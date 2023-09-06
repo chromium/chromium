@@ -161,6 +161,20 @@ base::StringPiece ContrastModeName(
   }
 }
 
+base::StringPiece ForcedColorsName(
+    ColorProviderKey::ForcedColors forced_colors) {
+  switch (forced_colors) {
+    case ColorProviderKey::ForcedColors::kNone:
+      return "kNone";
+    case ColorProviderKey::ForcedColors::kEmulated:
+      return "kEmulated";
+    case ColorProviderKey::ForcedColors::kActive:
+      return "kActive";
+    default:
+      return "<invalid>";
+  }
+}
+
 base::StringPiece SystemThemeName(ui::SystemTheme system_theme) {
   switch (system_theme) {
     case ui::SystemTheme::kDefault:

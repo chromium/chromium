@@ -39,6 +39,10 @@ base::StringPiece COMPONENT_EXPORT(COLOR)
 base::StringPiece COMPONENT_EXPORT(COLOR)
     ContrastModeName(ColorProviderKey::ContrastMode contrast_mode);
 
+// Converts the ForcedColors.
+base::StringPiece COMPONENT_EXPORT(COLOR)
+    ForcedColorsName(ColorProviderKey::ForcedColors forced_colors);
+
 // Converts SystemTheme.
 base::StringPiece COMPONENT_EXPORT(COLOR)
     SystemThemeName(ui::SystemTheme system_theme);

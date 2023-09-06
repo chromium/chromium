@@ -35,7 +35,8 @@ class ColorProviderManagerTest : public testing::Test {
 ColorProvider* GetLightNormalColorProvider() {
   return ColorProviderManager::GetForTesting().GetColorProviderFor(
       {ColorProviderKey::ColorMode::kLight,
-       ColorProviderKey::ContrastMode::kNormal, ui::SystemTheme::kDefault,
+       ColorProviderKey::ContrastMode::kNormal,
+       ColorProviderKey::ForcedColors::kNone, ui::SystemTheme::kDefault,
        ColorProviderKey::FrameType::kChromium,
        ColorProviderKey::UserColorSource::kAccent, /*user_color=*/absl::nullopt,
        /*scheme_variant=*/absl::nullopt, nullptr});

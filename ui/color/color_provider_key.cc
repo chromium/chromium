@@ -19,6 +19,7 @@ ColorProviderKey::ThemeInitializerSupplier::ThemeInitializerSupplier(
 ColorProviderKey::ColorProviderKey()
     : ColorProviderKey(ColorMode::kLight,
                        ContrastMode::kNormal,
+                       ForcedColors::kNone,
                        SystemTheme::kDefault,
                        FrameType::kChromium,
                        UserColorSource::kAccent,
@@ -29,6 +30,7 @@ ColorProviderKey::ColorProviderKey()
 ColorProviderKey::ColorProviderKey(
     ColorMode color_mode,
     ContrastMode contrast_mode,
+    ForcedColors forced_colors,
     SystemTheme system_theme,
     FrameType frame_type,
     UserColorSource user_color_source,
@@ -37,6 +39,7 @@ ColorProviderKey::ColorProviderKey(
     scoped_refptr<ThemeInitializerSupplier> custom_theme)
     : color_mode(color_mode),
       contrast_mode(contrast_mode),
+      forced_colors(forced_colors),
       elevation_mode(ElevationMode::kLow),
       system_theme(system_theme),
       frame_type(frame_type),

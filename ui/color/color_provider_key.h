@@ -32,6 +32,11 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     kNormal,
     kHigh,
   };
+  enum class ForcedColors {
+    kNone,
+    kEmulated,
+    kActive,
+  };
   enum class ElevationMode {
     kLow,
     kHigh,
@@ -103,6 +108,7 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
   ColorProviderKey(
       ColorMode color_mode,
       ContrastMode contrast_mode,
+      ForcedColors forced_colors,
       SystemTheme system_theme,
       FrameType frame_type,
       UserColorSource user_color_source = UserColorSource::kAccent,
@@ -117,6 +123,7 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
 
   ColorMode color_mode;
   ContrastMode contrast_mode;
+  ForcedColors forced_colors;
   ElevationMode elevation_mode;
   SystemTheme system_theme;
   FrameType frame_type;
@@ -132,11 +139,11 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
   bool operator<(const ColorProviderKey& other) const {
     auto* lhs_app_controller = app_controller.get();
     auto* rhs_app_controller = other.app_controller.get();
-    return std::tie(color_mode, contrast_mode, elevation_mode, system_theme,
-                    frame_type, user_color_source, user_color, scheme_variant,
-                    custom_theme, lhs_app_controller) <
-           std::tie(other.color_mode, other.contrast_mode, other.elevation_mode,
-                    other.system_theme, other.frame_type,
+    return std::tie(color_mode, contrast_mode, forced_colors, elevation_mode,
+                    system_theme, frame_type, user_color_source, user_color,
+                    scheme_variant, custom_theme, lhs_app_controller) <
+           std::tie(other.color_mode, other.contrast_mode, other.forced_colors,
+                    other.elevation_mode, other.system_theme, other.frame_type,
                     other.user_color_source, other.user_color,
                     other.scheme_variant, other.custom_theme,
                     rhs_app_controller);

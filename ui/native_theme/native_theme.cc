@@ -55,6 +55,8 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
           : ColorProviderKey::ColorMode::kLight,
       UserHasContrastPreference() ? ColorProviderKey::ContrastMode::kHigh
                                   : ColorProviderKey::ContrastMode::kNormal,
+      InForcedColorsMode() ? ColorProviderKey::ForcedColors::kActive
+                           : ColorProviderKey::ForcedColors::kNone,
       system_theme_,
       use_custom_frame ? ui::ColorProviderKey::FrameType::kChromium
                        : ui::ColorProviderKey::FrameType::kNative,

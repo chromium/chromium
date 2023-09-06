@@ -721,6 +721,9 @@ void GtkUi::UpdateColors() {
            (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
                ? ui::ColorProviderKey::ContrastMode::kHigh
                : ui::ColorProviderKey::ContrastMode::kNormal,
+           (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+               ? ui::ColorProviderKey::ForcedColors::kActive
+               : ui::ColorProviderKey::ForcedColors::kNone,
            ui::SystemTheme::kGtk,
            // Some theme colors, e.g. COLOR_NTP_LINK, are derived from color
            // provider colors. We assume that those sources' colors won't change

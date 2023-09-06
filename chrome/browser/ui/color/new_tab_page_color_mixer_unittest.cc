@@ -50,7 +50,8 @@ TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeColors) {
   mixer[kColorToolbar] = {gfx::kGoogleGreen300};
   ui::ColorProviderKey key = ui::ColorProviderKey(
       ui::ColorProviderKey::ColorMode::kLight,
-      ui::ColorProviderKey::ContrastMode::kNormal, ui::SystemTheme::kDefault,
+      ui::ColorProviderKey::ContrastMode::kNormal,
+      ui::ColorProviderKey::ForcedColors::kNone, ui::SystemTheme::kDefault,
       ui::ColorProviderKey::FrameType::kChromium,
       ui::ColorProviderKey::UserColorSource::kAccent, absl::nullopt,
       absl::nullopt,
@@ -78,7 +79,8 @@ TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeRealboxColors) {
   mixer[kColorToolbar] = {gfx::kGoogleGreen600};
   ui::ColorProviderKey key = ui::ColorProviderKey(
       ui::ColorProviderKey::ColorMode::kLight,
-      ui::ColorProviderKey::ContrastMode::kNormal, ui::SystemTheme::kDefault,
+      ui::ColorProviderKey::ContrastMode::kNormal,
+      ui::ColorProviderKey::ForcedColors::kNone, ui::SystemTheme::kDefault,
       ui::ColorProviderKey::FrameType::kChromium,
       ui::ColorProviderKey::UserColorSource::kAccent, absl::nullopt,
       absl::nullopt,
@@ -103,7 +105,8 @@ TEST(NewTabPageColorMixer, DefaultColorComprehensiveThemeColor) {
   mixer[ui::kColorFrameActive] = {SK_ColorBLUE};
   ui::ColorProviderKey key = ui::ColorProviderKey(
       ui::ColorProviderKey::ColorMode::kLight,
-      ui::ColorProviderKey::ContrastMode::kNormal, ui::SystemTheme::kDefault,
+      ui::ColorProviderKey::ContrastMode::kNormal,
+      ui::ColorProviderKey::ForcedColors::kNone, ui::SystemTheme::kDefault,
       ui::ColorProviderKey::FrameType::kChromium,
       ui::ColorProviderKey::UserColorSource::kAccent, absl::nullopt,
       absl::nullopt,
