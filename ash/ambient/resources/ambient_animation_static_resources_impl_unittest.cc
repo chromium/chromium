@@ -6,7 +6,7 @@
 
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/resources/ambient_animation_resource_constants.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
+#include "ash/constants/ambient_theme.h"
 #include "base/json/json_reader.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,18 +27,14 @@ using ::testing::NotNull;
 
 TEST(AmbientAnimationStaticResourcesTest, LoadsLottieData) {
   auto resources = AmbientAnimationStaticResources::Create(
-      AmbientUiSettings(
-          personalization_app::mojom::AmbientTheme::kFeelTheBreeze),
-      /*serializable=*/false);
+      AmbientUiSettings(AmbientTheme::kFeelTheBreeze), /*serializable=*/false);
   ASSERT_THAT(resources->GetSkottieWrapper(), NotNull());
   EXPECT_TRUE(resources->GetSkottieWrapper()->is_valid());
 }
 
 TEST(AmbientAnimationStaticResourcesTest, LoadsStaticAssets) {
   auto resources = AmbientAnimationStaticResources::Create(
-      AmbientUiSettings(
-          personalization_app::mojom::AmbientTheme::kFeelTheBreeze),
-      /*serializable=*/false);
+      AmbientUiSettings(AmbientTheme::kFeelTheBreeze), /*serializable=*/false);
   ASSERT_THAT(resources, NotNull());
   for (base::StringPiece asset_id :
        ambient::resources::kAllFeelTheBreezeStaticAssets) {
@@ -52,17 +48,14 @@ TEST(AmbientAnimationStaticResourcesTest, LoadsStaticAssets) {
 
 TEST(AmbientAnimationStaticResourcesTest, FailsForSlideshowTheme) {
   EXPECT_THAT(AmbientAnimationStaticResources::Create(
-                  AmbientUiSettings(
-                      personalization_app::mojom::AmbientTheme::kSlideshow),
+                  AmbientUiSettings(AmbientTheme::kSlideshow),
                   /*serializable=*/false),
               IsNull());
 }
 
 TEST(AmbientAnimationStaticResourcesTest, FailsForUnknownAssetId) {
   auto resources = AmbientAnimationStaticResources::Create(
-      AmbientUiSettings(
-          personalization_app::mojom::AmbientTheme::kFeelTheBreeze),
-      /*serializable=*/false);
+      AmbientUiSettings(AmbientTheme::kFeelTheBreeze), /*serializable=*/false);
   ASSERT_THAT(resources, NotNull());
   gfx::ImageSkia image = resources->GetStaticImageAsset("unknown_asset_id");
   EXPECT_TRUE(image.isNull());

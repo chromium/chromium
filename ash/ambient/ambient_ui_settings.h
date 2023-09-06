@@ -7,10 +7,9 @@
 
 #include <string>
 
-#include "ash/ambient/ambient_constants.h"
 #include "ash/ash_export.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,13 +28,13 @@ class ASH_EXPORT AmbientUiSettings {
   AmbientUiSettings();
   // Fatal error occurs if an invalid combination of settings is provided.
   explicit AmbientUiSettings(
-      personalization_app::mojom::AmbientTheme theme,
+      AmbientTheme theme,
       absl::optional<AmbientVideo> video = absl::nullopt);
   AmbientUiSettings(const AmbientUiSettings&);
   AmbientUiSettings& operator=(const AmbientUiSettings&);
   ~AmbientUiSettings();
 
-  personalization_app::mojom::AmbientTheme theme() const { return theme_; }
+  AmbientTheme theme() const { return theme_; }
   // Must be set if |theme()| is |kVideo|. Otherwise, may be nullopt.
   const absl::optional<AmbientVideo>& video() const { return video_; }
 
@@ -56,7 +55,7 @@ class ASH_EXPORT AmbientUiSettings {
   // an invalid instance. A fatal error should occur before then.
   bool IsValid() const;
 
-  personalization_app::mojom::AmbientTheme theme_ = kDefaultAmbientTheme;
+  AmbientTheme theme_ = kDefaultAmbientTheme;
   absl::optional<AmbientVideo> video_;
 };
 

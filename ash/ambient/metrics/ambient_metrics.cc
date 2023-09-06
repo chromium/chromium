@@ -11,7 +11,6 @@
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ash_web_view.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -169,8 +168,7 @@ void RecordAmbientModeVideoSessionStatusInternal(
 void RecordAmbientModeVideoSmoothnessInternal(
     const AmbientUiSettings& ui_settings,
     base::Value::Dict playback_metrics) {
-  CHECK_EQ(ui_settings.theme(),
-           personalization_app::mojom::AmbientTheme::kVideo);
+  CHECK_EQ(ui_settings.theme(), AmbientTheme::kVideo);
   if (ParseAmbientVideoSessionStatus(playback_metrics) !=
       AmbientVideoSessionStatus::kSuccess) {
     // Just to prevent error log spam below. If playback failed completely,

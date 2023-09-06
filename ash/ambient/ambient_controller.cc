@@ -32,6 +32,7 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -48,7 +49,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_status.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
@@ -1263,8 +1263,7 @@ void AmbientController::StartRefreshingImages() {
 
   AmbientPhotoConfig photo_config;
   std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate;
-  if (current_ui_settings.theme() ==
-      personalization_app::mojom::AmbientTheme::kSlideshow) {
+  if (current_ui_settings.theme() == AmbientTheme::kSlideshow) {
     photo_config = CreateAmbientSlideshowPhotoConfig();
     topic_queue_delegate =
         std::make_unique<AmbientTopicQueueSlideshowDelegate>();
@@ -1366,8 +1365,7 @@ void AmbientController::CreateUiLauncher() {
   if (IsAmbientModeManagedScreensaverEnabled()) {
     ambient_ui_launcher_ = std::make_unique<AmbientManagedSlideshowUiLauncher>(
         &delegate_, screensaver_images_policy_handler_.get());
-  } else if (GetCurrentUiSettings().theme() ==
-             personalization_app::mojom::AmbientTheme::kVideo) {
+  } else if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {
     ambient_ui_launcher_ = std::make_unique<AmbientVideoUiLauncher>(
         GetPrimaryUserPrefService(), &delegate_);
   } else if (GetCurrentUiSettings().theme() == AmbientTheme::kSlideshow) {
