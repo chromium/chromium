@@ -583,7 +583,6 @@ class RasterDecoderImpl final : public RasterDecoder,
     }
     return shared_context_state_->context_state();
   }
-  gl::GLApi* api() const { return api_; }
   GrDirectContext* gr_context() const {
     return shared_context_state_->gr_context();
   }
@@ -625,7 +624,9 @@ class RasterDecoderImpl final : public RasterDecoder,
       TRACE_EVENT0("gpu", "RasterDecoderImpl::FlushToWorkAroundMacCrashes");
       if (gr_context())
         gr_context()->flushAndSubmit();
-      api()->glFlushFn();
+
+      gl::GLApi* const api = gl::g_current_gl_context;
+      api->glFlushFn();
 
       // Flushes can be expensive, yield to allow interruption after each flush.
       ExitCommandProcessingEarly();
@@ -973,8 +974,6 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   const bool is_drdc_enabled_;
 
-  raw_ptr<gl::GLApi, AcrossTasksDanglingUntriaged> api_ = nullptr;
-
   base::WeakPtrFactory<DecoderContext> weak_ptr_factory_{this};
 };
 
@@ -1109,8 +1108,6 @@ ContextResult RasterDecoderImpl::Initialize(
   TRACE_EVENT0("gpu", "RasterDecoderImpl::Initialize");
   DCHECK(shared_context_state_->IsCurrent(nullptr));
 
-  api_ = gl::g_current_gl_context;
-
   set_initialized();
 
   if (!offscreen) {
@@ -1197,8 +1194,6 @@ bool RasterDecoderImpl::MakeCurrent() {
     LOG(ERROR) << "  RasterDecoderImpl: Context lost during MakeCurrent.";
     return false;
   }
-
-  DCHECK_EQ(api(), gl::g_current_gl_context);
 
   // Rebind textures if the service ids may have changed.
   RestoreAllExternalTextureBindingsIfNeeded();
@@ -1558,8 +1553,9 @@ error::Error RasterDecoderImpl::DoCommandsImpl(unsigned int num_commands,
 
         if (DebugImpl && shared_context_state_->GrContextIsGL() && debug() &&
             !WasContextLost()) {
+          gl::GLApi* const api = gl::g_current_gl_context;
           GLenum error;
-          while ((error = api()->glGetErrorFn()) != GL_NO_ERROR) {
+          while ((error = api->glGetErrorFn()) != GL_NO_ERROR) {
             LOG(ERROR) << "[" << logger_.GetLogPrefix() << "] "
                        << "GL ERROR: " << gles2::GLES2Util::GetStringEnum(error)
                        << " : " << GetCommandName(command);
