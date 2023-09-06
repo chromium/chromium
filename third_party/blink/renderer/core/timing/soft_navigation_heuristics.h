@@ -33,7 +33,7 @@ class SoftNavigationHeuristics
   void Trace(Visitor*) const override;
 
   // The class's API.
-  void UserInitiatedClick(ScriptState*);
+  void UserInitiatedInteraction(ScriptState*, bool is_unfocused_keydown);
   void ClickEventEnded(ScriptState*);
   void SameDocumentNavigationStarted(ScriptState*);
   void SameDocumentNavigationCommitted(ScriptState*, const String& url);
@@ -78,18 +78,16 @@ class SoftNavigationHeuristics
 class SoftNavigationEventScope {
  public:
   SoftNavigationEventScope(SoftNavigationHeuristics* heuristics,
-                           ScriptState* script_state)
+                           ScriptState* script_state,
+                           bool is_unfocused_keydown)
       : heuristics_(heuristics), script_state_(script_state) {
-    heuristics->UserInitiatedClick(script_state);
+    heuristics->UserInitiatedInteraction(script_state, is_unfocused_keydown);
   }
   ~SoftNavigationEventScope() { heuristics_->ClickEventEnded(script_state_); }
-  // TODO(yoav): Remove this method, as it's not doing anything useful.
-  void SetResult(DispatchEventResult result) { result_ = result; }
 
  private:
   Persistent<SoftNavigationHeuristics> heuristics_;
   Persistent<ScriptState> script_state_;
-  DispatchEventResult result_;
 };
 
 }  // namespace blink
