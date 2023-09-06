@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_3PCD_HEURISTICS_OPENER_HEURISTIC_METRICS_H_
-#define CHROME_BROWSER_3PCD_HEURISTICS_OPENER_HEURISTIC_METRICS_H_
+#ifndef CHROME_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_METRICS_H_
+#define CHROME_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_METRICS_H_
 
 #include <cstdint>
 #include <functional>
@@ -17,4 +17,4 @@ int32_t Bucketize3PCDHeuristicTimeDelta(
     base::TimeDelta maximum,
     base::RepeatingCallback<int64_t(const base::TimeDelta*)> cast_time_delta);
 
-#endif  // CHROME_BROWSER_3PCD_HEURISTICS_OPENER_HEURISTIC_METRICS_H_
+#endif  // CHROME_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_METRICS_H_

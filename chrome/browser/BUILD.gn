@@ -139,12 +139,6 @@ source_set("browser_process") {
 # require many files from it. This makes linking more efficient.
 static_library("browser") {
   sources = [
-    "3pcd/heuristics/opener_heuristic_metrics.cc",
-    "3pcd/heuristics/opener_heuristic_metrics.h",
-    "3pcd/heuristics/opener_heuristic_tab_helper.cc",
-    "3pcd/heuristics/opener_heuristic_tab_helper.h",
-    "3pcd/heuristics/opener_heuristic_utils.cc",
-    "3pcd/heuristics/opener_heuristic_utils.h",
     "about_flags.cc",
     "about_flags.h",
     "accessibility/accessibility_labels_service.cc",
@@ -1801,6 +1795,12 @@ static_library("browser") {
     "tab_contents/web_contents_collection.h",
     "task_manager/web_contents_tags.cc",
     "task_manager/web_contents_tags.h",
+    "tpcd/heuristics/opener_heuristic_metrics.cc",
+    "tpcd/heuristics/opener_heuristic_metrics.h",
+    "tpcd/heuristics/opener_heuristic_tab_helper.cc",
+    "tpcd/heuristics/opener_heuristic_tab_helper.h",
+    "tpcd/heuristics/opener_heuristic_utils.cc",
+    "tpcd/heuristics/opener_heuristic_utils.h",
     "tracing/background_tracing_field_trial.cc",
     "tracing/background_tracing_field_trial.h",
     "tracing/chrome_background_tracing_metrics_provider.cc",
