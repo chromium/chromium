@@ -1707,6 +1707,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInactiveTabsMoveLimitName,
      flag_descriptions::kInactiveTabsMoveLimitDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kInactiveTabsMoveLimit)},
+    {"autofill-enable-merchant-domain-in-unmask-card-request",
+     flag_descriptions::kAutofillEnableMerchantDomainInUnmaskCardRequestName,
+     flag_descriptions::
+         kAutofillEnableMerchantDomainInUnmaskCardRequestDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableMerchantDomainInUnmaskCardRequest)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

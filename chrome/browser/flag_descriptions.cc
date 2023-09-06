@@ -452,6 +452,13 @@ const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
     "When enabled, manual fallback will be enabled for virtual cards on "
     "Android.";
 
+const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[] =
+    "Enable sending merchant domain in server card unmask requests";
+const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =
+    "When enabled, requests to unmask cards will include a top-level "
+    "merchant_domain parameter populated with the last origin of the main "
+    "frame.";
+
 const char kAutofillEnableMerchantOptOutClientSideUrlFilteringName[] =
     "Enable Autofill merchant opt-out client side URL filtering";
 const char kAutofillEnableMerchantOptOutClientSideUrlFilteringDescription[] =

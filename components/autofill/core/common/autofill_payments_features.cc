@@ -85,6 +85,12 @@ BASE_FEATURE(kAutofillEnableManualFallbackForVirtualCards,
              "AutofillEnableManualFallbackForVirtualCards",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the merchant_domain field is included in requests to unmask a
+// card.
+BASE_FEATURE(kAutofillEnableMerchantDomainInUnmaskCardRequest,
+             "AutofillEnableMerchantDomainInUnmaskCardRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, client side URL filtering will be triggered for the merchant
 // opt-out use-case, so that virtual card suggestions are not shown on websites
 // that are opted-out of virtual cards.

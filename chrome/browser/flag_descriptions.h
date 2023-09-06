@@ -264,6 +264,9 @@ extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
 extern const char kAutofillEnableManualFallbackForVirtualCardsName[];
 extern const char kAutofillEnableManualFallbackForVirtualCardsDescription[];
 
+extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];
+extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];
+
 extern const char kAutofillEnableMerchantOptOutClientSideUrlFilteringName[];
 extern const char
     kAutofillEnableMerchantOptOutClientSideUrlFilteringDescription[];

@@ -56,6 +56,13 @@ const char kAutofillEnableCardArtImageDescription[] =
     "When enabled, card product images (instead of network icons) will be "
     "shown in Payments Autofill UI.";
 
+const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[] =
+    "Enable sending merchant domain in server card unmask requests";
+const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =
+    "When enabled, requests to unmask cards will include a top-level "
+    "merchant_domain parameter populated with the last origin of the main "
+    "frame.";
+
 const char kAutofillEnablePaymentsMandatoryReauthOnBlingName[] =
     "Enable mandatory re-auth for payments autofill on Bling";
 const char kAutofillEnablePaymentsMandatoryReauthOnBlingDescription[] =
