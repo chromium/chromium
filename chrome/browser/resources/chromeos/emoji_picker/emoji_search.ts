@@ -108,6 +108,12 @@ export class EmojiSearch extends PolymerElement {
         this.set('searchResults', [...localSearchResults, ...searchResults]);
       });
     }
+
+    // If the user is searching, to ensure emoji tooltip or variants popup can
+    // be full displayed, we need to specify the minimum height as 100%.
+    this.updateStyles({
+      '--min-height': (newSearch.length > 0 ? '100%' : 'unset'),
+    });
   }
 
   // TODO(b/281609806): Remove this compatibility logic once gif support is
