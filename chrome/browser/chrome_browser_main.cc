@@ -297,6 +297,7 @@
 #include "chrome/browser/headless/headless_mode_metrics.h"  // nogncheck
 #include "chrome/browser/headless/headless_mode_util.h"     // nogncheck
 #include "components/headless/select_file_dialog/headless_select_file_dialog.h"
+#include "ui/gfx/switches.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
@@ -2075,8 +2076,18 @@ bool ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
   // starts running. So, an additional check needs to happen when it starts.
   // But regardless of any future check, there is no reason to post the task
   // now if we know we're already shutting down.
-  if (!g_browser_process || g_browser_process->IsShuttingDown())
+  if (!g_browser_process || g_browser_process->IsShuttingDown()) {
     return false;
+  }
+
+  // Drop the request if headless mode is in effect or the request is from
+  // a headless Chrome process.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (headless::IsHeadlessMode() ||
+      command_line.HasSwitch(switches::kHeadless)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // In order to handle this request on Windows, there is platform specific
   // code in browser_finder.cc that requires making outbound COM calls to
