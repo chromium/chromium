@@ -1275,8 +1275,14 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
     if (id_to_accelerator_iter == id_to_accelerators.end() &&
         ignore_layouts_for_testing_) {
       continue;
-    } else {
-      DCHECK(id_to_accelerator_iter != id_to_accelerators.end());
+    }
+
+    // TODO(jimmyxgong): Re-evaluate this after fixing the root cause of this.
+    if (id_to_accelerator_iter == id_to_accelerators.end()) {
+      LOG(ERROR) << "Error: Layout with action ID: " << layout_info.action_id
+                 << " does not exist in the ID to Accelerator mapping. "
+                 << " Skipping adding this to the Ash configuration map.";
+      continue;
     }
 
     const auto& accelerators = id_to_accelerator_iter->second;
