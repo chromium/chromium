@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Builder (dbg)",
-              "project": "chromium"
+              "project": "chromium-m118"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -31,7 +31,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac13 Tests (dbg)",
-              "project": "chromium"
+              "project": "chromium-m118"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -52,7 +52,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m118"
               }
             }
           }
@@ -62,23 +62,19 @@
         {
           "bucket": "ci",
           "builder": "Mac Builder (dbg)",
-          "project": "chromium"
+          "project": "chromium-m118"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Mac13 Tests (dbg)",
-          "project": "chromium"
+          "project": "chromium-m118"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "mac_chromium_compile_dbg_ng",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_dbg_ng",
           "group": "tryserver.chromium.mac"
         }
       ]
@@ -100,6 +96,6 @@
   "builder_group": "chromium.mac",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

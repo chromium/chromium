@@ -15,27 +15,6 @@
   },
   "thresholds": {
     "ci": {
-      "ASAN Debug": {
-        "_default": "_default"
-      },
-      "ASAN Release": {
-        "_default": "_default"
-      },
-      "ASAN Release Media": {
-        "_default": "_default"
-      },
-      "ASan Debug (32-bit x86 with V8-ARM)": {
-        "_default": "_default"
-      },
-      "ASan Release (32-bit x86 with V8-ARM)": {
-        "_default": "_default"
-      },
-      "ASan Release Media (32-bit x86 with V8-ARM)": {
-        "_default": "_default"
-      },
-      "Android ASAN (dbg)": {
-        "_default": "_default"
-      },
       "Android Release (Nexus 5X)": {
         "_default": "_default"
       },
@@ -66,55 +45,7 @@
       "Android x86 Builder (dbg)": {
         "_default": "_default"
       },
-      "CFI Linux CF": {
-        "_default": "_default"
-      },
-      "CFI Linux ToT": {
-        "_default": "_default"
-      },
       "Cast Android (dbg)": {
-        "_default": "_default"
-      },
-      "Centipede Upload Linux ASan": {
-        "_default": "_default"
-      },
-      "ChromiumOS ASAN Release": {
-        "_default": "_default"
-      },
-      "CrWinAsan": {
-        "_default": "_default"
-      },
-      "CrWinAsan(dll)": {
-        "_default": "_default"
-      },
-      "Dawn Android arm Builder": {
-        "_default": "_default"
-      },
-      "Dawn Android arm DEPS Builder": {
-        "_default": "_default"
-      },
-      "Dawn Android arm DEPS Release (Nexus 5X)": {
-        "_default": "_default"
-      },
-      "Dawn Android arm DEPS Release (Pixel 4)": {
-        "_default": "_default"
-      },
-      "Dawn Android arm Release (Nexus 5X)": {
-        "_default": "_default"
-      },
-      "Dawn Android arm Release (Pixel 4)": {
-        "_default": "_default"
-      },
-      "Dawn Android arm64 DEPS Release (Pixel 6)": {
-        "_default": "_default"
-      },
-      "Dawn Android arm64 Release (Pixel 6)": {
-        "_default": "_default"
-      },
-      "Dawn Linux TSAN Release": {
-        "_default": "_default"
-      },
-      "Dawn Linux x64 Builder": {
         "_default": "_default"
       },
       "Dawn Linux x64 DEPS Builder": {
@@ -126,21 +57,6 @@
       "Dawn Linux x64 DEPS Release (NVIDIA)": {
         "_default": "_default"
       },
-      "Dawn Linux x64 Release (Intel UHD 630)": {
-        "_default": "_default"
-      },
-      "Dawn Linux x64 Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "Dawn Mac arm64 DEPS Release (Apple M2)": {
-        "_default": "_default"
-      },
-      "Dawn Mac arm64 Release (Apple M2)": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 Builder": {
-        "_default": "_default"
-      },
       "Dawn Mac x64 DEPS Builder": {
         "_default": "_default"
       },
@@ -148,30 +64,6 @@
         "_default": "_default"
       },
       "Dawn Mac x64 DEPS Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 Experimental Release (AMD)": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 Experimental Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 Release (AMD)": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 ASAN Builder": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 ASAN Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 ASAN Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 Builder": {
         "_default": "_default"
       },
       "Dawn Win10 x64 DEPS Builder": {
@@ -183,18 +75,6 @@
       "Dawn Win10 x64 DEPS Release (NVIDIA)": {
         "_default": "_default"
       },
-      "Dawn Win10 x64 Experimental Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x86 Builder": {
-        "_default": "_default"
-      },
       "Dawn Win10 x86 DEPS Builder": {
         "_default": "_default"
       },
@@ -204,108 +84,16 @@
       "Dawn Win10 x86 DEPS Release (NVIDIA)": {
         "_default": "_default"
       },
-      "Dawn Win10 x86 Experimental Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x86 Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x86 Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "Deterministic Android": {
-        "_default": "_default"
-      },
-      "Deterministic Android (dbg)": {
-        "_default": "_default"
-      },
       "GPU Linux Builder": {
-        "_default": "_default"
-      },
-      "GPU Linux Builder (dbg)": {
         "_default": "_default"
       },
       "GPU Mac Builder": {
         "_default": "_default"
       },
-      "GPU Mac Builder (dbg)": {
-        "_default": "_default"
-      },
       "GPU Win x64 Builder": {
         "_default": "_default"
       },
-      "GPU Win x64 Builder (dbg)": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Chrome OS ASan": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Linux ASan": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Linux ASan Debug": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Linux MSan": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Linux UBSan": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Linux V8-ARM64 ASan": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Linux V8-ARM64 ASan Debug": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Linux32 ASan": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Linux32 V8-ARM ASan": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Linux32 V8-ARM ASan Debug": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Mac ASan": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload Windows ASan": {
-        "_default": "_default"
-      },
-      "Libfuzzer Upload iOS Catalyst Debug": {
-        "_default": "_default"
-      },
-      "Linux ChromiumOS Full": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "Linux Debug (NVIDIA)": {
-        "_default": "_default"
-      },
       "Linux Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "MSAN Release (chained origins)": {
-        "_default": "_default"
-      },
-      "MSAN Release (no origins)": {
-        "_default": "_default"
-      },
-      "Mac ASAN Release": {
-        "_default": "_default"
-      },
-      "Mac ASAN Release Media": {
         "_default": "_default"
       },
       "Mac Builder": {
@@ -314,13 +102,7 @@
       "Mac Builder (dbg)": {
         "_default": "_default"
       },
-      "Mac Debug (Intel)": {
-        "_default": "_default"
-      },
       "Mac Release (Intel)": {
-        "_default": "_default"
-      },
-      "Mac Retina Debug (AMD)": {
         "_default": "_default"
       },
       "Mac Retina Release (AMD)": {
@@ -347,172 +129,10 @@
       "Oreo Phone Tester": {
         "_default": "_default"
       },
-      "TSAN Debug": {
-        "_default": "_default"
-      },
-      "TSAN Release": {
-        "_default": "_default"
-      },
-      "ToTAndroid": {
-        "_default": "_default"
-      },
-      "ToTAndroid (dbg)": {
-        "_default": "_default"
-      },
-      "ToTAndroid x64": {
-        "_default": "_default"
-      },
-      "ToTAndroid x86": {
-        "_default": "_default"
-      },
-      "ToTAndroid64": {
-        "_default": "_default"
-      },
-      "ToTAndroidASan": {
-        "_default": "_default"
-      },
-      "ToTAndroidCoverage x86": {
-        "_default": "_default"
-      },
-      "ToTAndroidOfficial": {
-        "_default": "_default"
-      },
-      "ToTChromeOS": {
-        "_default": "_default"
-      },
-      "ToTChromeOS (dbg)": {
-        "_default": "_default"
-      },
-      "ToTFuchsia x64": {
-        "_default": "_default"
-      },
-      "ToTFuchsiaOfficial arm64": {
-        "_default": "_default"
-      },
-      "ToTLinux": {
-        "_default": "_default"
-      },
-      "ToTLinux (dbg)": {
-        "_default": "_default"
-      },
-      "ToTLinuxASan": {
-        "_default": "_default"
-      },
-      "ToTLinuxASanLibfuzzer": {
-        "_default": "_default"
-      },
-      "ToTLinuxCoverage": {
-        "_default": "_default"
-      },
-      "ToTLinuxMSan": {
-        "_default": "_default"
-      },
-      "ToTLinuxPGO": {
-        "_default": "_default"
-      },
-      "ToTLinuxTSan": {
-        "_default": "_default"
-      },
-      "ToTLinuxUBSanVptr": {
-        "_default": "_default"
-      },
-      "ToTMac": {
-        "_default": "_default"
-      },
-      "ToTMac (dbg)": {
-        "_default": "_default"
-      },
-      "ToTMacASan": {
-        "_default": "_default"
-      },
-      "ToTMacCoverage": {
-        "_default": "_default"
-      },
-      "ToTWin": {
-        "_default": "_default"
-      },
-      "ToTWin(dbg)": {
-        "_default": "_default"
-      },
-      "ToTWin(dll)": {
-        "_default": "_default"
-      },
-      "ToTWin64": {
-        "_default": "_default"
-      },
-      "ToTWin64(dbg)": {
-        "_default": "_default"
-      },
-      "ToTWin64(dll)": {
-        "_default": "_default"
-      },
-      "ToTWin64PGO": {
-        "_default": "_default"
-      },
-      "ToTWinASanLibfuzzer": {
-        "_default": "_default"
-      },
-      "ToTWinArm64PGO": {
-        "_default": "_default"
-      },
-      "ToTWindowsCoverage": {
-        "_default": "_default"
-      },
-      "ToTiOS": {
-        "_default": "_default"
-      },
-      "ToTiOSDevice": {
-        "_default": "_default"
-      },
-      "UBSan Release": {
-        "_default": "_default"
-      },
-      "UBSan vptr Release": {
-        "_default": "_default"
-      },
-      "Win ASan Release": {
-        "_default": "_default"
-      },
-      "Win ASan Release Media": {
-        "_default": "_default"
-      },
-      "Win10 x64 Debug (NVIDIA)": {
-        "_default": "_default"
-      },
       "Win10 x64 Release (NVIDIA)": {
         "_default": "_default"
       },
-      "android-10-arm64-rel": {
-        "_default": "_default"
-      },
-      "android-11-x86-rel": {
-        "_default": "_default"
-      },
       "android-12-x64-rel": {
-        "_default": "_default"
-      },
-      "android-12l-x64-dbg-tests": {
-        "_default": "_default"
-      },
-      "android-13-x64-rel": {
-        "_default": "_default"
-      },
-      "android-archive-dbg": {
-        "_default": "_default"
-      },
-      "android-archive-rel": {
-        "_default": "_default"
-      },
-      "android-arm64-archive-rel": {
-        "_default": "_default"
-      },
-      "android-arm64-proguard-rel": {
-        "_default": "_default"
-      },
-      "android-bfcache-rel": {
-        "_default": "_default"
-      },
-      "android-binary-size-generator": {
         "_default": "_default"
       },
       "android-cronet-arm-dbg": {
@@ -521,40 +141,10 @@
       "android-cronet-arm-rel": {
         "_default": "_default"
       },
-      "android-cronet-arm64-dbg": {
-        "_default": "_default"
-      },
-      "android-cronet-arm64-rel": {
-        "_default": "_default"
-      },
-      "android-cronet-asan-arm-rel": {
-        "_default": "_default"
-      },
-      "android-cronet-mainline-clang-arm64-dbg": {
-        "_default": "_default"
-      },
-      "android-cronet-mainline-clang-arm64-rel": {
-        "_default": "_default"
-      },
       "android-cronet-mainline-clang-x86-dbg": {
         "_default": "_default"
       },
-      "android-cronet-mainline-clang-x86-rel": {
-        "_default": "_default"
-      },
-      "android-cronet-marshmallow-arm64-perf-rel": {
-        "_default": "_default"
-      },
       "android-cronet-x64-dbg": {
-        "_default": "_default"
-      },
-      "android-cronet-x64-dbg-12-tests": {
-        "_default": "_default"
-      },
-      "android-cronet-x64-dbg-13-tests": {
-        "_default": "_default"
-      },
-      "android-cronet-x64-rel": {
         "_default": "_default"
       },
       "android-cronet-x86-dbg": {
@@ -563,34 +153,10 @@
       "android-cronet-x86-dbg-10-tests": {
         "_default": "_default"
       },
-      "android-cronet-x86-dbg-11-tests": {
-        "_default": "_default"
-      },
-      "android-cronet-x86-dbg-lollipop-tests": {
-        "_default": "_default"
-      },
-      "android-cronet-x86-dbg-marshmallow-tests": {
-        "_default": "_default"
-      },
-      "android-cronet-x86-dbg-nougat-tests": {
-        "_default": "_default"
-      },
-      "android-cronet-x86-dbg-oreo-tests": {
-        "_default": "_default"
-      },
-      "android-cronet-x86-dbg-pie-tests": {
-        "_default": "_default"
-      },
-      "android-cronet-x86-rel": {
-        "_default": "_default"
-      },
       "android-nougat-x86-rel": {
         "_default": "_default"
       },
       "android-official": {
-        "_default": "_default"
-      },
-      "android-oreo-x86-rel": {
         "_default": "_default"
       },
       "android-pie-arm64-dbg": {
@@ -598,43 +164,6 @@
       },
       "android-pie-arm64-rel": {
         "_default": "_default"
-      },
-      "android-pie-x86-rel": {
-        "_default": "_default"
-      },
-      "android-webview-10-x86-rel-tests": {
-        "_default": "_default"
-      },
-      "android-x86-rel": {
-        "_default": "_default"
-      },
-      "chromeos-amd64-generic-asan-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "chromeos-amd64-generic-cfi-thin-lto-rel": {
-        "build_time": {
-          "p50_mins": 100
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
       },
       "chromeos-amd64-generic-dbg": {
         "build_time": {
@@ -665,20 +194,6 @@
         }
       },
       "chromeos-amd64-generic-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "chromeos-arm-generic-dbg": {
         "build_time": {
           "p50_mins": 60
         },
@@ -751,34 +266,11 @@
       "fuchsia-official": {
         "_default": "_default"
       },
-      "ios-catalyst": {
-        "_default": "_default"
-      },
-      "ios-device": {
-        "_default": "_default"
-      },
       "ios-simulator": {
         "_default": "_default"
       },
       "ios-simulator-full-configs": {
         "_default": "_default"
-      },
-      "ios-simulator-noncq": {
-        "_default": "_default"
-      },
-      "lacros-amd64-generic-binary-size-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
       },
       "lacros-amd64-generic-rel": {
         "build_time": {
@@ -794,23 +286,6 @@
           "p50_mins": 20
         }
       },
-      "lacros-amd64-generic-rel-skylab": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "lacros-arm-archive-rel": {
-        "_default": "_default"
-      },
       "lacros-arm-generic-rel": {
         "build_time": {
           "p50_mins": 60
@@ -825,78 +300,7 @@
           "p50_mins": 20
         }
       },
-      "lacros-arm-generic-rel-skylab": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "lacros-arm64-archive-rel": {
-        "_default": "_default"
-      },
       "lacros-arm64-generic-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "lacros-arm64-generic-rel-skylab": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "lacros64-archive-rel": {
-        "_default": "_default"
-      },
-      "linux-archive-dbg": {
-        "_default": "_default"
-      },
-      "linux-archive-rel": {
-        "_default": "_default"
-      },
-      "linux-arm64-rel-cft": {
-        "_default": "_default"
-      },
-      "linux-ash-chromium-generator-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "linux-cfm-rel": {
         "build_time": {
           "p50_mins": 60
         },
@@ -937,9 +341,6 @@
         "pending_time": {
           "p50_mins": 20
         }
-      },
-      "linux-lacros-archive-rel": {
-        "_default": "_default"
       },
       "linux-lacros-builder-rel": {
         "build_time": {
@@ -997,37 +398,10 @@
           "p50_mins": 20
         }
       },
-      "linux-rel-cft": {
-        "_default": "_default"
-      },
-      "linux-win_cross-rel": {
-        "_default": "_default"
-      },
-      "mac-archive-dbg": {
-        "_default": "_default"
-      },
-      "mac-archive-rel": {
-        "_default": "_default"
-      },
-      "mac-arm64-archive-dbg": {
-        "_default": "_default"
-      },
-      "mac-arm64-archive-rel": {
-        "_default": "_default"
-      },
-      "mac-arm64-on-arm64-rel": {
-        "_default": "_default"
-      },
       "mac-arm64-rel": {
         "_default": "_default"
       },
-      "mac-intel-on-arm64-rel": {
-        "_default": "_default"
-      },
       "mac-official": {
-        "_default": "_default"
-      },
-      "mac-rel-cft": {
         "_default": "_default"
       },
       "mac11-arm64-rel-tests": {
@@ -1039,22 +413,7 @@
       "mac13-arm64-rel-tests": {
         "_default": "_default"
       },
-      "win-archive-dbg": {
-        "_default": "_default"
-      },
-      "win-archive-rel": {
-        "_default": "_default"
-      },
       "win-official": {
-        "_default": "_default"
-      },
-      "win-rel-cft": {
-        "_default": "_default"
-      },
-      "win32-archive-dbg": {
-        "_default": "_default"
-      },
-      "win32-archive-rel": {
         "_default": "_default"
       },
       "win32-official": {

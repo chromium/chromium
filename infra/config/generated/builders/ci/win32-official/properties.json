@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "win32-official",
-              "project": "chromium"
+              "project": "chromium-m118"
             },
             "builder_spec": {
               "builder_group": "chromium",
@@ -33,7 +33,7 @@
         {
           "bucket": "ci",
           "builder": "win32-official",
-          "project": "chromium"
+          "project": "chromium-m118"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -60,6 +60,6 @@
   "builder_group": "chromium",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

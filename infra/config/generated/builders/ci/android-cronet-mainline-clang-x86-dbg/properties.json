@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-cronet-mainline-clang-x86-dbg",
-              "project": "chromium"
+              "project": "chromium-m118"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -40,13 +40,7 @@
         {
           "bucket": "ci",
           "builder": "android-cronet-mainline-clang-x86-dbg",
-          "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-cronet-mainline-clang-x86-dbg",
-          "group": "tryserver.chromium.android"
+          "project": "chromium-m118"
         }
       ]
     }
@@ -65,5 +59,8 @@
     ]
   },
   "builder_group": "chromium.android",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }
