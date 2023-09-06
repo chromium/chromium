@@ -432,7 +432,7 @@ void EmbeddedWorkerInstance::Start(
   // If we allocated a process, WorkerProcessHandle has to be created before
   // returning to ensure the process is eventually released.
   auto process_handle = std::make_unique<WorkerProcessHandle>(
-      process_manager->AsWeakPtr(), embedded_worker_id(),
+      process_manager->GetWeakPtr(), embedded_worker_id(),
       process_info->process_id);
 
   ServiceWorkerMetrics::StartSituation start_situation =

@@ -29,7 +29,6 @@ ServiceWorkerProcessManager::ServiceWorkerProcessManager()
       new_process_id_for_test_(ChildProcessHost::kInvalidUniqueID),
       force_new_process_for_test_(false) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
 ServiceWorkerProcessManager::~ServiceWorkerProcessManager() {
@@ -67,6 +66,7 @@ void ServiceWorkerProcessManager::Shutdown() {
 }
 
 bool ServiceWorkerProcessManager::IsShutdown() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return is_shutdown_;
 }
 
@@ -184,6 +184,12 @@ void ServiceWorkerProcessManager::ReleaseWorkerProcess(int embedded_worker_id) {
       process->DecrementWorkerRefCount();
   }
   worker_process_map_.erase(it);
+}
+
+base::WeakPtr<ServiceWorkerProcessManager>
+ServiceWorkerProcessManager::GetWeakPtr() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 SiteInstance* ServiceWorkerProcessManager::GetSiteInstanceForWorker(
