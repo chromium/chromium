@@ -164,10 +164,9 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     result->allowed_to_be_default_match = input.allowed_to_be_default_match;
     result->type = AutocompleteMatchType::ToString(input.type);
     result->is_search_type = AutocompleteMatch::IsSearchType(input.type);
+    omnibox::SuggestType type = input.suggest_type;
     auto subtypes = input.subtypes;
-    omnibox::SuggestType type = omnibox::TYPE_NATIVE_CHROME;
-    AutocompleteController::GetMatchTypeAndExtendSubtypes(input, &type,
-                                                          &subtypes);
+    AutocompleteController::ExtendMatchSubtypes(input, &subtypes);
     std::vector<std::string> subtypes_str;
     subtypes_str.push_back(base::NumberToString(type));
     base::ranges::transform(

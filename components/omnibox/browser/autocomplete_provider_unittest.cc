@@ -1188,9 +1188,11 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
     available_suggestion = searchbox_stats.add_available_suggestions();
     available_suggestion->set_index(2);
     available_suggestion->set_type(omnibox::TYPE_NAVIGATION);
+    available_suggestion->add_subtypes(omnibox::SUBTYPE_OMNIBOX_OTHER);
     available_suggestion = searchbox_stats.add_available_suggestions();
     available_suggestion->set_index(3);
     available_suggestion->set_type(omnibox::TYPE_NAVIGATION);
+    available_suggestion->add_subtypes(omnibox::SUBTYPE_OMNIBOX_OTHER);
     available_suggestion = searchbox_stats.add_available_suggestions();
     available_suggestion->set_index(4);
     available_suggestion->set_type(omnibox::TYPE_QUERY);
@@ -1250,36 +1252,36 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
 
     AssistedQueryStatsTestData test_data[] = {
         {AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-         "chrome..69i57j69i58j5l2j0i362j0i362i450j0i362i451j69i59",
+         "chrome..69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_0, omnibox::TYPE_NATIVE_CHROME},
         {AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-         "chrome..69i57j69i58j5l2j0i362j0i362i450j0i362i451j69i59",
+         "chrome..69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_1, omnibox::TYPE_NATIVE_CHROME},
         {AutocompleteMatchType::NAVSUGGEST,
-         "chrome.2.69i57j69i58j5l2j0i362j0i362i450j0i362i451j69i59",
+         "chrome.2.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_2, omnibox::TYPE_NAVIGATION},
         {AutocompleteMatchType::NAVSUGGEST,
-         "chrome.3.69i57j69i58j5l2j0i362j0i362i450j0i362i451j69i59",
+         "chrome.3.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_3, omnibox::TYPE_NAVIGATION},
         {AutocompleteMatchType::SEARCH_SUGGEST,
-         "chrome.4.69i57j69i58j5l2j0i362j0i362i450j0i362i451j69i59",
+         "chrome.4.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_4,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX}},
         {AutocompleteMatchType::SEARCH_SUGGEST,
-         "chrome.5.69i57j69i58j5l2j0i362j0i362i450j0i362i451j69i59",
+         "chrome.5.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_5,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX,
           omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY}},
         {AutocompleteMatchType::SEARCH_SUGGEST,
-         "chrome.6.69i57j69i58j5l2j0i362j0i362i450j0i362i451j69i59",
+         "chrome.6.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_6,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX,
           omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS}},
         {AutocompleteMatchType::SEARCH_HISTORY,
-         "chrome.7.69i57j69i58j5l2j0i362j0i362i450j0i362i451j69i59",
+         "chrome.7.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_7, omnibox::TYPE_NATIVE_CHROME},
     };
     SCOPED_TRACE("Trivial and zero-prefix matches");

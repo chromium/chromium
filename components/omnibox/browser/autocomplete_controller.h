@@ -95,14 +95,13 @@ class AutocompleteController : public AutocompleteProviderListener,
                                  bool default_match_changed) {}
   };
 
-  // Given a match, returns the appropriate type and zero or more subtypes
-  // corresponding to the SuggestType and SuggestSubtype enums in types.proto.
+  // Given a match, returns zero or more subtypes corresponding to SuggestType
+  // and SuggestSubtype enums in //third_party/omnibox_proto/types.proto.
   // This is needed to update Chrome's native types/subtypes to those expected
   // by the server. For more details, see go/chrome-suggest-logging.
   // Note: `subtypes` may be prepopulated with server-reported subtypes.
-  static void GetMatchTypeAndExtendSubtypes(
+  static void ExtendMatchSubtypes(
       const AutocompleteMatch& match,
-      omnibox::SuggestType* type,
       base::flat_set<omnibox::SuggestSubtype>* subtypes);
 
   // |provider_types| is a bitmap containing AutocompleteProvider::Type values

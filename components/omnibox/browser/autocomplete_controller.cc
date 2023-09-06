@@ -200,13 +200,11 @@ bool DebouncingEnabled() {
 }  // namespace
 
 // static
-void AutocompleteController::GetMatchTypeAndExtendSubtypes(
+void AutocompleteController::ExtendMatchSubtypes(
     const AutocompleteMatch& match,
-    omnibox::SuggestType* type,
     base::flat_set<omnibox::SuggestSubtype>* subtypes) {
   // If provider is TYPE_ZERO_SUGGEST_LOCAL_HISTORY, TYPE_ZERO_SUGGEST, or
-  // TYPE_ON_DEVICE_HEAD, set the subtype accordingly. The type will be set in
-  // the switch statement below for SEARCH_SUGGEST or NAVSUGGEST types.
+  // TYPE_ON_DEVICE_HEAD, set the subtype accordingly.
   if (match.provider) {
     if (match.provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST) {
       // Make sure changes here are reflected in UpdateAssistedQueryStats()
@@ -238,105 +236,64 @@ void AutocompleteController::GetMatchTypeAndExtendSubtypes(
   }
 
   switch (match.type) {
-    case AutocompleteMatchType::SEARCH_SUGGEST:
-    case AutocompleteMatchType::TILE_REPEATABLE_QUERY: {
-      // Do not set subtype here; subtype may have been set above.
-      *type = omnibox::TYPE_QUERY;
-      return;
-    }
-    case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY: {
-      // Map `ACMatchType::SEARCH_SUGGEST_ENTITY` back to
-      // `omnibox::TYPE_CATEGORICAL_QUERY` depending on the original suggestion
-      // type.
-      if (match.suggest_type == omnibox::TYPE_CATEGORICAL_QUERY &&
-          base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
-        *type = omnibox::TYPE_CATEGORICAL_QUERY;
-        return;
-      }
-      *type = omnibox::TYPE_ENTITY;
-      return;
-    }
-    case AutocompleteMatchType::SEARCH_SUGGEST_TAIL: {
-      *type = omnibox::TYPE_TAIL;
-      return;
-    }
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED: {
-      *type = omnibox::TYPE_PERSONALIZED_QUERY;
       subtypes->emplace(omnibox::SUBTYPE_PERSONAL);
-      return;
-    }
-    case AutocompleteMatchType::SEARCH_SUGGEST_PROFILE: {
-      *type = omnibox::TYPE_ENTITY;
-      return;
-    }
-    case AutocompleteMatchType::TILE_NAVSUGGEST:
-    case AutocompleteMatchType::TILE_MOST_VISITED_SITE:
-    case AutocompleteMatchType::NAVSUGGEST: {
-      // Do not set subtype here; subtype may have been set above.
-      *type = omnibox::TYPE_NAVIGATION;
-      return;
+      break;
     }
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED: {
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_ECHO_SEARCH);
-      return;
+      break;
     }
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED: {
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_ECHO_URL);
-      return;
+      break;
     }
     case AutocompleteMatchType::SEARCH_HISTORY: {
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_SEARCH);
-      return;
+      break;
     }
     case AutocompleteMatchType::HISTORY_URL: {
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_URL);
-      return;
+      break;
     }
     case AutocompleteMatchType::HISTORY_TITLE: {
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_TITLE);
-      return;
+      break;
     }
     case AutocompleteMatchType::HISTORY_BODY: {
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_BODY);
-      return;
+      break;
     }
     case AutocompleteMatchType::HISTORY_KEYWORD: {
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_KEYWORD);
-      return;
+      break;
     }
     case AutocompleteMatchType::BOOKMARK_TITLE: {
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_BOOKMARK_TITLE);
-      return;
+      break;
     }
     case AutocompleteMatchType::NAVSUGGEST_PERSONALIZED: {
-      *type = omnibox::TYPE_NAVIGATION;
       subtypes->emplace(omnibox::SUBTYPE_PERSONAL);
-      return;
-    }
-    case AutocompleteMatchType::CALCULATOR: {
-      *type = omnibox::TYPE_CALCULATOR;
-      return;
+      break;
     }
     case AutocompleteMatchType::CLIPBOARD_URL: {
       subtypes->emplace(omnibox::SUBTYPE_CLIPBOARD_URL);
-      return;
+      break;
     }
     case AutocompleteMatchType::CLIPBOARD_TEXT: {
       subtypes->emplace(omnibox::SUBTYPE_CLIPBOARD_TEXT);
-      return;
+      break;
     }
     case AutocompleteMatchType::CLIPBOARD_IMAGE: {
       subtypes->emplace(omnibox::SUBTYPE_CLIPBOARD_IMAGE);
-      return;
-    }
-    case AutocompleteMatchType::TILE_SUGGESTION: {
-      *type = omnibox::TYPE_CHROME_QUERY_TILES;
-      return;
+      break;
     }
     default: {
       // This value indicates a native chrome suggestion with no named subtype
       // (yet).
-      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_OTHER);
+      if (subtypes->empty()) {
+        subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_OTHER);
+      }
     }
   }
 }
@@ -1335,12 +1292,9 @@ void AutocompleteController::UpdateAssistedQueryStats(
   base::flat_set<omnibox::SuggestSubtype> last_subtypes = {};
   for (size_t index = 0; index < result->size(); ++index) {
     AutocompleteMatch* match = result->match_at(index);
+    omnibox::SuggestType type = match->suggest_type;
     auto subtypes = match->subtypes;
-    omnibox::SuggestType type = omnibox::TYPE_NATIVE_CHROME;
-    GetMatchTypeAndExtendSubtypes(*match, &type, &subtypes);
-    DCHECK_EQ(match->suggest_type, type)
-        << "AutocompleteMatchType: "
-        << AutocompleteMatchType::ToString(match->type);
+    ExtendMatchSubtypes(*match, &subtypes);
 
     // Count any suggestions that constitute zero-prefix suggestions.
     if (subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY) ||
