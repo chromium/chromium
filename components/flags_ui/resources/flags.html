@@ -79,7 +79,7 @@
         <a href="https://chrome.com/dev">dev channel</a>
       </span>
     </p>
-    <div class="tabs" role="tablist">
+    <div id="tabs" class="tabs" role="tablist">
       <a href="#tab-content-available" id="tab-available" class="tab selected"
           role="tab"
           aria-selected="true"
@@ -90,7 +90,7 @@
       <a href="#tab-content-unavailable" id="tab-unavailable" class="tab"
           role="tab"
           aria-selected="false" aria-controls="panel2"
-          tabindex="6">$i18n{unavailable}</a>
+          tabindex="-1">$i18n{unavailable}</a>
 </if>
     </div>
     <div id="tabpanels">

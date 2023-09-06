@@ -59,6 +59,12 @@ function selectTab(selectedTabEl: HTMLElement) {
     const isSelectedTab = tab.tabEl === selectedTabEl;
     tab.tabEl.classList.toggle('selected', isSelectedTab);
     tab.tabEl.setAttribute('aria-selected', String(isSelectedTab));
+    // flags.html has hard-coded tabindex values for its elements. A tabindex
+    // value of 5 ensures the tabs are in the correct order.
+    tab.tabEl.tabIndex = isSelectedTab ? 5 : -1;
+    if (isSelectedTab) {
+      selectedTabEl.focus();
+    }
     tab.panelEl.classList.toggle('selected', isSelectedTab);
   }
 }
@@ -100,6 +106,40 @@ function render(experimentalFeaturesData: ExperimentalFeaturesData) {
   // </if>
 
   // Tab panel selection.
+  const tabsEl = getRequiredElement('tabs');
+  tabsEl.addEventListener('keydown', (e: KeyboardEvent) => {
+    let selectedIndex = tabs.findIndex(tab => {
+      return tab.tabEl.classList.contains('selected');
+    }) ||
+        0;
+
+    switch (e.key) {
+      case 'Home':
+        selectedIndex = 0;
+        break;
+      case 'End':
+        selectedIndex = tabs.length - 1;
+        break;
+      case 'ArrowLeft':
+        selectedIndex--;
+        if (selectedIndex < 0) {
+          selectedIndex += tabs.length;
+        }
+        break;
+      case 'ArrowRight':
+        selectedIndex++;
+        if (selectedIndex >= tabs.length) {
+          selectedIndex %= tabs.length;
+        }
+        break;
+      default:
+        return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    selectTab(tabs[selectedIndex]!.tabEl);
+  });
+
   for (const tab of tabs) {
     tab.tabEl.addEventListener('click', e => {
       e.preventDefault();
