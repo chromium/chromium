@@ -8,6 +8,9 @@ import android.util.SparseArray;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceLoader;
 
@@ -34,6 +37,9 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
 
     private final SparseArray<AsyncLoadTask> mOutstandingLoads = new SparseArray<AsyncLoadTask>();
     private final ResourceCreator mCreator;
+    // USER_BLOCKING since we eventually .get() this.
+    private final TaskRunner mTaskQueue =
+            PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING_MAY_BLOCK);
 
     /**
      * Creates a {@link AsyncPreloadResourceLoader}.
@@ -84,7 +90,7 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
     public void preloadResource(int resId) {
         if (mOutstandingLoads.get(resId) != null) return;
         AsyncLoadTask task = new AsyncLoadTask(resId);
-        task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        task.executeOnTaskRunner(mTaskQueue);
         mOutstandingLoads.put(resId, task);
     }
 
