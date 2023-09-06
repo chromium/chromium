@@ -17,12 +17,10 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -64,7 +62,14 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     @Override
     public boolean doesProcessSuggestion(AutocompleteMatch match, int matchIndex) {
-        return match.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST;
+        switch (match.getType()) {
+            case OmniboxSuggestionType.TILE_NAVSUGGEST:
+            case OmniboxSuggestionType.TILE_MOST_VISITED_SITE:
+            case OmniboxSuggestionType.TILE_REPEATABLE_QUERY:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -88,15 +93,34 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     public void populateModel(AutocompleteMatch match, PropertyModel model, int matchIndex) {
         super.populateModel(match, model, matchIndex);
 
-        // Note: we should never show most visited tiles in incognito mode. Catch this early
-        // if we ever do.
-        assert model.get(SuggestionCommonProperties.COLOR_SCHEME) != BrandedColorScheme.INCOGNITO;
-
         if (match.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
             updateModelFromTileNavsuggest(match, model, matchIndex);
         } else {
-            assert false : "Unsupported AutocompleteMatch type: " + match.getType();
+            updateModelFromDedicatedMatch(match, model, matchIndex);
         }
+    }
+
+    private void updateModelFromDedicatedMatch(
+            AutocompleteMatch match, PropertyModel model, int matchIndex) {
+        List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
+        String title = TextUtils.isEmpty(match.getDisplayText()) ? match.getUrl().getHost()
+                                                                 : match.getDisplayText();
+        int tileIndex = tileList.size();
+
+        // clang-format off
+        var tileModel = createTile(title, match.getUrl(), match.isSearchSuggestion(),
+                v -> {
+                    OmniboxMetrics.recordSuggestTileTypeUsed(tileIndex, match.isSearchSuggestion());
+                    mSuggestionHost.onSuggestionClicked(match, matchIndex, match.getUrl());
+                },
+                v -> {
+                    mSuggestionHost.onDeleteMatch(match, title);
+                    return true;
+                });
+        // clang-format on
+
+        tileList.add(
+                new ListItem(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileModel));
     }
 
     private void updateModelFromTileNavsuggest(
