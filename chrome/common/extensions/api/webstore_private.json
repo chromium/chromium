@@ -303,39 +303,6 @@
         }
       },
       {
-        "name": "getEphemeralAppsEnabled",
-        "description": "Returns whether the ephemeral apps feature is enabled.",
-        "parameters": [],
-        "returns_async": {
-          "name": "callback",
-          "parameters": [
-            { "name": "is_enabled", "type": "boolean" }
-          ]
-        }
-      },
-      {
-        "name": "launchEphemeralApp",
-        "description": "Installs an app ephemerally in Chrome (if not already fully installed) and launches the app. A user gesture is required.",
-        "parameters": [
-          {
-            "name": "id",
-            "type": "string",
-            "description": "The extension id of the app to launch."
-          }
-        ],
-        "returns_async": {
-          "name": "callback",
-          "optional": true,
-          "parameters": [
-            {
-              "name": "result",
-              "$ref": "Result",
-              "description": "Whether an attempt to launch an app succeeded, or the reason for failure."
-            }
-          ]
-        }
-      },
-      {
         "name": "isPendingCustodianApproval",
         "description": "Checks if an extension installed on a Supervised User profile is pending custodian approval.",
         "parameters": [

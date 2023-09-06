@@ -310,42 +310,6 @@ class WebstorePrivateIsInIncognitoModeFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 };
 
-class WebstorePrivateLaunchEphemeralAppFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("webstorePrivate.launchEphemeralApp",
-                             WEBSTOREPRIVATE_LAUNCHEPHEMERALAPP)
-
-  WebstorePrivateLaunchEphemeralAppFunction();
-
- private:
-  ~WebstorePrivateLaunchEphemeralAppFunction() override;
-
-  // ExtensionFunction:
-  ExtensionFunction::ResponseAction Run() override;
-
-  void OnLaunchComplete(webstore_install::Result result,
-                        const std::string& error);
-
-  ExtensionFunction::ResponseValue BuildResponse(
-      api::webstore_private::Result result,
-      const std::string& error);
-};
-
-class WebstorePrivateGetEphemeralAppsEnabledFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("webstorePrivate.getEphemeralAppsEnabled",
-                             WEBSTOREPRIVATE_GETEPHEMERALAPPSENABLED)
-
-  WebstorePrivateGetEphemeralAppsEnabledFunction();
-
- private:
-  ~WebstorePrivateGetEphemeralAppsEnabledFunction() override;
-
-  // ExtensionFunction:
-  ExtensionFunction::ResponseAction Run() override;
-};
-
 class WebstorePrivateIsPendingCustodianApprovalFunction
     : public ExtensionFunction {
  public:
