@@ -2494,7 +2494,7 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
     // OnSubmission for the second buffer with a non-null fence.
     gfx::GpuFenceHandle handle;
     const int32_t kFenceFD = dup(1);
-    handle.owned_fd.reset(kFenceFD);
+    handle.Adopt(base::ScopedFD(kFenceFD));
 
     auto* mock_surface = server->GetObject<wl::MockSurface>(id);
     mock_surface->ReleaseBufferFenced(mock_surface->prev_attached_buffer(),

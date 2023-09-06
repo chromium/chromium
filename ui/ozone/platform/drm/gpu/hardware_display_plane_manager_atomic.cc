@@ -45,7 +45,7 @@ gfx::GpuFenceHandle CreateMergedGpuFenceFromFDs(
 
   gfx::GpuFenceHandle handle;
   if (merged_fd.is_valid())
-    handle.owned_fd = std::move(merged_fd);
+    handle.Adopt(std::move(merged_fd));
 
   return handle;
 }
@@ -413,7 +413,7 @@ bool HardwareDisplayPlaneManagerAtomic::SetPlaneData(
 
   if (overlay.gpu_fence) {
     const auto& gpu_fence_handle = overlay.gpu_fence->GetGpuFenceHandle();
-    fence_fd = gpu_fence_handle.owned_fd.get();
+    fence_fd = gpu_fence_handle.Peek();
   }
 
   if (!atomic_plane->AssignPlaneProps(

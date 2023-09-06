@@ -536,8 +536,7 @@ OverlayImage* AHardwareBufferImageBacking::BeginOverlayAccess(
 
   if (write_sync_fd_.is_valid()) {
     gfx::GpuFenceHandle fence_handle;
-    fence_handle.owned_fd =
-        base::ScopedFD(HANDLE_EINTR(dup(write_sync_fd_.get())));
+    fence_handle.Adopt(base::ScopedFD(HANDLE_EINTR(dup(write_sync_fd_.get()))));
     begin_read_fence = std::move(fence_handle);
   }
 

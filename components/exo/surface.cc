@@ -867,7 +867,7 @@ void Surface::SetEmbeddedSurfaceSize(const gfx::Size& size) {
 
 void Surface::SetAcquireFence(std::unique_ptr<gfx::GpuFence> gpu_fence) {
   TRACE_EVENT1("exo", "Surface::SetAcquireFence", "fence_fd",
-               gpu_fence ? gpu_fence->GetGpuFenceHandle().owned_fd.get() : -1);
+               gpu_fence ? gpu_fence->GetGpuFenceHandle().Peek() : -1);
 
   pending_state_.acquire_fence = std::move(gpu_fence);
 }

@@ -331,8 +331,8 @@ void GbmSurfacelessWayland::OnSubmission(uint32_t frame_id,
   // Check if the fence has retired.
   if (!release_fence.is_null()) {
     base::TimeTicks ticks;
-    auto status = gfx::GpuFence::GetStatusChangeTime(
-        release_fence.owned_fd.get(), &ticks);
+    auto status =
+        gfx::GpuFence::GetStatusChangeTime(release_fence.Peek(), &ticks);
     if (status == gfx::GpuFence::kSignaled)
       release_fence = {};
   }

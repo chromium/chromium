@@ -189,7 +189,7 @@ TEST_F(GpuFenceManagerTest, GetGpuFence) {
   EXPECT_TRUE(gpu_fence);
   const gfx::GpuFenceHandle& handle = gpu_fence->GetGpuFenceHandle();
 
-  EXPECT_EQ(handle.owned_fd.get(), kFenceFD);
+  EXPECT_EQ(handle.Peek(), kFenceFD);
 
   // Removing the fence marks it invalid.
   EXPECT_CALL(*egl_, DestroySyncKHR(_, kDummySync))
@@ -208,7 +208,7 @@ TEST_F(GpuFenceManagerTest, Duplication) {
 
   // Create a handle.
   gfx::GpuFenceHandle handle;
-  handle.owned_fd = base::ScopedFD(kFenceFD);
+  handle.Adopt(base::ScopedFD(kFenceFD));
 
   // Create a duplicate fence object from it.
   EXPECT_CALL(*egl_, CreateSyncKHR(_, EGL_SYNC_NATIVE_FENCE_ANDROID, _))

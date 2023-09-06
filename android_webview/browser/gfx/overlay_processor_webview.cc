@@ -82,7 +82,7 @@ class OverlayProcessorWebView::Manager
 
       gfx::GpuFenceHandle acquire_fence = read_access_->TakeAcquireFence();
       if (!acquire_fence.is_null()) {
-        begin_read_fence_ = std::move(acquire_fence.owned_fd);
+        begin_read_fence_ = acquire_fence.Release();
       }
 
       AHardwareBuffer_Desc desc;
@@ -111,7 +111,7 @@ class OverlayProcessorWebView::Manager
       // surface in this case.
       if (read_access_) {
         gfx::GpuFenceHandle fence_handle;
-        fence_handle.owned_fd = std::move(end_read_fence);
+        fence_handle.Adopt(std::move(end_read_fence));
         read_access_->SetReleaseFence(std::move(fence_handle));
         read_access_.reset();
       } else {

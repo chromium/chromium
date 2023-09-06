@@ -31,16 +31,9 @@ std::vector<zx::event> GpuFenceHandlesToZxEvents(
   std::vector<zx::event> events;
   events.reserve(handles.size());
   for (auto& handle : handles) {
-    events.push_back(std::move(handle.owned_event));
+    events.push_back(handle.Release());
   }
   return events;
-}
-
-zx::event DuplicateZxEvent(const zx::event& event) {
-  zx::event result;
-  zx_status_t status = event.duplicate(ZX_RIGHT_SAME_RIGHTS, &result);
-  ZX_DCHECK(status == ZX_OK, status);
-  return result;
 }
 
 // A struct containing Flatland properties for an associated overlay transform.
@@ -283,8 +276,7 @@ void FlatlandSurface::Present(
   // Keep track of release fences from last present for destructor.
   release_fences_from_last_present_.clear();
   for (auto& fence : release_fences) {
-    release_fences_from_last_present_.push_back(
-        DuplicateZxEvent(fence.owned_event));
+    release_fences_from_last_present_.push_back(fence.Clone().Release());
   }
 
   // Present to Flatland.

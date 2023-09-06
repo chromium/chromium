@@ -46,8 +46,8 @@ class LinuxBufferRelease {
   void HandleExplicitRelease(gfx::GpuFenceHandle release_fence) {
     if (!release_fence.is_null()) {
       // Fd will be dup'd for us.
-      zwp_linux_buffer_release_v1_send_fenced_release(
-          resource_, release_fence.owned_fd.get());
+      zwp_linux_buffer_release_v1_send_fenced_release(resource_,
+                                                      release_fence.Peek());
     } else {
       zwp_linux_buffer_release_v1_send_immediate_release(resource_);
     }
@@ -138,7 +138,7 @@ void linux_surface_synchronization_set_acquire_fence(wl_client* client,
   }
 
   gfx::GpuFenceHandle handle;
-  handle.owned_fd = std::move(fence_fd);
+  handle.Adopt(std::move(fence_fd));
 
   surface->SetAcquireFence(std::make_unique<gfx::GpuFence>(std::move(handle)));
 }

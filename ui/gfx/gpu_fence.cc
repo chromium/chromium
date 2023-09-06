@@ -44,8 +44,8 @@ void GpuFence::Wait() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   static const int kInfiniteSyncWaitTimeout = -1;
-  DCHECK_GE(fence_handle_.owned_fd.get(), 0);
-  if (sync_wait(fence_handle_.owned_fd.get(), kInfiniteSyncWaitTimeout) < 0) {
+  DCHECK_GE(fence_handle_.Peek(), 0);
+  if (sync_wait(fence_handle_.Peek(), kInfiniteSyncWaitTimeout) < 0) {
     LOG(FATAL) << "Failed while waiting for gpu fence fd";
   }
 #else
@@ -90,8 +90,7 @@ GpuFence::FenceStatus GpuFence::GetStatusChangeTime(int fd,
 base::TimeTicks GpuFence::GetMaxTimestamp() const {
   base::TimeTicks timestamp;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  FenceStatus status =
-      GetStatusChangeTime(fence_handle_.owned_fd.get(), &timestamp);
+  FenceStatus status = GetStatusChangeTime(fence_handle_.Peek(), &timestamp);
   DCHECK_EQ(status, FenceStatus::kSignaled);
   return timestamp;
 #endif

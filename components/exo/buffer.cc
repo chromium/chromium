@@ -779,15 +779,15 @@ void Buffer::MaybeRunPerCommitRelease(
     // fence can have already been signalled. Thus, only watch the fence is
     // readable iff it hasn't been signalled yet.
     base::TimeTicks ticks;
-    auto status = gfx::GpuFence::GetStatusChangeTime(
-        release_fence.owned_fd.get(), &ticks);
+    auto status =
+        gfx::GpuFence::GetStatusChangeTime(release_fence.Peek(), &ticks);
     if (status == gfx::GpuFence::kSignaled) {
       std::move(buffer_release_callback).Run();
       return;
     }
 
     auto controller = base::FileDescriptorWatcher::WatchReadable(
-        release_fence.owned_fd.get(),
+        release_fence.Peek(),
         base::BindRepeating(&Buffer::FenceSignalled, AsWeakPtr(), commit_id));
     buffer_releases_.emplace(
         commit_id,

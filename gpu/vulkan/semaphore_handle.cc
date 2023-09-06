@@ -38,16 +38,16 @@ SemaphoreHandle::SemaphoreHandle(gfx::GpuFenceHandle fence_handle) {
   // VkSemaphore, which can then be used to submit present work, see
   // https://fuchsia.dev/reference/fidl/fuchsia.ui.scenic.
   Init(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA,
-       std::move(fence_handle.owned_event));
+       fence_handle.Release());
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   Init(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT_KHR,
-       std::move(fence_handle.owned_fd));
+       fence_handle.Release());
 #elif BUILDFLAG(IS_POSIX)
   Init(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR,
-       std::move(fence_handle.owned_fd));
+       fence_handle.Release());
 #elif BUILDFLAG(IS_WIN)
   Init(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT,
-       std::move(fence_handle.owned_handle));
+       fence_handle.Release());
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
@@ -63,17 +63,17 @@ gfx::GpuFenceHandle SemaphoreHandle::ToGpuFenceHandle() && {
   // Fuchsia's Vulkan driver allows zx::event to be obtained from a
   // VkSemaphore, which can then be used to submit present work, see
   // https://fuchsia.dev/reference/fidl/fuchsia.ui.scenic.
-  fence_handle.owned_event = TakeHandle();
+  fence_handle.Adopt(TakeHandle());
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   if (type_ == VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT_KHR) {
-    fence_handle.owned_fd = TakeHandle();
+    fence_handle.Adopt(TakeHandle());
   } else {
     DLOG(ERROR) << "Unable to convert SemaphoreHandle to GpuFenceHandle";
   }
 #elif BUILDFLAG(IS_POSIX)
-  fence_handle.owned_fd = TakeHandle();
+  fence_handle.Adopt(TakeHandle());
 #elif BUILDFLAG(IS_WIN)
-  fence_handle.owned_handle = TakeHandle();
+  fence_handle.Adopt(TakeHandle());
 #endif  // BUILDFLAG(IS_FUCHSIA)
   return fence_handle;
 }

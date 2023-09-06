@@ -235,9 +235,8 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
   }
 
   Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
-  hr = d3d11_device5->OpenSharedFence(
-      gpu_fence.GetGpuFenceHandle().owned_handle.Get(),
-      IID_PPV_ARGS(&d3d11_fence));
+  hr = d3d11_device5->OpenSharedFence(gpu_fence.GetGpuFenceHandle().Peek(),
+                                      IID_PPV_ARGS(&d3d11_fence));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Unable to open a shared fence " << std::hex << hr;
     return false;

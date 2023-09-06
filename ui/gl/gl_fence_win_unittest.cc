@@ -93,14 +93,14 @@ TEST_F(GLFenceWinTest, CreateFromGpuFence) {
 
   gfx::GpuFenceHandle gpu_fence_handle;
   EXPECT_TRUE(gpu_fence_handle.is_null());
-  gpu_fence_handle.owned_handle.Set(mock_handle);
+  gpu_fence_handle.Adopt(base::win::ScopedHandle(mock_handle));
   EXPECT_FALSE(gpu_fence_handle.is_null());
 
   gfx::GpuFence gpu_fence(std::move(gpu_fence_handle));
   EXPECT_TRUE(gpu_fence_handle.is_null());
 
   const gfx::GpuFenceHandle& fence_handle_ref = gpu_fence.GetGpuFenceHandle();
-  EXPECT_EQ(fence_handle_ref.owned_handle.Get(), mock_handle);
+  EXPECT_EQ(fence_handle_ref.Peek(), mock_handle);
   EXPECT_FALSE(fence_handle_ref.is_null());
 
   // Ensure that CreateFromGpuFence opens the shared handle.

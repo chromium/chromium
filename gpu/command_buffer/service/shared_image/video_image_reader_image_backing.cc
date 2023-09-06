@@ -535,7 +535,7 @@ class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
       return false;
 
     gfx::GpuFenceHandle handle;
-    handle.owned_fd = scoped_hardware_buffer_->TakeFence();
+    handle.Adopt(scoped_hardware_buffer_->TakeFence());
     if (!handle.is_null())
       acquire_fence = std::move(handle);
 
@@ -550,7 +550,7 @@ class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
       }
       video_image_.reset();
     } else {
-      scoped_hardware_buffer_->SetReadFence(std::move(release_fence.owned_fd));
+      scoped_hardware_buffer_->SetReadFence(release_fence.Release());
     }
 
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());

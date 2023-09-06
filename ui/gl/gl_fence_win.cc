@@ -92,7 +92,7 @@ std::unique_ptr<GLFenceWin> GLFenceWin::CreateForGpuFence(
   }
 
   gfx::GpuFenceHandle gpu_fence_handle;
-  gpu_fence_handle.owned_handle = std::move(scoped_handle);
+  gpu_fence_handle.Adopt(std::move(scoped_handle));
   return std::make_unique<GLFenceWin>(std::move(d3d11_fence),
                                       std::move(gpu_fence_handle));
 }
@@ -117,7 +117,7 @@ std::unique_ptr<GLFenceWin> GLFenceWin::CreateFromGpuFence(
 
   gfx::GpuFenceHandle gpu_fence_handle = gpu_fence.GetGpuFenceHandle().Clone();
   Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
-  hr = d3d11_device5->OpenSharedFence(gpu_fence_handle.owned_handle.Get(),
+  hr = d3d11_device5->OpenSharedFence(gpu_fence_handle.Peek(),
                                       IID_PPV_ARGS(&d3d11_fence));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Unable to open a shared fence "

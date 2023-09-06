@@ -436,7 +436,7 @@ TEST_F(DisplayResourceProviderSkiaTest,
       gfx::GpuFenceHandle fake_handle;
 #if BUILDFLAG(IS_POSIX)
       const int32_t kFenceFd = dup(1);
-      fake_handle.owned_fd.reset(kFenceFd);
+      fake_handle.Adopt(base::ScopedFD(kFenceFd));
 #endif
       release_fence->SetReleaseFence(std::move(fake_handle));
     }
@@ -545,7 +545,7 @@ TEST_F(DisplayResourceProviderSkiaTest, ResourceFenceDestroyChild) {
       gfx::GpuFenceHandle fake_handle;
 #if BUILDFLAG(IS_POSIX)
       const int32_t kFenceFd = dup(1);
-      fake_handle.owned_fd.reset(kFenceFd);
+      fake_handle.Adopt(base::ScopedFD(kFenceFd));
 #endif
       release_fence->SetReleaseFence(std::move(fake_handle));
     }
@@ -633,7 +633,7 @@ TEST_F(DisplayResourceProviderSkiaTest, ResourceFenceOutlivesResourceProvider) {
     gfx::GpuFenceHandle fake_handle;
 #if BUILDFLAG(IS_POSIX)
     const int32_t kFenceFd = dup(1);
-    fake_handle.owned_fd.reset(kFenceFd);
+    fake_handle.Adopt(base::ScopedFD(kFenceFd));
 #endif
     release_fence->SetReleaseFence(std::move(fake_handle));
   }

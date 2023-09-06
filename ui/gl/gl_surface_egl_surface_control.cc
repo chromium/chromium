@@ -302,7 +302,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     if (gpu_fence && surface_state.hardware_buffer) {
       auto fence_handle = gpu_fence->GetGpuFenceHandle().Clone();
       DCHECK(!fence_handle.is_null());
-      fence_fd = std::move(fence_handle.owned_fd);
+      fence_fd = fence_handle.Release();
     }
 
     if (is_primary_plane) {

@@ -768,8 +768,8 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
       if (iter != submitted_frames_.begin()) {
         auto prev_iter = iter - 1;
         if ((*prev_iter)->merged_release_fence_fd.is_valid()) {
-          release_fence_handle.owned_fd =
-              std::move((*prev_iter)->merged_release_fence_fd);
+          release_fence_handle.Adopt(
+              std::move((*prev_iter)->merged_release_fence_fd));
         }
       }
 
