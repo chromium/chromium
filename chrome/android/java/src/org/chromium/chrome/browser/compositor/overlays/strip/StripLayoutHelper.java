@@ -9,7 +9,9 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PointF;
 import android.os.Handler;
@@ -1436,6 +1438,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // Allow the user to drag the selected tab out of the tab toolbar.
             if (clickedTab != null) {
                 allowMovingTabOutOfStripLayout(clickedTab, new PointF(x, y));
+            } else {
+                // Broadcast to start moving the window instance as the user has long pressed on the
+                // open space of the tab strip.
+                sendMoveWindowBroadcast(mToolbarContainerView, x, y);
             }
         }
     }
@@ -3281,5 +3287,32 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     int getCurrentTabIndexForTesting() {
         return findIndexForTab(TabModelUtils.getCurrentTabId(mModel));
+    }
+
+    void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
+        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+
+        // The start position is in the view coordinate system and related to the top left position
+        // of the toolbar container view. Convert it to the screen coordinate system for window drag
+        // start position.
+        int[] topLeftLocation = new int[2];
+        view.getLocationOnScreen(topLeftLocation);
+        float startXInScreen = topLeftLocation[0] + startXInView;
+        float startYInScreen = topLeftLocation[1] + startYInView;
+
+        Activity activity = (Activity) view.getContext();
+        int taskId = activity.getTaskId();
+
+        // Prepare the move window intent for the Android system to initiate move and take over the
+        // user input events. The intent is ignored when not handled with no impact to existing
+        // Android platforms.
+        Intent intent = new Intent();
+        intent.setPackage(view.getContext().getPackageName());
+        intent.setAction("com.android.systemui.MOVE_WINDOW");
+        intent.putExtra("MOVE_WINDOW_TASK_ID", taskId);
+        intent.putExtra("MOVE_WINDOW_START_X", startXInScreen);
+        intent.putExtra("MOVE_WINDOW_START_Y", startYInScreen);
+        view.getContext().sendBroadcast(intent);
     }
 }

@@ -2490,4 +2490,22 @@ public class StripLayoutHelperTest {
 
         clearTabDragSourceMock();
     }
+
+    @Test
+    @Feature(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = 31)
+    public void testDrag_sendMoveWindowBroadcast_success() {
+        // Setup with tabs and select first tab.
+        setTabDragSourceMock();
+        initializeTest(false, false, false, 0, 5);
+        Activity activity = Mockito.spy(mActivity);
+        when(mToolbarContainerView.getContext()).thenReturn(activity);
+
+        // Act and verify the broadcast is sent.
+        onLongPress_OffTab();
+        verify(activity, times(1)).sendBroadcast(any());
+
+        // Cleanup for DragDrop
+        clearTabDragSourceMock();
+    }
 }
