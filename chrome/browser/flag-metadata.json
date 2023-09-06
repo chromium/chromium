@@ -5744,17 +5744,17 @@
   {
     "name": "ntp-chrome-cart-in-journeys-module",
     "owners": [ "yuezhanggg", "romanarora", "tiborg" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-chrome-cart-journeys-module-coexist",
     "owners": [ "yuezhanggg", "romanarora", "tiborg" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-chrome-cart-module",
     "owners": [ "wychen", "tiborg", "yuezhanggg" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-comprehensive-theme-realbox",
