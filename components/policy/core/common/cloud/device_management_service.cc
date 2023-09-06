@@ -135,75 +135,80 @@ const int DeviceManagementService::kInvalidPackagedDeviceForKiosk;
 // static
 std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     JobType type) {
+  // Please also update EnterpriseDMServerRequest in
+  // tools/metrics/histograms/metadata/enterprise/histograms.xml when updating
+  // this.
+  //
+  // Please keep sorted by returned string (case-insensitive).
   switch (type) {
-    case DeviceManagementService::JobConfiguration::TYPE_INVALID:
-      return "Invalid";
-    case DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT:
-      return "AutoEnrollment";
-    case DeviceManagementService::JobConfiguration::TYPE_REGISTRATION:
-      return "Registration";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_ANDROID_MANAGEMENT_CHECK:
+      return "AndroidManagementCheck";
     case DeviceManagementService::JobConfiguration::TYPE_API_AUTH_CODE_FETCH:
       return "ApiAuthCodeFetch";
+    case DeviceManagementService::JobConfiguration::TYPE_ATTRIBUTE_UPDATE:
+      return "AttributeUpdate";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_ATTRIBUTE_UPDATE_PERMISSION:
+      return "AttributeUpdatePermission";
+    case DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT:
+      return "AutoEnrollment";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_BROWSER_UPLOAD_PUBLIC_KEY:
+      return "BrowserUploadPublicKey";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_CERT_BASED_REGISTRATION:
+      return "CertBasedRegistration";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_CERT_PROVISIONING_REQUEST:
+      return "CertProvisioningRequest";
+    case DeviceManagementService::JobConfiguration::TYPE_CHECK_USER_ACCOUNT:
+      return "CheckUserAccount";
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_DESKTOP_REPORT:
+      return "ChromeDesktopReport";
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_OS_USER_REPORT:
+      return "ChromeOsUserReport";
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
+      return "ChromeProfileReport";
+    case DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL:
+      return "DeviceStateRetrieval";
+    case DeviceManagementService::JobConfiguration::TYPE_GCM_ID_UPDATE:
+      return "GcmIdUpdate";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_INITIAL_ENROLLMENT_STATE_RETRIEVAL:
+      return "InitialEnrollmentStateRetrieval";
+    case DeviceManagementService::JobConfiguration::TYPE_INVALID:
+      return "Invalid";
     case DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH:
       return "PolicyFetch";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_PSM_HAS_DEVICE_STATE_REQUEST:
+      return "PSMDeviceStateRequest";
+    case DeviceManagementService::JobConfiguration::TYPE_REQUEST_SAML_URL:
+      return "PublicSamlUserRequest";
+    case DeviceManagementService::JobConfiguration::TYPE_REGISTRATION:
+      return "Registration";
+    case DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS:
+      return "RemoteCommands";
+    case DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT:
+      return "TokenEnrollment";
     case DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION:
       return "Unregistration";
     case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE:
       return "UploadCertificate";
-    case DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL:
-      return "DeviceStateRetrieval";
-    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS:
-      return "UploadStatus";
-    case DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS:
-      return "RemoteCommands";
     case DeviceManagementService::JobConfiguration::
-        TYPE_ATTRIBUTE_UPDATE_PERMISSION:
-      return "AttributeUpdatePermission";
-    case DeviceManagementService::JobConfiguration::TYPE_ATTRIBUTE_UPDATE:
-      return "AttributeUpdate";
-    case DeviceManagementService::JobConfiguration::TYPE_GCM_ID_UPDATE:
-      return "GcmIdUpdate";
-    case DeviceManagementService::JobConfiguration::
-        TYPE_ANDROID_MANAGEMENT_CHECK:
-      return "AndroidManagementCheck";
-    case DeviceManagementService::JobConfiguration::
-        TYPE_CERT_BASED_REGISTRATION:
-      return "CertBasedRegistration";
-    case DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT:
-      return "TokenEnrollment";
-    case DeviceManagementService::JobConfiguration::TYPE_CHROME_DESKTOP_REPORT:
-      return "ChromeDesktopReport";
-    case DeviceManagementService::JobConfiguration::
-        TYPE_INITIAL_ENROLLMENT_STATE_RETRIEVAL:
-      return "InitialEnrollmentStateRetrieval";
+        TYPE_UPLOAD_ENCRYPTED_REPORT:
+      return "UploadEncryptedReport";
+    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
+      return "UploadEuiccInfo";
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_POLICY_VALIDATION_REPORT:
       return "UploadPolicyValidationReport";
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_REAL_TIME_REPORT:
       return "UploadrealtimeReport";
-    case DeviceManagementService::JobConfiguration::TYPE_REQUEST_SAML_URL:
-      return "PublicSamlUserRequest";
-    case DeviceManagementService::JobConfiguration::TYPE_CHROME_OS_USER_REPORT:
-      return "ChromeOsUserReport";
-    case DeviceManagementService::JobConfiguration::
-        TYPE_CERT_PROVISIONING_REQUEST:
-      return "CertProvisioningRequest";
-    case DeviceManagementService::JobConfiguration::
-        TYPE_PSM_HAS_DEVICE_STATE_REQUEST:
-      return "PSMDeviceStateRequest";
-    case DeviceManagementService::JobConfiguration::
-        TYPE_UPLOAD_ENCRYPTED_REPORT:
-      return "UploadEncryptedReport";
-    case DeviceManagementService::JobConfiguration::TYPE_CHECK_USER_ACCOUNT:
-      return "CheckUserAccount";
-    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
-      return "UploadEuiccInfo";
-    case DeviceManagementService::JobConfiguration::
-        TYPE_BROWSER_UPLOAD_PUBLIC_KEY:
-      return "BrowserUploadPublicKey";
-    case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
-      return "ChromeProfileReport";
+    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS:
+      return "UploadStatus";
     // TODO(b/263367348): Remove the Active Directory types below, after they're
     // removed from the corresponding enum.
     case DeviceManagementService::JobConfiguration::
