@@ -34,13 +34,24 @@ bool PhotosIntegrationSupported(const apps::AppUpdate& update) {
     return false;
   }
 
-  if (update.Version() == "DEVELOPMENT") {
+  auto photos_version = base::Version(update.Version());
+  if (!photos_version.IsValid()) {
+    // There are two reasons why a version string from Photos will be "invalid",
+    // i.e. cannot be parsed into a concatenation of numbers and dots:
+    // 1. The version string is "DEVELOPMENT", which is used by Photos engineers
+    // for unreleased builds, or
+    // 2. The version is suffixed with e.g. "-dogfood" or "-release", which is
+    // the new standard for Photos version strings.
+    // Version suffixes (2) were introduced a few months after version 6.12 was
+    // released, so we can conclude "invalid" strings are post-6.12 and
+    // therefore are supported for the Media App <-> Photos integration. It is
+    // safer to assume "invalid" versions are supported rather than implementing
+    // special handling of them to e.g. strip suffixes since there are no
+    // guarantees the version strings won't change again in the future.
     return true;
   }
 
-  auto photos_version = base::Version(update.Version());
-  return photos_version.IsValid() &&
-         photos_version >= base::Version(kMinPhotosVersion);
+  return photos_version >= base::Version(kMinPhotosVersion);
 }
 
 }  // namespace
