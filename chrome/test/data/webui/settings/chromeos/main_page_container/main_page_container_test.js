@@ -10,10 +10,14 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 const {Section} = routesMojom;
 
 suite('<main-page-container>', () => {
+  const isRevampWayfindingEnabled =
+      loadTimeData.getBoolean('isRevampWayfindingEnabled');
+
   /** @type {?MainPageContainerElement} */
   let mainPageContainer = null;
 
@@ -71,7 +75,60 @@ suite('<main-page-container>', () => {
       Router.getInstance().resetRouteForTesting();
     });
 
-    [
+    let pages;
+    if (isRevampWayfindingEnabled) {
+      pages = [
+        {
+          pageName: 'kNetwork',
+          elementName: 'settings-internet-page',
+        },
+        {
+          pageName: 'kBluetooth',
+          elementName: 'os-settings-bluetooth-page',
+        },
+        {
+          pageName: 'kMultiDevice',
+          elementName: 'settings-multidevice-page',
+        },
+        {
+          pageName: 'kKerberos',
+          elementName: 'settings-kerberos-page',
+        },
+        {
+          pageName: 'kPeople',
+          elementName: 'os-settings-people-page',
+        },
+        {
+          pageName: 'kDevice',
+          elementName: 'settings-device-page',
+        },
+        {
+          pageName: 'kPersonalization',
+          elementName: 'settings-personalization-page',
+        },
+        {
+          pageName: 'kPrivacyAndSecurity',
+          elementName: 'os-settings-privacy-page',
+        },
+        {
+          pageName: 'kApps',
+          elementName: 'os-settings-apps-page',
+        },
+        {
+          pageName: 'kSystemPreferences',
+          elementName: 'settings-system-preferences-page',
+        },
+        {
+          pageName: 'kAccessibility',
+          elementName: 'os-settings-a11y-page',
+        },
+        {
+          pageName: 'kAboutChromeOs',
+          elementName: 'os-about-page',
+        },
+      ];
+    } else {
+      pages = [
         // Basic pages
         {
           pageName: 'kNetwork',
@@ -149,7 +206,10 @@ suite('<main-page-container>', () => {
           pageName: 'kAboutChromeOs',
           elementName: 'os-about-page',
         },
-    ].forEach(({pageName, elementName}) => {
+      ];
+    }
+
+    pages.forEach(({pageName, elementName}) => {
       test(`${pageName} page is controlled by pageAvailability`, () => {
         // Make page available
         mainPageContainer.pageAvailability = {
@@ -175,56 +235,29 @@ suite('<main-page-container>', () => {
     });
   });
 
-  suite('Revamp: Wayfinding', () => {
-    suite('when enabled', () => {
-      suiteSetup(() => {
-        // Simulate feature flag enabled
-        loadTimeData.overrideValues({
-          isRevampWayfindingEnabled: true,
+  suite('Advanced toggle', () => {
+    suiteSetup(() => {
+      mainPageContainer = init();
+    });
 
-          // TODO(wesokuhara) Create 2 versions of this test under the
-          // OsSettingsRevampWayfinding feature so that this override can be
-          // removed.
-          storageAndPowerTitle: 'Storage and power',
-        });
-        document.body.classList.add('revamp-wayfinding-enabled');
+    suiteTeardown(() => {
+      mainPageContainer.remove();
+      CrSettingsPrefs.resetForTesting();
+      Router.getInstance().resetRouteForTesting();
+    });
 
-        mainPageContainer = init();
-      });
-
-      suiteTeardown(() => {
-        mainPageContainer.remove();
-        CrSettingsPrefs.resetForTesting();
-        Router.getInstance().resetRouteForTesting();
-      });
-
-      test('advanced toggle should not render', () => {
+    if (isRevampWayfindingEnabled) {
+      test('Advanced toggle should not be stamped', () => {
         const advancedToggle =
             mainPageContainer.shadowRoot.querySelector('#advancedToggle');
         assertNull(advancedToggle);
       });
-    });
-
-    suite('when disabled', () => {
-      suiteSetup(() => {
-        // Simulate feature flag disabled
-        loadTimeData.overrideValues({isRevampWayfindingEnabled: false});
-        document.body.classList.remove('revamp-wayfinding-enabled');
-
-        mainPageContainer = init();
-      });
-
-      suiteTeardown(() => {
-        mainPageContainer.remove();
-        CrSettingsPrefs.resetForTesting();
-        Router.getInstance().resetRouteForTesting();
-      });
-
-      test('advanced toggle should render', () => {
+    } else {
+      test('Advanced toggle should be visible', () => {
         const advancedToggle =
             mainPageContainer.shadowRoot.querySelector('#advancedToggle');
-        assertTrue(!!advancedToggle);
+        assertTrue(isVisible(advancedToggle));
       });
-    });
+    }
   });
 });

@@ -418,7 +418,24 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
  ],
  ['LockScreenSubpage', 'lock_screen_subpage_test.js'],
- ['MainPageContainer', 'main_page_container_test.js'],
+ [
+   'MainPageContainer',
+   'main_page_container/main_page_container_test.js',
+   {
+     disabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
+ ],
+ [
+   'MainPageContainerRevamp',
+   'main_page_container/main_page_container_test.js',
+   {
+     enabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
+ ],
  [
    'MainPageContainerPageDisplayer',
    'main_page_container/page_displayer_test.js',
