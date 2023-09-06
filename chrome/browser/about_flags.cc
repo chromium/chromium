@@ -10923,6 +10923,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kProfilesReordering)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"hide-tab-on-tab-switcher", flag_descriptions::kHideTabOnTabSwitcherName,
+     flag_descriptions::kHideTabOnTabSwitcherDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kHideTabOnTabSwitcher)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

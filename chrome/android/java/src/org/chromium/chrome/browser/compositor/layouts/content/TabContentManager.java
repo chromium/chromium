@@ -348,7 +348,7 @@ public class TabContentManager {
             Tab tab = getTabById(tabId);
             if (tab == null) return;
 
-            captureThumbnail(tab, writeBack, (bitmap) -> {
+            captureThumbnail(tab, writeBack, /*returnBitmap=*/true, (bitmap) -> {
                 // Null check to avoid having a Bitmap from getTabThumbnailFromDisk() but
                 // cleared here.
                 // If invalidation is not needed, readbackNativeBitmap() might not do anything
@@ -584,9 +584,22 @@ public class TabContentManager {
      * @param tab The tab whose content we will cache.
      */
     public void cacheTabThumbnail(@NonNull final Tab tab) {
+        cacheTabThumbnailWithCallback(tab, /*returnBitmap=*/false, null);
+    }
+
+    /**
+     * Cache the content of a tab as a thumbnail and call the {@code callback} when finished.
+     * @param tab The tab whose content we will cache.
+     * @param returnBitmap Whether to return a bitmap to the callback. Setting to false avoids an
+     *                     expensive bitmap copy if not required.
+     * @param callback Called when the caching is finished. The bitmap argument may be null if
+     *                 unsuccessful or {@code returnBitmap} is false.
+     */
+    public void cacheTabThumbnailWithCallback(
+            @NonNull final Tab tab, boolean returnBitmap, Callback<Bitmap> callback) {
         if (mNativeTabContentManager == 0 || !mSnapshotsEnabled) return;
 
-        captureThumbnail(tab, true, null);
+        captureThumbnail(tab, true, returnBitmap, callback);
     }
 
     private Bitmap cacheNativeTabThumbnail(final Tab tab) {
@@ -604,10 +617,11 @@ public class TabContentManager {
      * @param tab The tab whose content we will capture.
      * @param writeToCache Whether write the captured thumbnail to cache. If not, a downsampled
      *                     thumbnail is captured instead.
+     * @param returnBitmap Whether to return a bitmap to the callback.
      * @param callback The callback to send the {@link Bitmap} with.
      */
-    private void captureThumbnail(
-            @NonNull final Tab tab, boolean writeToCache, @Nullable Callback<Bitmap> callback) {
+    private void captureThumbnail(@NonNull final Tab tab, boolean writeToCache,
+            boolean returnBitmap, @Nullable Callback<Bitmap> callback) {
         assert mNativeTabContentManager != 0;
         assert mSnapshotsEnabled;
 
@@ -620,7 +634,7 @@ public class TabContentManager {
             // downsampled bitmap, but the performance here is not the bottleneck.
             Bitmap bitmap = cacheNativeTabThumbnail(tab);
             if (callback == null) return;
-            if (bitmap == null) {
+            if (bitmap == null || !returnBitmap) {
                 callback.onResult(null);
                 return;
             }
@@ -643,14 +657,19 @@ public class TabContentManager {
             }
             callback.onResult(resized);
         } else {
-            if (tab.getWebContents() == null) return;
+            if (tab.getWebContents() == null || tab.isHidden()) {
+                if (callback != null) {
+                    callback.onResult(null);
+                }
+                return;
+            }
             // If we don't have to write the thumbnail back to the cache, we can use the faster
             // path of capturing a downsampled copy.
             // This faster path is essential to Tab-to-Grid animation to be smooth.
             final float downsamplingScale = writeToCache ? 1 : 0.5f;
             TabContentManagerJni.get().captureThumbnail(mNativeTabContentManager, tab,
                     mThumbnailScale * downsamplingScale, writeToCache, getTabCaptureAspectRatio(),
-                    callback);
+                    returnBitmap, callback);
         }
     }
 
@@ -731,7 +750,8 @@ public class TabContentManager {
         void attachTab(long nativeTabContentManager, Tab tab, int tabId);
         void detachTab(long nativeTabContentManager, Tab tab, int tabId);
         void captureThumbnail(long nativeTabContentManager, Object tab, float thumbnailScale,
-                boolean writeToCache, double aspectRatio, Callback<Bitmap> callback);
+                boolean writeToCache, double aspectRatio, boolean returnBitmap,
+                Callback<Bitmap> callback);
         void cacheTabWithBitmap(long nativeTabContentManager, Object tab, Object bitmap,
                 float thumbnailScale, double aspectRatio);
         void invalidateIfChanged(long nativeTabContentManager, int tabId, GURL url);

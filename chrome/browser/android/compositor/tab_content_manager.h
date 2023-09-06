@@ -94,6 +94,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                         jfloat thumbnail_scale,
                         jboolean write_to_cache,
                         jdouble aspect_ratio,
+                        jboolean return_bitmap,
                         const base::android::JavaParamRef<jobject>& j_callback);
   void CacheTabWithBitmap(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& tab,
@@ -147,6 +148,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                      base::android::ScopedJavaGlobalRef<jobject> j_callback,
                      bool write_to_cache,
                      double aspect_ratio,
+                     bool return_bitmap,
                      float thumbnail_scale,
                      const SkBitmap& bitmap);
 

@@ -2348,6 +2348,9 @@ extern const char kForceOffTextAutosizingDescription[];
 extern const char kGridTabSwitcherLandscapeAspectRatioPhonesName[];
 extern const char kGridTabSwitcherLandscapeAspectRatioPhonesDescription[];
 
+extern const char kHideTabOnTabSwitcherName[];
+extern const char kHideTabOnTabSwitcherDescription[];
+
 extern const char kInfoCardAcknowledgementTrackingName[];
 extern const char kInfoCardAcknowledgementTrackingDescription[];
 

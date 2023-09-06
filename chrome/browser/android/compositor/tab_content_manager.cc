@@ -338,6 +338,7 @@ void TabContentManager::CaptureThumbnail(
     jfloat thumbnail_scale,
     jboolean write_to_cache,
     jdouble aspect_ratio,
+    jboolean return_bitmap,
     const base::android::JavaParamRef<jobject>& j_callback) {
   // Ensure capture only happens on UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -364,7 +365,7 @@ void TabContentManager::CaptureThumbnail(
       base::BindOnce(&TabContentManager::OnTabReadback,
                      weak_factory_.GetWeakPtr(), tab_id, TrackCapture(tab_id),
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback),
-                     write_to_cache, aspect_ratio);
+                     write_to_cache, aspect_ratio, return_bitmap);
   pending_tab_readbacks_[tab_id] = std::make_unique<TabReadbackRequest>(
       rwhv, thumbnail_scale, aspect_ratio, !write_to_cache,
       std::move(readback_done_callback));
@@ -386,7 +387,7 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
 
   if (thumbnail_cache_->CheckAndUpdateThumbnailMetaData(tab_id, url)) {
     OnTabReadback(tab_id, TrackCapture(tab_id), nullptr, true, aspect_ratio,
-                  thumbnail_scale, skbitmap);
+                  /*return_bitmap=*/false, thumbnail_scale, skbitmap);
   }
 }
 
@@ -479,6 +480,7 @@ void TabContentManager::OnTabReadback(
     base::android::ScopedJavaGlobalRef<jobject> j_callback,
     bool write_to_cache,
     double aspect_ratio,
+    bool return_bitmap,
     float thumbnail_scale,
     const SkBitmap& bitmap) {
   TabReadbackRequestMap::iterator readback_iter =
@@ -489,7 +491,8 @@ void TabContentManager::OnTabReadback(
   }
 
   if (j_callback) {
-    SendThumbnailToJava(j_callback, write_to_cache, aspect_ratio, true, bitmap);
+    SendThumbnailToJava(j_callback, write_to_cache, aspect_ratio, return_bitmap,
+                        bitmap);
   }
 
   if (write_to_cache && thumbnail_scale > 0 && !bitmap.empty()) {

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
@@ -115,6 +116,31 @@ public class TabSwitcherLayout extends Layout {
     private Runnable mFinishedShowingRunnable;
     private boolean mBackToStartSurface;
 
+    private static class HideTabCallback {
+        private Runnable mRunnable;
+        private boolean mIsCancelled;
+
+        HideTabCallback(Runnable runnable) {
+            mRunnable = runnable;
+        }
+
+        void run() {
+            RecordHistogram.recordBooleanHistogram("Android.TabSwitcher.TabHidden", !mIsCancelled);
+            if (mIsCancelled) return;
+
+            assert mRunnable != null;
+            mRunnable.run();
+            mRunnable = null;
+        }
+
+        void cancel() {
+            mIsCancelled = true;
+            mRunnable = null;
+        }
+    }
+
+    private HideTabCallback mHideTabCallback;
+
     /**
      * Notified when the animation is complete.
      */
@@ -162,14 +188,37 @@ public class TabSwitcherLayout extends Layout {
                     // thumbnail taking triggered by ThumbnailFetcher. See crbug.com/996385 for
                     // details.
                     mFinishedShowingRunnable = () -> {
-                        Tab currentTab = mTabModelSelector.getCurrentTab();
-                        if (currentTab != null) mTabContentManager.cacheTabThumbnail(currentTab);
+                        final Tab currentTab = mTabModelSelector.getCurrentTab();
+                        if (currentTab != null) {
+                            if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
+                                mHideTabCallback = new HideTabCallback(() -> {
+                                    Tab tab = mTabModelSelector.getCurrentTab();
+                                    if (currentTab == tab) {
+                                        currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
+                                    }
+                                    mHideTabCallback = null;
+                                });
+                                mTabContentManager.cacheTabThumbnailWithCallback(currentTab,
+                                        /*returnBitmap=*/false,
+                                        (bitmap) -> { mHideTabCallback.run(); });
+                            } else {
+                                mTabContentManager.cacheTabThumbnail(currentTab);
+                            }
+                        }
                         resetLayoutTabs();
                         mFinishedShowingRunnable = null;
                     };
                     mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
                 } else {
                     mFinishedShowingRunnable = () -> {
+                        if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
+                            final Tab currentTab = mTabModelSelector.getCurrentTab();
+                            if (currentTab != null) {
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Android.TabSwitcher.TabHidden", true);
+                                currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
+                            }
+                        }
                         resetLayoutTabs();
                         mFinishedShowingRunnable = null;
                     };
@@ -770,6 +819,10 @@ public class TabSwitcherLayout extends Layout {
         if (mFinishedShowingRunnable != null) {
             mHandler.removeCallbacks(mFinishedShowingRunnable);
             mFinishedShowingRunnable = null;
+        }
+        if (mHideTabCallback != null) {
+            mHideTabCallback.cancel();
+            mHideTabCallback = null;
         }
     }
 

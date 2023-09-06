@@ -291,6 +291,7 @@ public abstract class ChromeFeatureList {
             "GridTabSwitcherLandscapeAspectRatioPhones";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";
+    public static final String HIDE_TAB_ON_TAB_SWITCHER = "HideTabOnTabSwitcher";
     public static final String HISTORY_JOURNEYS = "Journeys";
     public static final String IDENTITY_STATUS_CONSISTENCY = "IdentityStatusConsistency";
     public static final String IMPROVED_INCOGNITO_SCREENSHOT = "ImprovedIncognitoScreenshot";
@@ -567,6 +568,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sInstanceSwitcher = new CachedFlag(INSTANCE_SWITCHER, true);
     public static final CachedFlag sInstantStart = new CachedFlag(INSTANT_START, false);
     public static final CachedFlag sInterestFeedV2 = new CachedFlag(INTEREST_FEED_V2, true);
+    public static final CachedFlag sHideTabOnTabSwitcher =
+            new CachedFlag(HIDE_TAB_ON_TAB_SWITCHER, false);
     public static final CachedFlag sNewTabSearchEngineUrlAndroid =
             new CachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, false);
     public static final CachedFlag sPrivacyGuideAndroid3 =
@@ -660,6 +663,7 @@ public abstract class ChromeFeatureList {
         sInstanceSwitcher,
         sInstantStart,
         sInterestFeedV2,
+        sHideTabOnTabSwitcher,
         sNewTabSearchEngineUrlAndroid,
         sPrivacyGuideAndroid3,
         sPrivacyGuidePreloadAndroid,

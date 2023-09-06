@@ -4800,6 +4800,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "hide-tab-on-tab-switcher",
+    "owners": [
+      "ckitagawa",
+      "clank-isochron-team@google.com"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "hidpi-capture",
     "owners": [ "//content/browser/media/capture/OWNERS" ],
     "expiry_milestone": 118

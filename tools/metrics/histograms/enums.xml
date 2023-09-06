@@ -62054,6 +62054,7 @@ from previous Chrome versions.
   <int value="-1267958145" label="disable-pdf-material-ui"/>
   <int value="-1266934701" label="AccessibilityAXModes:enabled"/>
   <int value="-1265627803" label="WebAppEnableManifestId:enabled"/>
+  <int value="-1264634670" label="HideTabOnTabSwitcher:disabled"/>
   <int value="-1262730949" label="EnableDspHotword:enabled"/>
   <int value="-1262303946" label="SubresourceRedirectPreviews:disabled"/>
   <int value="-1262302650" label="StorageBuckets:disabled"/>
@@ -66106,6 +66107,7 @@ from previous Chrome versions.
       label="OverrideLanguagePrefsForHrefTranslate:disabled"/>
   <int value="761815665" label="BlockInsecureDownloads:disabled"/>
   <int value="762030626" label="ViewTransition:disabled"/>
+  <int value="762073261" label="HideTabOnTabSwitcher:enabled"/>
   <int value="762324154" label="ZeroSuggestPrefetchingOnWeb:disabled"/>
   <int value="762700519" label="enable-checker-imaging"/>
   <int value="763667542"

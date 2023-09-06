@@ -7748,6 +7748,21 @@
             ]
         }
     ],
+    "HideTabOnTabSwitcher": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HideTabOnTabSwitcher"
+                    ]
+                }
+            ]
+        }
+    ],
     "HlsBuiltinPlayer": [
         {
             "platforms": [
