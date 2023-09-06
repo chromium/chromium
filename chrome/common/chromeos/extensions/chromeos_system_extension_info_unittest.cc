@@ -5,8 +5,14 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {
   const auto& google_extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
@@ -42,6 +48,26 @@ TEST(ChromeOSSystemExtensionInfo, ASUSExtension) {
               testing::UnorderedElementsAre("ASUS"));
   EXPECT_EQ("https://dlcdnccls.asus.com/*", extension_info.pwa_origin);
   EXPECT_FALSE(extension_info.iwa_id);
+}
+
+TEST(ChromeOSSystemExtensionInfo, DevExtension) {
+  ASSERT_FALSE(chromeos::IsChromeOSSystemExtension(
+      chromeos::kChromeOSSystemExtensionDevExtensionId));
+
+  auto scoped_info =
+      chromeos::ScopedChromeOSSystemExtensionInfo::CreateForTesting();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kShimlessRMA3pDiagnosticsDevMode);
+  scoped_info->ApplyCommandLineSwitchesForTesting();
+
+  ASSERT_TRUE(chromeos::IsChromeOSSystemExtension(
+      chromeos::kChromeOSSystemExtensionDevExtensionId));
+  const auto& extension_info = chromeos::GetChromeOSExtensionInfoById(
+      chromeos::kChromeOSSystemExtensionDevExtensionId);
+  EXPECT_TRUE(extension_info.manufacturers.contains("Google"));
+  EXPECT_TRUE(extension_info.pwa_origin);
+  EXPECT_TRUE(extension_info.iwa_id);
 }
 
 TEST(ChromeOSSystemExtensionInfo, ManufacturerOverride) {
@@ -125,9 +151,19 @@ TEST(ChromeOSSystemExtensionInfo, IwaIdOverride) {
 }
 
 TEST(ChromeOSSystemExtensionInfo, IsChromeOSSystemExtensionProvider) {
-  EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("Google"));
+  auto scoped_info =
+      chromeos::ScopedChromeOSSystemExtensionInfo::CreateForTesting();
+
   EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("HP"));
   EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("ASUS"));
 
   EXPECT_FALSE(chromeos::IsChromeOSSystemExtensionProvider("NotAProvider"));
+  // "Google" is only for dev extension.
+  EXPECT_FALSE(chromeos::IsChromeOSSystemExtensionProvider("Google"));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kShimlessRMA3pDiagnosticsDevMode);
+  scoped_info->ApplyCommandLineSwitchesForTesting();
+  EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("Google"));
 }
