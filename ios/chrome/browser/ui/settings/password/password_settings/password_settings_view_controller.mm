@@ -93,7 +93,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 
 // Indicates the state of the account storage switch.
 @property(nonatomic, assign)
-    PasswordSettingsAccountStorageState accountStorageState;
+    AccountStorageSwitchState accountStorageSwitchState;
 
 // Indicates whether the account storage switch should contain an icon
 // indicating a new feature. This doesn't mean the switch itself is shown.
@@ -196,7 +196,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   [model addSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
   [self addSavePasswordsSwitchOrManagedInfo];
 
-  if (self.accountStorageState != PasswordSettingsAccountStorageStateNotShown) {
+  if (self.accountStorageSwitchState != AccountStorageSwitchState::kHidden) {
     [self updateAccountStorageSwitch];
   }
 
@@ -535,12 +535,12 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   }
 }
 
-- (void)setAccountStorageState:(PasswordSettingsAccountStorageState)state {
-  if (_accountStorageState == state) {
+- (void)setAccountStorageSwitchState:(AccountStorageSwitchState)state {
+  if (_accountStorageSwitchState == state) {
     return;
   }
 
-  _accountStorageState = state;
+  _accountStorageSwitchState = state;
 
   if (self.modelLoadStatus != ModelNotLoaded) {
     [self updateAccountStorageSwitch];
@@ -654,8 +654,8 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   const BOOL hadItem = [self.tableViewModel
       hasItemForItemType:ItemTypeAccountStorageSwitch
        sectionIdentifier:SectionIdentifierSavePasswordsSwitch];
-  switch (self.accountStorageState) {
-    case PasswordSettingsAccountStorageStateNotShown: {
+  switch (self.accountStorageSwitchState) {
+    case AccountStorageSwitchState::kHidden: {
       if (!hadItem) {
         return;
       }
@@ -673,19 +673,19 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       }
       return;
     }
-    case PasswordSettingsAccountStorageStateOptedIn:
-    case PasswordSettingsAccountStorageStateOptedOut:
-    case PasswordSettingsAccountStorageStateDisabledByPolicy: {
+    case AccountStorageSwitchState::kOn:
+    case AccountStorageSwitchState::kOff:
+    case AccountStorageSwitchState::kDisabledByPolicy: {
       if (!hadItem) {
         [self.tableViewModel addItem:self.accountStorageItem
              toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
       }
 
-      self.accountStorageItem.on = self.accountStorageState ==
-                                   PasswordSettingsAccountStorageStateOptedIn;
+      self.accountStorageItem.on =
+          self.accountStorageSwitchState == AccountStorageSwitchState::kOn;
       self.accountStorageItem.enabled =
-          self.accountStorageState !=
-          PasswordSettingsAccountStorageStateDisabledByPolicy;
+          self.accountStorageSwitchState !=
+          AccountStorageSwitchState::kDisabledByPolicy;
 
       if (self.modelLoadStatus != ModelLoadComplete) {
         return;

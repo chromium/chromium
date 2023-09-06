@@ -135,7 +135,8 @@ using password_manager::prefs::kCredentialsEnableService;
   [self.consumer setSignedInAccount:base::SysUTF8ToNSString(
                                         _syncService->GetAccountInfo().email)];
 
-  [self.consumer setAccountStorageState:[self computeAccountStorageState]];
+  [self.consumer
+      setAccountStorageSwitchState:[self computeAccountStorageSwitchState]];
 
   // < and not <= below, because the next impression must be counted.
   const int impressionCount = _prefService->GetInteger(
@@ -282,7 +283,8 @@ using password_manager::prefs::kCredentialsEnableService;
   [self.consumer setOnDeviceEncryptionState:[self onDeviceEncryptionState]];
   [self.consumer setSignedInAccount:base::SysUTF8ToNSString(
                                         _syncService->GetAccountInfo().email)];
-  [self.consumer setAccountStorageState:[self computeAccountStorageState]];
+  [self.consumer
+      setAccountStorageSwitchState:[self computeAccountStorageSwitchState]];
 }
 
 #pragma mark - Private
@@ -307,7 +309,7 @@ using password_manager::prefs::kCredentialsEnableService;
   [self.consumer updateExportPasswordsButton];
 }
 
-- (PasswordSettingsAccountStorageState)computeAccountStorageState {
+- (AccountStorageSwitchState)computeAccountStorageSwitchState {
   // TODO(crbug.com/1462858): Delete the usage of IsSyncFeatureEnabled() after
   // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
   // details.
@@ -315,7 +317,7 @@ using password_manager::prefs::kCredentialsEnableService;
       _syncService->IsSyncFeatureEnabled() ||
       base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    return PasswordSettingsAccountStorageStateNotShown;
+    return AccountStorageSwitchState::kHidden;
   }
 
   CHECK(base::FeatureList::IsEnabled(
@@ -326,13 +328,13 @@ using password_manager::prefs::kCredentialsEnableService;
           syncer::UserSelectableType::kPasswords) ||
       _syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    return PasswordSettingsAccountStorageStateDisabledByPolicy;
+    return AccountStorageSwitchState::kDisabledByPolicy;
   }
 
   return _syncService->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPasswords)
-             ? PasswordSettingsAccountStorageStateOptedIn
-             : PasswordSettingsAccountStorageStateOptedOut;
+             ? AccountStorageSwitchState::kOn
+             : AccountStorageSwitchState::kOff;
 }
 
 @end

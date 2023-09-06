@@ -5,17 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSUMER_H_
 
-// State of the account storage switch.
-typedef NS_ENUM(NSInteger, PasswordSettingsAccountStorageState) {
-  // User cannot opt in/out in their current state, so the toggle should not be
-  // shown.
-  PasswordSettingsAccountStorageStateNotShown = 0,
-  // User is opted in to account storage.
-  PasswordSettingsAccountStorageStateOptedIn,
-  // User is opted out of account storage.
-  PasswordSettingsAccountStorageStateOptedOut,
-  // Toggle disabled due to an enterprise policy.
-  PasswordSettingsAccountStorageStateDisabledByPolicy,
+// State of the account storage switch (toggle).
+enum class AccountStorageSwitchState {
+  kHidden,
+  kOn,
+  kOff,
+  kDisabledByPolicy,
 };
 
 // State of on-device encryption.
@@ -45,7 +40,7 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 - (void)setSavePasswordsEnabled:(BOOL)enabled;
 
 // Indicates the state of the account storage switch.
-- (void)setAccountStorageState:(PasswordSettingsAccountStorageState)state;
+- (void)setAccountStorageSwitchState:(AccountStorageSwitchState)state;
 
 // Whether the account storage switch (if displayed) should show an icon that
 // highlights it as a new feature. This doesn't mean the switch itself is shown.
