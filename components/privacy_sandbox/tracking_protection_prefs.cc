@@ -17,7 +17,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kTrackingProtectionLevel,
       static_cast<int>(TrackingProtectionLevel::kStandard),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::k3pcdTrackingProtectionEnabled, false);
+  registry->RegisterBooleanPref(prefs::kTrackingProtection3pcdEnabled, false);
 }
 
 }  // namespace privacy_sandbox::tracking_protection
