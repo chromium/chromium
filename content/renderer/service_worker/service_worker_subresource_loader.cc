@@ -1374,7 +1374,9 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
   timing->respond_with_settled_time = base::TimeTicks::Now();
   switch (result->which()) {
     case blink::mojom::MatchResult::Tag::kStatus:  // error fallback.
-      // TODO(crbug.com/1371756): add UMA to track cases other than not found.
+      base::UmaHistogramEnumeration(
+          "ServiceWorker.StaticRouter.Subresource.CacheStorageError",
+          result->get_status());
       OnFallback(absl::nullopt, std::move(timing));
       return;
     case blink::mojom::MatchResult::Tag::kResponse:  // we got fetch response.

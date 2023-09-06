@@ -5,6 +5,7 @@
 #include "content/browser/service_worker/service_worker_cache_storage_matcher.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -119,7 +120,9 @@ void ServiceWorkerCacheStorageMatcher::DidMatch(
   timing->respond_with_settled_time = base::TimeTicks::Now();
   switch (result->which()) {
     case blink::mojom::MatchResult::Tag::kStatus:  // error fallback.
-      // TODO(crbug.com/1371756): add UMA to track cases other than not found.
+      base::UmaHistogramEnumeration(
+          "ServiceWorker.StaticRouter.MainResource.CacheStorageError",
+          result->get_status());
       RunCallback(
           blink::ServiceWorkerStatusCode::kOk,
           ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback,

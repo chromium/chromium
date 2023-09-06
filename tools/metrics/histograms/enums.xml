@@ -14045,6 +14045,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="Cache Name Not Found Error"/>
   <int value="6" label="Query Too Large Error"/>
   <int value="7" label="Not Implemented Error"/>
+  <int value="8" label="Duplicate Operation Error"/>
+  <int value="9" label="Cross Origin Resource Policy Error"/>
 </enum>
 
 <enum name="CacheStorageIndexResult">

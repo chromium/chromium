@@ -1506,6 +1506,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.StaticRouter.{Resource}.CacheStorageError"
+    enum="CacheStorageErrorType" expires_after="2024-03-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the cache storage error when the cache source is set by a rule for
+    the ServiceWorker static routing API and the cache storage match call
+    returns a status instead of a result. This metric is recorded for
+    {Resource}.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.Storage.DeleteAndStartOverResult"
     enum="ServiceWorkerDeleteAndStartOverResult" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
