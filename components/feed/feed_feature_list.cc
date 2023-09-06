@@ -175,7 +175,7 @@ BASE_FEATURE(kFeedDynamicColors,
 
 BASE_FEATURE(kFeedFollowUiUpdate,
              "FeedFollowUiUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedSportsCard,
              "FeedSportsCard",
