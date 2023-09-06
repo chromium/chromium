@@ -103,6 +103,7 @@ class CONTENT_EXPORT TraceReportDatabase {
   TraceReportDatabase& operator=(const TraceReportDatabase&) = delete;
 
   bool is_open() const { return database_.is_open(); }
+  bool is_initialized() const { return initialized_; }
 
   bool OpenDatabase(const base::FilePath& path);
 

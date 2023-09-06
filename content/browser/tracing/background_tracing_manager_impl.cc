@@ -66,6 +66,9 @@ void OpenDatabaseOnDatabaseTaskRunner(
     base::OnceCallback<void(absl::optional<BaseTraceReport>, bool)>
         on_database_created) {
   DCHECK(base::FeatureList::IsEnabled(kBackgroundTracingDatabase));
+  if (database->is_initialized()) {
+    return;
+  }
   bool success;
   if (!database_dir) {
     success = database->OpenDatabaseInMemoryForTesting();  // IN-TEST
@@ -103,7 +106,7 @@ absl::optional<NewTraceReport> AddTraceOnDatabaseTaskRunner(
     // disabled due to DeleteTracesInDateRange(). The trace is saved
     // only if BackgroundTracingDatabase is enabled and the database was
     // open successfully.
-    if (database && database->is_open() &&
+    if (database && database->is_initialized() &&
         base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
       success = database->AddTrace(std::move(trace_report));
     } else {
@@ -114,7 +117,7 @@ absl::optional<NewTraceReport> AddTraceOnDatabaseTaskRunner(
       }
     }
   }
-  if (database && database->is_open() &&
+  if (database && database->is_initialized() &&
       base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
     BackgroundTracingManagerImpl::RecordMetric(
         success ? BackgroundTracingManagerImpl::Metrics::SAVE_TRACE_SUCCEEDED
@@ -217,9 +220,7 @@ BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
       database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      trace_database_(base::FeatureList::IsEnabled(kBackgroundTracingDatabase)
-                          ? new TraceReportDatabase
-                          : nullptr,
+      trace_database_(nullptr,
                       base::OnTaskRunnerDeleter(database_task_runner_)) {
   SetInstance(this);
   g_background_tracing_manager_impl = this;
@@ -243,21 +244,23 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
 }
 
 void BackgroundTracingManagerImpl::OpenDatabaseIfExists() {
-  // Exit early if |trace_database_| was not initialized successfully.
-  if (!trace_database_) {
+  if (trace_database_) {
     return;
   }
-
-  auto database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
-  if (database_dir.has_value()) {
-    database_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](TraceReportDatabase* trace_database, base::FilePath path) {
-              trace_database->OpenDatabaseIfExists(path);
-            },
-            base::Unretained(trace_database_.get()), database_dir.value()));
+  absl::optional<base::FilePath> database_dir =
+      GetContentClient()->browser()->GetLocalTracesDirectory();
+  if (!database_dir.has_value()) {
+    return;
   }
+  trace_database_ = {new TraceReportDatabase,
+                     base::OnTaskRunnerDeleter(database_task_runner_)};
+  database_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](TraceReportDatabase* trace_database, base::FilePath path) {
+            trace_database->OpenDatabaseIfExists(path);
+          },
+          base::Unretained(trace_database_.get()), database_dir.value()));
 }
 
 void BackgroundTracingManagerImpl::GetAllTraceReports(
@@ -339,7 +342,6 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
   trace_report_to_upload_ = std::move(trace_to_upload);
   if (!creation_result) {
     RecordMetric(Metrics::DATABASE_INITIALIZATION_FAILED);
-    trace_database_.reset();
     return;
   }
   clean_database_timer_.Start(
@@ -498,26 +500,28 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
 
 void BackgroundTracingManagerImpl::InitializeTraceReportDatabase(
     bool open_in_memory) {
-  if (!trace_database_ ||
-      !base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
+  if (!base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
     return;
   }
-  auto database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
-  if (database_dir.has_value() || open_in_memory) {
-    database_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            OpenDatabaseOnDatabaseTaskRunner,
-            base::Unretained(trace_database_.get()), std::move(database_dir),
-            base::BindOnce(
-                &BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
-                weak_factory_.GetWeakPtr())));
-  } else {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
-                       weak_factory_.GetWeakPtr(), absl::nullopt, false));
+  absl::optional<base::FilePath> database_dir;
+  if (!trace_database_) {
+    trace_database_ = {new TraceReportDatabase,
+                       base::OnTaskRunnerDeleter(database_task_runner_)};
+    if (!open_in_memory) {
+      database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
+      if (!database_dir.has_value()) {
+        OnTraceDatabaseCreated(absl::nullopt, false);
+        return;
+      }
+    }
   }
+  database_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          OpenDatabaseOnDatabaseTaskRunner,
+          base::Unretained(trace_database_.get()), std::move(database_dir),
+          base::BindOnce(&BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
+                         weak_factory_.GetWeakPtr())));
 }
 
 void BackgroundTracingManagerImpl::OnScenarioActive(
@@ -836,29 +840,35 @@ void BackgroundTracingManagerImpl::CleanDatabase() {
 
 void BackgroundTracingManagerImpl::DeleteTracesInDateRange(base::Time start,
                                                            base::Time end) {
-  // Exit early if |trace_database_| was not initialized successfully.
-  if (!trace_database_) {
-    return;
-  }
-
   // The trace report database needs to exist for clean up. Avoid creating or
   // initializing the trace report database to perform a database clean up.
-  auto database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
-  if (database_dir.has_value()) {
-    database_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](TraceReportDatabase* trace_database,
-               absl::optional<base::FilePath> database_dir, base::Time start,
-               base::Time end) {
-              if (trace_database->OpenDatabaseIfExists(database_dir.value())) {
-                if (!trace_database->DeleteTracesInDateRange(start, end)) {
-                  RecordMetric(Metrics::DATABASE_CLEANUP_FAILED);
-                }
-              }
-            },
-            base::Unretained(trace_database_.get()), database_dir, start, end));
+  absl::optional<base::FilePath> database_dir;
+  if (!trace_database_) {
+    database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
+    if (!database_dir.has_value()) {
+      return;
+    }
+    trace_database_ = {new TraceReportDatabase,
+                       base::OnTaskRunnerDeleter(database_task_runner_)};
   }
+  database_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](TraceReportDatabase* trace_database,
+             absl::optional<base::FilePath> database_dir, base::Time start,
+             base::Time end) {
+            if (database_dir.has_value() &&
+                !trace_database->OpenDatabaseIfExists(database_dir.value())) {
+              return;
+            }
+            if (!trace_database->is_initialized()) {
+              return;
+            }
+            if (!trace_database->DeleteTracesInDateRange(start, end)) {
+              RecordMetric(Metrics::DATABASE_CLEANUP_FAILED);
+            }
+          },
+          base::Unretained(trace_database_.get()), database_dir, start, end));
 }
 
 // static
