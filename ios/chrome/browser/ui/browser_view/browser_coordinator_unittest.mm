@@ -28,17 +28,21 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
+#import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator+private.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
+#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -343,4 +347,59 @@ TEST_F(BrowserCoordinatorTest, NewTabPageTabHelperDelegate) {
 
     [browser_coordinator stop];
   }
+}
+
+// Tests that BrowserCoordinator starts and stops the SaveToPhotosCoordinator
+// properly when SaveToPhotosCommands are issued.
+TEST_F(BrowserCoordinatorTest, StartsAndStopsSaveToPhotosCoordinator) {
+  // Mock the SaveToPhotosCoordinator class
+  id mockSaveToPhotosCoordinator =
+      OCMStrictClassMock([SaveToPhotosCoordinator class]);
+
+  // Start the BrowserCoordinator
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+
+  // At rest, check the SaveToPhotosCoordinator is nil
+  EXPECT_EQ(browser_coordinator.saveToPhotosCoordinator, nil);
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<SaveToPhotosCommands> handler =
+      HandlerForProtocol(dispatcher, SaveToPhotosCommands);
+
+  // Insert a web state into the Browser.
+  InsertWebState();
+
+  GURL fakeImageURL("http://www.example.com/image.jpg");
+  web::Referrer fakeImageReferrer;
+  web::WebState* webState = GetActiveWebState();
+  SaveImageToPhotosCommand* command =
+      [[SaveImageToPhotosCommand alloc] initWithImageURL:fakeImageURL
+                                                referrer:fakeImageReferrer
+                                                webState:webState];
+
+  // Tests that -[BrowserCoordinator saveImageToPhotos:] starts the
+  // SaveToPhotosCoordinator.
+  OCMExpect([mockSaveToPhotosCoordinator alloc])
+      .andReturn(mockSaveToPhotosCoordinator);
+  OCMExpect([[mockSaveToPhotosCoordinator ignoringNonObjectArgs]
+                initWithBaseViewController:browser_coordinator.viewController
+                                   browser:browser_.get()
+                                  imageURL:command.imageURL
+                                  referrer:command.referrer
+                                  webState:command.webState.get()])
+      .andReturn(mockSaveToPhotosCoordinator);
+  OCMExpect([(SaveToPhotosCoordinator*)mockSaveToPhotosCoordinator start]);
+  [handler saveImageToPhotos:command];
+  EXPECT_OCMOCK_VERIFY(mockSaveToPhotosCoordinator);
+  EXPECT_NE(browser_coordinator.saveToPhotosCoordinator, nil);
+
+  // Tests that -[BrowserCoordinator stopSaveToPhotos:] stops the
+  // SaveToPhotosCoordinator.
+  OCMExpect([mockSaveToPhotosCoordinator stop]);
+  [handler stopSaveToPhotos];
+  EXPECT_OCMOCK_VERIFY(mockSaveToPhotosCoordinator);
+  EXPECT_EQ(browser_coordinator.saveToPhotosCoordinator, nil);
+
+  [browser_coordinator stop];
 }

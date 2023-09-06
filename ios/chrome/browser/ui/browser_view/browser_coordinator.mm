@@ -1360,6 +1360,9 @@ enum class ToolbarKind {
 
   [self.miniMapCoordinator stop];
   self.miniMapCoordinator = nil;
+
+  [self.saveToPhotosCoordinator stop];
+  self.saveToPhotosCoordinator = nil;
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2405,11 +2408,26 @@ enum class ToolbarKind {
 #pragma mark - SaveToPhotosCommands
 
 - (void)saveImageToPhotos:(SaveImageToPhotosCommand*)command {
-  // TODO(crbug.com/1473314): Create a SaveToPhotosCoordinator.
+  if (!command.webState) {
+    // If the web state does not exist anymore, don't do anything.
+    return;
+  }
+
+  // If the Save to Photos coordinator is not nil, stop it.
+  [self stopSaveToPhotos];
+
+  self.saveToPhotosCoordinator = [[SaveToPhotosCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                        imageURL:command.imageURL
+                        referrer:command.referrer
+                        webState:command.webState.get()];
+  [self.saveToPhotosCoordinator start];
 }
 
 - (void)stopSaveToPhotos {
-  // TODO(crbug.com/1473314): Create a SaveToPhotosCoordinator.
+  [self.saveToPhotosCoordinator stop];
+  self.saveToPhotosCoordinator = nil;
 }
 
 #pragma mark - WebContentCommands

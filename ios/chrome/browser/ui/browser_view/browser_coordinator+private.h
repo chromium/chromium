@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
+#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
 
 @class NewTabPageCoordinator;
 
@@ -16,6 +17,9 @@
 
 // The coordinator used for the New Tab Page.
 @property(nonatomic, strong) NewTabPageCoordinator* NTPCoordinator;
+
+// Coordinator for displaying the Save to Photos UI.
+@property(nonatomic, strong) SaveToPhotosCoordinator* saveToPhotosCoordinator;
 
 @end
 
