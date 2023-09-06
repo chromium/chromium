@@ -1,11 +1,9 @@
 use super::Value;
-use crate::lib::iter::FromIterator;
-use crate::lib::*;
 use crate::map::Map;
 use crate::number::Number;
-
-#[cfg(feature = "arbitrary_precision")]
-use serde::serde_if_integer128;
+use alloc::borrow::Cow;
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
 
 macro_rules! from_integer {
     ($($ty:ident)*) => {
@@ -25,10 +23,8 @@ from_integer! {
 }
 
 #[cfg(feature = "arbitrary_precision")]
-serde_if_integer128! {
-    from_integer! {
-        i128 u128
-    }
+from_integer! {
+    i128 u128
 }
 
 impl From<f32> for Value {
@@ -43,7 +39,7 @@ impl From<f32> for Value {
     /// let x: Value = f.into();
     /// ```
     fn from(f: f32) -> Self {
-        From::from(f as f64)
+        Number::from_f32(f).map_or(Value::Null, Value::Number)
     }
 }
 
@@ -264,5 +260,17 @@ impl From<()> for Value {
     /// ```
     fn from((): ()) -> Self {
         Value::Null
+    }
+}
+
+impl<T> From<Option<T>> for Value
+where
+    T: Into<Value>,
+{
+    fn from(opt: Option<T>) -> Self {
+        match opt {
+            None => Value::Null,
+            Some(value) => Into::into(value),
+        }
     }
 }

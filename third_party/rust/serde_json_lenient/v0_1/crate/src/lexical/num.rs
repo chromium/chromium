@@ -2,7 +2,7 @@
 
 //! Utilities for Rust numbers.
 
-use crate::lib::ops;
+use core::ops;
 
 /// Precalculated values of radix**i for i in range [0, arr.len()-1].
 /// Each value can be **exactly** represented as that type.

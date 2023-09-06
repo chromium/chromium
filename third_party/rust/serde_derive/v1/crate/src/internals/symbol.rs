@@ -13,15 +13,19 @@ pub const DEFAULT: Symbol = Symbol("default");
 pub const DENY_UNKNOWN_FIELDS: Symbol = Symbol("deny_unknown_fields");
 pub const DESERIALIZE: Symbol = Symbol("deserialize");
 pub const DESERIALIZE_WITH: Symbol = Symbol("deserialize_with");
+pub const EXPECTING: Symbol = Symbol("expecting");
 pub const FIELD_IDENTIFIER: Symbol = Symbol("field_identifier");
 pub const FLATTEN: Symbol = Symbol("flatten");
 pub const FROM: Symbol = Symbol("from");
 pub const GETTER: Symbol = Symbol("getter");
 pub const INTO: Symbol = Symbol("into");
+pub const NON_EXHAUSTIVE: Symbol = Symbol("non_exhaustive");
 pub const OTHER: Symbol = Symbol("other");
 pub const REMOTE: Symbol = Symbol("remote");
 pub const RENAME: Symbol = Symbol("rename");
 pub const RENAME_ALL: Symbol = Symbol("rename_all");
+pub const RENAME_ALL_FIELDS: Symbol = Symbol("rename_all_fields");
+pub const REPR: Symbol = Symbol("repr");
 pub const SERDE: Symbol = Symbol("serde");
 pub const SERIALIZE: Symbol = Symbol("serialize");
 pub const SERIALIZE_WITH: Symbol = Symbol("serialize_with");
@@ -35,7 +39,6 @@ pub const TRY_FROM: Symbol = Symbol("try_from");
 pub const UNTAGGED: Symbol = Symbol("untagged");
 pub const VARIANT_IDENTIFIER: Symbol = Symbol("variant_identifier");
 pub const WITH: Symbol = Symbol("with");
-pub const EXPECTING: Symbol = Symbol("expecting");
 
 impl PartialEq<Symbol> for Ident {
     fn eq(&self, word: &Symbol) -> bool {

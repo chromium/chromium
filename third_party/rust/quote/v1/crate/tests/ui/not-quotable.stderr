@@ -8,13 +8,13 @@ error[E0277]: the trait bound `Ipv4Addr: ToTokens` is not satisfied
   |             required by a bound introduced by this call
   |
   = help: the following other types implement trait `ToTokens`:
-            &'a T
-            &'a mut T
-            Box<T>
-            Cow<'a, T>
-            Option<T>
-            Rc<T>
-            RepInterp<T>
-            String
-          and 23 others
+            bool
+            char
+            isize
+            i8
+            i16
+            i32
+            i64
+            i128
+          and $N others
   = note: this error originates in the macro `quote` (in Nightly builds, run with -Z macro-backtrace for more info)

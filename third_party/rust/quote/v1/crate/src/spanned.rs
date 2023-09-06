@@ -26,19 +26,7 @@ impl<T: ?Sized + ToTokens> Spanned for T {
 }
 
 fn join_spans(tokens: TokenStream) -> Span {
-    #[cfg(not(needs_invalid_span_workaround))]
     let mut iter = tokens.into_iter().map(|tt| tt.span());
-
-    #[cfg(needs_invalid_span_workaround)]
-    let mut iter = tokens.into_iter().filter_map(|tt| {
-        let span = tt.span();
-        let debug = format!("{:?}", span);
-        if debug.ends_with("bytes(0..0)") {
-            None
-        } else {
-            Some(span)
-        }
-    });
 
     let first = match iter.next() {
         Some(span) => span,

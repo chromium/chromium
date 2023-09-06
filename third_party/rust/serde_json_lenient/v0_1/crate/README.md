@@ -1,4 +1,11 @@
-# serde_json_lenient
+# serde_json_lenient &emsp; [![Build Status]][actions] [![Latest Version]][crates.io] [![Rustc Version 1.36+]][rustc]
+
+[Build Status]: https://img.shields.io/github/actions/workflow/status/google/serde_json_lenient/ci.yml?branch=master
+[actions]: https://github.com/google/serde_json_lenient/actions?query=branch%3Amaster
+[Latest Version]: https://img.shields.io/crates/v/serde_json_lenient.svg
+[crates.io]: https://crates.io/crates/serde\_json\_lenient
+[Rustc Version 1.36+]: https://img.shields.io/badge/rustc-1.36+-lightgray.svg
+[rustc]: https://blog.rust-lang.org/2019/07/04/Rust-1.36.0.html
 
 This is a lenient JSON parser forked from the
 [serde_json](https://crates.io/crates/serde_json) crate

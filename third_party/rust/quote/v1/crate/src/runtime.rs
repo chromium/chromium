@@ -5,11 +5,21 @@ use core::iter;
 use core::ops::BitOr;
 use proc_macro2::{Group, Ident, Punct, Spacing, TokenTree};
 
+#[doc(hidden)]
+pub use alloc::format;
+#[doc(hidden)]
 pub use core::option::Option;
-pub use proc_macro2::{Delimiter, Span, TokenStream};
-pub use std::format;
 
+#[doc(hidden)]
+pub type Delimiter = proc_macro2::Delimiter;
+#[doc(hidden)]
+pub type Span = proc_macro2::Span;
+#[doc(hidden)]
+pub type TokenStream = proc_macro2::TokenStream;
+
+#[doc(hidden)]
 pub struct HasIterator; // True
+#[doc(hidden)]
 pub struct ThereIsNoIteratorInRepetition; // False
 
 impl BitOr<ThereIsNoIteratorInRepetition> for ThereIsNoIteratorInRepetition {
@@ -46,14 +56,16 @@ impl BitOr<HasIterator> for HasIterator {
 /// These traits expose a `quote_into_iter` method which should allow calling
 /// whichever impl happens to be applicable. Calling that method repeatedly on
 /// the returned value should be idempotent.
+#[doc(hidden)]
 pub mod ext {
     use super::RepInterp;
     use super::{HasIterator as HasIter, ThereIsNoIteratorInRepetition as DoesNotHaveIter};
     use crate::ToTokens;
+    use alloc::collections::btree_set::{self, BTreeSet};
     use core::slice;
-    use std::collections::btree_set::{self, BTreeSet};
 
     /// Extension trait providing the `quote_into_iter` method on iterators.
+    #[doc(hidden)]
     pub trait RepIteratorExt: Iterator + Sized {
         fn quote_into_iter(self) -> (Self, HasIter) {
             (self, HasIter)
@@ -65,6 +77,7 @@ pub mod ext {
     /// Extension trait providing the `quote_into_iter` method for
     /// non-iterable types. These types interpolate the same value in each
     /// iteration of the repetition.
+    #[doc(hidden)]
     pub trait RepToTokensExt {
         /// Pretend to be an iterator for the purposes of `quote_into_iter`.
         /// This allows repeated calls to `quote_into_iter` to continue
@@ -82,6 +95,7 @@ pub mod ext {
 
     /// Extension trait providing the `quote_into_iter` method for types that
     /// can be referenced as an iterator.
+    #[doc(hidden)]
     pub trait RepAsIteratorExt<'q> {
         type Iter: Iterator;
 
@@ -140,6 +154,7 @@ pub mod ext {
 // Helper type used within interpolations to allow for repeated binding names.
 // Implements the relevant traits, and exports a dummy `next()` method.
 #[derive(Copy, Clone)]
+#[doc(hidden)]
 pub struct RepInterp<T>(pub T);
 
 impl<T> RepInterp<T> {
@@ -166,6 +181,7 @@ impl<T: ToTokens> ToTokens for RepInterp<T> {
     }
 }
 
+#[doc(hidden)]
 #[inline]
 pub fn get_span<T>(span: T) -> GetSpan<T> {
     GetSpan(GetSpanInner(GetSpanBase(span)))
@@ -222,10 +238,12 @@ mod get_span {
     }
 }
 
+#[doc(hidden)]
 pub fn push_group(tokens: &mut TokenStream, delimiter: Delimiter, inner: TokenStream) {
     tokens.append(Group::new(delimiter, inner));
 }
 
+#[doc(hidden)]
 pub fn push_group_spanned(
     tokens: &mut TokenStream,
     span: Span,
@@ -237,11 +255,13 @@ pub fn push_group_spanned(
     tokens.append(g);
 }
 
+#[doc(hidden)]
 pub fn parse(tokens: &mut TokenStream, s: &str) {
     let s: TokenStream = s.parse().expect("invalid token stream");
     tokens.extend(iter::once(s));
 }
 
+#[doc(hidden)]
 pub fn parse_spanned(tokens: &mut TokenStream, span: Span, s: &str) {
     let s: TokenStream = s.parse().expect("invalid token stream");
     tokens.extend(s.into_iter().map(|t| respan_token_tree(t, span)));
@@ -264,15 +284,18 @@ fn respan_token_tree(mut token: TokenTree, span: Span) -> TokenTree {
     token
 }
 
+#[doc(hidden)]
 pub fn push_ident(tokens: &mut TokenStream, s: &str) {
     let span = Span::call_site();
     push_ident_spanned(tokens, span, s);
 }
 
+#[doc(hidden)]
 pub fn push_ident_spanned(tokens: &mut TokenStream, span: Span, s: &str) {
     tokens.append(ident_maybe_raw(s, span));
 }
 
+#[doc(hidden)]
 pub fn push_lifetime(tokens: &mut TokenStream, lifetime: &str) {
     struct Lifetime<'a> {
         name: &'a str,
@@ -303,6 +326,7 @@ pub fn push_lifetime(tokens: &mut TokenStream, lifetime: &str) {
     });
 }
 
+#[doc(hidden)]
 pub fn push_lifetime_spanned(tokens: &mut TokenStream, span: Span, lifetime: &str) {
     struct Lifetime<'a> {
         name: &'a str,
@@ -339,9 +363,11 @@ pub fn push_lifetime_spanned(tokens: &mut TokenStream, span: Span, lifetime: &st
 
 macro_rules! push_punct {
     ($name:ident $spanned:ident $char1:tt) => {
+        #[doc(hidden)]
         pub fn $name(tokens: &mut TokenStream) {
             tokens.append(Punct::new($char1, Spacing::Alone));
         }
+        #[doc(hidden)]
         pub fn $spanned(tokens: &mut TokenStream, span: Span) {
             let mut punct = Punct::new($char1, Spacing::Alone);
             punct.set_span(span);
@@ -349,10 +375,12 @@ macro_rules! push_punct {
         }
     };
     ($name:ident $spanned:ident $char1:tt $char2:tt) => {
+        #[doc(hidden)]
         pub fn $name(tokens: &mut TokenStream) {
             tokens.append(Punct::new($char1, Spacing::Joint));
             tokens.append(Punct::new($char2, Spacing::Alone));
         }
+        #[doc(hidden)]
         pub fn $spanned(tokens: &mut TokenStream, span: Span) {
             let mut punct = Punct::new($char1, Spacing::Joint);
             punct.set_span(span);
@@ -363,11 +391,13 @@ macro_rules! push_punct {
         }
     };
     ($name:ident $spanned:ident $char1:tt $char2:tt $char3:tt) => {
+        #[doc(hidden)]
         pub fn $name(tokens: &mut TokenStream) {
             tokens.append(Punct::new($char1, Spacing::Joint));
             tokens.append(Punct::new($char2, Spacing::Joint));
             tokens.append(Punct::new($char3, Spacing::Alone));
         }
+        #[doc(hidden)]
         pub fn $spanned(tokens: &mut TokenStream, span: Span) {
             let mut punct = Punct::new($char1, Spacing::Joint);
             punct.set_span(span);
@@ -427,24 +457,27 @@ push_punct!(push_star push_star_spanned '*');
 push_punct!(push_sub push_sub_spanned '-');
 push_punct!(push_sub_eq push_sub_eq_spanned '-' '=');
 
+#[doc(hidden)]
 pub fn push_underscore(tokens: &mut TokenStream) {
     push_underscore_spanned(tokens, Span::call_site());
 }
 
+#[doc(hidden)]
 pub fn push_underscore_spanned(tokens: &mut TokenStream, span: Span) {
     tokens.append(Ident::new("_", span));
 }
 
 // Helper method for constructing identifiers from the `format_ident!` macro,
 // handling `r#` prefixes.
+#[doc(hidden)]
 pub fn mk_ident(id: &str, span: Option<Span>) -> Ident {
     let span = span.unwrap_or_else(Span::call_site);
     ident_maybe_raw(id, span)
 }
 
 fn ident_maybe_raw(id: &str, span: Span) -> Ident {
-    if id.starts_with("r#") {
-        Ident::new_raw(&id[2..], span)
+    if let Some(id) = id.strip_prefix("r#") {
+        Ident::new_raw(id, span)
     } else {
         Ident::new(id, span)
     }
@@ -457,6 +490,7 @@ fn ident_maybe_raw(id: &str, span: Span) -> Ident {
 // `Octal`, `LowerHex`, `UpperHex`, and `Binary` to allow for their use within
 // `format_ident!`.
 #[derive(Copy, Clone)]
+#[doc(hidden)]
 pub struct IdentFragmentAdapter<T: IdentFragment>(pub T);
 
 impl<T: IdentFragment> IdentFragmentAdapter<T> {

@@ -1,7 +1,6 @@
+use crate::internals::ast::{Container, Data, Field, Style, Variant};
 use proc_macro2::TokenStream;
-use quote::format_ident;
-
-use internals::ast::{Container, Data, Field, Style, Variant};
+use quote::{format_ident, quote};
 
 // Suppress dead_code warnings that would otherwise appear when using a remote
 // derive. Other than this pretend code, a struct annotated with remote derive
@@ -97,29 +96,14 @@ fn pretend_fields_used_struct_packed(cont: &Container, fields: &[Field]) -> Toke
 
     let members = fields.iter().map(|field| &field.member).collect::<Vec<_>>();
 
-    #[cfg(not(no_ptr_addr_of))]
-    {
-        quote! {
-            match _serde::__private::None::<&#type_ident #ty_generics> {
-                _serde::__private::Some(__v @ #type_ident { #(#members: _),* }) => {
-                    #(
-                        let _ = _serde::__private::ptr::addr_of!(__v.#members);
-                    )*
-                }
-                _ => {}
+    quote! {
+        match _serde::__private::None::<&#type_ident #ty_generics> {
+            _serde::__private::Some(__v @ #type_ident { #(#members: _),* }) => {
+                #(
+                    let _ = _serde::__private::ptr::addr_of!(__v.#members);
+                )*
             }
-        }
-    }
-
-    #[cfg(no_ptr_addr_of)]
-    {
-        let placeholders = (0usize..).map(|i| format_ident!("__v{}", i));
-
-        quote! {
-            match _serde::__private::None::<#type_ident #ty_generics> {
-                _serde::__private::Some(#type_ident { #(#members: #placeholders),* }) => {}
-                _ => {}
-            }
+            _ => {}
         }
     }
 }

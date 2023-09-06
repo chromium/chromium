@@ -85,14 +85,18 @@
 //! # untyped_example().unwrap();
 //! ```
 //!
-//! [macro]: https://docs.serde.rs/serde_json_lenient/macro.json.html
-//! [from_str]: https://docs.serde.rs/serde_json_lenient/de/fn.from_str.html
-//! [from_slice]: https://docs.serde.rs/serde_json_lenient/de/fn.from_slice.html
-//! [from_reader]: https://docs.serde.rs/serde_json_lenient/de/fn.from_reader.html
+//! [macro]: crate::json
+//! [from_str]: crate::de::from_str
+//! [from_slice]: crate::de::from_slice
+//! [from_reader]: crate::de::from_reader
 
 use crate::error::Error;
 use crate::io;
-use crate::lib::*;
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::fmt::{self, Debug, Display};
+use core::mem;
+use core::str;
 use serde::de::DeserializeOwned;
 use serde::ser::Serialize;
 
@@ -172,26 +176,24 @@ pub enum Value {
 
 impl Debug for Value {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Value::Null => formatter.debug_tuple("Null").finish(),
-            Value::Bool(v) => formatter.debug_tuple("Bool").field(&v).finish(),
-            Value::Number(ref v) => Debug::fmt(v, formatter),
-            Value::String(ref v) => formatter.debug_tuple("String").field(v).finish(),
-            Value::Array(ref v) => {
-                formatter.write_str("Array(")?;
-                Debug::fmt(v, formatter)?;
-                formatter.write_str(")")
+        match self {
+            Value::Null => formatter.write_str("Null"),
+            Value::Bool(boolean) => write!(formatter, "Bool({})", boolean),
+            Value::Number(number) => Debug::fmt(number, formatter),
+            Value::String(string) => write!(formatter, "String({:?})", string),
+            Value::Array(vec) => {
+                tri!(formatter.write_str("Array "));
+                Debug::fmt(vec, formatter)
             }
-            Value::Object(ref v) => {
-                formatter.write_str("Object(")?;
-                Debug::fmt(v, formatter)?;
-                formatter.write_str(")")
+            Value::Object(map) => {
+                tri!(formatter.write_str("Object "));
+                Debug::fmt(map, formatter)
             }
         }
     }
 }
 
-impl fmt::Display for Value {
+impl Display for Value {
     /// Display a JSON value as a string.
     ///
     /// ```
@@ -361,8 +363,8 @@ impl Value {
     /// assert_eq!(v["b"].as_object(), None);
     /// ```
     pub fn as_object(&self) -> Option<&Map<String, Value>> {
-        match *self {
-            Value::Object(ref map) => Some(map),
+        match self {
+            Value::Object(map) => Some(map),
             _ => None,
         }
     }
@@ -379,8 +381,8 @@ impl Value {
     /// assert_eq!(v, json!({ "a": {} }));
     /// ```
     pub fn as_object_mut(&mut self) -> Option<&mut Map<String, Value>> {
-        match *self {
-            Value::Object(ref mut map) => Some(map),
+        match self {
+            Value::Object(map) => Some(map),
             _ => None,
         }
     }
@@ -420,8 +422,8 @@ impl Value {
     /// assert_eq!(v["b"].as_array(), None);
     /// ```
     pub fn as_array(&self) -> Option<&Vec<Value>> {
-        match *self {
-            Value::Array(ref array) => Some(&*array),
+        match self {
+            Value::Array(array) => Some(array),
             _ => None,
         }
     }
@@ -438,8 +440,8 @@ impl Value {
     /// assert_eq!(v, json!({ "a": [] }));
     /// ```
     pub fn as_array_mut(&mut self) -> Option<&mut Vec<Value>> {
-        match *self {
-            Value::Array(ref mut list) => Some(list),
+        match self {
+            Value::Array(list) => Some(list),
             _ => None,
         }
     }
@@ -487,8 +489,8 @@ impl Value {
     /// println!("The value is: {}", v["a"].as_str().unwrap());
     /// ```
     pub fn as_str(&self) -> Option<&str> {
-        match *self {
-            Value::String(ref s) => Some(s),
+        match self {
+            Value::String(s) => Some(s),
             _ => None,
         }
     }
@@ -533,8 +535,8 @@ impl Value {
     /// assert!(!v["c"].is_i64());
     /// ```
     pub fn is_i64(&self) -> bool {
-        match *self {
-            Value::Number(ref n) => n.is_i64(),
+        match self {
+            Value::Number(n) => n.is_i64(),
             _ => false,
         }
     }
@@ -558,8 +560,8 @@ impl Value {
     /// assert!(!v["c"].is_u64());
     /// ```
     pub fn is_u64(&self) -> bool {
-        match *self {
-            Value::Number(ref n) => n.is_u64(),
+        match self {
+            Value::Number(n) => n.is_u64(),
             _ => false,
         }
     }
@@ -584,8 +586,8 @@ impl Value {
     /// assert!(!v["c"].is_f64());
     /// ```
     pub fn is_f64(&self) -> bool {
-        match *self {
-            Value::Number(ref n) => n.is_f64(),
+        match self {
+            Value::Number(n) => n.is_f64(),
             _ => false,
         }
     }
@@ -604,8 +606,8 @@ impl Value {
     /// assert_eq!(v["c"].as_i64(), None);
     /// ```
     pub fn as_i64(&self) -> Option<i64> {
-        match *self {
-            Value::Number(ref n) => n.as_i64(),
+        match self {
+            Value::Number(n) => n.as_i64(),
             _ => None,
         }
     }
@@ -623,8 +625,8 @@ impl Value {
     /// assert_eq!(v["c"].as_u64(), None);
     /// ```
     pub fn as_u64(&self) -> Option<u64> {
-        match *self {
-            Value::Number(ref n) => n.as_u64(),
+        match self {
+            Value::Number(n) => n.as_u64(),
             _ => None,
         }
     }
@@ -642,8 +644,8 @@ impl Value {
     /// assert_eq!(v["c"].as_f64(), Some(-64.0));
     /// ```
     pub fn as_f64(&self) -> Option<f64> {
-        match *self {
-            Value::Number(ref n) => n.as_f64(),
+        match self {
+            Value::Number(n) => n.as_f64(),
             _ => None,
         }
     }
@@ -887,7 +889,6 @@ mod ser;
 /// ```
 /// use serde::Serialize;
 /// use serde_json_lenient::json;
-///
 /// use std::error::Error;
 ///
 /// #[derive(Serialize)]
@@ -896,7 +897,7 @@ mod ser;
 ///     location: String,
 /// }
 ///
-/// fn compare_json_values() -> Result<(), Box<Error>> {
+/// fn compare_json_values() -> Result<(), Box<dyn Error>> {
 ///     let u = User {
 ///         fingerprint: "0xF9BA143B95FF6D82".to_owned(),
 ///         location: "Menlo Park, CA".to_owned(),

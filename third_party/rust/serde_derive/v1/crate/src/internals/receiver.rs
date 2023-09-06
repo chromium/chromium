@@ -1,11 +1,11 @@
-use internals::respan::respan;
+use crate::internals::respan::respan;
 use proc_macro2::Span;
 use quote::ToTokens;
 use std::mem;
 use syn::punctuated::Punctuated;
 use syn::{
     parse_quote, Data, DeriveInput, Expr, ExprPath, GenericArgument, GenericParam, Generics, Macro,
-    Path, PathArguments, QSelf, ReturnType, Type, TypeParamBound, TypePath, WherePredicate,
+    Path, PathArguments, QSelf, ReturnType, Token, Type, TypeParamBound, TypePath, WherePredicate,
 };
 
 pub fn replace_receiver(input: &mut DeriveInput) {
@@ -179,10 +179,13 @@ impl ReplaceReceiver<'_> {
                 for arg in &mut arguments.args {
                     match arg {
                         GenericArgument::Type(arg) => self.visit_type_mut(arg),
-                        GenericArgument::Binding(arg) => self.visit_type_mut(&mut arg.ty),
+                        GenericArgument::AssocType(arg) => self.visit_type_mut(&mut arg.ty),
                         GenericArgument::Lifetime(_)
-                        | GenericArgument::Constraint(_)
-                        | GenericArgument::Const(_) => {}
+                        | GenericArgument::Const(_)
+                        | GenericArgument::AssocConst(_)
+                        | GenericArgument::Constraint(_) => {}
+                        #[cfg_attr(all(test, exhaustive), deny(non_exhaustive_omitted_patterns))]
+                        _ => {}
                     }
                 }
             }
@@ -205,7 +208,9 @@ impl ReplaceReceiver<'_> {
     fn visit_type_param_bound_mut(&mut self, bound: &mut TypeParamBound) {
         match bound {
             TypeParamBound::Trait(bound) => self.visit_path_mut(&mut bound.path),
-            TypeParamBound::Lifetime(_) => {}
+            TypeParamBound::Lifetime(_) | TypeParamBound::Verbatim(_) => {}
+            #[cfg_attr(all(test, exhaustive), deny(non_exhaustive_omitted_patterns))]
+            _ => {}
         }
     }
 
@@ -229,7 +234,9 @@ impl ReplaceReceiver<'_> {
                             self.visit_type_param_bound_mut(bound);
                         }
                     }
-                    WherePredicate::Lifetime(_) | WherePredicate::Eq(_) => {}
+                    WherePredicate::Lifetime(_) => {}
+                    #[cfg_attr(all(test, exhaustive), deny(non_exhaustive_omitted_patterns))]
+                    _ => {}
                 }
             }
         }

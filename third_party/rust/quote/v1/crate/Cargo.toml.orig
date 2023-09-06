@@ -1,6 +1,6 @@
 [package]
 name = "quote"
-version = "1.0.27" # don't forget to update html_root_url, version in readme for breaking changes
+version = "1.0.33" # don't forget to update html_root_url, version in readme for breaking changes
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]
@@ -10,10 +10,10 @@ edition = "2018"
 keywords = ["macros", "syn"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/quote"
-rust-version = "1.31"
+rust-version = "1.56"
 
 [dependencies]
-proc-macro2 = { version = "1.0.52", default-features = false }
+proc-macro2 = { version = "1.0.66", default-features = false }
 
 [dev-dependencies]
 rustversion = "1.0"
@@ -33,3 +33,4 @@ members = ["benches"]
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
+rustdoc-args = ["--generate-link-to-definition"]

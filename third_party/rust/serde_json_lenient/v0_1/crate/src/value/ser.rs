@@ -1,12 +1,12 @@
 use crate::error::{Error, ErrorCode, Result};
-use crate::lib::*;
 use crate::map::Map;
-use crate::number::Number;
 use crate::value::{to_value, Value};
+use alloc::borrow::ToOwned;
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
+use core::fmt::Display;
+use core::result;
 use serde::ser::{Impossible, Serialize};
-
-#[cfg(feature = "arbitrary_precision")]
-use serde::serde_if_integer128;
 
 impl Serialize for Value {
     #[inline]
@@ -14,14 +14,14 @@ impl Serialize for Value {
     where
         S: ::serde::Serializer,
     {
-        match *self {
+        match self {
             Value::Null => serializer.serialize_unit(),
-            Value::Bool(b) => serializer.serialize_bool(b),
-            Value::Number(ref n) => n.serialize(serializer),
-            Value::String(ref s) => serializer.serialize_str(s),
-            Value::Array(ref v) => v.serialize(serializer),
+            Value::Bool(b) => serializer.serialize_bool(*b),
+            Value::Number(n) => n.serialize(serializer),
+            Value::String(s) => serializer.serialize_str(s),
+            Value::Array(v) => v.serialize(serializer),
             #[cfg(any(feature = "std", feature = "alloc"))]
-            Value::Object(ref m) => {
+            Value::Object(m) => {
                 use serde::ser::SerializeMap;
                 let mut map = tri!(serializer.serialize_map(Some(m.len())));
                 for (k, v) in m {
@@ -91,10 +91,21 @@ impl serde::Serializer for Serializer {
         Ok(Value::Number(value.into()))
     }
 
-    #[cfg(feature = "arbitrary_precision")]
-    serde_if_integer128! {
-        fn serialize_i128(self, value: i128) -> Result<Value> {
+    fn serialize_i128(self, value: i128) -> Result<Value> {
+        #[cfg(feature = "arbitrary_precision")]
+        {
             Ok(Value::Number(value.into()))
+        }
+
+        #[cfg(not(feature = "arbitrary_precision"))]
+        {
+            if let Ok(value) = u64::try_from(value) {
+                Ok(Value::Number(value.into()))
+            } else if let Ok(value) = i64::try_from(value) {
+                Ok(Value::Number(value.into()))
+            } else {
+                Err(Error::syntax(ErrorCode::NumberOutOfRange, 0, 0))
+            }
         }
     }
 
@@ -118,21 +129,30 @@ impl serde::Serializer for Serializer {
         Ok(Value::Number(value.into()))
     }
 
-    #[cfg(feature = "arbitrary_precision")]
-    serde_if_integer128! {
-        fn serialize_u128(self, value: u128) -> Result<Value> {
+    fn serialize_u128(self, value: u128) -> Result<Value> {
+        #[cfg(feature = "arbitrary_precision")]
+        {
             Ok(Value::Number(value.into()))
+        }
+
+        #[cfg(not(feature = "arbitrary_precision"))]
+        {
+            if let Ok(value) = u64::try_from(value) {
+                Ok(Value::Number(value.into()))
+            } else {
+                Err(Error::syntax(ErrorCode::NumberOutOfRange, 0, 0))
+            }
         }
     }
 
     #[inline]
-    fn serialize_f32(self, value: f32) -> Result<Value> {
-        self.serialize_f64(value as f64)
+    fn serialize_f32(self, float: f32) -> Result<Value> {
+        Ok(Value::from(float))
     }
 
     #[inline]
-    fn serialize_f64(self, value: f64) -> Result<Value> {
-        Ok(Number::from_f64(value).map_or(Value::Null, Value::Number))
+    fn serialize_f64(self, float: f64) -> Result<Value> {
+        Ok(Value::from(float))
     }
 
     #[inline]
@@ -191,7 +211,7 @@ impl serde::Serializer for Serializer {
         T: ?Sized + Serialize,
     {
         let mut values = Map::new();
-        values.insert(String::from(variant), tri!(to_value(&value)));
+        values.insert(String::from(variant), tri!(to_value(value)));
         Ok(Value::Object(values))
     }
 
@@ -269,9 +289,9 @@ impl serde::Serializer for Serializer {
         })
     }
 
-    fn collect_str<T: ?Sized>(self, value: &T) -> Result<Value>
+    fn collect_str<T>(self, value: &T) -> Result<Value>
     where
-        T: Display,
+        T: ?Sized + Display,
     {
         Ok(Value::String(value.to_string()))
     }
@@ -310,7 +330,7 @@ impl serde::ser::SerializeSeq for SerializeVec {
     where
         T: ?Sized + Serialize,
     {
-        self.vec.push(tri!(to_value(&value)));
+        self.vec.push(tri!(to_value(value)));
         Ok(())
     }
 
@@ -359,7 +379,7 @@ impl serde::ser::SerializeTupleVariant for SerializeTupleVariant {
     where
         T: ?Sized + Serialize,
     {
-        self.vec.push(tri!(to_value(&value)));
+        self.vec.push(tri!(to_value(value)));
         Ok(())
     }
 
@@ -380,10 +400,8 @@ impl serde::ser::SerializeMap for SerializeMap {
     where
         T: ?Sized + Serialize,
     {
-        match *self {
-            SerializeMap::Map {
-                ref mut next_key, ..
-            } => {
+        match self {
+            SerializeMap::Map { next_key, .. } => {
                 *next_key = Some(tri!(key.serialize(MapKeySerializer)));
                 Ok(())
             }
@@ -398,16 +416,13 @@ impl serde::ser::SerializeMap for SerializeMap {
     where
         T: ?Sized + Serialize,
     {
-        match *self {
-            SerializeMap::Map {
-                ref mut map,
-                ref mut next_key,
-            } => {
+        match self {
+            SerializeMap::Map { map, next_key } => {
                 let key = next_key.take();
                 // Panic because this indicates a bug in the program rather than an
                 // expected failure.
                 let key = key.expect("serialize_value called before serialize_key");
-                map.insert(key, tri!(to_value(&value)));
+                map.insert(key, tri!(to_value(value)));
                 Ok(())
             }
             #[cfg(feature = "arbitrary_precision")]
@@ -432,6 +447,10 @@ struct MapKeySerializer;
 
 fn key_must_be_a_string() -> Error {
     Error::syntax(ErrorCode::KeyMustBeAString, 0, 0)
+}
+
+fn float_key_must_be_finite() -> Error {
+    Error::syntax(ErrorCode::FloatKeyMustBeFinite, 0, 0)
 }
 
 impl serde::Serializer for MapKeySerializer {
@@ -500,12 +519,20 @@ impl serde::Serializer for MapKeySerializer {
         Ok(value.to_string())
     }
 
-    fn serialize_f32(self, _value: f32) -> Result<String> {
-        Err(key_must_be_a_string())
+    fn serialize_f32(self, value: f32) -> Result<String> {
+        if value.is_finite() {
+            Ok(ryu::Buffer::new().format_finite(value).to_owned())
+        } else {
+            Err(float_key_must_be_finite())
+        }
     }
 
-    fn serialize_f64(self, _value: f64) -> Result<String> {
-        Err(key_must_be_a_string())
+    fn serialize_f64(self, value: f64) -> Result<String> {
+        if value.is_finite() {
+            Ok(ryu::Buffer::new().format_finite(value).to_owned())
+        } else {
+            Err(float_key_must_be_finite())
+        }
     }
 
     #[inline]
@@ -602,9 +629,9 @@ impl serde::Serializer for MapKeySerializer {
         Err(key_must_be_a_string())
     }
 
-    fn collect_str<T: ?Sized>(self, value: &T) -> Result<String>
+    fn collect_str<T>(self, value: &T) -> Result<String>
     where
-        T: Display,
+        T: ?Sized + Display,
     {
         Ok(value.to_string())
     }
@@ -618,21 +645,21 @@ impl serde::ser::SerializeStruct for SerializeMap {
     where
         T: ?Sized + Serialize,
     {
-        match *self {
+        match self {
             SerializeMap::Map { .. } => serde::ser::SerializeMap::serialize_entry(self, key, value),
             #[cfg(feature = "arbitrary_precision")]
-            SerializeMap::Number { ref mut out_value } => {
+            SerializeMap::Number { out_value } => {
                 if key == crate::number::TOKEN {
-                    *out_value = Some(value.serialize(NumberValueEmitter)?);
+                    *out_value = Some(tri!(value.serialize(NumberValueEmitter)));
                     Ok(())
                 } else {
                     Err(invalid_number())
                 }
             }
             #[cfg(feature = "raw_value")]
-            SerializeMap::RawValue { ref mut out_value } => {
+            SerializeMap::RawValue { out_value } => {
                 if key == crate::raw::TOKEN {
-                    *out_value = Some(value.serialize(RawValueEmitter)?);
+                    *out_value = Some(tri!(value.serialize(RawValueEmitter)));
                     Ok(())
                 } else {
                     Err(invalid_raw_value())
@@ -664,7 +691,7 @@ impl serde::ser::SerializeStructVariant for SerializeStructVariant {
     where
         T: ?Sized + Serialize,
     {
-        self.map.insert(String::from(key), tri!(to_value(&value)));
+        self.map.insert(String::from(key), tri!(to_value(value)));
         Ok(())
     }
 
@@ -1015,5 +1042,12 @@ impl serde::ser::Serializer for RawValueEmitter {
         _len: usize,
     ) -> Result<Self::SerializeStructVariant> {
         Err(invalid_raw_value())
+    }
+
+    fn collect_str<T>(self, value: &T) -> Result<Self::Ok>
+    where
+        T: ?Sized + Display,
+    {
+        self.serialize_str(&value.to_string())
     }
 }

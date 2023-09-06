@@ -13,7 +13,6 @@ cargo_crate("lib") {
   crate_type = "rlib"
   crate_root = "crate/src/lib.rs"
   sources = [
-    "//third_party/rust/quote/v1/crate/build.rs",
     "//third_party/rust/quote/v1/crate/src/ext.rs",
     "//third_party/rust/quote/v1/crate/src/format.rs",
     "//third_party/rust/quote/v1/crate/src/ident_fragment.rs",
@@ -36,7 +35,7 @@ cargo_crate("lib") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.27"
+  cargo_pkg_version = "1.0.33"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "quote"
   cargo_pkg_description = "Quasi-quoting macro quote!(...)"
@@ -46,6 +45,4 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/proc_macro2/v1:lib" ]
   features = [ "proc-macro" ]
-  build_root = "crate/build.rs"
-  build_sources = [ "crate/build.rs" ]
 }

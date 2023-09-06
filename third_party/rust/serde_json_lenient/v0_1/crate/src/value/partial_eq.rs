@@ -1,5 +1,5 @@
 use super::Value;
-use crate::lib::*;
+use alloc::string::String;
 
 fn eq_i64(value: &Value, other: i64) -> bool {
     value.as_i64().map_or(false, |i| i == other)
@@ -7,6 +7,13 @@ fn eq_i64(value: &Value, other: i64) -> bool {
 
 fn eq_u64(value: &Value, other: u64) -> bool {
     value.as_u64().map_or(false, |i| i == other)
+}
+
+fn eq_f32(value: &Value, other: f32) -> bool {
+    match value {
+        Value::Number(n) => n.as_f32().map_or(false, |i| i == other),
+        _ => false,
+    }
 }
 
 fn eq_f64(value: &Value, other: f64) -> bool {
@@ -90,6 +97,7 @@ macro_rules! partialeq_numeric {
 partialeq_numeric! {
     eq_i64[i8 i16 i32 i64 isize]
     eq_u64[u8 u16 u32 u64 usize]
-    eq_f64[f32 f64]
+    eq_f32[f32]
+    eq_f64[f64]
     eq_bool[bool]
 }

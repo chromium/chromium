@@ -113,7 +113,7 @@
 //! a JSON string to a Rust string with [`as_str()`] or avoiding the use of
 //! `Value` as described in the following section.
 //!
-//! [`as_str()`]: https://docs.serde.rs/serde_json_lenient/enum.Value.html#method.as_str
+//! [`as_str()`]: crate::Value::as_str
 //!
 //! The `Value` representation is sufficient for very basic tasks but can be
 //! tedious to work with for anything more significant. Error handling is
@@ -236,10 +236,10 @@
 //! });
 //! ```
 //!
-//! This is amazingly convenient but we have the problem we had before with
-//! `Value` which is that the IDE and Rust compiler cannot help us if we get it
-//! wrong. Serde jsonrc provides a better way of serializing strongly-typed data
-//! structures into JSON text.
+//! This is amazingly convenient, but we have the problem we had before with
+//! `Value`: the IDE and Rust compiler cannot help us if we get it wrong. Serde
+//! JSON provides a better way of serializing strongly-typed data structures
+//! into JSON text.
 //!
 //! # Creating JSON by serializing data structures
 //!
@@ -288,8 +288,8 @@
 //! # No-std support
 //!
 //! As long as there is a memory allocator, it is possible to use serde_json
-//! without the rest of the Rust standard library. This is supported on Rust
-//! 1.36+. Disable the default "std" feature and enable the "alloc" feature:
+//! without the rest of the Rust standard library. Disable the default "std"
+//! feature and enable the "alloc" feature:
 //!
 //! ```toml
 //! [dependencies]
@@ -299,32 +299,34 @@
 //! For JSON support in Serde without a memory allocator, please see the
 //! [`serde-json-core`] crate.
 //!
-//! [value]: https://docs.serde.rs/serde_json_lenient/value/enum.Value.html
-//! [from_str]: https://docs.serde.rs/serde_json_lenient/de/fn.from_str.html
-//! [from_slice]: https://docs.serde.rs/serde_json_lenient/de/fn.from_slice.html
-//! [from_reader]: https://docs.serde.rs/serde_json_lenient/de/fn.from_reader.html
-//! [to_string]: https://docs.serde.rs/serde_json_lenient/ser/fn.to_string.html
-//! [to_vec]: https://docs.serde.rs/serde_json_lenient/ser/fn.to_vec.html
-//! [to_writer]: https://docs.serde.rs/serde_json_lenient/ser/fn.to_writer.html
-//! [macro]: https://docs.serde.rs/serde_json_lenient/macro.json.html
+//! [value]: crate::value::Value
+//! [from_str]: crate::de::from_str
+//! [from_slice]: crate::de::from_slice
+//! [from_reader]: crate::de::from_reader
+//! [to_string]: crate::ser::to_string
+//! [to_vec]: crate::ser::to_vec
+//! [to_writer]: crate::ser::to_writer
+//! [macro]: crate::json
 //! [`serde-json-core`]: https://github.com/rust-embedded-community/serde-json-core
 
-#![doc(html_root_url = "https://docs.rs/serde_json_lenient/0.1.4")]
+#![doc(html_root_url = "https://docs.rs/serde_json_lenient/0.1.7")]
 // Ignored clippy lints
 #![allow(
+    clippy::collapsible_else_if,
     clippy::comparison_chain,
     clippy::deprecated_cfg_attr,
     clippy::doc_markdown,
     clippy::excessive_precision,
+    clippy::explicit_auto_deref,
     clippy::float_cmp,
     clippy::manual_range_contains,
     clippy::match_like_matches_macro,
     clippy::match_single_binding,
     clippy::needless_doctest_main,
+    clippy::needless_late_init,
+    clippy::return_self_not_must_use,
     clippy::transmute_ptr_to_ptr,
-    clippy::unnecessary_wraps,
-    // clippy bug: https://github.com/rust-lang/rust-clippy/issues/5704
-    clippy::unnested_or_patterns,
+    clippy::unnecessary_wraps
 )]
 // Ignored clippy_pedantic lints
 #![allow(
@@ -339,6 +341,7 @@
     clippy::enum_glob_use,
     clippy::if_not_else,
     clippy::integer_division,
+    clippy::let_underscore_untyped,
     clippy::map_err_ignore,
     clippy::match_same_arms,
     clippy::similar_names,
@@ -362,69 +365,14 @@
     clippy::missing_errors_doc,
     clippy::must_use_candidate,
 )]
+// Restrictions
+#![deny(clippy::question_mark_used)]
 #![allow(non_upper_case_globals)]
 #![deny(missing_docs)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-////////////////////////////////////////////////////////////////////////////////
-
-#[cfg(not(feature = "std"))]
 extern crate alloc;
-
-/// A facade around all the types we need from the `std`, `core`, and `alloc`
-/// crates. This avoids elaborate import wrangling having to happen in every
-/// module.
-mod lib {
-    mod core {
-        #[cfg(not(feature = "std"))]
-        pub use core::*;
-        #[cfg(feature = "std")]
-        pub use std::*;
-    }
-
-    pub use self::core::cell::{Cell, RefCell};
-    pub use self::core::clone::{self, Clone};
-    pub use self::core::convert::{self, From, Into};
-    pub use self::core::default::{self, Default};
-    pub use self::core::fmt::{self, Debug, Display};
-    pub use self::core::hash::{self, Hash, Hasher};
-    pub use self::core::iter::FusedIterator;
-    pub use self::core::marker::{self, PhantomData};
-    pub use self::core::ops::{Bound, RangeBounds};
-    pub use self::core::result::{self, Result};
-    pub use self::core::{borrow, char, cmp, iter, mem, num, ops, slice, str};
-
-    #[cfg(not(feature = "std"))]
-    pub use alloc::borrow::{Cow, ToOwned};
-    #[cfg(feature = "std")]
-    pub use std::borrow::{Cow, ToOwned};
-
-    #[cfg(not(feature = "std"))]
-    pub use alloc::string::{String, ToString};
-    #[cfg(feature = "std")]
-    pub use std::string::{String, ToString};
-
-    #[cfg(not(feature = "std"))]
-    pub use alloc::vec::{self, Vec};
-    #[cfg(feature = "std")]
-    pub use std::vec::{self, Vec};
-
-    #[cfg(not(feature = "std"))]
-    pub use alloc::boxed::Box;
-    #[cfg(feature = "std")]
-    pub use std::boxed::Box;
-
-    #[cfg(not(feature = "std"))]
-    pub use alloc::collections::{btree_map, BTreeMap};
-    #[cfg(feature = "std")]
-    pub use std::collections::{btree_map, BTreeMap};
-
-    #[cfg(feature = "std")]
-    pub use std::error;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(feature = "std")]
 #[doc(inline)]
@@ -444,14 +392,11 @@ pub use crate::value::{from_value, to_value, Map, Number, Value};
 // We only use our own error type; no need for From conversions provided by the
 // standard library's try! macro. This reduces lines of LLVM IR by 4%.
 macro_rules! tri {
-    ($e:expr) => {
+    ($e:expr $(,)?) => {
         match $e {
-            crate::lib::Result::Ok(val) => val,
-            crate::lib::Result::Err(err) => return crate::lib::Result::Err(err),
+            core::result::Result::Ok(val) => val,
+            core::result::Result::Err(err) => return core::result::Result::Err(err),
         }
-    };
-    ($e:expr,) => {
-        tri!($e)
     };
 }
 

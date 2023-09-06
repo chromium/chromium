@@ -1,10 +1,8 @@
 //! A Serde ast, parsed from the Syn ast and ready to generate Rust code.
 
-use internals::attr;
-use internals::check;
-use internals::{Ctxt, Derive};
-use syn;
+use crate::internals::{attr, check, Ctxt, Derive};
 use syn::punctuated::Punctuated;
+use syn::Token;
 
 /// A source data structure annotated with `#[derive(Serialize)]` and/or `#[derive(Deserialize)]`,
 /// parsed into an internal representation.
@@ -88,9 +86,12 @@ impl<'a> Container<'a> {
                         if field.attrs.flatten() {
                             has_flatten = true;
                         }
-                        field
-                            .attrs
-                            .rename_by_rules(variant.attrs.rename_all_rules());
+                        field.attrs.rename_by_rules(
+                            variant
+                                .attrs
+                                .rename_all_rules()
+                                .or(attrs.rename_all_fields_rules()),
+                        );
                     }
                 }
             }
@@ -121,7 +122,7 @@ impl<'a> Container<'a> {
 }
 
 impl<'a> Data<'a> {
-    pub fn all_fields(&'a self) -> Box<Iterator<Item = &'a Field<'a>> + 'a> {
+    pub fn all_fields(&'a self) -> Box<dyn Iterator<Item = &'a Field<'a>> + 'a> {
         match self {
             Data::Enum(variants) => {
                 Box::new(variants.iter().flat_map(|variant| variant.fields.iter()))
@@ -140,7 +141,7 @@ fn enum_from_ast<'a>(
     variants: &'a Punctuated<syn::Variant, Token![,]>,
     container_default: &attr::Default,
 ) -> Vec<Variant<'a>> {
-    variants
+    let variants: Vec<Variant> = variants
         .iter()
         .map(|variant| {
             let attrs = attr::Variant::from_ast(cx, variant);
@@ -154,7 +155,20 @@ fn enum_from_ast<'a>(
                 original: variant,
             }
         })
-        .collect()
+        .collect();
+
+    let index_of_last_tagged_variant = variants
+        .iter()
+        .rposition(|variant| !variant.attrs.untagged());
+    if let Some(index_of_last_tagged_variant) = index_of_last_tagged_variant {
+        for variant in &variants[..index_of_last_tagged_variant] {
+            if variant.attrs.untagged() {
+                cx.error_spanned_by(&variant.ident, "all variants with the #[serde(untagged)] attribute must be placed at the end of the enum");
+            }
+        }
+    }
+
+    variants
 }
 
 fn struct_from_ast<'a>(

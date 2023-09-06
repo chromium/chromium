@@ -6,12 +6,19 @@
 //! [`BTreeMap`]: https://doc.rust-lang.org/std/collections/struct.BTreeMap.html
 //! [`IndexMap`]: https://docs.rs/indexmap/*/indexmap/map/struct.IndexMap.html
 
-use crate::lib::borrow::Borrow;
-use crate::lib::iter::FromIterator;
-use crate::lib::*;
 use crate::value::Value;
+use alloc::string::String;
+use core::borrow::Borrow;
+use core::fmt::{self, Debug};
+use core::hash::Hash;
+use core::iter::FusedIterator;
+#[cfg(feature = "preserve_order")]
+use core::mem;
+use core::ops;
 use serde::de;
 
+#[cfg(not(feature = "preserve_order"))]
+use alloc::collections::{btree_map, BTreeMap};
 #[cfg(feature = "preserve_order")]
 use indexmap::{self, IndexMap};
 
@@ -94,6 +101,20 @@ impl Map<String, Value> {
         self.map.get_mut(key)
     }
 
+    /// Returns the key-value pair matching the given key.
+    ///
+    /// The key may be any borrowed form of the map's key type, but the ordering
+    /// on the borrowed form *must* match the ordering on the key type.
+    #[inline]
+    #[cfg(any(feature = "preserve_order", not(no_btreemap_get_key_value)))]
+    pub fn get_key_value<Q>(&self, key: &Q) -> Option<(&String, &Value)>
+    where
+        String: Borrow<Q>,
+        Q: ?Sized + Ord + Eq + Hash,
+    {
+        self.map.get_key_value(key)
+    }
+
     /// Inserts a key-value pair into the map.
     ///
     /// If the map did not have this key present, `None` is returned.
@@ -151,6 +172,8 @@ impl Map<String, Value> {
             no_btreemap_get_key_value,
         ))]
         {
+            use core::ops::{Bound, RangeBounds};
+
             struct Key<'a, Q: ?Sized>(&'a Q);
 
             impl<'a, Q: ?Sized> RangeBounds<Q> for Key<'a, Q> {
@@ -170,13 +193,12 @@ impl Map<String, Value> {
         }
     }
 
-    /// Moves all elements from other into Self, leaving other empty.
+    /// Moves all elements from other into self, leaving other empty.
     #[inline]
     pub fn append(&mut self, other: &mut Self) {
         #[cfg(feature = "preserve_order")]
-        for (k, v) in mem::replace(&mut other.map, MapImpl::default()) {
-            self.map.insert(k, v);
-        }
+        self.map
+            .extend(mem::replace(&mut other.map, MapImpl::default()));
         #[cfg(not(feature = "preserve_order"))]
         self.map.append(&mut other.map);
     }
@@ -188,7 +210,7 @@ impl Map<String, Value> {
         S: Into<String>,
     {
         #[cfg(not(feature = "preserve_order"))]
-        use crate::lib::btree_map::Entry as EntryImpl;
+        use alloc::collections::btree_map::Entry as EntryImpl;
         #[cfg(feature = "preserve_order")]
         use indexmap::map::Entry as EntryImpl;
 
@@ -249,6 +271,19 @@ impl Map<String, Value> {
             iter: self.map.values_mut(),
         }
     }
+
+    /// Retains only the elements specified by the predicate.
+    ///
+    /// In other words, remove all pairs `(k, v)` such that `f(&k, &mut v)`
+    /// returns `false`.
+    #[cfg(not(no_btreemap_retain))]
+    #[inline]
+    pub fn retain<F>(&mut self, f: F)
+    where
+        F: FnMut(&String, &mut Value) -> bool,
+    {
+        self.map.retain(f);
+    }
 }
 
 #[allow(clippy::derivable_impls)] // clippy bug: https://github.com/rust-lang/rust-clippy/issues/7655
@@ -267,6 +302,11 @@ impl Clone for Map<String, Value> {
         Map {
             map: self.map.clone(),
         }
+    }
+
+    #[inline]
+    fn clone_from(&mut self, source: &Self) {
+        self.map.clone_from(&source.map);
     }
 }
 
@@ -287,10 +327,10 @@ impl Eq for Map<String, Value> {}
 /// #
 /// # let val = &Value::String("".to_owned());
 /// # let _ =
-/// match *val {
-///     Value::String(ref s) => Some(s.as_str()),
-///     Value::Array(ref arr) => arr[0].as_str(),
-///     Value::Object(ref map) => map["type"].as_str(),
+/// match val {
+///     Value::String(s) => Some(s.as_str()),
+///     Value::Array(arr) => arr[0].as_str(),
+///     Value::Object(map) => map["type"].as_str(),
 ///     _ => None,
 /// }
 /// # ;
@@ -494,9 +534,9 @@ impl<'a> Entry<'a> {
     /// assert_eq!(map.entry("serde").key(), &"serde");
     /// ```
     pub fn key(&self) -> &String {
-        match *self {
-            Entry::Vacant(ref e) => e.key(),
-            Entry::Occupied(ref e) => e.key(),
+        match self {
+            Entry::Vacant(e) => e.key(),
+            Entry::Occupied(e) => e.key(),
         }
     }
 

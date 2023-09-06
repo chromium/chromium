@@ -1,7 +1,7 @@
 //! This crate provides Serde's two derive macros.
 //!
-//! ```edition2018
-//! # use serde_derive::{Serialize, Deserialize};
+//! ```edition2021
+//! # use serde_derive::{Deserialize, Serialize};
 //! #
 //! #[derive(Serialize, Deserialize)]
 //! # struct S;
@@ -13,8 +13,7 @@
 //!
 //! [https://serde.rs/derive.html]: https://serde.rs/derive.html
 
-#![doc(html_root_url = "https://docs.rs/serde_derive/1.0.147")]
-#![allow(unknown_lints, bare_trait_objects)]
+#![doc(html_root_url = "https://docs.rs/serde_derive/1.0.188")]
 // Ignored clippy lints
 #![allow(
     // clippy false positive: https://github.com/rust-lang/rust-clippy/issues/7054
@@ -43,7 +42,7 @@
     clippy::enum_glob_use,
     clippy::indexing_slicing,
     clippy::items_after_statements,
-    clippy::let_underscore_drop,
+    clippy::let_underscore_untyped,
     clippy::manual_assert,
     clippy::map_err_ignore,
     clippy::match_same_arms,
@@ -63,17 +62,16 @@
 )]
 #![cfg_attr(all(test, exhaustive), feature(non_exhaustive_omitted_patterns_lint))]
 
-#[macro_use]
+extern crate proc_macro2;
 extern crate quote;
-#[macro_use]
 extern crate syn;
 
 extern crate proc_macro;
-extern crate proc_macro2;
 
 mod internals;
 
 use proc_macro::TokenStream;
+use syn::parse_macro_input;
 use syn::DeriveInput;
 
 #[macro_use]
@@ -85,13 +83,13 @@ mod de;
 mod dummy;
 mod pretend;
 mod ser;
-mod try;
+mod this;
 
 #[proc_macro_derive(Serialize, attributes(serde))]
 pub fn derive_serialize(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
     ser::expand_derive_serialize(&mut input)
-        .unwrap_or_else(to_compile_errors)
+        .unwrap_or_else(syn::Error::into_compile_error)
         .into()
 }
 
@@ -99,11 +97,6 @@ pub fn derive_serialize(input: TokenStream) -> TokenStream {
 pub fn derive_deserialize(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
     de::expand_derive_deserialize(&mut input)
-        .unwrap_or_else(to_compile_errors)
+        .unwrap_or_else(syn::Error::into_compile_error)
         .into()
-}
-
-fn to_compile_errors(errors: Vec<syn::Error>) -> proc_macro2::TokenStream {
-    let compile_errors = errors.iter().map(syn::Error::to_compile_error);
-    quote!(#(#compile_errors)*)
 }

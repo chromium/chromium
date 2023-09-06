@@ -120,10 +120,6 @@ package = "hex-literal"
 path = "hex/v0_4/crate"
 package = "hex"
 
-[patch.crates-io.itoa_v0_4]
-path = "itoa/v0_4/crate"
-package = "itoa"
-
 [patch.crates-io.itoa_v1]
 path = "itoa/v1/crate"
 package = "itoa"
@@ -270,6 +266,10 @@ package = "strsim"
 
 [patch.crates-io.syn_v1]
 path = "syn/v1/crate"
+package = "syn"
+
+[patch.crates-io.syn_v2]
+path = "syn/v2/crate"
 package = "syn"
 
 [patch.crates-io.termcolor_v1]

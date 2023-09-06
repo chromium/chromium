@@ -37,23 +37,18 @@ jobs:
         if: matrix.rust == 'nightly'
       - run: cargo test
       - run: cargo run --manifest-path benches/Cargo.toml
-      - run: cargo update -Z minimal-versions
-        if: matrix.rust == 'nightly'
-      - run: cargo build
-        if: matrix.rust == 'nightly'
 
-  msrv:
-    name: Rust 1.31.0
+  minimal:
+    name: Minimal versions
     needs: pre_ci
     if: needs.pre_ci.outputs.continue
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@1.31.0
-        with:
-          components: rust-src
-      - run: cargo check
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo generate-lockfile -Z minimal-versions
+      - run: cargo check --locked
 
   clippy:
     name: Clippy
@@ -76,6 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@miri
+      - run: cargo miri setup
       - run: cargo miri test
         env:
           MIRIFLAGS: -Zmiri-strict-provenance

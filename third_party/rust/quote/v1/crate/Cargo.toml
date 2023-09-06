@@ -11,9 +11,9 @@
 
 [package]
 edition = "2018"
-rust-version = "1.31"
+rust-version = "1.56"
 name = "quote"
-version = "1.0.27"
+version = "1.0.33"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 autobenches = false
 description = "Quasi-quoting macro quote!(...)"
@@ -28,13 +28,14 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/quote"
 
 [package.metadata.docs.rs]
+rustdoc-args = ["--generate-link-to-definition"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
 doc-scrape-examples = false
 
 [dependencies.proc-macro2]
-version = "1.0.52"
+version = "1.0.66"
 default-features = false
 
 [dev-dependencies.rustversion]

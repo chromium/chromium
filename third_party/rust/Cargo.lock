@@ -61,7 +61,7 @@ dependencies = [
  "skrifa",
  "small_ctor",
  "static_assertions",
- "syn",
+ "syn 1.0.99",
  "unicode-linebreak",
  "wycheproof",
 ]
@@ -106,7 +106,7 @@ dependencies = [
  "codespan-reporting",
  "proc-macro2",
  "quote",
- "syn",
+ "syn 1.0.99",
 ]
 
 [[package]]
@@ -115,7 +115,7 @@ version = "1.0.82"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn",
+ "syn 1.0.99",
 ]
 
 [[package]]
@@ -138,10 +138,6 @@ version = "0.4.3"
 [[package]]
 name = "hex-literal"
 version = "0.4.1"
-
-[[package]]
-name = "itoa"
-version = "0.4.8"
 
 [[package]]
 name = "itoa"
@@ -198,7 +194,7 @@ version = "2.0.0"
 
 [[package]]
 name = "quote"
-version = "1.0.27"
+version = "1.0.33"
 dependencies = [
  "proc-macro2",
 ]
@@ -270,7 +266,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "rustc_version",
- "syn",
+ "syn 1.0.99",
  "unicode-ident",
 ]
 
@@ -281,7 +277,7 @@ dependencies = [
  "quote",
  "rand",
  "rustc_version",
- "syn",
+ "syn 1.0.99",
 ]
 
 [[package]]
@@ -316,34 +312,34 @@ version = "1.0.4"
 
 [[package]]
 name = "serde"
-version = "1.0.147"
+version = "1.0.188"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.147"
+version = "1.0.188"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn",
+ "syn 2.0.29",
 ]
 
 [[package]]
 name = "serde_json"
 version = "1.0.78"
 dependencies = [
- "itoa 1.0.1",
+ "itoa",
  "ryu",
  "serde",
 ]
 
 [[package]]
 name = "serde_json_lenient"
-version = "0.1.4"
+version = "0.1.7"
 dependencies = [
- "itoa 0.4.8",
+ "itoa",
  "ryu",
  "serde",
 ]
@@ -370,6 +366,15 @@ version = "0.10.0"
 [[package]]
 name = "syn"
 version = "1.0.99"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "unicode-ident",
+]
+
+[[package]]
+name = "syn"
+version = "2.0.29"
 dependencies = [
  "proc-macro2",
  "quote",

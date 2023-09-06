@@ -1,13 +1,15 @@
 //! Reimplements core logic and types from `std::io` in an `alloc`-friendly
 //! fashion.
 
-use crate::lib::*;
+use alloc::vec::Vec;
+use core::fmt::{self, Display};
+use core::result;
 
 pub enum ErrorKind {
     Other,
 }
 
-// IO errors can never occur in no-std mode. All our no-std IO implementations
+// I/O errors can never occur in no-std mode. All our no-std I/O implementations
 // are infallible.
 pub struct Error;
 

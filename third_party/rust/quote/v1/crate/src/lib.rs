@@ -92,7 +92,7 @@
 //! [prettyplease]: https://github.com/dtolnay/prettyplease
 
 // Quote types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/quote/1.0.27")]
+#![doc(html_root_url = "https://docs.rs/quote/1.0.33")]
 #![allow(
     clippy::doc_markdown,
     clippy::missing_errors_doc,
@@ -102,10 +102,9 @@
     clippy::wrong_self_convention,
 )]
 
-#[cfg(all(
-    not(all(target_arch = "wasm32", target_os = "unknown")),
-    feature = "proc-macro"
-))]
+extern crate alloc;
+
+#[cfg(feature = "proc-macro")]
 extern crate proc_macro;
 
 mod ext;

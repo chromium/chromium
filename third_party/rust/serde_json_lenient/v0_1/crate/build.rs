@@ -3,6 +3,8 @@ use std::process::Command;
 use std::str::{self, FromStr};
 
 fn main() {
+    println!("cargo:rerun-if-changed=build.rs");
+
     // Decide ideal limb width for arithmetic in the float parser. Refer to
     // src/lexical/math.rs for where this has an effect.
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
@@ -30,6 +32,12 @@ fn main() {
     // https://blog.rust-lang.org/2020/07/16/Rust-1.45.0.html#library-changes
     if minor < 45 {
         println!("cargo:rustc-cfg=no_btreemap_remove_entry");
+    }
+
+    // BTreeMap::retain
+    // https://blog.rust-lang.org/2021/06/17/Rust-1.53.0.html#stabilized-apis
+    if minor < 53 {
+        println!("cargo:rustc-cfg=no_btreemap_retain");
     }
 }
 
