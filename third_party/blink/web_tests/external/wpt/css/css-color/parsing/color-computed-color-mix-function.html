@@ -16,17 +16,6 @@
 <body>
 <div id="target"></div>
 <script>
-    function canonicalize(value)
-    {
-        const property = 'color';
-        var div = document.createElement("div");
-        document.body.appendChild(div);
-        div.style.setProperty(property, value);
-        var computedValue = getComputedStyle(div).getPropertyValue(property);
-        document.body.removeChild(div);
-        return computedValue;
-    }
-
     // hsl()
     fuzzy_test_computed_color(`color-mix(in hsl, hsl(120deg 10% 20%), hsl(30deg 30% 40%))`, `color(srgb 0.33 0.36 0.24)`);
     fuzzy_test_computed_color(`color-mix(in hsl, hsl(120deg 10% 20%) 25%, hsl(30deg 30% 40%))`, `color(srgb 0.4375 0.415625 0.2625)`);
@@ -191,10 +180,10 @@
     fuzzy_test_computed_color(`color-mix(in lch, lch(10 20 30deg / .4) 12.5%, lch(50 60 70deg / .8) 37.5%)`, `lch(44.285713 54.285717 60 / 0.35)`); // Scale up < 100% sum, causes alpha multiplication.
     fuzzy_test_computed_color(`color-mix(in lch, lch(10 20 30deg / .4) 0%, lch(50 60 70deg / .8))`, `lch(50 60 70 / 0.8)`);
 
-    fuzzy_test_computed_color(`color-mix(in lch, transparent, lch(0.3 0.4 30deg))`, canonicalize(`lch(0.3 0.4 30deg / 0.5)`));
-    fuzzy_test_computed_color(`color-mix(in lch, transparent 10%, lch(0.3 0.4 30deg))`, canonicalize(`lch(0.3 0.4 30deg / 0.9)`));
-    fuzzy_test_computed_color(`color-mix(in lch, lch(0.1 0.2 120deg / 0), lch(0.3 0.4 30deg))`, canonicalize(`lch(0.3 0.4 75deg / 0.5)`));
-    fuzzy_test_computed_color(`color-mix(in lch, lch(0.1 0.2 120deg / 0) 10%, lch(0.3 0.4 30deg))`, canonicalize(`lch(0.3 0.4 39deg / 0.9)`));
+    fuzzy_test_computed_color(`color-mix(in lch, transparent, lch(0.3 0.4 30deg))`, `lch(0.3 0.4 30 / 0.5)`);
+    fuzzy_test_computed_color(`color-mix(in lch, transparent 10%, lch(0.3 0.4 30deg))`, `lch(0.3 0.4 30 / 0.9)`);
+    fuzzy_test_computed_color(`color-mix(in lch, lch(0.1 0.2 120deg / 0), lch(0.3 0.4 30deg))`, `lch(0.3 0.4 75 / 0.5)`);
+    fuzzy_test_computed_color(`color-mix(in lch, lch(0.1 0.2 120deg / 0) 10%, lch(0.3 0.4 30deg))`, `lch(0.3 0.4 39 / 0.9)`);
 
     fuzzy_test_computed_color(`color-mix(in lch, lch(100 0 40deg), lch(100 0 60deg))`, `lch(100 0 50)`);
     fuzzy_test_computed_color(`color-mix(in lch, lch(100 0 60deg), lch(100 0 40deg))`, `lch(100 0 50)`);
@@ -262,10 +251,10 @@
     fuzzy_test_computed_color(`color-mix(in oklch, oklch(0.1 0.2 30deg / .4) 12.5%, oklch(0.5 0.6 70deg / .8) 37.5%)`, `oklch(0.44285713 0.54285717 60 / 0.35)`); // Scale up < 100% sum, causes alpha multiplication.
     fuzzy_test_computed_color(`color-mix(in oklch, oklch(0.1 0.2 30deg / .4) 0%, oklch(0.5 0.6 70deg / .8))`, `oklch(0.5 0.6 70 / 0.8)`);
 
-    fuzzy_test_computed_color(`color-mix(in oklch, transparent, oklch(30 40 30deg))`, canonicalize(`oklch(30 40 30deg / 0.5)`));
-    fuzzy_test_computed_color(`color-mix(in oklch, transparent 10%, oklch(30 40 30deg))`, canonicalize(`oklch(30 40 30deg / 0.9)`));
-    fuzzy_test_computed_color(`color-mix(in oklch, oklch(10 20 120deg / 0), oklch(30 40 30deg))`, canonicalize(`oklch(30 40 75deg / 0.5)`));
-    fuzzy_test_computed_color(`color-mix(in oklch, oklch(10 20 120deg / 0) 10%, oklch(30 40 30deg))`, canonicalize(`oklch(30 40 39deg / 0.9)`));
+    fuzzy_test_computed_color(`color-mix(in oklch, transparent, oklch(0.3 40 30deg))`, `oklch(0.3 40 30 / 0.5)`);
+    fuzzy_test_computed_color(`color-mix(in oklch, transparent 10%, oklch(0.3 40 30deg))`, `oklch(0.3 40 30 / 0.9)`);
+    fuzzy_test_computed_color(`color-mix(in oklch, oklch(0.1 20 120deg / 0), oklch(0.3 40 30deg))`, `oklch(0.3 40 75 / 0.5)`);
+    fuzzy_test_computed_color(`color-mix(in oklch, oklch(0.1 20 120deg / 0) 10%, oklch(0.3 40 30deg))`, `oklch(0.3 40 39 / 0.9)`);
 
     fuzzy_test_computed_color(`color-mix(in oklch, oklch(1 0 40deg), oklch(1 0 60deg))`, `oklch(1 0 50)`);
     fuzzy_test_computed_color(`color-mix(in oklch, oklch(1 0 60deg), oklch(1 0 40deg))`, `oklch(1 0 50)`);
