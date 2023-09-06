@@ -432,6 +432,11 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     case SignedInUserStateWithForcedSigninInfoRequired:
       return nil;
   }
+  if (self.isForceSigninEnabled) {
+    // Snackbar should be skipped since force sign-in dialog will be shown right
+    // after.
+    return nil;
+  }
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   int message_id =
