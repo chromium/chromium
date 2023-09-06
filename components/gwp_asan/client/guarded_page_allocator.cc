@@ -23,7 +23,6 @@
 #include "components/gwp_asan/common/allocation_info.h"
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
-#include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 

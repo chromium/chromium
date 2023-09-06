@@ -4,6 +4,7 @@
 
 #include "components/gwp_asan/client/lightweight_detector.h"
 
+#include <algorithm>
 #include <random>
 
 #include "base/rand_util.h"
@@ -101,6 +102,12 @@ LightweightDetector::GetInternalMemoryRegions() {
       metadata_.get(),
       sizeof(LightweightDetectorState::SlotMetadata) * state_.num_metadata);
   return regions;
+}
+
+bool LightweightDetector::HasAllocationForTesting(uintptr_t address) {
+  return std::any_of(
+      metadata_.get(), metadata_.get() + state_.num_metadata,
+      [&](const auto& metadata) { return metadata.alloc_ptr == address; });
 }
 
 }  // namespace gwp_asan::internal

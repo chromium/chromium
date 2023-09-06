@@ -19,7 +19,6 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
-#include "components/gwp_asan/common/lightweight_detector_state.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <pthread.h>

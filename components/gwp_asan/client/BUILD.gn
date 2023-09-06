@@ -35,6 +35,8 @@ component("client") {
 
   if (use_partition_alloc) {
     sources += [
+      "lightweight_detector_shims.cc",
+      "lightweight_detector_shims.h",
       "sampling_partitionalloc_shims.cc",
       "sampling_partitionalloc_shims.h",
     ]
@@ -68,7 +70,10 @@ source_set("unit_tests") {
   }
 
   if (use_partition_alloc) {
-    sources += [ "sampling_partitionalloc_shims_unittest.cc" ]
+    sources += [
+      "lightweight_detector_shims_unittest.cc",
+      "sampling_partitionalloc_shims_unittest.cc",
+    ]
   }
 
   deps = [

@@ -31,6 +31,8 @@ class GWP_ASAN_EXPORT LightweightDetector {
   // on supported platforms.)
   std::vector<std::pair<void*, size_t>> GetInternalMemoryRegions();
 
+  bool HasAllocationForTesting(uintptr_t);
+
  private:
   // The state shared with with the crash analyzer.
   LightweightDetectorState state_;

@@ -215,6 +215,10 @@ void MemorySystem::Impl::InitializeGwpASan(
   gwp_asan::EnableForPartitionAlloc(gwp_asan_parameters.boost_sampling,
                                     gwp_asan_parameters.process_type.c_str());
 #endif
+
+  gwp_asan::MaybeEnableLightweightDetector(
+      gwp_asan_parameters.boost_sampling,
+      gwp_asan_parameters.process_type.c_str());
 #endif  // BUILDFLAG(ENABLE_GWP_ASAN)
 }
 
