@@ -211,6 +211,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
 
    private:
     struct DragState;
+    struct InitialState;
 
     friend void InputHandler::StartDragging(
         const DropData& drop_data,
@@ -261,8 +262,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
     InputHandler& handler_;
 
     // These get used for starting a drag.
-    std::unique_ptr<blink::WebMouseEvent> last_mouse_move_ = nullptr;
-    base::WeakPtr<RenderWidgetHostImpl> last_widget_host_ = nullptr;
+    std::unique_ptr<InitialState> initial_state_;
 
     std::unique_ptr<DragState> drag_state_;
 

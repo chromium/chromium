@@ -811,6 +811,11 @@ struct InputHandler::DragController::DragState {
   base::OnceClosure updated_callback;
 };
 
+struct InputHandler::DragController::InitialState {
+  std::unique_ptr<blink::WebMouseEvent> event;
+  base::WeakPtr<RenderWidgetHostImpl> host;
+};
+
 InputHandler::DragController::DragController(InputHandler& handler)
     : handler_(handler) {}
 
@@ -821,9 +826,27 @@ bool InputHandler::DragController::HandleMouseEvent(
     const blink::WebMouseEvent& event,
     std::unique_ptr<DispatchMouseEventCallback>& callback) {
   if (!drag_state_) {
-    if (event.GetType() == blink::mojom::EventType::kMouseMove) {
-      last_mouse_move_ = std::make_unique<blink::WebMouseEvent>(event);
-      last_widget_host_ = host.GetWeakPtr();
+    switch (event.GetType()) {
+      case blink::mojom::EventType::kMouseMove:
+        // Check if the user started a mouse down through CDP.
+        if (initial_state_) {
+          // Set the move event in case dragging starts from this event.
+          initial_state_->event = std::make_unique<blink::WebMouseEvent>(event);
+          initial_state_->host = host.GetWeakPtr();
+        }
+        break;
+      case blink::mojom::EventType::kMouseDown:
+        // If the user performs a mouse down using CDP, then set the initial
+        // state. OS dragging is not possible beyond this point.
+        initial_state_ = std::make_unique<InitialState>();
+        break;
+      case blink::mojom::EventType::kMouseUp:
+        // If the user performs a mouse up using CDP, then reset the initial
+        // state. OS dragging is possible beyond this point.
+        initial_state_ = nullptr;
+        break;
+      default:
+        break;
     }
     return false;
   }
@@ -846,9 +869,10 @@ bool InputHandler::DragController::HandleMouseEvent(
       //
       // Note that in general, the mouse movement will be acked before the
       // dragging starts, so this should happen rarely.
-      if (last_mouse_move_) {
-        auto timestamp = last_mouse_move_->TimeStamp();
-        last_mouse_move_ = nullptr;
+      if (initial_state_) {
+        CHECK(initial_state_->event);
+        auto timestamp = initial_state_->event->TimeStamp();
+        initial_state_ = nullptr;
         if (timestamp == event.TimeStamp()) {
           return false;
         }
@@ -889,17 +913,18 @@ void InputHandler::DragController::EnsureDraggingEntered(
 void InputHandler::DragController::StartDragging(
     const content::DropData& drop_data,
     blink::DragOperationsMask drag_operations_mask) {
-  if (!last_widget_host_ || !last_mouse_move_) {
+  if (!initial_state_->host || !initial_state_->event) {
     CancelDragging(base::DoNothing());
     return;
   }
 
-  drag_state_ =
-      std::make_unique<DragController::DragState>(DragController::DragState{
-          drop_data, drag_operations_mask, nullptr, gfx::PointF(),
-          ui::mojom::DragOperation::kNone, 0, base::DoNothing()});
-  UpdateDragging(*last_widget_host_,
-                 std::make_unique<blink::WebMouseEvent>(*last_mouse_move_),
+  drag_state_ = std::make_unique<DragState>(
+      DragState{drop_data, drag_operations_mask, nullptr, gfx::PointF(),
+                ui::mojom::DragOperation::kNone, 0, base::DoNothing()});
+  UpdateDragging(*initial_state_->host,
+                 // Note we don't move it here. See
+                 // InputHandler::DragController::HandleMouseEvent.
+                 std::make_unique<blink::WebMouseEvent>(*initial_state_->event),
                  nullptr);
 }
 
@@ -1453,7 +1478,7 @@ void InputHandler::StartDragging(const content::DropData& drop_data,
   if (!intercept_drags_) {
     // If `last_mouse_move_` exists, then CDP is the currently handling mouse
     // movement, so intercept dragging.
-    if (drag_controller_.last_mouse_move_) {
+    if (drag_controller_.initial_state_) {
       drag_controller_.StartDragging(drop_data, drag_operations_mask);
       *intercepted = true;
     }
@@ -1489,8 +1514,8 @@ void InputHandler::StartDragging(const content::DropData& drop_data,
 }
 
 void InputHandler::DragEnded() {
-  drag_controller_.drag_state_.reset();
-  drag_controller_.last_mouse_move_.reset();
+  drag_controller_.drag_state_ = nullptr;
+  drag_controller_.initial_state_ = nullptr;
 }
 
 Response InputHandler::SetInterceptDrags(bool enabled) {
