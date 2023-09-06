@@ -635,6 +635,15 @@ gfx::Image OmniboxResultView::GetIcon() const {
     vector_icon_color_id = GetMatchSelected() ? kColorOmniboxResultsIconSelected
                                               : kColorOmniboxResultsIcon;
   }
+
+  if (OmniboxFieldTrial::IsActionsUISimplificationEnabled() &&
+      match_.type != AutocompleteMatchType::STARTER_PACK) {
+    // When `kOmniboxActionsUISimplification` is enabled, (non-starter pack)
+    // vector icons will need a distinctive foreground color in order to stand
+    // out against the blue square background they are painted upon.
+    vector_icon_color_id = kColorOmniboxAnswerIconGM3Foreground;
+  }
+
   return popup_view_->GetMatchIcon(
       match_, GetColorProvider()->GetColor(vector_icon_color_id));
 }
