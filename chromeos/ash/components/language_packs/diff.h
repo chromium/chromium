@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/containers/span.h"
 
 namespace ash::language_packs {
 
@@ -24,10 +23,8 @@ struct StringsDiff {
 
 // Returns the set of strings that need to be added and removed from the set
 // `current` to obtain the set `target`.
-// `current` and `target` do not need to be all unique, and do not need to be
-// all sorted.
-StringsDiff ComputeStringsDiff(base::span<const std::string> current,
-                               base::span<const std::string> target);
+StringsDiff ComputeStringsDiff(base::flat_set<std::string> current,
+                               base::flat_set<std::string> target);
 
 }  // namespace ash::language_packs
 

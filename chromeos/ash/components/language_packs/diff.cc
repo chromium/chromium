@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/span.h"
 
 namespace ash::language_packs {
 
@@ -18,23 +18,21 @@ StringsDiff::StringsDiff(base::flat_set<std::string> remove,
 StringsDiff::StringsDiff(StringsDiff&&) = default;
 StringsDiff::~StringsDiff() = default;
 
-StringsDiff ComputeStringsDiff(base::span<const std::string> current,
-                               base::span<const std::string> target) {
+StringsDiff ComputeStringsDiff(base::flat_set<std::string> current,
+                               base::flat_set<std::string> target) {
   std::vector<std::string> remove;
   std::vector<std::string> add;
 
-  // Sort, unique and copy the input strings.
-  // These copied strings will be moved to `add` and `remove` as necessary.
-  //
-  // As we plan on `std::move`ing things out of this container, we cannot use
-  // a `base::flat_set` here as `std::move`ing the entries of the set will
-  // invalidate the sorted invariant of the set. However, we still use
-  // `base::flat_set` here as a clean way of sorting, uniquing and copying the
-  // input strings.
-  std::vector<std::string> current_set =
-      base::flat_set<std::string>(current.begin(), current.end()).extract();
-  std::vector<std::string> target_set =
-      base::flat_set<std::string>(target.begin(), target.end()).extract();
+  // As we plan on `std::move`ing things out of `current` and `target`, we
+  // cannot maintain the sorted invariant of the `flat_set`, as `std::move`
+  // mutates the moved value to be in an unspecified state.
+  // As we already have ownership over `current` and `target`, we can extract
+  // the underlying vector and mutate it as we wish.
+  // Doing so allows users of this function to pass in an already
+  // sorted-and-uniqued container without the overhead of doing another
+  // sort-and-unique pass if needed.
+  std::vector<std::string> current_set = std::move(current).extract();
+  std::vector<std::string> target_set = std::move(target).extract();
 
   auto current_it = current_set.begin();
   const auto current_end = current_set.end();
