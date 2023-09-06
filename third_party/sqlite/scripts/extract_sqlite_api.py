@@ -341,7 +341,8 @@ def ProcessSourceFile(api_export_macro, symbol_prefix, header_line,
     with open(output_file, 'w') as f:
         f.write('\n'.join(output_lines))
 
-header_line = '''// Copyright %s The Chromium Authors. All rights reserved.
+
+header_line = '''// Copyright %s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
