@@ -77,6 +77,8 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL);
   if (features::IsChromeRefresh2023()) {
     cookies_description_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+    cookies_description_label->SetDefaultEnabledColorId(
+        ui::kColorLabelForegroundSecondary);
   } else {
     cookies_description_label->SetDefaultTextStyle(
         views::style::STYLE_SECONDARY);
@@ -297,6 +299,8 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   if (features::IsChromeRefresh2023()) {
     third_party_cookies_toggle_subtitle_->SetTextStyle(
         views::style::STYLE_BODY_5);
+    third_party_cookies_toggle_subtitle_->SetEnabledColorId(
+        ui::kColorLabelForegroundSecondary);
   }
 
   const std::u16string toggle_a11y_name =
@@ -535,6 +539,8 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
   third_party_cookies_description_->SetTextContext(views::style::CONTEXT_LABEL);
   if (features::IsChromeRefresh2023()) {
     third_party_cookies_description_->SetTextStyle(views::style::STYLE_BODY_5);
+    third_party_cookies_description_->SetEnabledColorId(
+        ui::kColorLabelForegroundSecondary);
   } else {
     third_party_cookies_description_->SetTextStyle(
         views::style::STYLE_SECONDARY);

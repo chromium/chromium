@@ -116,6 +116,7 @@ RichHoverButton::RichHoverButton(
   if (features::IsChromeRefresh2023()) {
     title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
     secondary_label_->SetTextStyle(views::style::STYLE_BODY_5);
+    secondary_label_->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   }
 
   // State icon is optional and column is created only when it is set.
@@ -144,6 +145,7 @@ RichHoverButton::RichHoverButton(
         views::style::STYLE_SECONDARY));
     if (features::IsChromeRefresh2023()) {
       subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
+      subtitle_->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
     }
     subtitle_->SetMultiLine(true);
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);

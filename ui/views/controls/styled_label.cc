@@ -157,6 +157,20 @@ void StyledLabel::SetDefaultTextStyle(int text_style) {
   OnPropertyChanged(&default_text_style_, kPropertyEffectsPreferredSizeChanged);
 }
 
+absl::optional<ui::ColorId> StyledLabel::GetDefaultEnabledColorId() const {
+  return default_enabled_color_id_;
+}
+
+void StyledLabel::SetDefaultEnabledColorId(
+    absl::optional<ui::ColorId> enabled_color_id) {
+  if (default_enabled_color_id_ == enabled_color_id) {
+    return;
+  }
+
+  default_enabled_color_id_ = enabled_color_id;
+  OnPropertyChanged(&default_enabled_color_id_, kPropertyEffectsPaint);
+}
+
 int StyledLabel::GetLineHeight() const {
   return line_height_.value_or(
       style::GetLineHeight(text_context_, default_text_style_));
@@ -577,6 +591,8 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     result->SetEnabledColorId(style_info.override_color_id.value());
   } else if (style_info.override_color) {
     result->SetEnabledColor(style_info.override_color.value());
+  } else if (default_enabled_color_id_) {
+    result->SetEnabledColorId(default_enabled_color_id_);
   }
   if (!style_info.tooltip.empty())
     result->SetTooltipText(style_info.tooltip);
@@ -630,6 +646,7 @@ ADD_PROPERTY_METADATA(int, DefaultTextStyle)
 ADD_PROPERTY_METADATA(int, LineHeight)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
 ADD_PROPERTY_METADATA(StyledLabel::ColorVariant, DisplayedOnBackgroundColor)
+ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, DefaultEnabledColorId)
 END_METADATA
 
 }  // namespace views
