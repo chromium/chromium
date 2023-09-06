@@ -28,8 +28,7 @@ interface URLLoader {
   // description, to notify the service side.
   const uint32 kClientDisconnectReason = 1;
 
-  // If the associated request has |auto_follow_redirects| set to false, then
-  // upon receiving an URLResponse with a non-NULL |redirect_url| field,
+  // Upon receiving a redirect through |URLLoaderClient::OnReceiveRedirect|,
   // |FollowRedirect| may be called to load the URL indicated by the redirect.
   //
   // |removed_headers| can be used to remove existing headers for the redirect.
