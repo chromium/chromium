@@ -544,6 +544,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
     return scheme_variant_;
   }
 
+  void set_should_use_system_accent_color(bool should_use_system_accent_color) {
+    should_use_system_accent_color_ = should_use_system_accent_color;
+  }
+  bool should_use_system_accent_color() const {
+    return should_use_system_accent_color_;
+  }
+
   // Updates the state of dark mode, forced colors mode, and the map of system
   // colors. Returns true if NativeTheme was updated as a result, or false if
   // the state of NativeTheme was untouched.
@@ -634,6 +641,10 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // System color scheme variant. Used in `ColorProvider::Key` to specify the
   // transforms of `user_color_` which generate colors.
   absl::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant_;
+
+  // Determines whether generated colors should express the system's accent
+  // color if present.
+  bool should_use_system_accent_color_ = true;
 
   bool should_use_dark_colors_ = false;
   const ui::SystemTheme system_theme_;

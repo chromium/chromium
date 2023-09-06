@@ -787,10 +787,11 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTooltipBackground] = {cros_tokens::kCrosSysOnSurface};
   mixer[ui::kColorTooltipForeground] = {cros_tokens::kCrosSysInverseOnSurface};
 
-  if (is_jelly_enabled && !key.custom_theme && !key.is_grayscale) {
+  if (is_jelly_enabled && !key.custom_theme &&
+      key.user_color_source == ui::ColorProviderKey::UserColorSource::kAccent) {
     // Only override frame color if there's no custom theme or we'll override
     // the value from the theme. Fallback to the default ui/color definition for
-    // grayscale headers.
+    // baseline and grayscale headers.
     mixer[ui::kColorFrameActive] = {cros_tokens::kCrosSysHeader};
     mixer[ui::kColorFrameInactive] = {cros_tokens::kCrosSysHeaderUnfocused};
   }
