@@ -121,6 +121,19 @@ bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
   return show_save_prompt_.value_or(false);
 }
 
+bool CreditCardSaveManager::AttemptToOfferCvcLocalSave(
+    bool from_dynamic_change_form,
+    bool has_non_focusable_field,
+    const CreditCard& card) {
+  local_card_save_candidate_ = card;
+  has_non_focusable_field_ = has_non_focusable_field;
+  from_dynamic_change_form_ = from_dynamic_change_form;
+
+  // TODO(crbug.com/1450749): Query strike database.
+  OfferCvcLocalSave();
+  return true;
+}
+
 void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     const FormStructure& submitted_form,
     bool from_dynamic_change_form,
@@ -503,6 +516,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
         AutofillClient::SaveCreditCardOptions()
             .with_show_prompt(show_save_prompt_.value_or(true))
             .with_from_dynamic_change_form(from_dynamic_change_form_)
+            // TODO(crbug.com/1479239): Refactor SaveCreditCardOptions.
             .with_has_non_focusable_field(has_non_focusable_field_),
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnLocalSave,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -511,6 +525,22 @@ void CreditCardSaveManager::OfferCardLocalSave() {
     autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
         AutofillMetrics::SaveTypeMetric::LOCAL);
   }
+}
+
+void CreditCardSaveManager::OfferCvcLocalSave() {
+#if BUILDFLAG(IS_ANDROID)
+  NOTIMPLEMENTED();
+#else
+  client_->ConfirmSaveCreditCardLocally(
+      local_card_save_candidate_,
+      AutofillClient::SaveCreditCardOptions()
+          .with_show_prompt(true)
+          .with_from_dynamic_change_form(from_dynamic_change_form_)
+          .with_has_non_focusable_field(has_non_focusable_field_)
+          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
+      base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave,
+                     weak_ptr_factory_.GetWeakPtr()));
+#endif
 }
 
 void CreditCardSaveManager::OfferCardUploadSave() {
@@ -602,6 +632,12 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
       OnUserDidIgnoreOrDeclineSave(local_card_save_candidate_.LastFourDigits());
       break;
   }
+}
+
+void CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave(
+    AutofillClient::SaveCardOfferUserDecision user_decision) {
+  // TODO(crbug.com/1450749): Implement OnUserDidDecideOnCvcLocalSave
+  NOTIMPLEMENTED();
 }
 
 void CreditCardSaveManager::LogStrikesPresentWhenCardSaved(

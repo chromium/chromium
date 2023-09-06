@@ -115,6 +115,14 @@ class CreditCardSaveManager {
                                    bool has_non_focusable_field,
                                    const CreditCard& card);
 
+  // Begins the process to offer local CVC save to the user. If
+  // `has_non_focusable_field` was true, the save is triggered by a form that
+  // has non_focusable fields. If `from_dynamic_change_form` was true, the save
+  // is triggered by a dynamic change form. Returns true if the prompt is shown.
+  bool AttemptToOfferCvcLocalSave(bool from_dynamic_change_form,
+                                  bool has_non_focusable_field,
+                                  const CreditCard& card);
+
   // Begins the process to offer upload credit card save to the user if the
   // imported card passes all requirements and Google Payments approves.
   // If |has_non_focusable_field| is true, the save is triggered by a form that
@@ -217,6 +225,10 @@ class CreditCardSaveManager {
   // decision.
   void OfferCardLocalSave();
 
+  // Offers local CVC save once `AttemptToOfferCvcLocalSave()` decides it should
+  // be allowed.
+  void OfferCvcLocalSave();
+
   // Offers credit card upload if Payments has allowed offering to save and the
   // Autofill StrikeSystem has made its decision.
   void OfferCardUploadSave();
@@ -225,6 +237,11 @@ class CreditCardSaveManager {
   // offer-to-save prompt. If accepted, clears strikes for the to-be-saved card
   // and has |personal_data_manager_| save the card.
   void OnUserDidDecideOnLocalSave(
+      AutofillClient::SaveCardOfferUserDecision user_decision);
+
+  // Called once the user makes a decision with respect to the local CVC
+  // offer-to-save prompt.
+  void OnUserDidDecideOnCvcLocalSave(
       AutofillClient::SaveCardOfferUserDecision user_decision);
 
   // Called once the user makes a decision with respect to the credit card
@@ -314,7 +331,7 @@ class CreditCardSaveManager {
   // Weak reference.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
-  // The credit card to be saved if local credit card save is accepted.
+  // The credit card to be saved if local credit card or CVC save is accepted.
   CreditCard local_card_save_candidate_;
 
   // Collected information about a pending upload request.

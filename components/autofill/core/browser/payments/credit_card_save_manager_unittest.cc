@@ -862,6 +862,51 @@ TEST_F(CreditCardSaveManagerTest,
       autofill_client_.get_save_credit_card_options().has_non_focusable_field);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that when triggering AttemptToOfferCvcLocalSave function, SaveCard
+// dialog will be triggered with `kCvcSaveOnly` option.
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCvcLocalSave_ShouldShowSaveCardLocallyWithCvcSaveOnly) {
+  CreditCard local_card;
+  test::SetCreditCardInfo(&local_card, "Jane Doe", "4111111111111111",
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1", u"123");
+  credit_card_save_manager_->AttemptToOfferCvcLocalSave(
+      /*from_dynamic_change_form=*/true, /*has_non_focusable_field=*/true,
+      local_card);
+
+  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_EQ(AutofillClient::CardSaveType::kCvcSaveOnly,
+            autofill_client_.get_save_credit_card_options().card_save_type);
+  EXPECT_TRUE(
+      autofill_client_.get_save_credit_card_options().has_non_focusable_field);
+  EXPECT_TRUE(
+      autofill_client_.get_save_credit_card_options().from_dynamic_change_form);
+}
+
+// Tests that when triggering AttemptToOfferCvcLocalSave function,
+// `from_dynamic_change_form` and `has_non_focusable_field` should match what we
+// passed in AttemptToOfferCvcLocalSave function.
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCvcLocalSave_NonFocusableAndDynamicChangeIsFalse) {
+  CreditCard local_card;
+  test::SetCreditCardInfo(&local_card, "Jane Doe", "4111111111111111",
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1", u"123");
+  credit_card_save_manager_->AttemptToOfferCvcLocalSave(
+      /*from_dynamic_change_form=*/false, /*has_non_focusable_field=*/false,
+      local_card);
+
+  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_EQ(AutofillClient::CardSaveType::kCvcSaveOnly,
+            autofill_client_.get_save_credit_card_options().card_save_type);
+  EXPECT_FALSE(
+      autofill_client_.get_save_credit_card_options().has_non_focusable_field);
+  EXPECT_FALSE(
+      autofill_client_.get_save_credit_card_options().from_dynamic_change_form);
+}
+#endif
+
 // Tests that |from_dynamic_change_form| is correctly sent to AutofillClient
 // when offering local save.
 TEST_F(CreditCardSaveManagerTest,
