@@ -399,6 +399,7 @@ crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrameOffscreen
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
+crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1476029 [ mac asan graphite-enabled ] Pixel_Video_BackdropFilter [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 crbug.com/1479017 [ ventura intel-0x3e9b angle-metal graphite-enabled ] Pixel_WebGPUCachedSwapBufferInvalidatedShouldBeBlank [ RetryOnFailure ]
