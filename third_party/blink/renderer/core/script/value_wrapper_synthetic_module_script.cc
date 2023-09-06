@@ -194,7 +194,7 @@ ValueWrapperSyntheticModuleScript::ValueWrapperSyntheticModuleScript(
                    base_url,
                    fetch_options,
                    start_position),
-      export_value_(v8::Isolate::GetCurrent(), value) {}
+      export_value_(settings_object->GetScriptState()->GetIsolate(), value) {}
 
 // This is the definition of [[EvaluationSteps]] As per the synthetic module
 // spec  https://webidl.spec.whatwg.org/#synthetic-module-records
