@@ -850,7 +850,7 @@ void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
   // Invalidate the scrollbar directly if it's already composited.
   // GetLayoutBox() may be null in some unit tests.
   if (auto* box = GetLayoutBox()) {
-    auto* frame_view = GetLayoutBox()->GetFrameView();
+    auto* frame_view = box->GetFrameView();
     if (auto* compositor = frame_view->GetPaintArtifactCompositor()) {
       if (compositor->SetScrollbarNeedsDisplay(
               GetScrollbarElementId(orientation))) {

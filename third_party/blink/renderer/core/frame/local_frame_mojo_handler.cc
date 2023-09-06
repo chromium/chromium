@@ -1004,7 +1004,7 @@ void LocalFrameMojoHandler::BindReportingObserver(
 
 void LocalFrameMojoHandler::UpdateOpener(
     const absl::optional<blink::FrameToken>& opener_frame_token) {
-  if (auto* web_frame = WebFrame::FromCoreFrame(frame_)) {
+  if (WebFrame::FromCoreFrame(frame_)) {
     Frame* opener_frame = nullptr;
     if (opener_frame_token)
       opener_frame = Frame::ResolveFrame(opener_frame_token.value());

@@ -1323,8 +1323,7 @@ Element* FocusController::NextFocusableElementForImeAndAutofill(
       return next_element;
     }
 
-    if (auto* select_element =
-            DynamicTo<HTMLSelectElement>(next_form_control_element)) {
+    if (IsA<HTMLSelectElement>(next_form_control_element)) {
       return next_element;
     }
   }

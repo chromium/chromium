@@ -6368,7 +6368,7 @@ CSSValue* ConsumeOffsetRotate(CSSParserTokenRange& range,
 
 CSSValue* ConsumeInitialLetter(CSSParserTokenRange& range,
                                const CSSParserContext& context) {
-  if (auto* normal = ConsumeIdent<CSSValueID::kNormal>(range)) {
+  if (ConsumeIdent<CSSValueID::kNormal>(range)) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
 

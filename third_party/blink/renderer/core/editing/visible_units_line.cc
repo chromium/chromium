@@ -90,8 +90,7 @@ static PositionWithAffinityTemplate<Strategy> EndPositionForLine(
   const PositionWithAffinityTemplate<Strategy> adjusted =
       ComputeInlineAdjustedPosition(c);
 
-  if (const LayoutBlockFlow* context =
-          NGInlineFormattingContextOf(adjusted.GetPosition())) {
+  if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
     DCHECK((std::is_same<Ordering, VisualOrdering>::value) ||
            !RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
         << "Logical line boundary for BidiCaretAffinity is not implemented yet";
@@ -129,8 +128,7 @@ PositionWithAffinityTemplate<Strategy> StartPositionForLine(
   const PositionWithAffinityTemplate<Strategy> adjusted =
       ComputeInlineAdjustedPosition(c);
 
-  if (const LayoutBlockFlow* context =
-          NGInlineFormattingContextOf(adjusted.GetPosition())) {
+  if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
     DCHECK((std::is_same<Ordering, VisualOrdering>::value) ||
            !RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
         << "Logical line boundary for BidiCaretAffinity is not implemented yet";

@@ -1620,8 +1620,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
         break;
       }
     }
-  } else if (const auto* coord_box_operation =
-                 DynamicTo<CoordBoxOffsetPathOperation>(offset_path)) {
+  } else if (IsA<CoordBoxOffsetPathOperation>(offset_path)) {
     if (box && box->ContainingBlock()) {
       scoped_refptr<BasicShapeInset> inset = BasicShapeInset::Create();
       inset->SetTop(Length::Fixed(0));

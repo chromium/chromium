@@ -62,7 +62,7 @@ void XUserInputMonitor::StartMonitor(WriteKeyPressCallback& callback) {
   if (!connection_) {
     // TODO(jamiewalch): We should pass the connection in.
     if (auto* connection = x11::Connection::Get()) {
-      connection_ = x11::Connection::Get()->Clone();
+      connection_ = connection->Clone();
     } else {
       LOG(ERROR) << "Couldn't open X connection";
       StopMonitor();

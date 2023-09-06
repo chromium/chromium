@@ -163,8 +163,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutChildren() {
   bool has_seen_all_children = false;
   if (const auto* token = BreakToken()) {
     const auto child_tokens = token->ChildBreakTokens();
-    if (wtf_size_t break_token_count =
-            base::checked_cast<wtf_size_t>(child_tokens.size())) {
+    if (base::checked_cast<wtf_size_t>(child_tokens.size())) {
       const NGBlockBreakToken* child_token =
           To<NGBlockBreakToken>(child_tokens[0].Get());
       if (child_token) {

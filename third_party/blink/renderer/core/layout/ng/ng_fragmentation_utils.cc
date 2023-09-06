@@ -787,8 +787,7 @@ bool HasBreakOpportunityBeforeNextChild(
   // children in parallel flows, since they shouldn't affect this flow.
   //
   // [1] https://www.w3.org/TR/css-break-3/#possible-breaks
-  if (const auto* box_fragment =
-          DynamicTo<NGPhysicalBoxFragment>(&child_fragment)) {
+  if (IsA<NGPhysicalBoxFragment>(&child_fragment)) {
     const auto* block_break_token =
         To<NGBlockBreakToken>(incoming_child_break_token);
     return !block_break_token || !block_break_token->IsAtBlockEnd();

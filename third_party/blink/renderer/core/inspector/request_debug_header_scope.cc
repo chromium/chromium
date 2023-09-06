@@ -20,7 +20,7 @@ String RequestDebugHeaderScope::CaptureStackIdForCurrentLocation(
   ThreadDebugger* debugger = nullptr;
   if (auto* scope = DynamicTo<WorkerGlobalScope>(context))
     debugger = WorkerThreadDebugger::From(scope->GetThread()->GetIsolate());
-  else if (LocalDOMWindow* dom_window = DynamicTo<LocalDOMWindow>(context))
+  else if (IsA<LocalDOMWindow>(context))
     debugger = MainThreadDebugger::Instance();
   if (!debugger)
     return String();
@@ -38,7 +38,7 @@ RequestDebugHeaderScope::RequestDebugHeaderScope(ExecutionContext* context,
     return;
   if (auto* scope = DynamicTo<WorkerGlobalScope>(context))
     debugger_ = WorkerThreadDebugger::From(scope->GetThread()->GetIsolate());
-  else if (auto* window = DynamicTo<LocalDOMWindow>(context))
+  else if (IsA<LocalDOMWindow>(context))
     debugger_ = MainThreadDebugger::Instance();
   if (debugger_)
     debugger_->ExternalAsyncTaskStarted(stack_trace_id_);

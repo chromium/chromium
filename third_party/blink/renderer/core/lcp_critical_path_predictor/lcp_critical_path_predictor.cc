@@ -55,8 +55,7 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
       GetHost().SetLcpElementLocator(lcp_element_locator_string);
     }
 
-    if (HTMLImageElement* image_element =
-            DynamicTo<HTMLImageElement>(lcp_element)) {
+    if (IsA<HTMLImageElement>(lcp_element)) {
       // TODO(crbug.com/1419756): Record LCP element's `creator_scripts`.
     }
   }

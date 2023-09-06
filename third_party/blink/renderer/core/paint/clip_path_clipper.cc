@@ -241,7 +241,7 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
     cursor.MoveTo(layout_inline);
     if (cursor) {
       PhysicalRect border_box = cursor.Current().RectInContainerFragment();
-      if (const auto* box_fragment = cursor.Current().BoxFragment()) {
+      if (cursor.Current().BoxFragment()) {
         return gfx::RectF(ComputeReferenceBoxInternal(
             geometry_box, layout_inline, border_box));
       }

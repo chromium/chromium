@@ -379,9 +379,7 @@ scoped_refptr<DevToolsAgentHost>
 WebContentsDevToolsAgentHost::GetOrCreatePrimaryFrameAgent() {
   if (WebContents* wc = web_contents()) {
     return RenderFrameDevToolsAgentHost::GetOrCreateFor(
-        static_cast<WebContentsImpl*>(web_contents())
-            ->GetPrimaryFrameTree()
-            .root());
+        static_cast<WebContentsImpl*>(wc)->GetPrimaryFrameTree().root());
   }
   return nullptr;
 }

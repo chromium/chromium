@@ -50,7 +50,7 @@ ContainerNode* LayoutTreeBuilderTraversal::Parent(const Node& node) {
   // LayoutTreeBuilderTraversal::parent() is used only for a node which is
   // connected.
   // DCHECK(node.isConnected());
-  if (auto* element = DynamicTo<PseudoElement>(node)) {
+  if (IsA<PseudoElement>(node)) {
     DCHECK(node.parentNode());
     return node.parentNode();
   }

@@ -653,8 +653,7 @@ bool LocalFrameView::LayoutFromRootObject(LayoutObject& root) {
   if (!root.NeedsLayout())
     return false;
 
-  if (auto* locked_ancestor =
-          DisplayLockUtilities::LockedAncestorPreventingLayout(root)) {
+  if (DisplayLockUtilities::LockedAncestorPreventingLayout(root)) {
     // Note that since we're preventing the layout on a layout root, we have to
     // mark its ancestor chain for layout. The reason for this is that we will
     // clear the layout roots whether or not we have finished laying them out,

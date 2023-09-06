@@ -2184,7 +2184,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
                                     logical_offset.block_offset);
   }
 
-  if (auto* block_child = DynamicTo<NGBlockNode>(child)) {
+  if (IsA<NGBlockNode>(child)) {
     container_builder_.AddResult(*layout_result, logical_offset,
                                  child_data->margins);
   } else {

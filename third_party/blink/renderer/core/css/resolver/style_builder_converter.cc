@@ -2924,7 +2924,7 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertContainerName(
     StyleResolverState& state,
     const CSSValue& value) {
   DCHECK(value.IsScopedValue());
-  if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+  if (IsA<CSSIdentifierValue>(value)) {
     DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
     return nullptr;
   }

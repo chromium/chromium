@@ -108,7 +108,7 @@ base::flat_set<FormGlobalId> FormForest::EraseForms(
   }
   base::flat_set<FormGlobalId> forms_with_removed_fields;
   for (const FormGlobalId renderer_form : renderer_forms) {
-    if (FrameData* frame = GetFrameData(renderer_form.frame_token)) {
+    if (GetFrameData(renderer_form.frame_token)) {
       EraseReferencesTo(renderer_form, &forms_with_removed_fields);
     }
   }

@@ -1382,7 +1382,7 @@ void NGPhysicalBoxFragment::AddOutlineRects(
   // For anonymous blocks, the children add outline rects.
   if (!IsAnonymousBlock()) {
     if (IsSvgText()) {
-      if (const NGFragmentItems* items = Items()) {
+      if (Items()) {
         collector.AddRect(PhysicalRect::EnclosingRect(
             GetLayoutObject()->ObjectBoundingBox()));
       }

@@ -1861,8 +1861,9 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
       force_push_children = true;
     }
 
-    if (auto* link_element = DynamicTo<HTMLLinkElement>(*element))
+    if (IsA<HTMLLinkElement>(*element)) {
       force_push_children = true;
+    }
 
     if (auto* template_element = DynamicTo<HTMLTemplateElement>(*element)) {
       // The inspector should not try to access the .content() property of

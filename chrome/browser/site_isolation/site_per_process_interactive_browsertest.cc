@@ -68,8 +68,9 @@ size_t GetNumberOfRenderWidgetHosts() {
   std::unique_ptr<content::RenderWidgetHostIterator> all_widgets =
       content::RenderWidgetHost::GetRenderWidgetHosts();
   size_t count = 0;
-  while (auto* widget = all_widgets->GetNextHost())
+  while (all_widgets->GetNextHost()) {
     count++;
+  }
   return count;
 }
 

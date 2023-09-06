@@ -402,7 +402,7 @@ void AbortSignal::OnEventListenerAddedOrRemoved(const AtomicString& event_type,
   }
   // `manager` will be null if this signal doesn't handle composition for
   // `composition_type`.
-  if (auto* manager = GetCompositionManager(*composition_type)) {
+  if (GetCompositionManager(*composition_type)) {
     InvokeRegistryCallback([&](AbortSignalRegistry& registry) {
       switch (add_or_remove) {
         case AddRemoveType::kAdded:

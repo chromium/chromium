@@ -910,7 +910,7 @@ void FrameSelection::FocusedOrActiveStateChanged() {
   // Because LayoutObject::selectionBackgroundColor() and
   // LayoutObject::selectionForegroundColor() check if the frame is active,
   // we have to update places those colors were painted.
-  if (LayoutView* view = GetDocument().GetLayoutView()) {
+  if (GetDocument().GetLayoutView()) {
     layout_selection_->InvalidatePaintForSelection();
   }
 

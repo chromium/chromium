@@ -476,9 +476,8 @@ void SidePanelCoordinator::Show(
 }
 
 views::View* SidePanelCoordinator::GetContentContainerView() const {
-  if (const SidePanel* side_panel = browser_view_->unified_side_panel()) {
-    return browser_view_->unified_side_panel()->GetViewByID(
-        kSidePanelContentContainerViewId);
+  if (SidePanel* side_panel = browser_view_->unified_side_panel()) {
+    return side_panel->GetViewByID(kSidePanelContentContainerViewId);
   }
 
   return nullptr;

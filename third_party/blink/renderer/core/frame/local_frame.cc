@@ -2011,7 +2011,7 @@ ContentCaptureManager* LocalFrame::GetOrResetContentCaptureManager() {
   // It is a little bit odd that ContentCaptureManager is created or released on
   // demand, and that this is something that could be improved with an explicit
   // signal for creating / destroying content capture managers.
-  if (auto* content_capture_client = Client()->GetWebContentCaptureClient()) {
+  if (Client()->GetWebContentCaptureClient()) {
     if (!content_capture_manager_) {
       content_capture_manager_ =
           MakeGarbageCollected<ContentCaptureManager>(*this);

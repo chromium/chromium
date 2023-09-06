@@ -231,7 +231,7 @@ KleeneValue MediaQueryEvaluator::Eval(
   if (auto* n = DynamicTo<MediaQueryOrExpNode>(node)) {
     return EvalOr(n->Left(), n->Right(), result_flags);
   }
-  if (auto* n = DynamicTo<MediaQueryUnknownExpNode>(node)) {
+  if (IsA<MediaQueryUnknownExpNode>(node)) {
     return KleeneValue::kUnknown;
   }
   return EvalFeature(To<MediaQueryFeatureExpNode>(node), result_flags);

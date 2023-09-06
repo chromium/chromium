@@ -2990,10 +2990,10 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
       return true;
     }
   }
-  if (auto* sticky_translation = properties->StickyTranslation())
+  if (properties->StickyTranslation()) {
     return true;
-  if (auto* anchor_position_scroll_translation =
-          properties->AnchorPositionScrollTranslation()) {
+  }
+  if (properties->AnchorPositionScrollTranslation()) {
     return true;
   }
   if (properties->OverflowClip())

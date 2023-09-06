@@ -707,8 +707,7 @@ absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
     SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
-  if (auto priority =
-          main_thread_only().selector.GetHighestPendingPriority(option)) {
+  if (main_thread_only().selector.GetHighestPendingPriority(option)) {
     // If the selector has non-empty queues we trivially know there is immediate
     // work to be done. However we may want to yield to native work if it is
     // more important.
@@ -720,8 +719,7 @@ absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
   // do this always.
   ReloadEmptyWorkQueues();
 
-  if (auto priority =
-          main_thread_only().selector.GetHighestPendingPriority(option)) {
+  if (main_thread_only().selector.GetHighestPendingPriority(option)) {
     return WakeUp{};
   }
 

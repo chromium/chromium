@@ -5913,8 +5913,7 @@ void AXObject::ChildrenChangedWithCleanLayout() {
   // cause whitespace redundancy in the parent object to change as well.
   if (IsA<LayoutInline>(GetLayoutObject())) {
     if (AXObject* ax_parent = CachedParentObject()) {
-      if (LayoutBlockFlow* layout_block_flow =
-              DynamicTo<LayoutBlockFlow>(ax_parent->GetLayoutObject())) {
+      if (IsA<LayoutBlockFlow>(ax_parent->GetLayoutObject())) {
         ax_parent->ChildrenChangedWithCleanLayout();
       }
     }

@@ -216,10 +216,11 @@ void SVGAnimateElement::ClearTargetProperty() {
 }
 
 void SVGAnimateElement::UpdateTargetProperty() {
-  if (SVGElement* target = targetElement())
+  if (targetElement()) {
     ResolveTargetProperty();
-  else
+  } else {
     ClearTargetProperty();
+  }
 }
 
 bool SVGAnimateElement::HasValidAnimation() const {

@@ -279,7 +279,7 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
   // account for the anchor's position relative to the visual viewport. If the
   // main frame is remote the overlay will be attached to the local root so the
   // visual viewport transform will already be applied to the overlay.
-  if (auto* overlay_frame = DynamicTo<LocalFrame>(anchor_page->MainFrame())) {
+  if (IsA<LocalFrame>(anchor_page->MainFrame())) {
     PhysicalRect rect(anchor_rect);
     anchor_->GetDocument()
         .GetFrame()
