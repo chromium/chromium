@@ -290,6 +290,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     return result;
   }
 
+  TestPermissionsClient& permissions_client() { return client_; }
+
  private:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -1077,6 +1079,53 @@ TEST_F(PermissionManagerTest, SubscribersAreNotifedOfEmbargoEvents) {
   EXPECT_EQ(callback_count(), 1);
 
   UnsubscribePermissionStatusChange(subscription_id);
+}
+
+TEST_F(PermissionManagerTest, UpdatePermissionStatusWithDeviceStatus) {
+  struct {
+    blink::mojom::PermissionStatus initial_status;
+    bool has_device_permission;
+    bool can_request_device_permission;
+    blink::mojom::PermissionStatus expected_status =
+        initial_status;  // For most of these test cases the expected status is
+                         // the same as the initial status
+  } kTests[] = {
+      {blink::mojom::PermissionStatus::GRANTED, false, false,
+       blink::mojom::PermissionStatus::DENIED},
+      {blink::mojom::PermissionStatus::GRANTED, false, true,
+       blink::mojom::PermissionStatus::ASK},
+      {blink::mojom::PermissionStatus::GRANTED, true, false},
+      {blink::mojom::PermissionStatus::GRANTED, true, true},
+
+      {blink::mojom::PermissionStatus::ASK, false, false},
+      {blink::mojom::PermissionStatus::ASK, false, true},
+      {blink::mojom::PermissionStatus::ASK, true, false},
+      {blink::mojom::PermissionStatus::ASK, true, true},
+
+      {blink::mojom::PermissionStatus::DENIED, false, false},
+      {blink::mojom::PermissionStatus::DENIED, false, true},
+      {blink::mojom::PermissionStatus::DENIED, true, false},
+      {blink::mojom::PermissionStatus::DENIED, true, true},
+  };
+
+  GURL url("http://google.com");
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(::testing::Message()
+                 << "initial_status:" << test.initial_status
+                 << ", expected_status: " << test.expected_status
+                 << ", has_device_permission: " << test.has_device_permission
+                 << ", can_request_device_permission: "
+                 << test.can_request_device_permission);
+
+    SetPermission(blink::PermissionType::NOTIFICATIONS, test.initial_status);
+    permissions_client().SetHasDevicePermission(test.has_device_permission);
+    permissions_client().SetCanRequestDevicePermission(
+        test.can_request_device_permission);
+
+    CheckPermissionStatus(blink::PermissionType::NOTIFICATIONS,
+                          test.expected_status);
+  }
 }
 
 }  // namespace permissions

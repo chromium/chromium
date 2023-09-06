@@ -41,6 +41,12 @@ class TestPermissionsClient : public PermissionsClient {
                       const GURL& requesting_origin,
                       GetUkmSourceIdCallback callback) override;
 
+  // Device (OS-level) simulated permissions
+  bool HasDevicePermission(ContentSettingsType type) const override;
+  bool CanRequestDevicePermission(ContentSettingsType type) const override;
+  void SetHasDevicePermission(bool has_device_permission);
+  void SetCanRequestDevicePermission(bool can_request_device_permission);
+
  private:
   TestPermissionsClient(const TestPermissionsClient&) = delete;
   TestPermissionsClient& operator=(const TestPermissionsClient&) = delete;
@@ -50,6 +56,8 @@ class TestPermissionsClient : public PermissionsClient {
   PermissionDecisionAutoBlocker autoblocker_;
   PermissionActionsHistory permission_actions_history_;
   OriginKeyedPermissionActionService origin_keyed_permission_action_service_;
+  bool has_device_permission_ = true;
+  bool can_request_device_permission_ = false;
 };
 
 }  // namespace permissions

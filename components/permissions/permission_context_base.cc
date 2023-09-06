@@ -20,6 +20,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
@@ -374,6 +375,24 @@ PermissionContextBase::UpdatePermissionStatusWithDeviceStatus(
     content::PermissionResult result,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
+  // If the site content setting is not "GRANTED" the device-level permission
+  // won't affect it anyway.
+  if (result.status != PermissionStatus::GRANTED) {
+    return result;
+  }
+
+  // If the device-level permission is granted, it has no effect on the result.
+  if (PermissionsClient::Get()->HasDevicePermission(content_settings_type())) {
+    return result;
+  }
+
+  // Otherwise the result will be "ASK" if the browser can ask for the
+  // device-level permission, and "DENIED" otherwise.
+  result.status = PermissionsClient::Get()->CanRequestDevicePermission(
+                      content_settings_type())
+                      ? PermissionStatus::ASK
+                      : PermissionStatus::DENIED;
+
   return result;
 }
 

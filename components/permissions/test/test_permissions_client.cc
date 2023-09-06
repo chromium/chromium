@@ -87,4 +87,23 @@ void TestPermissionsClient::GetUkmSourceId(
   }
 }
 
+bool TestPermissionsClient::HasDevicePermission(
+    ContentSettingsType type) const {
+  return has_device_permission_;
+}
+
+bool TestPermissionsClient::CanRequestDevicePermission(
+    ContentSettingsType type) const {
+  return can_request_device_permission_;
+}
+
+void TestPermissionsClient::SetHasDevicePermission(bool has_device_permission) {
+  has_device_permission_ = has_device_permission;
+}
+
+void TestPermissionsClient::SetCanRequestDevicePermission(
+    bool can_request_device_permission) {
+  can_request_device_permission_ = can_request_device_permission;
+}
+
 }  // namespace permissions

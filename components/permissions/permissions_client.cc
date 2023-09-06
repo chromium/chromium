@@ -188,4 +188,13 @@ std::unique_ptr<PermissionPrompt> PermissionsClient::CreatePrompt(
 }
 #endif
 
+bool PermissionsClient::HasDevicePermission(ContentSettingsType type) const {
+  return true;
+}
+
+bool PermissionsClient::CanRequestDevicePermission(
+    ContentSettingsType type) const {
+  return false;
+}
+
 }  // namespace permissions
