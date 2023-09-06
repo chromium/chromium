@@ -15,7 +15,6 @@
       document.querySelector('read-anything-app').shadowRoot;
   const toolbar =
       readAnythingApp.querySelector('read-anything-toolbar').shadowRoot;
-  const dropdown = toolbar.getElementById('fontSubmenu');
 
   let result = true;
   const assertEquals = (actual, expected) => {
@@ -28,8 +27,7 @@
     result = result && isEqual;
     return isEqual;
   };
-  const checkMarks = Array.from(dropdown.querySelectorAll('.check-mark'));
-  const assertCheckMarkVisible = (expectedIndex) => {
+  const assertCheckMarkVisible = (checkMarks, expectedIndex) => {
     checkMarks.forEach((element, index) => {
       if (index === expectedIndex) {
         assertEquals(element.style.visibility, 'visible');
@@ -38,13 +36,21 @@
       }
     });
   };
-
   // Check that the check mark of the selected item is visible
-  const fontButtons = Array.from(dropdown.querySelectorAll('.dropdown-item'));
-  fontButtons.forEach((button, index) => {
-    button.click();
-    assertCheckMarkVisible(index);
-  });
+  const assertCheckMarksForDropdown = (dropdown) => {
+    const buttons = Array.from(dropdown.querySelectorAll('.dropdown-item'));
+    const checkMarks = Array.from(dropdown.querySelectorAll('.check-mark'));
+    buttons.forEach((button, index) => {
+      button.click();
+      assertCheckMarkVisible(checkMarks, index);
+    });
+  };
+
+  assertCheckMarksForDropdown(toolbar.getElementById('fontMenu'));
+  assertCheckMarksForDropdown(toolbar.getElementById('rateMenu'));
+  assertCheckMarksForDropdown(toolbar.getElementById('lineSpacingMenu'));
+  assertCheckMarksForDropdown(toolbar.getElementById('letterSpacingMenu'));
+  assertCheckMarksForDropdown(toolbar.getElementById('colorMenu'));
 
   return result;
 })();

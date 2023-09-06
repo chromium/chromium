@@ -530,14 +530,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   restoreSettingsFromPrefs() {
-    // TODO(crbug.com/1474951): investigate using parent/child relationshiop
-    // instead of element by id.
-    const toolbar = this.shadowRoot?.getElementById('toolbar');
-    assert(toolbar);
-    if (toolbar instanceof ReadAnythingToolbar) {
-      toolbar.restoreSettingsFromPrefs();
-    }
-
     // TODO(crbug.com/1474951): Restore rate settings
     this.updateLineSpacing(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing(chrome.readingMode.letterSpacing);
@@ -567,6 +559,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
     if (colorSuffix !== undefined) {
       this.updateThemeFromWebUi(colorSuffix);
+    }
+    // TODO(crbug.com/1474951): investigate using parent/child relationshiop
+    // instead of element by id.
+    const toolbar = this.shadowRoot?.getElementById('toolbar');
+    assert(toolbar);
+    if (toolbar instanceof ReadAnythingToolbar) {
+      toolbar.restoreSettingsFromPrefs(colorSuffix);
     }
   }
 

@@ -71,22 +71,24 @@
   <cr-icon-button
       id="color"
       iron-icon="read-anything:color"
-      on-click="onShowColorSubMenuClick_">
+      on-click="onShowColorMenuClick_">
   </cr-icon-button>
   <cr-icon-button
       id="line-spacing"
       iron-icon="read-anything:line-spacing"
-      on-click="onShowLineSpacingSubMenuClick_">
+      on-click="onShowLineSpacingMenuClick_">
   </cr-icon-button>
   <cr-icon-button
       id="letter-spacing"
       iron-icon="read-anything:letter-spacing"
-      on-click="onShowLetterSpacingSubMenuClick_">
+      on-click="onShowLetterSpacingMenuClick_">
   </cr-icon-button>
 
   <cr-action-menu id="rateMenu">
     <template is="dom-repeat" items="[[rateOptions_]]">
       <button class="dropdown-item" on-click="onRateClick_">
+        <iron-icon class="button-image check-mark"
+            icon="read-anything:check-mark"></iron-icon>
         [[item]]x
       </button>
     </template>
@@ -108,64 +110,37 @@
       Reset
     </cr-button>
   </cr-action-menu>
-  <cr-action-menu id="colorSubmenu">
-    <button class="dropdown-item" data$="[[menuStateEnum_.DEFAULT_COLOR]]">
-      <iron-icon class="button-image" icon="read-anything:default-theme"></iron-icon>
-      $i18n{defaultColorTitle}
-    </button>
-    <button class="dropdown-item" data$="[[menuStateEnum_.LIGHT]]">
-      <iron-icon class="button-image" icon="read-anything:light-theme"></iron-icon>
-      $i18n{lightColorTitle}
-    </button>
-    <button class="dropdown-item" data$="[[menuStateEnum_.DARK]]">
-      <iron-icon class="button-image" icon="read-anything:dark-theme"></iron-icon>
-      $i18n{darkColorTitle}
-    </button>
-    <button class="dropdown-item" data$="[[menuStateEnum_.YELLOW]]">
-      <iron-icon class="button-image" icon="read-anything:yellow-theme"></iron-icon>
-      $i18n{yellowColorTitle}
-    </button>
-    <button class="dropdown-item" data$="[[menuStateEnum_.BLUE]]">
-      <iron-icon class="button-image" icon="read-anything:blue-theme"></iron-icon>
-      $i18n{blueColorTitle}
-    </button>
-  </cr-action-menu>
-  <cr-action-menu id="lineSpacingSubmenu">
-    <button class="dropdown-item" data$="[[menuStateEnum_.LINE_STANDARD]]">
-      <iron-icon class="button-image"
-      icon="read-anything:line-spacing-standard"></iron-icon>
-      $i18n{lineSpacingStandardTitle}
-    </button>
-    <button class="dropdown-item" data$="[[menuStateEnum_.LOOSE]]">
-      <iron-icon class="button-image"
-      icon="read-anything:line-spacing-loose"></iron-icon>
-      $i18n{lineSpacingLooseTitle}
-    </button>
-    <button class="dropdown-item" data$="[[menuStateEnum_.VERY_LOOSE]]">
-      <iron-icon class="button-image"
-      icon="read-anything:line-spacing-very-loose"></iron-icon>
-      $i18n{lineSpacingVeryLooseTitle}
+  <cr-action-menu id="colorMenu">
+    <template is="dom-repeat" items="[[colorOptions_]]">
+      <button class="dropdown-item" on-click="onColorClick_">
+        <iron-icon class="button-image check-mark"
+            icon="read-anything:check-mark"></iron-icon>
+        <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
+        [[item.title]]
       </button>
-    </cr-action-menu>
-  <cr-action-menu id="letterSpacingSubmenu">
-    <!--TODO(b/1465029): Fix icon that is slightly out of alignment. -->
-    <button class="dropdown-item" data$="[[menuStateEnum_.LETTER_STANDARD]]">
-      <iron-icon class="button-image"
-      icon="read-anything:letter-spacing-standard"></iron-icon>
-      $i18n{letterSpacingStandardTitle}
-    </button>
-    <button class="dropdown-item" data$="[[menuStateEnum_.WIDE]]">
-      <iron-icon class="button-image"
-      icon="read-anything:letter-spacing-wide"></iron-icon>
-      $i18n{letterSpacingWideTitle}
-    </button>
-    <button class="dropdown-item" data$="[[menuStateEnum_.VERY_WIDE]]">
-      <iron-icon class="button-image"
-      icon="read-anything:letter-spacing-very-wide"></iron-icon>
-      $i18n{letterSpacingVeryWideTitle}
-    </button>
+    </template>
   </cr-action-menu>
-  <cr-action-menu id="fontSubmenu">
+  <cr-action-menu id="lineSpacingMenu">
+    <template is="dom-repeat" items="[[lineSpacingOptions_]]">
+      <button class="dropdown-item" on-click="onLineSpacingClick_">
+        <iron-icon class="button-image check-mark"
+            icon="read-anything:check-mark"></iron-icon>
+        <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
+        [[item.title]]
+      </button>
+    </template>
+  </cr-action-menu>
+  <cr-action-menu id="letterSpacingMenu">
+    <template is="dom-repeat" items="[[letterSpacingOptions_]]">
+      <button class="dropdown-item" on-click="onLetterSpacingClick_">
+        <iron-icon class="button-image check-mark"
+            icon="read-anything:check-mark"></iron-icon>
+        <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
+        [[item.title]]
+      </button>
+    </template>
+  </cr-action-menu>
+  <cr-action-menu id="fontMenu">
   <template is="dom-repeat" items="[[fontOptions_]]">
     <button class="dropdown-item" on-click="onFontClick_">
       <iron-icon class="button-image check-mark"

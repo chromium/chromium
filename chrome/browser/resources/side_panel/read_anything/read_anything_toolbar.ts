@@ -12,34 +12,29 @@ import './icons.html.js';
 import {AnchorAlignment, CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ReadAnythingElement} from './app.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 
 export interface ReadAnythingToolbar {
   $: {
     rateMenu: CrActionMenuElement,
-    colorSubmenu: CrActionMenuElement,
-    lineSpacingSubmenu: CrActionMenuElement,
-    letterSpacingSubmenu: CrActionMenuElement,
-    fontSubmenu: CrActionMenuElement,
+    colorMenu: CrActionMenuElement,
+    lineSpacingMenu: CrActionMenuElement,
+    letterSpacingMenu: CrActionMenuElement,
+    fontMenu: CrActionMenuElement,
     fontSizeMenu: CrActionMenuElement,
   };
 }
 
-enum MenuStateValue {
-  LINE_STANDARD = 0,
-  LOOSE = 1,
-  VERY_LOOSE = 2,
-  DEFAULT_COLOR = 3,
-  LIGHT = 4,
-  DARK = 5,
-  YELLOW = 6,
-  BLUE = 7,
-  LETTER_STANDARD = 8,
-  WIDE = 9,
-  VERY_WIDE = 10,
+interface MenuStateItem {
+  title: string;
+  icon: string;
+  data: any;
+  callback: () => void;
 }
 
 // Enum for logging when a text style setting is changed.
@@ -72,18 +67,97 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
   static get properties() {
     return {
-      menuStateEnum_: {
-        type: Object,
-        value: MenuStateValue,
-      },
-
       fontOptions_: Array,
+      letterSpacingOptions_: Array,
+      lineSpacingOptions_: Array,
+      colorOptions_: Array,
       rateOptions_: Array,
     };
   }
 
   // If you change these fonts, please also update read_anything_constants.h
   private fontOptions_: string[] = [];
+
+  private letterSpacingOptions_: MenuStateItem[] = [
+    {
+      title: loadTimeData.getString('letterSpacingStandardTitle'),
+      icon: 'read-anything:letter-spacing-standard',
+      data: chrome.readingMode.getLetterSpacingValue(
+          chrome.readingMode.standardLetterSpacing),
+      callback: () => chrome.readingMode.onStandardLetterSpacing(),
+    },
+    {
+      title: loadTimeData.getString('letterSpacingWideTitle'),
+      icon: 'read-anything:letter-spacing-wide',
+      data: chrome.readingMode.getLetterSpacingValue(
+          chrome.readingMode.wideLetterSpacing),
+      callback: () => chrome.readingMode.onWideLetterSpacing(),
+    },
+    {
+      title: loadTimeData.getString('letterSpacingVeryWideTitle'),
+      icon: 'read-anything:letter-spacing-very-wide',
+      data: chrome.readingMode.getLetterSpacingValue(
+          chrome.readingMode.veryWideLetterSpacing),
+      callback: () => chrome.readingMode.onVeryWideLetterSpacing(),
+    },
+  ];
+
+  private lineSpacingOptions_: MenuStateItem[] = [
+    {
+      title: loadTimeData.getString('lineSpacingStandardTitle'),
+      icon: 'read-anything:line-spacing-standard',
+      data: chrome.readingMode.getLineSpacingValue(
+          chrome.readingMode.standardLineSpacing),
+      callback: () => chrome.readingMode.onStandardLineSpacing(),
+    },
+    {
+      title: loadTimeData.getString('lineSpacingLooseTitle'),
+      icon: 'read-anything:line-spacing-loose',
+      data: chrome.readingMode.getLineSpacingValue(
+          chrome.readingMode.looseLineSpacing),
+      callback: () => chrome.readingMode.onLooseLineSpacing(),
+    },
+    {
+      title: loadTimeData.getString('lineSpacingVeryLooseTitle'),
+      icon: 'read-anything:line-spacing-very-loose',
+      data: chrome.readingMode.getLineSpacingValue(
+          chrome.readingMode.veryLooseLineSpacing),
+      callback: () => chrome.readingMode.onVeryLooseLineSpacing(),
+    },
+  ];
+
+  private colorOptions_: MenuStateItem[] = [
+    {
+      title: loadTimeData.getString('defaultColorTitle'),
+      icon: 'read-anything:default-theme',
+      data: '',
+      callback: () => chrome.readingMode.onDefaultTheme(),
+    },
+    {
+      title: loadTimeData.getString('lightColorTitle'),
+      icon: 'read-anything:light-theme',
+      data: '-light',
+      callback: () => chrome.readingMode.onLightTheme(),
+    },
+    {
+      title: loadTimeData.getString('darkColorTitle'),
+      icon: 'read-anything:dark-theme',
+      data: '-dark',
+      callback: () => chrome.readingMode.onDarkTheme(),
+    },
+    {
+      title: loadTimeData.getString('yellowColorTitle'),
+      icon: 'read-anything:yellow-theme',
+      data: '-yellow',
+      callback: () => chrome.readingMode.onYellowTheme(),
+    },
+    {
+      title: loadTimeData.getString('blueColorTitle'),
+      icon: 'read-anything:blue-theme',
+      data: '-blue',
+      callback: () => chrome.readingMode.onBlueTheme(),
+    },
+  ];
 
   private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
@@ -97,10 +171,6 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
   // If Read Aloud is in the paused state.
   isPaused = true;
-
-  // This is needed to keep a reference to any dynamically added callbacks so
-  // that they can be removed with #removeEventListener.
-  private elementCallbackMap = new Map<any, () => void>();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -117,121 +187,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
         'EB Garamond',
         'STIX Two Text',
     );
-
-    // Configure on-click listeners for line spacing.
-    const onLineSpacingClick = (element: number) => {
-      let data: number|undefined;
-
-      switch (element) {
-        case MenuStateValue.LINE_STANDARD:
-          chrome.readingMode.onStandardLineSpacing();
-          data = chrome.readingMode.standardLineSpacing;
-          break;
-        case MenuStateValue.LOOSE:
-          chrome.readingMode.onLooseLineSpacing();
-          data = chrome.readingMode.looseLineSpacing;
-          break;
-        case MenuStateValue.VERY_LOOSE:
-          chrome.readingMode.onVeryLooseLineSpacing();
-          data = chrome.readingMode.veryLooseLineSpacing;
-          break;
-        default:
-          // Do nothing;
-      }
-
-      chrome.metricsPrivate.recordEnumerationValue(
-          SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
-          ReadAnythingSettingsChange.COUNT);
-      if (this.contentPage && data) {
-        this.contentPage.updateLineSpacing(
-            chrome.readingMode.getLineSpacingValue(data));
-      }
-      this.closeMenus_();
-    };
-
-    // Configure on-click listeners for letter spacing.
-    const onLetterSpacingClick = (element: number) => {
-      let data: number|undefined;
-
-      switch (element) {
-        case MenuStateValue.LETTER_STANDARD:
-          chrome.readingMode.onStandardLetterSpacing();
-          data = chrome.readingMode.standardLetterSpacing;
-          break;
-        case MenuStateValue.WIDE:
-          chrome.readingMode.onWideLetterSpacing();
-          data = chrome.readingMode.wideLetterSpacing;
-          break;
-        case MenuStateValue.VERY_WIDE:
-          chrome.readingMode.onVeryWideLetterSpacing();
-          data = chrome.readingMode.veryWideLetterSpacing;
-          break;
-        default:
-          // Do nothing;
-      }
-
-      chrome.metricsPrivate.recordEnumerationValue(
-          SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
-          ReadAnythingSettingsChange.COUNT);
-      if (this.contentPage && data) {
-        this.contentPage.updateLetterSpacing(
-            chrome.readingMode.getLetterSpacingValue(data));
-      }
-      this.closeMenus_();
-    };
-
-    // Configure on-click listeners for theme.
-    const onThemeClick = (element: number) => {
-      let colorSuffix: string|undefined;
-
-      switch (element) {
-        case MenuStateValue.DEFAULT_COLOR:
-          chrome.readingMode.onDefaultTheme();
-          colorSuffix = '';
-          break;
-        case MenuStateValue.LIGHT:
-          chrome.readingMode.onLightTheme();
-          colorSuffix = '-light';
-          break;
-        case MenuStateValue.DARK:
-          chrome.readingMode.onDarkTheme();
-          colorSuffix = '-dark';
-          break;
-        case MenuStateValue.YELLOW:
-          chrome.readingMode.onYellowTheme();
-          colorSuffix = '-yellow';
-          break;
-        case MenuStateValue.BLUE:
-          chrome.readingMode.onBlueTheme();
-          colorSuffix = '-blue';
-          break;
-        default:
-          // Do nothing;
-      }
-
-      chrome.metricsPrivate.recordEnumerationValue(
-          SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.THEME_CHANGE,
-          ReadAnythingSettingsChange.COUNT);
-      if (this.contentPage && (colorSuffix !== undefined)) {
-        this.contentPage.updateThemeFromWebUi(colorSuffix);
-      }
-      this.closeMenus_();
-    };
-    this.addOnClickListeners(this.$.lineSpacingSubmenu, onLineSpacingClick);
-    this.addOnClickListeners(this.$.colorSubmenu, onThemeClick);
-    this.addOnClickListeners(this.$.letterSpacingSubmenu, onLetterSpacingClick);
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeOnClickListeners(this.$.fontSubmenu);
-    this.removeOnClickListeners(this.$.lineSpacingSubmenu);
-    this.removeOnClickListeners(this.$.colorSubmenu);
-    this.removeOnClickListeners(this.$.letterSpacingSubmenu);
-  }
-
-  restoreSettingsFromPrefs() {
-    const fontNodes = Array.from(this.$.fontSubmenu.children);
+  restoreSettingsFromPrefs(colorSuffix: string|undefined) {
+    const fontNodes = Array.from(this.$.fontMenu.children);
     fontNodes.forEach((element) => {
       if (element instanceof HTMLButtonElement) {
         if (!element.innerText) {
@@ -242,9 +201,28 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       }
     });
 
+    // TODO(crbug.com/1474951): Restore rate checkmark
     this.setCheckMarkForMenu_(
-        this.$.fontSubmenu,
+        this.$.fontMenu,
         this.fontOptions_.indexOf(chrome.readingMode.fontName));
+    this.setCheckMarkForMenu_(
+        this.$.colorMenu,
+        this.getIndexOfSetting_(this.colorOptions_, colorSuffix));
+    this.setCheckMarkForMenu_(
+        this.$.lineSpacingMenu,
+        this.getIndexOfSetting_(
+            this.lineSpacingOptions_,
+            parseFloat(chrome.readingMode.lineSpacing.toFixed(2))));
+    this.setCheckMarkForMenu_(
+        this.$.letterSpacingMenu,
+        this.getIndexOfSetting_(
+            this.letterSpacingOptions_,
+            parseFloat(chrome.readingMode.letterSpacing.toFixed(2))));
+  }
+
+  private getIndexOfSetting_(menuArray: MenuStateItem[], dataToFind: any):
+      number {
+    return menuArray.findIndex((item) => (item.data === dataToFind));
   }
 
   updateUiForPlaying() {
@@ -265,63 +243,32 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.isPaused = true;
   }
 
-  private removeOnClickListeners(menu: CrActionMenuElement) {
-    const nodes = Array.from(menu.children);
-    nodes.forEach((element) => {
-      if ((element instanceof HTMLButtonElement) &&
-          !element.classList.contains('back') &&
-          (element.className === 'dropdown-item')) {
-        const callback = this.elementCallbackMap.get(element);
-        if (callback) {
-          element.removeEventListener('click', callback);
-        }
-        this.elementCallbackMap.delete(element);
-      }
-    });
-  }
-
-  private addOnClickListeners(
-      menu: CrActionMenuElement,
-      onMenuElementClick: (element: number) => void) {
-    const nodes = Array.from(menu.children);
-    nodes.forEach((element) => {
-      if ((element instanceof HTMLButtonElement) &&
-          !element.classList.contains('back') && element.hasAttribute('data')) {
-        const callback = () => {
-          onMenuElementClick(parseInt(element.getAttribute('data')!));
-        };
-        this.elementCallbackMap.set(element, callback);
-        element.addEventListener('click', callback);
-      }
-    });
-  }
-
   private closeMenus_() {
     this.$.rateMenu.close();
-    this.$.colorSubmenu.close();
-    this.$.lineSpacingSubmenu.close();
-    this.$.letterSpacingSubmenu.close();
-    this.$.fontSubmenu.close();
+    this.$.colorMenu.close();
+    this.$.lineSpacingMenu.close();
+    this.$.letterSpacingMenu.close();
+    this.$.fontMenu.close();
   }
 
   private onShowRateMenuClick_(event: MouseEvent) {
     this.openMenu_(this.$.rateMenu, event.target as HTMLElement);
   }
 
-  private onShowColorSubMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.colorSubmenu, event.target as HTMLElement);
+  private onShowColorMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.colorMenu, event.target as HTMLElement);
   }
 
-  private onShowLineSpacingSubMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.lineSpacingSubmenu, event.target as HTMLElement);
+  private onShowLineSpacingMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.lineSpacingMenu, event.target as HTMLElement);
   }
 
-  private onShowLetterSpacingSubMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.letterSpacingSubmenu, event.target as HTMLElement);
+  private onShowLetterSpacingMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.letterSpacingMenu, event.target as HTMLElement);
   }
 
-  private onShowFontSubMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.fontSubmenu, event.target as HTMLElement);
+  private onShowFontMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.fontMenu, event.target as HTMLElement);
   }
 
   private onShowFontSizeMenuClick_(event: MouseEvent) {
@@ -340,6 +287,40 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     });
   }
 
+  private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem>) {
+    this.onTextStyleClick_(
+        event, ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
+        this.$.letterSpacingMenu,
+        ReadAnythingElement.prototype.updateLetterSpacing);
+  }
+
+  private onLineSpacingClick_(event: DomRepeatEvent<MenuStateItem>) {
+    this.onTextStyleClick_(
+        event, ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
+        this.$.lineSpacingMenu,
+        ReadAnythingElement.prototype.updateLineSpacing);
+  }
+
+  private onColorClick_(event: DomRepeatEvent<MenuStateItem>) {
+    this.onTextStyleClick_(
+        event, ReadAnythingSettingsChange.THEME_CHANGE, this.$.colorMenu,
+        ReadAnythingElement.prototype.updateThemeFromWebUi);
+  }
+
+  private onTextStyleClick_(
+      event: DomRepeatEvent<MenuStateItem>, logVal: ReadAnythingSettingsChange,
+      menuClicked: CrActionMenuElement,
+      contentPageCallback: ((data: any) => void)) {
+    event.model.item.callback();
+    chrome.metricsPrivate.recordEnumerationValue(
+        SETTINGS_CHANGE_UMA, logVal, ReadAnythingSettingsChange.COUNT);
+    if (this.contentPage) {
+      contentPageCallback.call(this.contentPage, event.model.item.data);
+    }
+    this.setCheckMarkForMenu_(menuClicked, event.model.index);
+    this.closeMenus_();
+  }
+
   private onFontClick_(event: DomRepeatEvent<string>) {
     chrome.metricsPrivate.recordEnumerationValue(
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_CHANGE,
@@ -349,7 +330,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     if (this.contentPage) {
       this.contentPage.updateFont(fontName);
     }
-    this.setCheckMarkForMenu_(this.$.fontSubmenu, event.model.index);
+    this.setCheckMarkForMenu_(this.$.fontMenu, event.model.index);
 
     this.closeMenus_();
   }
@@ -359,6 +340,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       this.contentPage.onSpeechRateChange(event.model.item);
       this.setRateIcon(event.model.item);
     }
+    this.setCheckMarkForMenu_(this.$.rateMenu, event.model.index);
 
     this.closeMenus_();
   }
