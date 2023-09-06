@@ -50,10 +50,6 @@
           "group": "tryserver.chromium.chromiumos"
         },
         {
-          "builder": "linux-chromeos-rel-rts",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
           "builder": "linux-chromeos-siso-rel",
           "group": "tryserver.chromium.chromiumos"
         }
