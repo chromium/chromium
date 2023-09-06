@@ -104,12 +104,12 @@ const char kInfobarPermissionsBadgeTappedHistogram[] =
 
 // Histogram names for InfobarTypeTailoredSecurityService.
 const char kInfobarTailoredSecurityServiceBannerEventHistogram[] =
-    "Mobile.Messages.Banner.Event.InfobarTypePermissions";
+    "Mobile.Messages.Banner.Event.InfobarTypeTailoredSecurityService";
 const char kInfobarTailoredSecurityServiceBannerDismissTypeHistogram[] =
-    "Mobile.Messages.Banner.Dismiss.InfobarTypePermissions";
+    "Mobile.Messages.Banner.Dismiss.InfobarTypeTailoredSecurityService";
 // Modal.
 const char kInfobarTailoredSecurityServiceModalEventHistogram[] =
-    "Mobile.Messages.Modal.Event.InfobarTypePermissions";
+    "Mobile.Messages.Modal.Event.InfobarTypeTailoredSecurityService";
 
 // Histogram names for InfobarTypeSyncError.
 // Banner.
