@@ -613,6 +613,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "linux",
     ),
+    execution_timeout = 4 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
