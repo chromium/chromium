@@ -687,6 +687,10 @@ const base::FeatureParam<double>
         &omnibox::kSquareSuggestIcons,
         "OmniboxSquareSuggestIconEntitiesScale",
         0.8722);
+const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconWeather(
+    &omnibox::kSquareSuggestIcons,
+    "OmniboxSquareSuggestIconWeather",
+    false);
 
 bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);

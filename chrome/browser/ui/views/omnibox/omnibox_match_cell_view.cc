@@ -68,16 +68,19 @@ int GetIconAndImageCornerRadius() {
   // backgrounds.
   DCHECK(OmniboxFieldTrial::kSquareSuggestIconAnswers.Get() ||
          OmniboxFieldTrial::kSquareSuggestIconIcons.Get() ||
-         OmniboxFieldTrial::kSquareSuggestIconEntities.Get());
+         OmniboxFieldTrial::kSquareSuggestIconEntities.Get() ||
+         OmniboxFieldTrial::kSquareSuggestIconWeather.Get());
   return 4;
 }
 
-// The size of entities relative to their background. 0.5 means entities take up
-// half of the space.
-double GetEntityBackgroundScale() {
+// The size of entities and weather icons relative to their background. 0.5
+// means entities/weather icons take up half of the space.
+double GetEntityAndWeatherBackgroundScale() {
   // When `kSquareSuggestIconEntities` is disabled, entities shouldn't be
-  // scaled.
-  DCHECK(OmniboxFieldTrial::kSquareSuggestIconEntities.Get());
+  // scaled. Weather icons should also not be scaled if
+  // `kSquareSuggestIconWeather` is disabled.
+  DCHECK(OmniboxFieldTrial::kSquareSuggestIconEntities.Get() ||
+         OmniboxFieldTrial::kSquareSuggestIconWeather.Get());
   double scale = OmniboxFieldTrial::kSquareSuggestIconEntitiesScale.Get();
   DCHECK_GT(scale, 0);
   DCHECK_LE(scale, 1);
@@ -374,11 +377,22 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
   int height = image.height();
   const int max = std::max(width, height);
 
-  if (OmniboxFieldTrial::kSquareSuggestIconEntities.Get() &&
-      !is_weather_answer) {
+  if (OmniboxFieldTrial::kSquareSuggestIconWeather.Get() && is_weather_answer) {
+    // Weather icon square background should be the same color as the pop-up
+    // background.
     answer_image_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-            max / GetEntityBackgroundScale(), GetIconAndImageCornerRadius(),
+            max / GetEntityAndWeatherBackgroundScale(),
+            GetIconAndImageCornerRadius(),
+            GetColorProvider()->GetColor(kColorOmniboxResultsBackground),
+            gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+                GetIconAndImageCornerRadius(), image)));
+  } else if (OmniboxFieldTrial::kSquareSuggestIconEntities.Get() &&
+             !is_weather_answer) {
+    answer_image_view_->SetImage(
+        gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+            max / GetEntityAndWeatherBackgroundScale(),
+            GetIconAndImageCornerRadius(),
             GetColorProvider()->GetColor(kColorOmniboxResultsIconGM3Background),
             gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
                 GetIconAndImageCornerRadius(), image)));

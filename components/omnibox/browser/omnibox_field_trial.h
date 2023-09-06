@@ -353,6 +353,8 @@ extern const base::FeatureParam<bool> kSquareSuggestIconEntities;
 // takes up half of the space. Should be (0, 1). No effect if
 // `kSquareSuggestIconEntities` is false or this is 1.
 extern const base::FeatureParam<double> kSquareSuggestIconEntitiesScale;
+// Gray rounded rect background for weather icons.
+extern const base::FeatureParam<bool> kSquareSuggestIconWeather;
 
 // Omnibox UI simplification - uniform row heights.
 // Returns true if the feature to enable uniform row height is enabled.
