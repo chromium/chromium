@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught TransactionCallbackError
-If WebKit doesn't crash, this test has passed

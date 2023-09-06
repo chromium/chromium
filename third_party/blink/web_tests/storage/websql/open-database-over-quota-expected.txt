@@ -1,2 +1,0 @@
-This tests that calling openDatabase with a size over 5MB doesn't assert on debug builds.
-FAIL: We shouldn't have been able to open the database.

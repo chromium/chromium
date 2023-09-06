@@ -1,7 +1,0 @@
-PASS: property 'timestamp' ok, type was number
-PASS: property 'id' ok, type was number
-PASS: property 'real' ok, type was number
-PASS: property 'text' ok, type was string
-PASS: property 'blob' ok, type was string
-PASS: database clean up ok.
-

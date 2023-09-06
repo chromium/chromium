@@ -1,9 +1,0 @@
-This is a test to see if queueing up multiple transactions on different handles to the same database results in a deadlock.
-
-db1 read statement succeeded
-db1 write statement succeeded
-db1 transaction succeeded
-db2 read statement succeeded
-db2 write statement succeeded
-db2 transaction succeeded
-

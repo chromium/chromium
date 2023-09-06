@@ -1,3 +1,0 @@
-ALERT: undefined
-ALERT: PASS: document.body.bar visible in a callback created in this world.
-This test tests that the transaction success callback is called in the right world.

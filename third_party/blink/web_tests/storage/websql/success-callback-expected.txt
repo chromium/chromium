@@ -1,5 +1,0 @@
-This test confirms that a successful transaction - both with and without a statement - receives its successCallback
-Transaction succeeded - Transaction with one statement
-Transaction succeeded - Empty transaction
-Test Complete
-

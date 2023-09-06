@@ -1,4 +1,0 @@
-This test verifies that the JS database.changeVersion() function works as expected.
-Finished tests with version 3; expected version: 3
-TEST COMPLETE
-

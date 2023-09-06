@@ -1140,9 +1140,6 @@ scrollbars/overlay-scrollbars-within-overflow-scroll.html
 scrollbars/resize-scales-with-dpi-150.html
 storage/indexeddb/empty-blob-file.html
 storage/indexeddb/intversion-revert-on-abort.html
-storage/websql/database-lock-after-reload.html
-storage/websql/open-database-set-empty-version.html
-storage/websql/sql-error-codes.html
 svg/W3C-SVG-1.1-SE/color-prop-05-t.svg
 svg/W3C-SVG-1.1-SE/coords-dom-01-f.svg
 svg/W3C-SVG-1.1-SE/coords-dom-02-f.svg

@@ -1,4 +1,0 @@
-Changing the hash to create history entries.
-Db is warmed up
-Test Complete, SUCCESS
-
