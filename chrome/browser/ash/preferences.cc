@@ -108,6 +108,10 @@ const char* const kCopyToKnownUserPrefs[] = {
     ::prefs::kUse24HourClock,
     prefs::kDarkModeEnabled};
 
+bool AreScrollSettingsAllowed() {
+  return base::FeatureList::IsEnabled(features::kAllowScrollSettings);
+}
+
 }  // namespace
 
 Preferences::Preferences()
@@ -906,7 +910,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
       // With the flag off, also set scroll sensitivity (legacy fallback).
       // TODO(https://crbug.com/836258): Remove check when flag is removed.
-      if (!features::IsAllowScrollSettingsEnabled()) {
+      if (!AreScrollSettingsAllowed()) {
         mouse_settings.SetScrollSensitivity(sensitivity_int);
       }
     }
@@ -918,7 +922,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       pref_name == prefs::kMouseScrollSensitivity) {
     // With the flag off, use to normal sensitivity (legacy fallback).
     // TODO(https://crbug.com/836258): Remove check when flag is removed.
-    const int sensitivity_int = features::IsAllowScrollSettingsEnabled()
+    const int sensitivity_int = AreScrollSettingsAllowed()
                                     ? mouse_scroll_sensitivity_.GetValue()
                                     : mouse_sensitivity_.GetValue();
     if (user_is_active)
@@ -942,7 +946,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
       // With the flag off, also set scroll sensitivity (legacy fallback).
       // TODO(https://crbug.com/836258): Remove check when flag is removed.
-      if (!features::IsAllowScrollSettingsEnabled()) {
+      if (!AreScrollSettingsAllowed()) {
         touchpad_settings.SetScrollSensitivity(sensitivity_int);
       }
     }
@@ -954,7 +958,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       pref_name == prefs::kTouchpadScrollSensitivity) {
     // With the flag off, use normal sensitivity (legacy fallback).
     // TODO(https://crbug.com/836258): Remove check when flag is removed.
-    const int sensitivity_int = features::IsAllowScrollSettingsEnabled()
+    const int sensitivity_int = AreScrollSettingsAllowed()
                                     ? touchpad_scroll_sensitivity_.GetValue()
                                     : touchpad_sensitivity_.GetValue();
     if (user_is_active)
