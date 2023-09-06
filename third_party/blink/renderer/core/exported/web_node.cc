@@ -245,7 +245,7 @@ WebNode::operator Node*() const {
   return private_.Get();
 }
 
-int WebNode::GetDevToolsNodeId() const {
+int WebNode::GetDomNodeId() const {
   return DOMNodeIds::IdForNode(private_.Get());
 }
 

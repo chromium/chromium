@@ -1250,7 +1250,7 @@ void EmitDevtoolsIssueForLabelWithoutControl(
     label.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::
             kFormLabelHasNeitherForNorNestedInput,
-        label.GetDevToolsNodeId());
+        label.GetDomNodeId());
   } else if (!label_for_matches_names_attribute) {
     // Label has for attribute but no labellable element whose id OR name
     // matches it.
@@ -1259,14 +1259,14 @@ void EmitDevtoolsIssueForLabelWithoutControl(
     // should be linked to element ids.
     label.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::kFormLabelForMatchesNonExistingIdError,
-        label.GetDevToolsNodeId(), GetWebString<kFor>());
+        label.GetDomNodeId(), GetWebString<kFor>());
   } else {
     // Add a DevTools issue informing the developer that the `label`'s for-
     // attribute is pointing to the name of a field, even though the ID should
     // be used.
     label.GetDocument().GetFrame()->AddGenericIssue(
-        GenericIssueErrorType::kFormLabelForNameError,
-        label.GetDevToolsNodeId(), GetWebString<kFor>());
+        GenericIssueErrorType::kFormLabelForNameError, label.GetDomNodeId(),
+        GetWebString<kFor>());
   }
 }
 
@@ -1369,7 +1369,7 @@ void MaybeEmitDuplicateIdForInputIssue(
         id_count[element.GetIdAttribute()] > 1) {
       element.GetDocument().GetFrame()->AddGenericIssue(
           GenericIssueErrorType::kFormDuplicateIdForInputError,
-          element.GetDevToolsNodeId(), GetWebString<kId>());
+          element.GetDomNodeId(), GetWebString<kId>());
     }
   }
 }
@@ -1380,7 +1380,7 @@ void MaybeEmitInputWithEmptyIdAndNameIssue(
       element.GetIdAttribute().IsEmpty()) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::kFormEmptyIdAndNameAttributesForInputError,
-        element.GetDevToolsNodeId());
+        element.GetDomNodeId());
   }
 }
 
@@ -1423,7 +1423,7 @@ void MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesIssue(
     element.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::
             kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
-        element.GetDevToolsNodeId(),
+        element.GetDomNodeId(),
         id_attr_matches_autocomplete ? GetWebString<kId>()
                                      : GetWebString<kName>());
     return;
@@ -1673,7 +1673,7 @@ void ValidateAutocompleteAttributeForElement(const WebElement& element) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::
             kFormAutocompleteAttributeEmptyError,
-        element.GetDevToolsNodeId(), GetWebString<kAutocomplete>());
+        element.GetDomNodeId(), GetWebString<kAutocomplete>());
   }
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
@@ -1682,7 +1682,7 @@ void ValidateAutocompleteAttributeForElement(const WebElement& element) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::
             kFormInputHasWrongButWellIntendedAutocompleteValueError,
-        element.GetDevToolsNodeId(), GetWebString<kAutocomplete>());
+        element.GetDomNodeId(), GetWebString<kAutocomplete>());
   }
 }
 
@@ -2738,7 +2738,7 @@ void MaybeEmitAriaLabelledByDevtoolsIssue(const WebElement& element,
           [](const WebElement& node) { return node.IsNull(); })) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
-        element.GetDevToolsNodeId(), GetWebString<kAriaLabelledBy>());
+        element.GetDomNodeId(), GetWebString<kAriaLabelledBy>());
   }
 }
 

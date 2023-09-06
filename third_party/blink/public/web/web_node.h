@@ -109,7 +109,7 @@ class BLINK_EXPORT WebNode {
   v8::Local<v8::Value> ToV8Value(v8::Local<v8::Object> creation_context,
                                  v8::Isolate*);
 
-  int GetDevToolsNodeId() const;
+  int GetDomNodeId() const;
 
   // Helper to downcast to `T`. Will fail with a CHECK() if converting to `T` is
   // not legal. The returned `T` will always be non-null if `this` is non-null.
