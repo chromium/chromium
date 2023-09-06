@@ -27,10 +27,6 @@
     <description summary="requests for input emulation">
       This global provides requests for different type of input emulation that
       mirror the semantics of Chrome's ui_controls functions.
-
-      Additionally, there is a set_toplevel_bounds request to help with the
-      implementation of automated UI testing in compositors that don't support
-      aura_shell (i.e. Weston).
     </description>
 
     <enum name="key_state" bitfield="true">
@@ -166,20 +162,6 @@
            allow-null="true" summary="surface that x and y are relative to"/>
       <arg name="id" type="uint"
            summary="will be echoed back in the matching sent event"/>
-    </request>
-
-    <request name="set_toplevel_bounds">
-      <description summary="resize and/or move a toplevel surface">
-        Requests the compositor to apply the specified bounds to the given
-        toplevel surface. This request may be ignored by the compositor for any
-        reason.
-      </description>
-      <arg name="toplevel" type="object" interface="xdg_toplevel"
-           summary="toplevel surface to move/resize"/>
-      <arg name="x" type="int" summary="screen x-coordinate in DIP"/>
-      <arg name="y" type="int" summary="screen y-coordinate in DIP"/>
-      <arg name="width" type="uint" summary="width in DIP"/>
-      <arg name="height" type="uint" summary="height in DIP"/>
     </request>
 
     <event name="request_processed">

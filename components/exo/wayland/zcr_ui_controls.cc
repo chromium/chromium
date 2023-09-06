@@ -170,22 +170,9 @@ void ui_controls_send_touch(struct wl_client* client,
                                              std::move(emit_processed));
 }
 
-void ui_controls_set_toplevel_bounds(struct wl_client* client,
-                                     struct wl_resource* resource,
-                                     struct wl_resource* toplevel,
-                                     int32_t x,
-                                     int32_t y,
-                                     uint32_t width,
-                                     uint32_t height) {
-  // Exo supports aura_shell, which already has an equivalent request. This
-  // request only needs to be implemented by Weston.
-  NOTIMPLEMENTED();
-}
-
 const struct zcr_ui_controls_v1_interface ui_controls_implementation = {
     ui_controls_send_key_events, ui_controls_send_mouse_move,
-    ui_controls_send_mouse_button, ui_controls_send_touch,
-    ui_controls_set_toplevel_bounds};
+    ui_controls_send_mouse_button, ui_controls_send_touch};
 
 void destroy_ui_controls_resource(struct wl_resource* resource) {
   auto* state = GetUserDataAs<UiControlsState>(resource);
