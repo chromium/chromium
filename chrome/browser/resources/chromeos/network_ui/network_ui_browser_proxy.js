@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 /** @interface */
 export class NetworkUIBrowserProxy {
@@ -255,6 +254,12 @@ export class NetworkUIBrowserProxyImpl {
   setTetheringEnabled(enabled) {
     return sendWithPromise('setTetheringEnabled', enabled);
   }
+
+  /** @return {!NetworkUIBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new NetworkUIBrowserProxyImpl());
+  }
 }
 
-addSingletonGetter(NetworkUIBrowserProxyImpl);
+/** @type {?NetworkUIBrowserProxy} */
+let instance = null;
