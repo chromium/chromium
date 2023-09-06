@@ -140,10 +140,10 @@ void EnsureInitialized() {
   static class RunOnce {
    public:
     RunOnce() {
-      NativeInit();
       JNIEnv* env = base::android::AttachCurrentThread();
       // Ensure initialized from Java side to properly create Init thread.
       cronet::Java_CronetLibraryLoader_ensureInitializedFromNative(env);
+      NativeInit();
     }
   } s_run_once;
 }
