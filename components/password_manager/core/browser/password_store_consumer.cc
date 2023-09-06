@@ -29,6 +29,9 @@ void PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom(
                                     std::move(results_or_error)));
 }
 
+void PasswordStoreConsumer::OnGetPasswordStoreResults(
+    std::vector<std::unique_ptr<PasswordForm>> results) {}
+
 void PasswordStoreConsumer::OnGetSiteStatistics(
     std::vector<InteractionsStats> stats) {}
 

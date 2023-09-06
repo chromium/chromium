@@ -151,7 +151,12 @@ void FakePasswordStoreBackend::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {
-  NOTIMPLEMENTED();
+  GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &FakePasswordStoreBackend::RemoveLoginsCreatedBetweenInternal,
+          base::Unretained(this), delete_begin, delete_end),
+      std::move(callback));
 }
 
 void FakePasswordStoreBackend::DisableAutoSignInForOriginsAsync(
@@ -333,6 +338,21 @@ PasswordStoreChangeList FakePasswordStoreBackend::RemoveLoginInternal(
     }
   }
   return changes;
+}
+
+PasswordStoreChangeList
+FakePasswordStoreBackend::RemoveLoginsCreatedBetweenInternal(
+    base::Time delete_begin,
+    base::Time delete_end) {
+  std::vector<std::unique_ptr<PasswordForm>> all_logins =
+      GetAllLoginsInternal();
+  PasswordStoreChangeList list;
+  for (const auto& form : all_logins) {
+    if (delete_begin <= form->date_created && form->date_created < delete_end) {
+      base::ranges::move(RemoveLoginInternal(*form), std::back_inserter(list));
+    }
+  }
+  return list;
 }
 
 }  // namespace password_manager

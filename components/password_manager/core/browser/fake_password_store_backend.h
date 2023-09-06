@@ -112,6 +112,9 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void DisableAutoSignInForOriginsInternal(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
   PasswordStoreChangeList RemoveLoginInternal(const PasswordForm& form);
+  PasswordStoreChangeList RemoveLoginsCreatedBetweenInternal(
+      base::Time delete_begin,
+      base::Time delete_end);
 
   const IsAccountStore is_account_store_{false};
   const UpdateAlwaysSucceeds update_always_succeeds_{false};

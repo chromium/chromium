@@ -58,7 +58,7 @@ class PasswordStoreConsumer {
   // TODO(crbug.com/1360343): Remove when the `FormsOrError` version is
   // implemented by all consumers.
   virtual void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) = 0;
+      std::vector<std::unique_ptr<PasswordForm>> results);
 
   // Like OnGetPasswordStoreResults(), but also receives the originating
   // PasswordStoreInterface as a parameter. This is useful for consumers that
