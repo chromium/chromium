@@ -31,13 +31,6 @@ import {getTemplate} from './manager.html.js';
 import {SearchService} from './search_service.js';
 import {DownloadsToolbarElement} from './toolbar.js';
 
-declare global {
-  interface Window {
-    // https://github.com/microsoft/TypeScript/issues/40807
-    requestIdleCallback(callback: () => void): void;
-  }
-}
-
 export interface DownloadsManagerElement {
   $: {
     'toolbar': DownloadsToolbarElement,
@@ -149,7 +142,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.eventTracker_.add(document, 'click', () => this.onClick_());
 
     this.loaded_.promise.then(() => {
-      window.requestIdleCallback(function() {
+      requestIdleCallback(function() {
         chrome.send(
             'metricsHandler:recordTime',
             ['Download.ResultsRenderedTime', window.performance.now()]);

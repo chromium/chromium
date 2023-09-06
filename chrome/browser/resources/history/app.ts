@@ -111,13 +111,6 @@ export function listenForPrivilegedLinkClicks() {
   });
 }
 
-declare global {
-  interface Window {
-    // https://github.com/microsoft/TypeScript/issues/40807
-    requestIdleCallback(callback: () => void): void;
-  }
-}
-
 export interface HistoryAppElement {
   $: {
     'content': IronPagesElement,
@@ -334,7 +327,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
     // Lazily load the remainder of the UI.
     ensureLazyLoaded().then(function() {
-      window.requestIdleCallback(function() {
+      requestIdleCallback(function() {
         // https://github.com/microsoft/TypeScript/issues/13569
         (document as any).fonts.load('bold 12px Roboto');
       });

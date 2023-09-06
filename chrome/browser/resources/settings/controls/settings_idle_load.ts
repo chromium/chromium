@@ -13,14 +13,6 @@ import {html, PolymerElement, TemplateInstanceBase, templatize} from '//resource
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 
-declare global {
-  interface Window {
-    // https://github.com/microsoft/TypeScript/issues/40807
-    requestIdleCallback(callback: () => void): number;
-    cancelIdleCallback(id: number): void;
-  }
-}
-
 export class SettingsIdleLoadElement extends PolymerElement {
   static get is() {
     return 'settings-idle-load';
@@ -38,7 +30,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.idleCallback_ = window.requestIdleCallback(() => {
+    this.idleCallback_ = requestIdleCallback(() => {
       this.get();
     });
   }
@@ -47,7 +39,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
     super.disconnectedCallback();
 
     // No-op if callback already fired.
-    window.cancelIdleCallback(this.idleCallback_);
+    cancelIdleCallback(this.idleCallback_);
   }
 
   /**

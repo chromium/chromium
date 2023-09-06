@@ -39,11 +39,6 @@ declare global {
   interface HTMLElementTagNameMap {
     'history-clusters': HistoryClustersElement;
   }
-
-  interface Window {
-    // https://github.com/microsoft/TypeScript/issues/40807
-    requestIdleCallback(callback: () => void): void;
-  }
 }
 
 const HistoryClustersElementBase = I18nMixin(PolymerElement);
@@ -329,7 +324,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
    */
   private onBrowserIdle_(): Promise<void> {
     return new Promise(resolve => {
-      window.requestIdleCallback(() => {
+      requestIdleCallback(() => {
         resolve();
       });
     });

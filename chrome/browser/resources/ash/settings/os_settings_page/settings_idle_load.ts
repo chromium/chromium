@@ -47,7 +47,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.idleCallback_ = window.requestIdleCallback(() => {
+    this.idleCallback_ = requestIdleCallback(() => {
       this.get();
     });
   }

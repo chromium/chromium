@@ -248,7 +248,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
    */
   private onBrowserIdle_(): Promise<void> {
     return new Promise(resolve => {
-      window.requestIdleCallback(() => {
+      requestIdleCallback(() => {
         resolve();
       });
     });
@@ -331,7 +331,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     // iron-list can't handle our size changing because of loading an image
     // without an explicit event. But we also can't send this until we have
     // updated the image property, so send it on the next idle.
-    window.requestIdleCallback(() => {
+    requestIdleCallback(() => {
       this.dispatchEvent(new CustomEvent('iron-resize', {
         bubbles: true,
         composed: true,

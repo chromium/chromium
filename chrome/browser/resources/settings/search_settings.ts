@@ -14,13 +14,6 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
 
 // clang-format on
 
-  declare global {
-    interface Window {
-      // https://github.com/microsoft/TypeScript/issues/40807
-      requestIdleCallback(callback: () => void): number;
-    }
-  }
-
   /**
    * A data structure used by callers to combine the results of multiple search
    * requests.
@@ -372,7 +365,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
       }
 
       this.running_ = true;
-      window.requestIdleCallback(() => {
+      requestIdleCallback(() => {
         if (!this.request_.canceled) {
           task.exec().then(() => {
             this.running_ = false;
