@@ -2,20 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history/web_history_service_factory.h"
+#include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/history_helper.h"
-#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/typed_urls_helper.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/history/content/browser/history_context_helper.h"
+#include "components/history/core/browser/browsing_history_driver.h"
+#include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/browser/navigation_entry.h"
@@ -36,7 +41,34 @@ using history_helper::HasVisitDuration;
 using history_helper::UrlIs;
 using history_helper::VisitRowHasDuration;
 using testing::AllOf;
+using testing::IsEmpty;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
+
+namespace {
+
+class TestBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
+ public:
+  explicit TestBrowsingHistoryDriver(history::WebHistoryService* web_history)
+      : web_history_(web_history) {}
+  ~TestBrowsingHistoryDriver() override = default;
+
+  bool AllowHistoryDeletions() override { return true; }
+  history::WebHistoryService* GetWebHistoryService() override {
+    return web_history_;
+  }
+
+  void OnRemoveVisits(
+      const std::vector<history::ExpireHistoryArgs>& expire_list) override {}
+  bool ShouldHideWebHistoryUrl(const GURL& url) override { return false; }
+  void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
+      const syncer::SyncService* sync_service,
+      history::WebHistoryService* history_service,
+      base::OnceCallback<void(bool)> callback) override {}
+
+ private:
+  const raw_ptr<history::WebHistoryService> web_history_;
+};
 
 class TwoClientHistorySyncTest : public SyncTest {
  public:
@@ -117,6 +149,193 @@ class TwoClientHistorySyncTest : public SyncTest {
   base::test::ScopedFeatureList features_;
 };
 
+// Very simple test; its main reason for existence is that it's the only E2E
+// test covering history.
+IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, E2E_ENABLED(SyncsUrl)) {
+  ResetSyncForPrimaryAccount();
+  // Use a randomized URL to prevent test collisions.
+  const std::u16string kHistoryUrl = base::ASCIIToUTF16(base::StringPrintf(
+      "http://www.add-history.google.com/%s",
+      base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  size_t initial_count = typed_urls_helper::GetTypedUrlsFromClient(0).size();
+
+  // Populate one client with a URL, wait for it to sync to the other.
+  GURL new_url(kHistoryUrl);
+  typed_urls_helper::AddUrlToHistory(0, new_url);
+  ASSERT_TRUE(ProfilesHaveSameTypedURLsChecker().Wait());
+
+  // Verify that the second client has the correct new URL.
+  history::URLRows urls = typed_urls_helper::GetTypedUrlsFromClient(1);
+  ASSERT_EQ(initial_count + 1, urls.size());
+  EXPECT_EQ(new_url, urls.back().url());
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitForBookmarkedUrl) {
+  GURL bookmark_url("http://www.bookmark.google.com/");
+  GURL bookmark_icon_url("http://www.bookmark.google.com/favicon.ico");
+  ASSERT_TRUE(SetupClients());
+  // Create a bookmark.
+  const bookmarks::BookmarkNode* node = bookmarks_helper::AddURL(
+      0, bookmarks_helper::IndexedURLTitle(0), bookmark_url);
+  bookmarks_helper::SetFavicon(0, node, bookmark_icon_url,
+                               bookmarks_helper::CreateFavicon(SK_ColorWHITE),
+                               bookmarks_helper::FROM_UI);
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // A row in the DB for client 1 should have been created as a result of
+  // syncing the bookmark.
+  history::URLRow row;
+  ASSERT_TRUE(typed_urls_helper::GetUrlFromClient(1, bookmark_url, &row));
+
+  // Now, add a visit for client 0 to the bookmark URL and sync it over - this
+  // should not cause a crash.
+  typed_urls_helper::AddUrlToHistory(0, bookmark_url);
+
+  ASSERT_TRUE(ProfilesHaveSameTypedURLsChecker().Wait());
+  history::URLRows urls = typed_urls_helper::GetTypedUrlsFromClient(0);
+  EXPECT_EQ(1U, urls.size());
+  EXPECT_EQ(bookmark_url, urls[0].url());
+  EXPECT_EQ(1, urls[0].visit_count());
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsUrlDeletion) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to two URLs on the first client.
+  GURL url1 =
+      embedded_test_server()->GetURL("synced1.com", "/sync/simple.html");
+  NavigateToURL(0, url1);
+  GURL url2 =
+      embedded_test_server()->GetURL("synced2.com", "/sync/simple.html");
+  NavigateToURL(0, url2);
+
+  // Wait for the visits to arrive on the second client.
+  ASSERT_TRUE(WaitForLocalHistory(1, {{url1, SizeIs(1)}, {url2, SizeIs(1)}}));
+
+  // Delete the first URL on the first client.
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(GetProfile(0),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  history::WebHistoryService* web_history_service =
+      WebHistoryServiceFactory::GetForProfile(GetProfile(0));
+  history_service->DeleteLocalAndRemoteUrl(web_history_service, url1);
+
+  // Wait for the deletion to apply to the second client: The first URL should
+  // be gone, but the second one should remain.
+  EXPECT_TRUE(WaitForLocalHistory(1, {{url1, IsEmpty()}, {url2, SizeIs(1)}}));
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsTimeRangeDeletion) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to three URLs on the first client.
+  GURL url1 =
+      embedded_test_server()->GetURL("synced1.com", "/sync/simple.html");
+  NavigateToURL(0, url1);
+  GURL url2 =
+      embedded_test_server()->GetURL("synced2.com", "/sync/simple.html");
+  NavigateToURL(0, url2);
+  GURL url3 =
+      embedded_test_server()->GetURL("synced3.com", "/sync/simple.html");
+  NavigateToURL(0, url3);
+
+  // Wait for the visits to arrive on the second client.
+  ASSERT_TRUE(WaitForLocalHistory(
+      1, {{url1, SizeIs(1)}, {url2, SizeIs(1)}, {url3, SizeIs(1)}}));
+
+  // Get the visit timestamps.
+  history::VisitVector visits1 =
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
+  ASSERT_EQ(visits1.size(), 1u);
+  base::Time time1 = visits1[0].visit_time;
+  history::VisitVector visits2 =
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url2);
+  ASSERT_EQ(visits2.size(), 1u);
+  base::Time time2 = visits2[0].visit_time;
+  history::VisitVector visits3 =
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url3);
+  ASSERT_EQ(visits3.size(), 1u);
+  base::Time time3 = visits3[0].visit_time;
+
+  // Delete a time range that covers exactly the second visit.
+  base::Time begin = time1 + (time2 - time1) / 2;
+  ASSERT_LT(time1, begin);
+  ASSERT_LT(begin, time2);
+  base::Time end = time2 + (time3 - time2) / 2;
+  ASSERT_LT(time2, end);
+  ASSERT_LT(end, time3);
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(GetProfile(0),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  history::WebHistoryService* web_history_service =
+      WebHistoryServiceFactory::GetForProfile(GetProfile(0));
+  base::CancelableTaskTracker task_tracker;
+  history_service->DeleteLocalAndRemoteHistoryBetween(
+      web_history_service, begin, end, base::DoNothing(), &task_tracker);
+
+  // Wait for the deletion to apply to the second client: The second URL should
+  // be gone, but the first and third should remain.
+  EXPECT_TRUE(WaitForLocalHistory(
+      1, {{url1, SizeIs(1)}, {url2, IsEmpty()}, {url3, SizeIs(1)}}));
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to two URLs on the first client.
+  GURL url1 =
+      embedded_test_server()->GetURL("synced1.com", "/sync/simple.html");
+  NavigateToURL(0, url1);
+  GURL url2 =
+      embedded_test_server()->GetURL("synced2.com", "/sync/simple.html");
+  NavigateToURL(0, url2);
+
+  // Navigate to the URLs again, so there are two visits per URL.
+  NavigateToURL(0, url1);
+  NavigateToURL(0, url2);
+
+  // Wait for the visits to arrive on the second client.
+  ASSERT_TRUE(WaitForLocalHistory(1, {{url1, SizeIs(2)}, {url2, SizeIs(2)}}));
+
+  // Get the visit timestamps corresponding to the first URL.
+  history::VisitVector visits1 =
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
+  ASSERT_EQ(visits1.size(), 2u);
+  base::Time time1a = visits1[0].visit_time;
+  base::Time time1b = visits1[1].visit_time;
+
+  // Specify deletions for both of the first URL's visits.
+  // Logic similar to `BrowsingHistoryHandler::HandleRemoveVisits()`.
+  history::BrowsingHistoryService::HistoryEntry entry1;
+  entry1.url = url1;
+  entry1.all_timestamps.insert(time1a.ToInternalValue());
+  entry1.all_timestamps.insert(time1b.ToInternalValue());
+  std::vector<history::BrowsingHistoryService::HistoryEntry> items_to_remove;
+  items_to_remove.push_back(entry1);
+
+  // Apply the deletions. This requires creating a BrowsingHistoryService
+  // instance.
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(GetProfile(0),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  history::WebHistoryService* web_history_service =
+      WebHistoryServiceFactory::GetForProfile(GetProfile(0));
+  TestBrowsingHistoryDriver driver(web_history_service);
+  history::BrowsingHistoryService browsing_history_service(
+      &driver, history_service, GetSyncService(0));
+
+  browsing_history_service.RemoveVisits(items_to_remove);
+  // Note that this API applies deletions to all matching visits on the same
+  // day, so it's hard to test the deletion of only *some* of a URL's visits.
+
+  // Wait for the deletions to apply to the second client: Both visits to the
+  // first URL should be gone, but the second URL's visits should remain.
+  EXPECT_TRUE(WaitForLocalHistory(1, {{url1, IsEmpty()}, {url2, SizeIs(2)}}));
+}
+
 IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest,
                        DoesNotSyncBrowsingTopicsEligibility) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -177,3 +396,5 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest,
   // Just as a sanity check: Other visit fields *did* arrive.
   EXPECT_FALSE(synced_visit.visit_row.visit_duration.is_zero());
 }
+
+}  // namespace

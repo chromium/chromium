@@ -17,7 +17,6 @@ sync_integration_tests_sources = [
   "../browser/sync/test/integration/single_client_outgoing_password_sharing_invitation_test.cc",
   "../browser/sync/test/integration/single_client_reading_list_sync_test.cc",
   "../browser/sync/test/integration/single_client_sync_invalidations_test.cc",
-  "../browser/sync/test/integration/single_client_typed_urls_sync_test.cc",
   "../browser/sync/test/integration/sync_exponential_backoff_test.cc",
 ]
 
@@ -75,7 +74,6 @@ if (!is_android) {
     "../browser/sync/test/integration/two_client_send_tab_to_self_sync_test.cc",
     "../browser/sync/test/integration/two_client_sessions_sync_test.cc",
     "../browser/sync/test/integration/two_client_themes_sync_test.cc",
-    "../browser/sync/test/integration/two_client_typed_urls_sync_test.cc",
     "../browser/sync/test/integration/two_client_user_events_sync_test.cc",
     "../browser/sync/test/integration/two_client_wallet_sync_test.cc",
     "../browser/sync/test/integration/two_client_web_apps_bmo_sync_test.cc",
