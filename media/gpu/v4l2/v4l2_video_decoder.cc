@@ -351,7 +351,6 @@ bool V4L2VideoDecoder::IsPlatformDecoder() const {
 V4L2Status V4L2VideoDecoder::InitializeBackend() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DCHECK(state_ == State::kInitialized);
 
   can_use_decoder_ =
       num_instances_.Increment() < kMaxNumOfInstances ||
@@ -441,7 +440,6 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
 
 bool V4L2VideoDecoder::SetupInputFormat(uint32_t fourcc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DCHECK_EQ(state_, State::kInitialized);
 
   // Check if the format is supported.
   const auto v4l2_codecs_as_pix_fmts = EnumerateSupportedPixFmts(
