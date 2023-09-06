@@ -942,9 +942,13 @@
     "owners": ["andruud@chromium.org", "futhark@chromium.org"],
     "platforms": ["Linux"],
     "bases": [
-      "wpt_internal/css/css-nesting/ident"
+      "wpt_internal/css/css-nesting/ident",
+      "inspector-protocol/css"
     ],
-    "exclusive_tests": "ALL",
+    "exclusive_tests": [
+      "wpt_internal/css/css-nesting/ident",
+      "inspector-protocol/css/css-nested-ident-styles.js"
+      ],
     "args": ["--enable-blink-features=CSSNestingIdent",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 1, 2023"

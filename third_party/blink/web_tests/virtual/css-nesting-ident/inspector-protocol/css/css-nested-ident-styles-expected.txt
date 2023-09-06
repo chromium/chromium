@@ -1,0 +1,20 @@
+The test verifies functionality of protocol methods working correctly with CSS nesting rules starting with identifiers
+*div* {    user-agent    readonly
+    display: block; @[undefined-undefined]
+}
+*div* {    regular
+    width: 42px; @[2:4-2:16]
+    width: 42px; @[undefined-undefined]
+}
+nesting selectors: #parent
+unrelated, *div* {    regular
+    display: grid; @[9:6-9:20]
+    display: grid; @[undefined-undefined]
+}
+nesting selectors: div,#parent
+*div:not(.x)* {    regular
+    height: 42px; @[5:6-5:19]
+    height: 42px; @[undefined-undefined]
+}
+nesting selectors: div,#parent
+

@@ -38,11 +38,14 @@ class TestCSSParserObserver : public CSSParserObserver {
   void ObserveProperty(unsigned start_offset,
                        unsigned end_offset,
                        bool is_important,
-                       bool is_parsed) override {}
+                       bool is_parsed) override {
+    property_start_ = start_offset;
+  }
   void ObserveComment(unsigned start_offset, unsigned end_offset) override {}
   void ObserveErroneousAtRule(unsigned start_offset, CSSAtRuleID id) override {}
 
   StyleRule::RuleType rule_type_ = StyleRule::RuleType::kStyle;
+  unsigned property_start_ = 0;
   unsigned rule_header_start_ = 0;
   unsigned rule_header_end_ = 0;
   unsigned rule_body_start_ = 0;
@@ -453,6 +456,22 @@ TEST(CSSParserImplTest, ObserveNestedLayer) {
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 54u);
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 54u);
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 88u);
+}
+
+TEST(CSSParserImplTest, NestedIdent) {
+  ScopedCSSNestingIdentForTest enabled(true);
+
+  String sheet_text = "div { p:hover { } }";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
+                                             test_css_parser_observer);
+  // 'p:hover { }' should be reported both as a failed declaration,
+  // and as a style rule (at the same location).
+  EXPECT_EQ(test_css_parser_observer.property_start_, 6u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 6u);
 }
 
 TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {

@@ -210,6 +210,20 @@ class StyleSheetHandler final : public CSSParserObserver {
   CSSRuleSourceData* current_rule_data_;
   absl::optional<IssueReportingContext> issueReportingContext_;
   std::unique_ptr<LineEndings> line_endings_;
+  // A property that fails to parse (ObserveProperty with is_parsed=false)
+  // temporarily becomes a replaceable property. A replaceable property can be
+  // replaced by a (valid) style rule at the same offset. This is needed to
+  // interpret the parsing behavior seen with nested style rules that start with
+  // <ident-token>, where we first try to parse the token sequence as a
+  // property, and then (if that fails) restart parsing as a style rule. This
+  // means that we'll see both a ObserveProperty event and a StartRuleHeader
+  // event at the same offset.
+  //
+  // When this situation happens, we remove the CSSPropertySourceData previously
+  // produced by ObserveProperty once we've seen a valid style rule at the same
+  // offset. Note that we do not consider a rule valid until we see the
+  // StartRuleBody event, so the actual replacement takes place there.
+  absl::optional<unsigned> replaceable_property_offset_;
 };
 
 void StyleSheetHandler::StartRuleHeader(StyleRule::RuleType type,
@@ -262,6 +276,22 @@ void StyleSheetHandler::StartRuleBody(unsigned offset) {
   if (parsed_text_[offset] == '{')
     ++offset;  // Skip the rule body opening brace.
   current_rule_data_stack_.back()->rule_body_range.start = offset;
+
+  // If this style rule appears on the same offset as a failed property,
+  // we need to remove the corresponding CSSPropertySourceData.
+  // See `replaceable_property_offset_` for more information.
+  if (replaceable_property_offset_.has_value() &&
+      current_rule_data_stack_.size() >= 2) {
+    if (replaceable_property_offset_ ==
+        current_rule_data_stack_.back()->rule_header_range.start) {
+      // The outer rule holds a property at the same offset. Remove it.
+      CSSRuleSourceData& outer_rule =
+          *current_rule_data_stack_[current_rule_data_stack_.size() - 2];
+      DCHECK(!outer_rule.property_data.empty());
+      outer_rule.property_data.pop_back();
+      replaceable_property_offset_ = absl::nullopt;
+    }
+  }
 }
 
 void StyleSheetHandler::EndRuleBody(unsigned offset) {
@@ -346,6 +376,13 @@ void StyleSheetHandler::ObserveProperty(unsigned start_offset,
   current_rule_data_stack_.back()->property_data.push_back(
       CSSPropertySourceData(name, value, is_important, false, is_parsed,
                             SourceRange(start_offset, end_offset)));
+
+  // Any property with is_parsed=false becomes a replaceable property.
+  // A replaceable property can be replaced by a (valid) style rule
+  // at the same offset.
+  replaceable_property_offset_ = is_parsed
+                                     ? absl::optional<unsigned>()
+                                     : absl::optional<unsigned>(start_offset);
 }
 
 void StyleSheetHandler::ObserveComment(unsigned start_offset,

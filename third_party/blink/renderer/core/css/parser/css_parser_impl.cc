@@ -2118,9 +2118,7 @@ void CSSParserImpl::ConsumeDeclarationList(
             stream.UncheckedConsume();  // kSemicolonToken
           }
           break;
-        } else if (!RuntimeEnabledFeatures::CSSNestingIdentEnabled() ||
-                   use_observer) {
-          // TODO(crbug.com/1427259): Support restart with inspector attached.
+        } else if (!RuntimeEnabledFeatures::CSSNestingIdentEnabled()) {
           // Error recovery.
           stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
           if (!stream.AtEnd()) {
