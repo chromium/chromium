@@ -50,7 +50,10 @@ class SavePackageFilePicker : public ui::SelectFileDialog::Listener {
   // Whether the web page can be saved as a complete HTML file.
   bool can_save_as_complete_;
 
-  raw_ptr<DownloadPrefs> download_prefs_;
+  // TODO(https://crbug.com/1479566): `download_prefs_` points to
+  // `ChromeDownloadManagerDelegate::download_prefs_`.  `ChromeDownloadManagerDelegate`
+  // is destroyed on shutdown but dialogs are not, causing this to dangle.
+  raw_ptr<DownloadPrefs, DanglingUntriaged> download_prefs_;
 
   content::SavePackagePathPickedCallback callback_;
 
