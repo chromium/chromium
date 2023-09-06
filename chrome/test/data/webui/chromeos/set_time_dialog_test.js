@@ -69,7 +69,7 @@ suite('SetTimeDialog', function() {
 
   setup(function() {
     testBrowserProxy = new TestSetTimeBrowserProxy();
-    SetTimeBrowserProxyImpl.instance_ = testBrowserProxy;
+    SetTimeBrowserProxyImpl.setInstance(testBrowserProxy);
     PolymerTest.clearBody();
     setTimeElement = document.createElement('set-time-dialog');
     document.body.appendChild(setTimeElement);

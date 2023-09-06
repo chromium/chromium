@@ -4,8 +4,6 @@
 
 /** @fileoverview A helper object used by the "Set Time" dialog. */
 
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
-
 /** @interface */
 export class SetTimeBrowserProxy {
   /** Notifies C++ code that it's safe to call JS functions. */
@@ -54,6 +52,17 @@ export class SetTimeBrowserProxyImpl {
   doneClicked(timeInSeconds) {
     chrome.send('doneClicked', [timeInSeconds]);
   }
+
+  /** @return {!SetTimeBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new SetTimeBrowserProxyImpl());
+  }
+
+  /** @param {!SetTimeBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(SetTimeBrowserProxyImpl);
+/** @type {?SetTimeBrowserProxy} */
+let instance = null;
