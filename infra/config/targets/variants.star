@@ -483,3 +483,62 @@ targets.variant(
         "win10_nvidia_gtx_1660_stable",
     ],
 )
+
+targets.variant(
+    name = "MODEL_VALIDATION_TRUNK",
+    identifier = "MODEL_VALIDATION_TRUNK",
+    linux_args = [
+        "--chromedriver",
+        "chromedriver",
+        "--binary",
+        "chrome",
+    ],
+    mac_args = [
+        "--chromedriver",
+        "chromedriver",
+        "--binary",
+        "Chromium.app/Contents/MacOS/Chromium",
+    ],
+    win64_args = [
+        "--chromedriver",
+        "chromedriver.exe",
+        "--binary",
+        "Chrome.exe",
+    ],
+)
+
+targets.variant(
+    name = "MODEL_VALIDATION_STABLE",
+    identifier = "MODEL_VALIDATION_STABLE",
+    args = [
+        "--channel",
+        "stable",
+    ],
+)
+
+targets.variant(
+    name = "MODEL_VALIDATION_BETA",
+    identifier = "MODEL_VALIDATION_BETA",
+    args = [
+        "--channel",
+        "beta",
+    ],
+)
+
+targets.variant(
+    name = "MODEL_VALIDATION_DEV",
+    identifier = "MODEL_VALIDATION_DEV",
+    args = [
+        "--channel",
+        "dev",
+    ],
+)
+
+targets.variant(
+    name = "MODEL_VALIDATION_CANARY",
+    identifier = "MODEL_VALIDATION_CANARY",
+    args = [
+        "--channel",
+        "canary",
+    ],
+)
