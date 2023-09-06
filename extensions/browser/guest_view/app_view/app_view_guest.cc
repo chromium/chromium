@@ -256,7 +256,7 @@ void AppViewGuest::CompleteCreateWebContents(
     const Extension* guest_extension,
     std::unique_ptr<GuestViewBase> owned_this,
     WebContentsCreatedCallback callback) {
-  if (!owner_web_contents()) {
+  if (!owner_rfh()) {
     // The owner was destroyed before getting a response to the embedding
     // request, so we can't proceed with creating a guest.
     std::move(callback).Run(std::move(owned_this), nullptr);

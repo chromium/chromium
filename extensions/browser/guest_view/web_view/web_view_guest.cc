@@ -332,8 +332,7 @@ int WebViewGuest::GetOrGenerateRulesRegistryID(int embedder_process_id,
 void WebViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
                                      const base::Value::Dict& create_params,
                                      WebContentsCreatedCallback callback) {
-  RenderFrameHost* owner_render_frame_host =
-      owner_web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* owner_render_frame_host = owner_rfh();
   RenderProcessHost* owner_render_process_host =
       owner_render_frame_host->GetProcess();
   DCHECK_EQ(browser_context(), owner_render_process_host->GetBrowserContext());
@@ -833,10 +832,10 @@ void WebViewGuest::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsErrorPage() || !navigation_handle->HasCommitted()) {
     // Suppress loadabort for "mailto" URLs.
-    // Also during destruction, owner_web_contents() is null so there's no point
+    // Also during destruction, the owner is null so there's no point
     // trying to send the event.
     if (!navigation_handle->GetURL().SchemeIs(url::kMailToScheme) &&
-        owner_web_contents()) {
+        owner_rfh()) {
       // If a load is blocked, either by WebRequest or security checks, the
       // navigation may or may not have committed. So if we don't see an error
       // code, mark it as blocked.
