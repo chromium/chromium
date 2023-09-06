@@ -110,18 +110,17 @@ std::string GetMachineName() {
   if (computer_name.get())
     return base::SysCFStringRefToUTF8(computer_name.get());
 
-  // If all else fails, return to using a slightly nicer version of the
-  // hardware model.
+  // If all else fails, return to using a slightly nicer version of the hardware
+  // model. Warning: This will soon return just a useless "Mac" string.
   std::string model = base::SysInfo::HardwareModelName();
-  if (model.empty()) {
-    return std::string();
+  absl::optional<base::SysInfo::HardwareModelNameSplit> split =
+      base::SysInfo::SplitHardwareModelNameDoNotUse(model);
+
+  if (!split) {
+    return model;
   }
-  for (size_t i = 0; i < model.size(); i++) {
-    if (base::IsAsciiDigit(model[i])) {
-      return model.substr(0, i);
-    }
-  }
-  return model;
+
+  return split.value().category;
 #elif BUILDFLAG(IS_WIN)
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
   DWORD size = std::size(computer_name);

@@ -10,6 +10,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
@@ -113,9 +114,46 @@ class BASE_EXPORT SysInfo {
   // Returns a descriptive string for the current machine model or an empty
   // string if the machine model is unknown or an error occurred.
   // e.g. "MacPro1,1" on Mac, "iPhone9,3" on iOS or "Nexus 5" on Android. Only
-  // implemented on OS X, iOS, Android, Chrome OS and Windows. This returns an
+  // implemented on macOS, iOS, Android, Chrome OS and Windows. This returns an
   // empty string on other platforms.
+  //
+  // For macOS, a useful reference of the resulting strings returned by this
+  // function and their corresponding hardware can be found at
+  // https://everymac.com/systems/by_capability/mac-specs-by-machine-model-machine-id.html
   static std::string HardwareModelName();
+
+#if BUILDFLAG(IS_MAC)
+  struct HardwareModelNameSplit {
+    std::string category;
+    int model = 0;
+    int variant = 0;
+  };
+  // Hardware model names on the Mac are of the shape "Mac𝓍,𝓎" where the
+  // prefix is the general category, the 𝓍 is the model, and the 𝓎 is the
+  // variant. This function takes the hardware model name as returned by
+  // HardwareModelName() above, and returns it split into its constituent parts.
+  // Returns nullopt if the value cannot be parsed.
+  //
+  // /!\ WARNING
+  //
+  // This is NOT A USEFUL FUNCTION and SHOULD NOT BE USED. While the `model`
+  // value does inform as to what generation of hardware it is within the
+  // `category`, this is not useful in determining the capabilities of the
+  // hardware. Instead of using the `model` value, check the actual capabilities
+  // of the hardware to verify what it can do rather than relying on a hardware
+  // model name. In addition, while the `category` value used to have meaning
+  // and could be used to determine the type of hardware (e.g. desktop vs
+  // laptop), in 2022 Apple started using the generic category of "Mac", thus
+  // removing its usefulness when used alone. While the entire model string as
+  // returned by HardwareModelName() above can be useful for identifying a
+  // specific piece of equipment, splitting apart it is not useful.
+  //
+  // Do not add any further callers! When the aforementioned 2022-era hardware
+  // is the minimum requirement for Chromium, remove this function and adjust
+  // all callers appropriately.
+  static absl::optional<HardwareModelNameSplit> SplitHardwareModelNameDoNotUse(
+      std::string_view name);
+#endif
 
   struct HardwareInfo {
     std::string manufacturer;
@@ -123,7 +161,7 @@ class BASE_EXPORT SysInfo {
   };
   // Returns via |callback| a struct containing descriptive UTF-8 strings for
   // the current machine manufacturer and model, or empty strings if the
-  // information is unknown or an error occurred. Implemented on Windows, OS X,
+  // information is unknown or an error occurred. Implemented on Windows, macOS,
   // iOS, Linux, Chrome OS and Android.
   static void GetHardwareInfo(base::OnceCallback<void(HardwareInfo)> callback);
 

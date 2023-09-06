@@ -137,18 +137,12 @@ void GpuWatchdogTest::SetUp() {
   } else {
     // Check Mac machine model version.
     std::string model_str = base::SysInfo::HardwareModelName();
-    size_t found_position = model_str.find("MacBookPro");
-    constexpr size_t model_version_pos = 10;
+    absl::optional<base::SysInfo::HardwareModelNameSplit> split =
+        base::SysInfo::SplitHardwareModelNameDoNotUse(model_str);
 
-    // A MacBookPro is found.
-    if (found_position == 0 && model_str.size() > model_version_pos) {
-      // model_ver_str = "MacBookProXX,X", model_ver_str = "XX,X"
-      std::string model_ver_str = model_str.substr(model_version_pos);
-      int major_model_ver = std::atoi(model_ver_str.c_str());
-      // For model version < 14,1.
-      if (major_model_ver < 14) {
-        timeout_type = kSlow;
-      }
+    if (split && split.value().category == "MacBookPro" &&
+        split.value().model < 14) {
+      timeout_type = kSlow;
     }
   }
 

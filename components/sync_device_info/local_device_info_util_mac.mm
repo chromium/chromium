@@ -37,18 +37,20 @@ std::string GetPersonalizableDeviceNameInternal() {
     return base::SysCFStringRefToUTF8(computer_name);
   }
 
-  // If all else fails, return to using a slightly nicer version of the
-  // hardware model.
+  // If all else fails, return to using a slightly nicer version of the hardware
+  // model. Warning: This will soon return just a useless "Mac" string.
   std::string model = base::SysInfo::HardwareModelName();
-  if (model.empty()) {
-    return "Unknown";
-  }
-  for (size_t i = 0; i < model.size(); i++) {
-    if (base::IsAsciiDigit(model[i])) {
-      return model.substr(0, i);
+  absl::optional<base::SysInfo::HardwareModelNameSplit> split =
+      base::SysInfo::SplitHardwareModelNameDoNotUse(model);
+
+  if (!split) {
+    if (model.empty()) {
+      return "Unknown";
     }
+    return model;
   }
-  return model;
+
+  return split.value().category;
 }
 
 }  // namespace syncer

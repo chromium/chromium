@@ -12,6 +12,8 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include <string_view>
+
 #include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
@@ -21,6 +23,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -151,6 +154,30 @@ std::string SysInfo::HardwareModelName() {
   } else {
     return GetSysctlStringValue("hw.product");
   }
+}
+
+// static
+absl::optional<SysInfo::HardwareModelNameSplit>
+SysInfo::SplitHardwareModelNameDoNotUse(std::string_view name) {
+  size_t number_loc = name.find_first_of("0123456789");
+  if (number_loc == std::string::npos) {
+    return absl::nullopt;
+  }
+  size_t comma_loc = name.find(',', number_loc);
+  if (comma_loc == std::string::npos) {
+    return absl::nullopt;
+  }
+
+  HardwareModelNameSplit split;
+  const auto* begin = name.begin();
+  if (!StringToInt(std::string_view(begin + number_loc, begin + comma_loc),
+                   &split.model) ||
+      !StringToInt(std::string_view(begin + comma_loc + 1, name.end()),
+                   &split.variant)) {
+    return absl::nullopt;
+  }
+  split.category = name.substr(0, number_loc);
+  return split;
 }
 
 // static
