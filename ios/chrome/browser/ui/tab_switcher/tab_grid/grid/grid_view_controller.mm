@@ -1042,14 +1042,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
-// This prevents the user from dragging a cell past the plus sign cell (the last
-// cell in the collection view).
-- (NSIndexPath*)collectionView:(UICollectionView*)collectionView
-    targetIndexPathForMoveFromItemAtIndexPath:(NSIndexPath*)originalIndexPath
-                          toProposedIndexPath:(NSIndexPath*)proposedIndexPath {
-  return proposedIndexPath;
-}
-
 // This method is used instead of -didSelectItemAtIndexPath, because any
 // selection events will be signalled through the model layer and handled in
 // the TabCollectionConsumer -selectItemWithID: method.

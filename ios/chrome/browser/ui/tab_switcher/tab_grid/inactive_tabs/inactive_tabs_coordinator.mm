@@ -336,11 +336,6 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   }
 }
 
-- (void)didTapPlusSignInGridViewController:
-    (GridViewController*)gridViewController {
-  NOTREACHED();
-}
-
 - (void)gridViewController:(GridViewController*)gridViewController
          didMoveItemWithID:(NSString*)itemID
                    toIndex:(NSUInteger)destinationIndex {

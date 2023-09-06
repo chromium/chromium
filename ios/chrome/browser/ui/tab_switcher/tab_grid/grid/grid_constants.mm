@@ -86,5 +86,3 @@ const CGFloat kGridCellSelectionRingTintWidth = 5.0f;
 const CGFloat kGridCellPriceDropTopSpacing = 10.0f;
 const CGFloat kGridCellPriceDropLeadingSpacing = 10.0f;
 const CGFloat kGridCellPriceDropTrailingSpacing = 10.0f;
-
-const CGFloat kGridExpectedTopContentInset = 20.0f;

@@ -98,8 +98,4 @@ extern const CGFloat kGridCellPriceDropTopSpacing;
 extern const CGFloat kGridCellPriceDropLeadingSpacing;
 extern const CGFloat kGridCellPriceDropTrailingSpacing;
 
-// Expected collection view top content inset. If mismatch, the extra space
-// is communicated to the plus sign button to align + sign correctly.
-extern const CGFloat kGridExpectedTopContentInset;
-
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_CONSTANTS_H_
