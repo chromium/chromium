@@ -176,6 +176,13 @@ class ReadAnythingAppController
 
   void PostProcessSelection();
 
+  // Returns the index of the next sentence of the given text, such that the
+  // next sentence is equivalent to text.substr(0, <returned_index>).
+  // If the sentence exceeds the maximum text length, the sentence will be
+  // cropped to the nearest word boundary that doesn't exceed the maximum
+  // text length.
+  int GetNextSentence(const std::u16string& text, int maxTextLength);
+
   // SetContentForTesting and SetThemeForTesting are used by
   // ReadAnythingAppTest and thus need to be kept in ReadAnythingAppController
   // even though ReadAnythingAppControllerBrowserTest is friended.

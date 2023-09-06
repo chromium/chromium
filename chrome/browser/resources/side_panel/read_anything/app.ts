@@ -165,6 +165,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // window.speechSynthesis.speaking on some platforms.
   paused = true;
   speechStarted = false;
+  maxSpeechLength = 175;
+
   // TODO(crbug.com/1474951): Make this the screen reader default speed if a
   // TTS speed has been set
   private rate_: number = 1;
@@ -399,30 +401,32 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
+  // TODO(crbug.com/1474951): Investigate passing an index instead of a string,
+  // as passing substrings of substrings back and forth is not the most
+  // efficient.
   playMessage(text: string) {
-    // TODO(crbug.com/1474951): 200 characters is set to avoid the issue on
-    // Linux where we don't get too-long text errors. We should investigate a
-    // more robust solution.
-    let maxTextLength = 200;
+    // TODO(crbug.com/1474951): 175 characters is set to avoid the issue on
+    // Linux where the speech apis are blocked for too-long speech and we don't
+    // get too-long text errors. We should investigate a more robust solution.
+    let maxTextLength = this.maxSpeechLength;
     if (text.length < maxTextLength) {
       maxTextLength = text.length;
     }
-    let smallerText = text.substring(0, maxTextLength);
-    // TODO(crbug.com/1474951): Instead of splitting sentences by character
-    // search, which is brittle, use the accessibility APIs to get sentence
-    // boundaries, which will be more robust for internationalization and other
-    // types of sentences.
-    const textArray = smallerText.split('.');
-    if (textArray.length > 1) {
-      // TODO(crbug.com/1474951): Use a more efficient way of traversing through
-      // the text.
-      const splice = textArray[textArray.length - 1];
-      const index = smallerText.lastIndexOf(splice);
-      smallerText = text.substring(0, index);
-      maxTextLength = index;
-    }
 
-    const message = new SpeechSynthesisUtterance(smallerText);
+    // Taking the substring of the text isn't strictly necessary before sending
+    // the text to getNextSentence, but since blocks of text can be very long
+    // and we have a maximum sentence length, taking the substring before
+    // processing the sentence boundaries helps keep things more efficient.
+    // Send a string with a slightly longer length than maxTextLength (if
+    // possible) so indices can be compared to prevent unnecessarily shortening
+    // a complete sentence.
+    const nextSentenceEndIndex = chrome.readingMode.getNextSentence(
+        text.substring(0, maxTextLength + 50), maxTextLength);
+    const sentence = text.substring(0, nextSentenceEndIndex);
+
+    const message = new SpeechSynthesisUtterance(sentence);
+
+    // TODO(crbug.com/1474951): Use correct locale when speaking.
     message.lang = 'en-US';
 
     // TODO(crbug.com/1474951): Add callbacks for onboundary and onpause.
@@ -436,7 +440,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       assert(readAnythingApp);
       if (text.length > maxTextLength) {
         // Continue speaking with the next block of text.
-        readAnythingApp.playMessage(text.substring(maxTextLength, text.length));
+        readAnythingApp.playMessage(
+            text.substring(nextSentenceEndIndex, text.length));
       } else {
         readAnythingApp?.onSpeechStopped();
       }

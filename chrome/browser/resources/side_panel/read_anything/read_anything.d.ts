@@ -193,5 +193,12 @@ declare namespace chrome {
     // Ping that the theme choices of the user have been retrieved from
     // preferences and can be used to set up the page.
     function restoreSettingsFromPrefs(): void;
+
+    // Returns the index of the next sentence of the given text, such that the
+    // next sentence is equivalent to text.substr(0, <returned_index>).
+    // If the sentence exceeds the maximum text length, the sentence will be
+    // cropped to the nearest word boundary that doesn't exceed the maximum
+    // text length.
+    function getNextSentence(value: string, maxTextLength: number): number;
   }
 }
