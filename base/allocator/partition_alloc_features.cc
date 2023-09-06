@@ -97,6 +97,17 @@ BASE_FEATURE(kPartitionAllocLargeThreadCacheSize,
 #endif
 );
 
+const base::FeatureParam<int> kPartitionAllocLargeThreadCacheSizeValue{
+    &kPartitionAllocLargeThreadCacheSize,
+    "PartitionAllocLargeThreadCacheSizeValue",
+    ::partition_alloc::ThreadCacheLimits::kLargeSizeThreshold};
+
+const base::FeatureParam<int>
+    kPartitionAllocLargeThreadCacheSizeValueFor32BitAndroid{
+        &kPartitionAllocLargeThreadCacheSize,
+        "PartitionAllocLargeThreadCacheSizeValueFor32BitAndroid",
+        ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold};
+
 BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
              "PartitionAllocLargeEmptySlotSpanRing",
              FEATURE_DISABLED_BY_DEFAULT);
