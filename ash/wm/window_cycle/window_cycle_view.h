@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/gestures/wm_fling_handler.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -201,11 +200,6 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // performance heavy elements not created yet. These elements will be created
   // once onscreen to improve fade in performance, then removed from this set.
   std::vector<WindowMiniViewBase*> no_previews_list_;
-
-  // Used for preventng occlusion state computations for the duration of the
-  // fade in animation.
-  std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
-      occlusion_tracker_pauser_;
 
   // Tracks the distance that a user has dragged, offsetting the
   // |mirror_container_|. This should be reset only when a user cycles the

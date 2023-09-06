@@ -452,11 +452,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return grid_event_handler_.get();
   }
 
-  views::Widget* saved_desk_library_widget() const {
+  aura::Window* dragged_window() { return dragged_window_.get(); }
+
+  views::Widget* saved_desk_library_widget() {
     return saved_desk_library_widget_.get();
   }
 
-  views::Widget* save_desk_button_container_widget() const {
+  views::Widget* save_desk_button_container_widget() {
     return save_desk_button_container_widget_.get();
   }
 
@@ -633,7 +635,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Records the presentation time of scrolling the grid in overview mode.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
-  // Weak pointer to the window that is being dragged from the top, if there is
+  // Pointer to the window that is being dragged from the shelf, if there is
   // one.
   raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 

@@ -121,9 +121,8 @@ void FrameThrottlingController::StartThrottling(
   base::ranges::copy_if(
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
       std::back_inserter(all_arc_windows), [](aura::Window* window) {
-        return ash::AppType::ARC_APP ==
-               static_cast<ash::AppType>(
-                   window->GetProperty(aura::client::kAppType));
+        return AppType::ARC_APP == static_cast<AppType>(window->GetProperty(
+                                       aura::client::kAppType));
       });
 
   std::vector<aura::Window*> arc_windows;

@@ -425,8 +425,6 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
         paint_as_active_lock_ = active_widget->LockPaintAsActive();
     }
 
-    Shell::Get()->frame_throttling_controller()->StartThrottling(windows);
-
     // Clear any animations that may be running from last overview end.
     for (const auto& animation : delayed_animations_)
       animation->Shutdown();
@@ -484,6 +482,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     for (auto& observer : observers_)
       observer.OnOverviewModeStarting();
     overview_session_->Init(windows, hide_windows);
+
+    overview_session_->UpdateFrameThrottling();
 
     // When fading in from home, start animating blur immediately (if animation
     // is required) - with this transition the item widgets are positioned in

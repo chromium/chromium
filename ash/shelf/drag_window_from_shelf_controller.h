@@ -99,7 +99,7 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  aura::Window* dragged_window() const { return window_; }
+  aura::Window* dragged_window() { return window_; }
   bool drag_started() const { return drag_started_; }
   bool during_window_restoration() const { return during_window_restoration_; }
 
