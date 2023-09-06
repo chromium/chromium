@@ -1785,6 +1785,9 @@ void ShellSurfaceBase::UpdateHostWindowOrigin() {
   // floored value to adjust root surface origin to be at the same position.
   host_window()->layer()->SetSubpixelPositionOffset(
       ToFlooredVector2d(scaled_root_origin) - scaled_root_origin);
+  if (origin != host_window()->bounds().origin()) {
+    AllocateLocalSurfaceId();
+  }
 
   gfx::Rect surface_bounds(origin, host_window()->bounds().size());
   if (host_window()->bounds() == surface_bounds)
