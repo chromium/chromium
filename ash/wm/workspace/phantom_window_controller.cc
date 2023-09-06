@@ -192,6 +192,11 @@ views::Widget* PhantomWindowController::GetMaximizeCueForTesting() const {
   return maximize_cue_widget_.get();
 }
 
+const gfx::Rect& PhantomWindowController::GetTargetBoundsInScreenForTesting()
+    const {
+  return target_bounds_in_screen_;
+}
+
 std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
     aura::Window* root_window,
     const gfx::Rect& bounds_in_screen) {

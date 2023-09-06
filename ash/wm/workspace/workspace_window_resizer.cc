@@ -25,6 +25,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_window_resizer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tile_group/window_splitter.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -817,6 +818,13 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
     }
     dwell_location_in_screen_.reset();
   }
+
+  if (window_splitter_) {
+    // Still need to call this when another snap type takes precedence, so that
+    // the window splitter can remove its own preview if showing.
+    window_splitter_->UpdateDrag(location_in_screen,
+                                 /*can_split=*/snap_type == SnapType::kNone);
+  }
 }
 
 void WorkspaceWindowResizer::CompleteDrag() {
@@ -950,6 +958,10 @@ void WorkspaceWindowResizer::CompleteDrag() {
   // resize/drag and so the current bounds should be maintained, clearing
   // any prior restore bounds.
   window_state()->ClearRestoreBounds();
+
+  if (window_splitter_) {
+    window_splitter_->CompleteDrag(last_location_in_screen);
+  }
 }
 
 void WorkspaceWindowResizer::RevertDrag() {
@@ -991,6 +1003,10 @@ void WorkspaceWindowResizer::RevertDrag() {
       attached_windows_[i]->SetBounds(bounds);
       last_y = attached_windows_[i]->bounds().bottom();
     }
+  }
+
+  if (window_splitter_) {
+    window_splitter_->Disengage();
   }
 }
 
@@ -1106,6 +1122,10 @@ WorkspaceWindowResizer::WorkspaceWindowResizer(
       window_state->window()->parent()->bounds().size());
   if (!parent_local_bounds.Intersects(restore_bounds_for_gesture_)) {
     restore_bounds_for_gesture_.AdjustToFit(parent_local_bounds);
+  }
+
+  if (features::IsWindowSplittingEnabled()) {
+    window_splitter_ = std::make_unique<WindowSplitter>(window_state->window());
   }
 
   std::unique_ptr<ash::PresentationTimeRecorder> recorder =

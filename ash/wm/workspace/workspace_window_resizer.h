@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ash {
+class WindowSplitter;
 class PhantomWindowController;
 class WindowSize;
 class WindowState;
@@ -234,6 +235,9 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
   // Presentation time recorder for tab dragging in clamshell mode.
   std::unique_ptr<ui::PresentationTimeRecorder> tab_dragging_recorder_;
+
+  // Optional window splitter for tiling groups.
+  std::unique_ptr<WindowSplitter> window_splitter_;
 
   // Used to determine if this has been deleted during a drag such as when a tab
   // gets dragged into another browser window.
