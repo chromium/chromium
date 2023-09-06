@@ -93,7 +93,7 @@ export class AppServiceInternalsElement extends PolymerElement {
     fileParts.push('Preferred Apps\n');
     fileParts.push('==============\n\n');
     for (const preferredApp of this.preferredAppList_) {
-      fileParts.push(preferredApp.name + '\n');
+      fileParts.push(preferredApp.name + ' (' + preferredApp.id + ')\n');
       fileParts.push('-----\n');
       fileParts.push(preferredApp.preferredFilters + '\n');
     }
