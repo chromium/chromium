@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+FAIL A fetchLater() call accept small data in POST request of String.
+FAIL A fetchLater() call accept small data in POST request of ArrayBuffer.
+FAIL A fetchLater() call accept small data in POST request of FormData.
+FAIL A fetchLater() call accept small data in POST request of URLSearchParams.
+FAIL A fetchLater() call accept small data in POST request of Blob.
+FAIL A fetchLater() call accept small data in POST request of File.
+FAIL A single fetchLater() call takes up the per-origin quota for its body of String.
+FAIL A single fetchLater() call takes up the per-origin quota for its body of ArrayBuffer.
+FAIL A single fetchLater() call takes up the per-origin quota for its body of Blob.
+FAIL A single fetchLater() call takes up the per-origin quota for its body of File.
+FAIL A single fetchLater() call does not accept empty data in POST request of String.
+FAIL A single fetchLater() call does not accept empty data in POST request of ArrayBuffer.
+FAIL A single fetchLater() call does not accept empty data in POST request of FormData.
+FAIL A single fetchLater() call does not accept empty data in POST request of URLSearchParams.
+FAIL A single fetchLater() call does not accept empty data in POST request of Blob.
+FAIL A single fetchLater() call does not accept empty data in POST request of File.
+FAIL A single fetchLater() call is not allowed to exceed per-origin quota for its body of String.
+FAIL A single fetchLater() call is not allowed to exceed per-origin quota for its body of ArrayBuffer.
+FAIL A single fetchLater() call is not allowed to exceed per-origin quota for its body of FormData.
+FAIL A single fetchLater() call is not allowed to exceed per-origin quota for its body of URLSearchParams.
+FAIL A single fetchLater() call is not allowed to exceed per-origin quota for its body of Blob.
+FAIL A single fetchLater() call is not allowed to exceed per-origin quota for its body of File.
+FAIL The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of String.
+FAIL The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of ArrayBuffer.
+FAIL The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of FormData.
+FAIL The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of URLSearchParams.
+FAIL The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of Blob.
+FAIL The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of File.
+FAIL The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of String.
+FAIL The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of ArrayBuffer.
+FAIL The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of FormData.
+FAIL The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of URLSearchParams.
+FAIL The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of Blob.
+FAIL The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of File.
+Harness: the test ran to completion.
+

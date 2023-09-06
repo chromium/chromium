@@ -93,6 +93,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   const BodyStreamBuffer* BodyBuffer() const override {
     return request_->Buffer();
   }
+  uint64_t BodyBufferByteLength() const { return request_->BufferByteLength(); }
   mojom::blink::RequestContextType GetRequestContextType() const;
   network::mojom::RequestDestination GetRequestDestination() const;
   network::mojom::RequestMode GetRequestMode() const;

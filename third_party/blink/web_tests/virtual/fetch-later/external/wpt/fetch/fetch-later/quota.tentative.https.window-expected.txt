@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+PASS A fetchLater() call accept small data in POST request of String.
+PASS A fetchLater() call accept small data in POST request of ArrayBuffer.
+PASS A fetchLater() call accept small data in POST request of FormData.
+PASS A fetchLater() call accept small data in POST request of URLSearchParams.
+PASS A fetchLater() call accept small data in POST request of Blob.
+PASS A fetchLater() call accept small data in POST request of File.
+PASS A single fetchLater() call takes up the per-origin quota for its body of String.
+PASS A single fetchLater() call takes up the per-origin quota for its body of ArrayBuffer.
+PASS A single fetchLater() call takes up the per-origin quota for its body of Blob.
+PASS A single fetchLater() call takes up the per-origin quota for its body of File.
+PASS A single fetchLater() call does not accept empty data in POST request of String.
+PASS A single fetchLater() call does not accept empty data in POST request of ArrayBuffer.
+PASS A single fetchLater() call does not accept empty data in POST request of FormData.
+PASS A single fetchLater() call does not accept empty data in POST request of URLSearchParams.
+PASS A single fetchLater() call does not accept empty data in POST request of Blob.
+PASS A single fetchLater() call does not accept empty data in POST request of File.
+PASS A single fetchLater() call is not allowed to exceed per-origin quota for its body of String.
+PASS A single fetchLater() call is not allowed to exceed per-origin quota for its body of ArrayBuffer.
+PASS A single fetchLater() call is not allowed to exceed per-origin quota for its body of FormData.
+PASS A single fetchLater() call is not allowed to exceed per-origin quota for its body of URLSearchParams.
+PASS A single fetchLater() call is not allowed to exceed per-origin quota for its body of Blob.
+PASS A single fetchLater() call is not allowed to exceed per-origin quota for its body of File.
+PASS The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of String.
+PASS The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of ArrayBuffer.
+PASS The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of FormData.
+PASS The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of URLSearchParams.
+PASS The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of Blob.
+PASS The 2nd fetchLater() call is not allowed to exceed per-origin quota for its body of File.
+PASS The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of String.
+PASS The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of ArrayBuffer.
+PASS The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of FormData.
+PASS The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of URLSearchParams.
+PASS The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of Blob.
+PASS The 2nd fetchLater() call to another origin does not exceed per-origin quota for its body of File.
+Harness: the test ran to completion.
+

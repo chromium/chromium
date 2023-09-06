@@ -96,6 +96,9 @@ namespace blink {
 
 namespace {
 
+// 64 kilobytes.
+constexpr uint64_t kMaxScheduledDeferredBytesPerOrigin = 64 * 1024;
+
 bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
   String value;
   if (!headers->Get(http_names::kLocation, value))
@@ -282,6 +285,7 @@ class FetchManager::Loader : public GarbageCollected<FetchManager::Loader>,
   virtual void NotifyFinished();
   virtual bool IsDeferred() const;
   FetchManager* fetch_manager();
+  FetchRequestData* fetch_request_data() const;
   ExecutionContext* GetExecutionContext();
 
  private:
@@ -987,6 +991,10 @@ FetchManager* FetchManager::Loader::fetch_manager() {
   return fetch_manager_;
 }
 
+FetchRequestData* FetchManager::Loader::fetch_request_data() const {
+  return fetch_request_data_;
+}
+
 ExecutionContext* FetchManager::Loader::GetExecutionContext() {
   return execution_context_;
 }
@@ -1063,6 +1071,17 @@ class FetchManager::DeferredLoader : public FetchManager::Loader {
     FetchManager::Loader::Abort();
   }
 
+  // Returns this loader's request body length if the followings are all true:
+  // - this loader's request has a non-null body.
+  // - `url` is "same origin" with this loader's request URL.
+  uint64_t GetDeferredBytesForUrlOrigin(const KURL& url) const {
+    return fetch_request_data()->Buffer() &&
+                   SecurityOrigin::AreSameOrigin(fetch_request_data()->Url(),
+                                                 url)
+               ? fetch_request_data()->BufferByteLength()
+               : 0;
+  }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(fetch_later_result_);
     FetchManager::Loader::Trace(visitor);
@@ -1091,6 +1110,7 @@ class FetchManager::DeferredLoader : public FetchManager::Loader {
 
   // A deferred fetch record's "invoke state" field.
   InvokeState invoke_state_ = InvokeState::DEFERRED;
+
   // Retains strong reference to the returned V8 object of a FetchLater API call
   // that creates this loader.
   //
@@ -1150,12 +1170,54 @@ FetchLaterResult* FetchManager::FetchLater(ScriptState* script_state,
   // 6. If request’s URL is not a potentially trustworthy url ...
   if (!network::IsUrlPotentiallyTrustworthy(GURL(request->Url()))) {
     exception_state.ThrowSecurityError(
-        "fetchLater gots a not trustworthy URL.");
+        "fetchLater was passed an insecure URL.");
     return nullptr;
   }
 
+  // 11. Let deferredRecord be the result of calling request a deferred fetch.
+  //
+  // Deferred fetching
+  // https://whatpr.org/fetch/1647/53e4c3d...71fd383.html#deferred-fetching
+  uint64_t bytes_for_origin = 0;
+  // 3. If request’s body is not null then:
+  if (request->Buffer()) {
+    // 3.1 If request’s body’s length is null, then throw a TypeError.
+    if (request->BufferByteLength() == 0) {
+      exception_state.ThrowTypeError(
+          "fetchLater doesn't support body with unknown length.");
+      return nullptr;
+    }
+    // 3.2 Set `bytes_for_origin` to request’s body’s length.
+    bytes_for_origin = request->BufferByteLength();
+  }
+  // Run Step 5 for potential early termination.
+  if (bytes_for_origin > kMaxScheduledDeferredBytesPerOrigin) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kQuotaExceededError,
+        "fetchLater exceeds its quota for the origin.");
+    return nullptr;
+  }
+
+  // 4. For each deferredRecord in request’s client’s fetch group’s deferred
+  // fetch records: if deferredRecord’s request’s body is not null and
+  // deferredRecord’s request’s URL’s origin is same origin with request’s
+  // URL’s origin, then increment `bytes_for_origin` by deferredRecord’s
+  // request’s body’s length.
+  for (const auto& deferred_loader : deferred_loaders_) {
+    bytes_for_origin +=
+        deferred_loader->GetDeferredBytesForUrlOrigin(request->Url());
+    // 5. If `bytes_for_origin` is greater than 64 kilobytes, then throw a
+    // QuotaExceededError.
+    if (bytes_for_origin > kMaxScheduledDeferredBytesPerOrigin) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kQuotaExceededError,
+          "fetchLater exceeds its quota for the origin.");
+      return nullptr;
+    }
+  }
+
   request->SetDestination(network::mojom::RequestDestination::kEmpty);
-  // A fetchLater request is enforced to be a keepalive request.
+  // 6. Set request’s keepalive to true.
   request->SetKeepalive(true);
 
   auto* deferred_loader = MakeGarbageCollected<DeferredLoader>(
