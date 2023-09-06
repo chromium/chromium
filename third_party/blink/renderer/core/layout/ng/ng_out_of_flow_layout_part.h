@@ -238,8 +238,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // This should only be used when laying out a fragmentainer descendant.
     LogicalOffset original_offset;
 
-    // These two fields are set only if this |OffsetInfo| is calculated from a
-    // @try rule of a @position-fallback rule.
+    // These fields are set only if this |OffsetInfo| is calculated from a
+    // position fallback style, either from a @try rule or auto-generated.
+    bool uses_fallback_style = false;
     absl::optional<wtf_size_t> fallback_index;
     Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 

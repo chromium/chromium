@@ -515,7 +515,7 @@ class CORE_EXPORT NGLayoutResult final
     }
 
     void SetPositionFallbackResult(
-        wtf_size_t fallback_index,
+        absl::optional<wtf_size_t> fallback_index,
         const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
       layout_result_->EnsureRareData()->SetPositionFallbackResult(
           fallback_index, non_overflowing_ranges);
@@ -825,16 +825,13 @@ class CORE_EXPORT NGLayoutResult final
     }
 
     void SetPositionFallbackResult(
-        wtf_size_t fallback_index,
+        absl::optional<wtf_size_t> fallback_index,
         const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
       position_fallback_index = fallback_index;
       position_fallback_non_overflowing_ranges = non_overflowing_ranges;
       set_position_fallback_result_is_set(true);
     }
     absl::optional<wtf_size_t> PositionFallbackIndex() const {
-      if (!position_fallback_result_is_set()) {
-        return absl::nullopt;
-      }
       return position_fallback_index;
     }
     const Vector<NonOverflowingScrollRange>*
@@ -883,8 +880,9 @@ class CORE_EXPORT NGLayoutResult final
     // Only valid if line_box_bfc_block_offset_is_set
     LayoutUnit line_box_bfc_block_offset;
 
+    absl::optional<wtf_size_t> position_fallback_index;
+
     // Only valid if position_fallback_result_is_set
-    wtf_size_t position_fallback_index;
     Vector<NonOverflowingScrollRange> position_fallback_non_overflowing_ranges;
 
     // Only valid if oof_positioned_offset_is_set

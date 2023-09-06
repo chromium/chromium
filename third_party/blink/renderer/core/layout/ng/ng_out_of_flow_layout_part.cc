@@ -157,6 +157,10 @@ class OOFCandidateStyleIterator {
     Initialize();
   }
 
+  bool UsesFallbackStyle() const {
+    return position_fallback_index_ || HasAutoFallbacks();
+  }
+
   const ComputedStyle& GetStyle() const {
     return auto_anchor_style_ ? *auto_anchor_style_ : *style_;
   }
@@ -203,6 +207,9 @@ class OOFCandidateStyleIterator {
   }
 
  private:
+  bool HasAutoFallbacks() const {
+    return auto_anchor_flippable_in_block_ || auto_anchor_flippable_in_inline_;
+  }
   bool HasNextAutoAnchorFallback() const {
     return auto_anchor_flip_block_ != auto_anchor_flippable_in_block_ ||
            auto_anchor_flip_inline_ != auto_anchor_flippable_in_inline_;
@@ -1752,7 +1759,8 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     }
   }
 
-  if (iter.PositionFallbackIndex()) {
+  if (iter.UsesFallbackStyle()) {
+    offset_info->uses_fallback_style = true;
     offset_info->fallback_index = iter.PositionFallbackIndex();
     offset_info->non_overflowing_ranges = std::move(non_overflowing_ranges);
   } else {
@@ -2026,9 +2034,9 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
   layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
       offset_info.offset);
 
-  if (offset_info.fallback_index) {
+  if (offset_info.uses_fallback_style) {
     layout_result->GetMutableForOutOfFlow().SetPositionFallbackResult(
-        *offset_info.fallback_index, offset_info.non_overflowing_ranges);
+        offset_info.fallback_index, offset_info.non_overflowing_ranges);
   }
 
   return layout_result;
