@@ -507,7 +507,8 @@ absl::optional<gfx::SizeF> ViewTimeline::SubjectSize() const {
   }
 
   if (subject_layout_object->IsBox()) {
-    LayoutRect rect = To<LayoutBox>(subject_layout_object)->BorderBoxRect();
+    PhysicalRect rect =
+        To<LayoutBox>(subject_layout_object)->PhysicalBorderBoxRect();
     return gfx::SizeF(rect.Width().ToDouble(), rect.Height().ToDouble());
   }
 

@@ -1514,9 +1514,9 @@ PointAndTangent ComputedStyle::CalculatePointAndTangentOnRay(
     // Specifically, the path’s length is reduced by half the width
     // or half the height of the element’s border box,
     // whichever is larger, and floored at zero.
-    const float largest_side =
-        std::max(box->BorderBoxRect().Width().ToFloat(),
-                 box->BorderBoxRect().Height().ToFloat());
+    const PhysicalRect border_box_rect = box->PhysicalBorderBoxRect();
+    const float largest_side = std::max(border_box_rect.Width().ToFloat(),
+                                        border_box_rect.Height().ToFloat());
     ray_length -= largest_side / 2;
     ray_length = std::max(ray_length, 0.f);
   }

@@ -113,9 +113,9 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
   if (shape_ == kDefault) {
     Path path;
     // No need to zoom because it is already applied in
-    // containerObject->borderBoxRect().
+    // container_object->PhysicalBorderBoxRect().
     if (const auto* box = DynamicTo<LayoutBox>(container_object))
-      path.AddRect(gfx::RectF(box->BorderBoxRect()));
+      path.AddRect(gfx::RectF(box->PhysicalBorderBoxRect()));
     path_ = nullptr;
     return path;
   }

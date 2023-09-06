@@ -2935,7 +2935,7 @@ gfx::RectF ComputedStyleUtils::ReferenceBoxForTransform(
     if (pixel_snap_box == kUsePixelSnappedBox) {
       return gfx::RectF(layout_box.PixelSnappedBorderBoxRect());
     }
-    return gfx::RectF(layout_box.BorderBoxRect());
+    return gfx::RectF(layout_box.PhysicalBorderBoxRect());
   }
   return gfx::RectF();
 }

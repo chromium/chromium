@@ -6392,9 +6392,9 @@ const CSSValue* PerspectiveOrigin::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
   if (layout_object) {
-    LayoutRect box;
+    PhysicalRect box;
     if (layout_object->IsBox()) {
-      box = To<LayoutBox>(layout_object)->BorderBoxRect();
+      box = To<LayoutBox>(layout_object)->PhysicalBorderBoxRect();
     }
 
     return MakeGarbageCollected<CSSValuePair>(
