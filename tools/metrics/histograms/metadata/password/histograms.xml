@@ -1528,7 +1528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.GeneratedFormHasNoFormManager"
-    enum="BooleanFormManager" expires_after="2023-10-08">
+    enum="BooleanFormManager" expires_after="2024-03-31">
   <owner>kazinova@google.com</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
@@ -1550,7 +1550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.HttpPasswordMigrationCount2"
-    units="saved credentials" expires_after="2023-09-30">
+    units="saved credentials" expires_after="2024-03-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1561,7 +1561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.HttpPasswordMigrationMode2"
-    enum="HttpPasswordMigrationMode" expires_after="2023-09-30">
+    enum="HttpPasswordMigrationMode" expires_after="2024-03-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1832,7 +1832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.JavaScriptOnlyValueInSubmittedForm"
-    enum="JavaScriptOnlyValueInPasswordForm" expires_after="2023-09-30">
+    enum="JavaScriptOnlyValueInPasswordForm" expires_after="2024-03-31">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2641,7 +2641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStore.TimesAttemptedToReenrollInUPM"
-    units="Times" expires_after="2023-09-30">
+    units="Times" expires_after="2024-03-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -3059,7 +3059,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.RequirementsSpecFetcher.NetworkDuration"
-    units="ms" expires_after="2023-10-15">
+    units="ms" expires_after="2024-04-15">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -3649,7 +3649,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.UpdateUIOnClearedPasswordChangeFormDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2023-10-15">
+    enum="PasswordManagerUIDismissalReason" expires_after="2024-04-15">
   <owner>kazinova@google.com</owner>
   <owner>khamutov@google.com</owner>
   <summary>
