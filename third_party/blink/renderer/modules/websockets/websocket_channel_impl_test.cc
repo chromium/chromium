@@ -1286,15 +1286,18 @@ TEST_F(WebSocketChannelImplTest, MojoConnectionError) {
 }
 
 TEST_F(WebSocketChannelImplTest, FailFromClient) {
+  Checkpoint checkpoint;
   {
     InSequence s;
 
     EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
+    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(
         *ChannelClient(),
         DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete,
                  WebSocketChannel::kCloseEventCodeAbnormalClosure, String()));
+    EXPECT_CALL(checkpoint, Call(2));
   }
 
   mojo::ScopedDataPipeProducerHandle writable;
@@ -1306,6 +1309,10 @@ TEST_F(WebSocketChannelImplTest, FailFromClient) {
   Channel()->Fail(
       "fail message from WebSocket", mojom::ConsoleMessageLevel::kError,
       std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
+  checkpoint.Call(1);
+
+  test::RunPendingTasks();
+  checkpoint.Call(2);
 }
 
 class WebSocketChannelImplHandshakeThrottleTest
@@ -1390,10 +1397,11 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, FailDuringThrottle) {
   {
     InSequence s;
     EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
+    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(*ChannelClient(), DidClose(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
-    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(checkpoint, Call(2));
   }
 
   Channel()->Connect(url(), "");
@@ -1401,6 +1409,8 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, FailDuringThrottle) {
       "close during handshake", mojom::ConsoleMessageLevel::kWarning,
       std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
   checkpoint.Call(1);
+  test::RunPendingTasks();
+  checkpoint.Call(2);
 }
 
 // It makes no difference to the behaviour if the WebSocketHandle has actually
@@ -1411,10 +1421,11 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
   {
     InSequence s;
     EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
+    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(*ChannelClient(), DidClose(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
-    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(checkpoint, Call(2));
   }
 
   mojo::ScopedDataPipeProducerHandle writable;
@@ -1427,6 +1438,8 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
       "close during handshake", mojom::ConsoleMessageLevel::kWarning,
       std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
   checkpoint.Call(1);
+  test::RunPendingTasks();
+  checkpoint.Call(2);
 }
 
 TEST_F(WebSocketChannelImplHandshakeThrottleTest, DisconnectDuringThrottle) {
@@ -1489,26 +1502,41 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
 
 TEST_F(WebSocketChannelImplHandshakeThrottleTest,
        ThrottleReportsErrorBeforeConnect) {
+  Checkpoint checkpoint;
   {
     InSequence s;
     EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
+    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
+    EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(*ChannelClient(), DidClose(_, _, _));
+    EXPECT_CALL(checkpoint, Call(3));
   }
 
   Channel()->Connect(url(), "");
+
+  test::RunPendingTasks();
+  checkpoint.Call(1);
+
   Channel()->OnCompletion("Connection blocked by throttle");
+  checkpoint.Call(2);
+
+  test::RunPendingTasks();
+  checkpoint.Call(3);
 }
 
 TEST_F(WebSocketChannelImplHandshakeThrottleTest,
        ThrottleReportsErrorAfterConnect) {
+  Checkpoint checkpoint;
   {
     InSequence s;
     EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
+    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(*ChannelClient(), DidClose(_, _, _));
+    EXPECT_CALL(checkpoint, Call(2));
   }
 
   mojo::ScopedDataPipeProducerHandle writable;
@@ -1518,6 +1546,10 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
   ASSERT_TRUE(websocket);
 
   Channel()->OnCompletion("Connection blocked by throttle");
+  checkpoint.Call(1);
+
+  test::RunPendingTasks();
+  checkpoint.Call(2);
 }
 
 TEST_F(WebSocketChannelImplHandshakeThrottleTest, ConnectFailBeforeThrottle) {

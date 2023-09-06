@@ -505,7 +505,10 @@ void WebSocketChannelImpl::Fail(const String& reason,
       std::move(location)));
   // |reason| is only for logging and should not be provided for scripts,
   // hence close reason must be empty in tearDownFailedConnection.
-  TearDownFailedConnection();
+  execution_context_->GetTaskRunner(TaskType::kNetworking)
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,
+                               WrapPersistent(this)));
 }
 
 void WebSocketChannelImpl::Disconnect() {
