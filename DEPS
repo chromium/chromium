@@ -1822,7 +1822,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'm0SstdECLUB0rPetvzs8-zG8cqzA0mOi4MknuHWTBsUC',
+              'version': 'LrWtF7Gfts11G550w5xD61mhL5_0R9IxcPm-0bj735EC',
           },
       ],
       'condition': 'checkout_android',
