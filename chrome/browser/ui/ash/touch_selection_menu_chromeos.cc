@@ -66,6 +66,7 @@ void TouchSelectionMenuChromeOS::CreateButtons() {
       button->SetImageModel(views::Button::ButtonState::STATE_NORMAL,
                             ui::ImageModel::FromImageSkia(icon));
     }
+    CreateSeparator();
   }
 
   views::TouchSelectionMenuViews::CreateButtons();
