@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
@@ -34,6 +35,7 @@
 #include "content/public/test/fake_service_worker_context.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 
 namespace ash::shimless_rma {
 namespace {
@@ -161,13 +163,22 @@ class FakeDiagnosticsAppProfileHelperDelegate
     return &web_app_command_scheduler_;
   }
 
+  const web_app::WebApp* GetWebAppById(
+      const web_app::AppId& app_id,
+      content::BrowserContext* browser_context) override {
+    return &web_app_;
+  }
+
   FakeServiceWorkerContext& fake_service_worker_context() {
     return fake_service_worker_context_;
   }
 
+  web_app::WebApp& web_app() { return web_app_; }
+
  protected:
   FakeServiceWorkerContext fake_service_worker_context_;
   FakeWebAppCommandScheduler web_app_command_scheduler_;
+  web_app::WebApp web_app_{/*AppId=*/""};
 };
 
 class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
@@ -304,6 +315,21 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), k3pDiagErrorCannotActivateExtension);
+}
+
+// Verify that IWA with permission policy will be blocked.
+TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
+       IWACannotHavePermissionsPolicy) {
+  fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
+      blink::ParsedPermissionsPolicy{
+          {blink::ParsedPermissionsPolicyDeclaration{}}});
+
+  auto result = PrepareDiagnosticsAppBrowserContext(
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .Append(kTestCrxPath));
+
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), k3pDiagErrorIWACannotHasPermissionPolicy);
 }
 
 }  // namespace ash::shimless_rma

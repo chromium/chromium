@@ -20,6 +20,9 @@ inline constexpr char k3pDiagErrorNotChromeOSSystemExtension[] =
 inline constexpr char k3pDiagErrorCannotActivateExtension[] =
     "Can't activate the extension. Extension's service worker is not "
     "registered.";
+inline constexpr char k3pDiagErrorIWACannotHasPermissionPolicy[] =
+    "\"permissions_policy\" is not allowed for IWA for Shimless RMA "
+    "diagnostics app.";
 
 }  // namespace ash::shimless_rma
 

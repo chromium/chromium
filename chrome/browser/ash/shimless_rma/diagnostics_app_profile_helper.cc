@@ -24,7 +24,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/common/pref_names.h"
@@ -139,6 +141,19 @@ void OnIsolatedWebAppInstalled(
   if (!result.has_value()) {
     ReportError(std::move(state), "Failed to install Isolated web app: " +
                                       result.error().message);
+    return;
+  }
+
+  const web_app::WebApp* web_app = state->delegate->GetWebAppById(
+      web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+          *state->iwa_id)
+          .app_id(),
+      state->context);
+  // TODO(b/294815884): Check this when installing the IWA after we can add
+  // custom checker. For now, we just install the IWA. Because we won't return
+  // the profile and won't launch the IWA it should be fine.
+  if (!web_app->permissions_policy().empty()) {
+    ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
     return;
   }
 
@@ -345,6 +360,16 @@ DiagnosticsAppProfileHelperDelegate::GetWebAppCommandScheduler(
       Profile::FromBrowserContext(browser_context));
   CHECK(web_app_provider);
   return &web_app_provider->scheduler();
+}
+
+const web_app::WebApp* DiagnosticsAppProfileHelperDelegate::GetWebAppById(
+    const web_app::AppId& app_id,
+    content::BrowserContext* browser_context) {
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(browser_context));
+  const web_app::WebAppRegistrar& registrar =
+      web_app_provider->registrar_unsafe();
+  return registrar.GetAppById(app_id);
 }
 
 void PrepareDiagnosticsAppProfile(
