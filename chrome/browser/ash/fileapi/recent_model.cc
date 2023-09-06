@@ -136,8 +136,9 @@ void RecentModel::GetRecentFiles(
   pending_callbacks_.emplace_back(std::move(callback));
 
   // If a builder is already running, just enqueue the callback and return.
-  if (builder_already_running)
+  if (builder_already_running) {
     return;
+  }
 
   // Start building a recent file list.
   DCHECK_EQ(0, num_inflight_sources_);
@@ -152,15 +153,23 @@ void RecentModel::GetRecentFiles(
     return;
   }
 
+  // cutoff_time is the oldest modified time for a file to be considered recent.
   base::Time cutoff_time = forced_cutoff_time_.has_value()
                                ? forced_cutoff_time_.value()
                                : base::Time::Now() - kCutoffTimeDelta;
 
   uint32_t run_on_sequence_id = current_sequence_id_;
+  // If there is no scan timeout we set the end_time, i.e., the time by which
+  // the scan is supposed to be done, to maximum possible time. In the current
+  // code base that is about year 292,471.
+  base::TimeTicks end_time =
+      scan_timeout_duration_ ? base::TimeTicks::Now() + *scan_timeout_duration_
+                             : base::TimeTicks::Max();
 
   for (const auto& source : sources_) {
     source->GetRecentFiles(RecentSource::Params(
-        file_system_context, origin, max_files_, cutoff_time, file_type,
+        file_system_context, origin, max_files_, cutoff_time, end_time,
+        file_type,
         base::BindOnce(&RecentModel::OnGetRecentFiles,
                        weak_ptr_factory_.GetWeakPtr(), run_on_sequence_id,
                        max_files_, cutoff_time, file_type)));
@@ -211,16 +220,19 @@ void RecentModel::OnGetRecentFiles(uint32_t run_on_sequence_id,
   }
 
   for (const auto& file : files) {
-    if (file.last_modified() >= cutoff_time)
+    if (file.last_modified() >= cutoff_time) {
       intermediate_files_.emplace(file);
+    }
   }
 
-  while (intermediate_files_.size() > max_files)
+  while (intermediate_files_.size() > max_files) {
     intermediate_files_.pop();
+  }
 
   --num_inflight_sources_;
-  if (num_inflight_sources_ == 0)
+  if (num_inflight_sources_ == 0) {
     OnGetRecentFilesCompleted(file_type);
+  }
 }
 
 void RecentModel::OnGetRecentFilesCompleted(FileType file_type) {
@@ -259,8 +271,9 @@ void RecentModel::OnGetRecentFilesCompleted(FileType file_type) {
   callbacks_to_call.swap(pending_callbacks_);
   DCHECK(pending_callbacks_.empty());
   DCHECK(!callbacks_to_call.empty());
-  for (auto& callback : callbacks_to_call)
+  for (auto& callback : callbacks_to_call) {
     std::move(callback).Run(cached_files_.value());
+  }
 }
 
 void RecentModel::ClearCache() {

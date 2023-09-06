@@ -67,8 +67,9 @@ class RecentDiskSourceTest : public testing::Test {
   bool CreateEmptyFile(const std::string& filename, const base::Time& time) {
     base::File file(temp_dir_.GetPath().Append(filename),
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    if (!file.IsValid())
+    if (!file.IsValid()) {
       return false;
+    }
 
     return file.SetTimes(time, time);
   }
@@ -82,7 +83,8 @@ class RecentDiskSourceTest : public testing::Test {
     base::RunLoop run_loop;
 
     source_->GetRecentFiles(RecentSource::Params(
-        file_system_context_.get(), origin_, max_files, cutoff_time, file_type,
+        file_system_context_.get(), origin_, max_files, cutoff_time,
+        base::TimeTicks::Max(), file_type,
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,
                std::vector<RecentFile> files) {

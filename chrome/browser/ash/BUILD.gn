@@ -5352,6 +5352,7 @@ source_set("unit_tests") {
     "fileapi/recent_arc_media_source_unittest.cc",
     "fileapi/recent_disk_source_unittest.cc",
     "fileapi/recent_model_unittest.cc",
+    "fileapi/recent_source_unittest.cc",
     "fileapi/test/fake_recent_source.cc",
     "floating_workspace/floating_workspace_service_unittest.cc",
     "fusebox/fusebox_errno_unittest.cc",

@@ -168,6 +168,7 @@ class RecentArcMediaSourceTest : public testing::Test {
     source_->GetRecentFiles(RecentSource::Params(
         nullptr /* file_system_context */, GURL() /* origin */,
         1 /* max_files: ignored */, base::Time() /* cutoff_time: ignored */,
+        base::TimeTicks::Max() /* end_time: ignored */,
         file_type /* file_type */,
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,

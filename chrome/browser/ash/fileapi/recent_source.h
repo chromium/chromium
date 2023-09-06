@@ -50,6 +50,7 @@ class RecentSource {
            const GURL& origin,
            size_t max_files,
            const base::Time& cutoff_time,
+           const base::TimeTicks& end_time,
            FileType file_type,
            GetRecentFilesCallback callback);
 
@@ -81,6 +82,15 @@ class RecentSource {
     // expected to return files which matches the specified file type.
     FileType file_type() const { return file_type_; }
 
+    // Returns the time by which recent scan operation should terminate (with or
+    // without results).
+    base::TimeTicks end_time() const { return end_time_; }
+
+    // If maximum duration was set, this method checks if a recent source is
+    // late with delivery of recent files or still on schedule. If maximum
+    // duration was never set, this method always returns false.
+    bool IsLate() const;
+
     // Callback to be called for the result of GetRecentFiles().
     GetRecentFilesCallback& callback() { return callback_; }
 
@@ -90,6 +100,7 @@ class RecentSource {
     size_t max_files_;
     base::Time cutoff_time_;
     FileType file_type_;
+    const base::TimeTicks end_time_;
     GetRecentFilesCallback callback_;
   };
 

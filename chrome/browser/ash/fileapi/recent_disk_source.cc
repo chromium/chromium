@@ -155,7 +155,7 @@ void RecentDiskSource::OnReadDirectory(
     base::FilePath subpath = path.Append(entry.name);
 
     if (entry.type == filesystem::mojom::FsFileType::DIRECTORY) {
-      if (max_depth_ > 0 && depth >= max_depth_) {
+      if ((max_depth_ > 0 && depth >= max_depth_) || params_->IsLate()) {
         continue;
       }
       ScanDirectory(subpath, depth + 1);
