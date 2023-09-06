@@ -55,6 +55,8 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
 
   // Refreshes policy. |callback| will be invoked after the operation completes
   // or aborts because of errors.
+  //
+  // TODO(b/298336121) Add PolicyFetchReason parameter.
   virtual void RefreshPolicy(RefreshPolicyCallback callback);
 
   // Adds/Removes an Observer for this object.

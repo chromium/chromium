@@ -59,7 +59,7 @@ void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback) {
   // Else, trigger a refresh.
   refresh_callbacks_.push_back(std::move(callback));
   refresh_state_ = REFRESH_POLICY_FETCH;
-  client_->FetchPolicy();
+  client_->FetchPolicy(PolicyFetchReason::kUnspecified);
 }
 
 void CloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {

@@ -47,6 +47,11 @@ class RegistrationJobConfiguration;
 class SigningService;
 struct DMServerJobResult;
 
+enum class PolicyFetchReason {
+  kUnspecified,
+  kDeviceEnrollment,
+};
+
 // Implements the core logic required to talk to the device management service.
 // Also keeps track of the current state of the association with the service,
 // such as whether there is a valid registration (DMToken is present in that
@@ -281,7 +286,9 @@ class POLICY_EXPORT CloudPolicyClient {
   // can be retrieved once the policy fetch operation completes. In case of
   // multiple requests to fetch policy, new requests will cancel any pending
   // requests and the latest request will eventually trigger notifications.
-  virtual void FetchPolicy();
+  // The |reason| parameter will be used to tag the request to DMServer. This
+  // will allow for more targeted monitoring and alerting.
+  virtual void FetchPolicy(PolicyFetchReason reason);
 
   // Upload a policy validation report to the server. Like FetchPolicy, this
   // method requires that the client is in a registered state. This method

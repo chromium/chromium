@@ -57,7 +57,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                const std::string&,
                const std::string&),
               (override));
-  MOCK_METHOD(void, FetchPolicy, (), (override));
+  MOCK_METHOD(void, FetchPolicy, (PolicyFetchReason), (override));
   MOCK_METHOD(void,
               UploadEnterpriseMachineCertificate,
               (const std::string&, ResultCallback),

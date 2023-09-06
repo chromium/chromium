@@ -904,6 +904,16 @@ message DevicePolicyRequest {
   // from a non-TT client.  The repeated field allows clients to request
   // multiple policies for better performance.
   repeated PolicyFetchRequest requests = 3;
+
+  // Reason for the requesting policies, to help with monitoring and alerting
+  // (e.g. to detect an increase in fetch failures during enrollment).
+  // TODO(b/298336121) Add more reasons here and in the respective call sites.
+  enum Reason {
+    UNSPECIFIED = 0;
+    // Required policy fetch during device enrollment.
+    DEVICE_ENROLLMENT = 1;
+  }
+  optional Reason reason = 4;
 }
 
 // Response from server to device for reading policies.
@@ -2222,7 +2232,7 @@ message PolicyValueValidationIssue {
   // Policy name of the faulty value.
   optional string policy_name = 1;
 
-  // # LINT.IfChange
+  // LINT.IfChange
   enum ValueValidationIssueSeverity {
     // Default value for when a severity is not specified.
     VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED = 0;
@@ -2233,8 +2243,8 @@ message PolicyValueValidationIssue {
     // This result is an error. The policy blob was rejected completely and not
     // updated on the device.
     VALUE_VALIDATION_ISSUE_SEVERITY_ERROR = 2;
-  }  // LINT.ThenChange(
-  // //depot/google3/chrome/cros/reporting/api/proto/policy_validation_report.proto)
+  }
+  // LINT.ThenChange(//depot/google3/chrome/cros/reporting/api/proto/policy_validation_report.proto)
 
   // Severity of this policy value validation result.
   optional ValueValidationIssueSeverity severity = 2;
@@ -2324,8 +2334,8 @@ message PolicyValidationReportRequest {
     // payload validation errors, and zero or more payload validation warnings.
     // Client behavior: Policy blob rejected.
     VALIDATION_RESULT_TYPE_VALUE_ERROR = 15;
-  }  // LINT.ThenChange(
-  // //depot/google3/chrome/cros/reporting/api/proto/policy_validation_report.proto)
+  }
+  // LINT.ThenChange(//depot/google3/chrome/cros/reporting/api/proto/policy_validation_report.proto)
 
   // The validation result.
   optional ValidationResultType validation_result_type = 3;

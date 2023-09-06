@@ -84,7 +84,7 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicySuccess) {
   client_.SetDMToken("fake token");
 
   // Trigger a fetch on the client.
-  EXPECT_CALL(client_, FetchPolicy()).Times(1);
+  EXPECT_CALL(client_, FetchPolicy(_)).Times(1);
   service_.RefreshPolicy(base::BindOnce(
       &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
 
@@ -111,7 +111,7 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicyNotRegistered) {
   // Clear the token so the client is not registered.
   client_.SetDMToken(std::string());
 
-  EXPECT_CALL(client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(client_, FetchPolicy(_)).Times(0);
   EXPECT_CALL(*this, OnPolicyRefresh(false)).Times(1);
   service_.RefreshPolicy(base::BindOnce(
       &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
@@ -124,7 +124,7 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicyClientError) {
   client_.SetDMToken("fake token");
 
   // Trigger a fetch on the client.
-  EXPECT_CALL(client_, FetchPolicy()).Times(1);
+  EXPECT_CALL(client_, FetchPolicy(_)).Times(1);
   service_.RefreshPolicy(base::BindOnce(
       &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
 
@@ -141,7 +141,7 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicyStoreError) {
   client_.SetDMToken("fake token");
 
   // Trigger a fetch on the client.
-  EXPECT_CALL(client_, FetchPolicy()).Times(1);
+  EXPECT_CALL(client_, FetchPolicy(_)).Times(1);
   service_.RefreshPolicy(base::BindOnce(
       &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
 
@@ -164,12 +164,12 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicyConcurrent) {
   client_.SetDMToken("fake token");
 
   // Trigger a fetch on the client.
-  EXPECT_CALL(client_, FetchPolicy()).Times(1);
+  EXPECT_CALL(client_, FetchPolicy(_)).Times(1);
   service_.RefreshPolicy(base::BindOnce(
       &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
 
   // Triggering another policy refresh should generate a new fetch request.
-  EXPECT_CALL(client_, FetchPolicy()).Times(1);
+  EXPECT_CALL(client_, FetchPolicy(_)).Times(1);
   service_.RefreshPolicy(base::BindOnce(
       &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
 
@@ -181,7 +181,7 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicyConcurrent) {
   client_.NotifyPolicyFetched();
 
   // Trigger another policy fetch.
-  EXPECT_CALL(client_, FetchPolicy()).Times(1);
+  EXPECT_CALL(client_, FetchPolicy(_)).Times(1);
   service_.RefreshPolicy(base::BindOnce(
       &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
 

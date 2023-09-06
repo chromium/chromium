@@ -33,6 +33,7 @@
 
 namespace em = enterprise_management;
 
+using testing::_;
 using testing::Invoke;
 using testing::Mock;
 using testing::WithArgs;
@@ -131,7 +132,9 @@ TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
   policy.Build();
   policy_client->SetPolicy(dm_protocol::kChromeDevicePolicyType, std::string(),
                            policy.policy());
-  EXPECT_CALL(*policy_client, FetchPolicy())
+  // TODO(b/298336121) Adjust expected argument once an appropriate
+  // PolicyFetchReason can be passed through.
+  EXPECT_CALL(*policy_client, FetchPolicy(_))
       .WillOnce(
           Invoke(policy_client, &MockCloudPolicyClient::NotifyPolicyFetched));
   base::RunLoop().RunUntilIdle();

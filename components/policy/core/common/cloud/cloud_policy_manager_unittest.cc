@@ -299,7 +299,7 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
 
   // Start a refresh.
   EXPECT_CALL(observer_, OnUpdatePolicy(_)).Times(0);
-  EXPECT_CALL(*client, FetchPolicy());
+  EXPECT_CALL(*client, FetchPolicy(_));
   manager_->RefreshPolicies();
   Mock::VerifyAndClearExpectations(client);
   Mock::VerifyAndClearExpectations(&observer_);

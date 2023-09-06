@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -64,6 +65,17 @@ bool IsChromePolicy(const std::string& type) {
   return type == dm_protocol::kChromeDevicePolicyType ||
          type == dm_protocol::kChromeUserPolicyType ||
          IsMachineLevelUserCloudPolicyType(type);
+}
+
+em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
+  using Request = em::DevicePolicyRequest;
+  switch (reason) {
+    case PolicyFetchReason::kUnspecified:
+      return Request::UNSPECIFIED;
+    case PolicyFetchReason::kDeviceEnrollment:
+      return Request::DEVICE_ENROLLMENT;
+  }
+  NOTREACHED_NORETURN();
 }
 
 em::PolicyValidationReportRequest::ValidationResultType
@@ -404,7 +416,7 @@ void CloudPolicyClient::SetOAuthTokenAsAdditionalAuth(
   oauth_token_ = oauth_token;
 }
 
-void CloudPolicyClient::FetchPolicy() {
+void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(is_registered());
@@ -476,6 +488,8 @@ void CloudPolicyClient::FetchPolicy() {
       key_update_request->add_server_backed_state_keys(*key);
     }
   }
+
+  policy_request->set_reason(TranslateFetchReason(reason));
 
   // Set the fetched invalidation version to the latest invalidation version
   // since it is now the invalidation version used for the latest fetch.

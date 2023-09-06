@@ -47,6 +47,8 @@ namespace em = enterprise_management;
 
 namespace policy {
 
+using testing::_;
+
 class CloudPolicyInvalidatorTestBase : public testing::Test {
  protected:
   // Policy objects which can be used in tests.
@@ -437,12 +439,14 @@ bool CloudPolicyInvalidatorTestBase::CheckPolicyRefreshCount(int count) {
   }
 
   // Clear any non-invalidation refreshes which may be pending.
-  EXPECT_CALL(*client_, FetchPolicy()).Times(testing::AnyNumber());
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(testing::AnyNumber());
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(client_);
 
   // Run the invalidator tasks then check for invalidation refreshes.
-  EXPECT_CALL(*client_, FetchPolicy()).Times(count);
+  // TODO(b/298336121) Adjust expected argument once an appropriate
+  // PolicyFetchReason can be passed through.
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(count);
   task_runner_->RunUntilIdle();
   base::RunLoop().RunUntilIdle();
   return testing::Mock::VerifyAndClearExpectations(client_);

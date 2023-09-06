@@ -344,7 +344,7 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
   // Only use DMToken from now on.
   dm_auth_ = DMAuth::FromDMToken(client_->dm_token());
   SetStep(STEP_POLICY_FETCH);
-  client_->FetchPolicy();
+  client_->FetchPolicy(PolicyFetchReason::kDeviceEnrollment);
 }
 
 void EnrollmentHandler::OnClientError(CloudPolicyClient* client) {

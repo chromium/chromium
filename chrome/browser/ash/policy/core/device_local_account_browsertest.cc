@@ -951,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DisplayName) {
   DeviceLocalAccountPolicyBroker* broker =
       GetDeviceLocalAccountPolicyBroker(account_id_1_);
   ASSERT_TRUE(broker);
-  broker->core()->client()->FetchPolicy();
+  broker->core()->client()->FetchPolicy(PolicyFetchReason::kUnspecified);
   WaitForDisplayName(account_id_1_.GetUserEmail(), kDisplayName2);
 
   // Verify that the new display name is shown in the UI.
@@ -1853,7 +1853,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   DeviceLocalAccountPolicyBroker* broker =
       GetDeviceLocalAccountPolicyBroker(account_id_1_);
   ASSERT_TRUE(broker);
-  broker->core()->client()->FetchPolicy();
+  broker->core()->client()->FetchPolicy(PolicyFetchReason::kUnspecified);
   WaitForPublicSessionLocalesChange(account_id_1_);
 
   // Verify that the new list of locales is shown in the UI.
@@ -1876,7 +1876,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   SetRecommendedLocales(kRecommendedLocales1, std::size(kRecommendedLocales1));
 
   UploadAndInstallDeviceLocalAccountPolicy();
-  broker->core()->client()->FetchPolicy();
+  broker->core()->client()->FetchPolicy(PolicyFetchReason::kUnspecified);
   WaitForPublicSessionLocalesChange(account_id_1_);
 
   // Verify that the manually selected locale is still selected.
@@ -2258,7 +2258,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
     DeviceLocalAccountPolicyBroker* broker =
         GetDeviceLocalAccountPolicyBroker(account_id_1_);
     ASSERT_TRUE(broker);
-    broker->core()->client()->FetchPolicy();
+    broker->core()->client()->FetchPolicy(PolicyFetchReason::kUnspecified);
   }
   // Ensure the SessionLengthLimit is updated.
   LocalStateValueWaiter(prefs::kSessionLengthLimit, base::Value(kTwoHoursInMs))
