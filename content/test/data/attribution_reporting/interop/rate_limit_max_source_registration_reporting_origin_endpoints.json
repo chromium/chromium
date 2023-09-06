@@ -41,6 +41,27 @@
           }
         }]
       },
+      // Should be dropped due to the unattributed reporting origin limit for
+      // same reporting site.
+      {
+        "timestamp": "1643235574999",
+        "registration_request": {
+          "source_origin": "https://source1.test",
+          "attribution_src_url": "https://example.reporter1.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://example.reporter1.test/register-source",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination1.test",
+              "source_event_id": "888",
+              "debug_reporting": true
+            }
+          }
+        }]
+      },
       // Should be dropped due to the unattributed reporting origin limit.
       {
         "timestamp": "1643235575000",
@@ -296,6 +317,18 @@
       }
     ],
     "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination1.test",
+             "source_event_id": "888",
+             "source_site": "https://source1.test"
+          },
+          "type": "source-success"
+       } ],
+       "report_time": "1643235574999",
+       "report_url": "https://example.reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
       {
         "payload": [ {
           "body": {
