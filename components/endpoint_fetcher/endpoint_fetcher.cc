@@ -264,10 +264,12 @@ void EndpointFetcher::OnResponseFetched(
     EndpointFetcherCallback endpoint_fetcher_callback,
     std::unique_ptr<std::string> response_body) {
   int http_status_code = -1;
+  std::string mime_type;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
     http_status_code =
         simple_url_loader_->ResponseInfo()->headers->response_code();
+    mime_type = simple_url_loader_->ResponseInfo()->mime_type;
   }
   int net_error_code = simple_url_loader_->NetError();
   // The EndpointFetcher and its members will be destroyed after
@@ -298,7 +300,7 @@ void EndpointFetcher::OnResponseFetched(
   }
 
   if (response_body) {
-    if (sanitize_response_) {
+    if (sanitize_response_ && mime_type == "application/json") {
       data_decoder::JsonSanitizer::Sanitize(
           std::move(*response_body),
           base::BindOnce(&EndpointFetcher::OnSanitizationResult,

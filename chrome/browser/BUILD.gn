@@ -2528,6 +2528,7 @@ static_library("browser") {
   if (!is_android) {
     deps += [
       "//chrome/browser/companion/visual_search:flags",
+      "//chrome/browser/manta/proto:manta_proto",
       "//components/user_education/common",
     ]
   }
