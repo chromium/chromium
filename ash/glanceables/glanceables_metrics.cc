@@ -120,6 +120,12 @@ void RecordTasksChangeLoadTime(base::TimeDelta load_time) {
       load_time);
 }
 
+void RecordTasksListChangeCount(int change_count) {
+  base::UmaHistogramCounts100(
+      "Ash.Glanceables.TimeManagement.Tasks.TasksListChangeCount",
+      change_count);
+}
+
 void RecordStudentAssignmentListShowTime(StudentAssignmentsListType list_type,
                                          base::TimeDelta time_shown,
                                          bool default_list) {

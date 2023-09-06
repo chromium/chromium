@@ -3929,6 +3929,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Glanceables.TimeManagement.Tasks.TasksListChangeCount"
+    units="int" expires_after="2024-08-31">
+  <owner>mmourgos@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records the total number of times the selected tasks list is changed. The
+    total count is recorded when the glanceable bubble is closed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList"
     units="tasks" expires_after="2024-03-01">
   <owner>amitrokhin@google.com</owner>

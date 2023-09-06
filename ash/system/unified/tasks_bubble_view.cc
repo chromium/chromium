@@ -175,7 +175,11 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
   ScheduleUpdateTasksList(/*initial_update=*/true);
 }
 
-TasksBubbleView::~TasksBubbleView() = default;
+TasksBubbleView::~TasksBubbleView() {
+  if (first_task_list_shown_) {
+    RecordTasksListChangeCount(tasks_list_change_count_);
+  }
+}
 
 void TasksBubbleView::OnViewFocused(views::View* view) {
   CHECK_EQ(view, task_list_combo_box_view_);
@@ -198,6 +202,7 @@ void TasksBubbleView::ActionButtonPressed(TasksLaunchSource source) {
 void TasksBubbleView::SelectedTasksListChanged() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   tasks_requested_time_ = base::TimeTicks::Now();
+  tasks_list_change_count_++;
   ScheduleUpdateTasksList(/*initial_update=*/false);
 }
 
@@ -292,6 +297,8 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
     RecordActiveTaskListChanged();
     RecordTasksChangeLoadTime(base::TimeTicks::Now() - tasks_requested_time_);
   }
+
+  first_task_list_shown_ = true;
 }
 
 void TasksBubbleView::AnnounceListStateOnComboBoxAccessibility() {

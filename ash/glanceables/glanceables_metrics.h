@@ -45,6 +45,8 @@ void RecordTasksInitialLoadTime(bool first_occurrence,
 
 void RecordTasksChangeLoadTime(base::TimeDelta load_time);
 
+void RecordTasksListChangeCount(int change_count);
+
 // Record the length of time that the `list_type` was shown.
 void RecordStudentAssignmentListShowTime(StudentAssignmentsListType list_type,
                                          base::TimeDelta time_shown,
