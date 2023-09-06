@@ -6788,11 +6788,6 @@ const char kShimlessRMAOsUpdateName[] = "Enable OS updates in shimless RMA";
 const char kShimlessRMAOsUpdateDescription[] =
     "Turns on OS updating in Shimless RMA";
 
-const char kShimlessRMADisableDarkModeName[] =
-    "Disable dark mode in Shimless RMA";
-const char kShimlessRMADisableDarkModeDescription[] =
-    "Disable dark mode and only allow light mode in Shimless RMA";
-
 const char kShimlessRMADiagnosticPageName[] =
     "Enable diagnostic page in Shimless RMA";
 const char kShimlessRMADiagnosticPageDescription[] =

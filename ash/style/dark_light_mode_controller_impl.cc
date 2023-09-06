@@ -126,8 +126,7 @@ bool DarkLightModeControllerImpl::IsDarkModeEnabled() const {
   }
 
   // Disable dark mode for Shimless RMA.
-  if (features::IsShimlessRMADarkModeDisabled() &&
-      session_state == session_manager::SessionState::RMA) {
+  if (session_state == session_manager::SessionState::RMA) {
     return false;
   }
 
