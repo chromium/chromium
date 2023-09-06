@@ -210,6 +210,8 @@ FeatureInfo::FeatureInfo(
 #elif BUILDFLAG(IS_MAC)
   feature_flags_.chromium_image_ycbcr_p010 =
       base::mac::MacOSMajorVersion() >= 11;
+#elif BUILDFLAG(IS_IOS)
+  feature_flags_.chromium_image_ycbcr_p010 = true;
 #endif
 }
 
