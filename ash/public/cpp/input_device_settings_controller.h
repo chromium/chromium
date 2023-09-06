@@ -84,6 +84,10 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   // nullptr if no such device exists.
   virtual const mojom::PointingStickSettings* GetPointingStickSettings(
       DeviceId id) = 0;
+  // Returns the settings of the pointing stick with a device id of `id` or
+  // nullptr if no such device exists.
+  virtual const mojom::GraphicsTabletSettings* GetGraphicsTabletSettings(
+      DeviceId id) = 0;
 
   // Returns the current set of enterprise policies which control keyboard
   // settings.

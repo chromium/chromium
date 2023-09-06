@@ -10,6 +10,8 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/cpp/test/mock_input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
@@ -35,7 +37,8 @@ namespace ash {
 
 namespace {
 
-constexpr int kDeviceId = 1;
+constexpr int kMouseDeviceId = 1;
+constexpr int kGraphicsTabletDeviceId = 2;
 
 class TestEventRewriterContinuation
     : public ui::test::TestEventRewriterContinuation {
@@ -181,7 +184,7 @@ ui::KeyEvent CreateKeyButtonEvent(ui::EventType type,
                                   int flags = ui::EF_NONE,
                                   ui::DomCode code = ui::DomCode::NONE,
                                   ui::DomKey key = ui::DomKey::NONE,
-                                  int device_id = kDeviceId) {
+                                  int device_id = kMouseDeviceId) {
   auto engine = CreateLayoutEngine();
   ui::KeyEvent key_event(type, key_code, code, flags, key, /*time_stamp=*/{});
   key_event.set_source_device_id(device_id);
@@ -191,7 +194,7 @@ ui::KeyEvent CreateKeyButtonEvent(ui::EventType type,
 ui::MouseEvent CreateMouseButtonEvent(ui::EventType type,
                                       int flags,
                                       int changed_button_flags,
-                                      int device_id = kDeviceId) {
+                                      int device_id = kMouseDeviceId) {
   ui::MouseEvent mouse_event(type, /*location=*/gfx::PointF{},
                              /*root_location=*/gfx::PointF{},
                              /*time_stamp=*/{}, flags, changed_button_flags);
@@ -231,7 +234,7 @@ std::string ConvertToString(const ui::Event& event) {
   NOTREACHED_NORETURN();
 }
 
-const ui::Event& GetEventFromVariant(const EventTypeVariant& event) {
+ui::Event& GetEventFromVariant(EventTypeVariant& event) {
   if (absl::holds_alternative<ui::MouseEvent>(event)) {
     return absl::get<ui::MouseEvent>(event);
   } else {
@@ -270,7 +273,21 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
                                            features::kInputDeviceSettingsSplit},
                                           {});
     AshTestBase::SetUp();
-    rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>();
+    controller_scoped_resetter_ = std::make_unique<
+        InputDeviceSettingsController::ScopedResetterForTest>();
+    controller_ = std::make_unique<MockInputDeviceSettingsController>();
+    mouse_settings_ = mojom::MouseSettings::New();
+    graphics_tablet_settings_ = mojom::GraphicsTabletSettings::New();
+    ON_CALL(*controller_, GetMouseSettings(testing::_))
+        .WillByDefault(testing::Return(nullptr));
+    ON_CALL(*controller_, GetGraphicsTabletSettings(testing::_))
+        .WillByDefault(testing::Return(nullptr));
+    ON_CALL(*controller_, GetMouseSettings(kMouseDeviceId))
+        .WillByDefault(testing::Return(mouse_settings_.get()));
+    ON_CALL(*controller_, GetGraphicsTabletSettings(kGraphicsTabletDeviceId))
+        .WillByDefault(testing::Return(graphics_tablet_settings_.get()));
+    rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>(
+        controller_.get());
     observer_ = std::make_unique<TestObserver>();
     rewriter_->AddObserver(observer_.get());
   }
@@ -279,14 +296,21 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
     rewriter_->RemoveObserver(observer_.get());
     observer_.reset();
     rewriter_.reset();
+    controller_.reset();
+    controller_scoped_resetter_.reset();
     AshTestBase::TearDown();
     scoped_feature_list_.Reset();
   }
 
  protected:
   std::unique_ptr<PeripheralCustomizationEventRewriter> rewriter_;
+  std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
+      controller_scoped_resetter_;
+  std::unique_ptr<MockInputDeviceSettingsController> controller_;
   std::unique_ptr<TestObserver> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  mojom::MouseSettingsPtr mouse_settings_;
+  mojom::GraphicsTabletSettingsPtr graphics_tablet_settings_;
 };
 
 TEST_F(PeripheralCustomizationEventRewriterTest, MouseButtonWithoutObserving) {
@@ -307,7 +331,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
        InvalidEventTypeMouseObserving) {
   TestEventRewriterContinuation continuation;
 
-  rewriter_->StartObservingMouse(kDeviceId);
+  rewriter_->StartObservingMouse(kMouseDeviceId);
 
   ui::MouseEvent event =
       CreateMouseButtonEvent(ui::ET_MOUSE_DRAGGED, ui::EF_NONE, ui::EF_NONE);
@@ -323,9 +347,9 @@ TEST_F(PeripheralCustomizationEventRewriterTest, KeyEventActionRewriting) {
   TestAcceleratorObserver accelerator_observer;
   TestEventRewriterContinuation continuation;
 
-  rewriter_->SetRemappingActionForTesting(
-      kDeviceId, mojom::Button::NewVkey(ui::VKEY_A),
-      mojom::RemappingAction::NewAction(AcceleratorAction::kBrightnessDown));
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "", mojom::Button::NewVkey(ui::VKEY_A),
+      mojom::RemappingAction::NewAction(AcceleratorAction::kBrightnessDown)));
 
   rewriter_->RewriteEvent(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A),
                           continuation.weak_ptr_factory_.GetWeakPtr());
@@ -346,10 +370,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest, MouseEventActionRewriting) {
   TestAcceleratorObserver accelerator_observer;
   TestEventRewriterContinuation continuation;
 
-  rewriter_->SetRemappingActionForTesting(
-      kDeviceId,
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
-      mojom::RemappingAction::NewAction(AcceleratorAction::kLaunchApp0));
+      mojom::RemappingAction::NewAction(AcceleratorAction::kLaunchApp0)));
 
   rewriter_->RewriteEvent(
       CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_MIDDLE_MOUSE_BUTTON,
@@ -478,9 +502,9 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(MouseButtonObserverTest, EventRewriting) {
-  const auto& data = GetParam();
+  auto data = GetParam();
 
-  rewriter_->StartObservingMouse(kDeviceId);
+  rewriter_->StartObservingMouse(kMouseDeviceId);
 
   TestEventRewriterContinuation continuation;
   rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
@@ -489,7 +513,7 @@ TEST_P(MouseButtonObserverTest, EventRewriting) {
     ASSERT_TRUE(continuation.discarded());
     if (data.pressed_button) {
       const auto& actual_pressed_buttons =
-          observer_->pressed_mouse_buttons().at(kDeviceId);
+          observer_->pressed_mouse_buttons().at(kMouseDeviceId);
       ASSERT_EQ(1u, actual_pressed_buttons.size());
       EXPECT_EQ(*data.pressed_button, *actual_pressed_buttons[0]);
     }
@@ -623,18 +647,21 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(GraphicsTabletButtonObserverTest, RewriteEvent) {
-  const auto& data = GetParam();
+  auto data = GetParam();
 
-  rewriter_->StartObservingGraphicsTablet(kDeviceId);
+  rewriter_->StartObservingGraphicsTablet(kGraphicsTabletDeviceId);
+
+  auto& event = GetEventFromVariant(data.incoming_event);
+  event.set_source_device_id(kGraphicsTabletDeviceId);
 
   TestEventRewriterContinuation continuation;
-  rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
-                          continuation.weak_ptr_factory_.GetWeakPtr());
+  rewriter_->RewriteEvent(event, continuation.weak_ptr_factory_.GetWeakPtr());
   if (!data.rewritten_event) {
     ASSERT_TRUE(continuation.discarded());
     if (data.pressed_button) {
       const auto& actual_pressed_buttons =
-          observer_->pressed_graphics_tablet_buttons().at(kDeviceId);
+          observer_->pressed_graphics_tablet_buttons().at(
+              kGraphicsTabletDeviceId);
       ASSERT_EQ(1u, actual_pressed_buttons.size());
       EXPECT_EQ(*data.pressed_button, *actual_pressed_buttons[0]);
     }
@@ -649,8 +676,7 @@ TEST_P(GraphicsTabletButtonObserverTest, RewriteEvent) {
 
   // After we stop observing, the passthrough event should be an identity of the
   // original.
-  rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
-                          continuation.weak_ptr_factory_.GetWeakPtr());
+  rewriter_->RewriteEvent(event, continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
   EXPECT_EQ(ConvertToString(data.incoming_event),
             ConvertToString(*continuation.passthrough_event));
@@ -796,17 +822,59 @@ INSTANTIATE_TEST_SUITE_P(
 
         }));
 
-TEST_P(ButtonRewritingTest, RewriteEvent) {
-  auto& [tuple, data] = GetParam();
+TEST_P(ButtonRewritingTest, GraphicsPenRewriteEvent) {
+  auto [tuple, data] = GetParam();
   auto& [button, key_event] = tuple;
 
-  rewriter_->SetRemappingActionForTesting(
-      kDeviceId, button.Clone(),
-      mojom::RemappingAction::NewKeyEvent(key_event.Clone()));
+  graphics_tablet_settings_->pen_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          "", button.Clone(),
+          mojom::RemappingAction::NewKeyEvent(key_event.Clone())));
+
+  auto& event = GetEventFromVariant(data.incoming_event);
+  event.set_source_device_id(kGraphicsTabletDeviceId);
 
   TestEventRewriterContinuation continuation;
-  rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
-                          continuation.weak_ptr_factory_.GetWeakPtr());
+  rewriter_->RewriteEvent(event, continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(*data.rewritten_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_P(ButtonRewritingTest, GraphicsTabletRewriteEvent) {
+  auto [tuple, data] = GetParam();
+  auto& [button, key_event] = tuple;
+
+  graphics_tablet_settings_->tablet_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          "", button.Clone(),
+          mojom::RemappingAction::NewKeyEvent(key_event.Clone())));
+
+  auto& event = GetEventFromVariant(data.incoming_event);
+  event.set_source_device_id(kGraphicsTabletDeviceId);
+
+  TestEventRewriterContinuation continuation;
+  rewriter_->RewriteEvent(event, continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(*data.rewritten_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_P(ButtonRewritingTest, MouseRewriteEvent) {
+  auto [tuple, data] = GetParam();
+  auto& [button, key_event] = tuple;
+
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "", button.Clone(),
+      mojom::RemappingAction::NewKeyEvent(key_event.Clone())));
+
+  auto& event = GetEventFromVariant(data.incoming_event);
+  event.set_source_device_id(kMouseDeviceId);
+
+  TestEventRewriterContinuation continuation;
+  rewriter_->RewriteEvent(event, continuation.weak_ptr_factory_.GetWeakPtr());
 
   ASSERT_TRUE(continuation.passthrough_event);
   EXPECT_EQ(ConvertToString(*data.rewritten_event),
@@ -849,10 +917,10 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
   TestEventRewriterContinuation continuation;
 
-  rewriter_->SetRemappingActionForTesting(
-      kDeviceId, mojom::Button::NewVkey(ui::VKEY_0),
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag)));
+          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag))));
 
   rewriter_->RewriteEvent(
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),
@@ -893,10 +961,10 @@ TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
 TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
   TestEventRewriterContinuation continuation;
 
-  rewriter_->SetRemappingActionForTesting(
-      kDeviceId, mojom::Button::NewVkey(ui::VKEY_0),
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag)));
+          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag))));
 
   const ui::EventFlags test_flag =
       flag == ui::EF_COMMAND_DOWN ? ui::EF_SHIFT_DOWN : ui::EF_COMMAND_DOWN;
@@ -942,10 +1010,10 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
   const ui::EventFlags test_flag =
       flag == ui::EF_COMMAND_DOWN ? ui::EF_SHIFT_DOWN : ui::EF_COMMAND_DOWN;
 
-  rewriter_->SetRemappingActionForTesting(
-      kDeviceId, mojom::Button::NewVkey(ui::VKEY_0),
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag)));
+          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag))));
 
   rewriter_->RewriteEvent(
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),

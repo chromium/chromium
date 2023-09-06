@@ -56,6 +56,10 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               GetPointingStickSettings,
               (DeviceId id),
               (override));
+  MOCK_METHOD(const mojom::GraphicsTabletSettings*,
+              GetGraphicsTabletSettings,
+              (DeviceId id),
+              (override));
   MOCK_METHOD(const mojom::KeyboardPolicies&,
               GetKeyboardPolicies,
               (),

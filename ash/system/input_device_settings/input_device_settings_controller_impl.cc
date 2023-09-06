@@ -671,6 +671,15 @@ InputDeviceSettingsControllerImpl::GetPointingStickSettings(DeviceId id) {
   return iter->second->settings.get();
 }
 
+const mojom::GraphicsTabletSettings*
+InputDeviceSettingsControllerImpl::GetGraphicsTabletSettings(DeviceId id) {
+  auto iter = graphics_tablets_.find(id);
+  if (iter == graphics_tablets_.end()) {
+    return nullptr;
+  }
+  return iter->second->settings.get();
+}
+
 std::vector<mojom::KeyboardPtr>
 InputDeviceSettingsControllerImpl::GetConnectedKeyboards() {
   std::vector<mojom::KeyboardPtr> keyboard_vector;

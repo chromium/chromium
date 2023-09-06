@@ -12,6 +12,7 @@
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -125,6 +126,60 @@ int ConvertButtonToFlags(const mojom::Button& button) {
   return ui::EF_NONE;
 }
 
+const mojom::RemappingAction* GetRemappingActionFromMouseSettings(
+    const mojom::Button& button,
+    const mojom::MouseSettings& settings) {
+  const auto button_remapping_iter = base::ranges::find(
+      settings.button_remappings, button,
+      [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
+  if (button_remapping_iter != settings.button_remappings.end()) {
+    return (*button_remapping_iter)->remapping_action.get();
+  }
+
+  return nullptr;
+}
+
+const mojom::RemappingAction* GetRemappingActionFromGraphicsTabletSettings(
+    const mojom::Button& button,
+    const mojom::GraphicsTabletSettings& settings) {
+  const auto pen_button_remapping_iter = base::ranges::find(
+      settings.pen_button_remappings, button,
+      [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
+  if (pen_button_remapping_iter != settings.pen_button_remappings.end()) {
+    return (*pen_button_remapping_iter)->remapping_action.get();
+  }
+
+  const auto tablet_button_remapping_iter = base::ranges::find(
+      settings.tablet_button_remappings, button,
+      [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
+  if (tablet_button_remapping_iter != settings.tablet_button_remappings.end()) {
+    return (*tablet_button_remapping_iter)->remapping_action.get();
+  }
+
+  return nullptr;
+}
+
+int GetRemappedModifiersFromMouseSettings(
+    const mojom::MouseSettings& settings) {
+  int modifiers = 0;
+  for (const auto& button_remapping : settings.button_remappings) {
+    modifiers |= ConvertButtonToFlags(*button_remapping->button);
+  }
+  return modifiers;
+}
+
+int GetRemappedModifiersFromGraphicsTabletSettings(
+    const mojom::GraphicsTabletSettings& settings) {
+  int modifiers = 0;
+  for (const auto& button_remapping : settings.pen_button_remappings) {
+    modifiers |= ConvertButtonToFlags(*button_remapping->button);
+  }
+  for (const auto& button_remapping : settings.tablet_button_remappings) {
+    modifiers |= ConvertButtonToFlags(*button_remapping->button);
+  }
+  return modifiers;
+}
+
 }  // namespace
 
 // Compares the `DeviceIdButton` struct based on first the device id, and then
@@ -171,8 +226,9 @@ PeripheralCustomizationEventRewriter::DeviceIdButton::operator=(
     PeripheralCustomizationEventRewriter::DeviceIdButton&& device_id_button) =
     default;
 
-PeripheralCustomizationEventRewriter::PeripheralCustomizationEventRewriter() =
-    default;
+PeripheralCustomizationEventRewriter::PeripheralCustomizationEventRewriter(
+    InputDeviceSettingsController* input_device_settings_controller)
+    : input_device_settings_controller_(input_device_settings_controller) {}
 PeripheralCustomizationEventRewriter::~PeripheralCustomizationEventRewriter() =
     default;
 
@@ -432,20 +488,17 @@ const mojom::RemappingAction*
 PeripheralCustomizationEventRewriter::GetRemappingAction(
     int device_id,
     const mojom::Button& button) {
-  const auto button_remapping_list_iter =
-      button_remappings_for_testing_.find(device_id);
-  if (button_remapping_list_iter == button_remappings_for_testing_.end()) {
-    return nullptr;
+  const auto* mouse_settings =
+      input_device_settings_controller_->GetMouseSettings(device_id);
+  if (mouse_settings) {
+    return GetRemappingActionFromMouseSettings(button, *mouse_settings);
   }
 
-  const auto& button_remapping_list = button_remapping_list_iter->second;
-  const auto action_iter = base::ranges::find(
-      button_remapping_list, button,
-      [](const std::pair<mojom::ButtonPtr, mojom::RemappingActionPtr>& entry) {
-        return *entry.first;
-      });
-  if (action_iter != button_remapping_list.end()) {
-    return action_iter->second.get();
+  const auto* graphics_tablet_settings =
+      input_device_settings_controller_->GetGraphicsTabletSettings(device_id);
+  if (graphics_tablet_settings) {
+    return GetRemappingActionFromGraphicsTabletSettings(
+        button, *graphics_tablet_settings);
   }
 
   return nullptr;
@@ -453,15 +506,18 @@ PeripheralCustomizationEventRewriter::GetRemappingAction(
 
 void PeripheralCustomizationEventRewriter::RemoveRemappedModifiers(
     ui::Event& event) {
-  const auto button_remapping_list_iter =
-      button_remappings_for_testing_.find(event.source_device_id());
-  if (button_remapping_list_iter == button_remappings_for_testing_.end()) {
-    return;
-  }
-
-  int modifiers = 0;
-  for (const auto& [button, action] : button_remapping_list_iter->second) {
-    modifiers |= ConvertButtonToFlags(*button);
+  int modifier_flags = 0;
+  if (const auto* mouse_settings =
+          input_device_settings_controller_->GetMouseSettings(
+              event.source_device_id());
+      mouse_settings) {
+    modifier_flags = GetRemappedModifiersFromMouseSettings(*mouse_settings);
+  } else if (const auto* graphics_tablet_settings =
+                 input_device_settings_controller_->GetGraphicsTabletSettings(
+                     event.source_device_id());
+             graphics_tablet_settings) {
+    modifier_flags = GetRemappedModifiersFromGraphicsTabletSettings(
+        *graphics_tablet_settings);
   }
 
   // TODO(dpad): This logic isn't quite correct. If a second devices is holding
@@ -469,7 +525,7 @@ void PeripheralCustomizationEventRewriter::RemoveRemappedModifiers(
   // remapped, this will behave incorrectly as it will remove "Ctrl". Instead,
   // this needs to track what keys are being pressed by the device that have
   // modifiers attached to them. For now, this is close enough to being correct.
-  event.set_flags(event.flags() & ~modifiers);
+  event.set_flags(event.flags() & ~modifier_flags);
 }
 
 void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
@@ -479,14 +535,6 @@ void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
     flags |= flag;
   }
   event.set_flags(event.flags() | flags);
-}
-
-void PeripheralCustomizationEventRewriter::SetRemappingActionForTesting(
-    int device_id,
-    mojom::ButtonPtr button,
-    mojom::RemappingActionPtr remapping_action) {
-  button_remappings_for_testing_[device_id].emplace_back(
-      std::move(button), std::move(remapping_action));
 }
 
 }  // namespace ash

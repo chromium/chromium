@@ -70,7 +70,8 @@ void EventRewriterControllerImpl::Initialize(
       peripheral_customization_event_rewriter;
   if (features::IsPeripheralCustomizationEnabled()) {
     peripheral_customization_event_rewriter =
-        std::make_unique<PeripheralCustomizationEventRewriter>();
+        std::make_unique<PeripheralCustomizationEventRewriter>(
+            Shell::Get()->input_device_settings_controller());
     peripheral_customization_event_rewriter_ =
         peripheral_customization_event_rewriter.get();
   }

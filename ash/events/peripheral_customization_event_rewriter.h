@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
-#include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
@@ -17,6 +17,8 @@
 #include "ui/events/event_rewriter.h"
 
 namespace ash {
+
+class InputDeviceSettingsController;
 
 // PeripheralCustomizationEventRewriter recognizes and rewrites events from mice
 // and graphics tablets to arbitrary `ui::KeyEvent`s configured by the user via
@@ -55,7 +57,8 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
                                                const mojom::Button& button) = 0;
   };
 
-  PeripheralCustomizationEventRewriter();
+  explicit PeripheralCustomizationEventRewriter(
+      InputDeviceSettingsController* input_device_settings_controller);
   PeripheralCustomizationEventRewriter(
       const PeripheralCustomizationEventRewriter&) = delete;
   PeripheralCustomizationEventRewriter& operator=(
@@ -81,14 +84,6 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  // This is only for testing and will be removed once the controller properly
-  // sends button remapping data to the rewriter.
-  // TODO(dpad): Remove this function once button remapping data can be received
-  // from the settings controller.
-  void SetRemappingActionForTesting(int device_id,
-                                    mojom::ButtonPtr button,
-                                    mojom::RemappingActionPtr remapping_action);
 
  private:
   // Notifies observers if the given `mouse_event` is a remappable button for
@@ -137,9 +132,7 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   // be applied to other events processed.
   base::flat_map<DeviceIdButton, int> device_button_to_flags_;
 
-  // TODO(dpad): Remove once `InputDeviceSettingsController` is updated to
-  // handle button remappings.
-  base::flat_map<int, ButtonRemappingList> button_remappings_for_testing_;
+  raw_ptr<InputDeviceSettingsController> input_device_settings_controller_;
 };
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/cpp/test/mock_input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -208,7 +209,8 @@ class FakeMouseSettingsObserver : public mojom::MouseSettingsObserver {
   int num_times_mouse_policies_updated_ = 0;
 };
 
-class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
+class FakeInputDeviceSettingsController
+    : public MockInputDeviceSettingsController {
  public:
   // InputDeviceSettingsController:
   std::vector<::ash::mojom::KeyboardPtr> GetConnectedKeyboards() override {
