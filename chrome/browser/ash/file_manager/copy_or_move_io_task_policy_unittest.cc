@@ -621,7 +621,10 @@ class CopyOrMoveIOTaskWithScansTest
 
     EXPECT_CALL(*fpnm_, OnIOTaskResumed(
                             /*task_id=*/{kTaskId}))
-        .WillOnce([&]() { std::move(warning_callback_).Run(true); });
+        .WillOnce([&]() {
+          std::move(warning_callback_)
+              .Run(/*user_justification=*/absl::nullopt, true);
+        });
 
     task.Resume(params);
   }
@@ -692,7 +695,7 @@ class CopyOrMoveIOTaskWithScansTest
   raw_ptr<policy::MockFilesPolicyNotificationManager,
           DanglingUntriaged | ExperimentalAsh>
       fpnm_;
-  policy::OnDlpRestrictionCheckedCallback warning_callback_;
+  policy::OnDlpRestrictionCheckedWithJustificationCallback warning_callback_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

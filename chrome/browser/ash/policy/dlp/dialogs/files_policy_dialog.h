@@ -39,7 +39,7 @@ class FilesPolicyDialogFactory {
   virtual ~FilesPolicyDialogFactory() = default;
 
   virtual views::Widget* CreateWarnDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      OnDlpRestrictionCheckedWithJustificationCallback callback,
       const std::vector<DlpConfidentialFile>& files,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
@@ -68,7 +68,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
   // Creates and shows an instance of FilesPolicyWarnDialog. Returns owning
   // Widget.
   static views::Widget* CreateWarnDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      OnDlpRestrictionCheckedWithJustificationCallback callback,
       const std::vector<DlpConfidentialFile>& files,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,

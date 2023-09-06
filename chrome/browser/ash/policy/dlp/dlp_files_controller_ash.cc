@@ -990,6 +990,7 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
     const absl::optional<std::string>& dst_pattern,
     dlp::FileAction files_action,
     IsFilesTransferRestrictedCallback callback,
+    absl::optional<std::u16string> user_justification,
     bool should_proceed) {
   DCHECK(warned_files.size() == warned_src_patterns.size());
   DCHECK(warned_files.size() == warned_rules_metadata.size());

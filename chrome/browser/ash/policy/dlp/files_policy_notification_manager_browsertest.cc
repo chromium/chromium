@@ -86,7 +86,7 @@ class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
  public:
   MOCK_METHOD(views::Widget*,
               CreateWarnDialog,
-              (OnDlpRestrictionCheckedCallback,
+              (OnDlpRestrictionCheckedWithJustificationCallback,
                const std::vector<DlpConfidentialFile>&,
                dlp::FileAction,
                gfx::NativeWindow,
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileNoButtonIgnored) {
   fpnm_->SetTaskRunnerForTesting(task_runner);
 
   // The callback is not invoked.
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt,
                         {base::FilePath("file1.txt")}, DlpFileDestination(),
@@ -238,7 +238,8 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileNoButtonIgnored) {
   // Skip the warning timeout. The callback is only invoked when the warning
   // times out.
   testing::Mock::VerifyAndClearExpectations(&cb);
-  EXPECT_CALL(cb, Run(/*should_proceed=*/false));
+  EXPECT_CALL(cb, Run(/*user_justification=*/absl::optional<std::u16string>(),
+                      /*should_proceed=*/false));
   task_runner->FastForwardBy(kWarningTimeout);
   // The warning notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
@@ -257,8 +258,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileCloseCancels) {
   auto action = GetParam();
 
   // The task is cancelled.
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
-  EXPECT_CALL(cb, Run(/*should_proceed=*/false)).Times(1);
+  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
+  EXPECT_CALL(cb, Run(/*user_justification=*/absl::optional<std::u16string>(),
+                      /*should_proceed=*/false))
+      .Times(1);
 
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt,
                         {base::FilePath("file1.txt")}, DlpFileDestination(),
@@ -286,8 +289,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileOKContinues) {
                                        ash::SystemWebAppType::FILE_MANAGER));
 
   // The callback is invoked directly from the notification.
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
-  EXPECT_CALL(cb, Run(/*should_proceed=*/true)).Times(1);
+  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
+  EXPECT_CALL(cb, Run(/*user_justification=*/absl::optional<std::u16string>(),
+                      /*should_proceed=*/true))
+      .Times(1);
 
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt,
                         {base::FilePath("file1.txt")}, DlpFileDestination(),
@@ -325,7 +330,8 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
                            {warning_files.begin(), warning_files.end()}),
                        action, testing::NotNull(), testing::Eq(absl::nullopt)))
       .Times(2)
-      .WillRepeatedly([](OnDlpRestrictionCheckedCallback callback,
+      .WillRepeatedly([](OnDlpRestrictionCheckedWithJustificationCallback
+                             callback,
                          const std::vector<DlpConfidentialFile>& files,
                          dlp::FileAction file_action,
                          gfx::NativeWindow modal_parent,
@@ -346,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   fpnm_->SetTaskRunnerForTesting(task_runner);
 
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt, warning_files,
                         DlpFileDestination(), action);
@@ -382,7 +388,9 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   // Skip the warning timeout. The callback will only be invoked when the
   // warnings time out.
   testing::Mock::VerifyAndClearExpectations(&cb);
-  EXPECT_CALL(cb, Run(/*should_proceed=*/false)).Times(2);
+  EXPECT_CALL(cb, Run(/*user_justification=*/absl::optional<std::u16string>(),
+                      /*should_proceed=*/false))
+      .Times(2);
   task_runner->FastForwardBy(kWarningTimeout);
   // The warning timeout notifications should be shown.
   ASSERT_TRUE(bridge_->GetDisplayedNotification("dlp_files_2").has_value());
@@ -408,7 +416,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
                            {warning_files.begin(), warning_files.end()}),
                        action, testing::IsNull(), testing::Eq(absl::nullopt)))
       .Times(1)
-      .WillOnce([](OnDlpRestrictionCheckedCallback callback,
+      .WillOnce([](OnDlpRestrictionCheckedWithJustificationCallback callback,
                    const std::vector<DlpConfidentialFile>& files,
                    dlp::FileAction file_action, gfx::NativeWindow modal_parent,
                    absl::optional<DlpFileDestination> destination) {
@@ -427,7 +435,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   fpnm_->SetTaskRunnerForTesting(task_runner);
 
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt, warning_files,
                         DlpFileDestination(), action);
@@ -446,7 +454,8 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
 
   // Accept the warning.
   testing::Mock::VerifyAndClearExpectations(&cb);
-  EXPECT_CALL(cb, Run(/*should_proceed=*/true));
+  EXPECT_CALL(cb, Run(/*user_justification=*/absl::optional<std::u16string>(),
+                      /*should_proceed=*/true));
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_RETURN, /*control=*/false,
       /*shift=*/false, /*alt=*/false, /*command=*/false));
@@ -472,8 +481,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, CancelShowsNoDialog) {
   ASSERT_FALSE(FindFilesApp());
 
   // The callback is invoked directly from the notification.
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
-  EXPECT_CALL(cb, Run(/*should_proceed=*/false)).Times(1);
+  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
+  EXPECT_CALL(cb, Run(/*user_justification=*/absl::optional<std::u16string>(),
+                      /*should_proceed=*/false))
+      .Times(1);
 
   fpnm_->ShowDlpWarning(
       cb.Get(), /*task_id=*/absl::nullopt,
@@ -771,7 +782,9 @@ class IOTaskBrowserTest
                 result_callback) {
           auto warn_cb = base::BindOnce(
               [](DlpFilesControllerAsh::CheckIfTransferAllowedCallback cb,
-                 const bool expected_should_proceed, bool should_proceed) {
+                 const bool expected_should_proceed,
+                 absl::optional<std::u16string> user_justification,
+                 bool should_proceed) {
                 EXPECT_EQ(should_proceed, expected_should_proceed);
                 // No file is blocked.
                 std::move(cb).Run({});
@@ -830,7 +843,9 @@ class IOTaskBrowserTest
           auto warn_cb = base::BindOnce(
               [](DlpFilesControllerAsh::CheckIfTransferAllowedCallback cb,
                  const std::vector<storage::FileSystemURL>& transferred_files,
-                 const bool expected_should_proceed, bool should_proceed) {
+                 const bool expected_should_proceed,
+                 absl::optional<std::u16string> user_justification,
+                 bool should_proceed) {
                 EXPECT_EQ(should_proceed, expected_should_proceed);
                 // Return transferred files as blocked.
                 std::move(cb).Run(transferred_files);
@@ -865,7 +880,9 @@ class IOTaskBrowserTest
           auto warn_cb = base::BindOnce(
               [](DlpFilesControllerAsh::CheckIfTransferAllowedCallback cb,
                  const std::vector<storage::FileSystemURL>& transferred_files,
-                 const bool expected_should_proceed, bool should_proceed) {
+                 const bool expected_should_proceed,
+                 absl::optional<std::u16string> user_justification,
+                 bool should_proceed) {
                 EXPECT_EQ(should_proceed, expected_should_proceed);
               },
               std::move(result_callback), transferred_files,
@@ -967,15 +984,16 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                            {warning_files.begin(), warning_files.end()}),
                        action, testing::NotNull(), testing::Eq(absl::nullopt)))
       .Times(2)
-      .WillRepeatedly([](OnDlpRestrictionCheckedCallback callback,
-                         std::vector<DlpConfidentialFile> files,
-                         dlp::FileAction file_action,
-                         gfx::NativeWindow modal_parent,
-                         absl::optional<DlpFileDestination> destination) {
-        // Cancel the task so it's deleted properly.
-        std::move(callback).Run(/*should_proceed=*/false);
-        return nullptr;
-      });
+      .WillRepeatedly(
+          [](OnDlpRestrictionCheckedWithJustificationCallback callback,
+             std::vector<DlpConfidentialFile> files,
+             dlp::FileAction file_action, gfx::NativeWindow modal_parent,
+             absl::optional<DlpFileDestination> destination) {
+            // Cancel the task so it's deleted properly.
+            std::move(callback).Run(/*user_justification=*/absl::nullopt,
+                                    /*should_proceed=*/false);
+            return nullptr;
+          });
 
   // No Files app opened.
   ASSERT_FALSE(FindFilesApp());

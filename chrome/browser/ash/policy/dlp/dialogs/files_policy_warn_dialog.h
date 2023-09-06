@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_WARN_DIALOG_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_WARN_DIALOG_H_
 
+#include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
@@ -24,11 +26,12 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
   METADATA_HEADER(FilesPolicyWarnDialog);
 
   FilesPolicyWarnDialog() = delete;
-  FilesPolicyWarnDialog(OnDlpRestrictionCheckedCallback callback,
-                        const std::vector<DlpConfidentialFile>& files,
-                        dlp::FileAction action,
-                        gfx::NativeWindow modal_parent,
-                        absl::optional<DlpFileDestination> destination);
+  FilesPolicyWarnDialog(
+      OnDlpRestrictionCheckedWithJustificationCallback callback,
+      const std::vector<DlpConfidentialFile>& files,
+      dlp::FileAction action,
+      gfx::NativeWindow modal_parent,
+      absl::optional<DlpFileDestination> destination);
   FilesPolicyWarnDialog(const FilesPolicyWarnDialog&) = delete;
   FilesPolicyWarnDialog(FilesPolicyWarnDialog&&) = delete;
   FilesPolicyWarnDialog& operator=(const FilesPolicyWarnDialog&) = delete;
@@ -43,9 +46,17 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
   std::u16string GetTitle() override;
   std::u16string GetMessage() override;
 
+  // Called when the user proceeds the warning.
+  void ProceedWarning(
+      OnDlpRestrictionCheckedWithJustificationCallback callback);
+  // Called when the user cancels the warning.
+  void CancelWarning(OnDlpRestrictionCheckedWithJustificationCallback callback);
+
   std::vector<DlpConfidentialFile> files_;
   // TODO(b/290329012): Remove.
   absl::optional<DlpFileDestination> destination_;
+
+  base::WeakPtrFactory<FilesPolicyWarnDialog> weak_ptr_factory_{this};
 };
 
 }  // namespace policy

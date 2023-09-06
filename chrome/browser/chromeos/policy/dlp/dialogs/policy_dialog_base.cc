@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "build/chromeos_buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -65,6 +66,8 @@ PolicyDialogBase::PolicyDialogBase() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 }
+
+PolicyDialogBase::~PolicyDialogBase() = default;
 
 void PolicyDialogBase::SetOnDlpRestrictionCheckedCallback(
     OnDlpRestrictionCheckedCallback callback) {

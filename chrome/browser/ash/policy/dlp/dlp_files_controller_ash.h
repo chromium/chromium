@@ -223,6 +223,7 @@ class DlpFilesControllerAsh : public DlpFilesController,
       const absl::optional<std::string>& dst_pattern,
       dlp::FileAction files_action,
       IsFilesTransferRestrictedCallback callback,
+      absl::optional<std::u16string> user_justification,
       bool should_proceed);
 
   void ReturnDisallowedFiles(

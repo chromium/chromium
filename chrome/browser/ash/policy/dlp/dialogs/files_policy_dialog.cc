@@ -42,7 +42,7 @@ FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
 FilesPolicyDialog::~FilesPolicyDialog() = default;
 
 views::Widget* FilesPolicyDialog::CreateWarnDialog(
-    OnDlpRestrictionCheckedCallback callback,
+    OnDlpRestrictionCheckedWithJustificationCallback callback,
     const std::vector<DlpConfidentialFile>& files,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,

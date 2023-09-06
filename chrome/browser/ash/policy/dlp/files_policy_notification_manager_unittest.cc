@@ -304,7 +304,7 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
   // FPNM::ShowConnectorsWarning(), both of which store all the info about the
   // task to later show notifications/dialogs.
   void AddWarnedFiles(Policy policy,
-                      OnDlpRestrictionCheckedCallback cb,
+                      OnDlpRestrictionCheckedWithJustificationCallback cb,
                       file_manager::io_task::IOTaskId task_id,
                       std::vector<base::FilePath> warned_files,
                       dlp::FileAction action) {
@@ -450,7 +450,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
                       pause_params))))
       .Times(::testing::AtLeast(1));
 
-  base::MockCallback<OnDlpRestrictionCheckedCallback> mock_cb;
+  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> mock_cb;
 
   AddWarnedFiles(GetPolicy(), mock_cb.Get(), task_id,
                  std::vector<base::FilePath>{src_file_path},
@@ -470,7 +470,9 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
                           /*blocked_files=*/1)))))
       .Times(::testing::AtLeast(1));
 
-  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/false));
+  EXPECT_CALL(mock_cb,
+              Run(/*user_justification=*/absl::optional<std::u16string>(),
+                  /*should_proceed=*/false));
   io_task_controller_->CompleteWithError(
       task_id,
       file_manager::io_task::PolicyError(
@@ -576,7 +578,8 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningCancelled) {
                 Field(&file_manager::io_task::ProgressStatus::pause_params,
                       pause_params))))
       .Times(::testing::AtLeast(1));
-  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+  testing::StrictMock<
+      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
       mock_cb;
   AddWarnedFiles(GetPolicy(), mock_cb.Get(), task_id,
                  std::vector<base::FilePath>{src_file_path},
@@ -593,7 +596,10 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningCancelled) {
                       file_manager::io_task::State::kCancelled))));
   // Warning callback is run with should_proceed set to false when the task is
   // cancelled.
-  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/false)).Times(1);
+  EXPECT_CALL(mock_cb,
+              Run(/*user_justification=*/absl::optional<std::u16string>(),
+                  /*should_proceed=*/false))
+      .Times(1);
   io_task_controller_->Cancel(task_id);
 
   base::RunLoop().RunUntilIdle();
@@ -635,7 +641,8 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningResumed) {
                       pause_params))))
       .Times(::testing::AtLeast(1));
 
-  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+  testing::StrictMock<
+      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
       mock_cb;
 
   AddWarnedFiles(GetPolicy(), mock_cb.Get(), task_id,
@@ -646,7 +653,10 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningResumed) {
 
   // Warning callback is run with should_proceed set to true when the task is
   // resumed.
-  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/true)).Times(1);
+  EXPECT_CALL(mock_cb,
+              Run(/*user_justification=*/absl::optional<std::u16string>(),
+                  /*should_proceed=*/true))
+      .Times(1);
   fpnm_->OnIOTaskResumed(task_id);
   EXPECT_FALSE(fpnm_->HasWarningTimerForTesting(task_id));
 }
@@ -726,7 +736,8 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
                       pause_params))))
       .Times(::testing::AtLeast(1));
 
-  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+  testing::StrictMock<
+      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
       mock_cb;
   fpnm_ = std::make_unique<FilesPolicyNotificationManager>(profile_);
   ASSERT_FALSE(fpnm_->HasIOTask(task_id));
@@ -1168,7 +1179,8 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
   auto src_file_path = base::FilePath(kFile1);
-  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+  testing::StrictMock<
+      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
       mock_cb;
   fpnm_->ShowDlpWarning(
       mock_cb.Get(), /*task_id=*/absl::nullopt, {src_file_path},
@@ -1190,7 +1202,10 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
 
   // Warning callback is run with should_proceed set to false when the warning
   // times out.
-  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/false)).Times(1);
+  EXPECT_CALL(mock_cb,
+              Run(/*user_justification=*/absl::optional<std::u16string>(),
+                  /*should_proceed=*/false))
+      .Times(1);
   task_environment_.FastForwardBy(base::Minutes(5));
 }
 
@@ -1200,7 +1215,8 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
-  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+  testing::StrictMock<
+      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
       mock_cb;
   fpnm_->ShowDlpWarning(mock_cb.Get(), /*task_id=*/absl::nullopt,
                         {base::FilePath(kFile1), base::FilePath(kFile2)},
@@ -1224,7 +1240,10 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
 
   // Warning callback is run with should_proceed set to false when the warning
   // times out.
-  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/false)).Times(1);
+  EXPECT_CALL(mock_cb,
+              Run(/*user_justification=*/absl::optional<std::u16string>(),
+                  /*should_proceed=*/false))
+      .Times(1);
   task_environment_.FastForwardBy(base::Minutes(5));
 }
 

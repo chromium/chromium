@@ -87,7 +87,7 @@ class WarningDialogBrowserTest : public FilesPolicyDialogBrowserTest {
 
  protected:
   std::vector<DlpConfidentialFile> warning_files_;
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb_;
+  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb_;
 };
 
 // Tests that the warning dialog is created as a system modal if no parent is
@@ -106,7 +106,9 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, NoParent) {
 
   EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
   // Proceed.
-  EXPECT_CALL(cb_, Run(/*should_proceed=*/true)).Times(1);
+  EXPECT_CALL(cb_, Run(/*user_justification=*/absl::optional<std::u16string>(),
+                       /*should_proceed=*/true))
+      .Times(1);
   dialog->AcceptDialog();
   EXPECT_TRUE(widget->IsClosed());
 }
@@ -135,7 +137,9 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
             files_app->window()->GetNativeWindow());
   // Cancel.
-  EXPECT_CALL(cb_, Run(/*should_proceed=*/false)).Times(1);
+  EXPECT_CALL(cb_, Run(/*user_justification=*/absl::optional<std::u16string>(),
+                       /*should_proceed=*/false))
+      .Times(1);
   dialog->CancelDialog();
   EXPECT_TRUE(widget->IsClosed());
 }

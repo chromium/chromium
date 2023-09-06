@@ -100,9 +100,12 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // This is not done if the new UI for enterprise connectors is disabled.
   void MaybeSendConnectorsBlockedFilesNotification();
 
-  // Called after the warning dialog is proceed or cancelled.
-  // This resumes the transfer and allows for the warned files to be
-  void OnConnectorsWarnDialogResult(bool should_proceed);
+  // Called after the warning dialog is proceeded or cancelled.
+  // This resumes the transfer and allows for the warned files to be transferred
+  // if the warning is proceeded.
+  void OnConnectorsWarnDialogResult(
+      absl::optional<std::u16string> user_justification,
+      bool should_proceed);
 
   // Checks `file_transfer_analysis_delegates_[idx]` whether a transfer is
   // allowed for the source-destination-pair.

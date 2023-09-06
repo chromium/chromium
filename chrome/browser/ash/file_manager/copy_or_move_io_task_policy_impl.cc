@@ -388,9 +388,8 @@ bool CopyOrMoveIOTaskPolicyImpl::MaybeShowConnectorsWarning() {
   return true;
 }
 
-// TODO(b/293122562): The user justification should be passed to this callback
-// when proceeding a warning.
 void CopyOrMoveIOTaskPolicyImpl::OnConnectorsWarnDialogResult(
+    absl::optional<std::u16string> user_justification,
     bool should_proceed) {
   if (!should_proceed) {
     // No need to cancel. Cancel will be called from
@@ -401,10 +400,9 @@ void CopyOrMoveIOTaskPolicyImpl::OnConnectorsWarnDialogResult(
   // `FileTransferAnalysisDelegate`s to report the bypass of the warning and to
   // mark warned files as allowed for a transfer.
   base::ranges::for_each(file_transfer_analysis_delegates_,
-                         [](const auto& delegate) {
+                         [&user_justification](const auto& delegate) {
                            if (delegate) {
-                             // TODO(b/293122562): Pass user_justification.
-                             delegate->BypassWarnings(absl::nullopt);
+                             delegate->BypassWarnings(user_justification);
                            }
                          });
   StartTransfer();

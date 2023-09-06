@@ -310,7 +310,7 @@ void FilesPolicyNotificationManager::AddConnectorsBlockedFiles(
 }
 
 void FilesPolicyNotificationManager::ShowDlpWarning(
-    OnDlpRestrictionCheckedCallback callback,
+    OnDlpRestrictionCheckedWithJustificationCallback callback,
     absl::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
@@ -326,7 +326,7 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
 }
 
 void FilesPolicyNotificationManager::ShowConnectorsWarning(
-    OnDlpRestrictionCheckedCallback callback,
+    OnDlpRestrictionCheckedWithJustificationCallback callback,
     file_manager::io_task::IOTaskId task_id,
     std::vector<base::FilePath> warning_files,
     dlp::FileAction action) {
@@ -426,7 +426,7 @@ void FilesPolicyNotificationManager::OnIOTaskResumed(
   }
 
   std::move(io_tasks_.at(task_id).GetWarningInfo()->warning_callback)
-      .Run(/*should_proceed=*/true);
+      .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/true);
   io_tasks_.at(task_id).ResetWarningInfo();
 }
 
@@ -473,7 +473,8 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
 
   switch (button_index.value()) {
     case NotificationButton::CANCEL:
-      std::move(warning_info->warning_callback).Run(/*should_proceed=*/false);
+      std::move(warning_info->warning_callback)
+          .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/false);
       non_io_tasks_.erase(notification_id);
       non_io_tasks_warning_timers_.erase(notification_id);
       break;
@@ -483,7 +484,8 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
 
       if (warning_info->files.size() == 1) {
         // Action anyway.
-        std::move(warning_info->warning_callback).Run(/*should_proceed=*/true);
+        std::move(warning_info->warning_callback)
+            .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/true);
         non_io_tasks_.erase(notification_id);
         non_io_tasks_warning_timers_.erase(notification_id);
       } else {
@@ -556,8 +558,8 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
 FilesPolicyNotificationManager::WarningInfo::WarningInfo(
     std::vector<base::FilePath> files_paths,
     Policy warning_reason,
-    OnDlpRestrictionCheckedCallback warning_callback,
-    OnDlpRestrictionCheckedCallback dialog_callback)
+    OnDlpRestrictionCheckedWithJustificationCallback warning_callback,
+    OnDlpRestrictionCheckedWithJustificationCallback dialog_callback)
     : warning_reason(warning_reason),
       warning_callback(std::move(warning_callback)),
       dialog_callback(std::move(dialog_callback)) {
@@ -569,8 +571,8 @@ FilesPolicyNotificationManager::WarningInfo::WarningInfo(
 FilesPolicyNotificationManager::WarningInfo::WarningInfo(
     std::vector<DlpConfidentialFile> files,
     Policy warning_reason,
-    OnDlpRestrictionCheckedCallback warning_callback,
-    OnDlpRestrictionCheckedCallback dialog_callback)
+    OnDlpRestrictionCheckedWithJustificationCallback warning_callback,
+    OnDlpRestrictionCheckedWithJustificationCallback dialog_callback)
     : files(std::move(files)),
       warning_reason(warning_reason),
       warning_callback(std::move(warning_callback)),
@@ -944,7 +946,7 @@ void FilesPolicyNotificationManager::OnIOTaskStatus(
                  .GetWarningInfo()
                  ->warning_callback.is_null());
       std::move(io_tasks_.at(status.task_id).GetWarningInfo()->warning_callback)
-          .Run(/*should_proceed=*/false);
+          .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/false);
       io_tasks_.at(status.task_id).ResetWarningInfo();
     }
     // Remove only if the IOTask doesn't have any blocked file.
@@ -984,6 +986,7 @@ bool FilesPolicyNotificationManager::HasWarning(
 void FilesPolicyNotificationManager::OnIOTaskWarningDialogClicked(
     file_manager::io_task::IOTaskId task_id,
     Policy warning_reason,
+    absl::optional<std::u16string> user_justification,
     bool should_proceed) {
   if (!HasIOTask(task_id) || !HasWarning(task_id)) {
     // Task probably timed out.
@@ -998,6 +1001,7 @@ void FilesPolicyNotificationManager::OnIOTaskWarningDialogClicked(
 
 void FilesPolicyNotificationManager::OnNonIOTaskWarningDialogClicked(
     const std::string& notification_id,
+    absl::optional<std::u16string> user_justification,
     bool should_proceed) {
   if (!HasWarning(notification_id)) {
     // Task probably timed out.
@@ -1005,7 +1009,7 @@ void FilesPolicyNotificationManager::OnNonIOTaskWarningDialogClicked(
   }
   std::move(
       non_io_tasks_.at(notification_id).GetWarningInfo()->warning_callback)
-      .Run(should_proceed);
+      .Run(user_justification, should_proceed);
   non_io_tasks_.erase(notification_id);
 }
 
@@ -1131,7 +1135,7 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
 }
 
 void FilesPolicyNotificationManager::ShowDlpWarningNotification(
-    OnDlpRestrictionCheckedCallback callback,
+    OnDlpRestrictionCheckedWithJustificationCallback callback,
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
@@ -1197,14 +1201,15 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
 
 void FilesPolicyNotificationManager::PauseIOTask(
     file_manager::io_task::IOTaskId task_id,
-    OnDlpRestrictionCheckedCallback callback,
+    OnDlpRestrictionCheckedWithJustificationCallback callback,
     std::vector<base::FilePath> warning_files,
     dlp::FileAction action,
     Policy warning_reason) {
   auto* io_task_controller = GetIOTaskController(context_);
   if (!io_task_controller) {
     // Proceed because the IO task can't be paused.
-    std::move(callback).Run(/*should_proceed=*/true);
+    std::move(callback).Run(/*user_justification=*/absl::nullopt,
+                            /*should_proceed=*/true);
     return;
   }
   // Sometimes DLP checks are done before FilesPolicyNotificationManager is
@@ -1314,7 +1319,7 @@ void FilesPolicyNotificationManager::OnNonIOTaskWarningTimedOut(
   // Run the warning callback with false.
   std::move(
       non_io_tasks_.at(notification_id).GetWarningInfo()->warning_callback)
-      .Run(/*should_proceed=*/false);
+      .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/false);
 
   ShowDlpWarningTimeoutNotification(non_io_tasks_.at(notification_id).action());
 
