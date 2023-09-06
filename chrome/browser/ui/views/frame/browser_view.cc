@@ -295,6 +295,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/fullscreen_util_mac.h"
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "components/remote_cocoa/browser/application_host.h"
 #endif
@@ -2537,22 +2538,11 @@ bool BrowserView::IsTabStripEditable() const {
 
 bool BrowserView::IsToolbarVisible() const {
 #if BUILDFLAG(IS_MAC)
-  // This Mac-only preference disables display of the toolbar in fullscreen mode
-  // so we need to take it into account when determining if the toolbar is
-  // visible - especially as pertains to anchoring views.
-  bool show_fullscreen_toolbar = true;
-  if (web_app::AppBrowserController::IsWebApp(browser())) {
-    const web_app::AppBrowserController* controller =
-        browser()->app_controller();
-    show_fullscreen_toolbar = controller->AlwaysShowToolbarInFullscreen();
-  } else {
-    show_fullscreen_toolbar = browser()->profile()->GetPrefs()->GetBoolean(
-        prefs::kShowFullscreenToolbar);
-  }
   // Immersive full screen makes it possible to display the toolbar when
   // kShowFullscreenToolbar is not set.
   if (!UsesImmersiveFullscreenMode()) {
-    if (IsFullscreen() && !show_fullscreen_toolbar) {
+    if (IsFullscreen() &&
+        !fullscreen_utils::IsAlwaysShowToolbarEnabled(browser())) {
       return false;
     }
   }

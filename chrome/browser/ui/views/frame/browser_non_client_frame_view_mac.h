@@ -118,12 +118,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   // toolbar style is changed.
   void ToggleWebAppFrameToolbarViewVisibility();
 
-  // Returns the current value of the "always show toolbar in fullscreen"
-  // preference, either reading the value from the kShowFullscreenToolbar
-  // preference or if this is a window for an app, from the settings for that
-  // app.
-  bool AlwaysShowToolbarInFullscreen() const;
-
   // Emits the duration of the current fullscreen session, if any.
   void EmitFullscreenSessionHistograms();
 
