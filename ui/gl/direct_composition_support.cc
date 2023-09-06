@@ -76,7 +76,7 @@ void SetOverlayCapsValid(bool valid) {
   g_overlay_caps_valid = valid;
 }
 
-// A warpper of IDXGIOutput4::CheckOverlayColorSpaceSupport()
+// A wrapper of IDXGIOutput4::CheckOverlayColorSpaceSupport()
 bool CheckOverlayColorSpaceSupport(
     DXGI_FORMAT dxgi_format,
     DXGI_COLOR_SPACE_TYPE dxgi_color_space,
