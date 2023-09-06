@@ -19,6 +19,7 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,20 +61,11 @@ class ParentalControlMetricsTest : public testing::Test {
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           base::BindRepeating([](const GURL& url) { return false; }),
-          std::make_unique<MockServiceDelegate>());
+          std::make_unique<supervised_user::FakeURLFilterDelegate>());
 
   std::unique_ptr<supervised_user::ParentalControlMetrics>
       parental_control_metrics_;
   base::HistogramTester histogram_tester_;
-
- private:
-  // TODO(b/279164926): update SupervisedUserURLFilter::Delegate to prevent
-  // replicating MockServiceDelegate code.
-  class MockServiceDelegate
-      : public supervised_user::SupervisedUserURLFilter::Delegate {
-   public:
-    std::string GetCountryCode() override { return std::string(); }
-  };
 };
 
 TEST_F(ParentalControlMetricsTest, WebFilterTypeMetric) {

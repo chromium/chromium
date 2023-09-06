@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -68,17 +69,11 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   base::RunLoop run_loop_;
   SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
       base::BindRepeating([](const GURL& url) { return false; }),
-      std::make_unique<MockServiceDelegate>());
+      std::make_unique<FakeURLFilterDelegate>());
   SupervisedUserURLFilter::FilteringBehavior behavior_;
   supervised_user::FilteringBehaviorReason reason_;
 
  private:
-  class MockServiceDelegate
-      : public supervised_user::SupervisedUserURLFilter::Delegate {
-   public:
-    std::string GetCountryCode() override { return std::string(); }
-  };
-
   void ExpectURLCheckMatches(
       const std::string& url,
       SupervisedUserURLFilter::FilteringBehavior expected_behavior,

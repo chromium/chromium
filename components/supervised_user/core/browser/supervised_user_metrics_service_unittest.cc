@@ -12,6 +12,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Tests for family user metrics service.
@@ -45,17 +46,11 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  class MockServiceDelegate
-      : public supervised_user::SupervisedUserURLFilter::Delegate {
-   public:
-    std::string GetCountryCode() override { return std::string(); }
-  };
-
   TestingPrefServiceSimple pref_service_;
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           base::BindRepeating([](const GURL& url) { return false; }),
-          std::make_unique<MockServiceDelegate>());
+          std::make_unique<supervised_user::FakeURLFilterDelegate>());
   std::unique_ptr<supervised_user::SupervisedUserMetricsService>
       supervised_user_metrics_service_;
 };

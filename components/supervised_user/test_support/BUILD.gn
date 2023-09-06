@@ -9,6 +9,8 @@ source_set("test_support") {
     "kids_chrome_management_test_utils.h",
     "kids_management_api_server_mock.cc",
     "kids_management_api_server_mock.h",
+    "supervised_user_url_filter_test_utils.cc",
+    "supervised_user_url_filter_test_utils.h",
   ]
   deps = [
     "//base",

@@ -27,6 +27,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -41,12 +42,6 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
   bool IsEnabled() const override { return true; }
   void CreateURLAccessRequest(const GURL& url_requested,
                               SuccessCallback callback) override {}
-};
-
-class MockFilterDelegateImpl : public SupervisedUserURLFilter::Delegate {
- public:
-  // SupervisedUserURLFilter::Delegate implementation.
-  std::string GetCountryCode() override { return std::string(); }
 };
 
 class ChildAccountServiceTest : public ::testing::Test {
@@ -86,7 +81,7 @@ class ChildAccountServiceTest : public ::testing::Test {
         settings_service_, sync_service_,
         /*check_webstore_url_callback=*/
         base::BindRepeating([](const GURL& url) { return false; }),
-        std::make_unique<MockFilterDelegateImpl>(),
+        std::make_unique<FakeURLFilterDelegate>(),
         /*can_show_first_time_interstitial_banner=*/false);
 
     list_family_members_service_ = std::make_unique<ListFamilyMembersService>(
