@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -203,10 +204,13 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
 
 gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
-  GeometryBox geometry_box =
-      clip_path.GetType() == ClipPathOperation::kShape
-          ? To<ShapeClipPathOperation>(clip_path).GetGeometryBox()
-          : GeometryBox::kBorderBox;
+  GeometryBox geometry_box = GeometryBox::kBorderBox;
+  if (const auto* shape = DynamicTo<ShapeClipPathOperation>(clip_path)) {
+    geometry_box = shape->GetGeometryBox();
+  } else if (const auto* box =
+                 DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
+    geometry_box = box->GetGeometryBox();
+  }
 
   if (object.IsSVGChild()) {
     if (!RuntimeEnabledFeatures::ClipPathGeometryBoxEnabled()) {
@@ -280,6 +284,12 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     return bounding_box;
   }
 
+  if (const auto* box = DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
+    gfx::RectF bounding_box = box->GetPath(reference_box).BoundingRect();
+    bounding_box.Intersect(gfx::RectF(InfiniteIntRect()));
+    return reference_box;
+  }
+
   DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kReference);
   LayoutSVGResourceClipper* clipper = ResolveElementReference(
       object, To<ReferenceClipPathOperation>(clip_path));
@@ -348,6 +358,9 @@ bool ClipPathClipper::HitTest(const LayoutObject& object,
                                             reference_box, zoom);
     return path.Contains(location.TransformedPoint());
   }
+  if (const auto* box = DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
+    return box->GetPath(reference_box).Contains(location.TransformedPoint());
+  }
   const LayoutSVGResourceClipper* clipper = ResolveElementReference(
       object, To<ReferenceClipPathOperation>(clip_path));
   if (!clipper) {
@@ -388,6 +401,11 @@ static absl::optional<Path> PathBasedClipInternal(
     bool uses_zoomed_reference_box,
     const gfx::RectF& reference_box) {
   const ClipPathOperation& clip_path = *clip_path_owner.StyleRef().ClipPath();
+  if (const auto* geometry_box_clip =
+          DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
+    return geometry_box_clip->GetPath(reference_box);
+  }
+
   if (const auto* reference_clip =
           DynamicTo<ReferenceClipPathOperation>(clip_path)) {
     LayoutSVGResourceClipper* resource_clipper =

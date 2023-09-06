@@ -38,8 +38,7 @@ namespace blink {
 
 class ClipPathOperation : public GarbageCollected<ClipPathOperation> {
  public:
-  // TODO(pdr): Support <geometry-box>.
-  enum OperationType { kReference, kShape };
+  enum OperationType { kReference, kShape, kGeometryBox };
 
   virtual ~ClipPathOperation() = default;
   virtual void Trace(Visitor* visitor) const {}

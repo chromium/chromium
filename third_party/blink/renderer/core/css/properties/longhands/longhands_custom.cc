@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
+#include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/paint_order_array.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
@@ -1747,15 +1748,19 @@ const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   if (ClipPathOperation* operation = style.ClipPath()) {
-    if (operation->GetType() == ClipPathOperation::kShape) {
+    if (auto* box = DynamicTo<GeometryBoxClipPathOperation>(operation)) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-      if (auto* shape = DynamicTo<ShapeClipPathOperation>(operation)) {
-        auto* basic_shape = ValueForBasicShape(style, shape->GetBasicShape());
-        list->Append(*basic_shape);
-        GeometryBox geometry_box = shape->GetGeometryBox();
-        if (geometry_box != GeometryBox::kBorderBox) {
-          list->Append(*CSSIdentifierValue::Create(geometry_box));
-        }
+      GeometryBox geometry_box = box->GetGeometryBox();
+      list->Append(*CSSIdentifierValue::Create(geometry_box));
+      return list;
+    }
+    if (auto* shape = DynamicTo<ShapeClipPathOperation>(operation)) {
+      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+      auto* basic_shape = ValueForBasicShape(style, shape->GetBasicShape());
+      list->Append(*basic_shape);
+      GeometryBox geometry_box = shape->GetGeometryBox();
+      if (geometry_box != GeometryBox::kBorderBox) {
+        list->Append(*CSSIdentifierValue::Create(geometry_box));
       }
       return list;
     }

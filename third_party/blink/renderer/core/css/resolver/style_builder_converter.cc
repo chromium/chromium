@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
+#include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
@@ -203,9 +204,9 @@ ClipPathOperation* StyleBuilderConverter::ConvertClipPath(
       return MakeGarbageCollected<ShapeClipPathOperation>(
           BasicShapeForValue(state, shape_value), geometry_box);
     }
-
-    // TODO(pdr): Support specifying <geometry-box> by itself, without a shape.
-    return nullptr;
+    auto& geometry_box_value = To<CSSIdentifierValue>(list->First());
+    GeometryBox geometry_box = geometry_box_value.ConvertTo<GeometryBox>();
+    return MakeGarbageCollected<GeometryBoxClipPathOperation>(geometry_box);
   }
 
   if (const auto* url_value = DynamicTo<cssvalue::CSSURIValue>(value)) {
