@@ -302,6 +302,11 @@ bool MenuButtonController::IsTriggerableEventType(const ui::Event& event) {
   return event.type() == ui::ET_GESTURE_TAP;
 }
 
+void MenuButtonController::NotifyClick() {
+  ButtonController::NotifyClick();
+  Activate(nullptr);
+}
+
 void MenuButtonController::IncrementPressedLocked(
     bool snap_ink_drop_to_activated,
     const ui::LocatedEvent* event) {

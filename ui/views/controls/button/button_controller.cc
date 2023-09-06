@@ -137,6 +137,12 @@ void ButtonController::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
+void ButtonController::NotifyClick() {
+  ui::KeyEvent fake_event(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                          ui::EF_IS_SYNTHESIZED);
+  button_controller_delegate_->NotifyClick(fake_event);
+}
+
 void ButtonController::UpdateAccessibleNodeData(ui::AXNodeData* node_data) {}
 
 bool ButtonController::IsTriggerableEvent(const ui::Event& event) {

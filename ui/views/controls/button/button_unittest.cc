@@ -378,6 +378,12 @@ TEST_F(ButtonTest, NotifyActionNoClick) {
   EXPECT_FALSE(button()->canceled());
 }
 
+TEST_F(ButtonTest, ButtonControllerNotifyClick) {
+  EXPECT_FALSE(button()->pressed());
+  button()->button_controller()->NotifyClick();
+  EXPECT_TRUE(button()->pressed());
+}
+
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
 #if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
