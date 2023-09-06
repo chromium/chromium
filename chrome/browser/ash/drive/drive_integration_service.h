@@ -467,6 +467,8 @@ class DriveIntegrationService : public KeyedService,
   void OnMirroringPrefChanged();
 
   // NetworkStateHandlerObserver implementation.
+  void PortalStateChanged(const ash::NetworkState*,
+                          ash::NetworkState::PortalState portal_state) override;
   void DefaultNetworkChanged(const ash::NetworkState*) override;
   void OnShuttingDown() override;
 

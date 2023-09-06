@@ -235,7 +235,16 @@ ConnectionStatus GetDriveConnectionStatus(Profile* const profile) {
   }
 
   if (!network->IsOnline()) {
-    VLOG(1) << "GetDriveConnectionStatus: not ready";
+    VLOG(1) << "GetDriveConnectionStatus: not ready: network is "
+            << network->connection_state();
+    return kNotReady;
+  }
+
+  using PortalState = ash::NetworkState::PortalState;
+  if (const PortalState portal_state = network->GetPortalState();
+      portal_state != PortalState::kOnline) {
+    VLOG(1) << "GetDriveConnectionStatus: not ready: portal is "
+            << portal_state;
     return kNotReady;
   }
 

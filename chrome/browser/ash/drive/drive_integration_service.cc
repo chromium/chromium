@@ -1719,6 +1719,13 @@ void DriveIntegrationService::OnMirroringPrefChanged() {
   }
 }
 
+void DriveIntegrationService::PortalStateChanged(
+    const ash::NetworkState*,
+    const ash::NetworkState::PortalState portal_state) {
+  VLOG(1) << "PortalStateChanged: " << portal_state;
+  OnNetworkChanged();
+}
+
 void DriveIntegrationService::DefaultNetworkChanged(const ash::NetworkState*) {
   VLOG(1) << "DefaultNetworkChanged";
   OnNetworkChanged();
