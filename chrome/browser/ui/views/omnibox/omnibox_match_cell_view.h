@@ -70,7 +70,7 @@ class OmniboxMatchCellView : public views::View {
                      const AutocompleteMatch& match);
 
   // Set's the `icon_view_` image, possibly with a rounded square background.
-  void SetIcon(const gfx::ImageSkia& image);
+  void SetIcon(const gfx::ImageSkia& image, const AutocompleteMatch& match);
 
   // Clears the `icon_view_` image. Useful for suggestions that don't need icons
   // e.g., tail suggestions. Can't simply set the icon to an empty icon,

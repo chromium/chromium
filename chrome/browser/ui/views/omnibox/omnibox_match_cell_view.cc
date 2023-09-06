@@ -47,14 +47,6 @@ namespace {
 // kUniformRowHeight flag is enabled.
 static constexpr int kUniformRowHeightIconSize = 28;
 
-// The edge length of favicon backgrounds.
-int GetIconSize() {
-  // When `kSquareSuggestIconIcons` is disabled, icons don't have backgrounds
-  // and aren't resized in `OmniboxMatchCellView`.
-  DCHECK(OmniboxFieldTrial::kSquareSuggestIconIcons.Get());
-  return kUniformRowHeightIconSize;
-}
-
 // The size (edge length or diameter) of the answer icon backgrounds (which may
 // be squares or circles).
 int GetAnswerImageSize() {
@@ -345,13 +337,22 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
           : std::u16string());
 }
 
-void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image) {
-  if (OmniboxFieldTrial::kSquareSuggestIconIcons.Get()) {
+void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
+                                   const AutocompleteMatch& match) {
+  bool is_pedal_suggestion_row =
+      match.type == AutocompleteMatchType::PEDAL &&
+      OmniboxFieldTrial::IsActionsUISimplificationEnabled();
+  if (is_pedal_suggestion_row ||
+      OmniboxFieldTrial::kSquareSuggestIconIcons.Get()) {
+    // When a PEDAL suggestion has been split out to its own row, apply a square
+    // background with a distinctive color to the respective icon.
+    const auto background_color = is_pedal_suggestion_row
+                                      ? kColorOmniboxAnswerIconGM3Background
+                                      : kColorOmniboxResultsIconGM3Background;
     icon_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-            GetIconSize(), GetIconAndImageCornerRadius(),
-            GetColorProvider()->GetColor(kColorOmniboxResultsIconGM3Background),
-            image));
+            kUniformRowHeightIconSize, GetIconAndImageCornerRadius(),
+            GetColorProvider()->GetColor(background_color), image));
   } else {
     icon_view_->SetImage(image);
   }

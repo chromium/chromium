@@ -388,7 +388,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   if (icon.IsEmpty())
     suggestion_view_->ClearIcon();
   else
-    suggestion_view_->SetIcon(*icon.ToImageSkia());
+    suggestion_view_->SetIcon(*icon.ToImageSkia(), match_);
 
   // We must reapply colors for all the text fields here. If we don't, we can
   // break theme changes for ZeroSuggest. See https://crbug.com/1095205.
