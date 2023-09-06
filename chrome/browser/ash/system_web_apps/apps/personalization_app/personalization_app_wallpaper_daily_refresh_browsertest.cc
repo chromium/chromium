@@ -13,6 +13,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/wallpaper/test_wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -221,6 +222,68 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
   EXPECT_FALSE(original_info.MatchesSelection(new_info));
   EXPECT_EQ(original_info.collection_id, new_info.collection_id);
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
+                       DailyDarkLightWallpaperIsRefreshed) {
+  Browser* browser;
+  auto* web_contents = LaunchAppAtWallpaperSubpage(&browser);
+  ASSERT_EQ(ScheduleType::kCustom, scheduler()->GetScheduleType());
+  const char kCollectionId[] = "dark_light_collection";
+  {
+    // Enables daily refresh.
+    base::RunLoop loop;
+    WallpaperChangedWaiter waiter(loop.QuitClosure());
+    web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        u"personalizationTestApi.enableDailyRefresh('dark_light_collection');",
+        base::DoNothing());
+    loop.Run();
+  }
+  ASSERT_EQ(WallpaperType::kDaily, wallpaper_controller()->GetWallpaperType());
+  WallpaperInfo original_info =
+      *wallpaper_controller()->GetActiveUserWallpaperInfo();
+  ASSERT_EQ(kCollectionId, original_info.collection_id);
+  {
+    // Forwards half day and expects no change in wallpaper.
+    FastForwardBy(base::Hours(12));
+    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(original_info.MatchesAsset(
+        *wallpaper_controller()->GetActiveUserWallpaperInfo()))
+        << "No change to asset because not enough time elapsed for daily "
+           "refresh";
+    // Toggles color mode and expects new asset from the same wallpaper.
+    auto* dark_light_controller = Shell::Get()->dark_light_mode_controller();
+    dark_light_controller->ToggleColorMode();
+    base::RunLoop loop;
+    WallpaperChangedWaiter waiter(loop.QuitClosure());
+    loop.Run();
+    WallpaperInfo new_info =
+        *wallpaper_controller()->GetActiveUserWallpaperInfo();
+    EXPECT_TRUE(original_info.MatchesSelection(new_info))
+        << "Expect same wallpaper after color mode changes";
+    EXPECT_FALSE(original_info.MatchesAsset(new_info))
+        << "Expect updated variant asset after color mode changes";
+    EXPECT_EQ(original_info.date, new_info.date)
+        << "The wallpaper is timestamp is unaffected by color mode change";
+    EXPECT_EQ(original_info.collection_id, new_info.collection_id)
+        << "Expect same collection";
+  }
+  {
+    // Forwards another half day. Extra 1 minute is used to account for delays.
+    // Expects a new wallpaper is set.
+    const auto checkpoint_change =
+        FastForwardBy(base::Hours(12) + base::Minutes(1));
+    EXPECT_TRUE(checkpoint_change);
+    base::RunLoop loop;
+    WallpaperChangedWaiter waiter(loop.QuitClosure());
+    loop.Run();
+    WallpaperInfo new_info =
+        *wallpaper_controller()->GetActiveUserWallpaperInfo();
+    EXPECT_FALSE(original_info.MatchesSelection(new_info))
+        << "Expect new daily wallpaper after 24 hours have elapsed";
+    EXPECT_EQ(original_info.collection_id, new_info.collection_id)
+        << "Expect same collection";
+  }
 }
 
 }  // namespace

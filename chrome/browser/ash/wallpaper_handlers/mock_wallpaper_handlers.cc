@@ -25,6 +25,7 @@ namespace {
 constexpr char kDataUrlPrefix[] = "data:image/png;base64,";
 constexpr uint64_t kTimeOfDayStartingAssetId = 88;
 constexpr int kMaxImageNum = 5;
+constexpr char kDarklightCollectionId[] = "dark_light_collection";
 
 // Images used in test must have a unique `asset_id` for Personalization App to
 // function correctly. Make sure that the fake `collection_id` values used in
@@ -39,6 +40,8 @@ int GetStartingAssetId(const std::string& collection_id) {
     return 30;
   } else if (collection_id == "fake_collection_id_2") {
     return 40;
+  } else if (collection_id == kDarklightCollectionId) {
+    return 50;
   } else {
     return 100;
   }
@@ -91,6 +94,43 @@ backdrop::Image GenerateFakeBackdropImage(const std::string& collection_id,
   }
   image.set_image_type(GetImageType(asset_id));
   return image;
+}
+
+std::vector<backdrop::Image> GenerateDarkLightBackdropImagePair(
+    const std::string& collection_id,
+    int asset_id) {
+  std::vector<backdrop::Image> pairs;
+  const int unit_id = asset_id;
+  {
+    // Generates Light variant.
+    backdrop::Image image;
+    image.set_asset_id(asset_id);
+    image.set_image_url(kDataUrlPrefix + base::NumberToString(asset_id));
+    for (auto line = 0; line < 2; line++) {
+      image.add_attribution()->set_text(
+          base::StringPrintf("fake_attribution_%s_asset_id_%i_line_%i",
+                             collection_id.c_str(), asset_id, line));
+    }
+    image.set_unit_id(unit_id);
+    image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE);
+    pairs.push_back(image);
+  }
+  {
+    // Generates Dark variant.
+    backdrop::Image image;
+    const auto dark_asset_id = asset_id + 1;
+    image.set_asset_id(dark_asset_id);
+    image.set_image_url(kDataUrlPrefix + base::NumberToString(dark_asset_id));
+    for (auto line = 0; line < 2; line++) {
+      image.add_attribution()->set_text(
+          base::StringPrintf("fake_attribution_%s_asset_id_%i_line_%i",
+                             collection_id.c_str(), dark_asset_id, line));
+    }
+    image.set_unit_id(unit_id);
+    image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_DARK_MODE);
+    pairs.push_back(image);
+  }
+  return pairs;
 }
 
 ash::personalization_app::mojom::GooglePhotosPhotoPtr
@@ -171,6 +211,18 @@ MockBackdropCollectionInfoFetcher::MockBackdropCollectionInfoFetcher() {
         collections.push_back(std::move(time_of_day_collection));
       }
     }
+    {
+      // Generate a dark light collection.
+      backdrop::Collection dark_light_collection;
+      dark_light_collection.set_collection_id(kDarklightCollectionId);
+      dark_light_collection.set_collection_name("Dark Light collection");
+      dark_light_collection.set_description_content(
+          "Dark Light collection description");
+      backdrop::Image* image = dark_light_collection.add_preview();
+      // Needs a data url so that it loads.
+      image->set_image_url(kDataUrlPrefix);
+      collections.push_back(std::move(dark_light_collection));
+    }
     for (auto i = 0; i < 3; i++) {
       collections.push_back(GenerateFakeBackdropCollection(i));
     }
@@ -191,11 +243,21 @@ MockBackdropImageInfoFetcher::MockBackdropImageInfoFetcher(
                           collection_id_](OnImagesInfoFetched callback) {
         std::vector<backdrop::Image> images;
         const auto starting_asset_id = GetStartingAssetId(collection_id);
-        for (auto asset_id = starting_asset_id;
-             asset_id < starting_asset_id + kMaxImageNum; asset_id++) {
-          images.push_back(GenerateFakeBackdropImage(collection_id, asset_id));
+        if (collection_id == kDarklightCollectionId) {
+          for (auto asset_id = starting_asset_id;
+               asset_id < starting_asset_id + kMaxImageNum * 2; asset_id += 2) {
+            std::vector<backdrop::Image> pairs =
+                GenerateDarkLightBackdropImagePair(collection_id, asset_id);
+            images.push_back(pairs[0]);
+            images.push_back(pairs[1]);
+          }
+        } else {
+          for (auto asset_id = starting_asset_id;
+               asset_id < starting_asset_id + kMaxImageNum; asset_id++) {
+            images.push_back(
+                GenerateFakeBackdropImage(collection_id, asset_id));
+          }
         }
-
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
                                       collection_id, images));
@@ -210,16 +272,26 @@ MockBackdropSurpriseMeImageFetcher::MockBackdropSurpriseMeImageFetcher(
       collection_id_(collection_id) {
   ON_CALL(*this, Start)
       .WillByDefault([&collection_id = collection_id_,
-                      &id_icrementer =
+                      &id_incrementer =
                           id_incrementer_](OnSurpriseMeImageFetched callback) {
         const auto starting_asset_id = GetStartingAssetId(collection_id);
-        id_icrementer = (id_icrementer + 1) % kMaxImageNum;
-        const auto asset_id = starting_asset_id + id_icrementer;
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(callback), /*success=*/true,
-                           GenerateFakeBackdropImage(collection_id, asset_id),
-                           /*new_resume_token=*/""));
+        if (collection_id == kDarklightCollectionId) {
+          id_incrementer = (id_incrementer + 2) % (2 * kMaxImageNum);
+          const auto asset_id = starting_asset_id + id_incrementer;
+          std::vector<backdrop::Image> pairs =
+              GenerateDarkLightBackdropImagePair(collection_id, asset_id);
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
+                                        pairs[0], /*new_resume_token=*/""));
+        } else {
+          id_incrementer = (id_incrementer + 1) % kMaxImageNum;
+          const auto asset_id = starting_asset_id + id_incrementer;
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(std::move(callback), /*success=*/true,
+                             GenerateFakeBackdropImage(collection_id, asset_id),
+                             /*new_resume_token=*/""));
+        }
       });
 }
 
