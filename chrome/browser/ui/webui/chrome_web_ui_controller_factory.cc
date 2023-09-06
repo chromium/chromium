@@ -430,9 +430,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   //
   // We must compare hosts only since some of the Web UIs append extra stuff
   // after the host name.
-  // All platform builds of Chrome will need to have a cloud printing
-  // dialog as backup.  It's just that on Chrome OS, it's the only
-  // print dialog.
   if (url.host_piece() == chrome::kChromeUIAccessibilityHost)
     return &NewWebUI<AccessibilityUI>;
   if (url.host_piece() == chrome::kChromeUIAutofillInternalsHost)
