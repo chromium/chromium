@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_VIEW_H_
 
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -31,7 +33,8 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
  public:
   METADATA_HEADER(EditorMenuView);
 
-  EditorMenuView(const gfx::Rect& anchor_view_bounds,
+  EditorMenuView(const PresetTextQueries& preset_text_queries,
+                 const gfx::Rect& anchor_view_bounds,
                  EditorMenuViewDelegate* delegate);
 
   EditorMenuView(const EditorMenuView&) = delete;
@@ -40,6 +43,7 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
   ~EditorMenuView() override;
 
   static views::UniqueWidgetPtr CreateWidget(
+      const PresetTextQueries& preset_text_queries,
       const gfx::Rect& anchor_view_bounds,
       EditorMenuViewDelegate* delegate);
 
@@ -55,14 +59,18 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
 
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
+  const std::vector<raw_ptr<EditorMenuChipView>>& chips_for_testing() const {
+    return chips_;
+  }
+
  private:
-  void InitLayout();
+  void InitLayout(const PresetTextQueries& preset_text_queries);
   void AddTitleContainer();
-  void AddChipsContainer();
+  void AddChipsContainer(const PresetTextQueries& preset_text_queries);
   void AddTextfield();
 
   void OnSettingsButtonPressed();
-  void OnChipButtonPressed(int button_id);
+  void OnChipButtonPressed(const std::string& text_query_id);
 
   void ResetPreTargetHandler();
 

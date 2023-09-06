@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_CHIP_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_CHIP_VIEW_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -14,14 +12,15 @@
 
 namespace chromeos::editor_menu {
 
+struct PresetTextQuery;
+
 // A label button with an icon and a rounded rectangle border.
 class EditorMenuChipView : public views::LabelButton {
  public:
   METADATA_HEADER(EditorMenuChipView);
 
   EditorMenuChipView(views::Button::PressedCallback callback,
-                     const std::u16string& text,
-                     const gfx::VectorIcon* icon);
+                     const PresetTextQuery& preset_text_query);
   EditorMenuChipView(const EditorMenuChipView&) = delete;
   EditorMenuChipView& operator=(const EditorMenuChipView&) = delete;
   ~EditorMenuChipView() override;

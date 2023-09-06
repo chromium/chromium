@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_VIEW_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_VIEW_DELEGATE_H_
 
-#include <string>
+#include <string_view>
 
 namespace chromeos::editor_menu {
 
@@ -15,10 +15,9 @@ class EditorMenuViewDelegate {
 
   virtual void OnSettingsButtonPressed() = 0;
 
-  virtual void OnChipButtonPressed(int button_id,
-                                   const std::u16string& text) = 0;
+  virtual void OnChipButtonPressed(std::string_view text_query_id) = 0;
 
-  virtual void OnTextfieldArrowButtonPressed(const std::u16string& text) = 0;
+  virtual void OnTextfieldArrowButtonPressed(std::u16string_view text) = 0;
 
   virtual void OnPromoCardDismissButtonPressed() = 0;
 

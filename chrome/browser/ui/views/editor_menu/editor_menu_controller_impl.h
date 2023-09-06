@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_CONTROLLER_IMPL_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -37,8 +37,8 @@ class EditorMenuControllerImpl : public EditorMenuController,
 
   // EditorMenuViewDelegate:
   void OnSettingsButtonPressed() override;
-  void OnChipButtonPressed(int button_id, const std::u16string& text) override;
-  void OnTextfieldArrowButtonPressed(const std::u16string& text) override;
+  void OnChipButtonPressed(std::string_view text_query_id) override;
+  void OnTextfieldArrowButtonPressed(std::u16string_view text) override;
   void OnPromoCardDismissButtonPressed() override;
   void OnPromoCardTellMeMoreButtonPressed() override;
 
@@ -50,7 +50,7 @@ class EditorMenuControllerImpl : public EditorMenuController,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   using EditorPanelContext = ash::input_method::EditorPanelContext;
 
-  void OnGetEditorPanelContextResult(gfx::Rect anchor_bounds,
+  void OnGetEditorPanelContextResult(const gfx::Rect& anchor_bounds,
                                      const EditorPanelContext& context);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

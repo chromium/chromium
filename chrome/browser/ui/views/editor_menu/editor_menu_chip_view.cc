@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
 
+#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -30,9 +31,9 @@ constexpr int kBorderThicknessDip = 1;
 }  // namespace
 
 EditorMenuChipView::EditorMenuChipView(views::Button::PressedCallback callback,
-                                       const std::u16string& text,
-                                       const gfx::VectorIcon* icon)
-    : views::LabelButton(std::move(callback), text), icon_(icon) {
+                                       const PresetTextQuery& preset_text_query)
+    : views::LabelButton(std::move(callback), preset_text_query.name),
+      icon_(&GetIconForPresetQueryCategory(preset_text_query.category)) {
   CHECK(icon_);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -42,7 +43,7 @@ EditorMenuChipView::EditorMenuChipView(views::Button::PressedCallback callback,
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                 gfx::Insets(), kRadiusDip));
 
-  SetTooltipText(text);
+  SetTooltipText(preset_text_query.name);
   SetImageLabelSpacing(kImageLabelSpacingDip);
 }
 

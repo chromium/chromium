@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
+#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -80,12 +81,6 @@ constexpr gfx::Insets kTextfieldContainerInsets =
 // Spacing between this view and the anchor view (context menu).
 constexpr int kMarginDip = 8;
 
-// TODO(b/295059934): Call EditorMediator API to get the actual labels.
-constexpr std::array<std::u16string_view, 6> kChipLables = {
-    u"chip label 1", u"chip label 2", u"chip label 3",
-    u"chip label 4", u"chip label 5", u"chip label 6",
-};
-
 // A background that fills the canvas with rounded corners and gradient colors.
 class GradientRoundedRectBackground : public views::Background {
  public:
@@ -130,19 +125,21 @@ class GradientRoundedRectBackground : public views::Background {
 
 }  // namespace
 
-EditorMenuView::EditorMenuView(const gfx::Rect& anchor_view_bounds,
+EditorMenuView::EditorMenuView(const PresetTextQueries& preset_text_queries,
+                               const gfx::Rect& anchor_view_bounds,
                                EditorMenuViewDelegate* delegate)
     : pre_target_handler_(
           std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)),
       delegate_(delegate) {
   CHECK(delegate_);
-  InitLayout();
+  InitLayout(preset_text_queries);
 }
 
 EditorMenuView::~EditorMenuView() = default;
 
 // static
 views::UniqueWidgetPtr EditorMenuView::CreateWidget(
+    const PresetTextQueries& preset_text_queries,
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate) {
   views::Widget::InitParams params;
@@ -155,8 +152,9 @@ views::UniqueWidgetPtr EditorMenuView::CreateWidget(
 
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
-  EditorMenuView* editor_menu_view = widget->SetContentsView(
-      std::make_unique<EditorMenuView>(anchor_view_bounds, delegate));
+  EditorMenuView* editor_menu_view =
+      widget->SetContentsView(std::make_unique<EditorMenuView>(
+          preset_text_queries, anchor_view_bounds, delegate));
   editor_menu_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -221,7 +219,7 @@ void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   GetWidget()->SetBounds(bounds);
 }
 
-void EditorMenuView::InitLayout() {
+void EditorMenuView::InitLayout(const PresetTextQueries& preset_text_queries) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
@@ -234,7 +232,7 @@ void EditorMenuView::InitLayout() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
   AddTitleContainer();
-  AddChipsContainer();
+  AddChipsContainer(preset_text_queries);
   AddTextfield();
 }
 
@@ -300,7 +298,8 @@ void EditorMenuView::AddTitleContainer() {
   title_container_->SetPreferredSize(gfx::Size(width, height));
 }
 
-void EditorMenuView::AddChipsContainer() {
+void EditorMenuView::AddChipsContainer(
+    const PresetTextQueries& preset_text_queries) {
   chips_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   chips_container_->SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -309,12 +308,12 @@ void EditorMenuView::AddChipsContainer() {
   // paddings.
   int running_width = 0;
   views::View* row = nullptr;
-  int index = 0;
-  for (const auto& label : kChipLables) {
+  for (const auto& preset_text_query : preset_text_queries) {
     auto chip = std::make_unique<EditorMenuChipView>(
         base::BindRepeating(&EditorMenuView::OnChipButtonPressed,
-                            weak_factory_.GetWeakPtr(), index++),
-        label.data(), &vector_icons::kKeyboardIcon);
+                            weak_factory_.GetWeakPtr(),
+                            preset_text_query.text_query_id),
+        preset_text_query);
 
     int chip_width = chip->GetPreferredSize().width();
     if (running_width == 0) {
@@ -357,9 +356,9 @@ void EditorMenuView::OnSettingsButtonPressed() {
   delegate_->OnSettingsButtonPressed();
 }
 
-void EditorMenuView::OnChipButtonPressed(int button_id) {
+void EditorMenuView::OnChipButtonPressed(const std::string& text_query_id) {
   CHECK(delegate_);
-  delegate_->OnChipButtonPressed(button_id, textfield_->textfield()->GetText());
+  delegate_->OnChipButtonPressed(text_query_id);
 }
 
 void EditorMenuView::ResetPreTargetHandler() {

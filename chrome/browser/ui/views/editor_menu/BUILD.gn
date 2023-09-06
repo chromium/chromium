@@ -12,11 +12,14 @@ source_set("utils") {
     "utils/focus_search.h",
     "utils/pre_target_handler.cc",
     "utils/pre_target_handler.h",
+    "utils/preset_text_query.cc",
+    "utils/preset_text_query.h",
     "utils/utils.h",
   ]
 
   deps = [
     "//base",
+    "//components/vector_icons",
     "//ui/aura",
     "//ui/events",
     "//ui/gfx",
@@ -31,6 +34,7 @@ source_set("editor_menu") {
   ]
 
   deps = [
+    ":utils",
     ":views",
     "//base",
     "//chromeos/components/editor_menu/public/cpp",
