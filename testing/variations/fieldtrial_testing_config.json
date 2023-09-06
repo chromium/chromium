@@ -16492,6 +16492,23 @@
             ]
         }
     ],
+    "UseDMSAAForTilesAndroidGL": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseDMSAAForTilesAndroidGL"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseGpuSchedulerDfs": [
         {
             "platforms": [
