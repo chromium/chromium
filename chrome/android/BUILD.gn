@@ -3231,6 +3231,12 @@ if (current_toolchain == default_toolchain) {
         ]
       }
 
+      # For 32-bit this is an alias.
+      # TODO(crbug.com/1414410) For 64-bit make this build 32-bit Trichrome.
+      group("trichrome_32_minimal_apks") {
+        deps = [ ":trichrome_minimal_apks" ]
+      }
+
       android_resource_sizes_test("resource_sizes_trichrome") {
         apk_name = "Trichrome"
         trichrome_library_path =
