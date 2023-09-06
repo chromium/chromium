@@ -86,7 +86,8 @@ tests = [
     ["rgba(0%, 0%, 0%)", "rgb(0, 0, 0)", "RGB and RGBA are synonyms"],
     ["rgba(0, 0, 0)", "rgb(0, 0, 0)", "RGB and RGBA are synonyms"],
 
-    // calc(+/-infinity) remains infinity but calc(NaN) becomes zero for all channels.
+    // rgb are in the range [0, 255], alpha is in the range [0, 1].
+    // calc(infinity) resolves to the upper bound while calc(-infinity) and calc(NaN) resolves the lower bound.
     // See: https://github.com/w3c/csswg-drafts/issues/8629
     ["rgb(calc(infinity), 0, 0)", "rgb(255, 0, 0)", "Red channel resolves positive infinity to 255"],
     ["rgb(0, calc(infinity), 0)", "rgb(0, 255, 0)", "Green channel resolves positive infinity to 255"],

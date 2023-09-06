@@ -194,8 +194,7 @@ Color Color::FromColorSpace(ColorSpace color_space,
   result.param2_ = param2.value_or(0.f);
   if (alpha) {
     // Alpha is clamped to the range [0,1], no matter what colorspace.
-    result.alpha_ = isfinite(alpha.value()) ? ClampTo(alpha.value(), 0.f, 1.f)
-                                            : alpha.value();
+    result.alpha_ = ClampTo(alpha.value(), 0.f, 1.f);
   } else {
     result.alpha_ = 0.0f;
   }

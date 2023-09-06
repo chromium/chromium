@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_color_function_parser.h"
+#include <cmath>
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -255,7 +256,7 @@ static absl::optional<double> ConsumeHue(CSSParserTokenRange& range,
     if (!value) {
       return absl::nullopt;
     }
-    angle_value = value->GetDoubleValue();
+    angle_value = value->GetDoubleValueWithoutClamping();
   } else {
     angle_value = value->ComputeDegrees();
   }
@@ -294,6 +295,12 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
 
     if (!channels_[i].has_value()) {
       return false;
+    }
+
+    // Non-finite values should be clamped to the range [0, 360].
+    // Since 0 = 360 in this case, they can all simply become zero.
+    if (!isfinite(channels_[i].value())) {
+      channels_[i] = 0.0;
     }
 
     // Wrap hue to be in the range [0, 360].
@@ -347,16 +354,13 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
   CSSPrimitiveValue* temp;
   if ((temp = css_parsing_utils::ConsumeNumber(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
-    alpha_ = temp->GetDoubleValueWithoutClamping();
-    if (isfinite(alpha_.value())) {
-      alpha_ = ClampTo<double>(alpha_.value(), 0.0, 1.0);
-    }
+    alpha_ = ClampTo<double>(temp->GetDoubleValue(), 0.0, 1.0);
     return true;
   }
 
   if ((temp = css_parsing_utils::ConsumePercent(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
-    alpha_ = temp->GetDoubleValue() / 100.0;
+    alpha_ = ClampTo<double>(temp->GetDoubleValue() / 100.0, 0.0, 1.0);
     return true;
   }
 
@@ -408,6 +412,10 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
         }
         uses_bare_numbers = true;
         channels_[i].value() /= 255.0;
+      }
+
+      if (channels_[i].has_value() && !isfinite(channels_[i].value())) {
+        channels_[i].value() = channels_[i].value() > 0 ? 1 : 0;
       }
     }
     // TODO(crbug.com/1399566): There are many code paths that still compress
@@ -532,9 +540,10 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     return false;
   }
 
-  // TODO(crbug.com/1447327) We should return color(srgb ... ) colors for legacy
-  // color spaces, but a lot of test expectations need to change for that. See:
-  // https://github.com/w3c/csswg-drafts/issues/8444
+  // TODO(crbug.com/1447327) We should return color(srgb ... ) colors for
+  // relative colors in legacy color spaces, but a lot of test expectations
+  // need to change for that.
+  // See: https://github.com/w3c/csswg-drafts/issues/8444
   result = Color::FromColorSpace(color_space_, channels_[0], channels_[1],
                                  channels_[2], alpha_);
   // The parsing was successful, so we need to consume the input.
