@@ -103,7 +103,6 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x05e0, 0x1200},  // Symbol Technologies / Zebra LS2208 barcode scanner
     {0x0951, 0x16e2},  // HyperX Pulsefire Dart
     {0x0951, 0x1727},  // HyperX Pulsefire Haste Gaming Mouse
-    {0x0a5c, 0x8502},  // PageFlip Firefly (Bluetooth)
     {0x0b05, 0x1949},  // ASUS ROG Strix Impact II
     {0x0c45, 0x7403},  // RDing FootSwitch1F1
     {0x1038, 0x0470},  // SteelSeries Reaper Edge
