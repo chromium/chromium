@@ -5548,6 +5548,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SafeMode.ReceivedFix" enum="BooleanEnabled"
+    expires_after="2024-07-28">
+  <owner>avvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether or not the WebView nonembedded service receives a SafeMode
+    fix configuration. This is recorded once for each SafeMode config the
+    WebView receives. This only ever logs true since WebView won't need to log
+    anything when safemode is not activated. This is only relevant for the app
+    recovery activation pathway.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SafeMode.SafeModeEnabled"
     enum="BooleanEnabled" expires_after="2024-01-28">
   <owner>ntfschr@chromium.org</owner>
