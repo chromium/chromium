@@ -4,6 +4,7 @@
 
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "base/rand_util.h"
@@ -32,6 +33,20 @@ void WallpaperDailyRefreshScheduler::RegisterProfilePrefs(
                                 kFirstCheckpointOffsetMinutes);
   registry->RegisterIntegerPref(prefs::kWallpaperDailyRefreshSecondCheckTime,
                                 kSecondCheckpointOffsetMinutes);
+}
+
+bool WallpaperDailyRefreshScheduler::ShouldRefreshWallpaper(
+    const WallpaperInfo& info) {
+  if (info.type != WallpaperType::kDaily &&
+      info.type != WallpaperType::kDailyGooglePhotos) {
+    return false;
+  }
+  // When `features::IsWallpaperFastRefreshEnabled()` is enabled, the
+  // wallpaper may swap quickly back to back due to how ScheduledFeature
+  // stabilizes its schedule state.
+  return features::IsWallpaperFastRefreshEnabled()
+             ? true
+             : info.date + base::Hours(23) <= Now();
 }
 
 const char* WallpaperDailyRefreshScheduler::GetFeatureName() const {

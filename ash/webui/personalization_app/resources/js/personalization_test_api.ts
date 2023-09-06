@@ -12,7 +12,7 @@ import {getThemeProvider} from './theme/theme_interface_provider.js';
 import {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 import {isNonEmptyArray} from './utils.js';
 import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
-import {selectWallpaper} from './wallpaper/wallpaper_controller.js';
+import {selectWallpaper, setDailyRefreshCollectionId} from './wallpaper/wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper/wallpaper_interface_provider.js';
 
 /**
@@ -59,6 +59,19 @@ async function selectTimeOfDayWallpaper() {
   await selectWallpaper(image, getWallpaperProvider(), store);
 }
 
+async function enableDailyRefresh(collectionId: string) {
+  const store = PersonalizationStore.getInstance();
+  assert(!!store);
+  await setDailyRefreshCollectionId(
+      collectionId, getWallpaperProvider(), store);
+}
+
+async function disableDailyRefresh() {
+  const store = PersonalizationStore.getInstance();
+  assert(!!store);
+  await setDailyRefreshCollectionId('', getWallpaperProvider(), store);
+}
+
 declare global {
   interface Window {
     personalizationTestApi: {
@@ -67,6 +80,8 @@ declare global {
       makeTransparent: () => void,
       reset: () => Promise<void>,
       selectTimeOfDayWallpaper: () => Promise<void>,
+      enableDailyRefresh: (collectionId: string) => Promise<void>,
+      disableDailyRefresh: () => Promise<void>,
     };
   }
 }
@@ -77,4 +92,6 @@ window.personalizationTestApi = {
   makeTransparent,
   reset,
   selectTimeOfDayWallpaper,
+  enableDailyRefresh,
+  disableDailyRefresh,
 };

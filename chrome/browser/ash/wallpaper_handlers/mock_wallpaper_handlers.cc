@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
@@ -156,17 +157,19 @@ MockBackdropCollectionInfoFetcher::MockBackdropCollectionInfoFetcher() {
   ON_CALL(*this, Start).WillByDefault([](OnCollectionsInfoFetched callback) {
     std::vector<backdrop::Collection> collections;
     {
-      // Generate a fake time of day collection.
-      backdrop::Collection time_of_day_collection;
-      time_of_day_collection.set_collection_id(
-          ash::wallpaper_constants::kTimeOfDayWallpaperCollectionId);
-      time_of_day_collection.set_collection_name("Dawn to dark");
-      time_of_day_collection.set_description_content(
-          "Dawn to dark collection description");
-      backdrop::Image* image = time_of_day_collection.add_preview();
-      // Needs a data url so that it loads.
-      image->set_image_url(kDataUrlPrefix);
-      collections.push_back(std::move(time_of_day_collection));
+      if (ash::features::IsTimeOfDayWallpaperEnabled()) {
+        // Generate a fake time of day collection.
+        backdrop::Collection time_of_day_collection;
+        time_of_day_collection.set_collection_id(
+            ash::wallpaper_constants::kTimeOfDayWallpaperCollectionId);
+        time_of_day_collection.set_collection_name("Dawn to dark");
+        time_of_day_collection.set_description_content(
+            "Dawn to dark collection description");
+        backdrop::Image* image = time_of_day_collection.add_preview();
+        // Needs a data url so that it loads.
+        image->set_image_url(kDataUrlPrefix);
+        collections.push_back(std::move(time_of_day_collection));
+      }
     }
     for (auto i = 0; i < 3; i++) {
       collections.push_back(GenerateFakeBackdropCollection(i));
