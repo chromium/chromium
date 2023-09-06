@@ -1440,10 +1440,6 @@ bool LocalFrameView::RunPostLayoutIntersectionObserverSteps() {
                                       frame_view.NeedsLayout();
       });
 
-  if (!needs_more_lifecycle_steps) {
-    // When not re-running the lifecycle, we should not dirty style or layout.
-    CheckStyleAndLayoutClean();
-  }
   return needs_more_lifecycle_steps;
 }
 
@@ -2361,11 +2357,10 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
         continue;
     }
 
-    DCHECK(ShouldThrottleRendering() ||
-           Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
-    if (ShouldThrottleRendering() || !run_more_lifecycle_phases) {
-      return;
-    }
+      DCHECK(ShouldThrottleRendering() ||
+             Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
+      if (ShouldThrottleRendering() || !run_more_lifecycle_phases)
+        return;
 
     // Some features may require several passes over style and layout
     // within the same lifecycle update.
@@ -2447,10 +2442,6 @@ bool LocalFrameView::RunScrollSnapshotClientSteps() {
         bool valid = frame_view.GetFrame().ValidateScrollSnapshotClients();
         re_run_lifecycles |= !valid;
       });
-  if (!re_run_lifecycles) {
-    // When not re-running the lifecycle, we should not dirty style or layout.
-    CheckStyleAndLayoutClean();
-  }
   return re_run_lifecycles;
 }
 
@@ -2461,10 +2452,6 @@ bool LocalFrameView::RunCSSToggleSteps() {
     re_run_lifecycles |=
         frame_view.GetFrame().GetDocument()->SetNeedsStyleRecalcForToggles();
   });
-  if (!re_run_lifecycles) {
-    // When not re-running the lifecycle, we should not dirty style or layout.
-    CheckStyleAndLayoutClean();
-  }
   return re_run_lifecycles;
 }
 
@@ -2499,10 +2486,6 @@ bool LocalFrameView::RunViewTransitionSteps(
                             frame_view.NeedsLayout();
       });
 
-  if (!re_run_lifecycle) {
-    // When not re-running the lifecycle, we should not dirty style or layout.
-    CheckStyleAndLayoutClean();
-  }
   return re_run_lifecycle;
 }
 
@@ -2525,10 +2508,6 @@ bool LocalFrameView::RunResizeObserverSteps(
         bool result = frame_view.NotifyResizeObservers();
         re_run_lifecycles = re_run_lifecycles || result;
       });
-  if (!re_run_lifecycles) {
-    // When not re-running the lifecycle, we should not dirty style or layout.
-    CheckStyleAndLayoutClean();
-  }
   return re_run_lifecycles;
 }
 
@@ -2560,10 +2539,8 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     UpdateStyleAndLayoutIfNeededRecursive();
   }
 
-  if (target_state == DocumentLifecycle::kLayoutClean) {
-    CheckStyleAndLayoutClean();
+  if (target_state == DocumentLifecycle::kLayoutClean)
     return false;
-  }
 
   // Now we can run post layout steps in preparation for further phases.
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
@@ -2586,7 +2563,6 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     });
   }
 
-  CheckStyleAndLayoutClean();
   return Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean;
 }
 
@@ -2633,9 +2609,6 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
     frame_view.Lifecycle().AdvanceTo(
         DocumentLifecycle::kCompositingInputsClean);
   });
-
-  // The CompositingInputs lifecycle phase should not dirty style or layout.
-  CheckStyleAndLayoutClean();
 
   return target_state > DocumentLifecycle::kCompositingInputsClean;
 }
@@ -2692,9 +2665,6 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kPrePaintClean);
   });
-
-  // The PrePaint lifecycle phase should not dirty style or layout.
-  CheckStyleAndLayoutClean();
 
   return target_state > DocumentLifecycle::kPrePaintClean;
 }
@@ -2802,9 +2772,6 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 
   if (GetPage())
     GetPage()->Animator().ReportFrameAnimations(GetCompositorAnimationHost());
-
-  // The Paint lifecycle phase should not dirty style or layout.
-  CheckStyleAndLayoutClean();
 }
 
 void LocalFrameView::RunAccessibilitySteps() {
@@ -4655,15 +4622,6 @@ void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
       hidden_for_throttling, subtree_throttled, display_locked, recurse);
   if (was_throttled != CanThrottleRendering())
     RenderThrottlingStatusChanged();
-}
-
-void LocalFrameView::CheckStyleAndLayoutClean() {
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    CHECK(frame_view.CheckDoesNotNeedLayout());
-    CHECK(!frame_view.GetFrame()
-               .GetDocument()
-               ->NeedsLayoutTreeUpdateForThisDocument());
-  });
 }
 
 void LocalFrameView::BeginLifecycleUpdates() {
