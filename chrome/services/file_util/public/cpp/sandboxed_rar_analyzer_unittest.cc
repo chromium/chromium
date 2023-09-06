@@ -54,11 +54,11 @@ class SandboxedRarAnalyzerTest : public testing::Test {
 
   void AnalyzeFile(const base::FilePath& path,
                    safe_browsing::ArchiveAnalyzerResults* results) {
-    AnalyzeFile(path, /*password=*/"", results);
+    AnalyzeFile(path, /*password=*/absl::nullopt, results);
   }
 
   void AnalyzeFile(const base::FilePath& path,
-                   const std::string& password,
+                   absl::optional<const std::string> password,
                    safe_browsing::ArchiveAnalyzerResults* results) {
     mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
     FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
@@ -485,6 +485,23 @@ TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionIncorrectPassword) {
 
   safe_browsing::ArchiveAnalyzerResults results;
   AnalyzeFile(path, /*password=*/"5678", &results);
+
+  ASSERT_FALSE(results.success);
+  EXPECT_FALSE(results.has_executable);
+  ASSERT_EQ(results.archived_binary.size(), 0);
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            EncryptionInfo::kKnownIncorrect);
+}
+
+TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionNoPassword) {
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path =
+                              GetFilePath("header_encryption_passwd1234.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, /*password=*/absl::nullopt, &results);
 
   ASSERT_FALSE(results.success);
   EXPECT_FALSE(results.has_executable);
