@@ -340,12 +340,15 @@ void PermissionPromptBubbleBaseView::RunButtonCallbacks(
     PermissionDialogButton type) {
   switch (type) {
     case PermissionDialogButton::kAccept:
+      RecordDecision(permissions::PermissionAction::GRANTED);
       delegate_->Accept();
       return;
     case PermissionDialogButton::kAcceptOnce:
+      RecordDecision(permissions::PermissionAction::GRANTED_ONCE);
       delegate_->AcceptThisTime();
       return;
     case PermissionDialogButton::kDeny:
+      RecordDecision(permissions::PermissionAction::DENIED);
       delegate_->Deny();
       return;
   }
