@@ -211,12 +211,59 @@ BOOL WaitForKeyboardToAppear() {
   [SigninEarlGrey signOut];
 }
 
+// Ensures that the profile is saved to Account after submitting and editing the
+// form.
+- (void)testUserData_AccountEdit {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:YES];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
+
+  // Ensure there are no saved profiles.
+  GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
+                  @"There should be no saved profile.");
+
+  [self fillAndSubmitForm];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+
+  // Accept the banner.
+  [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
+      performAction:grey_tap()];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+
+  // Edit the profile.
+  [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_AUTOFILL_CITY)]
+      performAction:grey_replaceText(@"New York")];
+
+  id<GREYMatcher> footerMatcher = grey_text(l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER, u"foo1@gmail.com"));
+
+  [[EarlGrey selectElementWithMatcher:footerMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved locally.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  [SigninEarlGrey signOut];
+}
+
 // Ensures that if a local profile is filled in a form and submitted, the user
-// is asked for a migration prompt.
+// is asked for a migration prompt and the profile is moved to the Account.
 - (void)testUserData_MigrationToAccount {
   [AutofillAppInterface clearProfilesStore];
 
-  // Store one address.
+  // Store one local address.
   [AutofillAppInterface saveExampleProfile];
 
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
@@ -225,9 +272,9 @@ BOOL WaitForKeyboardToAppear() {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kFormHTMLFile)];
 
-  // Ensure there are no saved profiles.
+  // Ensure there is a saved local profile.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
-                  @"There should be no saved profile.");
+                  @"There should a saved local profile.");
 
   // Tap on a field to trigger form activity.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -265,11 +312,11 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:footerMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Save the profile.
+  // Confirm to migrate the profile.
   [[EarlGrey selectElementWithMatcher:ModalMigrationButtonMatcher()]
       performAction:grey_tap()];
 
-  // Ensure profile is saved locally.
+  // Ensure the count of profiles saved remains unchanged.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
                   @"Profile should have been saved.");
 
