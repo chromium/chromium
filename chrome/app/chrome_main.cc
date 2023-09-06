@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -156,12 +158,13 @@ int ChromeMain(int argc, const char** argv) {
   MainThreadStackSamplingProfiler scoped_sampling_profiler;
 
   // Chrome-specific process modes.
+  std::unique_ptr<headless::HeadlessModeHandle> headless_mode_handle;
   if (headless::IsHeadlessMode()) {
     if (command_line->GetArgs().size() > 1) {
       LOG(ERROR) << "Multiple targets are not supported in headless mode.";
       return chrome::RESULT_CODE_UNSUPPORTED_PARAM;
     }
-    headless::SetUpCommandLine(command_line);
+    headless_mode_handle = headless::InitHeadlessMode();
   } else {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

@@ -81,7 +81,7 @@ void HeadlessModeBrowserTest::AppendHeadlessCommandLineSwitches(
   } else {
     command_line->AppendSwitchASCII(::switches::kHeadless,
                                     kHeadlessSwitchValue);
-    headless::SetUpCommandLine(command_line);
+    headless::InitHeadlessMode();
   }
 }
 
@@ -222,39 +222,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeUserAgentBrowserTest, UserAgentHasHeadless) {
 }
 
 // Incognito mode tests ------------------------------------------------------
-
-class HeadlessModeBrowserTestWithNoUserDataDir
-    : public HeadlessModeBrowserTest {
- public:
-  HeadlessModeBrowserTestWithNoUserDataDir() = default;
-  ~HeadlessModeBrowserTestWithNoUserDataDir() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Postpone headless switch handling until after --user-data-dir switch is
-    // removed in SetUpUserDataDirectory() so that headless switch processing
-    // logic will not see it.
-  }
-
-  bool SetUpUserDataDirectory() override {
-    // Chrome test suite adds --user-data-dir in (at least) two places: in
-    // InProcessBrowserTest::SetUp() and in content::LaunchTests(), so there is
-    // no good way to prevent its addition.
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->RemoveSwitch(::switches::kUserDataDir);
-
-    // Setup headless mode switches after we removed user data directory switch
-    // so that incognito switches logic will be able to detect it.
-    AppendHeadlessCommandLineSwitches(command_line);
-
-    return true;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithNoUserDataDir,
-                       StartWithNoUserDataDir) {
-  // By default expect to start in incognito mode.
-  EXPECT_TRUE(browser()->profile()->IsOffTheRecord());
-}
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
                        StartWithUserDataDir) {

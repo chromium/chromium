@@ -17,6 +17,7 @@ source_set("headless") {
   deps = [
     "//base",
     "//chrome/common:non_code_constants",
+    "//content/public/common",
     "//ui/gfx",
   ]
 
