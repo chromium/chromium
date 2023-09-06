@@ -13,7 +13,8 @@ enum SubAppsResultCode {
 [
   Exposed=Window,
   SecureContext,
-  RuntimeEnabled=DesktopPWAsSubApps
+  RuntimeEnabled=DesktopPWAsSubApps,
+  IsolatedContext
 ] interface SubApps {
   [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsResultCode>> add(record<DOMString, SubAppsAddParams> sub_apps_to_add);
   [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsListResult>> list();

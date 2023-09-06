@@ -22,6 +22,6 @@ promise_test(async () => {
 
   startPrerendering(`resources/subapp.html?uid=${uid}`);
   const result = await gotMessage;
-  assert_equals(result, 'InvalidStateError');
+  assert_equals(result, 'TypeError');
 }, 'prerendering pages should not be able to access subapp API.');
 </script>

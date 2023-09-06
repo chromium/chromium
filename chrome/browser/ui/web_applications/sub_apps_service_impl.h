@@ -38,7 +38,7 @@ class SubAppsServiceImpl
   ~SubAppsServiceImpl() override;
 
   // We only want to create this object when the Browser* associated with the
-  // WebContents is an installed web app and when the RFH is the main frame.
+  // WebContents is an Isolated Web App and when the RFH is the main frame.
   static void CreateIfAllowed(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::SubAppsService> receiver);

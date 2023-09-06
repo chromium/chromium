@@ -1,0 +1,10 @@
+{
+  "name": "sub3",
+  "icons": [{
+    "src": "/subapps_icon.png",
+    "sizes": "512x512",
+    "type": "image/png"
+    }],
+  "start_url": "/sub3/page.html",
+  "display": "standalone"
+}
