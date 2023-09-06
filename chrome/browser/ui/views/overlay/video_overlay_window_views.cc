@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +34,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -346,7 +348,7 @@ gfx::Rect VideoOverlayWindowViews::CalculateAndUpdateWindowBounds() {
 
   UpdateMaxSize(work_area);
 
-  const gfx::Rect bounds = native_widget() ? GetRestoredBounds() : gfx::Rect();
+  const gfx::Rect bounds = GetBounds();
 
   gfx::Size window_size = bounds.size();
   if (!has_been_shown_)
@@ -453,8 +455,8 @@ void VideoOverlayWindowViews::OnNativeWidgetMove() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Update the positioning of some icons when the window is moved.
   WindowQuadrant quadrant =
-      GetCurrentWindowQuadrant(GetRestoredBounds(), GetController());
-  close_controls_view_->SetPosition(GetRestoredBounds().size(), quadrant);
+      GetCurrentWindowQuadrant(GetBounds(), GetController());
+  close_controls_view_->SetPosition(GetBounds().size(), quadrant);
   UpdateResizeHandleBounds(quadrant);
 #endif
 }
@@ -677,12 +679,12 @@ void VideoOverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
   // native_widget() is required for OnSizeConstraintsChanged.
   OnSizeConstraintsChanged();
 
-  if (GetRestoredBounds().width() <= max_size_.width() &&
-      GetRestoredBounds().height() <= max_size_.height()) {
+  if (GetBounds().width() <= max_size_.width() &&
+      GetBounds().height() <= max_size_.height()) {
     return;
   }
 
-  gfx::Size clamped_size = GetRestoredBounds().size();
+  gfx::Size clamped_size = GetBounds().size();
   clamped_size.SetToMin(max_size_);
   SetSize(clamped_size);
 }
@@ -1257,7 +1259,13 @@ bool VideoOverlayWindowViews::IsVisible() const {
 }
 
 gfx::Rect VideoOverlayWindowViews::GetBounds() {
-  return views::Widget::GetRestoredBounds();
+  if (!native_widget()) {
+    return gfx::Rect();
+  }
+
+  return base::FeatureList::IsEnabled(media::kUseWindowBoundsForPip)
+             ? GetWindowBoundsInScreen()
+             : GetRestoredBounds();
 }
 
 void VideoOverlayWindowViews::UpdateNaturalSize(const gfx::Size& natural_size) {

@@ -1577,6 +1577,13 @@ BASE_FEATURE(kVideoDecodeBatching,
              "VideoDecodeBatching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Safety switch to allow us to revert to the previous behavior of using the
+// restored bounds for PiP windows, rather than the window bounds.  If this
+// feature is enabled (the default), then we'll use the window bounds.
+BASE_FEATURE(kUseWindowBoundsForPip,
+             "UseWindowBoundsForPip",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);
