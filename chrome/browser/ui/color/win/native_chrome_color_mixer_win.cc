@@ -68,7 +68,7 @@ class FrameColorHelper {
   absl::optional<SkColor> dwm_inactive_frame_color_;
 
   // The DWM accent border color, if available; white otherwise.
-  SkColor dwm_accent_border_color_;
+  SkColor dwm_accent_border_color_ = SK_ColorWHITE;
 };
 
 FrameColorHelper::FrameColorHelper() {
@@ -204,11 +204,25 @@ void FrameColorHelper::OnAccentColorUpdated() {
 }
 
 void FrameColorHelper::FetchAccentColors() {
+  // Update the NativeTheme's user_color to reflect the system accent color.
+  // TODO(crbug.com/1477908): Explore moving FrameColorHelper logic into
+  // NativeThemeWin.
   const auto* accent_color_observer = ui::AccentColorObserver::Get();
+  const auto accent_color = accent_color_observer->accent_color();
+  ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(accent_color);
+  ui::NativeTheme::GetInstanceForDarkUI()->set_user_color(accent_color);
+
+  if (!accent_color_observer->use_dwm_frame_color()) {
+    dwm_accent_border_color_ = SK_ColorWHITE;
+    dwm_frame_color_.reset();
+    dwm_inactive_frame_color_.reset();
+    return;
+  }
+
   dwm_accent_border_color_ =
       accent_color_observer->accent_border_color().value_or(SK_ColorWHITE);
 
-  dwm_frame_color_ = accent_color_observer->accent_color();
+  dwm_frame_color_ = accent_color;
   dwm_inactive_frame_color_ = accent_color_observer->accent_color_inactive();
 }
 

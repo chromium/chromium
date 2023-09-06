@@ -148,9 +148,12 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   mixer[kColorNativeWindowText] = {
       color_utils::GetSysSkColor(COLOR_WINDOWTEXT)};
 
-  // Use the system accent color as the Chrome accent color, if present.
-  if (const auto accent_color = AccentColorObserver::Get()->accent_color();
-      accent_color.has_value()) {
+  // Use the system accent color as the Chrome accent color, if present and only
+  // if dwm colors are enabled.
+  const auto* accent_color_observer = AccentColorObserver::Get();
+  const auto& accent_color = accent_color_observer->accent_color();
+  if (accent_color.has_value() &&
+      accent_color_observer->use_dwm_frame_color()) {
     mixer[kColorAccent] = PickGoogleColor(accent_color.value());
   }
 
