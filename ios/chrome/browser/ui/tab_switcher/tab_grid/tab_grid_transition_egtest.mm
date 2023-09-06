@@ -599,6 +599,10 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 // Tests switching back and forth between the normal and incognito BVCs many
 // times.  This is a regression test for https://crbug.com/851954.
 - (void)testSwappingBVCModesManyTimesWithoutEnteringSwitcher {
+  // TODO(crbug.com/1479565): Test fails on iPhone.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPhone X 16.6.");
+  }
   for (int ii = 0; ii < 10; ++ii) {
     // Opening a new tab from the menu will force a change in BVC.
     [ChromeEarlGreyUI openNewIncognitoTab];
