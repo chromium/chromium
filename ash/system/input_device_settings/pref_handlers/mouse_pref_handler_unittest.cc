@@ -18,6 +18,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 
 namespace ash {
 
@@ -319,6 +320,38 @@ TEST_F(MousePrefHandlerTest, InitializeLoginScreenMouseSettings) {
   mojom::MouseSettingsPtr updated_settings =
       CallInitializeLoginScreenMouseSettings(account_id_1, mouse);
   EXPECT_EQ(button_remappings, updated_settings->button_remappings);
+}
+
+TEST_F(MousePrefHandlerTest, UpdateLoginScreenButtonRemappingList) {
+  mojom::Mouse mouse;
+  mouse.device_key = kMouseKey1;
+  mouse.is_external = false;
+  mojom::MouseSettingsPtr settings =
+      CallInitializeLoginScreenMouseSettings(account_id_1, mouse);
+
+  // Update button_remappings in mouse settings.
+  mojom::MouseSettingsPtr updated_settings = settings->Clone();
+  std::vector<mojom::ButtonRemappingPtr> button_remapping_list;
+  button_remapping_list.push_back(button_remapping1.Clone());
+  updated_settings->button_remappings = mojo::Clone(button_remapping_list);
+  CallUpdateLoginScreenMouseSettings(account_id_1, kMouseKey1,
+                                     *updated_settings);
+  EXPECT_TRUE(HasLoginScreenMouseButtonRemappingList(account_id_1));
+
+  // Verify the updated button remapping list.
+  const auto* updated_button_remapping_list = GetLoginScreenButtonRemappingList(
+      local_state(), account_id_1,
+      prefs::kMouseLoginScreenButtonRemappingListPref);
+  ASSERT_NE(nullptr, updated_button_remapping_list);
+  ASSERT_EQ(1u, updated_button_remapping_list->size());
+  const auto& button_remapping = (*updated_button_remapping_list)[0].GetDict();
+  EXPECT_EQ(button_remapping1.name,
+            *button_remapping.FindString(prefs::kButtonRemappingName));
+  EXPECT_EQ(
+      static_cast<int>(button_remapping1.button->get_customizable_button()),
+      *button_remapping.FindInt(prefs::kButtonRemappingCustomizableButton));
+  EXPECT_EQ(static_cast<int>(button_remapping1.remapping_action->get_action()),
+            *button_remapping.FindInt(prefs::kButtonRemappingAction));
 }
 
 TEST_F(MousePrefHandlerTest, UpdateLoginScreenMouseSettings) {

@@ -384,6 +384,16 @@ void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
           account_id, pref_name,
           absl::make_optional<base::Value>(ConvertSettingsToDict(
               mouse, mouse_policies, /*force_persistence=*/{}, settings_dict)));
+
+  if (features::IsPeripheralCustomizationEnabled()) {
+    const auto* button_remapping_list_pref =
+        prefs::kMouseLoginScreenButtonRemappingListPref;
+    user_manager::KnownUser(local_state)
+        .SetPath(
+            account_id, button_remapping_list_pref,
+            absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
+                mouse.settings->button_remappings)));
+  }
 }
 
 void MousePrefHandlerImpl::InitializeWithDefaultMouseSettings(
