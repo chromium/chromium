@@ -34,6 +34,7 @@
 
 #include "RawPtrHelpers.h"
 #include "RawPtrManualPathsToIgnore.h"
+#include "SeparateRepositoryPaths.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -1236,6 +1237,9 @@ int main(int argc, const char* argv[]) {
   if (override_exclude_paths_param == "") {
     std::vector<std::string> paths_to_exclude_lines;
     for (auto* const line : kRawPtrManualPathsToIgnore) {
+      paths_to_exclude_lines.push_back(line);
+    }
+    for (auto* const line : kSeparateRepositoryPaths) {
       paths_to_exclude_lines.push_back(line);
     }
     paths_to_exclude = std::make_unique<FilterFile>(paths_to_exclude_lines);
