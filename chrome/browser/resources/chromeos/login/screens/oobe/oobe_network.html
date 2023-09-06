@@ -28,14 +28,14 @@
     <oobe-back-button id="backButton"
         on-click="onBackClicked_"></oobe-back-button>
   </div>
-  <div slot="bottom-buttons">
-    <oobe-text-button
-      id="quickStart"
-      on-click="onQuickStartClicked_"
-      hidden="[[!isQuickStartEnabled_]]"
-      text-key="networkScreenQuickStart"
-    >
-    </oobe-text-button>
+  <div slot="bottom-buttons" class="flex layout horizontal">
+    <oobe-icon-button id="quickStart"
+        on-click="onQuickStartClicked_"
+        hidden="[[!isQuickStartEnabled_]]"
+        text-key="networkScreenQuickStart"
+        icon1x="oobe-20:quick-start-android-device"
+        icon2x="oobe-20:quick-start-android-device">
+    </oobe-icon-button>
     <oobe-next-button
       id="nextButton"
       disabled="[[!isConnected_]]"
