@@ -122,15 +122,14 @@ void RecordNetLogQuicSessionClientStateChanged(
     const absl::optional<WebTransportError>& error) {
   net_log.AddEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED, [&] {
-        base::Value::Dict dict;
-        dict.Set("last_state", WebTransportStateString(last_state));
-        dict.Set("next_state", WebTransportStateString(next_state));
+        auto dict = base::Value::Dict()
+                        .Set("last_state", WebTransportStateString(last_state))
+                        .Set("next_state", WebTransportStateString(next_state));
         if (error.has_value()) {
-          base::Value::Dict error_dict;
-          error_dict.Set("net_error", error->net_error);
-          error_dict.Set("quic_error", error->quic_error);
-          error_dict.Set("details", error->details);
-          dict.Set("error", std::move(error_dict));
+          dict.Set("error", base::Value::Dict()
+                                .Set("net_error", error->net_error)
+                                .Set("quic_error", error->quic_error)
+                                .Set("details", error->details));
         }
         return dict;
       });

@@ -98,14 +98,13 @@ enum class JobProtocolErrorLocation {
 
 base::Value::Dict NetLogQuicStreamFactoryJobParams(
     const QuicStreamFactory::QuicSessionAliasKey* key) {
-  base::Value::Dict dict;
-  dict.Set("host", key->server_id().host());
-  dict.Set("port", key->server_id().port());
-  dict.Set("privacy_mode",
-           PrivacyModeToDebugString(key->session_key().privacy_mode()));
-  dict.Set("network_anonymization_key",
+  return base::Value::Dict()
+      .Set("host", key->server_id().host())
+      .Set("port", key->server_id().port())
+      .Set("privacy_mode",
+           PrivacyModeToDebugString(key->session_key().privacy_mode()))
+      .Set("network_anonymization_key",
            key->session_key().network_anonymization_key().ToDebugString());
-  return dict;
 }
 
 std::string QuicPlatformNotificationToString(
