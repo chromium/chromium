@@ -3550,6 +3550,9 @@ extern const char kEcheSWAProcessAndroidAccessibilityTreeDescription[];
 extern const char kEnableNotificationImageDragName[];
 extern const char kEnableNotificationImageDragDescription[];
 
+extern const char kEnableNotifierCollisionName[];
+extern const char kEnableNotifierCollisionDescription[];
+
 extern const char kEnableOAuthIppName[];
 extern const char kEnableOAuthIppDescription[];
 

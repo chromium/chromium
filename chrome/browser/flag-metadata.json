@@ -3230,6 +3230,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "enable-notifier-collision",
+    "owners": ["leandre"],
+    "expiry_milestone": 124
+  },
+  {
     "name": "enable-oauth-ipp",
     "owners": [ "pawliczek", "project-bolton@google.com" ],
     "expiry_milestone": 118

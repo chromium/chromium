@@ -10368,6 +10368,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kNotificationImageDrag)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-notifier-collision",
+     flag_descriptions::kEnableNotifierCollisionName,
+     flag_descriptions::kEnableNotifierCollisionDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kNotifierCollision)},
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
     {"autofill-enable-new-save-card-bubble-ui",
      flag_descriptions::kAutofillEnableNewSaveCardBubbleUiName,

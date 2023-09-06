@@ -65683,6 +65683,7 @@ from previous Chrome versions.
   <int value="552158955" label="NotificationPermissionBottomSheet:enabled"/>
   <int value="552317551" label="MediaAppHandlesPdf:disabled"/>
   <int value="552421509" label="AssistMultiWordExpanded:enabled"/>
+  <int value="552724079" label="NotifierCollision:enabled"/>
   <int value="553197994" label="FedCmMetricsEndpoint:enabled"/>
   <int value="555959995" label="ChromeSharingHub:enabled"/>
   <int value="556555487"
@@ -65849,6 +65850,7 @@ from previous Chrome versions.
   <int value="642037198" label="SoleIntegration:disabled"/>
   <int value="642601306" label="ForceInitialSyncWhenDecryptionFails:enabled"/>
   <int value="642678255" label="ExoGamepadVibration:disabled"/>
+  <int value="642996845" label="NotifierCollision:disabled"/>
   <int value="643068614"
       label="CrossOriginOpenerPolicyAccessReporting:enabled"/>
   <int value="643725031" label="disable-touch-feedback"/>
