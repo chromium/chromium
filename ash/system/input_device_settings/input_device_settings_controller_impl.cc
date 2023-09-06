@@ -28,11 +28,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -131,8 +133,6 @@ mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
           graphics_tablet);
   return mojom_graphics_tablet;
 }
-
-}  // namespace
 
 // suppress_meta_fkey_rewrites must never be non-default for internal
 // keyboards, otherwise the keyboard settings are not valid.
@@ -249,6 +249,26 @@ void RecordSetMouseSettingsValidMetric(bool is_valid) {
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", is_valid);
 }
+
+// Check the list of keyboards to see if any have the same |device_key|.
+// If so, their settings need to also be updated.
+template <typename T>
+void UpdateDuplicateDeviceSettings(
+    const T& updated_device,
+    base::flat_map<InputDeviceSettingsControllerImpl::DeviceId,
+                   mojo::StructPtr<T>>& devices,
+    base::RepeatingCallback<void(InputDeviceSettingsControllerImpl::DeviceId)>
+        settings_updated_callback) {
+  for (const auto& [device_id, device] : devices) {
+    if (device_id != updated_device.id &&
+        device->device_key == updated_device.device_key) {
+      device->settings = updated_device.settings->Clone();
+      settings_updated_callback.Run(device_id);
+    }
+  }
+}
+
+}  // namespace
 
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
     PrefService* local_state)
@@ -751,14 +771,15 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     RecordSetKeyboardSettingsValidMetric(/*is_valid=*/false);
     return;
   }
-
   auto& found_keyboard = *found_keyboard_iter->second;
+
   if (!KeyboardSettingsAreValid(found_keyboard, *settings,
                                 policy_handler_->keyboard_policies())) {
     RecordSetKeyboardSettingsValidMetric(/*is_valid=*/false);
     return;
   }
   RecordSetKeyboardSettingsValidMetric(/*is_valid=*/true);
+
   const auto old_settings = std::move(found_keyboard.settings);
   found_keyboard.settings = settings.Clone();
   keyboard_pref_handler_->UpdateKeyboardSettings(
@@ -766,16 +787,12 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
       found_keyboard);
   metrics_manager_->RecordKeyboardChangedMetrics(found_keyboard, *old_settings);
   DispatchKeyboardSettingsChanged(id);
-  // Check the list of keyboards to see if any have the same |device_key|.
-  // If so, their settings need to also be updated.
-  for (const auto& [device_id, keyboard] : keyboards_) {
-    if (device_id != found_keyboard.id &&
-        keyboard->device_key == found_keyboard.device_key) {
-      keyboard->settings = settings->Clone();
-      DispatchKeyboardSettingsChanged(device_id);
-    }
-  }
 
+  UpdateDuplicateDeviceSettings(
+      found_keyboard, keyboards_,
+      base::BindRepeating(
+          &InputDeviceSettingsControllerImpl::DispatchKeyboardSettingsChanged,
+          base::Unretained(this)));
   RefreshStoredLoginScreenKeyboardSettings();
 }
 
@@ -797,22 +814,19 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
     return;
   }
   RecordSetTouchpadSettingsValidMetric(/*is_valid=*/true);
+
   const auto old_settings = std::move(found_touchpad.settings);
   found_touchpad.settings = settings.Clone();
   touchpad_pref_handler_->UpdateTouchpadSettings(active_pref_service_,
                                                  found_touchpad);
   metrics_manager_->RecordTouchpadChangedMetrics(found_touchpad, *old_settings);
   DispatchTouchpadSettingsChanged(id);
-  // Check the list of touchpads to see if any have the same |device_key|.
-  // If so, their settings need to also be updated.
-  for (const auto& [device_id, touchpad] : touchpads_) {
-    if (device_id != found_touchpad.id &&
-        touchpad->device_key == found_touchpad.device_key) {
-      touchpad->settings = settings->Clone();
-      DispatchTouchpadSettingsChanged(device_id);
-    }
-  }
 
+  UpdateDuplicateDeviceSettings(
+      found_touchpad, touchpads_,
+      base::BindRepeating(
+          &InputDeviceSettingsControllerImpl::DispatchTouchpadSettingsChanged,
+          base::Unretained(this)));
   RefreshStoredLoginScreenTouchpadSettings();
 }
 
@@ -834,21 +848,19 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
     return;
   }
   RecordSetMouseSettingsValidMetric(/*is_valid=*/true);
+
   const auto old_settings = std::move(found_mouse.settings);
   found_mouse.settings = settings.Clone();
   mouse_pref_handler_->UpdateMouseSettings(
       active_pref_service_, policy_handler_->mouse_policies(), found_mouse);
   metrics_manager_->RecordMouseChangedMetrics(found_mouse, *old_settings);
   DispatchMouseSettingsChanged(id);
-  // Check the list of mice to see if any have the same |device_key|.
-  // If so, their settings need to also be updated.
-  for (const auto& [device_id, mouse] : mice_) {
-    if (device_id != found_mouse.id &&
-        mouse->device_key == found_mouse.device_key) {
-      mouse->settings = settings->Clone();
-      DispatchMouseSettingsChanged(device_id);
-    }
-  }
+
+  UpdateDuplicateDeviceSettings(
+      found_mouse, mice_,
+      base::BindRepeating(
+          &InputDeviceSettingsControllerImpl::DispatchMouseSettingsChanged,
+          base::Unretained(this)));
   RefreshStoredLoginScreenMouseSettings();
 }
 
@@ -901,19 +913,17 @@ void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
   if (!GraphicsTabletSettingsAreValid(found_graphics_tablet, *settings)) {
     return;
   }
+
   found_graphics_tablet.settings = settings.Clone();
   graphics_tablet_pref_handler_->UpdateGraphicsTabletSettings(
       active_pref_service_, found_graphics_tablet);
   DispatchGraphicsTabletSettingsChanged(id);
-  // Check the list of graphics tablets to see if any have the same
-  // |device_key|. If so, their settings need to also be updated.
-  for (const auto& [device_id, graphics_tablet] : graphics_tablets_) {
-    if (device_id != found_graphics_tablet.id &&
-        graphics_tablet->device_key == found_graphics_tablet.device_key) {
-      graphics_tablet->settings = settings->Clone();
-      DispatchGraphicsTabletSettingsChanged(device_id);
-    }
-  }
+
+  UpdateDuplicateDeviceSettings(
+      found_graphics_tablet, graphics_tablets_,
+      base::BindRepeating(&InputDeviceSettingsControllerImpl::
+                              DispatchGraphicsTabletSettingsChanged,
+                          base::Unretained(this)));
 }
 
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
