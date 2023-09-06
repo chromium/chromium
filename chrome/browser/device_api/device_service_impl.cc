@@ -101,14 +101,10 @@ bool IsAffiliatedUser() {
 
 bool IsTrustedContext(content::RenderFrameHost& host,
                       const url::Origin& origin) {
-  // TODO(anqing): This feature flag is turned on by default for origin trial.
-  // The flag will be removed when permission policies are ready.
-  if (!base::FeatureList::IsEnabled(features::kEnableRestrictedWebApis))
-    return false;
-
   // Do not create the service for the incognito mode.
-  if (GetProfile(host)->IsIncognitoProfile())
+  if (GetProfile(host)->IsIncognitoProfile()) {
     return false;
+  }
 
   if (chrome::IsRunningInAppMode()) {
     return IsEqualToKioskOrigin(origin);

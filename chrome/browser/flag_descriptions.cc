@@ -1498,12 +1498,6 @@ const char kEnableResamplingScrollEventsExperimentalPredictionDescription[] =
     "Predicts the scroll amount after the vsync time to more closely match "
     "when the frame is visible.";
 
-const char kEnableRestrictedWebApisName[] =
-    "Enable the restricted web APIs for high-trusted apps.";
-const char kEnableRestrictedWebApisDescription[] =
-    "Enable the restricted web APIs for dev trial. This will be replaced with "
-    "permission policies to control the capabilities afterwards.";
-
 const char kEnableWebAuthenticationChromeOSAuthenticatorName[] =
     "ChromeOS platform Web Authentication support";
 const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[] =

@@ -3448,11 +3448,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-restricted-web-apis",
-    "owners": [ "bfranz", "anqing", "apotapchuk" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-retail-coupons",
     "owners": [ "meiliang", "yuezhanggg", "wychen", "dtrainor" ],
     "expiry_milestone": 100

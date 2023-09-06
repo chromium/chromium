@@ -396,11 +396,6 @@ BASE_FEATURE(kEarlyLibraryLoad,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enable the restricted web APIs for high-trusted apps.
-BASE_FEATURE(kEnableRestrictedWebApis,
-             "EnableRestrictedWebApis",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enable WebHID on extension service workers.
 BASE_FEATURE(kEnableWebHidOnExtensionServiceWorker,
