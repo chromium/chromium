@@ -12,6 +12,10 @@
 #include "build/build_config.h"
 #include "gpu/gpu_export.h"
 
+namespace base {
+class CommandLine;
+}  // namespace base
+
 namespace features {
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kUseGles2ForOopR);
@@ -120,6 +124,7 @@ GPU_EXPORT bool IsDrDcEnabled();
 GPU_EXPORT bool IsGpuMainThreadForcedToNormalPriorityDrDc();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsANGLEValidationEnabled();
+GPU_EXPORT bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line);
 
 #if BUILDFLAG(IS_ANDROID)
 GPU_EXPORT bool IsAImageReaderEnabled();
