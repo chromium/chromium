@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Հայելապատճենումը միացվեց</translation>
 <translation id="2031987842108996681">Կարմիր կապուղի</translation>
 <translation id="2060505056492490888">«<ph name="DOT" />»-ը սխալ տեղ է դրված «<ph name="INVALIDDOMAIN" />» տիրույթում:</translation>
+<translation id="2068711044993563745">Նվազագույն արժեքը (<ph name="MINIMUM" />) պետք է առավելագույն արժեքից (<ph name="MAXIMUM" />) փոքր լինի։</translation>
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2226276347425096477">Կրճատեք այս տեքստը մինչև <ph name="MAX_CHARACTERS" /> գրանշան կամ ավելի քիչ (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="2247351761944213033">Շաբաթ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

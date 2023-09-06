@@ -24,6 +24,8 @@ Wichtige Hinweise:
 
   • Falls du die Synchronisierung deines Verlaufs in deinem Google-Konto aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Du nutzt den umfangreichen Schutz von Chrome vor schädlichen Websites</translation>
+<translation id="1675955119303651351">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.
+        Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="1682483655351012182">Chrome-Daten synchronisieren</translation>
 <translation id="1733654336159102143">Sperre die Inkognitotabs, wenn du Chrome verlässt oder zu einer anderen App wechselst.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -31,6 +33,7 @@ Wichtige Hinweise:
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
 <translation id="2009224836393115614">Chrome konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="2056123005618757196">Jetzt mit dem neuen ultraschnellen Google Chrome ganz einfach und sicherer noch mehr erledigen.</translation>
+<translation id="2120238739383482109">Öffnet die Chrome-Lesezeichen.</translation>
 <translation id="2147651015520127414">Chrome hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
 <translation id="2199719347983604670">Daten aus der Chrome-Synchronisierung</translation>
 <translation id="2339201583852607431">Dein Passwort wird in deinem Google-Konto (<ph name="EMAIL" />) gespeichert.</translation>
@@ -67,6 +70,7 @@ Wichtige Hinweise:
 <translation id="3594076341410558780">„Chrome optimal nutzen“ ausblenden</translation>
 <translation id="3655656110921623717">Das bedeutet, dass Chrome immer die mobile Website anfordert.</translation>
 <translation id="3720541637541300822">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
+<translation id="3741995255368156336">Öffnet die Chrome-Leseliste.</translation>
 <translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
 <translation id="3901001113120561395">Chrome optimal nutzen.</translation>
@@ -93,6 +97,7 @@ Wichtige Hinweise:
 <translation id="4903674399067644695">Auf dieser Karte findest du Vorschläge, wie du Chrome optimal nutzen kannst.</translation>
 <translation id="5030102366287574140">Chrome kann helfen, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="5108659628347594808">Chrome verbessern</translation>
+<translation id="5112925986883715005">Chrome-Leseliste ansehen</translation>
 <translation id="5119391094379141756">Chrome auswählen</translation>
 <translation id="5162467219239570114">Chrome ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt dein Gerät neuere Versionen von Chrome möglicherweise nicht mehr.</translation>
 <translation id="5190139289262548459">Deine Organisation, <ph name="DOMAIN" />, verwaltet das Konto, in dem du angemeldet bist, und die Nutzung von Chrome.</translation>
@@ -161,6 +166,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="81358522153858150">Chrome unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
 <translation id="8174679664544842874">Öffnet einen neuen Tab in Chrome.</translation>
+<translation id="8213758103105806860">Chrome-Lesezeichen ansehen</translation>
 <translation id="8357607116237445042">Möchtest du deine Chrome-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="840168496893712993">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstalliere diese Add-ons.</translation>

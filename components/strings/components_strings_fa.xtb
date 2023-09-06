@@ -2995,6 +2995,7 @@
 <translation id="722454870747268814">برگه ناشناس جدید</translation>
 <translation id="7226276626900992675">به این سایت اجازه داده‌اید از کوکی‌های شخص ثالث استفاده کند این بدین معنی است که اکثر ویژگی‌های سایت باید کار کند، اما محافظت کمتری دارید.</translation>
 <translation id="7227293336683593977">سابقه قیمت</translation>
+<translation id="7227747683324411744">مهاجمان در سایتی که می‌خواهید از آن بازدید کنید ممکن است شما را فریب دهند تا نرم‌افزار مخربی را نصب کنید که بر نحوه مرورتان تأثیر می‌گذارد، برای مثال با تغییر دادن صفحه اصلی یا نمایش آگهی‌های اضافی در سایت‌هایی که بازدید می‌کنید.</translation>
 <translation id="7233592378249864828">برگ تأیید چاپ</translation>
 <translation id="7234638337680728591">قیمت بنزین و سوخت خودرو</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />٪ تکمیل شد | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3194,6 +3195,7 @@
 <translation id="7599089013883397081">مهلت زمانی بارگیری تمام شد</translation>
 <translation id="7600965453749440009">هرگز <ph name="LANGUAGE" /> ترجمه نشود</translation>
 <translation id="7601297359530599375">‏معمولاً ازطریق اتصال ایمن به این سایت متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">مهاجمان در سایتی که می‌خواهید از آن بازدید کنید ممکن است نرم‌افزار مخربی را نصب کنند که مواردی مثل گذرواژه، عکس‌ها، پیام‌ها، یا شماره کارت اعتباری‌تان را به‌سرقت می‌برد یا حذف می‌کند.</translation>
 <translation id="7610193165460212391">مقدار خارج از محدوده <ph name="VALUE" /> است.</translation>
 <translation id="7613889955535752492">انقضا: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628">‏<ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای مشاهده و مدیریت کردن گذرواژه‌ها در تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
@@ -3592,6 +3594,7 @@
 توضیحات بیشتر:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">میکروفون این بار مجاز شد</translation>
+<translation id="8422228580902424274">مهاجمان در سایتی که می‌خواهید از آن بازدید کنید ممکن است شما را فریب دهند تا نرم‌افزاری را نصب کنید یا مواردی مثل گذرواژه، تلفن، یا شماره کارت اعتباری‌تان را دراختیار آن‌ها قرار دهید.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">۷۵۰ × ۵۰۰ میلی‌متر</translation>
 <translation id="8428213095426709021">تنظیمات</translation>

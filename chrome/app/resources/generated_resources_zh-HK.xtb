@@ -486,6 +486,7 @@
 <translation id="1390548061267426325">在一般分頁中開啟</translation>
 <translation id="1390907927270446471">「<ph name="PROFILE_USERNAME" />」無權透過「<ph name="PRINTER_NAME" />」列印。請聯絡您的管理員。</translation>
 <translation id="1392047138650695757">用戶字典</translation>
+<translation id="139300021892314943">限制可登入的使用者</translation>
 <translation id="1393283411312835250">太陽和雲</translation>
 <translation id="1395730723686586365">更新程式已啟動</translation>
 <translation id="1395832189806039783">突顯鍵盤焦點所在項目</translation>
@@ -2531,6 +2532,7 @@
 <translation id="2956070239128776395">群組中具有巢狀部份：<ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">封裝擴充功能警告</translation>
 <translation id="2959127025785722291">發生錯誤，無法完成掃瞄。請再試一次。</translation>
+<translation id="2959474507964749987">這個加密的檔案可能是病毒或惡意軟體。<ph name="LINE_BREAK" />如要檢查檔案是否不安全，你可以將檔案和密碼提供給 Google 安全瀏覽功能。檔案掃描作業通常需要幾秒鐘的時間。<ph name="LINE_BREAK" />如要掃描，請提供檔案的密碼。</translation>
 <translation id="2959842337402130152">儲存空間不足，因此無法還原。請騰出 <ph name="SPACE_REQUIRED" /> 的裝置儲存空間，然後再試一次。</translation>
 <translation id="2960208947600937804">設定 Linux 時發生錯誤。請聯絡您的管理員。</translation>
 <translation id="2960942820860729477">更新率</translation>
@@ -3990,6 +3992,7 @@
 <translation id="4147099377280085053">選取點字表</translation>
 <translation id="4147911968024186208">請重試。如果出現同樣問題，請聯絡您的支援代表。</translation>
 <translation id="414800391140809654">可在你瀏覽時使用你的資料</translation>
+<translation id="4148195018520464922">你可以限制只有特定使用者才能登入。設定完成後，系統會移除登入畫面上的「新增使用者」選項。你也可以移除現有的使用者。</translation>
 <translation id="4150201353443180367">顯示屏</translation>
 <translation id="4150569944729499860">畫面內容</translation>
 <translation id="4151449637210235443">與我們分享您最近的遊戲體驗</translation>
@@ -4790,7 +4793,7 @@
 <translation id="4820236583224459650">設定為有效票證</translation>
 <translation id="4820795723433418303">將最上排按鍵當作功能鍵使用</translation>
 <translation id="4821935166599369261">分析已啟用(&amp;P)</translation>
-<translation id="4823193082697477185">透過區域網路存取共用的檔案、資料夾或雲端硬碟。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="4823193082697477185">透過本地網絡存取共用的檔案、資料夾或硬碟。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">讀取和變更使用者和裝置設定</translation>
 <translation id="4824037980212326045">Linux 備份與還原</translation>
 <translation id="4824958205181053313">要取消同步功能嗎？</translation>
@@ -8144,6 +8147,7 @@
 <translation id="7617263010641145920">開啟「Play 商店」</translation>
 <translation id="7617648809369507487">使用低擾式通知</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
+<translation id="7621480263311228380">這個網站不可使用與你相關的既有資訊</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN，就無法復原本機資料。</translation>
 <translation id="7622114377921274169">正在充電。</translation>
 <translation id="7622768823216805500">網站通常會安裝付款處理常式以提供購物功能，例如較易結帳</translation>
@@ -8697,6 +8701,7 @@
 <translation id="8037117027592400564">讀取使用合成語音朗讀的所有文字</translation>
 <translation id="8037357227543935929">要求 (預設)</translation>
 <translation id="803771048473350947">檔案</translation>
+<translation id="8037801708772278989">剛檢查過</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{正在將 1 個檔案複製至 <ph name="CLOUD_PROVIDER" />}other{正在將 {NUM_OF_FILES} 個檔案複製至 <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8041267120753677077">串流播放手機應用程式內容</translation>
@@ -9490,6 +9495,7 @@
 <translation id="8680251145628383637">登入即可從任何裝置取得自己的書籤、記錄、密碼和其他設定。您亦會自動登入至各種 Google 服務。</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的滋擾性或誤導廣告。</translation>
 <translation id="8682730193597992579">已連接 <ph name="PRINTER_NAME" /> 並準備就緒</translation>
+<translation id="8684471948980641888">允許透過計量付費網路進行同步處理</translation>
 <translation id="8685540043423825702">你的 Chrome 個人檔案</translation>
 <translation id="8686142379631285985">以 <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> 的身份登入</translation>
 <translation id="8687103160920393343">取消下載 <ph name="FILE_NAME" /></translation>

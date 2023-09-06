@@ -234,6 +234,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1432187715652018471">page wants to install a service handler.</translation>
 <translation id="1432581352905426595">Manage search engines</translation>
 <translation id="1433225466058025572">Try moving your files again</translation>
+<translation id="1434317006812369578">Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing <ph name="BEGIN_LINK" />recently found malware on <ph name="SITE" /><ph name="END_LINK" />, which is embedded in the site you're trying to visit.</translation>
 <translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436185428532214179">Can ask to edit files and folders on your device</translation>
 <translation id="1442386063175183758">Right gate fold</translation>
@@ -384,6 +385,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1732445923934584865">Ask in-person instead</translation>
 <translation id="1733064249834771892">fonts</translation>
 <translation id="1733631169686303142">Audio Equipment</translation>
+<translation id="1733762317901693627">Even sites that are normally safe are sometimes compromised by attackers. Only visit <ph name="BEGIN_LINK" />this unsafe site<ph name="END_LINK" /> if you're sure you understand the risks.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Try contacting the system admin.</translation>
 <translation id="1736420071277903564">Computer</translation>
@@ -717,6 +719,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2480300195898055381">In your Google Account, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="248348093745724435">Machine policies</translation>
+<translation id="2490199669743245365">Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Server's certificate contains errors.</translation>
 <translation id="2491414235131909199">This page has been blocked by an extension</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
@@ -1051,6 +1054,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relative</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Update required now}=2{Update required by tomorrow}other{Update required within # days}}</translation>
+<translation id="3218388919950135939">Only visit <ph name="BEGIN_LINK" />this unsafe site<ph name="END_LINK" /> if you're sure you understand the risks.</translation>
 <translation id="3220264767789936523">Formal Wear</translation>
 <translation id="3223287115535306850">App launching throbber</translation>
 <translation id="3223425961342298674">Location not allowed</translation>
@@ -1337,6 +1341,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3772211998634047851">Paper (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new note in Google Keep quickly</translation>
 <translation id="3778403066972421603">Do you want to save this card to your Google Account and on this device?</translation>
+<translation id="378026377453746707">Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing recently <ph name="BEGIN_LINK" />found harmful software on <ph name="SITE" /><ph name="END_LINK" />, which is embedded in the site if you're trying to visit.</translation>
 <translation id="3780694243617746492">Output bin</translation>
 <translation id="3781428340399460090">Hot pink</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1348,6 +1353,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3795344968043407227">Indie and alternative music</translation>
 <translation id="3799805948399000906">Font requested</translation>
 <translation id="380329542618494757">Name</translation>
+<translation id="3806932344025766608">Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Phone service providers</translation>
 <translation id="3807366285948165054">Image X shift</translation>
 <translation id="3807873520724684969">Harmful content blocked.</translation>
@@ -1413,6 +1419,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3953505489397572035">This price is typical</translation>
 <translation id="3958057596965527988">4.0 in x 4.0 in</translation>
+<translation id="3959121317419633580">Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing recently <ph name="BEGIN_LINK" />found phishing on <ph name="SITE" /><ph name="END_LINK" />, which is embedded in the site you're trying to visit.<ph name="NEW_LINE" />Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK" />Let us know<ph name="END_ERROR_LINK" /> if you think there's been a mistake and that this site doesn't pose a danger.</translation>
 <translation id="3961148744525529027">Payment handler sheet is half-opened</translation>
 <translation id="3962859241508114581">Previous track</translation>
 <translation id="3963721102035795474">Reader Mode</translation>
@@ -1436,6 +1443,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF document containing {COUNT} page}other{PDF document containing {COUNT} pages}}</translation>
 <translation id="4014895360827978999">Merchant Services and Payment Systems</translation>
+<translation id="4018819349042761761">Public key</translation>
 <translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
 <translation id="4030383055268325496">&amp;Undo add</translation>
 <translation id="4030545038933060179">When on, a list of topics appears here based on your recent browsing history</translation>
@@ -1612,6 +1620,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="433013776994920042">Web Hosting and Domain Registration</translation>
 <translation id="4331519897422864041">Stacker 5</translation>
 <translation id="4331708818696583467">Not Secure</translation>
+<translation id="4333295216031073611">Shopping list</translation>
 <translation id="4333561522337981382">Manage windows on all your displays</translation>
 <translation id="4340575312453649552">This ad used too many resources for your device, so Chrome removed it.</translation>
 <translation id="4340810192899866471">Import from JSON</translation>
@@ -1664,6 +1673,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4451684391620232683">Text presented to user:</translation>
 <translation id="4452328064229197696">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends checking your saved passwords.</translation>
 <translation id="4464826014807964867">Websites with info from your organisation</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK" /> to get Chrome's highest level of security</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">This form is not secure. Auto-fill has been turned off.</translation>
 <translation id="4477350412780666475">Next track</translation>
@@ -2382,6 +2392,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5992805036496113940">See info used to show you ads</translation>
 <translation id="5995727681868049093">Manage your info, privacy and security in your Google Account</translation>
 <translation id="5997247540087773573">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends changing it now and checking your saved passwords.</translation>
+<translation id="5999271311987646952">Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK" />recently found malware<ph name="END_LINK" /> on the site you're trying to visit.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> results for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002122790816966947">Your devices</translation>
 <translation id="6005659677094197001">Continuous</translation>
@@ -2686,6 +2697,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Computer Education</translation>
 <translation id="6633476656216409494">Business and Productivity Software</translation>
+<translation id="6638353438328951386">Chrome has built-in safety features to protect you while you browse — such as Google Safe Browsing, which recently <ph name="BEGIN_LINK" />found harmful software<ph name="END_LINK" /> on the site you're trying to visit.</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645291930348198241">Access cookies and site data.</translation>
 <translation id="6645478838938543427">Price drop alerts will be sent to <ph name="EMAIL_ADDRESS" /></translation>
@@ -2881,6 +2893,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="702146556168549005">URLs of pages that you visit are sent to Google Cloud or third parties for analysis. For example, they might be scanned to detect unsafe websites or filter websites based on rules set by the administrator.</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
 <translation id="7023162328967545559">Admin warning</translation>
+<translation id="7024932305105294144">Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK" />recently found phishing<ph name="END_LINK" /> on the site you're trying to visit. Phishing sites pretend to be other sites to trick you.<ph name="NEW_LINE" />Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK" />Let us know<ph name="END_ERROR_LINK" /> if you think there's been a mistake and that this site doesn't pose a danger.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7030436163253143341">Certificate is not valid</translation>
 <translation id="7031646650991750659">Which Google Play apps you have installed</translation>
@@ -2916,6 +2929,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7105998430540165694">Passkey from iCloud Keychain</translation>
 <translation id="7106762743910369165">Your browser is managed by your organisation</translation>
 <translation id="7107249414147762907">This PDF is inaccessible. No text extracted</translation>
+<translation id="7107427078069498123">SHA-256 Fingerprints</translation>
 <translation id="7108338896283013870">Hide</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> wants to use your camera</translation>
 <translation id="7108819624672055576">Allowed by an extension</translation>
@@ -3081,6 +3095,7 @@ Additional details:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">Add contact info</translation>
 <translation id="7437490109271760224">Card games</translation>
+<translation id="7438338505272634288">Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit. Chrome strongly recommends going back to safety to avoid harm. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Explore while offline</translation>
 <translation id="7441627299479586546">Wrong policy subject</translation>
 <translation id="7441864845853794192">Gourmet and Speciality Foods</translation>
@@ -3408,6 +3423,7 @@ Additional details:
 <translation id="8078006011486731853">{0,plural, =1{Upload confidential file?}other{Upload confidential files?}}</translation>
 <translation id="8078141288243656252">Cannot annotate when rotated</translation>
 <translation id="8079031581361219619">Reload site?</translation>
+<translation id="8079976827192572403">Dangerous site</translation>
 <translation id="8081087320434522107">Sedans</translation>
 <translation id="8086971161893892807">Draft</translation>
 <translation id="8088680233425245692">Failed to view article.</translation>
@@ -3691,6 +3707,7 @@ Additional details:
 <translation id="8680536109547170164"><ph name="QUERY" />, answer, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">The web page at <ph name="PAGE" /> could not be loaded because:</translation>
 <translation id="8686424632716064939">Computer Security</translation>
+<translation id="8687278439622293018">Entry <ph name="ENTRY_VOICEOVER" /> has been deleted</translation>
 <translation id="8687429322371626002">Your device and account are managed by <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Available</translation>
 <translation id="868922510921656628">Pages per set</translation>
@@ -3902,6 +3919,7 @@ Additional details:
 <translation id="9128870381267983090">Connect to network</translation>
 <translation id="9131119348384879525">Capture confidential content?</translation>
 <translation id="9133985615769429248">If you share this device with others, you can use your screen lock to verify that it's you whenever you use a saved password</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, virtual card</translation>
 <translation id="9136861683332321024">Luxury vehicles</translation>
 <translation id="9137013805542155359">Show original</translation>
 <translation id="9137248913990643158">Please start and sign in to Chrome before using this app.</translation>

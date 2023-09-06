@@ -4774,6 +4774,7 @@
 <translation id="4820236583224459650">Выбрать в качестве активного билета</translation>
 <translation id="4820795723433418303">Использовать функциональные клавиши как клавиши верхнего ряда</translation>
 <translation id="4821935166599369261">&amp;Сбор данных включен</translation>
+<translation id="4823193082697477185">Открыть доступ к общим файлам, папкам и дискам в локальной сети. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Просмотр и изменение настроек для пользователей и устройств</translation>
 <translation id="4824037980212326045">Резервное копирование и восстановление Linux</translation>
 <translation id="4824958205181053313">Отключить синхронизацию?</translation>
@@ -8684,6 +8685,7 @@
 <translation id="8037117027592400564">Доступ к тексту, произнесенному синтезатором речи</translation>
 <translation id="8037357227543935929">Спрашивать (по умолчанию)</translation>
 <translation id="803771048473350947">Файл</translation>
+<translation id="8037801708772278989">Проверено только что.</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Копируем 1 файл в сервис "<ph name="CLOUD_PROVIDER" />"}one{Копируем {NUM_OF_FILES} файл в сервис "<ph name="CLOUD_PROVIDER" />"}few{Копируем {NUM_OF_FILES} файла в сервис "<ph name="CLOUD_PROVIDER" />"}many{Копируем {NUM_OF_FILES} файлов в сервис "<ph name="CLOUD_PROVIDER" />"}other{Копируем {NUM_OF_FILES} файла в сервис "<ph name="CLOUD_PROVIDER" />"}}</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="8041267120753677077">Транслировать приложения с телефона</translation>

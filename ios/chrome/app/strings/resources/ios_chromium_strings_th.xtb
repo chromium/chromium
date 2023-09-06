@@ -17,13 +17,16 @@
 <translation id="1722370509450468186">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี (<ph name="EMAIL" />)</translation>
 <translation id="1736662517232558588">ล้างข้อมูล Chromium แล้ว</translation>
 <translation id="1758508597843173586">ล็อกโหมดไม่ระบุตัวตนเมื่อคุณออกจาก Chromium หรือเปลี่ยนไปใช้แอปอื่น</translation>
+<translation id="1791845338122684020">เปิดหน้าประวัติการเข้าชมใน Chromium</translation>
 <translation id="1838412507805038478">Chromium ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="1843424232666537147">Chromium มีฟีเจอร์ที่ช่วยให้คุณสามารถจัดการข้อมูลอินเทอร์เน็ตและระดับความเร็วที่คุณสามารถใช้ในการโหลดหน้าเว็บ
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps ใน Chromium</translation>
 <translation id="186734497270163706">แตะ "Chromium" แล้วแตะ "แอปเบราว์เซอร์เริ่มต้น"</translation>
 <translation id="1867772173333403444">4. เลือก Chromium</translation>
+<translation id="1940441310478179027">Chromium ตรวจหาที่อยู่โดยใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่</translation>
 <translation id="2006345422933397527">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
+<translation id="2042889939382983733">ดูประวัติการเข้าชมใน Chromium</translation>
 <translation id="2052320862053429062">Chromium ตรวจสอบรหัสผ่านของคุณเป็นระยะโดยเทียบกับรายการที่มีการเผยแพร่ออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
 <translation id="2054703085270098503">ปลอดภัยเสมอด้วย Chromium</translation>
 <translation id="2168108852149185974">ส่วนเสริมบางรายการทำให้ Chromium ขัดข้อง โปรดถอนการติดตั้ง:</translation>
@@ -32,6 +35,7 @@
 <translation id="2218146227246548550">องค์กรกำหนดให้คุณต้องลงชื่อเพื่อเข้าใช้ Chromium <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">ซึ่งหมายความว่า Chromium จะขอเว็บไซต์ในเดสก์ท็อปทุกครั้ง</translation>
 <translation id="2313870531055795960">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chromium หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chromium อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
+<translation id="2374627437126809292">Chromium ใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่ของที่อยู่ที่ตรวจพบ</translation>
 <translation id="2426113998523353159">องค์กรกำหนดให้คุณต้องลงชื่อเพื่อเข้าใช้ Chromium</translation>
 <translation id="2450140762465183767">ตอนนี้คุณจะใช้ Chromium ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="2478931088402984578">เลือก <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -60,6 +64,7 @@
 <translation id="3661862315467204831">เปิดการตั้งค่า Chromium ใน iOS จากนั้นแตะ "แอปเบราว์เซอร์เริ่มต้น" แล้วเลือก Chromium</translation>
 <translation id="372658070733623520">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chromium</translation>
 <translation id="3780779443901618967">เตือนคุณเกี่ยวกับเว็บไซต์ที่เป็นอันตราย แม้แต่เว็บไซต์ที่ Google ไม่เคยรู้จักมาก่อนด้วยการวิเคราะห์ข้อมูลจากเว็บไซต์มากกว่าการปกป้องแบบมาตรฐาน คุณเลือกข้ามคำเตือนของ Chromium ได้</translation>
+<translation id="3784369638459513223">เปิดแท็บที่ไม่ระบุตัวตนใหม่ใน Chromium</translation>
 <translation id="3805899903892079518">Chromium ไม่มีสิทธิ์เข้าถึงรูปภาพหรือวิดีโอของคุณ เปิดใช้การเข้าถึงได้ในการตั้งค่า iOS &gt; ความเป็นส่วนตัว &gt; รูปภาพ</translation>
 <translation id="3827545470516145620">คุณกำลังได้รับการรักษาความปลอดภัยแบบมาตรฐานในอุปกรณ์นี้</translation>
 <translation id="3886689467633467988">ลงชื่อเข้าใช้เว็บไซต์นี้และ Chromium เพื่อรับบุ๊กมาร์กและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
@@ -67,12 +72,15 @@
 
 หากต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="3955621079070267756">เปิด Chromium จากแอปใดก็ได้</translation>
+<translation id="4005283307739974863">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4043291146360695975">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="4099085513035183040">ไม่รองรับใน Chromium เบต้า</translation>
 <translation id="4195557071150719219">ดูแท็บล่าสุดใน Chromium</translation>
+<translation id="4408912345039114853">เรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4432744876818348753">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="452436063477828504">ตรวจสอบว่าคุณใช้ข้อมูล Chromium ในบัญชี Google ได้เสมอ</translation>
 <translation id="4555020257205549924">เมื่อเปิดฟีเจอร์นี้ Chromium จะเสนอให้แปลหน้าต่างๆ ที่เขียนด้วยภาษาอื่นโดยใช้ Google แปลภาษา <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="4576283463017113841">เปิดหน้าการตั้งค่าวิธีการชำระเงินใน Chromium</translation>
 <translation id="4585809515399340748">ตอนนี้คุณจะใช้ Chromium ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="4633738821577273991">รับ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นสำหรับโปรไฟล์ Chromium นี้ด้วย</translation>
 <translation id="4654936625574199632">Chromium จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
@@ -168,6 +176,7 @@
 <translation id="8115308261377517697">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="8235427517854598594">กำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้นใช่ไหม</translation>
 <translation id="8240981428553046115">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
+<translation id="8303579360494576778">จัดการวิธีการชำระเงินใน Chromium</translation>
 <translation id="8409374867500149834">คุณได้รับการดูแลอย่างเข้มงวดที่สุดของ Chromium ให้ปลอดภัยจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="858114650497379505">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในแอปอื่นๆ บน iPhone ได้</translation>
 <translation id="8586442755830160949">ลิขสิทธิ์ <ph name="YEAR" /> The Chromium Authors สงวนลิขสิทธิ์</translation>
@@ -185,6 +194,7 @@
   • หากคุณเปิดการซิงค์ เมตริกต่างๆ อาจมีข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมด้วย<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chromium</translation>
 <translation id="88376265765385899">เปิดบุ๊กมาร์ก Chromium</translation>
+<translation id="8924617840944134898">เปิดแท็บที่ไม่ระบุตัวตนใน Chromium</translation>
 <translation id="894437814105052438">Chromium จะไม่ซิงค์ข้อมูลใหม่กับบัญชี Google ของคุณเมื่อออกจากระบบ แต่ข้อมูลที่ซิงค์ไว้ก่อนหน้านี้จะยังอยู่ในบัญชี</translation>
 <translation id="8963279154877372067">อนุญาตให้การแจ้งเตือนของ Chromium รับการแจ้งเตือนเมื่อราคาลดลง</translation>
 <translation id="9022552996538154597">ลงชื่อเข้าใช้ Chromium</translation>

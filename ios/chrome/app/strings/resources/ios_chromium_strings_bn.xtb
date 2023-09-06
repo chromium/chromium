@@ -17,13 +17,16 @@
 <translation id="1722370509450468186">পাসওয়ার্ড আপনার অ্যাকাউন্টে (<ph name="EMAIL" />) সেভ করা হবে।</translation>
 <translation id="1736662517232558588">Chromium ডেটা সাফ করা হয়েছে</translation>
 <translation id="1758508597843173586">আপনি Chromium ছেড়ে বেরিয়ে আসা বা আলাদা অ্যাপে পাল্টে নেওয়ার সময় নিজের 'ছদ্মবেশী' লক করুন।</translation>
+<translation id="1791845338122684020">আপনার Chromium-এর ইতিহাস পৃষ্ঠা খোলে।</translation>
 <translation id="1838412507805038478"><ph name="ISSUER" /> যে এই ওয়েবসাইটের শংসাপত্র প্রকাশ করেছে Chromium তা যাচাই করেছে।</translation>
 <translation id="1843424232666537147">Google Chrome-এর এমন বৈশিষ্ট্য রয়েছে যা আপনাকে আপনার ইন্টারনেট ডেটা পরিচালনা করতে এবং কিভাবে আপনি ওয়েবপৃষ্ঠাগুলি দ্রুত লোড করতে পারবেন সে বিষয়ে সহায়তা করে।
 <ph name="BEGIN_LINK" />আরো জানুন<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromium-এ Maps</translation>
 <translation id="186734497270163706">"Chromium"-এ, তারপর "ডিফল্ট ব্রাউজার অ্যাপ"-এ ট্যাপ করুন।</translation>
 <translation id="1867772173333403444">৪. Chromium বেছে নিন</translation>
+<translation id="1940441310478179027">Chromium আপনাকে দিকনির্দেশ এবং স্থানীয় তথ্য দিতে Google Maps ব্যবহার করে ঠিকানা শনাক্ত করে।</translation>
 <translation id="2006345422933397527">কোনও নতুন আপডেট আছে কিনা তা Chromium-এ চেক করে দেখা যায়নি। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
+<translation id="2042889939382983733">আপনার Chromium ইতিহাস দেখুন</translation>
 <translation id="2052320862053429062">Chromium মাঝে মাঝে অনলাইনে প্রকাশ করা তালিকা অনুযায়ী আপনার পাসওয়ার্ড চেক করে। এটি করার সময় আপনার পাসওয়ার্ড ও ইউজারনেম এনক্রিপ্ট করা থাকে, তাই সেগুলি কেউ দেখতে পাবে না, এমনকি Google-ও না।</translation>
 <translation id="2054703085270098503">Chromium-এর সাহায্যে নিরাপদে থাকুন</translation>
 <translation id="2168108852149185974">কিছু অ্যাড-অনের কারণে Chromium ক্র্যাশ করতে পারে৷ দয়া করে আনইনস্টল করুন:</translation>
@@ -32,6 +35,7 @@
 <translation id="2218146227246548550">Chromium ব্যবহার করতে আপনার সংস্থার প্রয়োজন অনুযায়ী আপনাকে সাইন-ইন করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">এর মানে Chromium প্রতিবার ডেস্কটপ সাইটের অনুরোধ করবে।</translation>
 <translation id="2313870531055795960">Chromium-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সেগুলির URL গুলি পরীক্ষা করে দেখে। যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Safe Browsing-এ Chromium পৃষ্ঠার কিছু কন্টেন্ট সহ URL গুলিও হয়ত পাঠাতে পারে।</translation>
+<translation id="2374627437126809292">Chromium আপনাকে দিকনির্দেশ এবং শনাক্ত করা ঠিকানায় স্থানীয় তথ্য যাতে দেওয়া যায় তার জন্য Google Maps ব্যবহার করে।</translation>
 <translation id="2426113998523353159">Chromium ব্যবহার করতে আপনার সংস্থার প্রয়োজন অনুযায়ী আপনাকে সাইন-ইন করতে হবে।</translation>
 <translation id="2450140762465183767">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্কে ট্যাপ করে, যেকোনও সময় তা Chromium ব্রাউজারে খুলতে পারেন।</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> বেছে নিন</translation>
@@ -60,6 +64,7 @@
 <translation id="3661862315467204831">iOS অপারেটিং সিস্টেমে Chromium সেটিংস খুলুন, তারপর "ব্রাউজার ডিফল্ট অ্যাপ" বিকল্পে ট্যাপ করে Chromium বেছে নিন।</translation>
 <translation id="372658070733623520">আপনার Google অ্যাকাউন্টে Chromium ডেটা ব্যবহার এবং সেভ করতে, আপনার পরিচয় যাচাই করুন।</translation>
 <translation id="3780779443901618967">স্ট্যান্ডার্ড সুরক্ষার চেয়ে সাইট থেকে আরও বেশি ডেটা বিশ্লেষণ করার মাধ্যমে Google আপনাকে বিপজ্জনক সাইট সম্পর্কে সতর্ক করে, এমনকি আগে যার সম্পর্কে জানা নেই সেই বিষয়েও সতর্ক করে। আপনি Chromium সম্পর্কিত সতর্কতা এড়িয়ে যাওয়ার বিকল্প বেছে নিতে পারবেন।</translation>
+<translation id="3784369638459513223">নতুন Chromium-এর ছদ্মবেশী ট্যাব খোলে।</translation>
 <translation id="3805899903892079518">আপনার ফটো এবং ভিডিওগুলিতে Chromium এর অ্যাক্সেস নেই৷ iOS সেটিংস &gt; গোপনীয়তা &gt; ফটোগুলিতে অ্যাক্সেস সক্ষম করুন৷</translation>
 <translation id="3827545470516145620">এই ডিভাইসে আপনি স্টান্ডার্ড নিরাপত্তামূলক সুরক্ষা পাচ্ছেন</translation>
 <translation id="3886689467633467988">আপনার ডিভাইসে আপনার বুকমার্ক ও আরও অনেক কিছু পেতে এই সাইট ও Chromium-এ সাইন-ইন করুন।</translation>
@@ -67,12 +72,15 @@
 
 এই সেটিং পরিবর্তন করতে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chromium সম্পর্কিত ডেটা মুছুন<ph name="END_LINK" />।</translation>
 <translation id="3955621079070267756">যেকোনও অ্যাপ থেকে Chromium খুলুন</translation>
+<translation id="4005283307739974863">Chromium-এ 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার খুলে রান করায়।</translation>
 <translation id="4043291146360695975">শুধুমাত্র এই ডিভাইসের 'পাসওয়ার্ড ম্যানেজারে' পাসওয়ার্ড সেভ করা হয়।</translation>
 <translation id="4099085513035183040">এই সুবিধা Chromium-এর বিটা ভার্সনে কাজ করে না</translation>
 <translation id="4195557071150719219">Chromium-এর সাম্প্রতিক ট্যাব দেখুন</translation>
+<translation id="4408912345039114853">Chromium-এর 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার রান করুন</translation>
 <translation id="4432744876818348753">Chromium থেকে সবচেয়ে বেশি সুবিধা পেতে সাইন-ইন করুন।</translation>
 <translation id="452436063477828504">আপনার Google অ্যাকাউন্টে সবসময় Chromium ডেটা ব্যবহার করতে পারবেন তা কনফার্ম করুন</translation>
 <translation id="4555020257205549924">যখন এই বৈশিষ্ট্যটি চালু করা হয় তখন Chromium, Google অনুবাদ ব্যবহার করে অন্যান্য ভাষায় লিখিত পৃষ্ঠাগুলি অনুবাদ করার অফার করবে৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="4576283463017113841">Chromium-এ পেমেন্ট পদ্ধতি সেটিং পৃষ্ঠা খোলে।</translation>
 <translation id="4585809515399340748">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে ট্যাপ করে তা সরাসরি Chromium ব্রাউজারে খুলতে পারেন।</translation>
 <translation id="4633738821577273991">এছাড়াও, এই Chromium প্রোফাইলের জন্য উন্নত Safe Browsing-এর সুবিধা পান</translation>
 <translation id="4654936625574199632">অ্যাপ উন্নত করতে সাহায্য করার জন্য, Chromium ব্যবহার সম্পর্কিত ও ক্র্যাশ ডেটা Google-এ পাঠায়। <ph name="BEGIN_LINK" />ম্যানেজ করুন<ph name="END_LINK" /></translation>
@@ -168,6 +176,7 @@
 <translation id="8115308261377517697">Chromium-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="8235427517854598594">Chromium-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করবেন?</translation>
 <translation id="8240981428553046115">কোনও নতুন আপডেট আছে কিনা তা Chromium-এ চেক করে দেখা যায়নি। পরে আবার চেষ্টা করুন।</translation>
+<translation id="8303579360494576778">Chromium থেকে পেমেন্ট পদ্ধতি ম্যানেজ করুন</translation>
 <translation id="8409374867500149834">ক্ষতিকর ওয়েবসাইটের জন্য আপনার কাছে Chromium-এর সবচেয়ে শক্তিশালী নিরাপত্তা আছে</translation>
 <translation id="858114650497379505">আপনার iPhone-এর অন্যান্য অ্যাপে পাসওয়ার্ড ম্যানেজারে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="8586442755830160949">কপিরাইট <ph name="YEAR" /> Chromium রচয়িতা৷ সর্বস্বত্ত্ব সংরক্ষিত৷</translation>
@@ -185,6 +194,7 @@
   • সিঙ্ক চালু করা থাকলে, আপনি যেসব URL-এ গেছেন তার ব্যাপারে তথ্যও মেট্রিকে থাকতে পারে।<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">এই অ্যাকাউন্ট ও যেকোনও সেভ না করা ডেটা Chromium থেকে সরিয়ে দেওয়া হবে।</translation>
 <translation id="88376265765385899">Chromium-এর বুকমার্ক খোলে।</translation>
+<translation id="8924617840944134898">hromium-এর ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="894437814105052438">আপনি সাইন-আউট করলে, Chromium আপনার Google অ্যাকাউন্টে কোনও নতুন ডেটা সিঙ্ক করবে না। আগে সিঙ্ক করা ডেটা অ্যাকাউন্টে থেকে যাবে।</translation>
 <translation id="8963279154877372067">দাম কমলে বিজ্ঞপ্তি পেতে Chromium বিজ্ঞপ্তিতে অনুমতি দিন</translation>
 <translation id="9022552996538154597">Chromium-এ সাইন-ইন করুন</translation>

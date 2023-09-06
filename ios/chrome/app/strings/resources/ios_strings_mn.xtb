@@ -418,6 +418,7 @@
 <translation id="3328801116991980348">Сайтын мэдээлэл</translation>
 <translation id="3340938510625667914">Chrome-н үйлдлүүд</translation>
 <translation id="3344485292736684439">{count,plural, =1{Хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}other{Хавчуургуудыг таны {email} бүртгэлийн "{title}"-д хадгалсан}}</translation>
+<translation id="3349676726073650389">Таны дагадаг сайт болон хайлтуудыг Google Бүртгэлд тань хадгалдаг. Та тохиргоонд дагалтаа хүссэн үедээ удирдах боломжтой.</translation>
 <translation id="3365529507898144230">Зурагт хадгалах</translation>
 <translation id="3371831930909698441">Орчуулах боломжтой байна. Дэлгэцийн доод хэсгийн ойролцоо сонголт хийх боломжтой.</translation>
 <translation id="3377063233124932127">Одоо таны хадгалсан хавчуурга, нууц үг болон бусад зүйл дээд талд байна.</translation>
@@ -781,6 +782,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5597915316964418992">Табын хүснэгтийг нээх</translation>
 <translation id="560322036295180549">Танай байгууллага унтраасан</translation>
 <translation id="5614553682702429503">Нууц үгийг хадгалах уу?</translation>
+<translation id="5619871095170816857">Энэ карт сүүлийн 24 цагийн дотор таны синк хийсэн бүх төхөөрөмж дээрх сүүлд ашигласан нээлттэй табыг харуулна.</translation>
 <translation id="5626245204502895507">Файлыг одоогоор татаж авч чадаагүй байна.</translation>
 <translation id="562753339521713441">Аюулгүй байдлын шалгалт хийх</translation>
 <translation id="5631164295104953411">Төлбөрийн хэрэгсэл нэмэх</translation>
@@ -1086,6 +1088,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7082853213442715471">Асаалттай үед тодорхой веб технологиудыг блоклодог бөгөөд энэ нь зарим вебсайтыг илүү удаан ачаалах эсвэл зохих ёсоор ажиллахгүй байхад хүргэж магадгүй.</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" />-н Google Password Manager-т</translation>
 <translation id="7099761977003084116">Саяхны нээсэн табууд</translation>
+<translation id="7101580180124131336">Та одоо <ph name="CHANNEL_NAME" />-с болон түүний талаарх контентыг Дагаж буй табд харна.</translation>
 <translation id="7102005569666697658">Татаж байна… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Нуух</translation>
 <translation id="7108762695052995889">Сайтад зочлох</translation>
@@ -1166,6 +1169,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="764827086632467055">Өгөгдмөл хөтчийн аппыг товшино уу</translation>
 <translation id="7649070708921625228">Тусламж</translation>
 <translation id="7658239707568436148">Болих</translation>
+<translation id="7666861622396822790">Та үүнийг <ph name="BEGIN_LINK" />Контентын тохиргоонд<ph name="END_LINK" /> удирдах боломжтой.</translation>
 <translation id="7671141431838911305">СУУЛГАХ</translation>
 <translation id="7679915578945954324">Сайтын хаягийг хуулсан</translation>
 <translation id="7687508192620387263">Календарийн файл боломжтой</translation>
@@ -1239,6 +1243,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8032569120109842252">Дагаж буй</translation>
 <translation id="804225253087497565">Таныг нэвтэрсэн үед <ph name="BEGIN_LINK" />хайлтын түүх<ph name="END_LINK" /> болон <ph name="BEGIN_LINK" />бусад төрлийн үйл ажиллагааг<ph name="END_LINK" /> Google Бүртгэлд тань хадгалж магадгүй. Та тэдгээрийг хүссэн үедээ устгах боломжтой.</translation>
 <translation id="804427445359061970">Та бусад төхөөрөмжийн табаа эндээс олох болно</translation>
+<translation id="8044568254381073661">Шифрлэлтгүйгээр хадгалах</translation>
 <translation id="8059533439631660104">Хэсгийг хураалаа.</translation>
 <translation id="8065292699993359127">URL-г Chrome дээр Нууцлалтайгаар нээх</translation>
 <translation id="806745655614357130">Миний өгөгдлийг тусад нь байлгах</translation>
@@ -1293,7 +1298,9 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8386068868580335421">Шинэчлэх</translation>
 <translation id="838867811594159347">Нэвтрэх үг оруулна уу…</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> хоногийн турш ашиглаагүй табууд</translation>
+<translation id="8395339334550012808">Удахгүй та <ph name="CHANNEL_NAME" />-с болон түүний талаарх контентыг Дагаж буй табд харна.</translation>
 <translation id="8395378633507873708">Хаяг оруулах хэсэг</translation>
+<translation id="8403629764260204788">"Үргэлжлүүлэн үзэх"-ийг нуух</translation>
 <translation id="8407669440184693619">Энэ сайтад нууц үг олдсонгүй</translation>
 <translation id="842017693807136194">Дараахаар нэвтэрсэн</translation>
 <translation id="8423121072346537366">Дөнгөж сая</translation>

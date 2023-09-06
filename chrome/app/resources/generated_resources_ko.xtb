@@ -8704,6 +8704,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8037117027592400564">음성 출력 기능을 사용한 모든 음성 텍스트 조회</translation>
 <translation id="8037357227543935929">요청(기본값)</translation>
 <translation id="803771048473350947">파일</translation>
+<translation id="8037801708772278989">조금 전에 확인됨</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{파일 1개를 <ph name="CLOUD_PROVIDER" />로 복사 중}other{파일 {NUM_OF_FILES}개를 <ph name="CLOUD_PROVIDER" />로 복사 중}}</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8041267120753677077">휴대전화의 앱을 스트리밍합니다.</translation>
@@ -9497,6 +9498,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8680251145628383637">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정이 동기화되며 Google 서비스에 자동으로 로그인됩니다.</translation>
 <translation id="8681886425883659911">방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려진 사이트에서 광고가 차단됩니다.</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" />이(가) 연결되었으며 사용 가능함</translation>
+<translation id="8684471948980641888">데이터 전송량 제한이 있는 네트워크에서 동기화 허용</translation>
 <translation id="8685540043423825702">내 Chrome 프로필</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> 계정으로 로그인되었습니다.</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> 다운로드 취소</translation>

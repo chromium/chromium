@@ -87,6 +87,7 @@ Se viene disattivato, la funzionalità di correzione automatica sulla tastiera f
       Per un elenco di varianti che possono essere utilizzate, vai all'indirizzo https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Se il criterio non viene configurato, viene utilizzata la directory del profilo predefinito.</translation>
+<translation id="1053981429146436598">Un gruppo di criteri relativi alle impostazioni delle richieste di rete privata.  Visita la pagina https://wicg.github.io/private-network-access/.</translation>
 <translation id="1059069692400941670">Disabilita l'importazione del motore di ricerca predefinito alla prima esecuzione</translation>
 <translation id="1062011392452772310">Attivazione dell'attestazione da remoto per il dispositivo</translation>
 <translation id="1062407476771304334">Sostituisci</translation>
@@ -245,6 +246,10 @@ Se questo criterio viene disattivato, la protezione contro il phishing lato clie
 <translation id="120937472976628837">Segnala informazioni sulla ventola</translation>
 <translation id="1212233008927724662">Disattiva il caricamento lento di WebUI di accesso.</translation>
 <translation id="1216919699175573511">Attiva il supporto per Signed HTTP Exchange (SXG)</translation>
+<translation id="1218658069098810124">Se questo criterio viene attivato, è possibile eseguire il downgrade delle connessioni peer WebRTC a versioni obsolete dei protocolli TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
+      Se questo criterio viene disattivato o se non viene configurato, queste versioni TLS/DTLS sono disattivate.
+
+      Questo criterio è deprecato ed è prevista la rimozione nella versione M121 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1219027971768347970">Utilizza la configurazione predefinita per la sandbox audio</translation>
 <translation id="1219695476179627719">Consente di specificare se il dispositivo deve eseguire il rollback alla versione impostata da <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> nel caso in cui sia già in esecuzione una versione successiva.
 
@@ -2621,16 +2626,6 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
       Usa il carattere jolly "*" per rappresentare lo zero e caratteri più arbitrari. Il carattere di escape è "\"; quindi, per rappresentare gli effettivi caratteri "*" o "\", devi farli precedere da un "\".
 
       Se il criterio non è impostato, tutti gli Account Google sul dispositivo saranno visibili in <ph name="PRODUCT_NAME" />.</translation>
-<translation id="3246744067327836077">
-      Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" /> per uno specifico profilo gestito.
-
-      Se il criterio non viene configurato o viene impostato su Disabled, i dati non vengono raccolti o caricati.
-      Se il criterio viene impostato su Enabled, i dati vengono raccolti e caricati sulla <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Il rapporto include informazioni sull'utilizzo e sullo stato del profilo, incluse, a titolo esemplificativo, la versione del sistema operativo, la versione del browser, le estensioni installate e i criteri applicati.
-
-      Questo criterio può essere impostato soltanto come criterio relativo agli utenti cloud.
-      </translation>
 <translation id="3248019773260441802">Consente a una pagina di mostrare i popup durante l'unload</translation>
 <translation id="3251500716404598358">Configura le norme per passare da un browser all'altro.
 
@@ -5771,14 +5766,6 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="6144046700495610112">Se il criterio viene impostato su Attivato, i dati di compilazione automatica dei moduli nel precedente browser predefinito verranno importati alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, nessun dato di compilazione automatica dei moduli verrà importato alla prima esecuzione.
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo dei dati di compilazione automatica dei moduli verrà selezionata o deselezionata in modo che corrisponda al valore del criterio.</translation>
-<translation id="614522356524762803">
-      Controlla la frequenza dei caricamenti di report sullo stato di Chrome.
-
-      Sono inclusi i report attivati da <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />.
-
-      Quando il criterio non è configurato, i report vengono caricati ogni 24 ore.
-      Quando il criterio è configurato, il numero di ore tra due caricamenti di report consecutivi viene definito da questo criterio.
-      </translation>
 <translation id="614551633868957694">App ed estensioni di Chrome</translation>
 <translation id="614616930188030377">I pattern di questo elenco verranno confrontati con l'origine di sicurezza dell'URL richiedente.
       Se viene trovata una corrispondenza o se chrome://flags/#enable-webrtc-hide-local-ips-with-mdns è disattivato, gli indirizzi IP locali vengono mostrati nei candidati ICE WebRTC.
@@ -9256,16 +9243,6 @@ Se il criterio non viene configurato, per impostazione predefinita <ph name="PRO
 
       Se imposti il criterio, gli utenti non possono modificarlo. Se il criterio non è impostato, i tasti permanenti risultano disattivati all'inizio, ma gli utenti possono attivarli in qualsiasi momento.</translation>
 <translation id="91206085111961438">Stabilisci la disponibilità delle estensioni Manifest v2</translation>
-<translation id="9121178963309901985">Questo criterio controlla le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /> consentendo agli utenti di inviare alla Console di amministrazione Google le richieste per l'approvazione.
-
-      Se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, questo criterio viene ignorato e le richieste di installazione delle estensioni non vengono create né caricate.
-      Se questo criterio non viene configurato o viene disattivato, le richieste di installazione delle estensioni non vengono create né caricate.
-      Se il criterio viene attivato, le richieste di installazione delle estensioni vengono create e caricate nella Console di amministrazione Google.
-
-      Le richieste di installazione delle estensioni vengono create quando gli utenti tentano di installare un'estensione non autorizzata dal criterio <ph name="EXTENSION_INSTALL_ALLOWLIST" /> o <ph name="EXTENSION_SETTINGS" />.
-
-      Questo criterio viene applicato soltanto se la macchina viene registrata con il criterio <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
-      Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9123211093995421438">Consente di specificare il numero minimo di obiettivi di <ph name="PRODUCT_OS_NAME" /> consentiti per il rollback a partire dalla versione stabile in qualsiasi momento.
 
       L'impostazione predefinita è 0 per il consumatore, 4 (circa sei mesi) per i dispositivi aziendali registrati.
@@ -9371,13 +9348,6 @@ Se il criterio non viene configurato, per impostazione predefinita <ph name="PRO
 <translation id="9221827710437832530">Consenti l'accesso alla geolocalizzazione nella schermata di accesso.</translation>
 <translation id="922540222991413931">Configura fonti di installazione di estensioni, applicazioni e script utente</translation>
 <translation id="924557436754151212">Importa password salvate dal browser predefinito alla prima esecuzione</translation>
-<translation id="926104720905645793">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" />, che consente di caricare informazioni sul funzionamento del browser nella <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Se il criterio non viene configurato o viene impostato su Disabled, i dati non vengono raccolti o caricati.
-      Se il criterio viene impostato su Enabled, i dati vengono raccolti e caricati sulla <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la macchina viene registrata con il token <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-      Per <ph name="PRODUCT_OS_NAME" />, questo criterio viene sempre applicato.</translation>
 <translation id="927384371566552478">Se il criterio viene impostato su Attivato o se non viene configurato, l'interfaccia utente di esportazione/importazione è disponibile agli utenti. Se il criterio viene impostato su Disattivato, l'interfaccia utente di esportazione/importazione non è disponibile agli utenti.</translation>
 <translation id="927444535723396977">Se il criterio è impostato su 1, i siti web possono eseguire JavaScript. Se il criterio è impostato su 2, JavaScript viene negato.
 

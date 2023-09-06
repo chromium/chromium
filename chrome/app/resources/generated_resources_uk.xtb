@@ -4797,6 +4797,7 @@
 <translation id="4820236583224459650">Зробити активним квитком</translation>
 <translation id="4820795723433418303">Використовувати функціональні клавіші як клавіші верхнього рядка</translation>
 <translation id="4821935166599369261">&amp;Профілювання ввімкнено</translation>
+<translation id="4823193082697477185">Отримувати доступ до спільних файлів, папок або дисків у локальній мережі. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Переглядати та змінювати налаштування користувача й пристрою</translation>
 <translation id="4824037980212326045">Резервне копіювання й відновлення Linux</translation>
 <translation id="4824958205181053313">Скасувати синхронізацію?</translation>
@@ -8708,6 +8709,7 @@
 <translation id="8037117027592400564">Читати весь текст, відтворений за допомогою синтезованого мовлення</translation>
 <translation id="8037357227543935929">Запитувати (за умовчанням)</translation>
 <translation id="803771048473350947">Файл</translation>
+<translation id="8037801708772278989">Щойно перевірено</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Копіювання 1 файлу в сервіс <ph name="CLOUD_PROVIDER" />}one{Копіювання {NUM_OF_FILES} файлу в сервіс <ph name="CLOUD_PROVIDER" />}few{Копіювання {NUM_OF_FILES} файлів у сервіс <ph name="CLOUD_PROVIDER" />}many{Копіювання {NUM_OF_FILES} файлів у сервіс <ph name="CLOUD_PROVIDER" />}other{Копіювання {NUM_OF_FILES} файлу в сервіс <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8041267120753677077">Транслювати контент із додатків на вашому телефоні</translation>

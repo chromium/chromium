@@ -18,13 +18,16 @@
 <translation id="1722370509450468186">Geslo bo shranjeno v računu (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Podatki Chromiuma so izbrisani</translation>
 <translation id="1758508597843173586">Zaklepanje anonimnega načina, ko zapustite Chromium ali preklopite na drugo aplikacijo.</translation>
+<translation id="1791845338122684020">Odpre stran z zgodovino v Chromiumu.</translation>
 <translation id="1838412507805038478">Chromium je preveril, ali je izdajatelj <ph name="ISSUER" /> izdal potrdilo tega spletnega mesta.</translation>
 <translation id="1843424232666537147">Chromium ima funkcije, s katerimi lažje upravljate internetne podatke in hitrost nalaganja spletnih strani.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Google Zemljevidi v Chromiumu</translation>
 <translation id="186734497270163706">Dotaknite se »Chromium« in nato »Default Browser App« (Privzeti brskalnik).</translation>
 <translation id="1867772173333403444">4. Izberite Chromium.</translation>
+<translation id="1940441310478179027">Chromium zazna naslove z uporabo Google Zemljevidov in prikazuje navodila za pot ter lokalne podatke.</translation>
 <translation id="2006345422933397527">Chromium ni mogel preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
+<translation id="2042889939382983733">Ogled zgodovine v Chromiumu</translation>
 <translation id="2052320862053429062">Chromium občasno preveri vaša gesla, tako da jih primerja s seznami gesel, objavljenimi v spletu. Pri tem so vaša gesla in uporabniška imena šifrirana, da jih ne more prebrati nihče, vključno z Googlom.</translation>
 <translation id="2054703085270098503">Ostanite varni s Chromiumom</translation>
 <translation id="2168108852149185974">Nekateri dodatki povzročajo zrušitve Chromiuma. Odstranite jih:</translation>
@@ -33,6 +36,7 @@
 <translation id="2218146227246548550">Vaša organizacija zahteva, da se za uporabo Chromiuma prijavite. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">To pomeni, da bo Chromium vsakič zahteval spletno mesto za namizne naprave.</translation>
 <translation id="2313870531055795960">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromiumu. Če vam spletno mesto poskusi ukrasti geslo ali če prenašate škodljivo datoteko, lahko Chromium prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
+<translation id="2374627437126809292">Chromium z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne podatke o zaznanih naslovih.</translation>
 <translation id="2426113998523353159">Vaša organizacija zahteva, da se za uporabo Chromiuma prijavite.</translation>
 <translation id="2450140762465183767">Zdaj lahko uporabljate Chromium, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="2478931088402984578">Izberite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -61,6 +65,7 @@
 <translation id="3661862315467204831">V sistemu iOS odprite nastavitve za Chromium, nato se dotaknite »Browser Default APP« (Privzeti brskalnik) in izberite Chromium.</translation>
 <translation id="372658070733623520">Če želite v računu Google uporabljati in shranjevati podatke iz Chromiuma, potrdite, da ste to vi.</translation>
 <translation id="3780779443901618967">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chromium.</translation>
+<translation id="3784369638459513223">Odpre nov anonimni zavihek v Chromiumu.</translation>
 <translation id="3805899903892079518">Chromium nima dostopa do fotografij ali videoposnetkov. Omogočite dostop v sistemu iOS: Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="3827545470516145620">V tej napravi uporabljate standardno varnostno zaščito</translation>
 <translation id="3886689467633467988">Prijavite se na tem spletnem mestu in v Chromiumu, če želite dostopati do zaznamkov in drugega v vseh napravah.</translation>
@@ -68,12 +73,15 @@
 
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Odpiranje Chromiuma v poljubni aplikaciji</translation>
+<translation id="4005283307739974863">Odpre in izvede varnostno preverjanje v Chromiumu.</translation>
 <translation id="4043291146360695975">Gesla so shranjena v upravitelju gesel samo v tej napravi.</translation>
 <translation id="4099085513035183040">Ni podprto v Chromiumu Beta</translation>
 <translation id="4195557071150719219">Ogled nedavnih zavihkov v Chromiumu</translation>
+<translation id="4408912345039114853">Zagon varnostnega preverjanja v Chromiumu</translation>
 <translation id="4432744876818348753">Prijavite se, če želite čim bolje izkoristiti Chromium.</translation>
 <translation id="452436063477828504">Poskrbite, da boste v računu Google vedno lahko uporabljali podatke v Chromiumu</translation>
 <translation id="4555020257205549924">Kadar je vklopljena ta funkcija, bo Chromium ponudil, da z uporabo Google Prevajalnika prevede strani v drugih jezikih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="4576283463017113841">V Chromiumu odpre stran z nastavitvijo plačilnih sredstev.</translation>
 <translation id="4585809515399340748">Zdaj lahko uporabljate Chromium, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="4633738821577273991">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromiumu.</translation>
 <translation id="4654936625574199632">Zaradi izboljšanja aplikacije Chromium Googlu pošlje poročila o uporabi in zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
@@ -171,6 +179,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8115308261377517697">Nastavitev Chromiuma za privzeti brskalnik</translation>
 <translation id="8235427517854598594">Želite nastaviti Chromium kot privzeti brskalnik?</translation>
 <translation id="8240981428553046115">Chromium ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
+<translation id="8303579360494576778">Upravljanje plačilnih sredstev v Chromiumu</translation>
 <translation id="8409374867500149834">Uporabljate Chromiumovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
 <translation id="858114650497379505">Gesla, ki ste jih shranili v upravitelju gesel, lahko uporabite v drugih aplikacijah v iPhonu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
@@ -189,6 +198,7 @@ Kaj je treba upoštevati:
   • Če vklopite sinhronizacijo, bodo meritve vključevale tudi podatke o URL-jih, ki jih obiščete.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Ta račun in neshranjeni podatki bodo odstranjeni iz Chromiuma.</translation>
 <translation id="88376265765385899">Odpre zaznamke v Chromiumu.</translation>
+<translation id="8924617840944134898">Odpiranje anonimnega zavihka v Chromiumu</translation>
 <translation id="894437814105052438">Če se odjavite, Chromium ne bo več sinhroniziral novih podatkov v račun Google. Predhodno sinhronizirani podatki ostanejo v računu.</translation>
 <translation id="8963279154877372067">Dovolite obvestila za Chromium, če želite prejemati opozorila o znižanju cen</translation>
 <translation id="9022552996538154597">Prijava v Chromium</translation>

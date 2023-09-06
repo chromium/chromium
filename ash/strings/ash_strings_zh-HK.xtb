@@ -1619,6 +1619,7 @@
 <translation id="7714767791242455379">新增流動網絡</translation>
 <translation id="7720400844887872976">開啟，直到<ph name="TIME" /></translation>
 <translation id="7720410380936703141">再試一次</translation>
+<translation id="7721132362314201794">桌面名稱</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7723703419796509666">顯示或隱藏 Developer Tools 控制台</translation>
 <translation id="7724603315864178912">剪下</translation>
@@ -1854,7 +1855,7 @@
 <translation id="8731487213223706745">結束時間：<ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">鍵盤可能會嘗試盜取您的按鍵操作</translation>
 <translation id="8735678380411481005">鍵盤背光顏色</translation>
-<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />：啟用中...</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />：正在啟用…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">驗證你嘅身份：<ph name="ORIGIN_NAME" /> 要求確認你嘅身分</translation>

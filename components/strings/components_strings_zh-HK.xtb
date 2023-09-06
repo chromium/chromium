@@ -234,6 +234,7 @@
 <translation id="1432187715652018471">網頁想要安裝服務處理常式。</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
 <translation id="1433225466058025572">嘗試再次移動檔案</translation>
+<translation id="1434317006812369578">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能<ph name="BEGIN_LINK" />最近在 <ph name="SITE" /> 發現惡意軟體<ph name="END_LINK" />，而且你嘗試造訪的網站也內嵌該軟體。</translation>
 <translation id="1435940442311036198">在其他裝置上使用密鑰</translation>
 <translation id="1436185428532214179">可要求編輯裝置中的檔案和資料夾</translation>
 <translation id="1442386063175183758">右半邊對摺</translation>
@@ -384,6 +385,7 @@
 <translation id="1732445923934584865">改為當面要求</translation>
 <translation id="1733064249834771892">字型</translation>
 <translation id="1733631169686303142">音響器材</translation>
+<translation id="1733762317901693627">即使是平常可以安心造訪的網站，有時也會遭到攻擊者入侵。除非你確實瞭解相關風險，否則請勿造訪<ph name="BEGIN_LINK" />這個不安全的網站<ph name="END_LINK" />。</translation>
 <translation id="1734864079702812349">美國運通信用卡</translation>
 <translation id="1734878702283171397">請嘗試聯絡系統管理員。</translation>
 <translation id="1736420071277903564">電腦</translation>
@@ -717,6 +719,7 @@
 <translation id="2480300195898055381">儲存在 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">裝置政策</translation>
+<translation id="2490199669743245365">如果你嘗試造訪的網站遭到攻擊，攻擊者可能會在你的裝置上安裝安裝有害軟體，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。Chrome 強烈建議你不要造訪這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">伺服器憑證含有錯誤。</translation>
 <translation id="2491414235131909199">有擴充程式已封鎖此頁面</translation>
 <translation id="2495083838625180221">JSON 剖析器</translation>
@@ -1051,6 +1054,7 @@
 <translation id="3216313131063488104">藍調</translation>
 <translation id="3218181027817787318">相對</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{請立即更新}=2{最遲請在明天完成更新}other{請在 # 天內更新}}</translation>
+<translation id="3218388919950135939">除非你確實瞭解相關風險，否則請勿造訪<ph name="BEGIN_LINK" />這個不安全的網站<ph name="END_LINK" />。</translation>
 <translation id="3220264767789936523">禮服</translation>
 <translation id="3223287115535306850">應用程式啟動載入圖示</translation>
 <translation id="3223425961342298674">唔批准存取位置資料</translation>
@@ -1336,6 +1340,7 @@
 <translation id="3772211998634047851">紙 (證券紙)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google Keep 度快速建立新筆記</translation>
 <translation id="3778403066972421603">您要將這張信用卡儲存至 Google 帳戶及此裝置上嗎？</translation>
+<translation id="378026377453746707">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近在 <ph name="BEGIN_LINK" /><ph name="SITE" /> 發現有害軟體<ph name="END_LINK" />，而且你嘗試造訪的網站也內嵌該軟體。</translation>
 <translation id="3780694243617746492">出紙槽</translation>
 <translation id="3781428340399460090">豔粉紅色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1347,6 +1352,7 @@
 <translation id="3795344968043407227">獨立音樂和另類音樂</translation>
 <translation id="3799805948399000906">要求的字型</translation>
 <translation id="380329542618494757">名稱</translation>
+<translation id="3806932344025766608">如果你嘗試造訪的網站遭到攻擊，攻擊者可能會誘騙你安裝軟體或提供資料，例如密碼、電話號碼或信用卡號碼等資訊。Chrome 強烈建議你不要造訪這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">電話服務供應商</translation>
 <translation id="3807366285948165054">圖片 X 軸移動</translation>
 <translation id="3807873520724684969">有害內容已被封鎖。</translation>
@@ -1412,6 +1418,7 @@
 <translation id="3950820424414687140">登入</translation>
 <translation id="3953505489397572035">這是一般價格</translation>
 <translation id="3958057596965527988">4 x 4 吋</translation>
+<translation id="3959121317419633580">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近在 <ph name="BEGIN_LINK" /><ph name="SITE" /> 發現網路釣魚內容<ph name="END_LINK" />，而且你嘗試造訪的網站也內嵌該內容。<ph name="NEW_LINE" />即使是平常可以安心造訪的網站，有時也會遭到攻擊者入侵。如果你認為我們的判斷有誤，而且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="3961148744525529027">付款處理常式工作表只係顯示咁一半</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963721102035795474">閱讀器模式</translation>
@@ -1435,6 +1442,7 @@
 <translation id="401170183602135785">C6 信封</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件入面有 {COUNT} 頁}other{PDF 文件入面有 {COUNT} 頁}}</translation>
 <translation id="4014895360827978999">商業服務和付款系統</translation>
+<translation id="4018819349042761761">公開金鑰</translation>
 <translation id="4023431997072828269">由於此表格透過不安全的連線提交，其他人將可看到您的資料。</translation>
 <translation id="4030383055268325496">復原新增(&amp;U)</translation>
 <translation id="4030545038933060179">開啟設定後，系統會根據最近的瀏覽記錄此顯示主題清單</translation>
@@ -1611,6 +1619,7 @@
 <translation id="433013776994920042">網頁寄存和網域註冊</translation>
 <translation id="4331519897422864041">堆疊器 5</translation>
 <translation id="4331708818696583467">不安全</translation>
+<translation id="4333295216031073611">購物清單</translation>
 <translation id="4333561522337981382">在您所有的顯示屏上管理視窗</translation>
 <translation id="4340575312453649552">此廣告使用了太多裝置資源，因此已被 Chrome 移除。</translation>
 <translation id="4340810192899866471">從 JSON 匯入</translation>
@@ -1663,6 +1672,7 @@
 <translation id="4451684391620232683">向使用者顯示的文字：</translation>
 <translation id="4452328064229197696">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，Google 密碼管理工具建議您檢查已儲存的密碼。</translation>
 <translation id="4464826014807964867">有來自您機構資料的網站</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />開啟強化防護<ph name="END_ENHANCED_PROTECTION_LINK" />，即可享有 Chrome 最強大的安全防護機制</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">此表格不安全，自動填入功能已關閉。</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
@@ -2381,6 +2391,7 @@
 <translation id="5992805036496113940">查看系統用於放送廣告的資料</translation>
 <translation id="5995727681868049093">在 Google 帳戶管理您的資料、私隱權和安全設定</translation>
 <translation id="5997247540087773573">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，「Google 密碼管理工具」建議您立即變更密碼，並檢查已儲存的密碼。</translation>
+<translation id="5999271311987646952">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能<ph name="BEGIN_LINK" />最近曾在你嘗試造訪的網站上發現惡意軟體<ph name="END_LINK" />。</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
 <translation id="6002122790816966947">您的裝置</translation>
 <translation id="6005659677094197001">連續</translation>
@@ -2685,6 +2696,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">電腦教育</translation>
 <translation id="6633476656216409494">商業和生產力軟件</translation>
+<translation id="6638353438328951386">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近曾在你嘗試造訪的網站上<ph name="BEGIN_LINK" />發現有害軟體<ph name="END_LINK" />。</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645291930348198241">存取 Cookie 和網站資料。</translation>
 <translation id="6645478838938543427">系統將會向 <ph name="EMAIL_ADDRESS" /> 傳送減價通知</translation>
@@ -2880,6 +2892,7 @@
 <translation id="702146556168549005">您瀏覽的網頁網址會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方會掃瞄網址，偵測是否為不安全的網站或根據管理員設定的規則篩選網站。</translation>
 <translation id="702275896380648118">此網站會判斷您喜歡的內容，以便向其他網站建議廣告。此網站亦會從 Chrome 取得您的廣告主題，以便為您顯示更相關的廣告。</translation>
 <translation id="7023162328967545559">管理員警告</translation>
+<translation id="7024932305105294144">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能<ph name="BEGIN_LINK" />最近曾在你嘗試造訪的網站上發現網路釣魚內容<ph name="END_LINK" />。網路釣魚網站會偽裝成其他網站，藉此欺騙你。<ph name="NEW_LINE" />即使是平常可以安心造訪的網站，有時也會遭到攻擊者入侵。如果你認為我們的判斷有誤，而且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030436163253143341">憑證無效</translation>
 <translation id="7031646650991750659">您已安裝的 Google Play 應用程式</translation>
@@ -2915,6 +2928,7 @@
 <translation id="7105998430540165694">iCloud 鑰匙圈的密鑰</translation>
 <translation id="7106762743910369165">您的瀏覽器由組織管理</translation>
 <translation id="7107249414147762907">無法存取此 PDF。�系統未擷取任何文字</translation>
+<translation id="7107427078069498123">SHA-256 指紋</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> 要求使用相機</translation>
 <translation id="7108819624672055576">根據擴充程式設定允許</translation>
@@ -2980,6 +2994,7 @@
 <translation id="722454870747268814">新增無痕式分頁</translation>
 <translation id="7226276626900992675">你已允許此網站使用第三方 Cookie。這表示大多數網站功能應該都能正常運作，但保護程度較低。</translation>
 <translation id="7227293336683593977">過往價格</translation>
+<translation id="7227747683324411744">如果你嘗試造訪的網站遭到攻擊，攻擊者可能會誘騙你安裝有害軟體，影響你的瀏覽方式，例如變更首頁，或在你造訪的網站上顯示額外廣告。</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>
 <translation id="7234638337680728591">氣油價格和汽車燃料</translation>
 <translation id="7236417832106250253">已完成 <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3079,6 +3094,7 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">新增聯絡人資料</translation>
 <translation id="7437490109271760224">卡類遊戲</translation>
+<translation id="7438338505272634288">如果你嘗試造訪的網站遭到攻擊，攻擊者可能會誘騙你安裝有害軟體，影響你的瀏覽方式，例如變更首頁，或在你造訪的網站上顯示額外廣告。Chrome 強烈建議你不要造訪這個網站，避免遭到攻擊。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">探索可供離線檢視的內容</translation>
 <translation id="7441627299479586546">政策主體有誤</translation>
 <translation id="7441864845853794192">美食和特色食品</translation>
@@ -3178,6 +3194,7 @@
 <translation id="7599089013883397081">下載逾時</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">您通常可經由安全連線前往此網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改您的網絡連線。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">如果你嘗試造訪的網站遭到攻擊，攻擊者可能會在你的裝置上安裝安裝有害軟體，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。</translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
 <translation id="7613889955535752492">到期日：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度睇同管理密碼</translation>
@@ -3405,6 +3422,7 @@
 <translation id="8078006011486731853">{0,plural, =1{要上載機密檔案嗎？}other{要上載機密檔案嗎？}}</translation>
 <translation id="8078141288243656252">文件旋轉後無法加入註釋</translation>
 <translation id="8079031581361219619">要重新載入網站嗎？</translation>
+<translation id="8079976827192572403">危險網站</translation>
 <translation id="8081087320434522107">轎車</translation>
 <translation id="8086971161893892807">草稿</translation>
 <translation id="8088680233425245692">無法檢視文章。</translation>
@@ -3575,6 +3593,7 @@
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">呢次批准用咪</translation>
+<translation id="8422228580902424274">如果你嘗試造訪的網站遭到攻擊，攻擊者可能會誘騙你安裝軟體或提供資料，例如密碼、電話號碼或信用卡號碼等資訊。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 毫米</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -3687,6 +3706,7 @@
 <translation id="8680536109547170164"><ph name="QUERY" />，答案：<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">無法載入 <ph name="PAGE" /> 的網頁，原因如下：</translation>
 <translation id="8686424632716064939">電腦保安</translation>
+<translation id="8687278439622293018">已刪除「<ph name="ENTRY_VOICEOVER" />」這項資料</translation>
 <translation id="8687429322371626002">您的裝置和帳戶由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="868922510921656628">每組頁數</translation>
@@ -3898,6 +3918,7 @@
 <translation id="9128870381267983090">連接網絡</translation>
 <translation id="9131119348384879525">要擷取機密內容嗎？</translation>
 <translation id="9133985615769429248">如果您與其他人分享此裝置，可以在使用已儲存的密碼時透過螢幕鎖定來驗證身份</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />，虛擬卡片</translation>
 <translation id="9136861683332321024">豪華房車</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9137248913990643158">使用此應用程式前，請先啟動 Chrome 並登入帳戶。</translation>

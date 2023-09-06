@@ -158,6 +158,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1872096359983322073">Baterka</translation>
 <translation id="1882901927376062252">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{{count} záložky boli uložené do vášho účtu Google {email}}many{{count} Bookmarks saved in your Google Account, {email}}other{{count} záložiek bolo uložených do vášho účtu Google {email}}}</translation>
 <translation id="1883255238294161206">Zbaliť zoznam</translation>
+<translation id="1890237935065108104">Toto nastavenie nie je k dispozícii.</translation>
 <translation id="1894023287452300670">Tu sledujte cenu</translation>
 <translation id="189531189292803889">Váš iPad bol nedávno obnovený, v dôsledku čoho sa možno zmenil váš predvolený prehliadač.</translation>
 <translation id="1910975740091000991">Chrome pre iOS</translation>
@@ -1376,6 +1377,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="8855242995793521265">Prehliadač ani zariadenie výrazne nespomalí.</translation>
 <translation id="8855781063981781621">Ak chcete režim silnej zámky v Chrome deaktivovať, vypnite ho vo svojom iPade.</translation>
 <translation id="8863431381414769983">Získavajte trasy a miestne informácie z Máp Google</translation>
+<translation id="8865415417596392024">Údaje Chromu vo vašom účte</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} karta}few{{count} karty}many{{count} Tabs}other{{count} kariet}}</translation>
 <translation id="8870413625673593573">Nedávno zatvorené</translation>
 <translation id="8876882697946675716">Udržiavajte svoje zariadenia synchronizované</translation>

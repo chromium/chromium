@@ -4775,6 +4775,7 @@
 <translation id="4820236583224459650">Белсенді билет ретінде орнату</translation>
 <translation id="4820795723433418303">Функция пернелерін жоғарғы жол пернелері ретінде пайдалану</translation>
 <translation id="4821935166599369261">&amp;Профильдеу қосылды</translation>
+<translation id="4823193082697477185">Жергілікті желідегі ортақ файлдарға, қалталарға немесе дискілерге кіріңіз. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Пайдаланушы және құрылғы параметрлерін оқу және өзгерту</translation>
 <translation id="4824037980212326045">Linux қолданбалары мен файлдарының сақтық көшірмесін жасау және оларды қалпына келтіру</translation>
 <translation id="4824958205181053313">Синхрондауды тоқтату қажет пе?</translation>
@@ -8678,6 +8679,7 @@
 <translation id="8037117027592400564">Синтезделген сөйлеу арқылы айтылған барлық мәтінді оқу</translation>
 <translation id="8037357227543935929">Сұрау (әдепкі)</translation>
 <translation id="803771048473350947">Файл</translation>
+<translation id="8037801708772278989">Жаңа ғана тексерілді</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 файл <ph name="CLOUD_PROVIDER" /> қызметіне көшіріліп жатыр}other{{NUM_OF_FILES} файл <ph name="CLOUD_PROVIDER" /> қызметіне көшіріліп жатыр}}</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8041267120753677077">Телефондағы қолданбаларды трансляциялау</translation>

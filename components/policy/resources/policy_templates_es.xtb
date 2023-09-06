@@ -2618,16 +2618,6 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
       El carácter comodín "*" se puede utilizar para buscar coincidencias con cero o más caracteres arbitrarios. Como el carácter de escape es "\", para que coincida con los caracteres "*", "?" o "\", debes colocar el carácter "\" delante de ellos.
 
       Si esta política no se configura, todas las cuentas de Google del dispositivo serán visibles en <ph name="PRODUCT_NAME" />.</translation>
-<translation id="3246744067327836077">
-      Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" /> de un perfil gestionado concreto.
-
-      Si no se establece esta política o se inhabilita, no se recogerá ni se subirá ningún dato.
-      Si se habilita esta política, se recogerán y subirán los datos a la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      El informe contiene datos sobre el estado y el uso del perfil, incluidos, entre otros, la versión del SO, la versión del navegador, las extensiones instaladas y las políticas aplicadas.
-
-      Esta política solo se puede establecer como política de usuarios basada en la nube.
-      </translation>
 <translation id="3248019773260441802">Permite que una página muestre ventanas emergentes mientras se descarga</translation>
 <translation id="3251500716404598358">Configura las políticas para cambiar de navegador.
 
@@ -5777,14 +5767,6 @@ Si no se define esta política o la lista no contiene ninguna referencia a una i
 <translation id="6144046700495610112">Si se asigna el valor "Habilitada" a esta política, se importarán los datos de formularios para la función Autocompletar del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importarán estos datos al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de datos de formularios para la función Autocompletar aparecerá marcada o desmarcada en función del valor de esta política.</translation>
-<translation id="614522356524762803">
-      Controla la frecuencia de subida de los informes de estado de Chrome.
-
-      Incluidos los informes habilitados por la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />.
-
-      Si la política no se establece, los informes se suben cada 24 horas.
-      Si se establece, el número de horas entre dos subidas de informe sucesivas lo define esta política.
-      </translation>
 <translation id="614551633868957694">Aplicaciones y extensiones de Chrome</translation>
 <translation id="614616930188030377">Los patrones de esta lista se compararán con el origen de seguridad de la URL solicitante.
       Si se encuentra alguna coincidencia o chrome://flags/#enable-webrtc-hide-local-ips-with-mdns está inhabilitado, las direcciones IP locales se mostrarán en candidatos ICE WebRTC.
@@ -9280,16 +9262,6 @@ Si no se define esta política, <ph name="PRODUCT_NAME" /> recogerá y subirá e
 
       Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, las teclas persistentes están en un principio desactivadas, pero los usuarios pueden activarlas en cualquier momento.</translation>
 <translation id="91206085111961438">Controlar la disponibilidad de extensiones de Manifest V2</translation>
-<translation id="9121178963309901985">Esta política controla las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" /> que permiten a los usuarios enviar las solicitudes a la consola de administración de Google para su aprobación.
-
-      Si la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> no se establece o se inhabilita, esta política se ignorará y las solicitudes de instalación de extensiones no se crearán ni se subirán.
-      Si no se establece esta política o se inhabilita, las solicitudes de instalación de extensiones no se crearán ni se subirán.
-      Si se habilita, las solicitudes de instalación de extensiones se crearán y se subirán a la consola de administración de Google.
-
-      Las solicitudes de instalación de extensiones se crean cuando los usuarios intentan instalar una extensión que no está permitida por <ph name="EXTENSION_INSTALL_ALLOWLIST" /> o <ph name="EXTENSION_SETTINGS" />.
-
-      Esta política solo es efectiva cuando el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
-      En <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
 <translation id="9123211093995421438">Especifica el número mínimo de reversiones a versiones principales de <ph name="PRODUCT_OS_NAME" /> que se deberían permitir desde la versión estable en cualquier momento.
 
       El valor predeterminado es 0 para dispositivos de consumo y 4 (aproximadamente medio año) para los dispositivos registrados por empresas.
@@ -9426,13 +9398,6 @@ Si no se define esta política, <ph name="PRODUCT_NAME" /> recogerá y subirá e
 <translation id="9221827710437832530">Permitir el acceso a la geolocalización en la pantalla de inicio de sesión.</translation>
 <translation id="922540222991413931">Configurar fuentes de instalación de secuencias de comandos de usuario, aplicaciones y extensiones</translation>
 <translation id="924557436754151212">Importar las contraseñas guardadas desde el navegador predeterminado en la primera ejecución</translation>
-<translation id="926104720905645793">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" />, que sube información sobre el funcionamiento del navegador a la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Si no se establece esta política o se inhabilita, no se recogerá ni se subirá ningún dato.
-      Si se habilita esta política, se recogerán y subirán los datos a la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Para <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-      Para <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
 <translation id="927384371566552478">Si se habilita la política o no se establece, la interfaz de usuario de exportación e importación estará disponible para los usuarios. Si se inhabilita la política, la interfaz de usuario de exportación e importación no estará disponible para los usuarios.</translation>
 <translation id="927444535723396977">Si se asigna el valor 1 a esta política, los sitios web podrán ejecutar JavaScript. Si se le asigna el valor 2, se denegará el uso de JavaScript.
 

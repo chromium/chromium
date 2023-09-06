@@ -8678,6 +8678,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8037117027592400564">Alle tekst lezen die wordt gesproken met gesynthetiseerde spraak</translation>
 <translation id="8037357227543935929">Vragen (standaard)</translation>
 <translation id="803771048473350947">Archief</translation>
+<translation id="8037801708772278989">Zojuist gecheckt</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 bestand kopiëren naar <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} bestanden kopiëren naar <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
 <translation id="8041267120753677077">Stream apps van je telefoon</translation>
@@ -9471,6 +9472,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8680251145628383637">Log in om je bookmarks, geschiedenis, wachtwoorden en andere instellingen op te halen op al je apparaten. Je wordt ook automatisch ingelogd bij je Google-services.</translation>
 <translation id="8681886425883659911">Advertenties worden geblokkeerd op sites waarvan bekend is dat ze opdringerige of misleidende advertenties tonen</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is verbonden en klaar</translation>
+<translation id="8684471948980641888">Synchroniseren toestaan voor netwerken met datalimiet</translation>
 <translation id="8685540043423825702">Je Chrome-profiel</translation>
 <translation id="8686142379631285985">Ingelogd als <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> annuleren</translation>

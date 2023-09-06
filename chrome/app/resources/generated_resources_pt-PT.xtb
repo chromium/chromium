@@ -484,6 +484,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1390548061267426325">Abrir como Separador Normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> não tem autorização para imprimir para <ph name="PRINTER_NAME" />. Contacte o seu administrador.</translation>
 <translation id="1392047138650695757">Dicionários do utilizador</translation>
+<translation id="139300021892314943">Limitar quem pode iniciar sessão</translation>
 <translation id="1393283411312835250">Sol e nuvens</translation>
 <translation id="1395730723686586365">Atualizador iniciado</translation>
 <translation id="1395832189806039783">Realçar item com foco do teclado</translation>
@@ -2516,6 +2517,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2956070239128776395">Secção aninhada no grupo: <ph name="ERROR_LINE" />.</translation>
 <translation id="2958721676848865875">Aviso de extensão do pacote</translation>
 <translation id="2959127025785722291">Ocorreu um erro. Não foi possível concluir a procura. Tente novamente.</translation>
+<translation id="2959474507964749987">Este ficheiro encriptado pode ser um vírus ou software malicioso.<ph name="LINE_BREAK" />Para verificar se não é seguro, pode enviar o ficheiro e a palavra-passe para a Navegação Segura do Google. Normalmente, as análises demoram alguns segundos.<ph name="LINE_BREAK" />Para fazer a análise, adicione a palavra-passe do ficheiro.</translation>
 <translation id="2959842337402130152">Não é possível restaurar devido à falta de espaço de armazenamento. Liberte <ph name="SPACE_REQUIRED" /> no dispositivo e tente novamente.</translation>
 <translation id="2960208947600937804">Ocorreu um erro ao configurar o Linux. Contacte o seu administrador.</translation>
 <translation id="2960942820860729477">Taxa de atualização</translation>
@@ -3762,7 +3764,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3971764089670057203">Impressões digitais nesta chave de segurança</translation>
 <translation id="3973005893595042880">O utilizador não é permitido</translation>
 <translation id="3973660817924297510">A verificar palavras-passe (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Os sites podem pedir para usar as informações guardas sobre si</translation>
+<translation id="3974105241379491420">Os sites podem pedir para usar as informações guardadas sobre si</translation>
 <translation id="3974514184580396500">Use "Seguinte" para mover o foco para a frente no ecrã</translation>
 <translation id="3975201861340929143">Explicação</translation>
 <translation id="3975565978598857337">Falha ao contactar o servidor do domínio.</translation>
@@ -3980,6 +3982,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4147099377280085053">Selecionar uma tabela de braille</translation>
 <translation id="4147911968024186208">Tente novamente. Se vir novamente este erro, contacte o seu representante do apoio técnico.</translation>
 <translation id="414800391140809654">pode usar as suas informações enquanto navega</translation>
+<translation id="4148195018520464922">Pode limitar o início de sessão a determinados utilizadores. Esta ação remove a opção "Adicionar pessoa" do ecrã de início de sessão. Também pode remover utilizadores atuais.</translation>
 <translation id="4150201353443180367">Visualização</translation>
 <translation id="4150569944729499860">Contexto do ecrã</translation>
 <translation id="4151449637210235443">Fale-nos sobre a sua jogabilidade recente</translation>
@@ -4178,6 +4181,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4322394346347055525">Fechar os Outros Separadores</translation>
 <translation id="4324577459193912240">Ficheiro incompleto</translation>
 <translation id="4325237902968425115">A desinstalar <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4325433082696797523">Armazenamento e alimentação</translation>
 <translation id="4326146840124313313">A segurança mais avançada do Chrome faz mais para proteger contra Websites, transferências e extensões perigosos</translation>
 <translation id="4326484226728068206">Artigos no seu carrinho com <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visualizados <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Água gelada</translation>
@@ -5161,6 +5165,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5146896637028965135">Voz do sistema</translation>
 <translation id="5147992672778369947">Use uma palavra-passe recomendada</translation>
 <translation id="5148277445782867161">O serviço de localização da Google utiliza fontes como redes Wi-Fi, redes móveis e sensores para ajudar a obter uma estimativa da localização do dispositivo.</translation>
+<translation id="5148285448107770349">A palavra-passe tem de ter, no mínimo, 8 carateres</translation>
 <translation id="5150254825601720210">Nome do servidor SSL do certificado Netscape</translation>
 <translation id="5151354047782775295">Liberte espaço em disco ou determinados dados poderão ser automaticamente eliminados</translation>
 <translation id="5153234146675181447">Esquecer telemóvel</translation>
@@ -5438,7 +5443,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5383740867328871413">Grupo sem nome – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="538822246583124912">A política empresarial foi alterada. O botão Experiências foi adicionado à barra de ferramentas. Clique no botão para abrir uma caixa de diálogo para ativar experiências.</translation>
 <translation id="5388885445722491159">Emparelhado</translation>
-<translation id="5389626883706033615">Os sites foram impedidos de lhe pedir para usar as informações que guardaram sobre si</translation>
+<translation id="5389626883706033615">Os sites estão impedidos de lhe pedir para usar as informações que guardaram sobre si</translation>
 <translation id="5390112241331447203">Inclua o ficheiro system_logs.txt enviado nos relatórios de feedback.</translation>
 <translation id="5390677308841849479">Vermelho escuro e laranja</translation>
 <translation id="5390743329570580756">Enviar para</translation>
@@ -8137,6 +8142,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7617263010641145920">Ativar Play Store</translation>
 <translation id="7617648809369507487">Usar mensagens mais discretas</translation>
 <translation id="7621382409404463535">O sistema não conseguiu guardar a configuração do dispositivo.</translation>
+<translation id="7621480263311228380">Não autorizado a usar as informações que guardou sobre si</translation>
 <translation id="7621595347123595643">Caso se esqueça da palavra-passe ou do PIN, não pode recuperar os dados locais.</translation>
 <translation id="7622114377921274169">A carregar…</translation>
 <translation id="7622768823216805500">Normalmente, os sites instalam controladores de pagamentos para funcionalidades de compras como o pagamento mais fácil.</translation>
@@ -8690,6 +8696,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8037117027592400564">Ler todo o texto falado através da voz sintetizada</translation>
 <translation id="8037357227543935929">Pedir (predefinição)</translation>
 <translation id="803771048473350947">Ficheiro</translation>
+<translation id="8037801708772278989">Última verificação agora mesmo</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{A copiar 1 ficheiro para o <ph name="CLOUD_PROVIDER" />}other{A copiar {NUM_OF_FILES} ficheiros para o <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8041267120753677077">Faça stream das apps do telemóvel</translation>

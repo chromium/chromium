@@ -4775,6 +4775,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4820236583224459650">Establecer como ticket activo</translation>
 <translation id="4820795723433418303">Usar las teclas de función como las teclas de la fila superior</translation>
 <translation id="4821935166599369261">&amp;Perfiles activados</translation>
+<translation id="4823193082697477185">Accede a carpetas, unidades o archivos compartidos en una red local. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Leer y cambiar la configuración del dispositivo y del usuario</translation>
 <translation id="4824037980212326045">Copia de seguridad y restablecimiento de Linux</translation>
 <translation id="4824958205181053313">¿Quieres cancelar la sincronización?</translation>
@@ -8684,6 +8685,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8037117027592400564">Leer todo el texto hablado con la síntesis de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>
+<translation id="8037801708772278989">Se verificó recién</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 archivo en <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} archivos en <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Enviar comentario</translation>
 <translation id="8041267120753677077">Transmitir las apps de tu teléfono</translation>

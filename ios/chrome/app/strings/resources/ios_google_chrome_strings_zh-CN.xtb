@@ -36,6 +36,7 @@
 <translation id="2120238739383482109">打开 Chrome 书签。</translation>
 <translation id="2147651015520127414">Chrome 已证实此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="2199719347983604670">Chrome 同步的数据</translation>
+<translation id="2311240109311056604">打开 Chrome 恐龙游戏。</translation>
 <translation id="2339201583852607431">您的密码将会保存到您的 Google 账号 (<ph name="EMAIL" />) 中。</translation>
 <translation id="2342919707875585281">Chrome 会将您的位置信息分享给您允许的网站。</translation>
 <translation id="2347208864470321755">启用此功能后，Chrome 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -95,10 +96,12 @@
 <translation id="484033449593719797">在 Chrome Beta 版中不受支持</translation>
 <translation id="4840404732697892756">您需要先登录 Google 账号，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="4903674399067644695">此卡片会为您提供一些建议，帮助您充分利用 Chrome。</translation>
+<translation id="49200511069271369">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
 <translation id="5030102366287574140">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响。</translation>
 <translation id="5108659628347594808">帮助改善 Chrome</translation>
 <translation id="5112925986883715005">查看 Chrome 阅读清单</translation>
 <translation id="5119391094379141756">选择“Chrome”</translation>
+<translation id="5156818928311866442">打开 Chrome 设置以将 Chrome 设为默认浏览器。</translation>
 <translation id="5162467219239570114">Chrome 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chrome。</translation>
 <translation id="5190139289262548459">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chrome 的使用方式。</translation>
 <translation id="5389212809648216794">由于另一个应用正在使用您的相机，因此 Google Chrome 无法使用</translation>
@@ -145,6 +148,7 @@
 <translation id="7173660919484573146">Chrome 会使用面容 ID 来确保对您密码的访问均已获授权。</translation>
 <translation id="7187993566681480880">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="72119412072970160">您可在 iPad 上的其他应用内使用已保存至 Google 密码管理器的密码。</translation>
+<translation id="7254380941803999489">将 Chrome 设为默认浏览器</translation>
 <translation id="7261678641327190792">Chrome 无法检查您的密码</translation>
 <translation id="7272930098487145294">若要保存图片，请点按“设置”并允许 Chrome 添加照片</translation>
 <translation id="7275945473750112644">您的账号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chrome 数据将会被清除</translation>

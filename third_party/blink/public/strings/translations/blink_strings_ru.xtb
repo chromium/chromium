@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Включено дублирование экрана</translation>
 <translation id="2031987842108996681">Красный канал</translation>
 <translation id="2060505056492490888">Недопустимое положение символа "<ph name="DOT" />" в адресе "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">Минимальное значение (<ph name="MINIMUM" />) должно быть меньше максимального (<ph name="MAXIMUM" />)</translation>
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2226276347425096477">Длина текста не должна превышать <ph name="MAX_CHARACTERS" /> симв. (сейчас <ph name="CURRENT_LENGTH" /> симв.).</translation>
 <translation id="2247351761944213033">Неделя <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

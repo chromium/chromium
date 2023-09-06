@@ -8685,6 +8685,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8037117027592400564">Ler o texto falado coa síntese de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Ficheiro</translation>
+<translation id="8037801708772278989">A comprobación realizouse agora mesmo</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 ficheiro en <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} ficheiros en <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8041267120753677077">Emite as aplicacións do teu teléfono</translation>
@@ -9478,6 +9479,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8680251145628383637">Inicia sesión para  ter os marcadores, o historial, os contrasinais e o resto da túa configuración en todos os teus dispositivos. Tamén se iniciará sesión automaticamente nos teus servizos de Google.</translation>
 <translation id="8681886425883659911">Bloquéanse anuncios nos sitios que conteñen anuncios enganosos ou intrusivos</translation>
 <translation id="8682730193597992579">A impresora <ph name="PRINTER_NAME" /> está conectada e lista</translation>
+<translation id="8684471948980641888">Permitir sincronización en redes de pago por consumo</translation>
 <translation id="8685540043423825702">O teu perfil de Chrome</translation>
 <translation id="8686142379631285985">Sesión iniciada como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Cancelar descarga de <ph name="FILE_NAME" /></translation>

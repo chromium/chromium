@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">ปิดจนถึงพระอาทิตย์ตก</translation>
 <translation id="1768366657309696705">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + จุด หากต้องการใช้แป้น Insert ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace</translation>
 <translation id="1770726142253415363">ย้ายไปที่แถว <ph name="ROW_NUMBER" /> คอลัมน์ <ph name="COLUMN_NUMBER" /></translation>
+<translation id="1771458705381257690">เปิด <ph name="NAME" /> เพื่อตั้งค่าและปรับแต่งอุปกรณ์</translation>
 <translation id="1771761307086386028">เลื่อนไปทางขวา</translation>
 <translation id="1774796056689732716">ปฏิทิน, <ph name="CURRENT_MONTH_YEAR" />, เลือกวันที่ <ph name="DATE" /> อยู่</translation>
 <translation id="1775598828170459419">กำลังแสดง <ph name="NUM_SHOWN_ITEMS" /> จาก <ph name="NUM_TOTAL_ITEMS" /> รายการ</translation>
@@ -1188,6 +1189,7 @@
 <translation id="5876666360658629066">กรอกรหัสผู้ปกครอง</translation>
 <translation id="5881540930187678962">ตั้งค่าฮับโทรศัพท์ภายหลัง</translation>
 <translation id="5881663018261910378">ปิดอยู่</translation>
+<translation id="5883017113634523865">ติดตั้งแอปของ <ph name="NAME" /> จาก Google Play เพื่อดูฟีเจอร์ที่ใช้ได้ทั้งหมด</translation>
 <translation id="5887954372087850114">กำหนดหน้าต่าง <ph name="WINDOW_TITLE" /> ให้กับ <ph name="DESK_TITLE" /> และยกเลิกการกำหนดจากเดสก์อื่นๆ ทั้งหมดแล้ว</translation>
 <translation id="588817334757907802">เปิดไฟล์ในเบราว์เซอร์ Chrome</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>

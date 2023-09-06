@@ -10,6 +10,7 @@
 <translation id="1431818719585918472">Biarkan Chromium mengunci tab Inkognito anda.</translation>
 <translation id="1472013873724362412">Akaun anda tidak berfungsi pada Chromium. Sila hubungi pentadbir domain anda atau gunakan Akaun Google biasa untuk log masuk.</translation>
 <translation id="1507010443238049608">Bantu Tingkatkan Ciri dan Prestasi Chromium</translation>
+<translation id="1513122820609681462">Tetapkan Chromium Sebagai Penyemak Imbas Lalai</translation>
 <translation id="1531155317299575425">Memaparkan gesaan untuk log masuk ke Chromium.</translation>
 <translation id="1591119736686995611">Membuka Tab Grid Chromium.</translation>
 <translation id="1617663976202781617">Data daripada penyegerakan Chromium</translation>
@@ -17,13 +18,16 @@
 <translation id="1722370509450468186">Kata laluan anda akan disimpan dalam Account anda (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Data Chromium dikosongkan</translation>
 <translation id="1758508597843173586">Kunci tab inkognito anda semasa anda keluar daripada Chromium atau beralih kepada apl lain.</translation>
+<translation id="1791845338122684020">Buka Halaman Sejarah Chromium anda.</translation>
 <translation id="1838412507805038478">Chromium mengesahkan bahawa <ph name="ISSUER" /> telah mengeluarkan sijil laman web ini.</translation>
 <translation id="1843424232666537147">Chromium mempunyai ciri yang membantu anda mengurus data Internet dan kepantasan anda memuatkan halaman web.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps pada Chromium</translation>
 <translation id="186734497270163706">Ketik "Chromium" kemudian "Apl Penyemak Imbas Lalai".</translation>
 <translation id="1867772173333403444">4. Pilih Chromium</translation>
+<translation id="1940441310478179027">Chromium mengesan alamat dengan menggunakan Google Maps untuk memberi anda arah dan maklumat setempat.</translation>
 <translation id="2006345422933397527">Chromium tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
+<translation id="2042889939382983733">Lihat Sejarah Chromium Anda</translation>
 <translation id="2052320862053429062">Chromium menyemak kata laluan anda secara berkala pada senarai yang telah diterbitkan dalam talian. Apabila melakukan tindakan ini, kata laluan dan nama pengguna anda akan disulitkan supaya data ini tidak dapat dibaca oleh sesiapa termasuk Google.</translation>
 <translation id="2054703085270098503">Kekal Selamat dengan Chromium</translation>
 <translation id="2168108852149185974">Beberapa alat tambah menyebabkan Chromium ranap. Sila nyahpasang:</translation>
@@ -32,6 +36,7 @@
 <translation id="2218146227246548550">Organisasi anda menghendaki anda log masuk untuk menggunakan Chromium. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">Ini bermakna Chromium akan meminta laman desktop setiap masa.</translation>
 <translation id="2313870531055795960">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chromium. Jika laman cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chromium juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
+<translation id="2374627437126809292">Chromium menggunakan Google Maps untuk memberi anda arah dan maklumat setempat pada alamat yang dikesan.</translation>
 <translation id="2426113998523353159">Organisasi anda menghendaki anda log masuk untuk menggunakan Chromium.</translation>
 <translation id="2450140762465183767">Kini anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="2478931088402984578">Pilih <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -60,6 +65,7 @@
 <translation id="3661862315467204831">Buka Tetapan Chromium dalam iOS, kemudian ketik pada "Penyemak Imbas Lalai APP" dan pilih Chromium.</translation>
 <translation id="372658070733623520">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, sahkan identiti anda.</translation>
 <translation id="3780779443901618967">Memberikan amaran kepada anda tentang laman berbahaya, termasuk laman yang tidak diketahui oleh Google sebelum ini, dengan menganalisis lebih banyak data daripada laman berbanding perlindungan standard. Anda boleh memilih untuk melangkau amaran Chromium.</translation>
+<translation id="3784369638459513223">Buka Tab Inkognito Chromium Baharu.</translation>
 <translation id="3805899903892079518">Chromium tidak mempunyai akses kepada foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
 <translation id="3827545470516145620">Anda mendapat perlindungan keselamatan standard pada peranti ini</translation>
 <translation id="3886689467633467988">Log masuk laman ini dan Chromium untuk mendapatkan penanda halaman anda dan banyak lagi pada semua peranti anda.</translation>
@@ -67,12 +73,15 @@
 
 Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Buka Chromium Daripada Mana-mana Apl</translation>
+<translation id="4005283307739974863">Buka dan Jalankan Pemeriksaan Keselamatan dalam Chromium.</translation>
 <translation id="4043291146360695975">Kata laluan disimpan pada Pengurus Kata Laluan pada peranti ini sahaja.</translation>
 <translation id="4099085513035183040">Tidak disokong pada Chromium Beta</translation>
 <translation id="4195557071150719219">Lihat Tab Terbaharu Chromium</translation>
+<translation id="4408912345039114853">Jalankan Pemeriksaan Keselamatan Chromium</translation>
 <translation id="4432744876818348753">Log masuk untuk memanfaatkan Chromium sepenuhnya</translation>
 <translation id="452436063477828504">Pastikan anda dapat menggunakan data Chromium pada bila-bila masa dalam Google Account anda</translation>
 <translation id="4555020257205549924">Apabila ciri ini dihidupkan, Chromium akan menawarkan untuk menterjemah halaman yang ditulis dalam bahasa lain menggunakan Terjemahan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="4576283463017113841">Buka Halaman Tetapan Kaedah Pembayaran dalam Chromium.</translation>
 <translation id="4585809515399340748">Kini, anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="4633738821577273991">Dapatkan juga Penyemakan Imbas Selamat Dipertingkat untuk profil Chromium ini</translation>
 <translation id="4654936625574199632">Untuk membantu dalam usaha meningkatkan apl, Chromium menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
@@ -131,11 +140,13 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="6563921047760808519">Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />cara Chromium mengekalkan data anda peribadi<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Kini Chromium menyokong dasar pengguna untuk akaun terurus anda</translation>
 <translation id="6752854822223394465">Organisasi anda sedang menyediakan Chromium...</translation>
+<translation id="6794054469102824109">Buka Permainan Dino Chromium.</translation>
 <translation id="6820823224820483452">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi esok.</translation>
 <translation id="6911341667534646387">Kekal menggunakan data Chromium dalam Google Account anda</translation>
 <translation id="7006920032187763988">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan dalam apl lain pada iPad anda.</translation>
 <translation id="7018284295775193585">Chromium tidak dapat mengemas kini</translation>
 <translation id="7045244423563602563">Peribadikan Chromium Anda</translation>
+<translation id="7055269218854630176">Organisasi anda, <ph name="DOMAIN" />, mengurus akaun yang anda log masuk dan cara Chromium boleh digunakan. Pentadbir anda boleh menyediakan atau mengehadkan ciri tertentu.</translation>
 <translation id="7099326575020694068">Chromium tidak dapat menggunakan kamera anda dalam mod Paparan Pisah</translation>
 <translation id="7165402419892018581">Pilih Chromium untuk AutoLengkap</translation>
 <translation id="7175400662502680481">Kata laluan anda terdedah dalam suatu pelanggaran data. Pengurus Kata Laluan mengesyorkan agar anda menukarnya sekarang.</translation>
@@ -168,12 +179,14 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="8115308261377517697">Tetapkan Chromium sebagai Penyemak Imbas Lalai anda</translation>
 <translation id="8235427517854598594">Jadikan Chromium Penyemak Imbas Lalai Anda?</translation>
 <translation id="8240981428553046115">Chromium tidak dapat menyemak kemaskinian. Cuba lagi nanti.</translation>
+<translation id="8303579360494576778">Urus Kaedah Pembayaran dalam Chromium</translation>
 <translation id="8409374867500149834">Anda mempunyai keselamatan terkuat Chromium terhadap laman web berbahaya</translation>
 <translation id="858114650497379505">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan dalam apl lain pada iPhone anda.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="865600487977764604">Memastikan anda selamat pada Chromium dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk.</translation>
 <translation id="8663480472502753423">Pastikan Chromium terkini</translation>
 <translation id="8685813584220679697">Log masuk ke laman ini dan Chromium.</translation>
+<translation id="8730503818204408000">Buka Tetapan Chromium untuk menetapkan Chromium sebagai Penyemak Imbas Lalai.</translation>
 <translation id="8747378496147986285">Apabila dihidupkan:
 <ph name="BEGIN_INDENT" />  • Bantu jadikan Chromium lebih baik untuk orang yang menggunakannya seperti yang anda lakukan.<ph name="END_INDENT" />
 
@@ -185,6 +198,7 @@ Perkara yang perlu dipertimbangkan:
   • Jika anda menghidupkan penyegerakan, metrik juga mungkin merangkumi maklumat tentang URL yang anda lawati.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chromium.</translation>
 <translation id="88376265765385899">Membuka penanda halaman Chromium.</translation>
+<translation id="8924617840944134898">Buka Tab Inkognito Chromium</translation>
 <translation id="894437814105052438">Apabila anda log keluar, Chromium tidak akan menyegerakkan sebarang data baharu ke Akaun Google anda. Data yang disegerakkan sebelumnya akan dikekalkan dalam akaun.</translation>
 <translation id="8963279154877372067">Benarkan pemberitahuan Chromium untuk menerima makluman penurunan harga</translation>
 <translation id="9022552996538154597">Log masuk ke Chromium</translation>
@@ -193,5 +207,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="9110075932708282655">Gunakan Chromium secara Lalai</translation>
 <translation id="921174536258924340">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi esok atau <ph name="BEGIN_LINK" />semak kata laluan dalam Akaun Google anda.<ph name="END_LINK" /></translation>
 <translation id="971488683725792095">Gunakan Chromium secara automatik apabila anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
+<translation id="981812233959540767">Main Permainan Dino Chromium</translation>
 <translation id="985602178874221306">Pengarang Chromium</translation>
 </translationbundle>

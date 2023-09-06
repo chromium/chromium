@@ -418,6 +418,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3328801116991980348">Información do sitio</translation>
 <translation id="3340938510625667914">Accións de Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
+<translation id="3349676726073650389">Os sitios e as buscas que segues gárdanse na túa Conta de Google. Para xestionar o que segues, accede cando queiras á configuración.</translation>
 <translation id="3365529507898144230">Gardar en Fotos</translation>
 <translation id="3371831930909698441">A tradución está dispoñible. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="3377063233124932127">Agora os marcadores e os contrasinais que teñas gardados, ademais doutros elementos, aparecen na parte superior.</translation>
@@ -781,6 +782,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5597915316964418992">Abre a grade de pestanas</translation>
 <translation id="560322036295180549">Opción desactivada pola túa organización</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
+<translation id="5619871095170816857">Esta tarxeta móstrache a última pestana aberta que usaches en todos os dispositivos sincronizados nas últimas 24 horas.</translation>
 <translation id="5626245204502895507">Non se puido descargar o ficheiro neste momento.</translation>
 <translation id="562753339521713441">Fai unha comprobación de seguranza</translation>
 <translation id="5631164295104953411">Engadir método de pago</translation>
@@ -1086,6 +1088,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7082853213442715471">Cando esta opción está activada, bloquéanse determinadas tecnoloxías web, o que pode provocar que algúns sitios web tarden máis en cargar ou non funcionen correctamente.</translation>
 <translation id="7095110968493193530">No xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Pestanas recentes</translation>
+<translation id="7101580180124131336">Verás contido da canle <ph name="CHANNEL_NAME" /> e sobre ela en Seguindo.</translation>
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108762695052995889">Visitar sitio</translation>
@@ -1166,6 +1169,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="764827086632467055">Toca Aplicación de navegador predeterminada</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7666861622396822790">Podes xestionar esta opción en <ph name="BEGIN_LINK" />Configuración de contido<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALAR</translation>
 <translation id="7679915578945954324">Copiáronse os enderezos dos sitios</translation>
 <translation id="7687508192620387263">Hai un ficheiro de calendario dispoñible</translation>
@@ -1239,6 +1243,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="804225253087497565">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google o <ph name="BEGIN_LINK" />historial de busca<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outros datos da túa actividade<ph name="END_LINK" />. Podes eliminalos en calquera momento.</translation>
 <translation id="804427445359061970">Aquí atoparás as túas pestanas doutros dispositivos</translation>
+<translation id="8044568254381073661">Gardar sen encriptación</translation>
 <translation id="8059533439631660104">Contrae a sección.</translation>
 <translation id="8065292699993359127">Abrir URL en Chrome no modo de incógnito</translation>
 <translation id="806745655614357130">Conservar os meus datos por separado</translation>
@@ -1293,7 +1298,9 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8386068868580335421">Restablecer</translation>
 <translation id="838867811594159347">Introducir frase de acceso…</translation>
 <translation id="8393889347136007944">Estas pestanas levan sen usarse <ph name="THRESHOLD" /> días</translation>
+<translation id="8395339334550012808">Pronto verás contido da canle <ph name="CHANNEL_NAME" /> e sobre ela en Seguindo.</translation>
 <translation id="8395378633507873708">Barra de enderezos</translation>
+<translation id="8403629764260204788">Oculta Continuar navegando</translation>
 <translation id="8407669440184693619">Non se atopou ningún contrasinal para este sitio</translation>
 <translation id="842017693807136194">Sesión iniciada con</translation>
 <translation id="8423121072346537366">Agora mesmo</translation>

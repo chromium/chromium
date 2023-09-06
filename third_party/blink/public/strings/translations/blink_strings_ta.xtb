@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">பிரதிபலித்தலுக்கு மாற்றியது</translation>
 <translation id="2031987842108996681">சிவப்பு சேனல்</translation>
 <translation id="2060505056492490888"><ph name="INVALIDDOMAIN" /> இல் தவறான இடத்தில் '<ph name="DOT" />' பயன்படுத்தபட்டுள்ளது.</translation>
+<translation id="2068711044993563745">அதிகபட்ச மதிப்பைவிட (<ph name="MAXIMUM" />) குறைந்தபட்ச மதிப்பு (<ph name="MINIMUM" />) குறைவாக இருக்க வேண்டும்.</translation>
 <translation id="2148716181193084225">இன்று</translation>
 <translation id="2226276347425096477">இந்த உரையை <ph name="MAX_CHARACTERS" /> எழுத்துக்குறிகள் அல்லது அதற்கும் குறைவாக சுருக்கிடுங்கள் (நீங்கள் தற்போது <ph name="CURRENT_LENGTH" /> எழுத்துக்குறிகளைப் பயன்படுத்துகிறீர்கள்).</translation>
 <translation id="2247351761944213033">வாரம் <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

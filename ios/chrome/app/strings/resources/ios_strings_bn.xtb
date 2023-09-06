@@ -418,6 +418,7 @@
 <translation id="3328801116991980348">সাইট তথ্য</translation>
 <translation id="3340938510625667914">Chrome অ্যাকশন</translation>
 <translation id="3344485292736684439">{count,plural, =1{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}other{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}}</translation>
+<translation id="3349676726073650389">আপনি যেসব সাইট এবং সার্চ ফলো করেন, সেগুলি আপনার Google অ্যাকাউন্টে সেভ হয়ে যায়। আপনি যেকোনও সময়ে সেটিংস থেকে আপনার ফলো করা কন্টেন্ট ম্যানেজ করতে পারবেন।</translation>
 <translation id="3365529507898144230">Photos-এ সেভ করুন</translation>
 <translation id="3371831930909698441">অনুবাদ পাওয়া যাচ্ছে। স্ক্রিনের একটু নিচের দিকে বিকল্পগুলি দেওয়া আছে।</translation>
 <translation id="3377063233124932127">আপনার সেভ করা বুকমার্ক, পাসওয়ার্ড এবং আরও অনেক কিছু এখন উপরে থাকবে।</translation>
@@ -782,6 +783,7 @@
 <translation id="5597915316964418992">ট্যাব গ্রিড খুলুন</translation>
 <translation id="560322036295180549">আপনার সংস্থা বন্ধ করে দিয়েছে</translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
+<translation id="5619871095170816857">এই কার্ড শেষ ২৪ ঘণ্টায় আপনার সিঙ্ক করা সমস্ত ডিভাইসে শেষবার ব্যবহার করা ট্যাব দেখায়।</translation>
 <translation id="5626245204502895507">ফাইলটি এই সময়ে ডাউনলোড করা যাবে না৷</translation>
 <translation id="562753339521713441">নিরাপত্তা সংক্রান্ত পরীক্ষা চালান</translation>
 <translation id="5631164295104953411">পেমেন্টের পদ্ধতি যোগ করুন</translation>
@@ -1087,6 +1089,7 @@
 <translation id="7082853213442715471">চালু থাকাকালীন, নির্দিষ্ট ওয়েব প্রযুক্তি ব্লক করা থাকে, যার জন্য কিছু ওয়েবসাইট খুব ধীরগতিতে লোড হতে পারে বা সঠিকভাবে কাজ নাও করতে পারে।</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" />-এর Google Password Manager-এ</translation>
 <translation id="7099761977003084116">সাম্প্রতিক ট্যাব</translation>
+<translation id="7101580180124131336">আপনি 'ফলো করা হচ্ছে' বিভাগ থেকে <ph name="CHANNEL_NAME" /> সম্পর্কে এবং থেকে কন্টেন্ট দেখতে পাবেন।</translation>
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> ডাউনলোড করা হচ্ছে…</translation>
 <translation id="7108338896283013870">লুকান</translation>
 <translation id="7108762695052995889">সাইট দেখুন</translation>
@@ -1167,6 +1170,7 @@
 <translation id="764827086632467055">'ডিফল্ট ব্রাউজার অ্যাপ' বিকল্পে ট্যাপ করুন</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7658239707568436148">বাতিল</translation>
+<translation id="7666861622396822790">আপনি <ph name="BEGIN_LINK" />কন্টেন্ট সেটিংস<ph name="END_LINK" /> থেকে এটি ম্যানেজ করতে পারবেন।</translation>
 <translation id="7671141431838911305">ইনস্টল করুন</translation>
 <translation id="7679915578945954324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
 <translation id="7687508192620387263">ক্যালেন্ডার ফাইল উপলভ্য</translation>
@@ -1240,6 +1244,7 @@
 <translation id="8032569120109842252">ফলো করছেন</translation>
 <translation id="804225253087497565">আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK" />সার্চ ইতিহাস<ph name="END_LINK" /> এবং <ph name="BEGIN_LINK" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে। আপনি যেকোনও সময় সেগুলি মুছে দিতে পারেন।</translation>
 <translation id="804427445359061970">আপনি অন্যান্য ডিভাইস থেকে নিজের ট্যাবগুলি এখানে দেখতে পাবেন</translation>
+<translation id="8044568254381073661">এনক্রিপশন ছাড়া সেভ করুন</translation>
 <translation id="8059533439631660104">বিভাগটি সঙ্কুচন করে।</translation>
 <translation id="8065292699993359127">Chrome-এ 'ছদ্মবেশী' মোডে ইউআরএল খুলুন</translation>
 <translation id="806745655614357130">আমার ডেটা আলাদা রাখুন</translation>
@@ -1294,7 +1299,9 @@
 <translation id="8386068868580335421">রিসেট করুন</translation>
 <translation id="838867811594159347">পাসফ্রেজ লিখুন…</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> দিন ট্যাব ব্যবহার করা হয়নি</translation>
+<translation id="8395339334550012808">শীঘ্রই, আপনি 'ফলো করা হচ্ছে' বিভাগ থেকে <ph name="CHANNEL_NAME" /> সম্পর্কে এবং থেকে কন্টেন্ট দেখতে পাবেন।</translation>
 <translation id="8395378633507873708">অ্যাড্রেস বার</translation>
+<translation id="8403629764260204788">"ব্রাউজ করা চালিয়ে যান" লুকান</translation>
 <translation id="8407669440184693619">এই সাইটের জন্য কোনও পাসওয়ার্ড পাওয়া যায়নি</translation>
 <translation id="842017693807136194">এটি দিয়ে সাইন-ইন করেছেন</translation>
 <translation id="8423121072346537366">এইমাত্র</translation>
@@ -1377,6 +1384,7 @@
 <translation id="8855242995793521265">উল্লেখযোগ্যভাবে আপনার ব্রাউজার বা ডিভাইসের পারফর্ম্যান্স ধীর গতির করে দেয় না।</translation>
 <translation id="8855781063981781621">Chrome-এ 'লকডাউন' মোড বন্ধ করতে এটি আপনার iPad-এ বন্ধ করুন।</translation>
 <translation id="8863431381414769983">Google Maps থেকে স্থানীয় তথ্য এবং দিকনির্দেশ পান</translation>
+<translation id="8865415417596392024">আপনার অ্যাকাউন্টের Chrome ডেটা</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count}টি ট্যাব}one{{count}টি ট্যাব}other{{count}টি ট্যাব}}</translation>
 <translation id="8870413625673593573">সম্প্রতি বন্ধ হয়েছে</translation>
 <translation id="8876882697946675716">আপনার ডিভাইস সিঙ্ক করে রাখুন</translation>

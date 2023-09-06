@@ -58,6 +58,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1246905108078336582">Remove suggestion from clipboard?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">You'll now see content from and about <ph name="SITE_NAME" /> in following. The websites and searches you follow are saved in your Google Account. You can manage your follows in settings at any time.</translation>
 <translation id="1263231323834454256">Reading list</translation>
 <translation id="1266864766717917324">Couldn't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">You'll find your history here</translation>
@@ -136,6 +137,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1671236975893690980">Download pending...</translation>
 <translation id="1672586136351118594">Don‘t show again</translation>
 <translation id="1680919990519905526">Shop image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Soon, you'll see content from and about <ph name="SITE_NAME" /> in following. The websites and searches you follow are saved in your Google Account. You can manage your follows in settings at any time.</translation>
 <translation id="1702543251015153180">Change your Dark theme settings?</translation>
 <translation id="1702907158640575240">Managed browser</translation>
 <translation id="1710099199314114079">Switch or close tabs</translation>
@@ -1243,6 +1245,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7437998757836447326">Sign out of Chrome</translation>
+<translation id="7450926666485653189">Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address</translation>
 <translation id="7453467225369441013">Signs you out of most sites. You won't be signed out of your Google Account.</translation>
 <translation id="7453810262525006706">Collapse to side view</translation>
 <translation id="7454641608352164238">Not enough space</translation>
@@ -1472,6 +1475,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8497242791509864205">Open sort options</translation>
 <translation id="8497480609928300907">Privacy guide explanation</translation>
 <translation id="8497726226069778601">Nothing to see here… yet</translation>
+<translation id="8501423924927196358">Page insights loading indicator</translation>
 <translation id="8503559462189395349">Chrome Passwords</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8505766168025405649">See notification for download status</translation>

@@ -18,13 +18,16 @@
 <translation id="1722370509450468186">Parool salvestatakse teie kontole (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromiumi andmed kustutati</translation>
 <translation id="1758508597843173586">Lukustage Chromiumist väljumisel või muu rakenduse aktiveerimisel oma inkognito vahelehed.</translation>
+<translation id="1791845338122684020">Avab teie Chromiumi ajaloo lehe.</translation>
 <translation id="1838412507805038478">Chromium kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromiumil on funktsioonid, mis aitavad teil hallata oma Interneti-andmeid ja seda, kui kiiresti saate veebilehti laadida.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps Chromiumis</translation>
 <translation id="186734497270163706">Puudutage valikuid Chromium ja seejärel Brauseri vaikerakendus.</translation>
 <translation id="1867772173333403444">4. Valige Chromium</translation>
+<translation id="1940441310478179027">Chromium tuvastab teile juhiste ja kohaliku info andmiseks aadressid Google Mapsi abil.</translation>
 <translation id="2006345422933397527">Chromium ei saanud värskendusi otsida. Kontrollige internetiühendust.</translation>
+<translation id="2042889939382983733">Chromiumi ajaloo vaatamine</translation>
 <translation id="2052320862053429062">Chromium võrdleb teie paroole regulaarselt veebis avaldatud loenditega. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
 <translation id="2054703085270098503">Turvalisus Chromiumiga</translation>
 <translation id="2168108852149185974">Mõned pistikprogrammid põhjustavad Chromiumi kokkujooksmise. Desinstallige need:</translation>
@@ -33,6 +36,7 @@
 <translation id="2218146227246548550">Teie organisatsioon nõuab, et logiksite Chromiumi kasutamiseks sisse. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">See tähendab, et Chromium taotleb iga kord töölauasaiti.</translation>
 <translation id="2313870531055795960">Kontrollib URL-e Chromiumi talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chromium saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
+<translation id="2374627437126809292">Chromium kasutab Google Mapsi, et anda teile tuvastatud aadresside kohta juhiseid ja kohalikku teavet.</translation>
 <translation id="2426113998523353159">Teie organisatsioon nõuab, et logiksite Chromiumi kasutamiseks sisse.</translation>
 <translation id="2450140762465183767">Nüüd saate kasutada Chromiumi iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="2478931088402984578">Valige <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -61,6 +65,7 @@
 <translation id="3661862315467204831">Avage iOS-is Chromiumi seaded, seejärel puudutage valikut „Brauseri vaike-APP” ja valige Chromium.</translation>
 <translation id="372658070733623520">Chromiumi andmete kasutamiseks ja salvestamiseks oma Google’i kontole kinnitage, et see olete teie.</translation>
 <translation id="3780779443901618967">Hoiatab teid ohtlike saitide eest, isegi nende eest, millest Google varem ei teadnud, analüüsides standardse kaitsega võrreldes rohkem saitidelt pärinevaid andmeid. Soovi korral saate Chromiumi hoiatused vahele jätta.</translation>
+<translation id="3784369638459513223">Avab uue Chromiumi inkognito vahelehe.</translation>
 <translation id="3805899903892079518">Chromiumil pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdepääs valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
 <translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
 <translation id="3886689467633467988">Logige sisse sellele saidile ja Chromiumi, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
@@ -68,12 +73,15 @@
 
 Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Avage Chromium mis tahes rakendusest</translation>
+<translation id="4005283307739974863">Avab ja käitab Chromiumi ohutuskontrolli.</translation>
 <translation id="4043291146360695975">Paroolid salvestatakse rakendusse Paroolihaldur ainult selles seadmes.</translation>
 <translation id="4099085513035183040">Ei toetata Chromiumi beetaversioonis</translation>
 <translation id="4195557071150719219">Kuva Chromiumi hiljutised vahelehed</translation>
+<translation id="4408912345039114853">Chromiumi ohutuskontrolli käitamine</translation>
 <translation id="4432744876818348753">Chromiumi parimal moel kasutamiseks logige sisse.</translation>
 <translation id="452436063477828504">Veenduge, et saaksite alati kasutada oma Google'i kontol Chromiumi andmeid</translation>
 <translation id="4555020257205549924">Kui see funktsioon on sisse lülitatud, pakub Chromium võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="4576283463017113841">Avab Chromiumis makseviisi seadete lehe.</translation>
 <translation id="4585809515399340748">Nüüd saate kasutada Chromiumi iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="4633738821577273991">Hankige ka sellele Chromiumi profiilile täiustatud ohutu sirvimise funktsioon</translation>
 <translation id="4654936625574199632">Rakenduse täiustamiseks saadab Chromium Google'ile kasutus- ja krahhiandmeid. <ph name="BEGIN_LINK" />Haldamine<ph name="END_LINK" /></translation>
@@ -171,6 +179,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="8115308261377517697">Chromiumi vaikebrauseriks määramine</translation>
 <translation id="8235427517854598594">Kas soovite Chromiumi vaikebrauseriks määrata?</translation>
 <translation id="8240981428553046115">Chromium ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
+<translation id="8303579360494576778">Chromiumis makseviiside haldamine</translation>
 <translation id="8409374867500149834">Teil on Chromiumi tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="858114650497379505">Saate paroolihaldurisse salvestatud paroole oma iPhone'i muudes rakendustes kasutada.</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
@@ -189,6 +198,7 @@ Olulised aspektid
   • Kui lülitate sünkroonimise sisse, võivad mõõdikud sisaldada ka teavet teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">See konto ja kõik salvestamata andmed eemaldatakse Chromiumist.</translation>
 <translation id="88376265765385899">Avab Chromiumi järjehoidjad.</translation>
+<translation id="8924617840944134898">Chromiumi inkognito vahelehe avamine</translation>
 <translation id="894437814105052438">Väljalogimisel ei sünkrooni Chromium teie Google'i kontoga uusi andmeid. Varem sünkroonitud andmed jäävad kontole.</translation>
 <translation id="8963279154877372067">Hinnaalanduse märguannete saamiseks lubage Chromiumi märguanded</translation>
 <translation id="9022552996538154597">Logige Chromiumi sisse</translation>

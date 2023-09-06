@@ -71,6 +71,7 @@
 <translation id="3655656110921623717">To znači da će Chrome svaki put zahtevati mobilni sajt.</translation>
 <translation id="3720541637541300822">Zaključajte kartice bez arhiviranja posle zatvaranja Chrome-a</translation>
 <translation id="3741995255368156336">Otvara Chrome listu za čitanje.</translation>
+<translation id="3744018071945602754">Upravljajte lozinkama u Chrome-u</translation>
 <translation id="3827545470516145620">Dobijate standardnu bezbednosnu zaštitu na ovom uređaju</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne može da koristi kameru</translation>
 <translation id="3901001113120561395">Iskoristite Chrome na najbolji način.</translation>
@@ -82,6 +83,7 @@
 <translation id="417201473131094001">Nije podržano u verziji Chrome Canary</translation>
 <translation id="4233521129555661685">Korisnik <ph name="USER_EMAIL1" /> je koristio Chrome i ostavio obeleživače, lozinke i druga podešavanja na ovom uređaju.</translation>
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
+<translation id="4453284704333523777">Upravljajte podešavanjima Chrome-a</translation>
 <translation id="4508370294876102450">Otvorite Chrome iz bilo koje aplikacije</translation>
 <translation id="4523886039239821078">Neki programski dodaci izazivaju otkazivanje Chrome-a. Deinstalirajte:</translation>
 <translation id="4633328489441962921">Chrome ne može da traži ažuriranja</translation>
@@ -116,6 +118,7 @@
 <translation id="571296537125272375">Oflajn ste. Chrome ne može da traži ažuriranja.</translation>
 <translation id="5716154293141027663">Otvara Chrome svaki put kada dodirnete linkove u drugim aplikacijama</translation>
 <translation id="5808435672482059465">Pregledajte istoriju Chrome-a</translation>
+<translation id="589695154992054845">Otvara Menadžer lozinki u Chrome-u.</translation>
 <translation id="5998675059699164418">Organizacija zahteva da se prijavite da biste koristili Chrome.</translation>
 <translation id="6054613632208573261">Podrazumevano koristite Chrome</translation>
 <translation id="6063091872902370735">Dozvolite prijavljivanje u Chrome</translation>
@@ -201,6 +204,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <ph name="BEGIN_INDENT" />  • Informacije o vašem korišćenju Chrome-a se šalju Google-u, ali nisu povezane sa vama.
   • Ako Chrome otkaže, detalji o otkazivanju mogu da sadrže neke lične podatke.
   • Ako uključite sinhronizaciju, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Otvara Podešavanja u Chrome-u.</translation>
 <translation id="9112744793181547300">Želite da podesite Chrome kao podrazumevani?</translation>
 <translation id="9122931302567044771">To znači da će Chrome svaki put zahtevati sajt za računar.</translation>
 <translation id="9181628561061032322">Otvara nedavne kartice u Chrome-u.</translation>

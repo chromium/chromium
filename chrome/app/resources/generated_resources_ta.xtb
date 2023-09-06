@@ -4794,6 +4794,7 @@
 <translation id="4820236583224459650">செயலிலுள்ள டிக்கெட்டாக அமை</translation>
 <translation id="4820795723433418303">மேல் வரிசை பட்டன்களுக்குப் பதிலாக ஃபங்க்ஷன் பட்டன்களைப் பயன்படுத்து</translation>
 <translation id="4821935166599369261">&amp;சுயவிவரமாக்கம் இயக்கப்பட்டது</translation>
+<translation id="4823193082697477185">அக நெட்வொர்க்கில் உள்ள அணுகல் பகிரப்பட்ட ஃபைல்கள், ஃபோல்டர்கள் அல்லது டிரைவ்கள். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">பயணர் மற்றும் சாதன அமைப்புகளைப் படிக்கும் மற்றும் மாற்றும்</translation>
 <translation id="4824037980212326045">Linux காப்புப் பிரதி மற்றும் மீட்டெடுப்பு</translation>
 <translation id="4824958205181053313">ஒத்திசைவை ரத்துசெய்யவா?</translation>
@@ -8704,6 +8705,7 @@
 <translation id="8037117027592400564">தொகுக்கப்பட்ட பேச்சைப் பயன்படுத்திப் பேசப்படும் எல்லா உரையையும் படிக்கலாம்</translation>
 <translation id="8037357227543935929">கேள் (இயல்பு)</translation>
 <translation id="803771048473350947">ஃபைல்</translation>
+<translation id="8037801708772278989">சரிபார்த்தது: சற்று முன்பு</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 ஃபைலை <ph name="CLOUD_PROVIDER" />விற்கு நகலெடுக்கிறது}other{{NUM_OF_FILES} ஃபைல்களை <ph name="CLOUD_PROVIDER" />விற்கு நகலெடுக்கிறது}}</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="8041267120753677077">மொபைலில் உள்ள ஆப்ஸை ஸ்ட்ரீம் செய்யலாம்</translation>

@@ -486,6 +486,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1390548061267426325">Megnyitás normál lapként</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> nem jogosult arra, hogy a(z) <ph name="PRINTER_NAME" /> nyomtatón nyomtasson. Forduljon a rendszergazdához.</translation>
 <translation id="1392047138650695757">Felhasználói szótárak</translation>
+<translation id="139300021892314943">Korlátozhatja, hogy ki jelentkezhet be</translation>
 <translation id="1393283411312835250">Nap és felhők</translation>
 <translation id="1395730723686586365">A frissítő elindult</translation>
 <translation id="1395832189806039783">Elem kiemelése billentyűzetfókusszal</translation>
@@ -2530,6 +2531,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2956070239128776395">Egy szakasz csoportba van beágyazva: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Csomagbővítménnyel kapcsolatos figyelmeztetés</translation>
 <translation id="2959127025785722291">Hiba történt. A vizsgálatot nem sikerült elvégezni. Próbálja újra.</translation>
+<translation id="2959474507964749987">Előfordulhat hogy ez a titkosított fájl vírus vagy rosszindulatú program.<ph name="LINE_BREAK" />Ha szeretné ellenőrizni, hogy biztonságos-e, elküldheti a fájlt és a jelszót a Google Biztonságos Böngészésnek. A vizsgálat általában néhány másodpercet vesz igénybe.<ph name="LINE_BREAK" />Az ellenőrzés elindításához adja meg a fájl jelszavát.</translation>
 <translation id="2959842337402130152">A túl kevés tárhely miatt nem lehetséges a visszaállítás. Szabadítson fel <ph name="SPACE_REQUIRED" /> helyet az eszközön, és próbálja újra.</translation>
 <translation id="2960208947600937804">Hiba történt a Linux konfigurálásakor. Forduljon a rendszergazdához.</translation>
 <translation id="2960942820860729477">Frissítési gyakoriság</translation>
@@ -3992,6 +3994,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4147099377280085053">Braille-táblázat kiválasztása</translation>
 <translation id="4147911968024186208">Próbálja újra. Ha ismét ezt a hibaüzenetet látja, forduljon helyi ügyfélszolgálati képviselőjéhez.</translation>
 <translation id="414800391140809654">felhasználhatja az Ön adatait böngészés közben</translation>
+<translation id="4148195018520464922">A bejelentkezést korlátozhatja bizonyos felhasználókra. A művelettel eltávolítja a „Személy hozzáadása” beállítást a bejelentkezési képernyőről. A jelenlegi felhasználókat is eltávolíthatja.</translation>
 <translation id="4150201353443180367">Megjelenítés</translation>
 <translation id="4150569944729499860">Képernyőkontextus</translation>
 <translation id="4151449637210235443">Meséljen legutóbbi játékélményéről</translation>
@@ -5174,6 +5177,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5146896637028965135">Rendszerhang</translation>
 <translation id="5147992672778369947">A javasolt jelszó használata</translation>
 <translation id="5148277445782867161">A Google helyszolgáltatásai olyan forrásokat használnak eszköze helyének becsléséhez, mint a Wi-Fi- vagy mobilhálózatok és az érzékelők.</translation>
+<translation id="5148285448107770349">A jelszónak legalább 8 karakterből kell állnia.</translation>
 <translation id="5150254825601720210">Netscape tanúsítvány - SSL-szerver neve</translation>
 <translation id="5151354047782775295">Szabadítson fel tárhelyet, vagy bizonyos adatok automatikusan törlődhetnek</translation>
 <translation id="5153234146675181447">Telefon elfelejtése</translation>
@@ -8150,6 +8154,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7617263010641145920">A Play Áruház bekapcsolása</translation>
 <translation id="7617648809369507487">Kevésbé zavaró értesítések használata</translation>
 <translation id="7621382409404463535">A rendszer nem tudta menteni az eszközkonfigurációt.</translation>
+<translation id="7621480263311228380">Nem használhatják az Önről mentett adatokat</translation>
 <translation id="7621595347123595643">Ha elfelejti jelszavát vagy PIN-kódját, akkor nem tudja majd helyreállítani a helyi adatokat.</translation>
 <translation id="7622114377921274169">Töltés.</translation>
 <translation id="7622768823216805500">A webhelyek általában fizetéskezelőket telepítenek bizonyos vásárlási funkciók (például az egyszerűbb fizetés) biztosítása érdekében</translation>
@@ -8703,6 +8708,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8037117027592400564">Az összes szöveg felolvasása szintetizált beszéddel kimondva</translation>
 <translation id="8037357227543935929">Kérdezzen rá (alapértelmezés szerint)</translation>
 <translation id="803771048473350947">Fájl</translation>
+<translation id="8037801708772278989">Most volt ellenőrizve</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 fájl másolása a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba}other{{NUM_OF_FILES} fájl másolása a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba}}</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
 <translation id="8041267120753677077">Streamelheti telefonja alkalmazásait</translation>

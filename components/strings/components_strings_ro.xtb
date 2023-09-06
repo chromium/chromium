@@ -234,6 +234,7 @@
 <translation id="1432187715652018471">Pagina dorește să instaleze un handler de serviciu.</translation>
 <translation id="1432581352905426595">Gestionați motoarele de căutare</translation>
 <translation id="1433225466058025572">Încearcă să muți din nou fișierele</translation>
+<translation id="1434317006812369578">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google. Navigarea sigură <ph name="BEGIN_LINK" />a detectat recent programe malware pe <ph name="SITE" /><ph name="END_LINK" />, care este încorporat în site-ul pe care încerci să-l accesezi.</translation>
 <translation id="1435940442311036198">Folosește o cheie de acces pe alt dispozitiv</translation>
 <translation id="1436185428532214179">Poate solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="1442386063175183758">Îndoire tip fereastră spre dreapta</translation>
@@ -384,6 +385,7 @@
 <translation id="1732445923934584865">Întreabă în persoană</translation>
 <translation id="1733064249834771892">Fonturi</translation>
 <translation id="1733631169686303142">Echipamente audio</translation>
+<translation id="1733762317901693627">Chiar și site-urile care sunt de obicei sigure sunt uneori compromise de atacatori. Accesează <ph name="BEGIN_LINK" />acest site nesigur<ph name="END_LINK" /> doar dacă îți asumi riscurile.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Încearcă să contactezi administratorul sistemului.</translation>
 <translation id="1736420071277903564">Computer</translation>
@@ -717,6 +719,7 @@
 <translation id="2480300195898055381">În Contul Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="248348093745724435">Politicile dispozitivului</translation>
+<translation id="2490199669743245365">Atacatorii de pe site-ul pe care încerci să-l accesezi pot instala software dăunător care fură sau șterge informații cum ar fi parola, fotografiile, mesajele sau numărul cardului de credit. Chrome recomandă insistent să închizi pagina. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Certificatul serverului conține erori.</translation>
 <translation id="2491414235131909199">Pagina a fost blocată de o extensie</translation>
 <translation id="2495083838625180221">Analizor JSON</translation>
@@ -1051,6 +1054,7 @@
 <translation id="3216313131063488104">Nuanțe de albastru</translation>
 <translation id="3218181027817787318">Relativă</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Actualizarea este necesară acum}=2{Actualizarea este necesară până mâine}few{Actualizarea este necesară în termen de # zile}other{Actualizarea este necesară în termen de # de zile}}</translation>
+<translation id="3218388919950135939">Accesează <ph name="BEGIN_LINK" />acest site nesigur<ph name="END_LINK" /> doar dacă îți asumi riscurile.</translation>
 <translation id="3220264767789936523">Îmbrăcăminte formală</translation>
 <translation id="3223287115535306850">Pictograma de încărcare pentru lansarea aplicației</translation>
 <translation id="3223425961342298674">Folosirea locației nu este permisă</translation>
@@ -1337,6 +1341,7 @@
 <translation id="3772211998634047851">Hârtie (cretată)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid o notă în Google Keep</translation>
 <translation id="3778403066972421603">Dorești să salvezi acest card în Contul Google și pe acest dispozitiv?</translation>
+<translation id="378026377453746707">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google. Navigarea sigură <ph name="BEGIN_LINK" />a detectat recent software dăunător pe <ph name="SITE" /><ph name="END_LINK" />, care este încorporat în site-ul pe care încerci să-l accesezi.</translation>
 <translation id="3780694243617746492">Tavă de ieșire</translation>
 <translation id="3781428340399460090">Roz aprins</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1348,6 +1353,7 @@
 <translation id="3795344968043407227">Muzică independentă și alternativă</translation>
 <translation id="3799805948399000906">Font solicitat</translation>
 <translation id="380329542618494757">Nume</translation>
+<translation id="3806932344025766608">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software sau să dezvălui informații cum ar fi parola, numărul de telefon sau numărul cardului de credit. Chrome recomandă insistent să închizi pagina. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Furnizori de servicii telefonice</translation>
 <translation id="3807366285948165054">Deplasarea poziției X a imaginii</translation>
 <translation id="3807873520724684969">Conținutul dăunător a fost blocat.</translation>
@@ -1413,6 +1419,7 @@
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="3953505489397572035">Acest preț este standard</translation>
 <translation id="3958057596965527988">4 x 4 in</translation>
+<translation id="3959121317419633580">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google. Navigarea sigură <ph name="BEGIN_LINK" />a detectat recent activități de phishing pe <ph name="SITE" /><ph name="END_LINK" />, care este încorporat în site-ul pe care încerci să-l accesezi.<ph name="NEW_LINE" />Chiar și site-urile care sunt de obicei sigure sunt uneori compromise de atacatori. <ph name="BEGIN_ERROR_LINK" />Anunță-ne<ph name="END_ERROR_LINK" /> dacă ești de părere că este o greșeală și că acest site nu reprezintă un pericol.</translation>
 <translation id="3961148744525529027">Foaia handlerului pentru plăți este pe jumătate deschisă</translation>
 <translation id="3962859241508114581">Melodia anterioară</translation>
 <translation id="3963721102035795474">Modul Cititor</translation>
@@ -1436,6 +1443,7 @@
 <translation id="401170183602135785">Plic C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF cu {COUNT} pagină}few{Document PDF cu {COUNT} pagini}other{Document PDF cu {COUNT} de pagini}}</translation>
 <translation id="4014895360827978999">Servicii comerciale și sisteme de plată</translation>
+<translation id="4018819349042761761">Cheie publică</translation>
 <translation id="4023431997072828269">Întrucât formularul este trimis printr-o conexiune care nu este securizată, informațiile tale vor vizibile pentru alte persoane.</translation>
 <translation id="4030383055268325496">&amp;Anulați adăugarea</translation>
 <translation id="4030545038933060179">Când opțiunea este activată, aici apare o listă de subiecte, în funcție de istoricul de navigare recent</translation>
@@ -1612,6 +1620,7 @@
 <translation id="433013776994920042">Găzduire web și înregistrare de domenii</translation>
 <translation id="4331519897422864041">Receptorul de hârtie 5</translation>
 <translation id="4331708818696583467">Nesecurizat</translation>
+<translation id="4333295216031073611">Listă de cumpărături</translation>
 <translation id="4333561522337981382">Gestionează ferestre de pe toate ecranele</translation>
 <translation id="4340575312453649552">Anunțul folosea prea multe resurse pentru dispozitivul tău, așa că Chrome l-a eliminat.</translation>
 <translation id="4340810192899866471">Importă din JSON</translation>
@@ -1664,6 +1673,7 @@
 <translation id="4451684391620232683">Text prezentat utilizatorului:</translation>
 <translation id="4452328064229197696">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Pentru a-ți proteja conturile, Managerul de parole Google îți recomandă să verifici parolele salvate.</translation>
 <translation id="4464826014807964867">Site-uri cu informații de la organizația ta</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activează Protecția îmbunătățită<ph name="END_ENHANCED_PROTECTION_LINK" /> pentru a beneficia de cel mai înalt nivel de securitate oferit de Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Acest formular nu este sigur. Completarea automată a fost dezactivată.</translation>
 <translation id="4477350412780666475">Melodia următoare</translation>
@@ -2382,6 +2392,7 @@
 <translation id="5992805036496113940">Vezi informațiile folosite pentru a-ți afișa anunțuri</translation>
 <translation id="5995727681868049093">Gestionează-ți informațiile, confidențialitatea și securitatea Contului Google</translation>
 <translation id="5997247540087773573">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Pentru a-ți proteja conturile, Managerul de parole Google îți recomandă să schimbi parola acum și să verifici parolele salvate.</translation>
+<translation id="5999271311987646952">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent programe malware<ph name="END_LINK" /> pe site-ul pe care încerci să-l accesezi.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6002122790816966947">Dispozitivele tale</translation>
 <translation id="6005659677094197001">Continuu</translation>
@@ -2686,6 +2697,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Educație informatică</translation>
 <translation id="6633476656216409494">Software comercial și de productivitate</translation>
+<translation id="6638353438328951386">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent software dăunător<ph name="END_LINK" /> pe site-ul pe care încerci să-l accesezi.</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6645291930348198241">să acceseze cookie-urile și datele privind site-urile.</translation>
 <translation id="6645478838938543427">Alertele privind scăderea prețului vor fi trimise la <ph name="EMAIL_ADDRESS" /></translation>
@@ -2881,6 +2893,7 @@
 <translation id="702146556168549005">Adresele URL ale paginilor pe care le accesezi sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot scana pentru a detecta site-urile nesigure sau pentru a filtra site-urile în funcție de regulile stabilite de administrator.</translation>
 <translation id="702275896380648118">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri. În plus, site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante.</translation>
 <translation id="7023162328967545559">Avertisment de la administrator</translation>
+<translation id="7024932305105294144">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent activități de phishing<ph name="END_LINK" /> pe site-ul pe care încerci să-l accesezi. Site-urile de phishing falsifică alte site-uri pentru a te înșela.<ph name="NEW_LINE" />Chiar și site-urile care sunt de obicei sigure sunt uneori compromise de atacatori. <ph name="BEGIN_ERROR_LINK" />Anunță-ne<ph name="END_ERROR_LINK" /> dacă ești de părere că este o greșeală și că acest site nu reprezintă un pericol.</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7030436163253143341">Certificatul nu este valid</translation>
 <translation id="7031646650991750659">aplicațiile Google Play instalate.</translation>
@@ -2916,6 +2929,7 @@
 <translation id="7105998430540165694">Cheia de acces din iCloud Keychain</translation>
 <translation id="7106762743910369165">Browserul este gestionat de organizația ta</translation>
 <translation id="7107249414147762907">Acest PDF nu se poate accesa. Nu s-a extras niciun text</translation>
+<translation id="7107427078069498123">Amprentele digitale SHA-256</translation>
 <translation id="7108338896283013870">Ascunde</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> dorește să utilizeze camera foto</translation>
 <translation id="7108819624672055576">Permisă de o extensie</translation>
@@ -2981,6 +2995,7 @@
 <translation id="722454870747268814">Filă incognito nouă</translation>
 <translation id="7226276626900992675">Ai permis acestui site să utilizeze cookie-uri terță parte. Astfel, majoritatea funcțiilor site-ului ar trebui să ruleze, dar beneficiezi de mai puțină protecție.</translation>
 <translation id="7227293336683593977">Istoricul prețurilor</translation>
+<translation id="7227747683324411744">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software dăunător care afectează modul în care navighezi, de exemplu, schimbând pagina principală sau afișând anunțuri suplimentare pe site-urile pe care le accesezi.</translation>
 <translation id="7233592378249864828">Printează foaia de confirmare</translation>
 <translation id="7234638337680728591">Prețuri la combustibil și combustibili pentru vehicule</translation>
 <translation id="7236417832106250253">Progres: <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3080,6 +3095,7 @@ Detalii suplimentare:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">Adaugă informații de contact</translation>
 <translation id="7437490109271760224">Jocuri de cărți</translation>
+<translation id="7438338505272634288">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software dăunător care afectează modul în care navighezi, de exemplu, schimbând pagina principală sau afișând anunțuri suplimentare pe site-urile pe care le accesezi. Chrome recomandă insistent să închizi pagina pentru a evita pericolele. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Explorează în timp ce ești offline</translation>
 <translation id="7441627299479586546">Subiectul politicii este greșit</translation>
 <translation id="7441864845853794192">Mâncăruri fine și specialități</translation>
@@ -3179,6 +3195,7 @@ Detalii suplimentare:
 <translation id="7599089013883397081">Descărcarea a expirat</translation>
 <translation id="7600965453749440009">Nu traduce niciodată din <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">De obicei, te conectezi în siguranță la acest site, dar Chrome nu a putut folosi o conexiune sigură de data aceasta. Un atacator ar putea încerca să intercepteze sau să modifice conexiunea la rețea. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Atacatorii de pe site-ul pe care încerci să îl accesezi pot instala software dăunător care fură sau șterge elemente precum parola, fotografiile, mesajele sau numărul cardului de credit.</translation>
 <translation id="7610193165460212391">Valoarea este în afara intervalului <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Expiră pe: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a vedea și a gestiona parolele din setările Chrome</translation>
@@ -3406,6 +3423,7 @@ Detalii suplimentare:
 <translation id="8078006011486731853">{0,plural, =1{Încarci un fișier confidențial?}few{Încarci fișiere confidențiale?}other{Încarci fișiere confidențiale?}}</translation>
 <translation id="8078141288243656252">Nu se poate adnota când este rotit</translation>
 <translation id="8079031581361219619">Reîncarci site-ul?</translation>
+<translation id="8079976827192572403">Site periculos</translation>
 <translation id="8081087320434522107">Berline</translation>
 <translation id="8086971161893892807">Schiță</translation>
 <translation id="8088680233425245692">Articolul nu a fost vizualizat.</translation>
@@ -3576,6 +3594,7 @@ Detalii suplimentare:
 Detalii suplimentare:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfonul este permis de această dată</translation>
+<translation id="8422228580902424274">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software sau să dezvălui lucruri precum parola, telefonul sau numărul cardului de credit.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Setări</translation>
@@ -3689,6 +3708,7 @@ Detalii suplimentare:
 <translation id="8680536109547170164"><ph name="QUERY" />, răspuns, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Pagina de la <ph name="PAGE" /> nu a putut fi încărcată, deoarece:</translation>
 <translation id="8686424632716064939">Securitate pentru computere</translation>
+<translation id="8687278439622293018">Intrarea <ph name="ENTRY_VOICEOVER" /> a fost ștearsă</translation>
 <translation id="8687429322371626002">Dispozitivul și contul sunt gestionate de <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponibilă</translation>
 <translation id="868922510921656628">Pagini per set</translation>
@@ -3900,6 +3920,7 @@ Detalii suplimentare:
 <translation id="9128870381267983090">Conectați-vă la rețea</translation>
 <translation id="9131119348384879525">Capturezi conținut confidențial?</translation>
 <translation id="9133985615769429248">Dacă folosești dispozitivul în comun cu alte persoane, poți folosi blocarea ecranului pentru a-ți confirma identitatea când utilizezi o parolă salvată</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, card virtual</translation>
 <translation id="9136861683332321024">Vehicule de lux</translation>
 <translation id="9137013805542155359">Afișează originalul</translation>
 <translation id="9137248913990643158">Pornește și conectează-te la Chrome înainte de a folosi această aplicație.</translation>

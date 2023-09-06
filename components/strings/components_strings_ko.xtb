@@ -2981,6 +2981,7 @@
 <translation id="722454870747268814">새 시크릿 탭</translation>
 <translation id="7226276626900992675">이 사이트에서 서드 파티 쿠키를 사용하도록 허용했습니다. 대부분의 사이트 기능은 작동하지만 보안이 취약해집니다.</translation>
 <translation id="7227293336683593977">가격 변동 내역</translation>
+<translation id="7227747683324411744">방문하려는 사이트의 공격자가 홈페이지를 변경하거나 방문하는 사이트에서 추가 광고를 표시하는 등 탐색 방식에 영향을 주는 유해한 소프트웨어를 설치하도록 유도할 수 있습니다.</translation>
 <translation id="7233592378249864828">인쇄 확인 시트</translation>
 <translation id="7234638337680728591">유가 및 자동차 주유</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% 완료됨 | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3178,6 +3179,7 @@
 <translation id="7599089013883397081">다운로드 시간 초과</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="7601297359530599375">일반적으로 이 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">방문하려는 사이트의 공격자가 비밀번호, 사진, 메시지, 신용카드 번호 등을 도용하거나 삭제하는 유해한 소프트웨어를 설치할 수 있습니다.</translation>
 <translation id="7610193165460212391">값(<ph name="VALUE" />)이 범위를 벗어났습니다.</translation>
 <translation id="7613889955535752492">만료일: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 비밀번호를 확인하고 관리하려면 Tab을 누른 다음 Enter 누르기</translation>
@@ -3575,6 +3577,7 @@
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">현재 마이크 허용됨</translation>
+<translation id="8422228580902424274">방문하려는 사이트의 공격자가 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500x750mm</translation>
 <translation id="8428213095426709021">설정</translation>

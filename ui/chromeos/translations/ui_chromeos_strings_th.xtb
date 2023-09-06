@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">บริบท</translation>
 <translation id="3272909651715601089">เปิด "<ph name="PATH" />" ไม่ได้</translation>
 <translation id="3280431534455935878">กำลังเตรียม</translation>
+<translation id="3280719573299097127">คุณกำลังใช้เครือข่ายแบบจำกัดปริมาณ การซิงก์ไฟล์หยุดชั่วคราว</translation>
 <translation id="3280987981688031357">แผ่นเสียงไวนิล</translation>
 <translation id="3290356915286466215">ไม่ปลอดภัย</translation>
 <translation id="3291218047831493686">เชื่อมต่อกับเครือข่ายนี้เพื่อเปลี่ยนการตั้งค่าการล็อกซิม</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">นำรายการทั้งหมดออกจากรายการที่เลือกไว้</translation>
 <translation id="5838825566232597749">Workman สหรัฐฯ แบบสากล</translation>
 <translation id="5845721951356578987">พยาบาล</translation>
+<translation id="5858478190805449225">เปิดโหมดประหยัดแบตเตอรี่แล้ว ลองอีกครั้งเมื่อโหมดประหยัดแบตเตอรี่ปิดอยู่</translation>
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5861477046012235702">เกมเมอร์</translation>
 <translation id="5864471791310927901">การค้นหา DHCP ล้มเหลว</translation>

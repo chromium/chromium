@@ -486,6 +486,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1390548061267426325">Buka sebagai Tab Biasa</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> tidak diizinkan untuk mencetak ke <ph name="PRINTER_NAME" />. Harap hubungi administrator Anda.</translation>
 <translation id="1392047138650695757">Kamus pengguna</translation>
+<translation id="139300021892314943">Batasi siapa saja yang dapat login</translation>
 <translation id="1393283411312835250">Matahari dan awan</translation>
 <translation id="1395730723686586365">Updater dimulai</translation>
 <translation id="1395832189806039783">Tandai item dengan fokus keyboard</translation>
@@ -2531,6 +2532,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2956070239128776395">Bagian tersarang dalam grup: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Peringatan ekstensi pack</translation>
 <translation id="2959127025785722291">Terjadi error. Pemindaian tidak dapat diselesaikan. Coba lagi.</translation>
+<translation id="2959474507964749987">File terenkripsi ini mungkin adalah virus atau malware.<ph name="LINE_BREAK" />Untuk memeriksa apakah file ini tidak aman, Anda dapat mengirim file dan sandi ke Google Safe Browsing. Pemindaian biasanya memerlukan waktu beberapa detik.<ph name="LINE_BREAK" />Untuk memindai, tambahkan sandi file.</translation>
 <translation id="2959842337402130152">Tidak dapat memulihkan karena ruang penyimpanan tidak cukup. Kosongkan <ph name="SPACE_REQUIRED" /> dari perangkat dan coba lagi.</translation>
 <translation id="2960208947600937804">Terjadi error saat mengonfigurasi Linux. Hubungi administrator Anda.</translation>
 <translation id="2960942820860729477">Kecepatan refresh</translation>
@@ -3994,6 +3996,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4147099377280085053">Pilih tabel braille</translation>
 <translation id="4147911968024186208">Harap coba lagi. Jika Anda melihat error ini lagi, hubungi perwakilan dukungan Anda.</translation>
 <translation id="414800391140809654">dapat menggunakan info Anda ketika Anda menjelajah</translation>
+<translation id="4148195018520464922">Anda dapat membatasi login untuk pengguna tertentu. Tindakan ini akan menghapus opsi "Tambahkan pengguna" di layar login. Anda juga dapat menghapus pengguna saat ini.</translation>
 <translation id="4150201353443180367">Tampilan</translation>
 <translation id="4150569944729499860">Konteks layar</translation>
 <translation id="4151449637210235443">Beri tahu kami mengenai gameplay terbaru Anda</translation>
@@ -8150,6 +8153,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7617263010641145920">Aktifkan Play Store</translation>
 <translation id="7617648809369507487">Gunakan pesan yang lebih tenang</translation>
 <translation id="7621382409404463535">Sistem gagal menyimpan konfigurasi ponsel.</translation>
+<translation id="7621480263311228380">Tidak diizinkan untuk menggunakan info tentang Anda yang telah disimpan situs</translation>
 <translation id="7621595347123595643">Anda tidak akan dapat memulihkan data lokal jika Anda lupa sandi atau PIN.</translation>
 <translation id="7622114377921274169">Mengisi daya.</translation>
 <translation id="7622768823216805500">Situs biasanya menginstal pengelola pembayaran untuk fitur belanja seperti pembayaran yang lebih mudah</translation>
@@ -8703,6 +8707,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8037117027592400564">Membaca semua teks yang diucapkan menggunakan ucapan yang disintesis</translation>
 <translation id="8037357227543935929">Tanyakan (default)</translation>
 <translation id="803771048473350947">File</translation>
+<translation id="8037801708772278989">Baru saja diperiksa</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Menyalin 1 file ke <ph name="CLOUD_PROVIDER" />}other{Menyalin {NUM_OF_FILES} file ke <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Kirim Masukan</translation>
 <translation id="8041267120753677077">Streaming aplikasi ponsel</translation>
@@ -9496,6 +9501,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8680251145628383637">Login untuk mendapatkan bookmark, histori, sandi, dan setelan lain di semua perangkat. Anda juga akan otomatis masuk ke layanan Google.</translation>
 <translation id="8681886425883659911">Iklan diblokir di situs yang dikenal menampilkan iklan yang mengganggu atau menyesatkan</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> terhubung dan siap digunakan</translation>
+<translation id="8684471948980641888">Izinkan sinkronisasi di jaringan berkuota</translation>
 <translation id="8685540043423825702">Profil Chrome Anda</translation>
 <translation id="8686142379631285985">Login sebagai <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Batalkan <ph name="FILE_NAME" /></translation>

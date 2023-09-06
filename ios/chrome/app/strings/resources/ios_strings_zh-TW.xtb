@@ -156,6 +156,7 @@
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1882901927376062252">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{{count} 個書籤已儲存至 Google 帳戶 ({email})}}</translation>
 <translation id="1883255238294161206">收合清單</translation>
+<translation id="1890237935065108104">無法使用這項設定。</translation>
 <translation id="1894023287452300670">追蹤這個地區的價格</translation>
 <translation id="189531189292803889">你的 iPad 最近執行過還原作業，可能已變更預設瀏覽器。</translation>
 <translation id="1910975740091000991">Chrome iOS 版</translation>
@@ -416,6 +417,7 @@
 <translation id="3328801116991980348">網站資訊</translation>
 <translation id="3340938510625667914">Chrome 快捷操作</translation>
 <translation id="3344485292736684439">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
+<translation id="3349676726073650389">你追蹤的網站和搜尋內容會儲存在 Google 帳戶中，隨時可以前往設定管理追蹤項目。</translation>
 <translation id="3365529507898144230">儲存在相簿中</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
@@ -779,6 +781,7 @@
 <translation id="5597915316964418992">開啟分頁方格</translation>
 <translation id="560322036295180549">已由貴機構停用</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
+<translation id="5619871095170816857">這張卡片會顯示所有已同步裝置在過去 24 小時內最後開啟的分頁。</translation>
 <translation id="5626245204502895507">目前無法下載這個檔案。</translation>
 <translation id="562753339521713441">執行安全檢查</translation>
 <translation id="5631164295104953411">新增付款方式</translation>
@@ -1082,6 +1085,7 @@
 <translation id="7082853213442715471">開啟後，系統會封鎖特定的網頁技術，部分網站載入速度可能會因此變慢或無法正常運作。</translation>
 <translation id="7095110968493193530">儲存到 <ph name="EMAIL" /> 的 Google 密碼管理工具</translation>
 <translation id="7099761977003084116">最近開啟的分頁</translation>
+<translation id="7101580180124131336">你現在會在「追蹤中」分頁看到「<ph name="CHANNEL_NAME" />」的內容和簡介。</translation>
 <translation id="7102005569666697658">下載中… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108762695052995889">造訪網站</translation>
@@ -1162,6 +1166,7 @@
 <translation id="764827086632467055">輕觸「預設瀏覽器 App」</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7666861622396822790">你可以前往<ph name="BEGIN_LINK" />內容設定<ph name="END_LINK" />進行管理。</translation>
 <translation id="7671141431838911305">安裝</translation>
 <translation id="7679915578945954324">已複製網址</translation>
 <translation id="7687508192620387263">有可用的日曆檔案</translation>
@@ -1235,6 +1240,7 @@
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="804225253087497565">在你登入後，<ph name="BEGIN_LINK" />搜尋記錄<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="804427445359061970">這裡會顯示你在其他裝置上查看的分頁</translation>
+<translation id="8044568254381073661">不加密直接儲存</translation>
 <translation id="8059533439631660104">收合這個專區。</translation>
 <translation id="8065292699993359127">在 Chrome 無痕模式中開啟網址</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
@@ -1289,7 +1295,9 @@
 <translation id="8386068868580335421">重設</translation>
 <translation id="838867811594159347">輸入通關密語…</translation>
 <translation id="8393889347136007944">已有 <ph name="THRESHOLD" /> 天未使用的分頁</translation>
+<translation id="8395339334550012808">不久後，你會在「追蹤中」分頁看到「<ph name="CHANNEL_NAME" />」的內容和簡介。</translation>
 <translation id="8395378633507873708">網址列</translation>
+<translation id="8403629764260204788">隱藏「繼續瀏覽」</translation>
 <translation id="8407669440184693619">找不到這個網站的密碼</translation>
 <translation id="842017693807136194">目前登入身分</translation>
 <translation id="8423121072346537366">剛剛</translation>

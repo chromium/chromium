@@ -418,6 +418,7 @@
 <translation id="3328801116991980348">ข้อมูลไซต์</translation>
 <translation id="3340938510625667914">การดำเนินการใน Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}}</translation>
+<translation id="3349676726073650389">ระบบจะบันทึกเว็บไซต์และการค้นหาที่คุณติดตามไว้ในบัญชี Google คุณจัดการการติดตามในการตั้งค่าได้ทุกเมื่อ</translation>
 <translation id="3365529507898144230">บันทึกใน Photos</translation>
 <translation id="3371831930909698441">มีบริการแปลภาษา ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="3377063233124932127">ตอนนี้บุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ที่บันทึกไว้ย้ายไปอยู่ด้านบนแล้ว</translation>
@@ -781,6 +782,7 @@
 <translation id="5597915316964418992">เปิดตารางกริดของแท็บ</translation>
 <translation id="560322036295180549">ปิดโดยองค์กรของคุณ</translation>
 <translation id="5614553682702429503">บันทึกรหัสผ่านไหม</translation>
+<translation id="5619871095170816857">การ์ดนี้จะแสดงแท็บที่เปิดไว้ล่าสุดในอุปกรณ์ทุกเครื่องที่ซิงค์ในช่วง 24 ชั่วโมงที่ผ่านมา</translation>
 <translation id="5626245204502895507">ไม่สามารถดาวน์โหลดไฟล์ได้ในขณะนี้</translation>
 <translation id="562753339521713441">เรียกใช้การตรวจสอบความปลอดภัย</translation>
 <translation id="5631164295104953411">เพิ่มวิธีการชำระเงิน</translation>
@@ -1086,6 +1088,7 @@
 <translation id="7082853213442715471">เมื่อเปิดใช้ เทคโนโลยีเว็บบางอย่างจะถูกบล็อก ซึ่งอาจทำให้บางเว็บไซต์โหลดช้าลงหรือทำงานไม่ถูกต้อง</translation>
 <translation id="7095110968493193530">ที่เครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">แท็บล่าสุด</translation>
+<translation id="7101580180124131336">ตอนนี้คุณจะเห็นเนื้อหาจาก และเกี่ยวกับ <ph name="CHANNEL_NAME" /> ใน "กำลังติดตาม"</translation>
 <translation id="7102005569666697658">กำลังดาวน์โหลด… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">ซ่อน</translation>
 <translation id="7108762695052995889">เข้าชมเว็บไซต์</translation>
@@ -1166,6 +1169,7 @@
 <translation id="764827086632467055">แตะแอปเบราว์เซอร์เริ่มต้น</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
+<translation id="7666861622396822790">คุณจัดการตัวเลือกนี้ได้ใน<ph name="BEGIN_LINK" />การตั้งค่าเนื้อหา<ph name="END_LINK" /></translation>
 <translation id="7671141431838911305">ติดตั้ง</translation>
 <translation id="7679915578945954324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>
 <translation id="7687508192620387263">ไฟล์ปฏิทินพร้อมให้ใช้งานแล้ว</translation>
@@ -1239,6 +1243,7 @@
 <translation id="8032569120109842252">กำลังติดตาม</translation>
 <translation id="804225253087497565">ระบบอาจบันทึก<ph name="BEGIN_LINK" />ประวัติการค้นหา<ph name="END_LINK" />และ<ph name="BEGIN_LINK" />กิจกรรมรูปแบบอื่น<ph name="END_LINK" />ในบัญชี Google เมื่อคุณลงชื่อเข้าใช้ คุณลบข้อมูลนี้ได้ทุกเมื่อ</translation>
 <translation id="804427445359061970">คุณจะเห็นแท็บจากอุปกรณ์อื่นๆ ที่นี่</translation>
+<translation id="8044568254381073661">บันทึกโดยไม่เข้ารหัส</translation>
 <translation id="8059533439631660104">ยุบส่วนนี้</translation>
 <translation id="8065292699993359127">เปิด URL ใน Chrome ในโหมดไม่ระบุตัวตน</translation>
 <translation id="806745655614357130">เก็บข้อมูลของฉันแยกต่างหาก</translation>
@@ -1293,7 +1298,9 @@
 <translation id="8386068868580335421">รีเซ็ต</translation>
 <translation id="838867811594159347">ป้อนรหัสผ่าน…</translation>
 <translation id="8393889347136007944">แท็บที่ไม่มีการใช้งานเป็นเวลา <ph name="THRESHOLD" /> วัน</translation>
+<translation id="8395339334550012808">เร็วๆ นี้ คุณจะเห็นเนื้อหาจาก และเกี่ยวกับ <ph name="CHANNEL_NAME" /> ใน "กำลังติดตาม"</translation>
 <translation id="8395378633507873708">แถบที่อยู่</translation>
+<translation id="8403629764260204788">ซ่อน "เรียกดูต่อ"</translation>
 <translation id="8407669440184693619">ไม่พบรหัสผ่านสำหรับเว็บไซต์นี้</translation>
 <translation id="842017693807136194">ลงชื่อเข้าใช้ด้วย</translation>
 <translation id="8423121072346537366">เมื่อสักครู่</translation>

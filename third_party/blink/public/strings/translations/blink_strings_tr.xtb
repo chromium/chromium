@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Yansıtmaya geçildi</translation>
 <translation id="2031987842108996681">Kırmızı kanal</translation>
 <translation id="2060505056492490888">"<ph name="DOT" />", "<ph name="INVALIDDOMAIN" />" adı içinde yanlış bir konumda kullanılmış.</translation>
+<translation id="2068711044993563745">Minimum değer (<ph name="MINIMUM" />), maksimum değerden (<ph name="MAXIMUM" />) küçük olmalıdır.</translation>
 <translation id="2148716181193084225">Bugün</translation>
 <translation id="2226276347425096477">Lütfen bu metni <ph name="MAX_CHARACTERS" /> veya daha az karakter olacak şekilde kısaltın (şu anda <ph name="CURRENT_LENGTH" /> karakter kullanıyorsunuz).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hafta, <ph name="YEAR" /></translation>

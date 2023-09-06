@@ -4777,6 +4777,7 @@
 <translation id="4820236583224459650">Задаць білет у якасці актыўнага</translation>
 <translation id="4820795723433418303">Выкарыстоўвайце функцыянальныя клавішы ў якасці клавіш верхняга радка</translation>
 <translation id="4821935166599369261">&amp;Прафіліраванне ўключана</translation>
+<translation id="4823193082697477185">Доступ да агульных файлаў, папак і дыскаў у лакальнай сетцы. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Прагляд і змяненне налад прылады і карыстальніка</translation>
 <translation id="4824037980212326045">Рэзервовае капіраванне і аднаўленне Linux</translation>
 <translation id="4824958205181053313">Скасаваць сінхранізацыю?</translation>
@@ -8690,6 +8691,7 @@
 <translation id="8037117027592400564">Чытаць увесь тэкст, выкарыстоўваючы сінтэзатар маўлення</translation>
 <translation id="8037357227543935929">Запытаць (стандартна)</translation>
 <translation id="803771048473350947">Файл</translation>
+<translation id="8037801708772278989">Праверка праводзілася толькі што</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Ідзе капіраванне 1 файла ў сэрвіс "<ph name="CLOUD_PROVIDER" />"}one{Ідзе капіраванне {NUM_OF_FILES} файла ў сэрвіс "<ph name="CLOUD_PROVIDER" />"}few{Ідзе капіраванне {NUM_OF_FILES} файлаў у сэрвіс "<ph name="CLOUD_PROVIDER" />"}many{Ідзе капіраванне {NUM_OF_FILES} файлаў у сэрвіс "<ph name="CLOUD_PROVIDER" />"}other{Ідзе капіраванне {NUM_OF_FILES} файла ў сэрвіс "<ph name="CLOUD_PROVIDER" />"}}</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
 <translation id="8041267120753677077">Перадача плынню змесціва праграм з тэлефона</translation>
@@ -9483,6 +9485,7 @@
 <translation id="8680251145628383637">Каб закладкі, гісторыя, паролі і іншыя налады былі даступнымі на ўсіх вашых прыладах, увайдзіце ў сістэму. Вы таксама аўтаматычна ўвойдзеце ў сэрвісы Google.</translation>
 <translation id="8681886425883659911">На сайтах, якія паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман, рэклама блакіруецца</translation>
 <translation id="8682730193597992579">Прынтар "<ph name="PRINTER_NAME" />" падключаны і гатовы да працы</translation>
+<translation id="8684471948980641888">Дазволіць сінхранізацыю ў сетках з падлікам трафіка</translation>
 <translation id="8685540043423825702">Ваш профіль Chrome</translation>
 <translation id="8686142379631285985">Вы ўвайшлі як <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Скасаваць спампоўванне файла "<ph name="FILE_NAME" />"</translation>

@@ -366,6 +366,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">சாளரங்களை அன்லாக் செய்</translation>
 <translation id="2528111225373402384">ஹாட்ஸ்பாட் அமைப்புகள்</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">சுட்டி உலாவலை இயக்க/முடக்க</translation>
 <translation id="2531025035050312891">சாதனம் மெதுவாகச் செயல்படுகிறது</translation>
 <translation id="2531107890083353124">பக்கத்தை இழுக்கும்போது <ph name="KEY_ONE" /> அழுத்தவும்</translation>
@@ -1855,6 +1856,7 @@
 <translation id="8731487213223706745">முடியும் நேரம்: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
 <translation id="8735678380411481005">கீபோர்டு பேக்லைட் வண்ணம்</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: இயக்குகிறது...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">உங்கள் அடையாளத்தைச் சரிபாருங்கள்: இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>

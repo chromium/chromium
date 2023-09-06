@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">දර්පණයට මාරු විය</translation>
 <translation id="2031987842108996681">රතු නාලිකාව</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' '<ph name="INVALIDDOMAIN" />' හි වැරදි ස්ථානයක් අසල භාවිතා කෙරේ.</translation>
+<translation id="2068711044993563745">අවම අගය (<ph name="MINIMUM" />) උපරිම අගයට (<ph name="MAXIMUM" />) වඩා අඩු විය යුතු යි.</translation>
 <translation id="2148716181193084225">අද</translation>
 <translation id="2226276347425096477">කරුණාකර මෙම පෙළ අකුරු <ph name="MAX_CHARACTERS" /> හෝ අවම වන සේ කෙටි කරන්න (ඔබ දැනට අකුරු <ph name="CURRENT_LENGTH" /> භාවිත කරයි).</translation>
 <translation id="2247351761944213033">සතිය <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

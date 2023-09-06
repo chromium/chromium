@@ -4794,6 +4794,7 @@
 <translation id="4820236583224459650">चालू टिकट के तौर पर सेट करें</translation>
 <translation id="4820795723433418303">सबसे ऊपर वाली पंक्ति के बटनों को फ़ंक्शन बटन के तौर पर इस्तेमाल करें</translation>
 <translation id="4821935166599369261">&amp;प्रोफ़ाइलिंग सक्षम</translation>
+<translation id="4823193082697477185">लोकल नेटवर्क पर शेयर की गई फ़ाइलों, फ़ोल्डर या ड्राइव को ऐक्सेस करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">उपयोगकर्ता और डिवाइस सेटिंग पढ़ें और उसमें बदलाव करें</translation>
 <translation id="4824037980212326045">Linux का बैक अप लेना और बहाल करना</translation>
 <translation id="4824958205181053313">सिंक करना रद्द करें?</translation>
@@ -8703,6 +8704,7 @@
 <translation id="8037117027592400564">संश्लेषित बोली का उपयोग करके बोला गया सभी लेख पढ़ें</translation>
 <translation id="8037357227543935929">पूछें (डिफ़ॉल्ट)</translation>
 <translation id="803771048473350947">फ़ाइल</translation>
+<translation id="8037801708772278989">अभी-अभी जांच की गई</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> में 1 फ़ाइल कॉपी की जा रही है}one{<ph name="CLOUD_PROVIDER" /> में {NUM_OF_FILES} फ़ाइल कॉपी की जा रही है}other{<ph name="CLOUD_PROVIDER" /> में {NUM_OF_FILES} फ़ाइलें कॉपी की जा रही हैं}}</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8041267120753677077">अपने फ़ोन के ऐप्लिकेशन स्ट्रीम करें</translation>

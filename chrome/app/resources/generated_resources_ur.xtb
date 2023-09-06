@@ -484,6 +484,7 @@
 <translation id="1390548061267426325">ریگولر ٹیب کے بطور کھولیں</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> <ph name="PRINTER_NAME" /> پر پرنٹ کرنے کا مجاز نہیں ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="1392047138650695757">صارف کی لغات</translation>
+<translation id="139300021892314943">اس امر کو محدود کریں کہ کون سائن ان کر سکتا ہے</translation>
 <translation id="1393283411312835250">سورج اور بادل</translation>
 <translation id="1395730723686586365">اپ ڈیٹر شروع ہوگیا</translation>
 <translation id="1395832189806039783">کی بورڈ فوکس کی مدد سے آئٹم کو نمایاں کریں</translation>
@@ -2518,6 +2519,7 @@
 <translation id="2956070239128776395">سیکشن گروپ میں ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">پیک ایکسٹینشن کی وارننگ</translation>
 <translation id="2959127025785722291">کچھ غلط ہو گیا۔ اسکیننگ مکمل نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
+<translation id="2959474507964749987">‏یہ اینکرپٹ کردہ فائل ایک وائرس یا میلویئر ہو سکتا ہے۔<ph name="LINE_BREAK" />یہ چیک کرنے کیلئے کہ آیا یہ غیر محفوظ ہے، آپ Google محفوظ براؤزنگ کو فائل اور پاس ورڈ بھیج سکتے ہیں۔ اسکینز میں عموماً کچھ سیکنڈ کا وقت لگتا ہے۔<ph name="LINE_BREAK" />اسکین کرنے کیلئے، فائل کا پاس ورڈ شامل کریں۔</translation>
 <translation id="2959842337402130152">اسٹوریج کی جگہ کم ہونے کی وجہ سے بحال نہیں کیا جا سکتا۔ آلہ سے <ph name="SPACE_REQUIRED" /> خالی کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2960208947600937804">‏Linux کنفیگر کرنے میں ایک خرابی تھی۔ اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="2960942820860729477">ریفریش ریٹ</translation>
@@ -3981,6 +3983,7 @@
 <translation id="4147099377280085053">بریل ٹیبل کا انتخاب کریں</translation>
 <translation id="4147911968024186208">براہ کرم دوبارہ کوشش کریں۔ اگر یہ خرابی دوبارہ پیش آتی ہے تو براہ کرم اپنے سپورٹ کے نمائندے سے رابطہ کریں۔</translation>
 <translation id="414800391140809654">براؤز کرتے وقت آپ کی معلومات استعمال کر سکتے ہیں</translation>
+<translation id="4148195018520464922">آپ سائن ان کو بعض مخصوص صارفین تک محدود کر سکتے ہیں۔ اس سے سائن ان اسکرین پر "شخص کو شامل کریں" اختیار ہٹ جاتا ہے۔ آپ موجودہ صارفین کو بھی ہٹا سکتے ہیں۔</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>
 <translation id="4150569944729499860">اسکرین کا سیاق و سباق</translation>
 <translation id="4151449637210235443">ہمیں اپنے حالیہ گیم پلے کے بارے میں بتائیں</translation>
@@ -4179,6 +4182,7 @@
 <translation id="4322394346347055525">دیگر ٹیبز بند کریں</translation>
 <translation id="4324577459193912240">فائل نا مکمل ہے</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> اَن انسٹال ہو رہی ہے...</translation>
+<translation id="4325433082696797523">اسٹوریج اور پاور</translation>
 <translation id="4326146840124313313">‏Chrome کی مضبوط ترین سیکیورٹی آپ کو خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے بچانے کے لیے بہت کچھ کرتی ہے</translation>
 <translation id="4326484226728068206">آپ کے کارٹ میں <ph name="MERCHANT_NAME" />، <ph name="MERCHANT_DOMAIN" /> کی جانب سے <ph name="DISCOUNT_TEXT" /> پر آئٹمز، <ph name="RELATIVE_TIME" /> پہلے دیکھے گئے</translation>
 <translation id="4330191372652740264">برف کا پانی</translation>
@@ -8135,6 +8139,7 @@
 <translation id="7617263010641145920">‏Play اسٹور آن کریں</translation>
 <translation id="7617648809369507487">خاموش پیغام رسانی استعمال کریں</translation>
 <translation id="7621382409404463535">سسٹم آلہ کی کنفگریشن کو محفوظ کرنے میں ناکام ہوگیا۔</translation>
+<translation id="7621480263311228380">ان کی جانب سے آپ سے متعلق محفوظ کردہ معلومات کو استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="7621595347123595643">‏اگر آپ اپنا پاس ورڈ یا PIN بھول جاتے ہیں تو آپ مقامی ڈیٹا کو بازیافت نہیں کر سکیں گے۔</translation>
 <translation id="7622114377921274169">چارج ہو رہا ہے۔</translation>
 <translation id="7622768823216805500">سائٹس عام طور پر آسان تر چیک آؤٹ جیسی شاپنگ کی خصوصیات کے لیے ادائيگی ہینڈلرز انسٹال کرتی ہیں</translation>
@@ -8687,6 +8692,7 @@
 <translation id="8037117027592400564">سنتھیسائز کردہ اسپیچ کا استعمال کر کے بولے گئے سبھی متن کو پڑھیں</translation>
 <translation id="8037357227543935929">پوچھیں (ڈیفالٹ)</translation>
 <translation id="803771048473350947">فائل</translation>
+<translation id="8037801708772278989">ابھی چیک کیا گيا</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 فائل <ph name="CLOUD_PROVIDER" /> میں کاپی ہو رہی ہے}other{{NUM_OF_FILES} فائلز <ph name="CLOUD_PROVIDER" /> میں کاپی ہو رہی ہیں}}</translation>
 <translation id="8041089156583427627">تاثرات بھیجیں</translation>
 <translation id="8041267120753677077">اپنے فون کی ایپس کی سلسلہ بندی کریں</translation>
@@ -9480,6 +9486,7 @@
 <translation id="8680251145628383637">‏اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کرنے کیلئے سائن ان کریں۔ آپ اپنی Google سروسز میں خود بخود سائن ان بھی ہو جائیں گے۔</translation>
 <translation id="8681886425883659911">اشتہارات دخل انداز یا گمراہ کن اشتہارات دکھانے کے لیے جانی جانے والی سائٹس پر مسدود ہیں</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> منسلک اور تیار ہے</translation>
+<translation id="8684471948980641888">میٹرڈ نیٹ ورکس پر مطابقت پذیری کی اجازت دیں</translation>
 <translation id="8685540043423825702">‏آپ کی Chrome پروفائل</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> کے بطور سائن ان کردہ</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> منسوخ کریں</translation>

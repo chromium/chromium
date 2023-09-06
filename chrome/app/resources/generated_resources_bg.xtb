@@ -4791,6 +4791,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4820236583224459650">Задаване като активен пропуск</translation>
 <translation id="4820795723433418303">Използване на функционалните клавиши като клавиши на най-горния ред</translation>
 <translation id="4821935166599369261">&amp;Профилирането е активирано</translation>
+<translation id="4823193082697477185">Осъществявайте достъп до споделените файлове, папки или дискове в локална мрежа. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Четене и промяна на настройките на потребителите и устройството</translation>
 <translation id="4824037980212326045">Резервни копия и възстановяване на Linux</translation>
 <translation id="4824958205181053313">Да се анулира ли синхронизирането?</translation>
@@ -8701,6 +8702,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8037117027592400564">Четене на целия текст, произнесен посредством синтезирания говор</translation>
 <translation id="8037357227543935929">Извеждане на запитване (по подразбиране)</translation>
 <translation id="803771048473350947">Файл</translation>
+<translation id="8037801708772278989">Проверено току-що</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 файл се копира в <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} файла се копират в <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="8041267120753677077">Предавайте поточно приложенията на телефона си</translation>

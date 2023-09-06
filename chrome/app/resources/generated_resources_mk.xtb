@@ -4795,6 +4795,7 @@
 <translation id="4820236583224459650">Постави како активен билет</translation>
 <translation id="4820795723433418303">Користете функциски копчиња како копчињата во најгорниот ред</translation>
 <translation id="4821935166599369261">&amp;Профилирањето е овозможено</translation>
+<translation id="4823193082697477185">Пристапувајте до споделени датотеки, папки или простори на локална мрежа. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Прочитајте ги и сменете ги корисничките поставки и поставките на уредот</translation>
 <translation id="4824037980212326045">Бекап и враќање на Linux</translation>
 <translation id="4824958205181053313">Да се откаже синхронизацијата?</translation>
@@ -8704,6 +8705,7 @@
 <translation id="8037117027592400564">Прочитајте го текстот што се изговара со помош на синтетизиран говор.</translation>
 <translation id="8037357227543935929">Прашај (стандардно)</translation>
 <translation id="803771048473350947">Датотека</translation>
+<translation id="8037801708772278989">Тукушто проверено</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Се копира 1 датотека во <ph name="CLOUD_PROVIDER" />}one{Се копираат {NUM_OF_FILES} датотека во <ph name="CLOUD_PROVIDER" />}other{Се копираат {NUM_OF_FILES} датотеки во <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
 <translation id="8041267120753677077">Стримувајте ги апликациите на телефонот</translation>

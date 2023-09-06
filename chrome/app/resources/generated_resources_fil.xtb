@@ -487,6 +487,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1390548061267426325">Buksan bilang Regular na Tab</translation>
 <translation id="1390907927270446471">Hindi pinapahintulutan si <ph name="PROFILE_USERNAME" /> na mag-print sa <ph name="PRINTER_NAME" />. Makipag-ugnayan sa iyong administrator.</translation>
 <translation id="1392047138650695757">Mga diksyunaryo ng user</translation>
+<translation id="139300021892314943">Limitahan kung sino ang puwedeng mag-sign in</translation>
 <translation id="1393283411312835250">Araw at mga ulap</translation>
 <translation id="1395730723686586365">Sinimulan ang updater</translation>
 <translation id="1395832189806039783">Mag-highlight ng item gamit ang pag-focus ng keyboard</translation>
@@ -2532,6 +2533,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2956070239128776395">Seksyong naka-nest sa grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Babala sa extension ng pack</translation>
 <translation id="2959127025785722291">Nagkaproblema. Hindi makumpleto ang pag-scan. Pakisubukan ulit.</translation>
+<translation id="2959474507964749987">Posibleng virus o malware ang naka-encrypt na file na ito.<ph name="LINE_BREAK" />Para tingnan kung hindi ito ligtas, puwede mong ipadala ang file at password sa Ligtas na Pag-browse sa Google. Kadalasang tumatagal nang ilang segundo ang mga pag-scan.<ph name="LINE_BREAK" />Para mag-scan, idagdag ang password ng file.</translation>
 <translation id="2959842337402130152">Hindi ma-restore dahil kulang ang storage space. Magbakante ng <ph name="SPACE_REQUIRED" /> sa device at subukan ulit.</translation>
 <translation id="2960208947600937804">Nagka-error habang kino-configure ang Linux. Makipag-uganayan sa iyong administrator.</translation>
 <translation id="2960942820860729477">Rate ng pag-refresh</translation>
@@ -3995,6 +3997,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4147099377280085053">Pumili ng talahanayan ng braille</translation>
 <translation id="4147911968024186208">Pakisubukang muli. Kung makikita mong muli ang error na ito, makipag-ugnayan sa iyong kinatawan ng suporta.</translation>
 <translation id="414800391140809654">magagamit ang iyong impormasyon habang nagba-browse ka</translation>
+<translation id="4148195018520464922">Puwede mong limitahan ang pag-sign in sa ilang partikular na user. Aalisin nito ang opsyong "Magdagdag ng tao" sa screen sa pag-sign in. Puwede mo ring alisin ang mga kasalukuyang user.</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4150569944729499860">Konteksto ng screen</translation>
 <translation id="4151449637210235443">Sabihin sa amin ang tungkol sa iyong kamakailang gameplay</translation>
@@ -4193,6 +4196,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4322394346347055525">Isara ang Ibang Mga Tab</translation>
 <translation id="4324577459193912240">Hindi kumpleto ang file</translation>
 <translation id="4325237902968425115">Ina-uninstall ang <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">Storage at power</translation>
 <translation id="4326146840124313313">Marami pang ginagawa ang pinakamalakas na seguridad ng Chrome para maprotektahan ka laban sa mga mapanganib na website, download, at extension</translation>
 <translation id="4326484226728068206">Mga item sa iyong cart na may <ph name="DISCOUNT_TEXT" /> mula sa <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, na tiningnan noong <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Icewater</translation>
@@ -8154,6 +8158,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7617263010641145920">I-on ang Play Store</translation>
 <translation id="7617648809369507487">Gumamit ng mas tahimik na pagmemensahe</translation>
 <translation id="7621382409404463535">Hindi na-save ng system ang configuration ng device.</translation>
+<translation id="7621480263311228380">Hindi pinapayagang gumamit ng impormasyong na-save nito tungkol sa iyo</translation>
 <translation id="7621595347123595643">Hindi mo mare-recover ang lokal na data kung makakalimutan mo ang iyong password o PIN.</translation>
 <translation id="7622114377921274169">Nagcha-charge.</translation>
 <translation id="7622768823216805500">Karaniwang nag-i-install ang mga site ng mga tagapangasiwa ng pagbabayad para sa mga feature sa pamimili gaya ng mas madaling pag-check out</translation>
@@ -8707,6 +8712,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8037117027592400564">Basahin ang lahat ng binigkas na text gamit ang naka-synthesize na pagsasalita</translation>
 <translation id="8037357227543935929">Magtanong (default)</translation>
 <translation id="803771048473350947">File</translation>
+<translation id="8037801708772278989">Kakasuri lang</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kinokopya ang 1 file sa <ph name="CLOUD_PROVIDER" />}one{Kinokopya ang {NUM_OF_FILES} file sa <ph name="CLOUD_PROVIDER" />}other{Kinokopya ang {NUM_OF_FILES} na file sa <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8041267120753677077">I-stream ang mga app ng iyong telepono</translation>
@@ -9501,6 +9507,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8680251145628383637">Mag-sign in upang makuha ang iyong mga bookmark, history, password at iba pang mga setting sa lahat ng iyong device. Awtomatiko ka ring masa-sign in sa iyong mga serbisyo ng Google.</translation>
 <translation id="8681886425883659911">Bina-block ang mga ad sa mga site na kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad</translation>
 <translation id="8682730193597992579">Nakakonekta na ang <ph name="PRINTER_NAME" /> at puwede nang gamitin</translation>
+<translation id="8684471948980641888">Payagan ang pag-sync sa mga nakametrong network</translation>
 <translation id="8685540043423825702">Iyong profile sa Chrome</translation>
 <translation id="8686142379631285985">Naka-sign in bilang <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Kanselahin ang <ph name="FILE_NAME" /></translation>

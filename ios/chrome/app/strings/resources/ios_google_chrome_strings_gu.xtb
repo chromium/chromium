@@ -36,6 +36,7 @@
 <translation id="2120238739383482109">Chrome બુકમાર્ક ખોલે છે.</translation>
 <translation id="2147651015520127414">Chrome એ ચકાસણી કરી છે કે <ph name="ISSUER" /> એ આ વેબસાઇટનું પ્રમાણપત્ર ઇસ્યુ કર્યું છે.</translation>
 <translation id="2199719347983604670">Chrome સિંકમાંનો ડેટા</translation>
+<translation id="2311240109311056604">Chrome Dino ગેમ ખોલે છે.</translation>
 <translation id="2339201583852607431">તમારો પાસવર્ડ તમારા Google એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="2342919707875585281">Chrome તમે મંજૂરી આપો છો તે સાઇટ સાથે તમારા સ્થાનની માહિતી શેર કરે છે.</translation>
 <translation id="2347208864470321755">જ્યારે આ સુવિધા ચાલુ કરી હોય, ત્યારે Chrome, Google Translateનો ઉપયોગ કરીને અન્ય ભાષાઓમાં લખેલા પેજના અનુવાદ ઑફર કરશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -99,10 +100,12 @@
 <translation id="484033449593719797">Chrome બીટા પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="4840404732697892756">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો, ત્યારે Google Password Manager તમારા પાસવર્ડ ચેક કરી શકે છે.</translation>
 <translation id="4903674399067644695">આ કાર્ડ તમને Chromeનો મહત્તમ લાભ મેળવવા માટેના સૂચનો બતાવે છે.</translation>
+<translation id="49200511069271369">તમે જેમાં સાઇન ઇન કરી રહ્યાં હો તે એકાઉન્ટને અને Chromeના વપરાશની રીતને તમારી સંસ્થા <ph name="DOMAIN" /> મેનેજ કરે છે. તમારા ઍડમિનિસ્ટ્રેટર અમુક સુવિધાઓનું સેટઅપ અથવા તેને પ્રતિબંધિત કરી શકે છે.</translation>
 <translation id="5030102366287574140">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chrome તમારી સહાય કરી શકે છે.</translation>
 <translation id="5108659628347594808">Chromeને બહેતર બનાવો</translation>
 <translation id="5112925986883715005">Chrome વાંચન સૂચિ જુઓ</translation>
 <translation id="5119391094379141756">Chrome પસંદ કરો</translation>
+<translation id="5156818928311866442">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે, Chromeના સેટિંગ ખોલે છે.</translation>
 <translation id="5162467219239570114">Chrome જૂનું થઈ ગયું છે. જો <ph name="BEGIN_LINK" />ઍપ સ્ટોર<ph name="END_LINK" />માં કોઈ અપડેટ ઉપલબ્ધ ન હોય, તો એવું બની શકે છે કે તમારું ડિવાઇસ હવેથી Chromeના નવા વર્ઝનને સપોર્ટ ન કરતું હોય.</translation>
 <translation id="5190139289262548459">તમારી સંસ્થા <ph name="DOMAIN" />, તમે જેમાં સાઇન ઇન કર્યું હોય તે એકાઉન્ટને અને Chromeના વપરાશની રીતને મેનેજ કરે છે.</translation>
 <translation id="5389212809648216794">Google Chrome, તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી કારણ કે તે બીજી ઍપ્લિકેશન દ્વારા ઉપયોગમાં છે</translation>
@@ -152,6 +155,7 @@
 <translation id="7173660919484573146">તમારા પાસવર્ડની અધિકૃત ઍક્સેસની ખાતરી કરવા માટે, Chrome ચહેરાના IDનો ઉપયોગ કરે છે.</translation>
 <translation id="7187993566681480880">તમને Chrome પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં ઉપયોગમાં લેવાઈ શકે છે.</translation>
 <translation id="72119412072970160">તમે Google પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPad પરની અન્ય ઍપમાં કરી શકો છો.</translation>
+<translation id="7254380941803999489">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="7261678641327190792">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
 <translation id="7272930098487145294">છબીઓ સાચવવા માટે, સેટિંગ પર ટૅપ કરો જેથી Chrome તમારા ફોટા ઉમેરી શકે</translation>
 <translation id="7275945473750112644">તમારું એકાઉન્ટ <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવતું હોવાથી, આ ડિવાઇસમાંથી તમારો Chrome ડેટા સાફ કરવામાં આવશે</translation>

@@ -8706,6 +8706,7 @@
 <translation id="8037117027592400564">خواندن همه نوشتار با استفاده از گفتار تجزیه و تحلیل شده</translation>
 <translation id="8037357227543935929">درخواست (پیش‌فرض)</translation>
 <translation id="803771048473350947">فایل</translation>
+<translation id="8037801708772278989">آخرین بررسی: همین‌حالا</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{درحال کپی کردن یک فایل در <ph name="CLOUD_PROVIDER" />}one{درحال کپی کردن {NUM_OF_FILES} فایل در <ph name="CLOUD_PROVIDER" />}other{درحال کپی کردن {NUM_OF_FILES} فایل در <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>
 <translation id="8041267120753677077">جاری‌سازی برنامه‌های تلفن شما</translation>
@@ -9499,6 +9500,7 @@
 <translation id="8680251145628383637">‏برای دریافت نشانک‌ها، سابقه، گذرواژه‌ها و تنظیمات دیگرتان را در همه دستگاه‌هایتان، به سیستم وارد شوید. همچنین به‌صورت خودکار به سیستم خدمات Google خود نیز وارد می‌شوید.</translation>
 <translation id="8681886425883659911">آگهی‌های نمایش‌داده‌شده در سایت‌هایی که طبق تشخیص ما آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند مسدود می‌شود.</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> متصل و آماده است</translation>
+<translation id="8684471948980641888">مجاز کردن همگام‌سازی در شبکه‌های با حجم محدود</translation>
 <translation id="8685540043423825702">‏نمایه Chrome شما</translation>
 <translation id="8686142379631285985">با <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> به سیستم وارد شده‌اید.</translation>
 <translation id="8687103160920393343">لغو <ph name="FILE_NAME" /></translation>

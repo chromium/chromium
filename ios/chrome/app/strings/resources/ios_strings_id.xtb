@@ -158,6 +158,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="1872096359983322073">Senter</translation>
 <translation id="1882901927376062252">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}}other{{count} Bookmark disimpan di Akun Google Anda, {email}}}</translation>
 <translation id="1883255238294161206">Ciutkan daftar</translation>
+<translation id="1890237935065108104">Setelan ini tidak tersedia.</translation>
 <translation id="1894023287452300670">Pantau harga di sini</translation>
 <translation id="189531189292803889">iPad Anda baru-baru ini dipulihkan, yang mungkin telah mengubah browser default Anda.</translation>
 <translation id="1910975740091000991">Chrome untuk iOS</translation>
@@ -418,6 +419,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3328801116991980348">Informasi situs</translation>
 <translation id="3340938510625667914">Tindakan Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{Bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
+<translation id="3349676726073650389">Situs dan penelusuran yang Anda ikuti disimpan di Akun Google Anda. Anda dapat mengelola konten yang Anda ikuti di setelan kapan saja.</translation>
 <translation id="3365529507898144230">Simpan di Foto</translation>
 <translation id="3371831930909698441">Terjemahan tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="3377063233124932127">Kini bookmark, sandi, dan data tersimpan lainnya ada di bagian atas.</translation>
@@ -781,6 +783,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5597915316964418992">Buka Petak Tab</translation>
 <translation id="560322036295180549">Dinonaktifkan oleh organisasi Anda</translation>
 <translation id="5614553682702429503">Simpan sandi?</translation>
+<translation id="5619871095170816857">Kartu ini menampilkan tab terbuka yang terakhir digunakan di semua perangkat yang disinkronkan dalam 24 jam terakhir.</translation>
 <translation id="5626245204502895507">File tidak dapat didownload saat ini.</translation>
 <translation id="562753339521713441">Jalankan Pemeriksaan Keamanan</translation>
 <translation id="5631164295104953411">Tambahkan Metode Pembayaran</translation>
@@ -1086,6 +1089,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7082853213442715471">Jika diaktifkan, teknologi web tertentu akan diblokir, yang dapat menyebabkan beberapa situs dimuat lebih lambat atau tidak beroperasi dengan benar.</translation>
 <translation id="7095110968493193530">Ke Pengelola Sandi Google untuk <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Tab Terbaru</translation>
+<translation id="7101580180124131336">Sekarang Anda akan melihat konten dari dan tentang <ph name="CHANNEL_NAME" /> di tab Mengikuti.</translation>
 <translation id="7102005569666697658">Mendownload… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
 <translation id="7108762695052995889">Buka Situs</translation>
@@ -1166,6 +1170,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="764827086632467055">Ketuk Aplikasi Browser Default</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7666861622396822790">Anda dapat mengelolanya di <ph name="BEGIN_LINK" />Setelan Konten<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTAL</translation>
 <translation id="7679915578945954324">Alamat situs disalin</translation>
 <translation id="7687508192620387263">File Kalender Tersedia</translation>
@@ -1239,6 +1244,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8032569120109842252">Mengikuti</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Histori penelusuran<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
 <translation id="804427445359061970">Tab Anda dari perangkat lain akan ditampilkan di sini</translation>
+<translation id="8044568254381073661">Simpan Tanpa Enkripsi</translation>
 <translation id="8059533439631660104">Ciutkan bagian.</translation>
 <translation id="8065292699993359127">Buka URL di Chrome dalam mode Samaran</translation>
 <translation id="806745655614357130">Tetap pisahkan data saya</translation>
@@ -1293,7 +1299,9 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8386068868580335421">Reset</translation>
 <translation id="838867811594159347">Masukkan Frasa Sandi…</translation>
 <translation id="8393889347136007944">Tab tidak digunakan selama <ph name="THRESHOLD" /> hari</translation>
+<translation id="8395339334550012808">Anda akan segera melihat konten dari dan tentang <ph name="CHANNEL_NAME" /> di tab Mengikuti.</translation>
 <translation id="8395378633507873708">Kolom URL</translation>
+<translation id="8403629764260204788">Menyembunyikan "Lanjutkan Menjelajah"</translation>
 <translation id="8407669440184693619">Tidak ada sandi yang ditemukan untuk situs ini</translation>
 <translation id="842017693807136194">Login Dengan</translation>
 <translation id="8423121072346537366">Baru Saja</translation>

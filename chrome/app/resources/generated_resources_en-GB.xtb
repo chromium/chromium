@@ -486,6 +486,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1390548061267426325">Open as a Standard Tab</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> is not authorised to print to <ph name="PRINTER_NAME" />. Please contact your administrator.</translation>
 <translation id="1392047138650695757">User dictionaries</translation>
+<translation id="139300021892314943">Limit who can sign in</translation>
 <translation id="1393283411312835250">Sun and clouds</translation>
 <translation id="1395730723686586365">Updater started</translation>
 <translation id="1395832189806039783">Highlight item with keyboard focus</translation>
@@ -2531,6 +2532,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2956070239128776395">Section nested in group: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Pack extension warning</translation>
 <translation id="2959127025785722291">Something went wrong. Scanning could not be completed. Please try again.</translation>
+<translation id="2959474507964749987">This encrypted file might be a virus or malware.<ph name="LINE_BREAK" />To check if it's unsafe, you can send the file and password to Google Safe Browsing. Scans usually take a few seconds.<ph name="LINE_BREAK" />To scan, add the file's password.</translation>
 <translation id="2959842337402130152">Cannot restore due to lack of storage space. Free up <ph name="SPACE_REQUIRED" /> from the device and try again.</translation>
 <translation id="2960208947600937804">There was an error while configuring Linux. Contact your administrator.</translation>
 <translation id="2960942820860729477">Refresh rate</translation>
@@ -3994,6 +3996,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4147099377280085053">Select a braille table</translation>
 <translation id="4147911968024186208">Please retry. If you see this error again, please contact your support representative.</translation>
 <translation id="414800391140809654">can use your info as you browse</translation>
+<translation id="4148195018520464922">You can limit sign-in to certain users. This removes the 'Add person' option on the sign-in screen. You can also remove current users.</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4150569944729499860">Screen context</translation>
 <translation id="4151449637210235443">Tell us about your recent gameplay</translation>
@@ -4192,6 +4195,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4322394346347055525">Close Other Tabs</translation>
 <translation id="4324577459193912240">File incomplete</translation>
 <translation id="4325237902968425115">Uninstalling <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4325433082696797523">Storage and power</translation>
 <translation id="4326146840124313313">Chrome’s strongest security does more to protect you against dangerous websites, downloads and extensions</translation>
 <translation id="4326484226728068206">Items in your basket <ph name="DISCOUNT_TEXT" /> from <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, viewed <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Ice water</translation>
@@ -5176,6 +5180,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5146896637028965135">System voice</translation>
 <translation id="5147992672778369947">Use recommended password</translation>
 <translation id="5148277445782867161">Google's location service uses sources such as Wi-Fi, mobile networks and sensors to help estimate your device’s location.</translation>
+<translation id="5148285448107770349">Password must be at least 8 characters</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">Free up disk space or select data may be automatically deleted</translation>
 <translation id="5153234146675181447">Forget phone</translation>
@@ -8151,6 +8156,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7617263010641145920">Turn on Play Store</translation>
 <translation id="7617648809369507487">Use quieter messaging</translation>
 <translation id="7621382409404463535">The system failed to save device configuration.</translation>
+<translation id="7621480263311228380">Not allowed to use info they've saved about you</translation>
 <translation id="7621595347123595643">You will not be able to recover local data if you forget your password or PIN.</translation>
 <translation id="7622114377921274169">Charging.</translation>
 <translation id="7622768823216805500">Sites usually install payment handlers for shopping features like easier checkout</translation>
@@ -8704,6 +8710,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8037117027592400564">Read all text spoken using synthesised speech</translation>
 <translation id="8037357227543935929">Ask (default)</translation>
 <translation id="803771048473350947">File</translation>
+<translation id="8037801708772278989">Checked just now</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copying 1 file to <ph name="CLOUD_PROVIDER" />}other{Copying {NUM_OF_FILES} files to <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8041267120753677077">Stream your phone's apps</translation>

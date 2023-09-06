@@ -36,6 +36,7 @@ Megjegyzések:
 <translation id="2120238739383482109">Megnyitja a Chrome-könyvjelzőket.</translation>
 <translation id="2147651015520127414">A Chrome ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="2199719347983604670">A Chrome-szinkronizálás adatai</translation>
+<translation id="2311240109311056604">Megnyitja a Chrome dinós játékát.</translation>
 <translation id="2339201583852607431">Jelszavát a rendszer a Google-fiókjába (<ph name="EMAIL" />) menti.</translation>
 <translation id="2342919707875585281">A Chrome megosztja a tartózkodási helyét az Ön által engedélyezett webhelyekkel.</translation>
 <translation id="2347208864470321755">Ha a funkció be van kapcsolva, a Chrome felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
@@ -95,10 +96,12 @@ Megjegyzések:
 <translation id="484033449593719797">A Chrome bétaverziója nem támogatja</translation>
 <translation id="4840404732697892756">A Google Jelszókezelő ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="4903674399067644695">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
+<translation id="49200511069271369">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe bejelentkezik, valamint azt is, hogy miként használhatja a Chrome-ot. A rendszergazda beállíthat, illetve korlátozhat bizonyos funkciókat.</translation>
 <translation id="5030102366287574140">A Chrome segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben.</translation>
 <translation id="5108659628347594808">A Chrome fejlesztése</translation>
 <translation id="5112925986883715005">Chrome-olvasólista megtekintése</translation>
 <translation id="5119391094379141756">Válassza ki a Chrome böngészőt.</translation>
+<translation id="5156818928311866442">Megnyitja a Chrome beállításait a Chrome alapértelmezett böngészőként való beállításához.</translation>
 <translation id="5162467219239570114">A Chrome elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chrome újabb verzióit.</translation>
 <translation id="5190139289262548459">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe be van jelentkezve, és a Chrome használatának módját is.</translation>
 <translation id="5389212809648216794">A Google Chrome nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
@@ -145,6 +148,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7173660919484573146">A Chrome a Face ID segítségével ellenőrzi a jogosultságot a jelszavakhoz való hozzáféréshez.</translation>
 <translation id="7187993566681480880">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="72119412072970160">A Google Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPad eszközén.</translation>
+<translation id="7254380941803999489">A Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="7261678641327190792">A Chrome nem tudja ellenőrizni a jelszavakat</translation>
 <translation id="7272930098487145294">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chrome hozzáadhassa őket a fotóihoz.</translation>
 <translation id="7275945473750112644">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chrome-adatai törölve lesznek erről az eszközről</translation>

@@ -36,6 +36,7 @@ Aspetos a considerar:
 <translation id="2120238739383482109">Abre os marcadores do Chrome.</translation>
 <translation id="2147651015520127414">O Chrome confirmou que <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
 <translation id="2199719347983604670">Dados da Sincronização do Chrome</translation>
+<translation id="2311240109311056604">Abre o jogo Chrome Dino.</translation>
 <translation id="2339201583852607431">A palavra-passe será guardada na sua Conta Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">O Chrome partilha a sua localização com os sites que permite.</translation>
 <translation id="2347208864470321755">Se esta funcionalidade estiver ativada, o Chrome oferecer-se-á para traduzir páginas escritas noutros idiomas com o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -71,6 +72,7 @@ Aspetos a considerar:
 <translation id="3655656110921623717">Isto significa que o Chrome irá pedir sempre o site para dispositivos móveis.</translation>
 <translation id="3720541637541300822">Bloquear os separadores de navegação anónima quando fecha o Chrome</translation>
 <translation id="3741995255368156336">Abre a Lista de leitura do Chrome.</translation>
+<translation id="3744018071945602754">Faça a gestão das palavras-passe no Chrome</translation>
 <translation id="3827545470516145620">Vai obter a proteção de segurança padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode utilizar a câmara neste momento</translation>
 <translation id="3901001113120561395">Tire o máximo partido do Chrome.</translation>
@@ -82,6 +84,7 @@ Aspetos a considerar:
 <translation id="417201473131094001">Opção não suportada no Chrome Canary.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estava a utilizar o Chrome e deixou marcadores, palavras-passe e outras definições neste dispositivo.</translation>
 <translation id="424864128008805179">Quer terminar sessão no Chrome?</translation>
+<translation id="4453284704333523777">Faça a gestão das definições do Chrome</translation>
 <translation id="4508370294876102450">Abra o Chrome a partir de qualquer app</translation>
 <translation id="4523886039239821078">Alguns suplementos provocam falhas no sistema do Chrome. Desinstale:</translation>
 <translation id="4633328489441962921">O Chrome não consegue verificar se existem atualizações.</translation>
@@ -95,10 +98,12 @@ Aspetos a considerar:
 <translation id="484033449593719797">Opção não suportada no Chrome Beta.</translation>
 <translation id="4840404732697892756">O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="4903674399067644695">Este cartão mostra sugestões sobre como tirar o máximo partido do Chrome.</translation>
+<translation id="49200511069271369">A sua organização, <ph name="DOMAIN" />, gere a conta na qual está a iniciar sessão e a forma como o Chrome pode ser usado. O seu administrador pode configurar ou restringir determinadas funcionalidades.</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>
 <translation id="5108659628347594808">Melhore o Chrome</translation>
 <translation id="5112925986883715005">Veja a Lista de leitura do Chrome</translation>
 <translation id="5119391094379141756">Selecione o Chrome</translation>
+<translation id="5156818928311866442">Abre a definição do Chrome para definir o Chrome como o navegador predefinido.</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chrome.</translation>
 <translation id="5190139289262548459">A sua organização, <ph name="DOMAIN" />, gere a conta na qual tem sessão iniciada e como o Chrome é usado.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
@@ -116,6 +121,7 @@ Aspetos a considerar:
 <translation id="571296537125272375">Está offline. O Chrome não consegue verificar se existem atualizações.</translation>
 <translation id="5716154293141027663">Abra o Chrome sempre que tocar em links noutras apps</translation>
 <translation id="5808435672482059465">Ver Histórico do Chrome</translation>
+<translation id="589695154992054845">Abre o Gestor de Palavras-passe no Chrome.</translation>
 <translation id="5998675059699164418">A sua organização requer que inicie sessão para utilizar o Chrome.</translation>
 <translation id="6054613632208573261">Utilize o Chrome por predefinição</translation>
 <translation id="6063091872902370735">Permitir o início de sessão no Chrome</translation>
@@ -145,6 +151,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7173660919484573146">O Chrome utiliza o Face ID para assegurar o acesso autorizado às suas palavras-passe.</translation>
 <translation id="7187993566681480880">Mantém a sua segurança no Chrome e pode ser utilizada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="72119412072970160">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe da Google noutras apps no seu iPad.</translation>
+<translation id="7254380941803999489">Defina o Chrome como o navegador predefinido</translation>
 <translation id="7261678641327190792">O Chrome não consegue verificar as suas palavras-passe.</translation>
 <translation id="7272930098487145294">Para guardar imagens, toque em Definições para permitir que o Chrome as adicione às suas fotos.</translation>
 <translation id="7275945473750112644">A sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, pelo que os seus dados do Chrome serão limpos deste dispositivo</translation>
@@ -203,6 +210,7 @@ Aspetos a considerar:
   • Se o Chrome falhar, os detalhes sobre a falha podem incluir algumas informações pessoais.
 
   • Se ativar a sincronização, as métricas também podem incluir informações sobre os URLs que visita.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Abre as definições no Chrome.</translation>
 <translation id="9112744793181547300">Quer definir o Chrome como a predefinição?</translation>
 <translation id="9122931302567044771">Isto significa que o Chrome irá pedir sempre o site para computador.</translation>
 <translation id="9181628561061032322">Abre os separadores recentes do Chrome.</translation>

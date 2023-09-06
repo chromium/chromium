@@ -4189,6 +4189,7 @@
 <translation id="4322394346347055525">အခြား တဲဘ်များ ပိတ်ရန်</translation>
 <translation id="4324577459193912240">ဖိုင်မပြည့်စုံပါ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> ကို ဖယ်ရှားနေသည်...</translation>
+<translation id="4325433082696797523">သိုလှောင်ခန်းနှင့် ပါဝါ</translation>
 <translation id="4326146840124313313">Chrome ၏ အတောင့်တင်းဆုံး လုံခြုံရေးသည် အန္တရာယ်ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများရန်မှ ကာကွယ်ရန် ပိုမိုလုပ်ဆောင်ပေးသည်</translation>
 <translation id="4326484226728068206">သင့်ဈေးခြင်းတောင်းအတွင်းရှိ <ph name="MERCHANT_DOMAIN" />၊ <ph name="MERCHANT_NAME" /> ထံမှ <ph name="DISCOUNT_TEXT" /> ပစ္စည်းများ၊ ကြည့်ရှုခဲ့ချိန် <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">ရေခဲရေ</translation>
@@ -5173,6 +5174,7 @@
 <translation id="5146896637028965135">စနစ်၏အသံ</translation>
 <translation id="5147992672778369947">အကြံပြုထားသည့် စကားဝှက် သုံးနိုင်သည်</translation>
 <translation id="5148277445782867161">Google ၏ တည်နေရာဝန်ဆောင်မှုသည် သင့်စက်ပစ္စည်း၏ တည်နေရာကို ခန့်မှန်းနိုင်ရန် Wi-Fi၊ မိုဘိုင်းကွန်ရက်များနှင့် အာရုံခံကိရိယာများကဲ့သို့သော အရင်းအမြစ်များကို အသုံးပြုပါသည်။</translation>
+<translation id="5148285448107770349">စကားဝှက်သည် အနည်းဆုံးအက္ခရာ ၈ လုံးရှိရမည်</translation>
 <translation id="5150254825601720210">Netscape အသိမှတ်ပြုလက်မှတ် SSL ဆာဗာအမည်</translation>
 <translation id="5151354047782775295">နေရာလွတ်ပြုလုပ်ပါ။ သို့မဟုတ်လျှင် ဒေတာရွေးချယ်ခြင်းကို အလိုအလျောက်ဖျက်သွားပါမည်</translation>
 <translation id="5153234146675181447">ဖုန်းကို မေ့ပစ်ပါ</translation>
@@ -8697,6 +8699,7 @@
 <translation id="8037117027592400564">ဖန်တီး နှုတ်စကားကို အသုံးပြုပြီး ပြောကြားခဲ့သည့် စာသား အားလုံးကို ဖတ်ရန်</translation>
 <translation id="8037357227543935929">မေးရန် (မူရင်း)</translation>
 <translation id="803771048473350947">ဖိုင်</translation>
+<translation id="8037801708772278989">ယခုလေးတင် စစ်ဆေးခဲ့သည်</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{ဖိုင် ၁ ဖိုင်ကို <ph name="CLOUD_PROVIDER" /> သို့ မိတ္တူကူးနေသည်}other{ဖိုင် {NUM_OF_FILES} ဖိုင်ကို <ph name="CLOUD_PROVIDER" /> သို့ မိတ္တူကူးနေသည်}}</translation>
 <translation id="8041089156583427627">အကြံပြုချက် ပို့ရန်</translation>
 <translation id="8041267120753677077">ဖုန်းရှိအက်ပ်များ တိုက်ရိုက်လွှင့်နိုင်သည်</translation>

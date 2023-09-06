@@ -64,6 +64,7 @@ Aandachtspunten:
 <translation id="322254490661677575">Geef je wachtwoordzin op als je Chrome-gegevens wilt gebruiken en opslaan in je Google-account.</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
 <translation id="3345341804167540816">Chrome overal gebruiken</translation>
+<translation id="3472587960215700950">Chrome gebruikt Google Maps om je routes en lokale informatie te geven voor gevonden adressen.</translation>
 <translation id="3503014945441706099">Gebruik ook de uitgebreide versie van Safe Browsing voor dit Chrome-profiel</translation>
 <translation id="3522659714780527202">Zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="3533694711092285624">Geen opgeslagen wachtwoorden. Chrome kan je wachtwoorden controleren als je deze hebt opgeslagen.</translation>
@@ -74,14 +75,17 @@ Aandachtspunten:
 <translation id="3827545470516145620">Je krijgt standaardbeveiliging op dit apparaat</translation>
 <translation id="384394811301901750">Google Chrome kan je camera momenteel niet gebruiken</translation>
 <translation id="3901001113120561395">Haal het maximale uit Chrome.</translation>
+<translation id="3967382818307165056">Betaalmethoden beheren in Chrome</translation>
 <translation id="3980220367029651214">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chrome-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Je organisatie vereist dat je uitgelogd blijft bij Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome heeft geen toegang tot je foto's of video's. Geef in iOS toegang via Instellingen &gt; Privacy &gt; Foto's.</translation>
 <translation id="4064699917955374540">Bevestig dat jij het bent als je Chrome-gegevens wilt gebruiken en opslaan in je Google-account.</translation>
+<translation id="4067858366537947361">Chrome-incognitotabblad openen</translation>
 <translation id="4093042601582616698">Chrome instellen als je standaardbrowser?</translation>
 <translation id="417201473131094001">Niet ondersteund in Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> heeft Chrome gebruikt en heeft bookmarks, wachtwoorden en andere instellingen op dit apparaat laten staan.</translation>
 <translation id="424864128008805179">Uitloggen bij Chrome?</translation>
+<translation id="4251174643044751591">Opent de pagina met instellingen voor betaalmethoden in Chrome.</translation>
 <translation id="4508370294876102450">Chrome openen via elke app</translation>
 <translation id="4523886039239821078">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder de volgende add-ons:</translation>
 <translation id="4633328489441962921">Chrome kan niet checken op updates</translation>
@@ -121,6 +125,7 @@ Aandachtspunten:
 <translation id="6063091872902370735">Inloggen bij Chrome toestaan</translation>
 <translation id="6110625574506755980">Sommige Chrome-functies zijn niet meer beschikbaar.</translation>
 <translation id="6181930887571472871">Overschakelen naar Chrome</translation>
+<translation id="6228768456496298352">Chrome neemt adressen via Google Maps waar om je routes en lokale informatie te geven.</translation>
 <translation id="6238746320622508509">Laat Chrome je incognitotabbladen vergrendelen.</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
 <translation id="6412673304250309937">Controleert URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen.</translation>
@@ -130,6 +135,7 @@ Aandachtspunten:
 <translation id="6646696210740573446">Stuurt een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Google sturen.</translation>
 <translation id="6648150602980899529">Je logt in met een account dat wordt beheerd door <ph name="DOMAIN" />, waarmee je de eigenaar beheer geeft over je Chrome-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chrome, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
 <translation id="6676840375528380067">Je Chrome-gegevens van dit apparaat wissen?</translation>
+<translation id="6683891932310469419">Opent de pagina met je Chrome-geschiedenis.</translation>
 <translation id="6709398533399187136">Je wachtwoord is gelekt bij een gegevenslek. Google Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen.</translation>
 <translation id="6815466750807582739">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
 
@@ -138,6 +144,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="6916015246697034114">Zoeken met je stem in Chrome</translation>
 <translation id="6964931465519938134">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="6975725306479268850">Chrome kiezen voor automatisch invullen</translation>
+<translation id="7056826488869329999">Opent de Veiligheidscheck in Chrome en voert deze uit.</translation>
 <translation id="7059914902409643750">Chrome personaliseren</translation>
 <translation id="7124339256045485976">Houd Chrome up-to-date</translation>
 <translation id="7161390184744336561">Google Chrome is verouderd</translation>
@@ -168,6 +175,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8160472928944011082">Chrome kan niet updaten</translation>
 <translation id="8174679664544842874">Opent een nieuw tabblad in Chrome.</translation>
 <translation id="8213758103105806860">Chrome-bookmarks bekijken</translation>
+<translation id="8328903609881776074">Opent een nieuw Chrome-incognitotabblad.</translation>
 <translation id="8357607116237445042">Kies of je je Chrome-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="840168496893712993">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder deze add-ons.</translation>

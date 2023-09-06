@@ -4795,6 +4795,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4820236583224459650">Angiv som aktiv billet</translation>
 <translation id="4820795723433418303">Brug funktionstaster som tasterne i den øverste række</translation>
 <translation id="4821935166599369261">&amp;Profilering aktiveret</translation>
+<translation id="4823193082697477185">Tilgå delte filer, mapper eller diske på et lokalt netværk. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Læs og rediger bruger- og enhedsindstillinger</translation>
 <translation id="4824037980212326045">Backup og gendannelse i Linux</translation>
 <translation id="4824958205181053313">Vil du annullere synkroniseringen?</translation>
@@ -8705,6 +8706,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8037117027592400564">Læs hele teksten højt ved hjælp af talesyntese</translation>
 <translation id="8037357227543935929">Spørg (standardindstilling)</translation>
 <translation id="803771048473350947">Fil</translation>
+<translation id="8037801708772278989">Tjekket lige nu</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopierer 1 fil til <ph name="CLOUD_PROVIDER" />}one{Kopierer {NUM_OF_FILES} fil til <ph name="CLOUD_PROVIDER" />}other{Kopierer {NUM_OF_FILES} filer til <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8041267120753677077">Stream din telefons apps</translation>

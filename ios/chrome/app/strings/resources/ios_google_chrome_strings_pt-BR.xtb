@@ -64,6 +64,7 @@ Considerações:
 <translation id="322254490661677575">Digite sua senha longa para usar e salvar dados do Chrome na sua Conta do Google.</translation>
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
 <translation id="3345341804167540816">Usar o Chrome em qualquer lugar</translation>
+<translation id="3472587960215700950">O Chrome usa o Google Maps para fornecer rotas e informações locais sobre endereços detectados.</translation>
 <translation id="3503014945441706099">Use também o recurso Navegação segura com maior proteção neste perfil do Chrome</translation>
 <translation id="3522659714780527202">Para ver suas guias em qualquer lugar onde você usar o Chrome, ative a sincronização</translation>
 <translation id="3533694711092285624">Nenhuma senha salva. O Chrome poderá verificar suas senhas quando elas forem salvas.</translation>
@@ -74,14 +75,17 @@ Considerações:
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode usar a câmera agora</translation>
 <translation id="3901001113120561395">Aproveite o Chrome ao máximo.</translation>
+<translation id="3967382818307165056">Gerenciar formas de pagamento no Chrome</translation>
 <translation id="3980220367029651214">Você está trocando de contas de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Seus dados já existentes do Chrome são gerenciados por <ph name="DOMAIN" />. Seus dados serão excluídos desse dispositivo, mas permanecerão em <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Sua organização exige que a conta permaneça desconectada do Chrome.</translation>
 <translation id="3988789688219830639">O Google Chrome não têm acesso às suas fotos ou vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
 <translation id="4064699917955374540">Confirme sua identidade para usar e salvar dados do Chrome na sua Conta do Google.</translation>
+<translation id="4067858366537947361">Abrir uma guia anônima no Chrome</translation>
 <translation id="4093042601582616698">Definir o Google Chrome como o navegador padrão?</translation>
 <translation id="417201473131094001">Indisponível no Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estava usando o Chrome e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
+<translation id="4251174643044751591">Abre a página de configurações de formas de pagamento do Chrome.</translation>
 <translation id="4508370294876102450">Abrir o Chrome por qualquer app</translation>
 <translation id="4523886039239821078">Alguns complementos causam a falha do Google Chrome. Desinstale-os.</translation>
 <translation id="4633328489441962921">Não é possível verificar se há atualizações</translation>
@@ -121,6 +125,7 @@ Considerações:
 <translation id="6063091872902370735">Permitir login no Chrome</translation>
 <translation id="6110625574506755980">Você vai perder o acesso a alguns recursos do Chrome.</translation>
 <translation id="6181930887571472871">Mudar para o Chrome</translation>
+<translation id="6228768456496298352">O Chrome detecta endereços usando o Google Maps para mostrar rotas e informações locais.</translation>
 <translation id="6238746320622508509">Permita que o Chrome bloqueie suas guias anônimas.</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
 <translation id="6412673304250309937">Verifica se os URLs estão em uma lista de sites não seguros armazenada no Chrome. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar URLs, incluindo partes do conteúdo da página, para o "Navegação segura".</translation>
@@ -130,6 +135,7 @@ Considerações:
 <translation id="6646696210740573446">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar o URL, incluindo partes do conteúdo da página, ao Google.</translation>
 <translation id="6648150602980899529">Você está fazendo login com uma conta gerenciada por <ph name="DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chrome, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chrome, seus dados serão excluídos desse dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
 <translation id="6676840375528380067">Limpar seus dados do Chrome deste dispositivo?</translation>
+<translation id="6683891932310469419">Abre a página de histórico do Chrome.</translation>
 <translation id="6709398533399187136">Sua senha foi exposta em uma violação de dados. O Gerenciador de senhas do Google recomenda que ela seja mudada agora mesmo.</translation>
 <translation id="6815466750807582739">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
 
@@ -138,6 +144,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6916015246697034114">Pesquisar com voz no Chrome</translation>
 <translation id="6964931465519938134">Agora você poderá usar o Chrome sempre que tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
+<translation id="7056826488869329999">Abre e realiza a Confirmação de segurança no Chrome.</translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>
 <translation id="7124339256045485976">Manter o Chrome atualizado</translation>
 <translation id="7161390184744336561">O Google Chrome está desatualizado</translation>
@@ -168,6 +175,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
 <translation id="8174679664544842874">Abre uma nova guia no Chrome.</translation>
 <translation id="8213758103105806860">Visualizar favoritos do Chrome</translation>
+<translation id="8328903609881776074">Abre uma nova guia anônima no Chrome.</translation>
 <translation id="8357607116237445042">Você quer apagar ou manter os dados do Chrome neste dispositivo?</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="840168496893712993">Alguns complementos causam a falha do Google Chrome. Tente desinstalá-los.</translation>

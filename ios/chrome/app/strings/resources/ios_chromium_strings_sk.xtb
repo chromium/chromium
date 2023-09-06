@@ -10,6 +10,7 @@
 <translation id="1431818719585918472">Umožnite prehliadaču Chromium uzamknúť vaše karty inkognito.</translation>
 <translation id="1472013873724362412">Váš účet nefunguje v prehliadači Chromium. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="1507010443238049608">Pomoc so zlepšovaním funkcií a výkonu prehliadača Chromium</translation>
+<translation id="1513122820609681462">Nastaviť Chromium ako predvolený prehliadač</translation>
 <translation id="1531155317299575425">Zobrazí výzvy na prihlásenie do prehliadača Chromium.</translation>
 <translation id="1591119736686995611">Otvorí mriežku kariet v prehliadači Chromium.</translation>
 <translation id="1617663976202781617">Údaje zo synchronizácie prehliadača Chromium</translation>
@@ -131,11 +132,13 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Ako Chromium uchováva vaše údaje v súkromí<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium teraz podporuje pre váš spravovaný účet pravidlá pre používateľov</translation>
 <translation id="6752854822223394465">Vaša organizácia nastavuje Chromium…</translation>
+<translation id="6794054469102824109">Otvorí hru Chromium Dino.</translation>
 <translation id="6820823224820483452">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
 <translation id="6911341667534646387">Naďalej používajte údaje prehliadača Chromium vo svojom účte Google</translation>
 <translation id="7006920032187763988">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPade použiť v iných aplikáciách.</translation>
 <translation id="7018284295775193585">Chromium sa nedá aktualizovať</translation>
 <translation id="7045244423563602563">Upravte Chromium podľa seba</translation>
+<translation id="7055269218854630176">Vaša organizácia <ph name="DOMAIN" /> spravuje účet, do ktorého sa prihlasujete, a spôsob, akým sa dá Chromium používať. Váš správca môže nastaviť alebo obmedziť určité funkcie.</translation>
 <translation id="7099326575020694068">Chromium nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
 <translation id="7165402419892018581">Ak chcete využívať automatické dopĺňanie, vyberte si Chromium</translation>
 <translation id="7175400662502680481">Pri porušení ochrany údajov došlo k prezradeniu vášho hesla. Správca hesiel odporúča okamžite ho zmeniť.</translation>
@@ -174,6 +177,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="865600487977764604">Chráni vás v prehliadači Chromium a môže zlepšiť zabezpečenie v ďalších aplikáciách Googlu, keď sa prihlásite.</translation>
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>
 <translation id="8685813584220679697">Prihláste sa na tomto webe a v prehliadači Chromium.</translation>
+<translation id="8730503818204408000">Otvorí nastavenia prehliadača Chromium, aby bolo možné Chromium nakonfigurovať ako predvolený prehliadač.</translation>
 <translation id="8747378496147986285">Keď túto možnosť zapnete:
 <ph name="BEGIN_INDENT" />  • budete pomáhať zlepšovať Chromium pre ľudí, ktorí ho používajú rovnako ako vy.<ph name="END_INDENT" />
 
@@ -192,5 +196,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="9110075932708282655">Predvolene používať Chromium</translation>
 <translation id="921174536258924340">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>
 <translation id="971488683725792095">Automaticky používajte Chromium, keď klepnete na odkazy v správach, dokumentoch a aplikáciách.</translation>
+<translation id="981812233959540767">Hrať hru Chromium Dino</translation>
 <translation id="985602178874221306">Autori prehliadača Chromium</translation>
 </translationbundle>

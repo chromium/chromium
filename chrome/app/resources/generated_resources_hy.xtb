@@ -4778,6 +4778,7 @@
 <translation id="4820236583224459650">Նշել որպես ակտիվ տոմս</translation>
 <translation id="4820795723433418303">Գործառնական ստեղներն օգտագործել որպես վերևի շարքի ստեղներ</translation>
 <translation id="4821935166599369261">&amp;Տվյալների հավաքումը միացված է</translation>
+<translation id="4823193082697477185">Օգտագործեք տեղական ցանցի ընդհանուր ֆայլերը, պանակները և դրայվները։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Կարդալ և փոփոխել օգտատիրոջ և սարքի կարգավորումները</translation>
 <translation id="4824037980212326045">Լինուքսի պահուստավորում և վերականգնում</translation>
 <translation id="4824958205181053313">Չեղարկե՞լ համաժամացումը</translation>
@@ -8686,6 +8687,7 @@
 <translation id="8037117027592400564">Տեքստի ընթերցում սինթեզված խոսքի միջոցով</translation>
 <translation id="8037357227543935929">Հարցնել (կանխադրված)</translation>
 <translation id="803771048473350947">Ֆայլ</translation>
+<translation id="8037801708772278989">Ստուգվել է հենց նոր</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Պատճենվում է 1 ֆայլ <ph name="CLOUD_PROVIDER" />-ում}one{Պատճենվում է {NUM_OF_FILES} ֆայլ <ph name="CLOUD_PROVIDER" />-ում}other{Պատճենվում է {NUM_OF_FILES} ֆայլ <ph name="CLOUD_PROVIDER" />-ում}}</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8041267120753677077">Հեռարձակել հեռախոսի հավելվածները</translation>

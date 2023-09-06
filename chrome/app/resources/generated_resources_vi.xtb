@@ -486,6 +486,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1390548061267426325">Mở dưới dạng thẻ thông thường</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> không được phép in bằng <ph name="PRINTER_NAME" />. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="1392047138650695757">Từ điển người dùng</translation>
+<translation id="139300021892314943">Giới hạn những người có thể đăng nhập</translation>
 <translation id="1393283411312835250">Mặt trời và những đám mây</translation>
 <translation id="1395730723686586365">Trình cập nhật đã bắt đầu</translation>
 <translation id="1395832189806039783">Đánh dấu mục bằng tiêu điểm lấy bằng bàn phím</translation>
@@ -2531,6 +2532,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2956070239128776395">Phần lồng trong nhóm: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Cảnh báo đóng gói tiện ích</translation>
 <translation id="2959127025785722291">Đã xảy ra lỗi. Không quét được. Vui lòng thử lại.</translation>
+<translation id="2959474507964749987">Tệp đã mã hoá này có thể là virus hoặc phần mềm độc hại.<ph name="LINE_BREAK" />Để kiểm tra xem tệp có an toàn hay không, bạn có thể gửi tệp và mật khẩu tới tính năng Duyệt web An toàn của Google. Quá trình quét thường mất vài giây.<ph name="LINE_BREAK" />Để quét, hãy thêm mật khẩu của tệp.</translation>
 <translation id="2959842337402130152">Không thể khôi phục do thiếu dung lượng bộ nhớ. Hãy giải phóng <ph name="SPACE_REQUIRED" /> khỏi thiết bị rồi thử lại.</translation>
 <translation id="2960208947600937804">Đã xảy ra lỗi khi định cấu hình Linux. Hãy liên hệ với quản trị viên của bạn.</translation>
 <translation id="2960942820860729477">Tốc độ làm mới</translation>
@@ -3994,6 +3996,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4147099377280085053">Chọn một bảng chữ nổi</translation>
 <translation id="4147911968024186208">Vui lòng thử lại. Nếu bạn vẫn thấy lỗi này, vui lòng liên hệ với người đại diện hỗ trợ của bạn.</translation>
 <translation id="414800391140809654">có thể sử dụng thông tin của bạn khi bạn duyệt web</translation>
+<translation id="4148195018520464922">Bạn có thể giới hạn sao cho chỉ một số người dùng nhất định có thể đăng nhập. Khi đó, tuỳ chọn "Thêm người" trên màn hình đăng nhập sẽ bị xoá. Bạn cũng có thể xoá người dùng hiện tại.</translation>
 <translation id="4150201353443180367">Hiển thị</translation>
 <translation id="4150569944729499860">Ngữ cảnh trên màn hình</translation>
 <translation id="4151449637210235443">Hãy cho chúng tôi biết lối chơi gần đây của bạn</translation>
@@ -4192,6 +4195,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4322394346347055525">Đóng các thẻ khác</translation>
 <translation id="4324577459193912240">Tệp không hoàn chỉnh</translation>
 <translation id="4325237902968425115">Đang gỡ cài đặt <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">Bộ nhớ và nguồn điện</translation>
 <translation id="4326146840124313313">Tính năng bảo mật mạnh nhất của Chrome hoạt động hiệu quả hơn giúp bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích nguy hiểm</translation>
 <translation id="4326484226728068206">Các mặt hàng trong giỏ hàng <ph name="DISCOUNT_TEXT" /> từ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, đã xem <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Nước đá</translation>
@@ -5176,6 +5180,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5146896637028965135">Giọng nói của hệ thống</translation>
 <translation id="5147992672778369947">Sử dụng mật khẩu được đề xuất</translation>
 <translation id="5148277445782867161">Dịch vụ vị trí của Google sử dụng các nguồn như mạng di động, Wi-Fi và các cảm biến để giúp ước đoán vị trí thiết bị của bạn.</translation>
+<translation id="5148285448107770349">Mật khẩu phải có ít nhất 8 ký tự</translation>
 <translation id="5150254825601720210">Tên Máy chủ SSL của Chứng chỉ Netscape</translation>
 <translation id="5151354047782775295">Giải phóng dung lượng đĩa, nếu không một số dữ liệu có thể tự động bị xóa</translation>
 <translation id="5153234146675181447">Quên điện thoại</translation>
@@ -8151,6 +8156,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7617263010641145920">Bật Cửa hàng Play</translation>
 <translation id="7617648809369507487">Dùng thông báo ở dạng tin nhắn</translation>
 <translation id="7621382409404463535">Hệ thống không lưu được cấu hình thiết bị.</translation>
+<translation id="7621480263311228380">Không được phép sử dụng thông tin mà họ đã lưu về bạn</translation>
 <translation id="7621595347123595643">Bạn sẽ không thể khôi phục dữ liệu cục bộ nếu quên mật khẩu hoặc mã PIN.</translation>
 <translation id="7622114377921274169">Đang sạc.</translation>
 <translation id="7622768823216805500">Các trang web thường cài đặt trình xử lý thanh toán cho các tính năng mua sắm như quy trình thanh toán dễ dàng hơn</translation>
@@ -8704,6 +8710,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8037117027592400564">Đọc tất cả văn bản được nói bằng giọng nói tổng hợp</translation>
 <translation id="8037357227543935929">Yêu cầu (mặc định)</translation>
 <translation id="803771048473350947">Tệp</translation>
+<translation id="8037801708772278989">Vừa kiểm tra xong</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Đang sao chép 1 tệp vào <ph name="CLOUD_PROVIDER" />}other{Đang sao chép {NUM_OF_FILES} tệp vào <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Gửi ý kiến phản hồi</translation>
 <translation id="8041267120753677077">Truyền trực tiếp ứng dụng trên điện thoại</translation>
@@ -9497,6 +9504,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8680251145628383637">Đăng nhập để sử dụng dấu trang, lịch sử hoạt động, mật khẩu và các tùy chọn cài đặt khác trên tất cả thiết bị của bạn. Bạn cũng sẽ tự động được đăng nhập vào các dịch vụ Google của mình.</translation>
 <translation id="8681886425883659911">Quảng cáo sẽ bị chặn trên các trang web được xác định là hiện quảng cáo xâm nhập hoặc gây hiểu lầm</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> đã kết nối và sẵn sàng sử dụng</translation>
+<translation id="8684471948980641888">Cho phép đồng bộ hoá bằng các mạng có đo lượng dữ liệu</translation>
 <translation id="8685540043423825702">Hồ sơ của bạn trên Chrome</translation>
 <translation id="8686142379631285985">Đã đăng nhập bằng <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Huỷ <ph name="FILE_NAME" /></translation>

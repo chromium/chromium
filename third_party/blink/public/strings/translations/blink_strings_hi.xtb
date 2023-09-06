@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">'स्क्रीन शेयर करने' पर स्विच किया गया</translation>
 <translation id="2031987842108996681">लाल चैनल</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' का '<ph name="INVALIDDOMAIN" />' में गलत स्थान पर उपयोग किया गया है.</translation>
+<translation id="2068711044993563745">कम से कम वैल्यू (<ph name="MINIMUM" />), ज़्यादा से ज़्यादा वैल्यू (<ph name="MAXIMUM" />) से कम होनी चाहिए.</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2226276347425096477">कृपया इस टेक्स्ट को <ph name="MAX_CHARACTERS" /> वर्णों या कम तक छोटा करें (वर्तमान में आप <ph name="CURRENT_LENGTH" /> वर्णों का उपयोग कर रहे हैं).</translation>
 <translation id="2247351761944213033">हफ़्ता <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

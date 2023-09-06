@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Пераключана на адлюстраванне</translation>
 <translation id="2031987842108996681">Чырвоны канал</translation>
 <translation id="2060505056492490888">Сімвал "<ph name="DOT" />" у адрасе "<ph name="INVALIDDOMAIN" />" размешчаны няправільна.</translation>
+<translation id="2068711044993563745">Мінімальнае значэнне (<ph name="MINIMUM" />) павінна быць меншым за максімальнае (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Сёння</translation>
 <translation id="2226276347425096477">Паменшыце колькасць сімвалаў у гэтым тэксце значэння, не большага за <ph name="MAX_CHARACTERS" /> (зараз у вас – <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Тыдзень <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

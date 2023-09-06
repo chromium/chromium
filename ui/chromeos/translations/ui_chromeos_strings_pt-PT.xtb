@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3272909651715601089">Não foi possível abrir "<ph name="PATH" />".</translation>
 <translation id="3280431534455935878">A preparar</translation>
+<translation id="3280719573299097127">Está a usar uma rede com acesso limitado. A sincronização de ficheiros foi pausada.</translation>
 <translation id="3280987981688031357">Disco de vinil</translation>
 <translation id="3290356915286466215">Não protegida</translation>
 <translation id="3291218047831493686">Estabeleça ligação a esta rede para alterar a definição de bloqueio do SIM</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">Removeu todas as entradas da seleção.</translation>
 <translation id="5838825566232597749">Workman internacional dos EUA</translation>
 <translation id="5845721951356578987">Enfermeiro</translation>
+<translation id="5858478190805449225">Modo de Poupança de bateria ativado. Tente novamente quando o modo de Poupança de bateria estiver desativado.</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5861477046012235702">Jogador</translation>
 <translation id="5864471791310927901">A procura DHCP falhou</translation>
@@ -920,6 +922,7 @@
 <translation id="8087576439476816834">Transferir, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Partilhado comigo</translation>
 <translation id="8116072619078571545">Água gelada</translation>
+<translation id="8120392982188717723">Permitir sincronização em redes com acesso limitado</translation>
 <translation id="8124093710070495550">Problema de sincronização</translation>
 <translation id="8128733386027980860">Inglês (EUA) com teclado Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" foi partilhado consigo. Não o pode eliminar porque não lhe pertence.</translation>

@@ -8688,6 +8688,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8037117027592400564">Leer todo el texto hablado con la conversión de texto a voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>
+<translation id="8037801708772278989">Comprobado justo ahora</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 archivo a <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} archivos a <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Enviar</translation>
 <translation id="8041267120753677077">Proyecta aplicaciones de tu teléfono</translation>

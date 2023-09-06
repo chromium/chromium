@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">सूर्यास्त नहुँदासम्म अफ रहने छ</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पिरियड किबोर्ड सर्टकट परिवर्तन गरिएको छ। Insert की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace थिच्नुहोस्।</translation>
 <translation id="1770726142253415363">यो एप सारेर रो <ph name="ROW_NUMBER" />, कलम <ph name="COLUMN_NUMBER" /> मा लगिएको छ।</translation>
+<translation id="1771458705381257690">आफ्नो डिभाइस सेटअप र कस्टमाइज गर्न <ph name="NAME" /> खोल्नुहोस्</translation>
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="1774796056689732716">पात्रो, <ph name="CURRENT_MONTH_YEAR" />, हाल चयन गरिएको मिति: <ph name="DATE" />।</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> मध्ये <ph name="NUM_SHOWN_ITEMS" /> औँ सामग्री देखाइँदै छ</translation>
@@ -1192,6 +1193,7 @@
 <translation id="5876666360658629066">अभिभावकको कोड हाल्नुहोस्</translation>
 <translation id="5881540930187678962">फोन हब पछि सेटअप गर्नुहोस्</translation>
 <translation id="5881663018261910378">अफ छ</translation>
+<translation id="5883017113634523865">Google Play बाट <ph name="NAME" /> को एप इन्स्टल गर्नुहोस् र यसका उपलब्ध सबै सुविधाहरू हेर्नुहोस्</translation>
 <translation id="5887954372087850114">"<ph name="DESK_TITLE" />" मा "<ph name="WINDOW_TITLE" />" विन्डो असाइन गरिएको छ र यो विन्डो अन्य सबै डेस्कबाट अनअसाइन गरिएको छ</translation>
 <translation id="588817334757907802">यो फाइल Chrome ब्राउजरमा खोल्नुहोस्</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
@@ -1621,6 +1623,7 @@
 <translation id="7714767791242455379">नयाँ मोबाइल नेटवर्क हाल्नुहोस्</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> सम्म अन रहने छ</translation>
 <translation id="7720410380936703141">फेरि प्रयास गर्नुहोस्</translation>
+<translation id="7721132362314201794">डेस्कको नाम</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{१ सूचना}other{# सूचनाहरू}}</translation>
 <translation id="7723703419796509666">डेभलपर टुल कन्सोल देखाउनुहोस् वा लुकाउनुहोस्</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
