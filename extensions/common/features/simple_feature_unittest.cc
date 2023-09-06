@@ -984,9 +984,6 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
 }
 
 TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kIwaControlledFrame}, {});
-
   // Test a feature that requires a delegated availability check, but the check
   // fails.
   std::string expected_feature_name = "DisallowedFeature";

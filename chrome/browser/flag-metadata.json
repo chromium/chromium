@@ -3023,11 +3023,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-iwa-controlled-frame",
-    "owners": [ "cmp", "odejesush" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-javascript-experimental-shared-memory",
     "owners": [ "syg", "dinfuehr", "pthier" ],
     "expiry_milestone": 120

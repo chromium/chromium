@@ -10,7 +10,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -76,10 +75,6 @@ MATCHER_P(IsApproximately, approximate_value, "") {
 
 class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
  protected:
-  IsolatedWebAppBrowsingDataTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIwaControlledFrame);
-  }
-
   IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
     server_ =
         CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
@@ -153,7 +148,6 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> server_;
 };
 

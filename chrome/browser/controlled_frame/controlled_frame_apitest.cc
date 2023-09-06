@@ -24,8 +24,7 @@ class ControlledFrameServiceWorkerTest
   ControlledFrameServiceWorkerTest() {
     feature_list.InitWithFeatures(
         /*enabled_features=*/{features::kIsolatedWebApps,
-                              features::kIsolatedWebAppDevMode,
-                              features::kIwaControlledFrame},
+                              features::kIsolatedWebAppDevMode},
         /*disabled_features=*/{});
   }
 
