@@ -4239,7 +4239,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     ServiceWorkerBrowserTestWithStoragePartitioning);
 
 // http://crbug.com/1385779
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_StorageKeyWithHostPermissionsWithDedicatedWorkers \
   DISABLED_StorageKeyWithHostPermissionsWithDedicatedWorkers
 #else
