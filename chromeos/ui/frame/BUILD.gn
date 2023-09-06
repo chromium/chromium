@@ -30,6 +30,8 @@ source_set("frame") {
     "desks/move_to_desks_menu_delegate.h",
     "desks/move_to_desks_menu_model.cc",
     "desks/move_to_desks_menu_model.h",
+    "frame_color_metrics_helper.cc",
+    "frame_color_metrics_helper.h",
     "frame_header.cc",
     "frame_header.h",
     "frame_utils.cc",

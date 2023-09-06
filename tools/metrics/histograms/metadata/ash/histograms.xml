@@ -3706,6 +3706,24 @@ chromium-metrics-reviews@google.com.
   <summary>Record the floating workspace template upload status.</summary>
 </histogram>
 
+<histogram name="Ash.Frame.ColorChangeCount.{AppType}" units="count"
+    expires_after="2024-09-01">
+  <owner>lingyufeng@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Tracks the number of frame color changes when a {AppType} is launched. The
+    data is collected once per app launching.
+  </summary>
+  <token key="AppType">
+    <variant name="ArcApp"/>
+    <variant name="Browser"/>
+    <variant name="ChromeApp"/>
+    <variant name="CrostiniApp"/>
+    <variant name="Others"/>
+    <variant name="SystemApp"/>
+  </token>
+</histogram>
+
 <histogram
     name="Ash.Glanceables.Api.Classroom.CourseWorkItemsPerStudentCourseCount"
     units="course work items" expires_after="2024-03-01">

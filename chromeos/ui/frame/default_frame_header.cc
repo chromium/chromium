@@ -79,6 +79,7 @@ DefaultFrameHeader::DefaultFrameHeader(
     : FrameHeader(target_widget, header_view) {
   DCHECK(caption_button_container);
   SetCaptionButtonContainer(caption_button_container);
+  InitializeFrameColorMetricsHelper();
 }
 
 DefaultFrameHeader::~DefaultFrameHeader() = default;
@@ -110,6 +111,9 @@ void DefaultFrameHeader::UpdateFrameColors() {
 
   if (updated) {
     StartTransitionAnimation(kDefaultFrameColorChangeAnimationDuration);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    frame_color_metrics_helper_->UpdateFrameColorChangesCount();
+#endif
   }
 
   if (::features::IsChromeRefresh2023() &&
@@ -186,6 +190,15 @@ SkColor DefaultFrameHeader::GetCurrentFrameColor() const {
 
 SkColor DefaultFrameHeader::GetActiveFrameColorForPaintForTest() {
   return active_frame_color_;
+}
+
+void DefaultFrameHeader::InitializeFrameColorMetricsHelper() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  aura::Window* window = GetTargetWindow();
+  CHECK(window);
+  frame_color_metrics_helper_ = std::make_unique<FrameColorMetricsHelper>(
+      static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType)));
+#endif
 }
 
 }  // namespace chromeos

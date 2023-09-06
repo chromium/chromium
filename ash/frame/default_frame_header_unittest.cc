@@ -14,6 +14,8 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -43,7 +45,19 @@ using views::Widget;
 
 namespace ash {
 
-using DefaultFrameHeaderTest = AshTestBase;
+class DefaultFrameHeaderTest : public AshTestBase {
+ public:
+  DefaultFrameHeaderTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  DefaultFrameHeaderTest(const DefaultFrameHeaderTest&) = delete;
+  DefaultFrameHeaderTest& operator=(const DefaultFrameHeaderTest&) = delete;
+  ~DefaultFrameHeaderTest() override = default;
+
+  void AdvanceClock(base::TimeDelta delay) {
+    task_environment()->AdvanceClock(delay);
+    task_environment()->RunUntilIdle();
+  }
+};
 
 // Ensure the title text is vertically aligned with the window icon.
 TEST_F(DefaultFrameHeaderTest, TitleIconAlignment) {
@@ -316,6 +330,35 @@ TEST_F(DefaultFrameHeaderTest, AnimateDuringAnimation) {
   EXPECT_TRUE(wm::IsActiveWindow(win_0.get()));
   // Makes sure that the layer has full damaged bounds.
   EXPECT_TRUE(win_0->layer()->damaged_region().Contains(layer_bounds));
+}
+
+// Ensure that the number of frame color changes is recorded as metrics.
+TEST_F(DefaultFrameHeaderTest, FrameColorChangeMetrics) {
+  const auto app_type = AppType::ARC_APP;
+  auto win0 = CreateAppWindow(gfx::Rect(300, 300), app_type);
+  Widget* widget = Widget::GetWidgetForNativeWindow(win0.get());
+  DefaultFrameHeader* frame_header =
+      static_cast<DefaultFrameHeader*>(FrameHeader::Get(widget));
+
+  const auto frame_color_change_histogram =
+      chromeos::FrameColorMetricsHelper::GetFrameColorChangeHistogramName(
+          app_type);
+  base::HistogramTester histogram_tester;
+
+  win0->SetProperty(kFrameActiveColorKey, SkColorSetRGB(70, 70, 70));
+  win0->SetProperty(kFrameInactiveColorKey, SkColorSetRGB(70, 70, 70));
+  frame_header->UpdateFrameColors();
+
+  constexpr base::TimeDelta kFrameColorTracingTime = base::Seconds(3);
+  // Advances the mock clock in the task environment because the metrics is
+  // recorded `kFrameColorTracingTime` after the `frame_header` is instantiated.
+  AdvanceClock(kFrameColorTracingTime);
+
+  histogram_tester.ExpectTotalCount(frame_color_change_histogram, 1);
+
+  // The recorded number of frame color changes should be at least 1.
+  EXPECT_GE(histogram_tester.GetAllSamples(frame_color_change_histogram)[0].min,
+            1);
 }
 
 }  // namespace ash
