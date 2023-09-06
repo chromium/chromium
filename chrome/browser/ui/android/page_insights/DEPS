@@ -5,6 +5,7 @@ include_rules = [
   "+chrome/browser/tab",
   "+chrome/browser/tabmodel",
   "+components/browser_ui/bottomsheet/android",
+  "+components/browser_ui/share",
   "+components/browser_ui/widget/android",
   "+components/embedder_support/android",
   "+components/history/core/browser/web_history_service.h",

@@ -18,7 +18,7 @@ public interface ShareDelegate {
     @IntDef({ShareOrigin.OVERFLOW_MENU, ShareOrigin.TOP_TOOLBAR, ShareOrigin.CONTEXT_MENU,
             ShareOrigin.WEBSHARE_API, ShareOrigin.MOBILE_ACTION_MODE, ShareOrigin.EDIT_URL,
             ShareOrigin.TAB_GROUP, ShareOrigin.WEBAPP_NOTIFICATION, ShareOrigin.FEED,
-            ShareOrigin.COUNT})
+            ShareOrigin.PAGE_INSIGHTS, ShareOrigin.COUNT})
     public @interface ShareOrigin {
         int OVERFLOW_MENU = 0;
         int TOP_TOOLBAR = 1;
@@ -29,9 +29,10 @@ public interface ShareDelegate {
         int TAB_GROUP = 6;
         int WEBAPP_NOTIFICATION = 7;
         int FEED = 8;
+        int PAGE_INSIGHTS = 9;
 
         // Must be the last one.
-        int COUNT = 9;
+        int COUNT = 10;
     }
 
     /**

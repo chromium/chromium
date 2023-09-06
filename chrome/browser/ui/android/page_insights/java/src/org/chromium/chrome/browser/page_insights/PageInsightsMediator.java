@@ -12,18 +12,19 @@ import android.text.format.DateUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.ByteString;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceRenderer;
@@ -89,8 +90,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final BooleanSupplier mIsPageInsightsHubEnabled;
     private final Handler mHandler;
     private final Runnable mAutoTriggerRunnable = this::autoTriggerPageInsightsFromTimer;
-    private final HashMap<String, Object> mSurfaceRendererContextValues =
-            PageInsightsActionHandlerImpl.createContextValues();
+    private final HashMap<String, Object> mSurfaceRendererContextValues;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
     @Nullable
@@ -107,6 +107,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private boolean mShouldRestore;
 
     public PageInsightsMediator(Context context, ObservableSupplier<Tab> tabObservable,
+            Supplier<ShareDelegate> shareDelegateSupplier,
             ManagedBottomSheetController bottomSheetController,
             BottomSheetController bottomUiController, ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
@@ -144,6 +145,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mControlsStateProvider = controlsStateProvider;
         mIsPageInsightsHubEnabled = isPageInsightsHubEnabled;
         mPageInsightsDataLoader = new PageInsightsDataLoader();
+        mSurfaceRendererContextValues =
+                PageInsightsActionHandlerImpl.createContextValues(new PageInsightsActionHandlerImpl(
+                        tabObservable, shareDelegateSupplier, this::changeToChildPage));
     }
 
     void initView(View bottomSheetContainer) {
@@ -253,9 +257,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 elementsOutput.toByteArray(), mSurfaceRendererContextValues);
     }
 
-    @VisibleForTesting
-    // TODO(kamalchoudhury): Make this function private when xUIKit code is written
-    void changeToChildPage(int id) {
+    private void changeToChildPage(int id) {
         PageInsightsMetadata metadata = mPageInsightsDataLoader.getData();
         for (int i = 0; i < metadata.getPagesCount(); i++) {
             Page currPage = metadata.getPages(i);

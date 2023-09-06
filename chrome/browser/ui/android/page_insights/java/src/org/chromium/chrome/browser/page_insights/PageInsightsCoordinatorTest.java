@@ -38,6 +38,8 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.page_insights.proto.PageInsights;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -104,6 +106,8 @@ public class PageInsightsCoordinatorTest {
     private PageInsightsSurfaceScope mSurfaceScope;
     @Mock
     private PageInsightsSurfaceRenderer mSurfaceRenderer;
+    @Mock
+    private Supplier<ShareDelegate> mShareDelegateSupplier;
 
     private PageInsightsCoordinator mPageInsightsCoordinator;
     private ManagedBottomSheetController mPageInsightsController;
@@ -161,8 +165,9 @@ public class PageInsightsCoordinatorTest {
         });
         doReturn(true).when(mIsPageInsightsHubEnabled).getAsBoolean();
         mPageInsightsCoordinator = new PageInsightsCoordinator(activity, mTabProvider,
-                mPageInsightsController, mBottomUiController, mExpandedSheetHelper,
-                mBrowserControlsStateProvider, mBrowserControlsSizer, mIsPageInsightsHubEnabled);
+                mShareDelegateSupplier, mPageInsightsController, mBottomUiController,
+                mExpandedSheetHelper, mBrowserControlsStateProvider, mBrowserControlsSizer,
+                mIsPageInsightsHubEnabled);
         mTestSupport = new BottomSheetTestSupport(mPageInsightsController);
         waitForAnimationToFinish();
     }
