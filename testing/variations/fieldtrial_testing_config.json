@@ -13288,7 +13288,7 @@
             ]
         }
     ],
-    "ReduceSubresourceResponseStartedIPC": [
+    "ReduceIPCCombined": [
         {
             "platforms": [
                 "android",
@@ -13302,9 +13302,28 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledUkmReduceAddEntryIPC",
+                    "enable_features": [
+                        "UkmReduceAddEntryIPC"
+                    ],
+                    "disable_features": [
+                        "ReduceSubresourceResponseStartedIPC"
+                    ]
+                },
+                {
+                    "name": "EnabledReduceSubresourceResponseStartedIPC",
                     "enable_features": [
                         "ReduceSubresourceResponseStartedIPC"
+                    ],
+                    "disable_features": [
+                        "UkmReduceAddEntryIPC"
+                    ]
+                },
+                {
+                    "name": "EnabledReduceIPCCombined",
+                    "enable_features": [
+                        "ReduceSubresourceResponseStartedIPC",
+                        "UkmReduceAddEntryIPC"
                     ]
                 }
             ]
@@ -16334,28 +16353,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootMigrateToUserSecretStash"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UkmReduceAddEntryIPC": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230530",
-                    "enable_features": [
-                        "UkmReduceAddEntryIPC"
                     ]
                 }
             ]
