@@ -125,7 +125,8 @@ class PLATFORM_EXPORT PaintController {
                          const gfx::Rect&,
                          TouchAction,
                          bool blocking_wheel,
-                         cc::HitTestOpaqueness);
+                         cc::HitTestOpaqueness,
+                         DisplayItem::Type type = DisplayItem::kHitTest);
 
   void RecordRegionCaptureData(const DisplayItemClient& client,
                                const RegionCaptureCropId& crop_id,

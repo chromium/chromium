@@ -180,6 +180,7 @@ WTF::String DisplayItem::TypeAsDebugString(Type type) {
 
   switch (type) {
     DEBUG_STRING_CASE(HitTest);
+    DEBUG_STRING_CASE(WebPluginHitTest);
     DEBUG_STRING_CASE(RegionCapture);
     DEBUG_STRING_CASE(ScrollHitTest);
     DEBUG_STRING_CASE(ResizerScrollHitTest);

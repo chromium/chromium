@@ -1339,6 +1339,8 @@ TEST_P(ScrollingTest, WheelEventRegionsForPlugins) {
       body {
         margin: 0;
         height: 3000px;
+        /* Ensures the wheel hit test data doesn't conflict with this. */
+        touch-action: none;
       }
       #plugin {
         width: 300px;

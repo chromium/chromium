@@ -75,10 +75,11 @@ void PaintController::RecordHitTestData(const DisplayItemClient& client,
                                         const gfx::Rect& rect,
                                         TouchAction touch_action,
                                         bool blocking_wheel,
-                                        cc::HitTestOpaqueness opaqueness) {
+                                        cc::HitTestOpaqueness opaqueness,
+                                        DisplayItem::Type type) {
   if (rect.IsEmpty())
     return;
-  PaintChunk::Id id(client.Id(), DisplayItem::kHitTest, current_fragment_);
+  PaintChunk::Id id(client.Id(), type, current_fragment_);
   CheckNewChunkId(id);
   ValidateNewChunkClient(client);
   if (paint_chunker_.AddHitTestDataToCurrentChunk(
