@@ -284,7 +284,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
     file_value->url = absl::make_optional<GURL>(download_item->GetURL());
   }
   file_value->display_url = GetFormattedDisplayUrl(download_item->GetURL());
-  file_value->total = static_cast<int>(download_item->GetTotalBytes());
+  file_value->total = download_item->GetTotalBytes();
   file_value->file_externally_removed =
       download_item->GetFileExternallyRemoved();
   file_value->resume = download_item->CanResume();

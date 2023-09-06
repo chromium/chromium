@@ -22,7 +22,7 @@ struct Data {
   bool retry;
   int32 percent;
   int32 started;
-  int32 total;
+  int64 total;
   string by_ext_id;
   string by_ext_name;
   string danger_type;
