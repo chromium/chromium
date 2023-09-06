@@ -2246,6 +2246,20 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
   return child;
 }
 
+// This function can leave the stream in one of the following states:
+//
+//  1) If the ident token is not immediately followed by kColonToken,
+//     then the stream is left at the token where kColonToken was expected.
+//  2) If the ident token is not a recognized property/descriptor,
+//     then the stream is left at the token immediately after kColonToken.
+//  3) Otherwise the stream is is left AtEnd(), regardless of whether or
+//     not the value was valid.
+//
+// Leaving the stream in an awkward states is normally not desirable for
+// Consume functions, but declarations are sometimes parsed speculatively,
+// which may cause a restart at the call site (see ConsumeDeclarationList,
+// kIdentToken branch). If we are anyway going to restart, any work we do
+// to leave the stream in a more consistent state is just wasted.
 bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
                                        StyleRule::RuleType rule_type) {
   const wtf_size_t decl_offset_start = stream.Offset();
@@ -2257,53 +2271,69 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   }
 
   stream.UncheckedConsume();  // kColonToken
-
-  CSSTokenizedValue tokenized_value = ConsumeValue(stream);
-
-  bool important = RemoveImportantAnnotationIfPresent(tokenized_value);
+  stream.EnsureLookAhead();
 
   size_t properties_count = parsed_properties_.size();
 
-  CSSPropertyID unresolved_property = CSSPropertyID::kInvalid;
-  AtRuleDescriptorID atrule_id = AtRuleDescriptorID::Invalid;
-  if (rule_type == StyleRule::kFontFace ||
-      rule_type == StyleRule::kFontPaletteValues ||
-      rule_type == StyleRule::kProperty ||
-      rule_type == StyleRule::kCounterStyle ||
-      rule_type == StyleRule::kViewTransitions) {
-    if (important) {  // Invalid
-      return false;
-    }
-    atrule_id = lhs.ParseAsAtRuleDescriptorID();
-    AtRuleDescriptorParser::ParseAtRule(rule_type, atrule_id, tokenized_value,
-                                        *context_, parsed_properties_);
-  } else {
-    unresolved_property = lhs.ParseAsUnresolvedCSSPropertyID(
-        context_->GetExecutionContext(), context_->Mode());
-  }
+  bool parsing_descriptor = rule_type == StyleRule::kFontFace ||
+                            rule_type == StyleRule::kFontPaletteValues ||
+                            rule_type == StyleRule::kProperty ||
+                            rule_type == StyleRule::kCounterStyle ||
+                            rule_type == StyleRule::kViewTransitions;
 
-  // @rules other than FontFace still handled with legacy code.
-  if (important &&
-      (rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kTry)) {
-    return false;
-  }
+  uint64_t id = parsing_descriptor
+                    ? static_cast<uint64_t>(lhs.ParseAsAtRuleDescriptorID())
+                    : static_cast<uint64_t>(lhs.ParseAsUnresolvedCSSPropertyID(
+                          context_->GetExecutionContext(), context_->Mode()));
 
-  if (unresolved_property == CSSPropertyID::kVariable) {
-    if (rule_type != StyleRule::kStyle && rule_type != StyleRule::kKeyframe) {
-      return false;
+  bool important = false;
+
+  static_assert(static_cast<uint64_t>(AtRuleDescriptorID::Invalid) == 0u);
+  static_assert(static_cast<uint64_t>(CSSPropertyID::kInvalid) == 0u);
+
+  if (id) {
+    CSSTokenizedValue tokenized_value = ConsumeValue(stream);
+    important = RemoveImportantAnnotationIfPresent(tokenized_value);
+
+    if (parsing_descriptor) {
+      if (important) {
+        return false;  // Invalid for descriptors.
+      }
+      const AtRuleDescriptorID atrule_id = static_cast<AtRuleDescriptorID>(id);
+      AtRuleDescriptorParser::ParseAtRule(rule_type, atrule_id, tokenized_value,
+                                          *context_, parsed_properties_);
+    } else {
+      if (important &&
+          (rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kTry)) {
+        return false;
+      }
+      const CSSPropertyID unresolved_property = static_cast<CSSPropertyID>(id);
+      if (unresolved_property == CSSPropertyID::kVariable) {
+        if (rule_type != StyleRule::kStyle &&
+            rule_type != StyleRule::kKeyframe) {
+          return false;
+        }
+        AtomicString variable_name = lhs.Value().ToAtomicString();
+        bool is_animation_tainted = rule_type == StyleRule::kKeyframe;
+        ConsumeVariableValue(tokenized_value, variable_name, important,
+                             is_animation_tainted);
+      } else if (unresolved_property != CSSPropertyID::kInvalid) {
+        ConsumeDeclarationValue(tokenized_value, unresolved_property, important,
+                                rule_type);
+      }
     }
-    AtomicString variable_name = lhs.Value().ToAtomicString();
-    bool is_animation_tainted = rule_type == StyleRule::kKeyframe;
-    ConsumeVariableValue(tokenized_value, variable_name, important,
-                         is_animation_tainted);
-  } else if (unresolved_property != CSSPropertyID::kInvalid) {
-    ConsumeDeclarationValue(tokenized_value, unresolved_property, important,
-                            rule_type);
   }
 
   if (observer_ &&
       (rule_type == StyleRule::kStyle || rule_type == StyleRule::kKeyframe ||
        rule_type == StyleRule::kTry)) {
+    if (!stream.AtEnd()) {
+      // If we skipped the main call to ConsumeValue due to an invalid
+      // property/descriptor, the inspector still needs to know the offset
+      // where the would-be declaration ends.
+      CSSTokenizedValue tokenized_value = ConsumeValue(stream);
+      important = RemoveImportantAnnotationIfPresent(tokenized_value);
+    }
     // The end offset is the offset of the terminating token, which is peeked
     // but not yet consumed.
     observer_->ObserveProperty(decl_offset_start, stream.LookAheadOffset(),

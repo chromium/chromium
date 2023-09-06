@@ -259,6 +259,25 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsDecl(
   if (parser_.ConsumeSupportsDeclaration(stream)) {
     return Result::kSupported;
   }
+
+  // ConsumeSupportsDeclaration can leave the stream in various states,
+  // see documentation near CSSParserImpl::ConsumeDeclaration.
+  if (!stream.AtEnd()) {
+    // If there are remaining tokens, then ConsumeSupportsDeclaration backed
+    // out early due to a missing colon or invalid property.
+    // This normally means it's either an invalid property (kUnsupported),
+    // or some other unknown construct (also kUnsupported). However, the unknown
+    // construct must not violate the rules of <general-enclosed>. If that
+    // happens, it is instead a kParseFailure.
+    CSSParserTokenRange remaining = stream.ConsumeUntilPeekedTypeIs<>();
+    // TODO(crbug.com/1361240): This is the same check as
+    // ConsumeGeneralEnclosed. It would be cleaner to just restart and actually
+    // call that function.
+    if (!ConsumeAnyValue(remaining) || !remaining.AtEnd()) {
+      return Result::kParseFailure;
+    }
+  }
+
   return Result::kUnsupported;
 }
 
