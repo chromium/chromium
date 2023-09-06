@@ -395,6 +395,7 @@ crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance
 crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 
 # Failing on some platforms.
+crbug.com/1175371 [ android angle-opengles passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ mac ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -553,15 +554,33 @@ crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/tr
 
 crbug.com/angleproject/4242 [ angle-opengl mac mac-x86_64 oop-c ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
 
+# Regressed in 10.13, still fails in 10.14 and 11.7
+crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/fborender/resize_03.html [ Failure ]
+crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/shaderindexing/mat_00.html [ Failure ]
+crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/shaderindexing/mat_02.html [ Failure ]
+crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/texturespecification/teximage2d_pbo_cube_00.html [ Failure ]
 
 # Fails on multiple GPU types.
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 crbug.com/630800 [ angle-opengl intel mac ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
+crbug.com/630800 [ nvidia mac ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
 crbug.com/630800 [ angle-opengl intel mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
+crbug.com/630800 [ nvidia mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/1289803 [ angle-opengl mac mac-x86_64 oop-c ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
 
 ## Mac Retina NVIDIA ##
 
+crbug.com/728271 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/mat_01.html [ Failure ]
+crbug.com/728271 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/tmp.html [ Failure ]
+crbug.com/996344 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop.html [ Failure ]
+crbug.com/996344 [ mac nvidia-0xfe9 ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
+crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
+crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
+crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
+crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Failure ]
+crbug.com/1474910 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
+crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 ## Mac AMD ##
 
@@ -668,6 +687,10 @@ crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/rendering/
 crbug.com/1130119 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/1130119 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
 
+# Newly added tests on NVIDIA passthrough
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/extensions/webgl-multi-draw.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/instancedrendering.html [ Failure ]
 
 ## Mac ASAN ##
 
