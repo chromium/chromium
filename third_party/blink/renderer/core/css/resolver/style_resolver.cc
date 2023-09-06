@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
+#include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -498,7 +499,8 @@ static inline ScopedStyleResolver* ScopedResolverFor(const Element& element) {
 }
 
 static inline ScopedStyleResolver* ParentScopedResolverFor(
-    const Element& element) {
+    const Element& element,
+    bool* parent_scope_contains_style_attribute) {
   // Rules for ::cue and custom pseudo elements like
   // ::-webkit-meter-bar pierce through a single shadow dom boundary and apply
   // to elements in sub-scopes.
@@ -506,9 +508,28 @@ static inline ScopedStyleResolver* ParentScopedResolverFor(
   if (!tree_scope) {
     return nullptr;
   }
-  if (element.ShadowPseudoId().empty() && !element.IsVTTElement()) {
+  const AtomicString& shadow_pseudo_id = element.ShadowPseudoId();
+  bool is_vtt = element.IsVTTElement();
+  if (shadow_pseudo_id.empty() && !is_vtt) {
     return nullptr;
   }
+  // Going forward, for shadow pseudo IDs that we standardize as
+  // pseudo-elements, we expect styles specified by the author using the
+  // pseudo-element to override styles specified in style attributes in
+  // the user agent shadow DOM.  However, since we have a substantial
+  // number of existing uses with :-webkit-* and :-internal-* pseudo
+  // elements that do not override the style attribute, we do not apply
+  // this (developer-expected) behavior to those existing
+  // pseudo-elements, or to VTT.  (Other than VTT, it's possible that we
+  // could, but it would require a good bit of compatibility analysis.)
+  DCHECK(shadow_pseudo_id.empty() || !shadow_pseudo_id.StartsWith("-") ||
+         shadow_pseudo_id.StartsWith("-webkit-") ||
+         shadow_pseudo_id.StartsWith("-internal-"))
+      << "shadow pseudo IDs should either begin with -webkit- or -internal- "
+         "or not begin with a -";
+  *parent_scope_contains_style_attribute =
+      is_vtt || shadow_pseudo_id.StartsWith("-") ||
+      shadow_pseudo_id == TextTrackCue::CueShadowPseudoId();
   return tree_scope->GetScopedStyleResolver();
 }
 
@@ -644,28 +665,44 @@ static void MatchElementScopeRules(const Element& element,
                                    ElementRuleCollector& collector,
                                    StyleRuleUsageTracker* tracker) {
   ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
-  ScopedStyleResolver* parent_scope_resolver = ParentScopedResolverFor(element);
+  bool parent_scope_contains_style_attribute = false;
+  ScopedStyleResolver* parent_scope_resolver =
+      ParentScopedResolverFor(element, &parent_scope_contains_style_attribute);
+  bool did_begin_for_scope = false;
   if (element_scope_resolver) {
     collector.ClearMatchedRules();
+    DCHECK_EQ(&element_scope_resolver->GetTreeScope(), &element.GetTreeScope());
     collector.BeginAddingAuthorRulesForTreeScope(
         element_scope_resolver->GetTreeScope());
+    did_begin_for_scope = true;
     element_scope_resolver->CollectMatchingElementScopeRules(collector);
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
   }
 
-  if (parent_scope_resolver) {
+  if (parent_scope_resolver && parent_scope_contains_style_attribute) {
+    // NOTE: This block is duplicated below, for the case of
+    // parent_scope_contains_style_attribute being false.
+    //
+    // TODO(crbug.com/1479329): Pseudo elements matching elements inside
+    // UA shadow trees (::-internal-*, ::-webkit-*, ::placeholder, etc.,
+    // although not ::cue) should end up in the same cascade context as
+    // other rules from an outer tree (like ::part() rules), and
+    // collected separately from the element's tree scope. That should
+    // remove the need for the ParentScopedResolver() here.
     collector.ClearMatchedRules();
     collector.BeginAddingAuthorRulesForTreeScope(
         parent_scope_resolver->GetTreeScope());
+    did_begin_for_scope = true;
     parent_scope_resolver->CollectMatchingElementScopeRules(collector);
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
   }
 
-  if (!element_scope_resolver && !parent_scope_resolver) {
+  if (!did_begin_for_scope) {
     // TODO(dbaron): Does the choice of scope here matter?  (If so,
-    // should the "&& !" in the condition above change to "|| "?)
+    // should the second "did_begin_for_scope = true" above instead
+    // assign false?)
     collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
   }
 
@@ -685,6 +722,17 @@ static void MatchElementScopeRules(const Element& element,
     collector.AddElementStyleProperties(
         element.InlineStyle(), CascadeOrigin::kAuthor,
         is_inline_style_cacheable, true /* is_inline_style */);
+  }
+
+  if (parent_scope_resolver && !parent_scope_contains_style_attribute) {
+    // NOTE: This block is duplicated above, for the case of
+    // parent_scope_contains_style_attribute being true.
+    collector.ClearMatchedRules();
+    collector.BeginAddingAuthorRulesForTreeScope(
+        parent_scope_resolver->GetTreeScope());
+    parent_scope_resolver->CollectMatchingElementScopeRules(collector);
+    collector.SortAndTransferMatchedRules(
+        CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
   }
 }
 

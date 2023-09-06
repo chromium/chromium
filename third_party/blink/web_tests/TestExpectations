@@ -4263,6 +4263,7 @@ crbug.com/1469418 virtual/details-styling-disabled/wpt_internal/html/rendering/t
 # A test that expects the DetailsStyling feature to be enabled:
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-001.tentative.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-001.tentative.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-002.tentative.html [ Failure ]
 
 # SwANGLE issues
 crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]

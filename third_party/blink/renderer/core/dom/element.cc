@@ -6193,6 +6193,8 @@ const AtomicString& Element::ShadowPseudoId() const {
 void Element::SetShadowPseudoId(const AtomicString& id) {
 #if DCHECK_IS_ON()
   {
+    // NOTE: This treats "cue" as kPseudoWebKitCustomElement, so "cue"
+    // is allowed here.
     CSSSelector::PseudoType type =
         CSSSelectorParser::ParsePseudoType(id, false, &GetDocument());
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
