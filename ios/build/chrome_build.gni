@@ -35,7 +35,7 @@ declare_args() {
   ios_enable_shortcuts_widget = true
 
   # Enable iOS search passwords widget in WidgetKit extension.
-  ios_enable_search_passwords_widget = false
+  ios_enable_search_passwords_widget = true
 
   # Label of the target providing implementation for AccountVerificationProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
