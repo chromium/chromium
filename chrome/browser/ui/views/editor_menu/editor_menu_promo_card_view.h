@@ -59,6 +59,8 @@ class EditorMenuPromoCardView : public views::View,
   void OnDismissButtonPressed();
   void OnTellMeMoreButtonPressed();
 
+  void ResetPreTargetHandler();
+
   std::unique_ptr<PreTargetHandler> pre_target_handler_;
 
   // `delegate_` outlives `this`.

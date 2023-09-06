@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
@@ -111,7 +112,13 @@ void EditorMenuPromoCardView::OnWidgetActivationChanged(views::Widget* widget,
                                                         bool active) {
   // When the widget is active, use default focus behavior.
   if (active) {
-    pre_target_handler_.reset();
+    // The widget could be activated by an event handled by the pre target
+    // handler. Reset the pre target handler asynchronously to avoid destroying
+    // it while it is still handling this event.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EditorMenuPromoCardView::ResetPreTargetHandler,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -231,6 +238,10 @@ void EditorMenuPromoCardView::OnDismissButtonPressed() {
 void EditorMenuPromoCardView::OnTellMeMoreButtonPressed() {
   CHECK(delegate_);
   delegate_->OnPromoCardTellMeMoreButtonPressed();
+}
+
+void EditorMenuPromoCardView::ResetPreTargetHandler() {
+  pre_target_handler_.reset();
 }
 
 BEGIN_METADATA(EditorMenuPromoCardView, views::View)
