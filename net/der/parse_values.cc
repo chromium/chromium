@@ -4,17 +4,13 @@
 
 #include "net/der/parse_values.h"
 
-#include <tuple>
-#include <vector>
+#include <stdlib.h>
 
-#include "base/notreached.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversion_utils.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/sys_byteorder.h"
-#include "base/third_party/icu/icu_utf.h"
+#include <tuple>
+
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace net::der {
 
@@ -116,7 +112,7 @@ bool ValidateGeneralizedTime(const GeneralizedTime& time) {
       }
       break;
     default:
-      NOTREACHED_NORETURN();
+      abort();
   }
   return true;
 }
@@ -369,7 +365,7 @@ bool ParseVisibleString(Input in, std::string* out) {
 
 bool ParsePrintableString(Input in, std::string* out) {
   for (char c : in.AsStringView()) {
-    if (!(base::IsAsciiAlpha(c) || c == ' ' || (c >= '\'' && c <= ':') ||
+    if (!(OPENSSL_isalpha(c) || c == ' ' || (c >= '\'' && c <= ':') ||
           c == '=' || c == '?')) {
       return false;
     }
@@ -402,44 +398,50 @@ bool ParseTeletexStringAsLatin1(Input in, std::string* out) {
 }
 
 bool ParseUniversalString(Input in, std::string* out) {
-  if (in.Length() % 4 != 0)
+  if (in.Length() % 4 != 0) {
     return false;
-
-  out->clear();
-  std::vector<uint32_t> in_32bit(in.Length() / 4);
-  if (in.Length())
-    memcpy(in_32bit.data(), in.UnsafeData(), in.Length());
-  for (const uint32_t c : in_32bit) {
-    // UniversalString is UCS-4 in big-endian order.
-    auto codepoint = static_cast<base_icu::UChar32>(base::NetToHost32(c));
-    if (!CBU_IS_UNICODE_CHAR(codepoint))
-      return false;
-
-    base::WriteUnicodeCharacter(codepoint, out);
   }
+
+  CBS cbs;
+  CBS_init(&cbs, in.UnsafeData(), in.Length());
+  bssl::ScopedCBB cbb;
+  if (!CBB_init(cbb.get(), in.Length())) {
+    return false;
+  }
+
+  while (CBS_len(&cbs) != 0) {
+    uint32_t c;
+    if (!CBS_get_utf32_be(&cbs, &c) ||  //
+        !CBB_add_utf8(cbb.get(), c)) {
+      return false;
+    }
+  }
+
+  out->assign(CBB_data(cbb.get()), CBB_data(cbb.get()) + CBB_len(cbb.get()));
   return true;
 }
 
 bool ParseBmpString(Input in, std::string* out) {
-  if (in.Length() % 2 != 0)
+  if (in.Length() % 2 != 0) {
     return false;
-
-  out->clear();
-  std::vector<uint16_t> in_16bit(in.Length() / 2);
-  if (in.Length())
-    memcpy(in_16bit.data(), in.UnsafeData(), in.Length());
-  for (const uint16_t c : in_16bit) {
-    // BMPString is UCS-2 in big-endian order.
-    base_icu::UChar32 codepoint = base::NetToHost16(c);
-
-    // BMPString only supports codepoints in the Basic Multilingual Plane;
-    // surrogates are not allowed. CBU_IS_UNICODE_CHAR excludes the surrogate
-    // code points, among other invalid values.
-    if (!CBU_IS_UNICODE_CHAR(codepoint))
-      return false;
-
-    base::WriteUnicodeCharacter(codepoint, out);
   }
+
+  CBS cbs;
+  CBS_init(&cbs, in.UnsafeData(), in.Length());
+  bssl::ScopedCBB cbb;
+  if (!CBB_init(cbb.get(), in.Length())) {
+    return false;
+  }
+
+  while (CBS_len(&cbs) != 0) {
+    uint32_t c;
+    if (!CBS_get_ucs2_be(&cbs, &c) ||  //
+        !CBB_add_utf8(cbb.get(), c)) {
+      return false;
+    }
+  }
+
+  out->assign(CBB_data(cbb.get()), CBB_data(cbb.get()) + CBB_len(cbb.get()));
   return true;
 }
 
