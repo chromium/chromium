@@ -71,10 +71,6 @@ void OverviewGridEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     return;
   }
 
-  if (event->type() == ui::ET_MOUSEWHEEL) {
-    grid_->HandleMouseWheelScrollEvent(event->AsMouseWheelEvent()->y_offset());
-  }
-
   if (event->type() == ui::ET_MOUSE_RELEASED)
     HandleClickOrTap(event);
 }
@@ -91,26 +87,28 @@ void OverviewGridEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   // it's `ET_GESTURE_TAP`, here it does not set event to handled, and thus
   // `HandleClickOrTap()` would be executed from
   // `SavedDeskLibraryView::OnLocatedEvent()`.
-  if (grid_->IsShowingSavedDeskLibrary())
+  if (grid_->IsShowingSavedDeskLibrary()) {
     return;
+  }
+
+  if (event->type() == ui::ET_GESTURE_TAP) {
+    HandleClickOrTap(event);
+    return;
+  }
+
+  // The following events are for scrolling the overview scroll layout, which is
+  // tablet only.
+  if (!Shell::Get()->IsInTabletMode()) {
+    return;
+  }
 
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP: {
-      HandleClickOrTap(event);
-      break;
-    }
     case ui::ET_SCROLL_FLING_START: {
-      if (!ShouldUseTabletModeGridLayout())
-        return;
-
       HandleFlingScroll(event);
       event->SetHandled();
       break;
     }
     case ui::ET_GESTURE_SCROLL_BEGIN: {
-      if (!ShouldUseTabletModeGridLayout())
-        return;
-
       scroll_offset_x_cumulative_ = 0.f;
       OnFlingEnd();
       grid_->StartScroll();
@@ -118,9 +116,6 @@ void OverviewGridEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       break;
     }
     case ui::ET_GESTURE_SCROLL_UPDATE: {
-      if (!ShouldUseTabletModeGridLayout())
-        return;
-
       // Only forward the scrolls to grid once they have exceeded the threshold.
       const float scroll_offset_x = event->details().scroll_x();
       scroll_offset_x_cumulative_ += scroll_offset_x;
@@ -132,9 +127,6 @@ void OverviewGridEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       break;
     }
     case ui::ET_GESTURE_SCROLL_END: {
-      if (!ShouldUseTabletModeGridLayout())
-        return;
-
       grid_->EndScroll();
       event->SetHandled();
       break;

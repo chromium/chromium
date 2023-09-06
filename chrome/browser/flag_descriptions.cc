@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "flag_descriptions.h"
 #include "pdf/buildflags.h"
 
 // Keep in identical order as the header file, see the comment at the top
@@ -6852,13 +6851,6 @@ const char kShowTouchHudDescription[] =
     "Shows a trail of colored dots for the last few touch points. Pressing "
     "Ctrl-Alt-I shows a heads-up display view in the top-left corner. Helps "
     "debug hardware issues that generate spurious touch events.";
-
-const char kOverviewScrollLayoutForClamshellName[] =
-    "Scrollable overview layout for clamshell";
-const char kOverviewScrollLayoutForClamshellDescription[] =
-    "Shows a new overview mode layout on clamshell when a large number of "
-    "windows are on the display. Improves the performance of overview mode and "
-    "prevents the screen from getting too cluttered";
 
 const char kContinuousOverviewScrollAnimationName[] =
     "Makes the gesture for Overview continuous";

@@ -46,12 +46,6 @@ class OverviewTestBase : public AshTestBase {
 
   bool InOverviewSession();
 
-  void DispatchLongPress(OverviewItemBase* item);
-
-  // Creates `n` app windows. They are created in reverse order, so that the
-  // first window in the vector is the MRU window.
-  std::vector<std::unique_ptr<aura::Window>> CreateAppWindows(int n);
-
   bool WindowsOverlapping(aura::Window* window1, aura::Window* window2);
 
   // Creates a window which cannot be snapped by splitview.

@@ -1974,13 +1974,6 @@ BASE_FEATURE(kOverviewDeskNavigation,
              "OverviewDeskNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables a new layout for overview mode in clamshell, preventing the overview
-// mode display from getting too cluttered. Similar to current overview mode
-// layout in tablet mode.
-BASE_FEATURE(kOverviewScrollLayoutForClamshell,
-             "OverviewScrollLayoutForClamshell",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Jelly colors and components to appear in the Parent Access Widget
 // if jelly-colors is also enabled.
 BASE_FEATURE(kParentAccessJelly,
@@ -3781,11 +3774,6 @@ bool IsOsSyncConsentRevampEnabled() {
 
 bool IsOverviewDeskNavigationEnabled() {
   return base::FeatureList::IsEnabled(kOverviewDeskNavigation);
-}
-
-bool IsOverviewScrollLayoutForClamshellEnabled() {
-  return base::FeatureList::IsEnabled(kOverviewScrollLayoutForClamshell) &&
-         chromeos::features::IsJellyEnabled();
 }
 
 bool IsPasspointARCSupportEnabled() {

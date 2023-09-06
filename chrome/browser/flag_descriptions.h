@@ -3943,9 +3943,6 @@ extern const char kSnoopingProtectionDescription[];
 extern const char kSpeakOnMuteOptInNudgePrefsResetName[];
 extern const char kSpeakOnMuteOptInNudgePrefsResetDescription[];
 
-extern const char kOverviewScrollLayoutForClamshellName[];
-extern const char kOverviewScrollLayoutForClamshellDescription[];
-
 extern const char kContinuousOverviewScrollAnimationName[];
 extern const char kContinuousOverviewScrollAnimationDescription[];
 
