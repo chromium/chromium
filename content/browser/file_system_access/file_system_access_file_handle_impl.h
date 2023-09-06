@@ -185,18 +185,6 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       absl::nullopt;
 #endif  // BUILDFLAG(IS_MAC)
 
-  // The shared lock type for SyncAccessHandle's `readonly` mode.
-  FileSystemAccessLockManager::LockType sah_read_only_lock_type_ =
-      manager()->CreateSharedLockType();
-
-  // The shared lock type for SyncAccessHandle's `readwrite-unsafe` mode.
-  FileSystemAccessLockManager::LockType sah_readwrite_unsafe_lock_type_ =
-      manager()->CreateSharedLockType();
-
-  // The shared lock type for WritableFileStream's default `siloed` mode.
-  FileSystemAccessLockManager::LockType wfs_siloed_lock_type_ =
-      manager()->CreateSharedLockType();
-
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
   base::WeakPtrFactory<FileSystemAccessFileHandleImpl> weak_factory_

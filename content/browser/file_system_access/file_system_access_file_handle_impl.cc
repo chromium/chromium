@@ -248,10 +248,10 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
       lock_type = manager()->GetExclusiveLockType();
       break;
     case blink::mojom::FileSystemAccessAccessHandleLockMode::kReadOnly:
-      lock_type = sah_read_only_lock_type_;
+      lock_type = manager()->GetSAHReadOnlyLockType();
       break;
     case blink::mojom::FileSystemAccessAccessHandleLockMode::kReadwriteUnsafe:
-      lock_type = sah_readwrite_unsafe_lock_type_;
+      lock_type = manager()->GetSAHReadwriteUnsafeLockType();
       break;
   }
 
@@ -523,7 +523,7 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
     return;
   }
 
-  auto lock = manager()->TakeLock(url(), wfs_siloed_lock_type_);
+  auto lock = manager()->TakeLock(url(), manager()->GetWFSSiloedLockType());
   if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(

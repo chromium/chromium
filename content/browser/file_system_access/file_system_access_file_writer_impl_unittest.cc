@@ -307,7 +307,7 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
               storage::AsyncFileTestHelper::CreateFile(
                   file_system_context_.get(), test_swap_url_));
 
-    writable_shared_lock_type_ = manager_->CreateSharedLockType();
+    writable_shared_lock_type_ = manager_->GetWFSSiloedLockType();
 
     quarantine_callback_ = base::BindLambdaForTesting(
         [&](mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {

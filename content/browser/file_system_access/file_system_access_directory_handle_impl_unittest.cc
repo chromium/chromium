@@ -368,7 +368,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
   auto handle = GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
 
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
-  LockType shared_lock_type = manager_->CreateSharedLockType();
+  LockType wfs_siloed_lock_type = manager_->GetWFSSiloedLockType();
 
   // Calling removeEntry() on an unlocked file should succeed.
   {
@@ -406,16 +406,16 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     EXPECT_TRUE(base::PathExists(file));
   }
 
-  // Acquire a shared lock on a file before removing to simulate when the file
-  // has an open writable. This should also fail.
+  // Acquire a wfs siloed lock on a file before removing to simulate when the
+  // file has an open writable. This should also fail.
   {
     base::CreateTemporaryFileInDir(dir, &file);
     auto base_name = storage::FilePathToString(file.BaseName());
     EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
               base::File::Error::FILE_OK);
-    auto lock = manager_->TakeLock(file_url, shared_lock_type);
+    auto lock = manager_->TakeLock(file_url, wfs_siloed_lock_type);
     ASSERT_TRUE(lock);
-    EXPECT_TRUE(lock->type() == shared_lock_type);
+    EXPECT_TRUE(lock->type() == wfs_siloed_lock_type);
 
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
     handle->RemoveEntry(base_name,
