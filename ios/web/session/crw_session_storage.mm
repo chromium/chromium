@@ -49,7 +49,7 @@ NSString* const kTabIdKey = @"TabId";
 
 @implementation CRWSessionStorage {
   // The unique identifier, stored as the underlying type since SessionID
-  // has not public default constructor, thus cannot be an ivar/property.
+  // has no public default constructor, thus cannot be an ivar/property.
   SessionID::id_type _uniqueIdentifier;
 }
 
