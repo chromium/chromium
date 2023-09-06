@@ -675,14 +675,13 @@ absl_cc_library(
     prefetch
   HDRS
     "prefetch.h"
-    "internal/prefetch.h"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::config
-    absl::core_headers  # TODO(b/265984188): remove
+    absl::core_headers
 )
 
 absl_cc_test(
@@ -690,7 +689,6 @@ absl_cc_test(
     prefetch_test
   SRCS
     "prefetch_test.cc"
-    "internal/prefetch_test.cc"
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS

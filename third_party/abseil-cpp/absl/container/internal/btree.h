@@ -2534,6 +2534,10 @@ auto btree<P>::rebalance_after_delete(iterator iter) -> iterator {
   return res;
 }
 
+// Note: we tried implementing this more efficiently by erasing all of the
+// elements in [begin, end) at once and then doing rebalancing once at the end
+// (rather than interleaving deletion and rebalancing), but that adds a lot of
+// complexity, which seems to outweigh the performance win.
 template <typename P>
 auto btree<P>::erase_range(iterator begin, iterator end)
     -> std::pair<size_type, iterator> {

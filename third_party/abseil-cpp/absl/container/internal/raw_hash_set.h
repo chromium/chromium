@@ -740,13 +740,13 @@ struct GroupPortableImpl {
 
   NonIterableBitMask<uint64_t, kWidth, 3> MaskEmpty() const {
     constexpr uint64_t msbs = 0x8080808080808080ULL;
-    return NonIterableBitMask<uint64_t, kWidth, 3>((ctrl & (~ctrl << 6)) &
+    return NonIterableBitMask<uint64_t, kWidth, 3>((ctrl & ~(ctrl << 6)) &
                                                    msbs);
   }
 
   NonIterableBitMask<uint64_t, kWidth, 3> MaskEmptyOrDeleted() const {
     constexpr uint64_t msbs = 0x8080808080808080ULL;
-    return NonIterableBitMask<uint64_t, kWidth, 3>((ctrl & (~ctrl << 7)) &
+    return NonIterableBitMask<uint64_t, kWidth, 3>((ctrl & ~(ctrl << 7)) &
                                                    msbs);
   }
 
@@ -771,10 +771,21 @@ struct GroupPortableImpl {
 
 #ifdef ABSL_INTERNAL_HAVE_SSE2
 using Group = GroupSse2Impl;
+using GroupEmptyOrDeleted = GroupSse2Impl;
 #elif defined(ABSL_INTERNAL_HAVE_ARM_NEON) && defined(ABSL_IS_LITTLE_ENDIAN)
 using Group = GroupAArch64Impl;
+// For Aarch64, we use the portable implementation for counting and masking
+// empty or deleted group elements. This is to avoid the latency of moving
+// between data GPRs and Neon registers when it does not provide a benefit.
+// Using Neon is profitable when we call Match(), but is not when we don't,
+// which is the case when we do *EmptyOrDeleted operations. It is difficult to
+// make a similar approach beneficial on other architectures such as x86 since
+// they have much lower GPR <-> vector register transfer latency and 16-wide
+// Groups.
+using GroupEmptyOrDeleted = GroupPortableImpl;
 #else
 using Group = GroupPortableImpl;
+using GroupEmptyOrDeleted = GroupPortableImpl;
 #endif
 
 // When there is an insertion with no reserved growth, we rehash with
@@ -1360,7 +1371,7 @@ inline FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
   auto seq = probe(common, hash);
   const ctrl_t* ctrl = common.control();
   while (true) {
-    Group g{ctrl + seq.offset()};
+    GroupEmptyOrDeleted g{ctrl + seq.offset()};
     auto mask = g.MaskEmptyOrDeleted();
     if (mask) {
 #if !defined(NDEBUG)
@@ -1699,7 +1710,8 @@ class raw_hash_set {
     // If a sentinel is reached, we null `ctrl_` out instead.
     void skip_empty_or_deleted() {
       while (IsEmptyOrDeleted(*ctrl_)) {
-        uint32_t shift = Group{ctrl_}.CountLeadingEmptyOrDeleted();
+        uint32_t shift =
+            GroupEmptyOrDeleted{ctrl_}.CountLeadingEmptyOrDeleted();
         ctrl_ += shift;
         slot_ += shift;
       }
@@ -2899,18 +2911,6 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
           m += Traits::space_used(c.slot_array() + i);
         }
       }
-    }
-    return m;
-  }
-
-  static size_t LowerBoundAllocatedByteSize(size_t size) {
-    size_t capacity = GrowthToLowerboundCapacity(size);
-    if (capacity == 0) return 0;
-    size_t m = AllocSize(NormalizeCapacity(capacity), sizeof(Slot),
-                         alignof(Slot), /*has_infoz=*/false);
-    size_t per_slot = Traits::space_used(static_cast<const Slot*>(nullptr));
-    if (per_slot != ~size_t{}) {
-      m += per_slot * size;
     }
     return m;
   }

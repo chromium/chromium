@@ -46,6 +46,10 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
+static_assert(
+    alignof(status_internal::StatusRep) >= 4,
+    "absl::Status assumes it can use the bottom 2 bits of a StatusRep*.");
+
 std::string StatusCodeToString(StatusCode code) {
   switch (code) {
     case StatusCode::kOk:

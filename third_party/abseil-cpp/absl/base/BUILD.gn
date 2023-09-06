@@ -282,7 +282,6 @@ absl_source_set("fast_type_id") {
 
 absl_source_set("prefetch") {
   public = [
-    "internal/prefetch.h",
     "prefetch.h",
   ]
   deps = [

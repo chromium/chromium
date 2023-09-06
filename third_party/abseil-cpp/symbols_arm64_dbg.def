@@ -1547,6 +1547,7 @@ EXPORTS
     ??0FormatSinkImpl@str_format_internal@absl@@QEAA@VFormatRawSinkImpl@12@@Z
     ??0GraphCycles@synchronization_internal@absl@@QEAA@XZ
     ??0GroupAArch64Impl@container_internal@absl@@QEAA@PEBW4ctrl_t@12@@Z
+    ??0GroupPortableImpl@container_internal@absl@@QEAA@PEBW4ctrl_t@12@@Z
     ??0HashtablezInfo@container_internal@absl@@QEAA@XZ
     ??0Hex@absl@@AEAA@W4PadSpec@1@_K@Z
     ??0HiRep@Duration@absl@@QEAA@_J@Z
@@ -2924,7 +2925,7 @@ EXPORTS
     ?MakeUint128@absl@@YA?AVuint128@1@_K0@Z
     ?MapToLocalCode@status_internal@absl@@YA?AW4StatusCode@2@H@Z
     ?MaskEmpty@GroupAArch64Impl@container_internal@absl@@QEBA?AV?$NonIterableBitMask@_K$07$02@23@XZ
-    ?MaskEmptyOrDeleted@GroupAArch64Impl@container_internal@absl@@QEBA?AV?$NonIterableBitMask@_K$07$02@23@XZ
+    ?MaskEmptyOrDeleted@GroupPortableImpl@container_internal@absl@@QEBA?AV?$NonIterableBitMask@_K$07$02@23@XZ
     ?MatchesConversions@ParsedFormatBase@str_format_internal@absl@@AEBA_N_NV?$initializer_list@W4FormatConversionCharSet@absl@@@std@@@Z
     ?MaxFlatLength@CordTestAccess@strings_internal@absl@@SA_KXZ
     ?MaxFramesInLogStackTrace@log_internal@absl@@YAHXZ

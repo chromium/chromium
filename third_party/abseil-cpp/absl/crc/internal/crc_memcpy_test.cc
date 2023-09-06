@@ -107,6 +107,9 @@ TEST_P(x86ParamTest, SmallCorrectnessCheckSourceAlignment) {
         *(base_data + i) =
             static_cast<char>(absl::Uniform<unsigned char>(gen_));
       }
+      SCOPED_TRACE(absl::StrCat("engine=<", GetParam().vector_lanes, ",",
+                                GetParam().integer_lanes, ">, ", "size=", size,
+                                ", source_alignment=", source_alignment));
       absl::crc32c_t initial_crc =
           absl::crc32c_t{absl::Uniform<uint32_t>(gen_)};
       absl::crc32c_t experiment_crc =
@@ -138,6 +141,9 @@ TEST_P(x86ParamTest, SmallCorrectnessCheckDestAlignment) {
         *(base_data + i) =
             static_cast<char>(absl::Uniform<unsigned char>(gen_));
       }
+      SCOPED_TRACE(absl::StrCat("engine=<", GetParam().vector_lanes, ",",
+                                GetParam().integer_lanes, ">, ", "size=", size,
+                                ", destination_alignment=", dest_alignment));
       absl::crc32c_t initial_crc =
           absl::crc32c_t{absl::Uniform<uint32_t>(gen_)};
       absl::crc32c_t experiment_crc =
@@ -161,6 +167,7 @@ INSTANTIATE_TEST_SUITE_P(x86ParamTest, x86ParamTest,
                          ::testing::Values(
                              // Tests for configurations that may occur in prod.
                              TestParams{X86, 3, 0}, TestParams{X86, 1, 2},
+                             TestParams{X86, 1, 0},
                              // Fallback test.
                              TestParams{FALLBACK, 0, 0},
                              // Non Temporal

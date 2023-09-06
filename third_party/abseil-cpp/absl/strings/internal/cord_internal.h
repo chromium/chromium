@@ -158,18 +158,18 @@ class RefcountAndFlags {
   // false.  Always returns false when the immortal bit is set.
   inline bool Decrement() {
     int32_t refcount = count_.load(std::memory_order_acquire);
-    assert((refcount & kRefcountMask) > 0 || refcount & kImmortalFlag);
+    assert(refcount > 0 || refcount & kImmortalFlag);
     return refcount != kRefIncrement &&
-           (count_.fetch_sub(kRefIncrement, std::memory_order_acq_rel) &
-            kHighRefcountMask) != 0;
+           count_.fetch_sub(kRefIncrement, std::memory_order_acq_rel) !=
+               kRefIncrement;
   }
 
   // Same as Decrement but expect that refcount is greater than 1.
   inline bool DecrementExpectHighRefcount() {
     int32_t refcount =
         count_.fetch_sub(kRefIncrement, std::memory_order_acq_rel);
-    assert((refcount & kRefcountMask) > 0 || refcount & kImmortalFlag);
-    return (refcount & kHighRefcountMask) != 0;
+    assert(refcount > 0 || refcount & kImmortalFlag);
+    return refcount != kRefIncrement;
   }
 
   // Returns the current reference count using acquire semantics.
@@ -185,10 +185,9 @@ class RefcountAndFlags {
   // This call performs the test for a reference count of one, and
   // performs the memory barrier needed for the owning thread
   // to act on the object, knowing that it has exclusive access to the
-  // object.  Always returns false when the immortal bit is set.
+  // object. Always returns false when the immortal bit is set.
   inline bool IsOne() {
-    return (count_.load(std::memory_order_acquire) & kRefcountMask) ==
-           kRefIncrement;
+    return count_.load(std::memory_order_acquire) == kRefIncrement;
   }
 
   bool IsImmortal() const {
@@ -196,32 +195,15 @@ class RefcountAndFlags {
   }
 
  private:
-  // We reserve the bottom bits for flags.
+  // We reserve the bottom bit for flag.
   // kImmortalBit indicates that this entity should never be collected; it is
   // used for the StringConstant constructor to avoid collecting immutable
   // constant cords.
-  // kReservedFlag is reserved for future use.
   enum Flags {
-    kNumFlags = 2,
+    kNumFlags = 1,
 
     kImmortalFlag = 0x1,
-    kReservedFlag = 0x2,
     kRefIncrement = (1 << kNumFlags),
-
-    // Bitmask to use when checking refcount by equality.  This masks out
-    // all flags except kImmortalFlag, which is part of the refcount for
-    // purposes of equality.  (A refcount of 0 or 1 does not count as 0 or 1
-    // if the immortal bit is set.)
-    kRefcountMask = ~kReservedFlag,
-
-    // Bitmask to use when checking if refcount is equal to 1 and not
-    // immortal when decrementing the refcount. This masks out kRefIncrement and
-    // all flags except kImmortalFlag. If the masked RefcountAndFlags is 0, we
-    // assume the refcount is equal to 1, since we know it's not immortal and
-    // not greater than 1. If the masked RefcountAndFlags is not 0, we can
-    // assume the refcount is not equal to 1 since either a higher bit in the
-    // refcount is set, or kImmortal is set.
-    kHighRefcountMask = kRefcountMask & ~kRefIncrement,
   };
 
   std::atomic<int32_t> count_;

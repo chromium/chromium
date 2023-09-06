@@ -51,10 +51,15 @@
 #ifndef ABSL_STATUS_STATUS_H_
 #define ABSL_STATUS_STATUS_H_
 
+#include <cassert>
+#include <cstdint>
 #include <ostream>
 #include <string>
 #include <utility>
 
+#include "absl/base/attributes.h"
+#include "absl/base/config.h"
+#include "absl/base/optimization.h"
 #include "absl/functional/function_ref.h"
 #include "absl/status/internal/status_internal.h"
 #include "absl/strings/cord.h"
@@ -644,13 +649,13 @@ class Status final {
   std::string ToStringSlow(StatusToStringMode mode) const;
 
   // Status supports two different representations.
-  //  - When the low bit is off it is an inlined representation.
+  //  - When the low bit is set it is an inlined representation.
   //    It uses the canonical error space, no message or payload.
   //    The error code is (rep_ >> 2).
   //    The (rep_ & 2) bit is the "moved from" indicator, used in IsMovedFrom().
-  //  - When the low bit is on it is an external representation.
+  //  - When the low bit is off it is an external representation.
   //    In this case all the data comes from a heap allocated Rep object.
-  //    (rep_ - 1) is a status_internal::StatusRep* pointer to that structure.
+  //    rep_ is a status_internal::StatusRep* pointer to that structure.
   uintptr_t rep_;
 };
 
@@ -839,18 +844,16 @@ inline status_internal::Payloads* Status::GetPayloads() {
   return IsInlined(rep_) ? nullptr : RepToPointer(rep_)->payloads.get();
 }
 
-inline bool Status::IsInlined(uintptr_t rep) { return (rep & 1) == 0; }
+inline bool Status::IsInlined(uintptr_t rep) { return (rep & 1) != 0; }
 
-inline bool Status::IsMovedFrom(uintptr_t rep) {
-  return IsInlined(rep) && (rep & 2) != 0;
-}
+inline bool Status::IsMovedFrom(uintptr_t rep) { return (rep & 2) != 0; }
 
 inline uintptr_t Status::MovedFromRep() {
   return CodeToInlinedRep(absl::StatusCode::kInternal) | 2;
 }
 
 inline uintptr_t Status::CodeToInlinedRep(absl::StatusCode code) {
-  return static_cast<uintptr_t>(code) << 2;
+  return (static_cast<uintptr_t>(code) << 2) + 1;
 }
 
 inline absl::StatusCode Status::InlinedRepToCode(uintptr_t rep) {
@@ -860,11 +863,11 @@ inline absl::StatusCode Status::InlinedRepToCode(uintptr_t rep) {
 
 inline status_internal::StatusRep* Status::RepToPointer(uintptr_t rep) {
   assert(!IsInlined(rep));
-  return reinterpret_cast<status_internal::StatusRep*>(rep - 1);
+  return reinterpret_cast<status_internal::StatusRep*>(rep);
 }
 
 inline uintptr_t Status::PointerToRep(status_internal::StatusRep* rep) {
-  return reinterpret_cast<uintptr_t>(rep) + 1;
+  return reinterpret_cast<uintptr_t>(rep);
 }
 
 inline void Status::Ref(uintptr_t rep) {

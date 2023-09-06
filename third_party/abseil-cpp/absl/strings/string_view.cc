@@ -37,8 +37,8 @@ const char* memmatch(const char* phaystack, size_t haylen, const char* pneedle,
 
   const char* match;
   const char* hayend = phaystack + haylen - neelen + 1;
-  // A static cast is used here to work around the fact that memchr returns
-  // a void* on Posix-compliant systems and const void* on Windows.
+  // A static cast is used here as memchr returns a const void *, and pointer
+  // arithmetic is not allowed on pointers to void.
   while (
       (match = static_cast<const char*>(memchr(
            phaystack, pneedle[0], static_cast<size_t>(hayend - phaystack))))) {
@@ -228,7 +228,6 @@ string_view::size_type string_view::find_last_not_of(
   }
   return npos;
 }
-
 
 #ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 constexpr string_view::size_type string_view::npos;

@@ -159,6 +159,7 @@ crc32c_t AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
     void* __restrict dst, const void* __restrict src, std::size_t length,
     crc32c_t initial_crc) const {
   constexpr std::size_t kRegions = vec_regions + int_regions;
+  static_assert(kRegions > 0, "Must specify at least one region.");
   constexpr uint32_t kCrcDataXor = uint32_t{0xffffffff};
   constexpr std::size_t kBlockSize = sizeof(__m128i);
   constexpr std::size_t kCopyRoundSize = kRegions * kBlockSize;
@@ -314,6 +315,21 @@ crc32c_t AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
   src_bytes += region_size * (kRegions - 1);
   dst_bytes += region_size * (kRegions - 1);
 
+  // Copy and CRC the tail through the XMM registers.
+  std::size_t tail_blocks = tail_size / kBlockSize;
+  LargeTailCopy<0, 1>(&crcs[kRegions - 1], &dst_bytes, &src_bytes, 0,
+                      tail_blocks);
+
+  // Final tail copy for under 16 bytes.
+  crcs[kRegions - 1] =
+      ShortCrcCopy(dst_bytes, src_bytes, tail_size - tail_blocks * kBlockSize,
+                   crcs[kRegions - 1]);
+
+  if (kRegions == 1) {
+    // If there is only one region, finalize and return its CRC.
+    return crc32c_t{static_cast<uint32_t>(crcs[0]) ^ kCrcDataXor};
+  }
+
   // Finalize the first CRCs: XOR the internal CRCs by the XOR mask to undo the
   // XOR done before doing block copy + CRCs.
   for (size_t i = 0; i + 1 < kRegions; i++) {
@@ -325,16 +341,6 @@ crc32c_t AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
   for (size_t i = 1; i + 1 < kRegions; i++) {
     full_crc = ConcatCrc32c(full_crc, crcs[i], region_size);
   }
-
-  // Copy and CRC the tail through the XMM registers.
-  std::size_t tail_blocks = tail_size / kBlockSize;
-  LargeTailCopy<0, 1>(&crcs[kRegions - 1], &dst_bytes, &src_bytes, 0,
-                      tail_blocks);
-
-  // Final tail copy for under 16 bytes.
-  crcs[kRegions - 1] =
-      ShortCrcCopy(dst_bytes, src_bytes, tail_size - tail_blocks * kBlockSize,
-                   crcs[kRegions - 1]);
 
   // Finalize and concatenate the final CRC, then return.
   crcs[kRegions - 1] =
@@ -427,6 +433,8 @@ std::unique_ptr<CrcMemcpyEngine> CrcMemcpy::GetTestEngine(int vector,
     return std::make_unique<AcceleratedCrcMemcpyEngine<3, 0>>();
   } else if (vector == 1 && integer == 2) {
     return std::make_unique<AcceleratedCrcMemcpyEngine<1, 2>>();
+  } else if (vector == 1 && integer == 0) {
+    return std::make_unique<AcceleratedCrcMemcpyEngine<1, 0>>();
   }
   return nullptr;
 }

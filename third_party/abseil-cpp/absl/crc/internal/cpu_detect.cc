@@ -246,6 +246,9 @@ CpuType GetCpuType() {
     if (implementer == 0x41 && part_number == 0xd0c) {
       return CpuType::kArmNeoverseN1;
     }
+    if (implementer == 0xc0 && part_number == 0xac3) {
+      return CpuType::kAmpereSiryn;
+    }
   }
   return CpuType::kUnknown;
 }
