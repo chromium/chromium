@@ -3498,6 +3498,7 @@ static_library("browser") {
       "//components/translate/core/language_detection",
       "//components/ukm/android:ukm_recorder",
       "//components/ukm/content",
+      "//components/user_prefs/android:jni_cc",
       "//components/viz/common",
       "//components/webapk:proto",
       "//components/webauthn/android",

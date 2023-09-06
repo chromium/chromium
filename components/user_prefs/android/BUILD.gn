@@ -19,3 +19,13 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
+
+static_library("jni_cc") {
+  sources = [ "user_prefs_android.cc" ]
+  deps = [
+    ":jni_headers",
+    "//components/prefs",
+    "//components/user_prefs",
+    "//content/public/browser",
+  ]
+}
