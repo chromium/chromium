@@ -1097,28 +1097,26 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                 /*original_domain_name=*/kDohProbeHostname,
                 /*request_port=*/0);
 
-        if (!results.has_value()) {
-          return;
-        }
+        if (results.has_value()) {
+          for (const auto& result : results.value()) {
+            if (result->type() == HostResolverInternalResult::Type::kData &&
+                !result->AsData().endpoints().empty()) {
+              // The DoH probe queries don't go through the standard DnsAttempt
+              // path, so the ServerStats have not been updated yet.
+              context_->RecordServerSuccess(
+                  doh_server_index, /*is_doh_server=*/true, session_.get());
+              context_->RecordRtt(doh_server_index, /*is_doh_server=*/true,
+                                  base::TimeTicks::Now() - query_start_time, rv,
+                                  session_.get());
+              success = true;
 
-        for (const auto& result : results.value()) {
-          if (result->type() == HostResolverInternalResult::Type::kData &&
-              !result->AsData().endpoints().empty()) {
-            // The DoH probe queries don't go through the standard DnsAttempt
-            // path, so the ServerStats have not been updated yet.
-            context_->RecordServerSuccess(
-                doh_server_index, /*is_doh_server=*/true, session_.get());
-            context_->RecordRtt(doh_server_index, /*is_doh_server=*/true,
-                                base::TimeTicks::Now() - query_start_time, rv,
-                                session_.get());
-            success = true;
-
-            // Do not delete the ProbeStats and cancel the probe sequence. It
-            // will cancel itself on the next scheduled ContinueProbe() call if
-            // the server is still available. This way, the backoff schedule
-            // will be maintained if a server quickly becomes unavailable again
-            // before that scheduled call.
-            return;
+              // Do not delete the ProbeStats and cancel the probe sequence. It
+              // will cancel itself on the next scheduled ContinueProbe() call
+              // if the server is still available. This way, the backoff
+              // schedule will be maintained if a server quickly becomes
+              // unavailable again before that scheduled call.
+              break;
+            }
           }
         }
       }
