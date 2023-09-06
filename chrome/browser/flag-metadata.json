@@ -5794,22 +5794,22 @@
   {
     "name": "ntp-journeys-module",
     "owners": [ "romanarora", "mfacey", "tiborg" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-journeys-module-model-ranking",
     "owners": [ "sophiechang", "tiborg" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-journeys-module-suggestion-chip-header",
     "owners": [ "mfacey", "romanarora" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-journeys-module-text-only",
     "owners": [ "mfacey", "romanarora" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-middle-slot-promo-dismissal",
