@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/third_party/icu/icu_utf.h"
@@ -43,10 +44,9 @@ inline bool IsValidCharacter(base_icu::UChar32 code_point) {
 // CountUnicodeCharacters ------------------------------------------------------
 
 // Returns the number of Unicode characters in `text`, up to the supplied
-// `limit`, if `text` contains valid UTF-16. Returns `nullopt` otherwise.
+// `limit`, if `text` contains valid UTF-8. Returns `nullopt` otherwise.
 BASE_EXPORT absl::optional<size_t> CountUnicodeCharacters(
-    const char16_t* src,
-    size_t src_len,
+    std::string_view text,
     size_t limit = std::numeric_limits<size_t>::max());
 
 // ReadUnicodeCharacter --------------------------------------------------------
