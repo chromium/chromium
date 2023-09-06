@@ -249,8 +249,7 @@ bool BrowserTabStripModelDelegate::SupportsReadLater() {
 }
 
 void BrowserTabStripModelDelegate::CacheWebContents(
-    const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
-        web_contents) {
+    const std::vector<std::unique_ptr<DetachedWebContents>>& web_contents) {
   if (browser_shutdown::HasShutdownStarted() ||
       browser_->profile()->IsOffTheRecord() ||
       !ClosedTabCache::IsFeatureEnabled()) {

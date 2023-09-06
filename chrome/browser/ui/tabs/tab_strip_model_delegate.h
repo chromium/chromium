@@ -8,13 +8,13 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 class GURL;
+struct DetachedWebContents;
 
 namespace content {
 class WebContents;
@@ -165,7 +165,7 @@ class TabStripModelDelegate {
   // WebContents.
   // TODO(https://crbug.com/1234332): Provide active web contents.
   virtual void CacheWebContents(
-      const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
+      const std::vector<std::unique_ptr<DetachedWebContents>>&
           web_contents) = 0;
 
   // Follows a web feed for the specified WebContents.

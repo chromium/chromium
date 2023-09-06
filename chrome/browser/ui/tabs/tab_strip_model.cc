@@ -200,6 +200,22 @@ std::unique_ptr<TabGroupModel> TabGroupModelFactory::Create(
   return std::make_unique<TabGroupModel>(controller);
 }
 
+DetachedWebContents::DetachedWebContents(
+    int index_before_any_removals,
+    int index_at_time_of_removal,
+    std::unique_ptr<WebContents> owned_contents,
+    content::WebContents* contents,
+    TabStripModelChange::RemoveReason remove_reason,
+    absl::optional<SessionID> id)
+    : owned_contents(std::move(owned_contents)),
+      contents(contents),
+      index_before_any_removals(index_before_any_removals),
+      index_at_time_of_removal(index_at_time_of_removal),
+      remove_reason(remove_reason),
+      id(id) {}
+DetachedWebContents::~DetachedWebContents() = default;
+DetachedWebContents::DetachedWebContents(DetachedWebContents&&) = default;
+
 ///////////////////////////////////////////////////////////////////////////////
 // Tab
 
@@ -227,23 +243,6 @@ std::unique_ptr<content::WebContents> TabStripModel::Tab::ReplaceWebContents(
     std::unique_ptr<content::WebContents> contents) {
   return ReplaceContents(std::move(contents));
 }
-
-TabStripModel::DetachedWebContents::DetachedWebContents(
-    int index_before_any_removals,
-    int index_at_time_of_removal,
-    std::unique_ptr<WebContents> owned_contents,
-    content::WebContents* contents,
-    TabStripModelChange::RemoveReason remove_reason,
-    absl::optional<SessionID> id)
-    : owned_contents(std::move(owned_contents)),
-      contents(contents),
-      index_before_any_removals(index_before_any_removals),
-      index_at_time_of_removal(index_at_time_of_removal),
-      remove_reason(remove_reason),
-      id(id) {}
-TabStripModel::DetachedWebContents::~DetachedWebContents() = default;
-TabStripModel::DetachedWebContents::DetachedWebContents(DetachedWebContents&&) =
-    default;
 
 // Holds all state necessary to send notifications for detached tabs.
 struct TabStripModel::DetachNotifications {
@@ -394,7 +393,7 @@ void TabStripModel::DetachAndDeleteWebContentsAt(int index) {
                                 TabStripModelChange::RemoveReason::kDeleted);
 }
 
-std::unique_ptr<TabStripModel::DetachedWebContents>
+std::unique_ptr<DetachedWebContents>
 TabStripModel::DetachWebContentsWithReasonAt(
     int index,
     TabStripModelChange::RemoveReason reason) {
@@ -424,11 +423,11 @@ void TabStripModel::OnChange(const TabStripModelChange& change,
   }
 }
 
-std::unique_ptr<TabStripModel::DetachedWebContents>
-TabStripModel::DetachWebContentsImpl(int index_before_any_removals,
-                                     int index_at_time_of_removal,
-                                     bool create_historical_tab,
-                                     TabStripModelChange::RemoveReason reason) {
+std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
+    int index_before_any_removals,
+    int index_at_time_of_removal,
+    bool create_historical_tab,
+    TabStripModelChange::RemoveReason reason) {
   if (contents_data_.empty())
     return nullptr;
   CHECK(ContainsIndex(index_at_time_of_removal));

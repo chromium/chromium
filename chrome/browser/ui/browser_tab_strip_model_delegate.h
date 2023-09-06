@@ -57,9 +57,8 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool CanReload() const override;
   void AddToReadLater(content::WebContents* web_contents) override;
   bool SupportsReadLater() override;
-  void CacheWebContents(
-      const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
-          web_contents) override;
+  void CacheWebContents(const std::vector<std::unique_ptr<DetachedWebContents>>&
+                            web_contents) override;
   void FollowSite(content::WebContents* web_contents) override;
   void UnfollowSite(content::WebContents* web_contents) override;
   bool IsForWebApp() override;
