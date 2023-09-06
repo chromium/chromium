@@ -154,6 +154,7 @@ extern const BASE_EXPORT base::FeatureParam<MemoryTaggingEnabledProcesses>
 // Kill switch for memory tagging. Skips any code related to memory tagging when
 // enabled.
 BASE_EXPORT BASE_DECLARE_FEATURE(kKillPartitionAllocMemoryTagging);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPermissiveMte);
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableDereferenceCheckParam;
 extern const BASE_EXPORT base::FeatureParam<bool>

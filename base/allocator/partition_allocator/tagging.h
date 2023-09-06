@@ -8,6 +8,7 @@
 // This file contains method definitions to support Armv8.5-A's memory tagging
 // extension.
 
+#include <csignal>
 #include <cstddef>
 #include <cstdint>
 
@@ -129,6 +130,17 @@ template <typename T>
 PA_ALWAYS_INLINE uintptr_t UntagPtr(T* ptr) {
   return internal::UntagAddr(reinterpret_cast<uintptr_t>(ptr));
 }
+
+#if PA_CONFIG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PermissiveMte {
+ public:
+  static void SetEnabled(bool enabled);
+  static bool HandleCrash(int signo, siginfo_t* siginfo, ucontext_t* context);
+
+ private:
+  static bool enabled_;
+};
+#endif
 
 }  // namespace partition_alloc
 

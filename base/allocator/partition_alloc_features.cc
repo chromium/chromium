@@ -206,6 +206,11 @@ BASE_FEATURE(kKillPartitionAllocMemoryTagging,
              "KillPartitionAllocMemoryTagging",
              FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPermissiveMte);
+BASE_FEATURE(kPartitionAllocPermissiveMte,
+             "PartitionAllocPermissiveMte",
+             FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kBackupRefPtrAsanEnableDereferenceCheckParam{
     &kPartitionAllocBackupRefPtr, "asan-enable-dereference-check", true};
 const base::FeatureParam<bool> kBackupRefPtrAsanEnableExtractionCheckParam{
