@@ -1387,7 +1387,7 @@ void NGPhysicalBoxFragment::AddOutlineRects(
             GetLayoutObject()->ObjectBoundingBox()));
       }
     } else {
-      collector.AddRect(PhysicalRect(additional_offset, Size().ToLayoutSize()));
+      collector.AddRect(PhysicalRect(additional_offset, Size()));
     }
   }
 

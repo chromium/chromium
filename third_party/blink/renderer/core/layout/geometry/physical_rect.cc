@@ -6,8 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -146,15 +145,6 @@ bool PhysicalRect::InclusiveIntersect(const PhysicalRect& other) {
   size = {new_max_point.left - new_offset.left,
           new_max_point.top - new_offset.top};
   return true;
-}
-
-LayoutRect PhysicalRect::ToLayoutFlippedRect(
-    const ComputedStyle& style,
-    const PhysicalSize& container_size) const {
-  if (!style.IsFlippedBlocksWritingMode())
-    return {offset.left, offset.top, size.width, size.height};
-  return {container_size.width - offset.left - size.width, offset.top,
-          size.width, size.height};
 }
 
 String PhysicalRect::ToString() const {
