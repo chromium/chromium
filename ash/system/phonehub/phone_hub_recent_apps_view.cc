@@ -5,9 +5,7 @@
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 
 #include <algorithm>
-#include <memory>
 #include <numeric>
-#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -41,6 +39,7 @@
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -164,6 +163,9 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorWarning));
     error_button_->SetImage(views::Button::STATE_NORMAL, image);
+    views::FocusRing::Get(error_button_)
+        ->SetColorId(static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
+    views::InstallCircleHighlightPathGenerator(error_button_);
     error_button_->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TITLE));
     error_button_->SetVisible(false);
