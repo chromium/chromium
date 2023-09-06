@@ -38,6 +38,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
     : public DesktopWindowTreeHostPlatform,
       public ui::X11ExtensionDelegate {
  public:
+  static const char kWindowKey[];
+
   DesktopWindowTreeHostLinux(
       internal::NativeWidgetDelegate* native_widget_delegate,
       DesktopNativeWidgetAura* desktop_native_widget_aura);

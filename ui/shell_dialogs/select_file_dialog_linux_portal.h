@@ -105,7 +105,8 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   // DialogInfo notifies the end result via one of the callbacks.
   class DialogInfo : public base::RefCountedThreadSafe<DialogInfo> {
    public:
-    DialogInfo(OnSelectFileExecutedCallback selected_callback,
+    DialogInfo(base::OnceClosure created_callback,
+               OnSelectFileExecutedCallback selected_callback,
                OnSelectFileCanceledCallback canceled_callback);
 
     // Sets up listeners for the response handle's signals.
@@ -157,6 +158,8 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
     void CancelOpen();
 
     // These callbacks should run on main thread.
+    // It will point to SelectFileDialogPortal::DialogCreatedOnMainThread.
+    base::OnceClosure created_callback_;
     // It will point to SelectFileDialogPortal::CompleteOpenOnMainThread.
     OnSelectFileExecutedCallback selected_callback_;
     // It will point to SelectFileDialogPortal::CancelOpenOnMainThread.
@@ -166,8 +169,8 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
     // dialog's completion.
     raw_ptr<dbus::ObjectProxy, DanglingUntriaged> response_handle_ = nullptr;
 
-    // `response_handle_` owns callbacks with methods bound to `this`.  To prevent
-    // leaking, the callbacks are bound with weak references to `this`.
+    // `response_handle_` owns callbacks with methods bound to `this`.  To
+    // prevent leaking, the callbacks are bound with weak references to `this`.
     base::WeakPtrFactory<DialogInfo> weak_factory_{this};
   };
 
@@ -189,6 +192,7 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
       base::FilePath::StringType default_extension,
       std::string parent_handle);
 
+  void DialogCreatedOnMainThread();
   void CompleteOpenOnMainThread(std::vector<base::FilePath> paths,
                                 std::string current_filter);
   void CancelOpenOnMainThread();
@@ -197,7 +201,7 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   void UnparentOnMainThread();
 
   // This should be used in the main thread.
-  absl::optional<gfx::AcceleratedWidget> parent_;
+  base::WeakPtr<aura::WindowTreeHost> host_;
 
   // The untyped params to pass to the listener, it should be used in the main
   // thread.
@@ -213,6 +217,11 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   static int handle_token_counter_;
 
   std::vector<PortalFilter> filters_;
+
+  // Event handling on the parent window is disabled while the dialog is active
+  // to make the dialog modal.  This closure should be run when the dialog is
+  // closed to reenable event handling.
+  base::OnceClosure reenable_window_event_handling_;
 
   // `DialogInfo` keeps callbacks to methods bound to `this`, and `this` keeps
   // a strong reference to `DialogInfo`.  To prevent a reference cycle, the

@@ -64,7 +64,10 @@ component("shell_dialogs") {
         "select_file_dialog_linux_portal.cc",
         "select_file_dialog_linux_portal.h",
       ]
-      deps += [ "//dbus" ]
+      deps += [
+        "//dbus",
+        "//ui/views",
+      ]
     }
   }
 

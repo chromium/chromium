@@ -22,6 +22,7 @@
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -56,6 +57,7 @@ constexpr char kFileChooserOptionFilters[] = "filters";
 constexpr char kFileChooserOptionCurrentFilter[] = "current_filter";
 constexpr char kFileChooserOptionCurrentFolder[] = "current_folder";
 constexpr char kFileChooserOptionCurrentName[] = "current_name";
+constexpr char kFileChooserOptionModal[] = "modal";
 
 constexpr int kFileChooserFilterKindGlob = 0;
 
@@ -155,6 +157,7 @@ SelectFileDialogLinuxPortal::SelectFileDialogLinuxPortal(
     : SelectFileDialogLinux(listener, std::move(policy)) {}
 
 SelectFileDialogLinuxPortal::~SelectFileDialogLinuxPortal() {
+  UnparentOnMainThread();
   // `info_` may have weak pointers which must be invalidated on the dbus
   // thread. Pass our reference to that thread so weak pointers get invalidated
   // on the correct sequence.
@@ -190,12 +193,7 @@ void SelectFileDialogLinuxPortal::DestroyPortalConnection() {
 
 bool SelectFileDialogLinuxPortal::IsRunning(
     gfx::NativeWindow parent_window) const {
-  if (parent_window && parent_window->GetHost()) {
-    auto window = parent_window->GetHost()->GetAcceleratedWidget();
-    return parent_ && parent_.value() == window;
-  }
-
-  return false;
+  return parent_window && host_ && host_.get() == parent_window->GetHost();
 }
 
 void SelectFileDialogLinuxPortal::SelectFileImpl(
@@ -209,6 +207,8 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
     void* params,
     const GURL* caller) {
   info_ = base::MakeRefCounted<DialogInfo>(
+      base::BindOnce(&SelectFileDialogLinuxPortal::DialogCreatedOnMainThread,
+                     weak_factory_.GetWeakPtr()),
       base::BindOnce(&SelectFileDialogLinuxPortal::CompleteOpenOnMainThread,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&SelectFileDialogLinuxPortal::CancelOpenOnMainThread,
@@ -217,8 +217,13 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
   info_->main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   listener_params_ = params;
 
-  if (owning_window && owning_window->GetHost()) {
-    parent_ = owning_window->GetHost()->GetAcceleratedWidget();
+  if (owning_window) {
+    if (auto* root = owning_window->GetRootWindow()) {
+      if (auto* host = root->GetNativeWindowProperty(
+              views::DesktopWindowTreeHostLinux::kWindowKey)) {
+        host_ = static_cast<aura::WindowTreeHost*>(host)->GetWeakPtr();
+      }
+    }
   }
 
   if (file_types)
@@ -232,11 +237,11 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
   // and returned to listeners later.
   filters_ = filter_set.filters;
 
-  if (parent_) {
+  if (host_) {
     auto* delegate = ui::LinuxUiDelegate::GetInstance();
     if (delegate &&
         delegate->ExportWindowHandle(
-            *parent_,
+            host_->GetAcceleratedWidget(),
             base::BindOnce(
                 &SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle,
                 this, title, default_path, filter_set, default_extension))) {
@@ -373,9 +378,11 @@ SelectFileDialogLinuxPortal::PortalFilterSet::PortalFilterSet(
 SelectFileDialogLinuxPortal::PortalFilterSet::~PortalFilterSet() = default;
 
 SelectFileDialogLinuxPortal::DialogInfo::DialogInfo(
+    base::OnceClosure created_callback,
     OnSelectFileExecutedCallback selected_callback,
     OnSelectFileCanceledCallback canceled_callback)
-    : selected_callback_(std::move(selected_callback)),
+    : created_callback_(std::move(created_callback)),
+      selected_callback_(std::move(selected_callback)),
       canceled_callback_(std::move(canceled_callback)) {}
 SelectFileDialogLinuxPortal::DialogInfo::~DialogInfo() = default;
 
@@ -591,6 +598,8 @@ void SelectFileDialogLinuxPortal::DialogInfo::AppendOptions(
     options_writer.CloseContainer(&option_writer);
   }
 
+  AppendBoolOption(&options_writer, kFileChooserOptionModal, true);
+
   writer->CloseContainer(&options_writer);
 }
 
@@ -667,6 +676,16 @@ void SelectFileDialogLinuxPortal::DialogInfo::CancelOpen() {
   main_task_runner->PostTask(FROM_HERE, std::move(canceled_callback_));
 }
 
+void SelectFileDialogLinuxPortal::DialogCreatedOnMainThread() {
+  if (!host_) {
+    return;
+  }
+  host_->ReleaseCapture();
+  reenable_window_event_handling_ =
+      static_cast<views::DesktopWindowTreeHostLinux*>(host_.get())
+          ->DisableEventListening();
+}
+
 void SelectFileDialogLinuxPortal::CompleteOpenOnMainThread(
     std::vector<base::FilePath> paths,
     std::string current_filter) {
@@ -698,9 +717,10 @@ void SelectFileDialogLinuxPortal::CancelOpenOnMainThread() {
 }
 
 void SelectFileDialogLinuxPortal::UnparentOnMainThread() {
-  if (parent_) {
-    parent_.reset();
+  if (reenable_window_event_handling_) {
+    std::move(reenable_window_event_handling_).Run();
   }
+  host_ = nullptr;
 }
 
 void SelectFileDialogLinuxPortal::DialogInfo::OnCallResponse(
@@ -751,6 +771,8 @@ void SelectFileDialogLinuxPortal::DialogInfo::OnResponseSignalConnected(
   if (!connected) {
     LOG(ERROR) << "Could not connect to Response signal";
     CancelOpen();
+  } else if (created_callback_) {
+    main_task_runner->PostTask(FROM_HERE, std::move(created_callback_));
   }
 }
 

@@ -77,11 +77,17 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
 
 }  // namespace
 
+// static
+const char DesktopWindowTreeHostLinux::kWindowKey[] =
+    "DesktopWindowTreeHostLinux";
+
 DesktopWindowTreeHostLinux::DesktopWindowTreeHostLinux(
     internal::NativeWidgetDelegate* native_widget_delegate,
     DesktopNativeWidgetAura* desktop_native_widget_aura)
     : DesktopWindowTreeHostPlatform(native_widget_delegate,
-                                    desktop_native_widget_aura) {}
+                                    desktop_native_widget_aura) {
+  window()->SetNativeWindowProperty(kWindowKey, this);
+}
 
 DesktopWindowTreeHostLinux::~DesktopWindowTreeHostLinux() = default;
 
