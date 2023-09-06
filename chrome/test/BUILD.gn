@@ -7810,9 +7810,6 @@ test("unit_tests") {
     }
     if (!is_fuchsia) {
       sources += [
-        # File type policies are not supported on Fuchsia.
-        "../browser/component_updater/file_type_policies_component_installer_unittest.cc",
-
         # Fuchsia does not need real file lock as the filesystem is not shared
         # across components.
         "../browser/importer/firefox_profile_lock_unittest.cc",
