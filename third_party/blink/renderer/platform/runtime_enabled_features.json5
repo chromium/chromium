@@ -1318,10 +1318,11 @@
     },
     {
       name: "DeviceAttributes",
-      origin_trial_feature_name: "DeviceAttributes",
-      origin_trial_os: ["chromeos"],
-      origin_trial_allows_third_party: true,
-      status: "experimental",
+      status: {
+        "ChromeOS_Ash": "stable",
+        "ChromeOS_Lacros": "stable",
+        "default": "experimental",
+      },
       base_feature: "none",
     },
     {
