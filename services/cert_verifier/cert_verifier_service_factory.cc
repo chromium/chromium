@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -146,6 +147,14 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
 void CertVerifierServiceFactoryImpl::UpdateCRLSet(
     mojo_base::BigBuffer crl_set,
     mojom::CertVerifierServiceFactory::UpdateCRLSetCallback callback) {
+  // Posting to thread pool might fail if the browser is in shutdown. Wrap the
+  // callback so that it will be invoked anyway to avoid violating Mojo
+  // expectations. This is a little misleading since the CRLSet was not
+  // actually updated, but if the browser is shutting down then it doesn't
+  // really matter. (If it actually mattered the callback could get passed a
+  // boolean success value or something.)
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback));
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ParseCRLSet, std::move(crl_set)),
