@@ -2542,6 +2542,10 @@ void InjectNTP(Browser* browser) {
         [weakSelf showSettingsFromViewController:weakSelf.currentInterface
                                                      .viewController];
       };
+    case OPEN_LATEST_TAB:
+      return ^{
+        [weakSelf openLatestTab];
+      };
     default:
       return nil;
   }
@@ -2655,6 +2659,18 @@ void InjectNTP(Browser* browser) {
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
                          ApplicationCommands);
   [applicationCommandsHandler showCreditCardSettings];
+}
+
+- (void)openLatestTab {
+  WebStateList* webStateList = self.currentInterface.browser->GetWebStateList();
+  web::WebState* webState = StartSurfaceRecentTabBrowserAgent::FromBrowser(
+                                self.currentInterface.browser)
+                                ->most_recent_tab();
+  if (!webState) {
+    return;
+  }
+  int index = webStateList->GetIndexOfWebState(webState);
+  webStateList->ActivateWebStateAt(index);
 }
 
 #pragma mark - TabOpening implementation.

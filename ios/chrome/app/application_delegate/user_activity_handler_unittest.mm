@@ -43,6 +43,7 @@
 #import "ios/chrome/common/intents/OpenBookmarksIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
+#import "ios/chrome/common/intents/OpenLatestTabIntent.h"
 #import "ios/chrome/common/intents/OpenNewTabIntent.h"
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
@@ -1240,5 +1241,35 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentManageSettings) {
                                   initStage:InitStageFinal];
 
   EXPECT_EQ(MANAGE_SETTINGS,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to Open Latest Tab intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentOpenLatestTab) {
+  NSUserActivity* userActivity =
+      [[NSUserActivity alloc] initWithActivityType:@"OpenLatestTabIntent"];
+
+  OpenLatestTabIntent* intent = [[OpenLatestTabIntent alloc] init];
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(OPEN_LATEST_TAB,
             [connectionInformationMock startupParameters].postOpeningAction);
 }
