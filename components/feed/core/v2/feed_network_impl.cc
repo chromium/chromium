@@ -463,8 +463,8 @@ class FeedNetworkImpl::NetworkFetch {
       response_body = std::move(*response);
 
       if (response_info.status_code == net::HTTP_UNAUTHORIZED) {
-        CoreAccountId account_id =
-            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+        CoreAccountId account_id = identity_manager_->GetPrimaryAccountId(
+            signin::ConsentLevel::kSignin);
         if (!account_id.empty()) {
           identity_manager_->RemoveAccessTokenFromCache(
               account_id, GetAuthScopes(), access_token_);

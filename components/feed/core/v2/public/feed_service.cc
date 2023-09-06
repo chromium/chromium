@@ -170,6 +170,8 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
     return profile_prefs_->GetBoolean(::prefs::kSigninAllowed);
   }
   bool IsSyncOn() override {
+    // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync is removed
+    // from the codebase.
     return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
   void RegisterExperiments(const Experiments& experiments) override {
