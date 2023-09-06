@@ -650,31 +650,6 @@ TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
   EXPECT_TRUE(bucket_context_handle->ShouldRunCompaction());
 }
 
-// Remove this test when the kill switch is removed.
-TEST_F(IndexedDBFactoryTest, CompactionKillSwitchWorks) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {kCompactIDBOnClose});
-
-  SetupContext();
-
-  const blink::StorageKey storage_key =
-      blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
-  IndexedDBBucketContextHandle bucket_context_handle;
-  leveldb::Status s;
-
-  // Open a connection & immediately release it to cause the closing sequence to
-  // start.
-  std::tie(bucket_context_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrCreateBucketContext(
-          bucket_locator, context()->GetDataPath(bucket_locator),
-          /*create_if_missing=*/true);
-  EXPECT_TRUE(bucket_context_handle.IsHeld()) << s.ToString();
-
-  EXPECT_FALSE(bucket_context_handle->ShouldRunCompaction());
-}
-
 TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
   SetupInMemoryContext();
   ASSERT_TRUE(context()->IsInMemoryContext());

@@ -104,10 +104,6 @@ base::Time GenerateNextGlobalCompactionTime(base::Time now) {
 
 }  // namespace
 
-BASE_FEATURE(kCompactIDBOnClose,
-             "CompactIndexedDBOnClose",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 constexpr const base::TimeDelta
     IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow;
 constexpr const base::TimeDelta
@@ -396,9 +392,6 @@ bool IndexedDBBucketContext::ShouldRunTombstoneSweeper() {
 
 bool IndexedDBBucketContext::ShouldRunCompaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kCompactIDBOnClose)) {
-    return false;
-  }
 
   base::Time now = clock_->Now();
   // Check that the last compaction hasn't run too recently.

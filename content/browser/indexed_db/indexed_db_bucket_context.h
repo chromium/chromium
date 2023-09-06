@@ -34,10 +34,6 @@ class TransactionalLevelDBFactory;
 
 constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 
-// This is an emergency kill switch to use with Finch if the feature needs to be
-// shut off.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompactIDBOnClose);
-
 // IndexedDBBucketContext manages the per-bucket IndexedDB state, and other
 // important context like the backing store and lock manager.
 //
