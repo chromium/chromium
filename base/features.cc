@@ -44,7 +44,14 @@ BASE_FEATURE(kSupportsUserDataFlatHashMap,
 // population to collect data.
 BASE_FEATURE(kPartialLowEndModeOnMidRangeDevices,
              "PartialLowEndModeOnMidRangeDevices",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A parameter to exclude or not exclude LowEndBackgroundCleanup from
+// PartialLowModeOnMidRangeDevices. This is used to see how
+// LowEndBackGroundCleanup affects total count of memory.gpu.privatefootprints.
+const FeatureParam<bool> kPartialLowEndModeExcludeLowEndBackgroundCleanup{
+    &kPartialLowEndModeOnMidRangeDevices, "exculde-low-end-background-cleanup",
+    false};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
