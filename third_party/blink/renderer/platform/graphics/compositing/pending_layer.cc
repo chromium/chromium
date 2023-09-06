@@ -44,7 +44,8 @@ PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
       draws_content_(first_chunk.DrawsContent()),
       text_known_to_be_on_opaque_background_(
           first_chunk.text_known_to_be_on_opaque_background),
-      is_solid_color_(first_chunk.background_color.is_solid_color),
+      solid_color_chunk_index_(
+          first_chunk.background_color.is_solid_color ? 0 : kNotFound),
       chunks_(std::move(artifact), first_chunk),
       property_tree_state_(
           first_chunk.properties.GetPropertyTreeState().Unalias()),
@@ -121,7 +122,7 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
                    VectorAsJSONArray(offset_of_decomposited_transforms_));
   result->SetArray("paint_chunks", chunks_.ToJSON());
   result->SetBoolean("draws_content", DrawsContent());
-  result->SetBoolean("is_solid_color", is_solid_color_);
+  result->SetBoolean("is_solid_color", solid_color_chunk_index_ != kNotFound);
   result->SetString("hit_test_opaqueness",
                     cc::HitTestOpaquenessToString(hit_test_opaqueness_));
   return result;
@@ -158,7 +159,7 @@ void PendingLayer::Upcast(const PropertyTreeState& new_state) {
   bounds_ = float_clip_rect.Rect();
 
   property_tree_state_ = new_state;
-  is_solid_color_ = false;
+  solid_color_chunk_index_ = kNotFound;
 }
 
 const PaintChunk& PendingLayer::FirstPaintChunk() const {
@@ -190,6 +191,7 @@ bool PendingLayer::CanMerge(
     PropertyTreeState& merged_state,
     gfx::RectF& merged_rect_known_to_be_opaque,
     bool& merged_text_known_to_be_on_opaque_background,
+    wtf_size_t& merged_solid_color_chunk_index,
     cc::HitTestOpaqueness& merged_hit_test_opaqueness) const {
   absl::optional<PropertyTreeState> optional_merged_state =
       CanUpcastWith(guest, guest.GetPropertyTreeState(), is_composited_scroll);
@@ -200,6 +202,7 @@ bool PendingLayer::CanMerge(
   merged_state = *optional_merged_state;
   const absl::optional<gfx::RectF>& merged_visibility_limit =
       GeometryMapper::VisibilityLimit(merged_state);
+  merged_solid_color_chunk_index = kNotFound;
 
   // If the current bounds and known-to-be-opaque area already cover the entire
   // visible area of the merged state, and the current state is already equal
@@ -212,6 +215,9 @@ bool PendingLayer::CanMerge(
       rect_known_to_be_opaque_ == bounds_) {
     merged_bounds = merged_rect_known_to_be_opaque = bounds_;
     merged_text_known_to_be_on_opaque_background = true;
+    if (!guest.draws_content_) {
+      merged_solid_color_chunk_index = solid_color_chunk_index_;
+    }
     merged_hit_test_opaqueness = cc::UnionHitTestOpaqueness(
         gfx::ToRoundedRect(bounds_), hit_test_opaqueness_,
         gfx::ToRoundedRect(guest.bounds_), guest.hit_test_opaqueness_);
@@ -279,6 +285,18 @@ bool PendingLayer::CanMerge(
         return false;
       }
     }
+    if (IsSolidColor() && new_home_bounds.IsTight() && !guest.draws_content_ &&
+        new_home_bounds.Rect() == merged_bounds) {
+      // Home's solid color fills the merged layer, and is the only drawing.
+      merged_solid_color_chunk_index = solid_color_chunk_index_;
+    } else if (guest.IsSolidColor() && new_guest_bounds.IsTight() &&
+               new_guest_bounds.Rect() == merged_bounds &&
+               (!draws_content_ || guest.GetSolidColor().isOpaque())) {
+      // Guest's solid color fills the merged layer, and is the only drawing or
+      // obscures all home's drawing.
+      merged_solid_color_chunk_index =
+          chunks_.size() + guest.solid_color_chunk_index_;
+    }
   }
 
   cc::HitTestOpaqueness home_hit_test_opaqueness = hit_test_opaqueness_;
@@ -310,13 +328,14 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   PropertyTreeState merged_state = PropertyTreeState::Uninitialized();
   gfx::RectF merged_rect_known_to_be_opaque;
   bool merged_text_known_to_be_on_opaque_background = false;
+  wtf_size_t merged_solid_color_chunk_index = kNotFound;
   cc::HitTestOpaqueness merged_hit_test_opaqueness =
       cc::HitTestOpaqueness::kMixed;
 
   if (!CanMerge(guest, lcd_text_preference, is_composited_scroll, merged_bounds,
                 merged_state, merged_rect_known_to_be_opaque,
                 merged_text_known_to_be_on_opaque_background,
-                merged_hit_test_opaqueness)) {
+                merged_solid_color_chunk_index, merged_hit_test_opaqueness)) {
     return false;
   }
 
@@ -328,7 +347,7 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   text_known_to_be_on_opaque_background_ =
       merged_text_known_to_be_on_opaque_background;
   has_text_ |= guest.has_text_;
-  is_solid_color_ = false;
+  solid_color_chunk_index_ = merged_solid_color_chunk_index;
   change_of_decomposited_transforms_ = std::max(
       ChangeOfDecompositedTransforms(), guest.ChangeOfDecompositedTransforms());
   hit_test_opaqueness_ = merged_hit_test_opaqueness;
@@ -605,9 +624,14 @@ void PendingLayer::UpdateSolidColorLayer(PendingLayer* old_pending_layer) {
   } else {
     cc_layer_->SetHitTestable(true);
   }
-  DCHECK(FirstPaintChunk().background_color.is_solid_color);
-  cc_layer_->SetBackgroundColor(FirstPaintChunk().background_color.color);
+  cc_layer_->SetBackgroundColor(GetSolidColor());
   cc_layer_->SetIsDrawable(draws_content_);
+}
+
+SkColor4f PendingLayer::GetSolidColor() const {
+  CHECK_NE(solid_color_chunk_index_, kNotFound);
+  DCHECK(chunks_[solid_color_chunk_index_].background_color.is_solid_color);
+  return chunks_[solid_color_chunk_index_].background_color.color;
 }
 
 void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
@@ -670,8 +694,7 @@ void PendingLayer::UpdateCompositedLayerForRepaint(
     if (UsesSolidColorLayer()) {
       DCHECK(cc_layer_);
       if (!chunks_unchanged) {
-        DCHECK(FirstPaintChunk().background_color.is_solid_color);
-        cc_layer_->SetBackgroundColor(FirstPaintChunk().background_color.color);
+        cc_layer_->SetBackgroundColor(GetSolidColor());
       }
     } else {
       DCHECK(content_layer_client_);

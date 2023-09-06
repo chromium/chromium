@@ -157,10 +157,9 @@ class PLATFORM_EXPORT PendingLayer {
 
   SkColor4f ComputeBackgroundColor() const;
 
-  // True if this contains only a single solid color PaintChunk in the same
-  // property tree state (decomposited 2d translations are allowed) as this
-  // PendingLayer.
-  bool IsSolidColor() const { return is_solid_color_; }
+  // True if a solid color chunk exists that makes this entire layer
+  // draw a solid color (see comment above `solid_color_chunk_index_`).
+  bool IsSolidColor() const { return solid_color_chunk_index_ != kNotFound; }
 
  private:
   // Checks basic merge-ability with `guest` and calls
@@ -177,6 +176,7 @@ class PLATFORM_EXPORT PendingLayer {
                 PropertyTreeState& merged_state,
                 gfx::RectF& merged_rect_known_to_be_opaque,
                 bool& merged_text_known_to_be_on_opaque_background,
+                wtf_size_t& merged_solid_color_chunk_index,
                 cc::HitTestOpaqueness& merged_hit_test_opaqueness) const;
 
   gfx::RectF MapRectKnownToBeOpaque(
@@ -197,8 +197,9 @@ class PLATFORM_EXPORT PendingLayer {
   void UpdateLayerProperties(cc::LayerSelection&, bool selection_only);
 
   bool UsesSolidColorLayer() const {
-    return RuntimeEnabledFeatures::SolidColorLayersEnabled() && is_solid_color_;
+    return RuntimeEnabledFeatures::SolidColorLayersEnabled() && IsSolidColor();
   }
+  SkColor4f GetSolidColor() const;
 
   // The rects are in the space of property_tree_state.
   gfx::RectF bounds_;
@@ -207,7 +208,10 @@ class PLATFORM_EXPORT PendingLayer {
   bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
   bool has_decomposited_blend_mode_ = false;
-  bool is_solid_color_ = false;
+  // If not kNotFound, this is the index of the chunk that makes this layer
+  // solid color. The solid color chunk must be the last drawable chunk and
+  // must draw a solid color that fully covers this pending layer.
+  wtf_size_t solid_color_chunk_index_ = kNotFound;
   PaintChunkSubset chunks_;
   RefCountedPropertyTreeState property_tree_state_;
   gfx::Vector2dF offset_of_decomposited_transforms_;
