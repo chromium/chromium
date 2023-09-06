@@ -242,7 +242,6 @@ def __step_config(ctx, step_config):
             "labels": {
                 "type": "tool",
             },
-            "inputs": rule.get("inputs", []),
             "canonicalize_working_dir": rule.get("canonicalize_dir", False),
             # TODO: b/297807325 - Siso wants to handle local execution. However,
             # Reclient's CompileErrorRatioAlert requires local fallback to be
