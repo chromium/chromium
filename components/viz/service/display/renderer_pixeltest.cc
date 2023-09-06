@@ -2458,6 +2458,11 @@ INSTANTIATE_TEST_SUITE_P(,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(VideoRendererPixelTest);
 
 TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
+  // TODO(b/283271538): Enable this test once YUV sampling/subset issues are
+  // fixed in Graphite.
+  if (is_skia_graphite()) {
+    GTEST_SKIP();
+  }
   gfx::Rect rect(this->device_viewport_size_);
 
   AggregatedRenderPassId id{1};
@@ -2597,6 +2602,11 @@ TEST_P(VideoRendererPixelTest, SimpleNV12JRect) {
 // Test that a YUV video doesn't bleed outside of its tex coords when the
 // tex coord rect is only a partial subrectangle of the coded contents.
 TEST_P(VideoRendererPixelTest, YUVEdgeBleed) {
+  // TODO(b/283271538): Enable this test once YUV sampling/subset issues are
+  // fixed in Graphite.
+  if (is_skia_graphite()) {
+    GTEST_SKIP();
+  }
   AggregatedRenderPassList pass_list;
   this->CreateEdgeBleedPass(media::PIXEL_FORMAT_I420,
                             gfx::ColorSpace::CreateJpeg(), &pass_list);
@@ -2606,6 +2616,11 @@ TEST_P(VideoRendererPixelTest, YUVEdgeBleed) {
 }
 
 TEST_P(VideoRendererPixelTest, YUVAEdgeBleed) {
+  // TODO(b/283271538): Enable this test once YUV sampling/subset issues are
+  // fixed in Graphite.
+  if (is_skia_graphite()) {
+    GTEST_SKIP();
+  }
   AggregatedRenderPassList pass_list;
   this->CreateEdgeBleedPass(media::PIXEL_FORMAT_I420A,
                             gfx::ColorSpace::CreateREC601(), &pass_list);
@@ -5580,6 +5595,10 @@ class RendererPixelTestWithOverdrawFeedback : public VizPixelTestWithParam {
 };
 
 TEST_P(RendererPixelTestWithOverdrawFeedback, TranslucentRectangles) {
+  // TODO(crbug.com/1475653): Enable this test once issue is fixed for Graphite.
+  if (is_skia_graphite()) {
+    GTEST_SKIP();
+  }
   gfx::Rect rect(this->device_viewport_size_);
 
   AggregatedRenderPassId id{1};
