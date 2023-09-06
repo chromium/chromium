@@ -1210,17 +1210,20 @@ void FormStructure::ParseFieldTypesWithPatterns(
     const GeoIpCountryCode& client_country,
     LogManager* log_manager) {
   FieldCandidatesMap field_type_map;
+  const LanguageCode& page_language =
+      base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
+          ? current_page_language_
+          : LanguageCode();
   if (ShouldRunHeuristics()) {
-    FormField::ParseFormFields(fields_, client_country, current_page_language_,
+    FormField::ParseFormFields(fields_, client_country, page_language,
                                is_form_tag_, pattern_source, field_type_map,
                                log_manager);
   } else if (ShouldRunHeuristicsForSingleFieldForms()) {
-    FormField::ParseSingleFieldForms(
-        fields_, client_country, current_page_language_, is_form_tag_,
-        pattern_source, field_type_map, log_manager);
-    FormField::ParseStandaloneCVCFields(fields_, current_page_language_,
-                                        pattern_source, field_type_map,
-                                        log_manager);
+    FormField::ParseSingleFieldForms(fields_, client_country, page_language,
+                                     is_form_tag_, pattern_source,
+                                     field_type_map, log_manager);
+    FormField::ParseStandaloneCVCFields(fields_, page_language, pattern_source,
+                                        field_type_map, log_manager);
   }
   if (field_type_map.empty())
     return;
