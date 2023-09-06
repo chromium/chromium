@@ -17,13 +17,10 @@ class Extension;
 namespace chromeos {
 
 // Finds a WebContents hosting a app UI of a ChromeOSSystemExtension. The
-// security level of the WebContents must be secure. If `focused_ui_required` is
-// true, the WebContents must be focused. A focused UI will always be preferred
-// regardless of `focused_ui_required`.
+// security level of the WebContents must be secure.
 content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
     content::BrowserContext* context,
-    const extensions::Extension* extension,
-    bool focused_ui_required = false);
+    const extensions::Extension* extension);
 
 // Same as above but returns whether there is a valid WebContents or not.
 bool IsTelemetryExtensionAppUiOpenAndSecure(

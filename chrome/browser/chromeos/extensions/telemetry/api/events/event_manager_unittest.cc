@@ -9,7 +9,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service.h"
@@ -111,18 +110,6 @@ class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
     return extension;
   }
 
-  void SimulateFocusEvent(const std::string& extension_id, bool is_focused) {
-    // Change active tab with `browser()->tab_strip_model()->ActivateTabAt()` or
-    // `AddPage()` will not trigger focus events. Fire those manually instead.
-    if (is_focused) {
-      event_manager()->app_ui_observers_[extension_id]->OnWebContentsFocused(
-          nullptr);
-    } else {
-      event_manager()->app_ui_observers_[extension_id]->OnWebContentsLostFocus(
-          nullptr);
-    }
-  }
-
   EventManager* event_manager() { return EventManager::Get(profile()); }
 
   base::flat_map<extensions::ExtensionId, std::unique_ptr<AppUiObserver>>&
@@ -177,55 +164,7 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventSuccess) {
   EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventAppUiOpenButUnfocusSuccess) {
-  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
-
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  AddTab(browser(), GURL("https://example.com/"));
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
-
-  // Closing the tab cuts the observation.
-  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/1,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventAppUiOpenButUnfocusFail) {
-  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
-
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  AddTab(browser(), GURL("https://example.com/"));
-  EXPECT_EQ(EventManager::kAppUiNotFocused,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_FALSE(app_ui_observers().contains(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
-
-  // Closing the tab should not change the observation.
-  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/1,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventAppUiSwitchFocusSuccess) {
+TEST_F(TelemetryExtensionEventManagerTest, RegisterEventSuccessSecondTimes) {
   const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
   CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
 
@@ -237,161 +176,15 @@ TEST_F(TelemetryExtensionEventManagerTest,
                 extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
-  // Regular events are not affected by focus changes.
-  SimulateFocusEvent(extension_id, /*is_focused=*/false);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
-
-  SimulateFocusEvent(extension_id, /*is_focused=*/true);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
-
-  // Closing the tab cuts the observation.
-  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventAppUiSwitchFocusSuccess) {
-  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
-
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  SimulateFocusEvent(extension_id, /*is_focused=*/false);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  SimulateFocusEvent(extension_id, /*is_focused=*/true);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  // Closing the tab cuts the observation.
-  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularAndFocusRestrictedEventWithAppUiSwitchFocusSuccess) {
-  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
-
-  auto regular_event_type = crosapi::TelemetryEventCategoryEnum::kAudioJack;
-  auto restricted_event_type =
-      crosapi::TelemetryEventCategoryEnum::kTouchpadConnected;
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_EQ(EventManager::kSuccess, event_manager()->RegisterExtensionForEvent(
-                                        extension_id, regular_event_type));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(extension_id,
-                                                           regular_event_type));
-
-  EXPECT_EQ(EventManager::kSuccess, event_manager()->RegisterExtensionForEvent(
-                                        extension_id, restricted_event_type));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, restricted_event_type));
-
-  SimulateFocusEvent(extension_id, /*is_focused=*/false);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(extension_id,
-                                                           regular_event_type));
-  EXPECT_FALSE(event_router().IsExtensionAllowedForCategory(
-      extension_id, restricted_event_type));
-
-  SimulateFocusEvent(extension_id, /*is_focused=*/true);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(extension_id,
-                                                           regular_event_type));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, restricted_event_type));
-
-  // Closing the tab cuts the observation.
-  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventTwoTimesSuccess) {
-  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
-
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
-
-  // Second register will still succeed.
+  // Second register will still success.
   EXPECT_EQ(EventManager::kSuccess,
             event_manager()->RegisterExtensionForEvent(
                 extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 }
 
 TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventTwoTimesSuccess) {
-  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
-
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  // Second register will still succeed.
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventMultipleTabsOpenSuccess) {
+       RegisterEventSuccessMultipleTabsOpen) {
   const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
   CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
 
@@ -405,129 +198,17 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
 
   // Open second tab.
-  SimulateFocusEvent(extension_id, /*is_focused=*/false);
   OpenAppUiUrlAndSetCertificateWithStatus(
       GURL("https://googlechromelabs.github.io/"),
       /*cert_status=*/net::OK);
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
   // Close the first tab (index 1). The observer shouldn't be cut.
   browser()->tab_strip_model()->CloseWebContentsAt(1,
                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
-
-  // Closing the second tab (the last one) cuts the observation.
-  browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestricedEventMultipleTabsOpenSuccess) {
-  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
-
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  // Open second tab. As the focus-restricted event is originated from the first
-  // tab, the event is now blocked.
-  SimulateFocusEvent(extension_id, /*is_focused=*/false);
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  // Try to observe the same event in the second tab. The event should now be
-  // unblocked.
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  // Close the first tab (index 1). The observer shouldn't be cut.
-  browser()->tab_strip_model()->CloseWebContentsAt(1,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  // Closing the second tab (the last one) cuts the observation.
-  browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularAndFocusRestricedEventMultipleTabsOpenSuccess) {
-  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
-
-  auto regular_event_type = crosapi::TelemetryEventCategoryEnum::kAudioJack;
-  auto restricted_event_type =
-      crosapi::TelemetryEventCategoryEnum::kTouchpadConnected;
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_EQ(EventManager::kSuccess, event_manager()->RegisterExtensionForEvent(
-                                        extension_id, regular_event_type));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(extension_id,
-                                                           regular_event_type));
-
-  // Open second tab.
-  SimulateFocusEvent(extension_id, /*is_focused=*/false);
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(extension_id,
-                                                           regular_event_type));
-
-  // Try to observe a focus-restricted event in the second tab.
-  EXPECT_EQ(EventManager::kSuccess, event_manager()->RegisterExtensionForEvent(
-                                        extension_id, restricted_event_type));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(extension_id,
-                                                           regular_event_type));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, restricted_event_type));
-
-  // Close the first tab (index 1). The observer shouldn't be cut.
-  browser()->tab_strip_model()->CloseWebContentsAt(1,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, restricted_event_type));
 
   // Closing the second tab (the last one) cuts the observation.
   browser()->tab_strip_model()->CloseWebContentsAt(0,
@@ -559,8 +240,6 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventAppUiNotSecure) {
                 extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
   // Close the secure one will cause the EventManager stop observing events.
   browser()->tab_strip_model()->CloseWebContentsAt(0,
@@ -569,7 +248,7 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventAppUiNotSecure) {
   EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventNavigateOut) {
+TEST_F(TelemetryExtensionEventManagerTest, RegisterEventNavigateOut) {
   const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
   CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
 
@@ -581,16 +260,12 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventNavigateOut) {
                 extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
   // Navigation in the same domain shouldn't affect the observation.
   NavigateAndCommitActiveTab(
       GURL("https://googlechromelabs.github.io/example/path"));
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
   // Navigation to other URL should cut the observation.
   NavigateAndCommitActiveTab(GURL("https://example.com/"));
@@ -598,38 +273,7 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventNavigateOut) {
   EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventNavigateOut) {
-  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
-
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  // Navigation in the same domain shouldn't affect the observation.
-  NavigateAndCommitActiveTab(
-      GURL("https://googlechromelabs.github.io/example/path"));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  // Navigation to other URL should cut the observation.
-  NavigateAndCommitActiveTab(GURL("https://example.com/"));
-  EXPECT_FALSE(app_ui_observers().contains(extension_id));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventTwoExtension) {
+TEST_F(TelemetryExtensionEventManagerTest, RegisterEventTwoExtension) {
   const extensions::ExtensionId extension_id_1 =
       "gogonhoemckpdpadfnjnpgbjpbjnodgc";
   CreateExtension(extension_id_1, {"*://googlechromelabs.github.io/*"});
@@ -651,13 +295,10 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventTwoExtension) {
           extension_id_2, crosapi::TelemetryEventCategoryEnum::kAudioJack));
   EXPECT_TRUE(app_ui_observers().contains(extension_id_1));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id_1));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id_1, crosapi::TelemetryEventCategoryEnum::kAudioJack));
   EXPECT_FALSE(app_ui_observers().contains(extension_id_2));
   EXPECT_FALSE(event_router().IsExtensionObserving(extension_id_2));
 
   // Open app UI for extension 2.
-  SimulateFocusEvent(extension_id_1, /*is_focused=*/false);
   OpenAppUiUrlAndSetCertificateWithStatus(
       GURL("https://hpcs-appschr.hpcloud.hp.com"),
       /*cert_status=*/net::OK);
@@ -667,12 +308,8 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventTwoExtension) {
           extension_id_2, crosapi::TelemetryEventCategoryEnum::kAudioJack));
   EXPECT_TRUE(app_ui_observers().contains(extension_id_1));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id_1));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id_1, crosapi::TelemetryEventCategoryEnum::kAudioJack));
   EXPECT_TRUE(app_ui_observers().contains(extension_id_2));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id_2));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id_2, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
   // Close the app UI of extension 1.
   browser()->tab_strip_model()->CloseWebContentsAt(1,
@@ -681,73 +318,6 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventTwoExtension) {
   EXPECT_FALSE(event_router().IsExtensionObserving(extension_id_1));
   EXPECT_TRUE(app_ui_observers().contains(extension_id_2));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id_2));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id_2, crosapi::TelemetryEventCategoryEnum::kAudioJack));
-
-  // Close the app UI of extension 2.
-  browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(extension_id_1));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id_1));
-  EXPECT_FALSE(app_ui_observers().contains(extension_id_2));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id_2));
-}
-
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventTwoExtension) {
-  const extensions::ExtensionId extension_id_1 =
-      "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-  CreateExtension(extension_id_1, {"*://googlechromelabs.github.io/*"});
-  const extensions::ExtensionId extension_id_2 =
-      "alnedpmllcfpgldkagbfbjkloonjlfjb";
-  CreateExtension(extension_id_2, {"https://hpcs-appschr.hpcloud.hp.com/*"});
-
-  // Open app UI for extension 1.
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://googlechromelabs.github.io/"),
-      /*cert_status=*/net::OK);
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id_1,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_EQ(EventManager::kAppUiNotFocused,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id_2,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id_1));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id_1));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id_1, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_FALSE(app_ui_observers().contains(extension_id_2));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id_2));
-
-  // Open app UI for extension 2.
-  SimulateFocusEvent(extension_id_1, /*is_focused=*/false);
-  OpenAppUiUrlAndSetCertificateWithStatus(
-      GURL("https://hpcs-appschr.hpcloud.hp.com"),
-      /*cert_status=*/net::OK);
-  EXPECT_EQ(EventManager::kSuccess,
-            event_manager()->RegisterExtensionForEvent(
-                extension_id_2,
-                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id_1));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id_1));
-  EXPECT_FALSE(event_router().IsExtensionAllowedForCategory(
-      extension_id_1, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id_2));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id_2));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id_2, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
-
-  // Close the app UI of extension 1.
-  browser()->tab_strip_model()->CloseWebContentsAt(1,
-                                                   TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(extension_id_1));
-  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id_1));
-  EXPECT_TRUE(app_ui_observers().contains(extension_id_2));
-  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id_2));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id_2, crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
 
   // Close the app UI of extension 2.
   browser()->tab_strip_model()->CloseWebContentsAt(0,
@@ -811,8 +381,6 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventIWASuccess) {
                 extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
   // Open IWA.
   OpenAppUiUrlAndSetCertificateWithStatus(
@@ -821,16 +389,12 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventIWASuccess) {
       /*cert_status=*/net::OK);
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
   // Close the PWA. This shouldn't affect the observation.
   browser()->tab_strip_model()->CloseWebContentsAt(1,
                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
-  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
   // Close the IWA (last tab) should cut the observation.
   browser()->tab_strip_model()->CloseWebContentsAt(0,

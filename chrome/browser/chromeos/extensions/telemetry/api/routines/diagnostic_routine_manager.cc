@@ -198,8 +198,7 @@ DiagnosticRoutineManager::CreateAppUiObserver(
       extensions::ExternallyConnectableInfo::Get(extension)->matches.Clone(),
       // Unretained is safe here because `this` will own the observer.
       base::BindOnce(&DiagnosticRoutineManager::OnAppUiClosed,
-                     base::Unretained(this), extension_id),
-      base::NullCallback());
+                     base::Unretained(this), extension_id));
 }
 
 void DiagnosticRoutineManager::OnDiagnosticRoutineFinished(
