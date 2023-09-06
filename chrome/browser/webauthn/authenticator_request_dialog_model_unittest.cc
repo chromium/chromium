@@ -722,6 +722,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {pqr("a")},
        {p("a"), add},
        mss},
+      // Even if the phone is from sync.
+      {L,
+       ga,
+       {usb, internal, cable},
+       {empty_al},
+       {psync("a")},
+       {p("a"), add},
+       mss},
       // Or a recognized platform credential.
       {L,
        ga,
@@ -1303,8 +1311,10 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       RunTest(test, windows_has_hybrid);
     }
   }
-  base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnNewPasskeyUI};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {device::kWebAuthnNewPasskeyUI, device::kWebAuthnListSyncedPasskeys},
+      /*disabled_features=*/{});
   for (const auto& test : kListSyncedPasskeysTests) {
     RunTest(test, /*windows_has_hybrid=*/false);
   }
@@ -2430,9 +2440,15 @@ TEST_F(MultiplePlatformAuthenticatorsTest,
 #endif
 
 class ListPasskeysFromSyncTest : public AuthenticatorRequestDialogModelTest {
+ public:
+  ListPasskeysFromSyncTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnNewPasskeyUI, device::kWebAuthnListSyncedPasskeys},
+        /*disabled_features=*/{});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnNewPasskeyUI};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
