@@ -56,9 +56,12 @@ void TracingObserver::StartTracingImpl(
   const base::trace_event::TraceConfig::MemoryDumpConfig& memory_dump_config =
       trace_config.memory_dump_config();
 
-  memory_dump_config_ =
-      std::make_unique<base::trace_event::TraceConfig::MemoryDumpConfig>(
-          memory_dump_config);
+  {
+    base::AutoLock lock(memory_dump_config_lock_);
+    memory_dump_config_ =
+        std::make_unique<base::trace_event::TraceConfig::MemoryDumpConfig>(
+            memory_dump_config);
+  }
 
   auto* mdm = base::trace_event::MemoryDumpManager::GetInstance();
   if (mdm->IsInitialized()) {
@@ -69,7 +72,11 @@ void TracingObserver::StartTracingImpl(
 void TracingObserver::StopTracingImpl(
     base::OnceClosure stop_complete_callback) {
   base::trace_event::MemoryDumpManager::GetInstance()->TeardownForTracing();
-  memory_dump_config_.reset();
+
+  {
+    base::AutoLock lock(memory_dump_config_lock_);
+    memory_dump_config_.reset();
+  }
 
   if (stop_complete_callback) {
     std::move(stop_complete_callback).Run();
@@ -132,9 +139,12 @@ void TracingObserver::OnTraceLogEnabled() {
   const base::trace_event::TraceConfig::MemoryDumpConfig& memory_dump_config =
       trace_config.memory_dump_config();
 
-  memory_dump_config_ =
-      std::make_unique<base::trace_event::TraceConfig::MemoryDumpConfig>(
-          memory_dump_config);
+  {
+    base::AutoLock lock(memory_dump_config_lock_);
+    memory_dump_config_ =
+        std::make_unique<base::trace_event::TraceConfig::MemoryDumpConfig>(
+            memory_dump_config);
+  }
 
   auto* mdm = base::trace_event::MemoryDumpManager::GetInstance();
   if (mdm->IsInitialized()) {
@@ -144,6 +154,7 @@ void TracingObserver::OnTraceLogEnabled() {
 
 void TracingObserver::OnTraceLogDisabled() {
   base::trace_event::MemoryDumpManager::GetInstance()->TeardownForTracing();
+  base::AutoLock lock(memory_dump_config_lock_);
   memory_dump_config_.reset();
 }
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -191,6 +202,7 @@ std::string TracingObserver::ApplyPathFiltering(
 
 bool TracingObserver::IsDumpModeAllowed(
     base::trace_event::MemoryDumpLevelOfDetail dump_mode) const {
+  base::AutoLock lock(memory_dump_config_lock_);
   if (!memory_dump_config_)
     return false;
   return memory_dump_config_->allowed_dump_modes.count(dump_mode) != 0;
