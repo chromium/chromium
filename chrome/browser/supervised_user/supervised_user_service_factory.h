@@ -18,6 +18,8 @@ namespace supervised_user {
 class SupervisedUserService;
 }  // namespace supervised_user
 
+// Factory creating SupervisedUserService for regular profiles.
+// SupervisedUserService is not created for incognito and guest profile.
 class SupervisedUserServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static supervised_user::SupervisedUserService* GetForProfile(

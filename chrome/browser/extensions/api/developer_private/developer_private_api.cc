@@ -507,7 +507,8 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile);
-  info->is_child_account = service->AreExtensionsPermissionsEnabled();
+  info->is_child_account =
+      service && service->AreExtensionsPermissionsEnabled();
 #else
   info->is_child_account = false;
 #endif
