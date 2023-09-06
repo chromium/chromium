@@ -12,8 +12,10 @@
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -26,7 +28,11 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 namespace {
 
-void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fakeIdentity) {
+void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
+                                        BOOL expect_history_sync) {
+  GREYAssertTrue(
+      [ChromeEarlGrey isReplaceSyncWithSigninEnabled],
+      @"Expected sign-in sheet to show but SyncToSignin flag is disabled");
   // Sign in with fake identity using the settings sign-in promo.
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
@@ -35,7 +41,7 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fakeIdentity) {
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::IdentityCellMatcherForEmail(
-                                   fakeIdentity.userEmail)]
+                                   fake_identity.userEmail)]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
@@ -43,11 +49,17 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fakeIdentity) {
                                        l10n_util::GetNSStringF(
                                            IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
                                            base::SysNSStringToUTF16(
-                                               fakeIdentity.userGivenName))),
+                                               fake_identity.userGivenName))),
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  if (expect_history_sync) {
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityID(
+                       kPromoStylePrimaryActionAccessibilityIdentifier)]
+        performAction:grey_tap()];
+  }
   [ChromeEarlGreyUI waitForAppToIdle];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fake_identity];
 
   // Check that Settings is presented.
   [[EarlGrey
@@ -124,7 +136,7 @@ void DismissSignOutSnackbar() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Sign in with fake identity using the settings sign-in promo.
-  SignInWithPromoFromAccountSettings(fakeIdentity);
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
 
   // Verify the Sync settings row is not showing.
   [SigninEarlGrey verifySyncUIIsHidden];
@@ -234,7 +246,9 @@ void DismissSignOutSnackbar() {
   [SigninEarlGrey verifySignedOut];
 
   // Sign back in with the same identity using the settings sign-in promo.
-  SignInWithPromoFromAccountSettings(fakeIdentity);
+  // The history sync opt-in was accepted in the first sign-in earlier in this
+  // test.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/NO);
 
   // Verify the account settings row is showing in the settings menu.
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]

@@ -816,17 +816,10 @@
            syncer::kReplaceSyncPromosWithSignInPromos))) {
     [handler showSettingsFromViewController:self.baseViewController];
   } else {
-    // If there are 0 identities, kInstantSignin requires less taps.
-    AuthenticationOperation operation = AuthenticationOperation::kSigninAndSync;
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
-      ChromeBrowserState* browserState = self.browser->GetBrowserState();
-      operation =
-          ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
-                  ->HasIdentities()
-              ? AuthenticationOperation::kSigninOnly
-              : AuthenticationOperation::kInstantSignin;
-    }
+    AuthenticationOperation operation =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? AuthenticationOperation::kSheetSigninAndHistorySync
+            : AuthenticationOperation::kSigninAndSync;
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
         initWithOperation:operation
               accessPoint:signin_metrics::AccessPoint::

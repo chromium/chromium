@@ -49,6 +49,13 @@ enum class AuthenticationOperation {
   // a dialog to choose an identity is presented and the user is signed in as
   // soon as the identity is selected.
   kInstantSignin,
+  // Operation to trigger sign-in and then history sync.
+  // If there is at least one identity on the device, the user is presented with
+  // the sign-in bottom sheet to sign-in.
+  // If there is no identity on the device, the user is presented the SSO add
+  // account dialog to sign-in.
+  // Once signed in, the history sync opt-in is displayed.
+  kSheetSigninAndHistorySync,
 };
 
 // A command to perform a sign in operation.

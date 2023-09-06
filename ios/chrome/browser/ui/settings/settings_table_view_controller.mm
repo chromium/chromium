@@ -2008,17 +2008,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   DCHECK(!self.isSigninInProgress);
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
-  AuthenticationOperation operation = AuthenticationOperation::kSigninAndSync;
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // If there are 0 identities, kInstantSignin requires less taps.
-    operation =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState)
-                ->HasIdentities()
-            ? AuthenticationOperation::kSigninOnly
-            : AuthenticationOperation::kInstantSignin;
-  }
-
+  AuthenticationOperation operation =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? AuthenticationOperation::kSheetSigninAndHistorySync
+          : AuthenticationOperation::kSigninAndSync;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:identity
