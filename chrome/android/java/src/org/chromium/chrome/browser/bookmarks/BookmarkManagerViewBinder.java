@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,6 +34,20 @@ class BookmarkManagerViewBinder {
                     view.findViewById(org.chromium.chrome.R.id.signin_promo_view_container);
             model.get(BookmarkManagerProperties.BOOKMARK_PROMO_HEADER)
                     .setUpSyncPromoView(promoView);
+        } else if (key == BookmarkManagerProperties.PROMO_TOP_MARGIN_RES) {
+            final @DimenRes int topMarginRes =
+                    model.get(BookmarkManagerProperties.PROMO_TOP_MARGIN_RES);
+            if (topMarginRes != Resources.ID_NULL) {
+                Resources resources = view.getResources();
+                int topMarginPx = resources.getDimensionPixelSize(topMarginRes);
+
+                PersonalizedSigninPromoView promoView =
+                        view.findViewById(org.chromium.chrome.R.id.signin_promo_view_container);
+                MarginLayoutParams layoutParams = (MarginLayoutParams) promoView.getLayoutParams();
+                layoutParams.setMargins(layoutParams.leftMargin, topMarginPx,
+                        layoutParams.rightMargin, layoutParams.bottomMargin);
+                promoView.setLayoutParams(layoutParams);
+            }
         }
     }
 

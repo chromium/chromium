@@ -226,7 +226,7 @@ found in the LICENSE file.
     <dimen name="bookmark_minimum_dialog_size_tablet">500dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
-     <dimen name="bookmark_favicon_display_size">20dp</dimen>
+    <dimen name="bookmark_favicon_display_size">20dp</dimen>
 
      <!-- Improved bookmark row properties. -->
      <!-- The size of the start image for compact rows. -->
@@ -238,6 +238,7 @@ found in the LICENSE file.
     <dimen name="bookmark_folder_picker_button_container_height">54dp</dimen>
     <dimen name="improved_bookmark_row_start_margin">16dp</dimen>
     <dimen name="improved_bookmark_row_start_negative_margin">-16dp</dimen>
+    <dimen name="bookmark_promo_top_margin_with_search_box">4dp</dimen>
     <dimen name="shopping_chip_padding">8dp</dimen>
 
     <!-- Improved bookmark save flow properties-->

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -243,5 +244,6 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
      */
     public static void forcePromoStateForTesting(@Nullable @SyncPromoState Integer promoState) {
         sPromoStateForTests = promoState;
+        ResettersForTesting.register(() -> sPromoStateForTests = null);
     }
 }

@@ -1129,7 +1129,13 @@ class BookmarkManagerMediator
     private ListItem buildPersonalizedPromoListItem(@ViewType int promoHeaderType) {
         BookmarkListEntry bookmarkListEntry =
                 BookmarkListEntry.createSyncPromoHeader(promoHeaderType);
-        PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(BookmarkManagerProperties.ALL_KEYS);
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            builder.with(BookmarkManagerProperties.PROMO_TOP_MARGIN_RES,
+                    R.dimen.bookmark_promo_top_margin_with_search_box);
+        }
+        PropertyModel propertyModel = builder.build();
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_PROMO_HEADER, mPromoHeaderManager);
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
