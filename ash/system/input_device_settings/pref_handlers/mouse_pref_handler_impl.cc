@@ -321,6 +321,13 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
     const mojom::MousePolicies& mouse_policies,
     mojom::Mouse* mouse) {
   CHECK(local_state);
+  // If the flag is disabled, clear the button remapping list.
+  if (!features::IsPeripheralCustomizationEnabled()) {
+    user_manager::KnownUser known_user(local_state);
+    known_user.SetPath(account_id,
+                       prefs::kMouseLoginScreenButtonRemappingListPref,
+                       absl::nullopt);
+  }
   // If the flag is disabled, clear all the settings dictionaries.
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
     user_manager::KnownUser known_user(local_state);
@@ -347,6 +354,16 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
       mouse_policies.swap_right_policy->policy_status ==
           mojom::PolicyStatus::kManaged) {
     mouse->settings->swap_right = mouse_policies.swap_right_policy->value;
+  }
+
+  if (features::IsPeripheralCustomizationEnabled()) {
+    const auto* button_remappings_list = GetLoginScreenButtonRemappingList(
+        local_state, account_id,
+        prefs::kMouseLoginScreenButtonRemappingListPref);
+    if (button_remappings_list) {
+      mouse->settings->button_remappings =
+          ConvertListToButtonRemappingArray(*button_remappings_list);
+    }
   }
 }
 

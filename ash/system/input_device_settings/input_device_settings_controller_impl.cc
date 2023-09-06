@@ -378,6 +378,14 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
+  // If the flag is disabled, clear the button remapping dictionaries.
+  if (!features::IsPeripheralCustomizationEnabled()) {
+    pref_service->ClearPref(
+        prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
+    pref_service->ClearPref(prefs::kGraphicsTabletPenButtonRemappingsDictPref);
+    pref_service->ClearPref(prefs::kMouseButtonRemappingsDictPref);
+  }
+
   // If the flag is disabled, clear all the settings dictionaries.
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
     active_pref_service_ = nullptr;
@@ -387,13 +395,6 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
     pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
     return;
-  }
-
-  if (!features::IsPeripheralCustomizationEnabled()) {
-    pref_service->ClearPref(
-        prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
-    pref_service->ClearPref(prefs::kGraphicsTabletPenButtonRemappingsDictPref);
-    pref_service->ClearPref(prefs::kMouseButtonRemappingsDictPref);
   }
 
   // If the flag is disabled, clear the new touchpad and keyboard settings from

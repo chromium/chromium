@@ -43,6 +43,11 @@ constexpr char kGraphicsTabletLoginScreenTabletButtonRemappingListPref[] =
 constexpr char kGraphicsTabletLoginScreenPenButtonRemappingListPref[] =
     "settings.graphics_tablet.pen_button_remappings";
 
+// Prefs which contain login screen button remapping list for connected external
+// mice devices.
+constexpr char kMouseLoginScreenButtonRemappingListPref[] =
+    "settings.mouse.external.button_remappings";
+
 // Prefs which contain dictionaries of settings for each connected device.
 constexpr char kKeyboardDeviceSettingsDictPref[] = "settings.keyboard.devices";
 constexpr char kMouseDeviceSettingsDictPref[] = "settings.mouse.devices";

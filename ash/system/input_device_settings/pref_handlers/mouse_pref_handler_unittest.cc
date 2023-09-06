@@ -274,6 +274,12 @@ class MousePrefHandlerTest : public AshTestBase {
     return dict && dict->is_dict();
   }
 
+  bool HasLoginScreenMouseButtonRemappingList(AccountId account_id) {
+    const auto* button_remapping_list = known_user().FindPath(
+        account_id, prefs::kMouseLoginScreenButtonRemappingListPref);
+    return button_remapping_list && button_remapping_list->is_list();
+  }
+
   base::Value::Dict GetInternalLoginScreenSettingsDict(AccountId account_id) {
     return known_user()
         .FindPath(account_id, prefs::kMouseLoginScreenInternalSettingsPref)
@@ -296,6 +302,23 @@ TEST_F(MousePrefHandlerTest, InitializeLoginScreenMouseSettings) {
 
   EXPECT_FALSE(HasInternalLoginScreenSettingsDict(account_id_1));
   CheckMouseSettingsAreSetToDefaultValues(*settings);
+
+  EXPECT_FALSE(HasLoginScreenMouseButtonRemappingList(account_id_1));
+  EXPECT_EQ(std::vector<mojom::ButtonRemappingPtr>(),
+            settings->button_remappings);
+
+  // Update the button remappings pref list to mock adding a new
+  // button remapping in the future.
+  std::vector<mojom::ButtonRemappingPtr> button_remappings;
+  button_remappings.push_back(button_remapping1.Clone());
+  known_user().SetPath(
+      account_id_1, prefs::kMouseLoginScreenButtonRemappingListPref,
+      absl::optional<base::Value>(
+          ConvertButtonRemappingArrayToList(button_remappings)));
+
+  mojom::MouseSettingsPtr updated_settings =
+      CallInitializeLoginScreenMouseSettings(account_id_1, mouse);
+  EXPECT_EQ(button_remappings, updated_settings->button_remappings);
 }
 
 TEST_F(MousePrefHandlerTest, UpdateLoginScreenMouseSettings) {
@@ -329,6 +352,18 @@ TEST_F(MousePrefHandlerTest, LoginScreenPrefsNotPersistedWhenFlagIsDisabled) {
   CallInitializeLoginScreenMouseSettings(account_id_1, mouse2);
   EXPECT_FALSE(HasInternalLoginScreenSettingsDict(account_id_1));
   EXPECT_FALSE(HasExternalLoginScreenSettingsDict(account_id_1));
+}
+
+TEST_F(MousePrefHandlerTest,
+       LoginScreenButtonRemappingListNotPersistedWhenFlagIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPeripheralCustomization);
+  mojom::Mouse mouse1;
+  mouse1.device_key = kMouseKey1;
+  mouse1.is_external = false;
+
+  CallInitializeLoginScreenMouseSettings(account_id_1, mouse1);
+  EXPECT_FALSE(HasLoginScreenMouseButtonRemappingList(account_id_1));
 }
 
 TEST_F(MousePrefHandlerTest, MultipleDevices) {
