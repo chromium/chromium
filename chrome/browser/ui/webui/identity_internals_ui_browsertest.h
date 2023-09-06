@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "chrome/test/base/web_ui_browser_test.h"
+#include "chrome/test/base/web_ui_mocha_browser_test.h"
 
-class IdentityInternalsUIBrowserTest : public WebUIBrowserTest {
+class IdentityInternalsUIBrowserTest : public WebUIMochaBrowserTest {
  public:
   IdentityInternalsUIBrowserTest();
 
