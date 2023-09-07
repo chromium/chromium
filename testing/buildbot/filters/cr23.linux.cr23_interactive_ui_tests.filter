@@ -11,4 +11,3 @@
 -PriceTrackingIconViewErrorHandelingTest.IconRevertedOnFailure
 -PriceTrackingIconViewInteractiveTest.EnablePriceTrackOnPress
 -PriceTrackingIconViewInteractiveTest.TrackedProductIsDifferentBookmark
--TabHoverCardInteractiveUiTest.HoverCardHidesOnMouseExit
