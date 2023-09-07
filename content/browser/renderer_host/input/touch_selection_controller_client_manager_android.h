@@ -7,17 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "components/viz/host/hit_test/hit_test_region_observer.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "ui/touch_selection/touch_selection_controller.h"
-
-namespace viz {
-
-class HostFrameSinkManager;
-class FrameSinkId;
-struct AggregatedHitTestRegion;
-
-}  // namespace viz
 
 namespace content {
 
@@ -25,12 +16,10 @@ class RenderWidgetHostViewAndroid;
 
 class TouchSelectionControllerClientManagerAndroid
     : public TouchSelectionControllerClientManager,
-      public ui::TouchSelectionControllerClient,
-      public viz::HitTestRegionObserver {
+      public ui::TouchSelectionControllerClient {
  public:
   explicit TouchSelectionControllerClientManagerAndroid(
-      RenderWidgetHostViewAndroid* rwhv,
-      viz::HostFrameSinkManager* frame_host_sink_manager);
+      RenderWidgetHostViewAndroid* rwhv);
 
   TouchSelectionControllerClientManagerAndroid(
       const TouchSelectionControllerClientManagerAndroid&) = delete;
@@ -71,21 +60,14 @@ class TouchSelectionControllerClientManagerAndroid
   void DidScroll() override;
   void ShowTouchSelectionContextMenu(const gfx::Point& location) override;
 
-  // viz::HitTestRegionObserver implementation.
-  void OnAggregatedHitTestRegionListUpdated(
-      const viz::FrameSinkId& frame_sink_id,
-      const std::vector<viz::AggregatedHitTestRegion>& hit_test_data) override;
-
   bool has_active_selection() const {
     return manager_selection_start_.HasHandle() ||
            manager_selection_end_.HasHandle();
   }
 
  private:
-  // Neither of the following pointers are owned, and both are assumed to
-  // outlive this object.
+  // Not owned, assumed to be non-null for the lifetime of this object.
   raw_ptr<RenderWidgetHostViewAndroid> rwhv_;
-  raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
 
   raw_ptr<TouchSelectionControllerClient> active_client_;
   gfx::SelectionBound manager_selection_start_;

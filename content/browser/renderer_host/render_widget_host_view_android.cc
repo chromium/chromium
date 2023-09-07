@@ -643,8 +643,7 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
 
   host()->SetView(this);
   touch_selection_controller_client_manager_ =
-      std::make_unique<TouchSelectionControllerClientManagerAndroid>(
-          this, GetHostFrameSinkManager());
+      std::make_unique<TouchSelectionControllerClientManagerAndroid>(this);
 
   UpdateNativeViewTree(parent_native_view);
   // This RWHVA may have been created speculatively. We should give any
