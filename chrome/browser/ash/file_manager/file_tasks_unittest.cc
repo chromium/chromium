@@ -386,6 +386,9 @@ TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
 
 // Check that legacy arc app format is parsed correctly.
 TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, LegacyArcAppFormat) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kArcFileTasksUseAppService);
+
   resulting_tasks()->tasks.emplace_back(
       TaskDescriptor{"com.legacy.package/intentName", TASK_TYPE_ARC_APP,
                      "view"},
