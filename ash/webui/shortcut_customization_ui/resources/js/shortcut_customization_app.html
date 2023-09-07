@@ -60,7 +60,6 @@
     font-size: var(--shortcuts-font-size-default);
     justify-content: center;
     padding-inline: var(--container-padding-nav);
-    padding-top: 8px;
   }
 
   #restoreDialog::part(dialog) {
@@ -90,7 +89,7 @@
   }
 </style>
 <navigation-view-panel id="navigationPanel" title="[[i18n('appTitle')]]"
-    show-tool-bar>
+    show-tool-bar has-search>
   <div slot="toolbar-main" id="searchBoxWrapper">
     <search-box></search-box>
   </div>
