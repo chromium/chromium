@@ -576,7 +576,9 @@ BrowsingDataModel::Iterator::operator*() const {
 }
 
 BrowsingDataModel::Iterator& BrowsingDataModel::Iterator::operator++() {
-  inner_iterator_++;
+  if (inner_iterator_ != outer_iterator_->second.end()) {
+    inner_iterator_++;
+  }
   if (inner_iterator_ == outer_iterator_->second.end()) {
     outer_iterator_++;
     if (outer_iterator_ != outer_end_iterator_)

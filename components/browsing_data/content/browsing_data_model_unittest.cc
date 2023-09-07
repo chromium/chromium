@@ -416,6 +416,24 @@ TEST_F(BrowsingDataModelTest, DelegateDataCanBeOriginOwned) {
                                                              expected_entries);
 }
 
+// Tests that the BrowsingDataModel::Iterator can handle when the outer map
+// contains an empty inner map.
+//
+// This is done by inserting an outer map element with an empty value
+// for the inner map and then attempting to iterate over the entire model.
+TEST_F(BrowsingDataModelTest, IteratorCanHandleEmptyDataKeyEntriesMaps) {
+  // The BrowsingDataModel is currently empty.
+
+  // Insert an outer map element with an empty inner map as its value. We can do
+  // this by trying to remove a non-existent origin.
+  model()->RemovePartitionedBrowsingData(
+      kSiteOrigin, net::SchemefulSite(kSiteOrigin), base::DoNothing());
+
+  // Now iterate over the model. The distance should be 1 because we have our
+  // empty outer element.
+  EXPECT_EQ(1, std::distance(model()->begin(), model()->end()));
+}
+
 TEST_F(BrowsingDataModelTest, RemovePartitionedBrowsingData) {
   std::unique_ptr<BrowsingDataModel> model = BrowsingDataModel::BuildEmpty(
       storage_partition(),
