@@ -577,10 +577,6 @@ class RTCVideoEncoderTest {
         features::kWebRtcInitializeEncoderOnFirstFrame);
   }
 
-  bool AsyncEncodingIsEnabled() const {
-    return base::FeatureList::IsEnabled(features::kWebRtcEncoderAsyncEncode);
-  }
-
   media::MockVideoEncodeAccelerator* mock_vea_;
   std::unique_ptr<RTCVideoEncoderWrapper> rtc_encoder_;
   absl::optional<media::VideoEncodeAccelerator::Config> config_;
@@ -707,7 +703,6 @@ INSTANTIATE_TEST_SUITE_P(InitTimingAndCodecProfiles,
 
 struct RTCVideoEncoderEncodeTestParam {
   bool init_on_first_frame;
-  bool async_encode;
 };
 
 class RTCVideoEncoderEncodeTest
@@ -726,11 +721,6 @@ class RTCVideoEncoderEncodeTest
     } else {
       disabled_features.push_back(
           features::kWebRtcInitializeEncoderOnFirstFrame);
-    }
-    if (GetParam().async_encode) {
-      enabled_features.push_back(features::kWebRtcEncoderAsyncEncode);
-    } else {
-      disabled_features.push_back(features::kWebRtcEncoderAsyncEncode);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -858,19 +848,6 @@ TEST_P(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
           frame, std::vector<scoped_refptr<media::VideoFrame>>(),
           new WebRtcVideoFrameAdapter::SharedResources(nullptr)));
   std::vector<webrtc::VideoFrameType> frame_types;
-
-  // Expect SW fallback because the frame isn't a GpuMemoryBuffer-based frame.
-  if (!AsyncEncodingIsEnabled()) {
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
-              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
-                                       .set_video_frame_buffer(frame_adapter)
-                                       .set_timestamp_rtp(1000)
-                                       .set_timestamp_us(2000)
-                                       .set_rotation(webrtc::kVideoRotation_0)
-                                       .build(),
-                                   &frame_types));
-    return;
-  }
 
   // The frame type check is done in media thread asynchronously. The error is
   // reported in the second Encode callback.
@@ -1400,17 +1377,6 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMissingEndOfPicture) {
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types{
       webrtc::VideoFrameType::kVideoFrameKey};
-  if (!AsyncEncodingIsEnabled()) {
-    EXPECT_NE(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
-                                       .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
-                                       .set_timestamp_us(0)
-                                       .set_rotation(webrtc::kVideoRotation_0)
-                                       .build(),
-                                   &frame_types),
-              WEBRTC_VIDEO_CODEC_OK);
-    return;
-  }
 
   // BitstreamBufferReady() is called after the first Encode() returns.
   // The error is reported on the second call.
@@ -1471,18 +1437,6 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMismatchingResolutions) {
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types{
       webrtc::VideoFrameType::kVideoFrameKey};
-
-  if (!AsyncEncodingIsEnabled()) {
-    EXPECT_NE(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
-                                       .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
-                                       .set_timestamp_us(0)
-                                       .set_rotation(webrtc::kVideoRotation_0)
-                                       .build(),
-                                   &frame_types),
-              WEBRTC_VIDEO_CODEC_OK);
-    return;
-  }
 
   // BitstreamBufferReady() is called after the first Encode() returns.
   // The error is reported on the second call.
@@ -2100,10 +2054,8 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
 }
 
 const RTCVideoEncoderEncodeTestParam kEncodeTestCases[] = {
-    {false, false},
-    {false, true},
-    {true, false},
-    {true, true},
+    {false},
+    {true},
 };
 
 INSTANTIATE_TEST_SUITE_P(InitTimingAndSyncAndAsynEncoding,

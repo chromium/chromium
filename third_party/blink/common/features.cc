@@ -1958,10 +1958,6 @@ BASE_FEATURE(kWebRtcH264WithOpenH264FFmpeg,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
-BASE_FEATURE(kWebRtcEncoderAsyncEncode,
-             "WebRtcEncoderAsyncEncode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Exposes non-standard stats in the WebRTC getStats() API.
 BASE_FEATURE(kWebRtcExposeNonStandardStats,
              "WebRtc-ExposeNonStandardStats",

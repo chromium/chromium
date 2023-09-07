@@ -603,10 +603,10 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
       const media::VideoEncodeAccelerator::Config& vea_config,
       SignaledValue init_event);
 
-  // Enqueue a frame from WebRTC for encoding.
-  // RTCVideoEncoder expects to be able to call this function synchronously from
-  // its own thread, hence the |encode_event| argument.
-  void Enqueue(FrameChunk frame_chunk, SignaledValue encode_event);
+  // Enqueue a frame from WebRTC for encoding. This function is called
+  // asynchronously from webrtc encoder thread. When the error is caused, it is
+  // reported by NotifyErrorStatus().
+  void Enqueue(FrameChunk frame_chunk);
 
   // Request encoding parameter change for the underlying encoder.
   void RequestEncodingParametersChange(
@@ -687,12 +687,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
       encoder_metrics_provider_factory_;
   std::unique_ptr<media::VideoEncoderMetricsProvider> encoder_metrics_provider_;
 
-  // webrtc::VideoEncoder expects InitEncode() and Encode() to be synchronous.
-  // Do this by waiting on the |async_init_event_| when initialization
-  // completes, on |async_encode_event_| when encoding completes and on both
-  // when an error occurs.
+  // webrtc::VideoEncoder expects InitEncode() to be synchronous. Do this by
+  // waiting on the |async_init_event_| when initialization completes.
   ScopedSignaledValue async_init_event_;
-  ScopedSignaledValue async_encode_event_;
 
   // The underlying VEA to perform encoding on.
   std::unique_ptr<media::VideoEncodeAccelerator> video_encoder_;
@@ -823,7 +820,6 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
 
   status_ = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
   async_init_event_ = ScopedSignaledValue(std::move(init_event));
-  async_encode_event_.reset();
 
   video_encoder_ = gpu_factories_->CreateVideoEncodeAccelerator();
   if (!video_encoder_) {
@@ -886,52 +882,23 @@ void RTCVideoEncoder::Impl::NotifyEncoderInfoChange(
           preferred_pixel_formats_.begin(), preferred_pixel_formats_.end()));
 }
 
-void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
-                                    SignaledValue encode_event) {
+void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::Enqueue", "timestamp",
                frame_chunk.timestamp_us);
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status_ != WEBRTC_VIDEO_CODEC_OK) {
-    encode_event.Set(status_);
-    encode_event.Signal();
+    // When |status_| is already not OK, the error has been notified.
     return;
   }
-
-  // If there are no free input and output buffers, drop the frame to avoid a
-  // deadlock. If there is a free input buffer and |use_native_input_| is false,
-  // EncodeOneFrame will run and unblock Encode(). If there are no free input
-  // buffers but there is a free output buffer, InputBufferReleased() will be
-  // called later to unblock Encode().
-  //
-  // The caller of Encode() holds a webrtc lock. The deadlock happens when:
-  // (1) Encode() is waiting for the frame to be encoded in EncodeOneFrame().
-  // (2) There are no free input buffers and they cannot be freed because
-  //     the encoder has no output buffers.
-  // (3) Output buffers cannot be freed because OnEncodedImage() is queued
-  //     on libjingle worker thread to be run. But the worker thread is waiting
-  //     for the same webrtc lock held by the caller of Encode().
-  //
-  // Dropping a frame is fine. The encoder has been filled with all input
-  // buffers. Returning an error in Encode() is not fatal and WebRTC will just
-  // continue. If this is a key frame, WebRTC will request a key frame again.
-  // Besides, webrtc will drop a frame if Encode() blocks too long.
-  if (!use_native_input_ && input_buffers_free_.empty() &&
-      output_buffers_in_encoder_count_ == 0u) {
-    DVLOG(2) << "Run out of input and output buffers. Drop the frame.";
-    encode_event.Set(WEBRTC_VIDEO_CODEC_ERROR);
-    encode_event.Signal();
-    return;
-  }
-
-  async_encode_event_ = ScopedSignaledValue(std::move(encode_event));
 
   if (use_native_input_) {
     DCHECK(pending_frames_.empty());
     EncodeOneFrameWithNativeInput(std::move(frame_chunk));
     return;
   }
+
   pending_frames_.push_back(std::move(frame_chunk));
   // When |input_buffers_free_| is empty, EncodeOneFrame() for the frame in
   // |pending_frames_| will be invoked from InputBufferReleased().
@@ -1397,7 +1364,6 @@ void RTCVideoEncoder::Impl::NotifyErrorStatus(
   status_ = WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
 
   async_init_event_.SetAndReset(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
-  async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 
   execute_software_fallback_.Run();
 }
@@ -1413,7 +1379,6 @@ RTCVideoEncoder::Impl::~Impl() {
   }
 
   async_init_event_.reset();
-  async_encode_event_.reset();
 
   // weak_this_ must be invalidated in |gpu_task_runner_|.
   weak_this_factory_.InvalidateWeakPtrs();
@@ -1427,7 +1392,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
                frame_chunk.timestamp_us);
 
   if (!video_encoder_) {
-    async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
     return;
   }
 
@@ -1585,7 +1549,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
 
   frames_in_encoder_count_++;
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
-  async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
 }
 
 void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
@@ -1597,7 +1560,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
                "timestamp", frame_chunk.timestamp_us);
 
   if (!video_encoder_) {
-    async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
     return;
   }
 
@@ -1610,8 +1572,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
     if (!black_gmb_frame_) {
       gfx::Size natural_size(frame_buffer->width(), frame_buffer->height());
       if (!CreateBlackGpuMemoryBufferFrame(natural_size)) {
-        DVLOG(2) << "Failed to allocate native buffer for black frame";
-        async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
+        NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
+                           "Failed to allocate native buffer for black frame"});
         return;
       }
     }
@@ -1646,7 +1608,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
 
   frames_in_encoder_count_++;
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
-  async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
 }
 
 bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
@@ -1988,28 +1949,11 @@ int32_t RTCVideoEncoder::Encode(
   const bool want_key_frame =
       frame_types && frame_types->size() &&
       frame_types->front() == webrtc::VideoFrameType::kVideoFrameKey;
-  if (base::FeatureList::IsEnabled(features::kWebRtcEncoderAsyncEncode)) {
-    PostCrossThreadTask(
-        *gpu_task_runner_.get(), FROM_HERE,
-        CrossThreadBindOnce(&RTCVideoEncoder::Impl::Enqueue, weak_impl_,
-                            FrameChunk(input_image, want_key_frame),
-                            SignaledValue()));
-    return WEBRTC_VIDEO_CODEC_OK;
-  } else {
-    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-    base::WaitableEvent encode_waiter(
-        base::WaitableEvent::ResetPolicy::MANUAL,
-        base::WaitableEvent::InitialState::NOT_SIGNALED);
-    int32_t encode_retval = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
-    PostCrossThreadTask(
-        *gpu_task_runner_.get(), FROM_HERE,
-        CrossThreadBindOnce(&RTCVideoEncoder::Impl::Enqueue, weak_impl_,
-                            FrameChunk(input_image, want_key_frame),
-                            SignaledValue(&encode_waiter, &encode_retval)));
-    encode_waiter.Wait();
-    DVLOG(3) << "Encode(): returning encode_retval=" << encode_retval;
-    return encode_retval;
-  }
+  PostCrossThreadTask(
+      *gpu_task_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(&RTCVideoEncoder::Impl::Enqueue, weak_impl_,
+                          FrameChunk(input_image, want_key_frame)));
+  return WEBRTC_VIDEO_CODEC_OK;
 }
 
 int32_t RTCVideoEncoder::RegisterEncodeCompleteCallback(

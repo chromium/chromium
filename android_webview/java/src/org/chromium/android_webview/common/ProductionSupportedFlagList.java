@@ -333,8 +333,6 @@ public final class ProductionSupportedFlagList {
                             + " on Android GL backend."),
             Flag.baseFeature(BlinkFeatures.CSS_PAINTING_FOR_SPELLING_GRAMMAR_ERRORS,
                     "Use the new CSS-based painting for spelling and grammar errors"),
-            Flag.baseFeature(BlinkFeatures.WEB_RTC_ENCODER_ASYNC_ENCODE,
-                    "Make RTCVideoEncoder encode call asynchronous."),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_INITIALIZE_ENCODER_ON_FIRST_FRAME,
                     "Initialize VideoEncodeAccelerator on the first encode."),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_METRONOME,
