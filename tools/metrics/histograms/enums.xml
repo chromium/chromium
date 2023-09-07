@@ -34768,6 +34768,9 @@ Called by update_document_policy_enum.py.-->
   <int value="25" label="smsc95xx"/>
   <int value="26" label="tg3"/>
   <int value="27" label="error"/>
+  <int value="28" label="rndis_host"/>
+  <int value="29" label="atl1c"/>
+  <int value="30" label="sky2"/>
 </enum>
 
 <enum name="EulaScreenUserAction">
