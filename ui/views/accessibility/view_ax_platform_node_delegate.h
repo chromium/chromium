@@ -29,12 +29,12 @@ namespace ui {
 
 struct AXActionData;
 class AXUniqueId;
-class SingleAXTreeManager;
 
 }  // namespace ui
 
 namespace views {
 
+class AtomicViewAXTreeManager;
 class View;
 
 // Shared base class for platforms that require an implementation of
@@ -116,6 +116,9 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
 
   bool TableHasColumnOrRowHeaderNodeForTesting() const;
 
+  AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting()
+      const override;
+
  protected:
   explicit ViewAXPlatformNodeDelegate(View* view);
 
@@ -125,9 +128,17 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   // during the constructor.
   virtual void Init();
 
+  ui::AXNodeData data() { return data_; }
   ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_; }
 
+  // Manager for the accessibility tree for this view. The tree will only have
+  // one node, which contains the AXNodeData for this view. It's a temporary
+  // solution to enable the ITextRangeProvider in Views: crbug.com/1468416.
+  std::unique_ptr<AtomicViewAXTreeManager> atomic_view_ax_tree_manager_;
+
  private:
+  friend class AtomicViewAXTreeManagerTest;
+
   struct ChildWidgetsResult final {
     ChildWidgetsResult();
     ChildWidgetsResult(std::vector<Widget*> child_widgets,
@@ -158,10 +169,6 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
 
   // Gets the real (non-virtual) TableView, otherwise nullptr.
   TableView* GetAncestorTableView() const;
-
-  // A tree manager that is used to hook up `AXPosition` to text fields in
-  // Views.
-  mutable std::unique_ptr<ui::SingleAXTreeManager> single_tree_manager_;
 
   // We own this, but it is reference-counted on some platforms so we can't use
   // a unique_ptr. It is destroyed in the destructor.

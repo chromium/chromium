@@ -29,6 +29,7 @@ class AXPlatformNodeDelegate;
 
 namespace views {
 
+class AtomicViewAXTreeManager;
 class View;
 class ViewsAXTreeManager;
 class Widget;
@@ -59,6 +60,11 @@ class VIEWS_EXPORT ViewAccessibility {
   // associated View, taking any custom overrides into account
   // (see OverrideFocus, OverrideRole, etc. below).
   virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) const;
+
+  // Made to be overridden on platforms that need the temporary
+  // `AtomicViewAXTreeManager` to enable more accessibility functionalities for
+  // Views. See crbug.com/1468416 for more info.
+  virtual void EnsureAtomicViewAXTreeManager() {}
 
   //
   // The following methods get or set accessibility attributes (in the owning
@@ -232,6 +238,8 @@ class VIEWS_EXPORT ViewAccessibility {
   AXVirtualView* FocusedVirtualChild() const { return focused_virtual_child_; }
   ViewsAXTreeManager* AXTreeManager() const;
 
+  virtual AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting() const;
+
   //
   // Methods for managing virtual views.
   //
@@ -276,6 +284,11 @@ class VIEWS_EXPORT ViewAccessibility {
   }
 
   bool propagate_focus_to_ancestor() { return propagate_focus_to_ancestor_; }
+
+  // If true, ensures an AtomicViewAXTreeManager is created for this view.
+  void set_needs_ax_tree_manager(bool value) { needs_ax_tree_manager_ = value; }
+
+  bool needs_ax_tree_manager() { return needs_ax_tree_manager_; }
 
   // Used for testing. Allows a test to watch accessibility events.
   const AccessibilityEventsCallback& accessibility_events_callback() const;
@@ -339,6 +352,10 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Whether to move accessibility focus to an ancestor.
   bool propagate_focus_to_ancestor_ = false;
+
+  // Whether we need to ensure an AtomicViewAXTreeManager is created for this
+  // View.
+  bool needs_ax_tree_manager_ = false;
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Each instance of ViewAccessibility that's associated with a root View

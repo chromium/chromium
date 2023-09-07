@@ -68,15 +68,17 @@ AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
     : connected_to_parent_tree_node_(false),
       ax_tree_(std::move(tree)),
       event_generator_(ax_tree()) {
-  DCHECK(ax_tree_);
-
   // Do not register the tree in the map if it has no ID. It will be registered
   // later in OnTreeDataChanged().
   if (HasValidTreeID()) {
     GetMap().AddTreeManager(GetTreeID(), this);
   }
 
-  tree_observation_.Observe(ax_tree());
+  // This is temporary until the ViewAXTreeManager is not needed anymore. After
+  // that, we could instead have a DCHECK(ax_tree()). See crbug.com/1468416.
+  if (ax_tree()) {
+    tree_observation_.Observe(ax_tree());
+  }
 }
 
 void AXTreeManager::FireFocusEvent(AXNode* node) {
@@ -116,6 +118,10 @@ bool AXTreeManager::CanFireEvents() const {
   }
 
   return true;
+}
+
+bool AXTreeManager::IsView() const {
+  return false;
 }
 
 AXNode* AXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,

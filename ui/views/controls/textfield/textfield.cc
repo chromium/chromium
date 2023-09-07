@@ -234,6 +234,7 @@ Textfield::Textfield()
       selection_controller_(this) {
   set_context_menu_controller(this);
   set_drag_controller(this);
+  GetViewAccessibility().set_needs_ax_tree_manager(true);
   auto cursor_view = std::make_unique<View>();
   cursor_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   cursor_view->GetViewAccessibility().OverrideIsIgnored(true);

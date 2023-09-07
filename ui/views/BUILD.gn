@@ -915,6 +915,8 @@ component("views") {
 
   if (has_native_accessibility) {
     sources += [
+      "accessibility/atomic_view_ax_tree_manager.cc",
+      "accessibility/atomic_view_ax_tree_manager.h",
       "accessibility/view_ax_platform_node_delegate.cc",
       "accessibility/view_ax_platform_node_delegate.h",
     ]
@@ -1373,6 +1375,7 @@ test("views_unittests") {
     ]
 
     sources += [
+      "accessibility/atomic_view_ax_tree_manager_unittest.cc",
       "accessibility/test_list_grid_view.cc",
       "accessibility/test_list_grid_view.h",
       "accessibility/view_ax_platform_node_delegate_win_unittest.cc",

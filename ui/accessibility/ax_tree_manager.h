@@ -61,6 +61,9 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
                                   const ui::AXNode* node) {}
   virtual bool CanFireEvents() const;
 
+  // Returns whether or not this tree manager is for a view.
+  virtual bool IsView() const;
+
   // Returns the AXNode with the given |node_id| from the tree that has the
   // given |tree_id|. This allows for callers to access nodes outside of their
   // own tree. Returns nullptr if |tree_id| or |node_id| is not found.
@@ -94,7 +97,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   virtual bool IsPlatformTreeManager() const;
 
   // Returns the AXNode that is at the root of the current tree.
-  AXNode* GetRoot() const;
+  virtual AXNode* GetRoot() const;
 
   bool IsRoot() const;
 
@@ -137,6 +140,11 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
       const std::vector<AXTreeObserver::Change>& changes) override;
 
  protected:
+  // This is only made protected to accommodate the `AtomicViewAXTreeManager`.
+  // It should be made private once that class is removed.
+  // TODO(crbug.com/1468416): Make private.
+  static AXTreeManagerMap& GetMap();
+
   AXTreeManager();
   explicit AXTreeManager(std::unique_ptr<AXTree> tree);
 
@@ -184,8 +192,6 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
  private:
   friend class SingleAXTreeManager;
-
-  static AXTreeManagerMap& GetMap();
 
   // Automatically stops observing notifications from the AXTree when this class
   // is destructed.

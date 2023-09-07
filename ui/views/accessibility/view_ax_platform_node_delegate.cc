@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -26,9 +27,9 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
-#include "ui/accessibility/single_ax_tree_manager.h"
 #include "ui/base/layout.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
@@ -303,6 +304,13 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   if (IsViewUnfocusableDescendantOfFocusableAncestor(view()))
     data_.AddState(ax::mojom::State::kIgnored);
 
+#if BUILDFLAG(IS_WIN)
+  if (features::IsUiaProviderEnabled() &&
+      view()->GetViewAccessibility().needs_ax_tree_manager()) {
+    view()->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   return data_;
 }
 
@@ -443,28 +451,12 @@ ViewAXPlatformNodeDelegate::CreateTextPositionAt(
     ax::mojom::TextAffinity affinity) const {
   // Support text navigation only on text fields for now. Primarily this is to
   // support navigating the address bar.
-  if (!IsDescendantOfAtomicTextField())
+  if (!atomic_view_ax_tree_manager_ || !IsDescendantOfAtomicTextField()) {
     return ui::AXNodePosition::CreateNullPosition();
-
-  if (!single_tree_manager_) {
-    ui::AXTreeUpdate initial_state;
-    initial_state.root_id = GetData().id;
-    initial_state.nodes = {GetData()};
-    initial_state.has_tree_data = true;
-    initial_state.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
-    auto tree = std::make_unique<ui::AXTree>(initial_state);
-    single_tree_manager_ =
-        std::make_unique<ui::SingleAXTreeManager>(std::move(tree));
-  } else {
-    DCHECK(single_tree_manager_->ax_tree());
-    ui::AXTreeUpdate update;
-    update.nodes = {GetData()};
-    const_cast<ui::AXTree*>(single_tree_manager_->ax_tree())
-        ->Unserialize(update);
   }
 
-  return ui::AXNodePosition::CreatePosition(*single_tree_manager_->GetRoot(),
-                                            offset, affinity);
+  return ui::AXNodePosition::CreateTextPosition(
+      *atomic_view_ax_tree_manager_->GetRoot(), offset, affinity);
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNSWindow() {
@@ -712,6 +704,11 @@ bool ViewAXPlatformNodeDelegate::IsReadOnlyOrDisabled() const {
 
 const ui::AXUniqueId& ViewAXPlatformNodeDelegate::GetUniqueId() const {
   return ViewAccessibility::GetUniqueId();
+}
+
+AtomicViewAXTreeManager*
+ViewAXPlatformNodeDelegate::GetAtomicViewAXTreeManagerForTesting() const {
+  return atomic_view_ax_tree_manager_.get();
 }
 
 std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds() const {

@@ -32,6 +32,7 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -1161,6 +1162,7 @@ void Label::Init(const std::u16string& text,
   // GetCanProcessEventsWithinSubtree().
   BuildContextMenuContents();
   set_context_menu_controller(this);
+  GetViewAccessibility().set_needs_ax_tree_manager(true);
 
   // This allows the BrowserView to pass the copy command from the Chrome menu
   // to the Label.

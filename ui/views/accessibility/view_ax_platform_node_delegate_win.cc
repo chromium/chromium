@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
@@ -22,6 +23,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/display/win/screen_win.h"
+#include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/views_utilities_aura.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -103,6 +105,17 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetBoundsRect(
       NOTIMPLEMENTED();
       return gfx::Rect();
   }
+}
+
+void ViewAXPlatformNodeDelegateWin::EnsureAtomicViewAXTreeManager() {
+  DCHECK(features::IsUiaProviderEnabled());
+  DCHECK(needs_ax_tree_manager());
+  if (atomic_view_ax_tree_manager_) {
+    return;
+  }
+
+  atomic_view_ax_tree_manager_ =
+      views::AtomicViewAXTreeManager::Create(this, data());
 }
 
 }  // namespace views
