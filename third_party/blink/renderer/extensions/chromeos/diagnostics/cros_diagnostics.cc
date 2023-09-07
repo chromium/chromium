@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_cpu_info.h"
 #include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_logical_cpu_info.h"
+#include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_network_interface.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -82,8 +83,8 @@ void CrosDiagnostics::OnGetCpuInfoResponse(
     }
     NOTREACHED_NORETURN();
   }
-
   CHECK(result->is_cpu_info());
+
   auto* cpu_info_blink = MakeGarbageCollected<CrosCpuInfo>();
 
   cpu_info_blink->setArchitectureName(
@@ -114,6 +115,48 @@ void CrosDiagnostics::OnGetCpuInfoResponse(
 
   cpu_info_blink->setLogicalCpus(logical_cpu_infos_blink);
   resolver->Resolve(std::move(cpu_info_blink));
+}
+
+ScriptPromise CrosDiagnostics::getNetworkInterfaces(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* cros_diagnostics = GetCrosDiagnosticsOrNull();
+
+  if (cros_diagnostics) {
+    cros_diagnostics->GetNetworkInterfaces(
+        WTF::BindOnce(&CrosDiagnostics::OnGetNetworkInterfacesResponse,
+                      WrapPersistent(this), WrapPersistent(resolver)));
+  }
+
+  return resolver->Promise();
+}
+
+void CrosDiagnostics::OnGetNetworkInterfacesResponse(
+    ScriptPromiseResolver* resolver,
+    mojom::blink::GetNetworkInterfacesResultPtr result) {
+  if (result->is_error()) {
+    switch (result->get_error()) {
+      case mojom::blink::GetNetworkInterfacesError::
+          kNetworkInterfaceLookupFailed:
+        resolver->Reject("Network interface lookup failed or unsupported.");
+        return;
+    }
+    NOTREACHED_NORETURN();
+  }
+  CHECK(result->is_network_interfaces());
+
+  HeapVector<Member<CrosNetworkInterface>> network_interfaces_blink;
+  for (const auto& interface : result->get_network_interfaces()) {
+    auto* network_interface_blink =
+        MakeGarbageCollected<CrosNetworkInterface>();
+
+    network_interface_blink->setAddress(interface->address);
+    network_interface_blink->setName(interface->name);
+    network_interface_blink->setPrefixLength(interface->prefix_length);
+
+    network_interfaces_blink.push_back(std::move(network_interface_blink));
+  }
+
+  resolver->Resolve(std::move(network_interfaces_blink));
 }
 
 }  // namespace blink

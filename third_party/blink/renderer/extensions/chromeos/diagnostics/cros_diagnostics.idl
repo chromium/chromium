@@ -14,4 +14,10 @@ interface CrosDiagnostics {
   // Returns a promise containing diagnostics information
   // of the CPU, e.g. model name, utilization and temperature.
   [CallWith=ScriptState] Promise<CrosCpuInfo> getCpuInfo();
+
+  // Retrieves diagnostics information on network interfaces.
+  //
+  // Returns a promise containing diagnostics information on each network interface
+  // attached to the system, e.g. network name and the associated IP address.
+  [CallWith=ScriptState] Promise<sequence<CrosNetworkInterface>> getNetworkInterfaces();
 };

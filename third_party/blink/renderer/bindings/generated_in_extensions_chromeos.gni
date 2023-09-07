@@ -9,6 +9,8 @@ generated_dictionary_sources_in_extensions_chromeos = [
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_accelerator_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_cpu_info.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_cpu_info.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_network_interface.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_network_interface.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_logical_cpu_info.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_logical_cpu_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_window_event_init.cc",

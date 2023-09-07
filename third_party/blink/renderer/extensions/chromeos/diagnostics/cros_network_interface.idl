@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Diagnostics information of a network interface, e.g. network name and
+// the associated IP address.
+dictionary CrosNetworkInterface {
+  // The associated IPv4/6 address.
+  DOMString address;
+
+  // The name of the network interface, e.g. "eth0", "wlan0".
+  DOMString name;
+
+  // The prefix length of the network.
+  unsigned long prefixLength;
+};

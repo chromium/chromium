@@ -21,6 +21,14 @@ interface CrosDiagnostics {
   // * |result| - union containing diagnostics information of the CPU, e.g.
   //   model name, utilization and temperature, or error.
   GetCpuInfo() => (GetCpuInfoResult result);
+
+  // Retrieves diagnostics information on network interfaces.
+  //
+  // The response:
+  // * |result| - union containing diagnostics information on each network
+  //   interface attached to the system, e.g. network name and the associated IP
+  //   address.
+  GetNetworkInterfaces() => (GetNetworkInterfacesResult network_interfaces);
 };
 
 // Error codes used by the getCpuInfo() method.
@@ -30,6 +38,12 @@ enum GetCpuInfoError {
 
   // TelemetryProbeService returned an error when retrieving CPU telemetry info.
   kCpuTelemetryInfoUnavailable,
+};
+
+// Error codes used by the getNetworkInterfaces() method.
+enum GetNetworkInterfacesError {
+  // Network interface lookup failed or unsupported.
+  kNetworkInterfaceLookupFailed,
 };
 
 // Diagnostics information of the CPU, e.g. model name, utilization and
@@ -72,6 +86,19 @@ struct CrosLogicalCpuInfo {
   uint32? scaling_max_frequency_khz;
 };
 
+// Diagnostics information of a network interface, e.g. network name and
+// the associated IP address.
+struct CrosNetworkInterface {
+  // The associated IPv4/6 address.
+  string address;
+
+  // The name of the network interface, e.g. "eth0", "wlan0".
+  string name;
+
+  // The prefix length of the network.
+  uint32 prefix_length;
+};
+
 // The response from the getCpuInfo() method.
 union GetCpuInfoResult {
   // Returned on success.
@@ -79,4 +106,13 @@ union GetCpuInfoResult {
 
   // Returned on encountering an error.
   GetCpuInfoError error;
+};
+
+// The response from the getNetworkInterfaces() method.
+union GetNetworkInterfacesResult {
+  // Returned on success.
+  array<CrosNetworkInterface> network_interfaces;
+
+  // Returned on encountering an error.
+  GetNetworkInterfacesError error;
 };

@@ -6,15 +6,18 @@
 
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/fake_probe_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class CrosAppsApiBrowserTest : public InProcessBrowserTest {
@@ -296,4 +299,41 @@ IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest,
       "retrieving CPU telemetry info.\"\n",
       content::EvalJs(web_contents, "window.chromeos.diagnostics.getCpuInfo();")
           .error);
+}
+
+IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest, GetNetworkInterfaces) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  base::test::TestFuture<const absl::optional<net::NetworkInterfaceList>&>
+      future;
+  content::GetNetworkService()->GetNetworkList(
+      net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES, future.GetCallback());
+  absl::optional<net::NetworkInterfaceList> interface_list = future.Get();
+
+  if (!interface_list.has_value()) {
+    EXPECT_EQ(
+        "a JavaScript error: \"Network interface lookup failed or "
+        "unsupported.\"\n",
+        content::EvalJs(web_contents,
+                        "window.chromeos.diagnostics.getNetworkInterfaces();")
+            .error);
+    return;
+  }
+
+  base::Value::List network_interfaces_expected_list;
+  for (const auto& interface : interface_list.value()) {
+    network_interfaces_expected_list.Append(
+        base::Value::Dict()
+            .Set("address", interface.address.ToString())
+            .Set("name", interface.name)
+            .Set("prefixLength", (int)interface.prefix_length));
+  }
+  base::Value network_interfaces_expected(
+      std::move(network_interfaces_expected_list));
+
+  EXPECT_EQ(
+      network_interfaces_expected,
+      content::EvalJs(web_contents,
+                      "window.chromeos.diagnostics.getNetworkInterfaces();"));
 }

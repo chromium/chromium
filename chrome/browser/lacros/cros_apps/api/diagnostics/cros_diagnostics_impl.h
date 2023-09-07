@@ -10,6 +10,7 @@
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/network_interfaces.h"
 #include "third_party/blink/public/mojom/chromeos/diagnostics/cros_diagnostics.mojom.h"
 
 namespace content {
@@ -28,6 +29,7 @@ class CrosDiagnosticsImpl
 
   // blink::mojom::CrosDiagnostics
   void GetCpuInfo(GetCpuInfoCallback callback) override;
+  void GetNetworkInterfaces(GetNetworkInterfacesCallback callback) override;
 
  private:
   friend class content::DocumentUserData<CrosDiagnosticsImpl>;
@@ -43,6 +45,10 @@ class CrosDiagnosticsImpl
       GetCpuInfoCallback callback,
       blink::mojom::CrosCpuInfoPtr cpu_info_mojom,
       crosapi::mojom::ProbeTelemetryInfoPtr telemetry_info);
+
+  void GetNetworkInterfacesGetNetworkListCallback(
+      GetNetworkInterfacesCallback callback,
+      const absl::optional<net::NetworkInterfaceList>& interface_list);
 
   DOCUMENT_USER_DATA_KEY_DECL();
 

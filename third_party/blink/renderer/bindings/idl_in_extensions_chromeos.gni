@@ -8,6 +8,7 @@ static_idl_files_in_extensions_chromeos = [
   "//third_party/blink/renderer/extensions/chromeos/chromeos.idl",
   "//third_party/blink/renderer/extensions/chromeos/diagnostics/cros_diagnostics.idl",
   "//third_party/blink/renderer/extensions/chromeos/diagnostics/cros_cpu_info.idl",
+  "//third_party/blink/renderer/extensions/chromeos/diagnostics/cros_network_interface.idl",
   "//third_party/blink/renderer/extensions/chromeos/diagnostics/cros_logical_cpu_info.idl",
   "//third_party/blink/renderer/extensions/chromeos/system_extensions/hid/cros_hid.idl",
   "//third_party/blink/renderer/extensions/chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.idl",

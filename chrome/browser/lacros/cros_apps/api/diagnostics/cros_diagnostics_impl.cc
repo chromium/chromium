@@ -10,7 +10,9 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace {
 
@@ -125,6 +127,42 @@ void CrosDiagnosticsImpl::GetCpuInfoProbeTelemetryInfoCallback(
   cpu_info_mojom->logical_cpus = std::move(logical_cpu_infos_mojom);
   std::move(callback).Run(
       blink::mojom::GetCpuInfoResult::NewCpuInfo(std::move(cpu_info_mojom)));
+}
+
+void CrosDiagnosticsImpl::GetNetworkInterfaces(
+    GetNetworkInterfacesCallback callback) {
+  content::GetNetworkService()->GetNetworkList(
+      net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
+      base::BindOnce(
+          &CrosDiagnosticsImpl::GetNetworkInterfacesGetNetworkListCallback,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CrosDiagnosticsImpl::GetNetworkInterfacesGetNetworkListCallback(
+    GetNetworkInterfacesCallback callback,
+    const absl::optional<net::NetworkInterfaceList>& interface_list) {
+  if (!interface_list.has_value()) {
+    auto error =
+        blink::mojom::GetNetworkInterfacesError::kNetworkInterfaceLookupFailed;
+    std::move(callback).Run(
+        blink::mojom::GetNetworkInterfacesResult::NewError(std::move(error)));
+    return;
+  }
+
+  std::vector<blink::mojom::CrosNetworkInterfacePtr> network_interfaces_mojom;
+  for (const auto& interface : interface_list.value()) {
+    auto network_interface_mojom = blink::mojom::CrosNetworkInterface::New();
+
+    network_interface_mojom->address = interface.address.ToString();
+    network_interface_mojom->name = interface.name;
+    network_interface_mojom->prefix_length = interface.prefix_length;
+
+    network_interfaces_mojom.push_back(std::move(network_interface_mojom));
+  }
+
+  std::move(callback).Run(
+      blink::mojom::GetNetworkInterfacesResult::NewNetworkInterfaces(
+          std::move(network_interfaces_mojom)));
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(CrosDiagnosticsImpl);
