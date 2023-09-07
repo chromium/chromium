@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_piece.h"
 
 ApplicationControllerImpl::ApplicationControllerImpl(
@@ -73,8 +74,38 @@ void ApplicationControllerImpl::SetBlockMediaLoading(
 
 void ApplicationControllerImpl::GetPrivateMemorySize(
     ApplicationControllerImpl::GetPrivateMemorySizeCompleter::Sync& completer) {
-  frame_->GetPrivateMemorySize(
-      [completer = completer.ToAsync()](uint64_t private_memory_size) mutable {
-        completer.Reply(private_memory_size);
-      });
+  /**
+   * A wrapper around the Async completer to ensure it can be correctly closed
+   * before the destruction.
+   * fidl::CompleteBase::~CompleteBase expects the completer to be either
+   * replied or closed explicitly.
+   * See https://crbug.com/1477315.
+   */
+  class AsyncCloser final {
+   public:
+    AsyncCloser(
+        ApplicationControllerImpl::GetPrivateMemorySizeCompleter::Async&&
+            completer)
+        : completer_(std::move(completer)) {}
+    AsyncCloser(AsyncCloser&& other)
+        : completer_(std::move(other.completer_)) {}
+
+    ~AsyncCloser() {
+      if (completer_.is_reply_needed()) {
+        completer_.Close(ZX_ERR_PEER_CLOSED);
+      }
+    }
+
+    void Reply(uint64_t private_memory_size) {
+      completer_.Reply(private_memory_size);
+    }
+
+   private:
+    ApplicationControllerImpl::GetPrivateMemorySizeCompleter::Async completer_;
+  };
+
+  frame_->GetPrivateMemorySize([completer = AsyncCloser(completer.ToAsync())](
+                                   uint64_t private_memory_size) mutable {
+    completer.Reply(private_memory_size);
+  });
 }
