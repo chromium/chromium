@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
@@ -38,6 +39,7 @@ class SchemefulSite;
 namespace content {
 
 class BrowserContext;
+class ScopedMockFirstPartySetsHandler;
 
 // Class FirstPartySetsHandlerImpl is a singleton, it allows an embedder to
 // provide First-Party Sets inputs from custom sources, then parses/merges the
@@ -52,6 +54,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       base::OnceCallback<void(net::GlobalFirstPartySets)>;
 
   static FirstPartySetsHandlerImpl* GetInstance();
+
+  static void SetInstanceForTesting(FirstPartySetsHandlerImpl* test_instance);
 
   ~FirstPartySetsHandlerImpl() override;
 
@@ -77,8 +81,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       bool embedder_will_provide_public_sets);
 
   // Returns the fully-parsed and validated global First-Party Sets data.
-  // Returns the data synchronously via an optional if it's already available,
-  // or via an asynchronously-invoked callback if the data is not ready yet.
+  // Returns the data synchronously via an absl::optional if it's already
+  // available, or via an asynchronously-invoked callback if the data is not
+  // ready yet.
   //
   // This function makes a clone of the underlying data.
   //
@@ -86,7 +91,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // data is not ready yet.
   //
   // Must not be called if First-Party Sets is disabled.
-  [[nodiscard]] absl::optional<net::GlobalFirstPartySets> GetSets(
+  [[nodiscard]] virtual absl::optional<net::GlobalFirstPartySets> GetSets(
       SetsReadyOnceCallback callback);
 
   // FirstPartySetsHandler
@@ -134,6 +139,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   static net::FirstPartySetsContextConfig ComputeEnterpriseContextConfig(
       const net::GlobalFirstPartySets& browser_sets,
       const FirstPartySetParser::ParsedPolicySetLists& policy);
+
+ protected:
+  FirstPartySetsHandlerImpl(base::PassKey<ScopedMockFirstPartySetsHandler> key,
+                            bool enabled,
+                            bool embedder_will_provide_public_sets);
 
  private:
   friend class base::NoDestructor<FirstPartySetsHandlerImpl>;
