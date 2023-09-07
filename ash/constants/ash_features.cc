@@ -1304,6 +1304,11 @@ BASE_FEATURE(kGlanceablesV2ClassroomTeacherView,
              "GlanceablesV2ClassroomTeacherView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables showing error messages for glanceables bubbles.
+BASE_FEATURE(kGlanceablesV2ErrorMessage,
+             "GlanceablesV2ErrorMessage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Gaia reauth endpoint for all online reauth flows on login screen.
 // Note that the reauth endpoint is used when the user is a child user or in
 // potential recovery flows, regardless of the flag value.
@@ -3386,6 +3391,10 @@ bool AreGlanceablesV2EnabledForTrustedTesters() {
 
 bool IsGlanceablesV2ClassroomTeacherViewEnabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2ClassroomTeacherView);
+}
+
+bool IsGlanceablesV2ErrorMessageEnabled() {
+  return base::FeatureList::IsEnabled(kGlanceablesV2ErrorMessage);
 }
 
 bool IsHibernateEnabled() {

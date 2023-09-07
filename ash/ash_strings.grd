@@ -6996,6 +6996,9 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the top left corner header icon that opens Google Calendar website with the companion app panel open.">
         Google tasks on web
       </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_FETCH_ERROR" desc="A glanceables classroom bubble displays a notification with an error message when an error occurs while fetching data. This is the text that describes the error to the user and appears on the notification.">
+        Can't show items. Try reopening this panel.
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
