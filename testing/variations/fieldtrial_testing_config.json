@@ -17410,7 +17410,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "V8MinorMS"
+                        "kV8MinorMS"
                     ]
                 }
             ]
