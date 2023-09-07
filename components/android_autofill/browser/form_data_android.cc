@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
+#include "components/android_autofill/browser/form_field_data_android_bridge_impl.h"
 #include "components/android_autofill/browser/jni_headers/FormData_jni.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -42,7 +43,9 @@ ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer(
     fields_.clear();
     fields_.reserve(form_.fields.size());
     for (FormFieldData& field : form_.fields) {
-      fields_.push_back(std::make_unique<FormFieldDataAndroid>(&field));
+      // TODO(crbug.com/1478934): Use a factory for the bridge.
+      fields_.push_back(std::make_unique<FormFieldDataAndroid>(
+          std::make_unique<FormFieldDataAndroidBridgeImpl>(), &field));
     }
 
     if (form_structure)
@@ -140,9 +143,10 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
           static_cast<ServerFieldType>(prediction.type()));
     }
     form_field_data_android->get()->UpdateAutofillTypes(
-        AutofillType(autofill_field->heuristic_type()),
-        AutofillType(autofill_field->server_type()),
-        autofill_field->ComputedType(), server_predictions);
+        FormFieldDataAndroid::FieldTypes(
+            AutofillType(autofill_field->heuristic_type()),
+            AutofillType(autofill_field->server_type()),
+            autofill_field->ComputedType(), std::move(server_predictions)));
     if (++form_field_data_android == fields_.end())
       break;
   }
