@@ -25,6 +25,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/buildflag.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -50,6 +51,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chromeos/ash/services/libassistant/constants.h"
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+
 namespace ash::assistant {
 
 namespace {
@@ -67,6 +76,13 @@ const char* g_s3_server_uri_override = nullptr;
 // Testing override for the device-id used by Libassistant to identify this
 // device.
 const char* g_device_id_override = nullptr;
+
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+base::TaskTraits GetTaskTraits() {
+  return {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
+}
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 // The max number of tries to start service.
 // We decide whether to start service based on two counters:
@@ -415,7 +431,7 @@ void Service::UpdateAssistantManagerState() {
       !assistant_state->locale().has_value() ||
       (!access_token_.has_value() && !IsSignedOutMode()) ||
       !assistant_state->arc_play_store_enabled().has_value() ||
-      !libassistant_loaded_) {
+      !libassistant_loaded_ || is_deleting_data_) {
     // Assistant state has not finished initialization, let's wait.
     return;
   }
@@ -717,6 +733,22 @@ void Service::OnLibassistantLoaded(bool success) {
 void Service::ClearAfterStop() {
   is_assistant_manager_service_finalized_ = false;
   scoped_ash_session_observer_.reset();
+
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+  // When user disables the Assistant, we also delete all data.
+  if (!AssistantState::Get()->settings_enabled().value()) {
+    is_deleting_data_ = true;
+    base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())
+        ->PostTaskAndReply(
+            FROM_HERE, base::BindOnce([]() {
+              base::DeletePathRecursively(base::FilePath(
+                  FILE_PATH_LITERAL(libassistant::kAssistantBaseDirPath)));
+            }),
+            base::BindOnce(&Service::OnDataDeleted,
+                           weak_ptr_factory_.GetWeakPtr()));
+  }
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+
   ResetAuthenticationStateObserver();
 }
 
@@ -767,6 +799,11 @@ bool Service::CanStartService() const {
   }
 
   return true;
+}
+
+void Service::OnDataDeleted() {
+  is_deleting_data_ = false;
+  UpdateAssistantManagerState();
 }
 
 }  // namespace ash::assistant
