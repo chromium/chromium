@@ -136,6 +136,15 @@ class VP9Validator : public DecoderBufferValidator {
   bool Validate(const DecoderBuffer& decoder_buffer,
                 const BitstreamBufferMetadata& metadata) override;
 
+  // Validate DecoderBuffer for a vanilla stream.
+  bool ValidateVanillaStream(const DecoderBuffer& decoder_buffer,
+                             const BitstreamBufferMetadata& metadata,
+                             const Vp9FrameHeader& header);
+  // Validate DecoderBuffer for a temporal or spatial layer stream.
+  bool ValidateSVCStream(const DecoderBuffer& decoder_buffer,
+                         const BitstreamBufferMetadata& metadata,
+                         const Vp9FrameHeader& header);
+
   Vp9Parser parser_;
 
   // The expected VP9 profile of |decoder_buffer|.
