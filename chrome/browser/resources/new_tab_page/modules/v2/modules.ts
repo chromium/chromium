@@ -219,6 +219,20 @@ export class ModulesV2Element extends PolymerElement {
                 forwardHostProp: this.forwardHostProp_,
                 instanceProps: {item: true},
               }) as {new (): TemplateInstanceBase & HTMLElement};
+
+
+      if (modules.length > 1) {
+        const maxModuleInstanceCount = loadTimeData.getInteger(
+            'multipleLoadedModulesMaxModuleInstanceCount');
+        if (maxModuleInstanceCount > 0) {
+          modules.forEach(module => {
+            module.elements.splice(
+                maxModuleInstanceCount,
+                module.elements.length - maxModuleInstanceCount);
+          });
+        }
+      }
+
       this.templateInstances_ =
           modules
               .map(module => {

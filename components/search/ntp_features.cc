@@ -168,6 +168,11 @@ BASE_FEATURE(kNtpModulesMaxColumnCount,
              "NtpModulesMaxColumnCount",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Dummy feature to set param "NtpModulesLoadedWithOtherModulesMaxInstanceCount"
+BASE_FEATURE(kNtpModulesLoadedWithOtherModulesMaxInstanceCount,
+             "NtpModulesLoadedWithOtherModulesMaxInstanceCount",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If true, displays a horizontal scrollbar on overflowing modules.
 BASE_FEATURE(kNtpModulesOverflowScrollbar,
              "NtpModulesOverflowScrollbar",
@@ -361,6 +366,8 @@ const char kNtpModulesEligibleForHappinessTrackingSurveyParam[] =
     "NtpModulesEligibleForHappinessTrackingSurveyParam";
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
+const char kNtpModulesLoadedWithOtherModulesMaxInstanceCountParam[] =
+    "NtpModulesLoadedWithOtherModulesMaxInstanceCountParam";
 const char kNtpModulesMaxColumnCountParam[] = "NtpModulesMaxColumnCountParam";
 const char kNtpModulesOrderParam[] = "NtpModulesOrderParam";
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
@@ -429,6 +436,12 @@ base::TimeDelta GetModulesLoadTimeout() {
 int GetModulesMaxColumnCount() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kNtpModulesMaxColumnCount, kNtpModulesMaxColumnCountParam, 3);
+}
+
+int GetMultipleLoadedModulesMaxModuleInstanceCount() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kNtpModulesLoadedWithOtherModulesMaxInstanceCount,
+      kNtpModulesLoadedWithOtherModulesMaxInstanceCountParam, 2);
 }
 
 std::vector<std::string> GetModulesOrder() {
