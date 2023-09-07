@@ -93,6 +93,9 @@ specific_include_rules = {
   "graphics_context.h": [
     "+third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h",
   ],
+  "image_frame_generator_test.cc": [
+    "+base/features.h",
+  ],
   "rw_buffer_test.cc": [
     "+base/threading/platform_thread.h",
   ],
