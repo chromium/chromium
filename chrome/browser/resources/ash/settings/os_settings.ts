@@ -133,7 +133,7 @@ export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_s
 export {FkeyRowElement} from './device_page/fkey_row.js';
 export {SettingsGraphicsTabletSubpageElement} from './device_page/graphics_tablet_subpage.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
-export {GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, MetaKey, ModifierKey, Mouse, PolicyStatus, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier} from './device_page/input_device_settings_types.js';
+export {Fkey, GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, MetaKey, ModifierKey, Mouse, PolicyStatus, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier, TopRowActionKey} from './device_page/input_device_settings_types.js';
 export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_modifier_key_row.js';
 export {KeyboardSixPackKeyRowElement, sixPackKeyProperties} from './device_page/keyboard_six_pack_key_row.js';
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';

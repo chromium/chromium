@@ -797,6 +797,29 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"builtInKeyboardName", IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME},
       {"f11KeyLabel", IDS_SETTINGS_F11_KEY_LABEL},
       {"f12KeyLabel", IDS_SETTINGS_F12_KEY_LABEL},
+      {"backKeyLabel", IDS_SETTINGS_BACK},
+      {"forwardKeyLabel", IDS_SETTINGS_FORWARD},
+      {"fullscreenKeyLabel", IDS_SETTINGS_FULLSCREEN},
+      {"backlightDownKeyLabel", IDS_SETTINGS_KEYBOARD_BACKLIGHT_DOWN},
+      {"backlightToggleKeyLabel", IDS_SETTINGS_KEYBOARD_BACKLIGHT_TOGGLE},
+      {"backlightUpKeyLabel", IDS_SETTINGS_KEYBOARD_BACKLIGHT_UP},
+      {"microphoneMuteKeyLabel", IDS_SETTINGS_MICROPHONE_MUTE},
+      {"muteKeyLabel", IDS_SETTINGS_MUTE},
+      {"overviewKeyLabel", IDS_SETTINGS_OVERVIEW},
+      {"playPauseKeyLabel", IDS_SETTINGS_PLAY_PAUSE},
+      {"privacyScreenToggleKeyLabel", IDS_SETTINGS_PRIVACY_SCREEN_TOGGLE},
+      {"refreshKeyLabel", IDS_SETTINGS_REFRESH},
+      {"screenshotKeyLabel", IDS_SETTINGS_SCREENSHOT},
+      {"screenBrightnessDownKeyLabel", IDS_SETTINGS_SCREEN_BRIGHTNESS_DOWN},
+      {"screenBrightnessUpKeyLabel", IDS_SETTINGS_SCREEN_BRIGHTNESS_UP},
+      {"screenMirrorKeyLabel", IDS_SETTINGS_SCREEN_MIRROR},
+      {"trackNextKeyLabel", IDS_SETTINGS_TRACK_NEXT},
+      {"trackPreviousKeyLabel", IDS_SETTINGS_TRACK_PREVIOUS},
+      {"volumeDownKeyLabel", IDS_SETTINGS_VOLUME_DOWN},
+      {"volumeUpKeyLabel", IDS_SETTINGS_VOLUME_UP},
+      {"allApplicationsKeyLabel", IDS_SETTINGS_ALL_APPLICATIONS},
+      {"emojiPickerKeyLabel", IDS_SETTINGS_EMOJI_PICKER},
+      {"dictationKeyLabel", IDS_SETTINGS_DICTATION},
       {"keyboardEnableAutoRepeat", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE},
       {"keyboardEnableAutoRepeatSubLabel",
        IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE_SUB_LABEL},
@@ -898,6 +921,15 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
     html_source->AddLocalizedString(
         "touchpadSimulateRightClickOptionSearch",
         IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_LAUNCHER);
+    html_source->AddLocalizedString(
+        "fKeyShiftOptionSearch",
+        IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_LAUNCHER);
+    html_source->AddLocalizedString(
+        "fKeyCtrlShiftOptionSearch",
+        IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_LAUNCHER);
+    html_source->AddLocalizedString(
+        "fKeyAltOptionSearch", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_LAUNCHER);
+
   } else {
     html_source->AddLocalizedString(
         "keyboardBlockMetaFunctionKeyRewrites",
@@ -928,6 +960,14 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
     html_source->AddLocalizedString(
         "touchpadSimulateRightClickOptionSearch",
         IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH);
+    html_source->AddLocalizedString(
+        "fKeyShiftOptionSearch",
+        IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_LAUNCHER);
+    html_source->AddLocalizedString(
+        "fKeyCtrlShiftOptionSearch",
+        IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_LAUNCHER);
+    html_source->AddLocalizedString(
+        "fKeyAltOptionSearch", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_LAUNCHER);
   }
 }
 

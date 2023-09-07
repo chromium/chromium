@@ -13,20 +13,78 @@ import './input_device_settings_shared.css.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
+import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route, routes} from '../router.js';
+
 import {getTemplate} from './fkey_row.html.js';
-import {Fkey} from './input_device_settings_types.js';
+import {ExtendedFkeysModifier, Fkey, Keyboard, TopRowActionKey} from './input_device_settings_types.js';
+
+function getTopRowActionKeyString(topRowActionKey: TopRowActionKey): string {
+  switch (topRowActionKey) {
+    case TopRowActionKey.BACK:
+      return loadTimeData.getString('backKeyLabel');
+    case TopRowActionKey.FORWARD:
+      return loadTimeData.getString('forwardKeyLabel');
+    case TopRowActionKey.REFRESH:
+      return loadTimeData.getString('refreshKeyLabel');
+    case TopRowActionKey.FULLSCREEN:
+      return loadTimeData.getString('fullscreenKeyLabel');
+    case TopRowActionKey.OVERVIEW:
+      return loadTimeData.getString('overviewKeyLabel');
+    case TopRowActionKey.SCREENSHOT:
+      return loadTimeData.getString('screenshotKeyLabel');
+    case TopRowActionKey.SCREEN_BRIGHTNESS_DOWN:
+      return loadTimeData.getString('screenBrightnessDownKeyLabel');
+    case TopRowActionKey.SCREEN_BRIGHTNESS_UP:
+      return loadTimeData.getString('screenBrightnessUpKeyLabel');
+    case TopRowActionKey.MICROPHONE_MUTE:
+      return loadTimeData.getString('microphoneMuteKeyLabel');
+    case TopRowActionKey.VOLUME_MUTE:
+      return loadTimeData.getString('muteKeyLabel');
+    case TopRowActionKey.VOLUME_DOWN:
+      return loadTimeData.getString('volumeDownKeyLabel');
+    case TopRowActionKey.VOLUME_UP:
+      return loadTimeData.getString('volumeUpKeyLabel');
+    case TopRowActionKey.KEYBOARD_BACKLIGHT_TOGGLE:
+      return loadTimeData.getString('backlightToggleKeyLabel');
+    case TopRowActionKey.KEYBOARD_BACKLIGHT_DOWN:
+      return loadTimeData.getString('backlightDownKeyLabel');
+    case TopRowActionKey.KEYBOARD_BACKLIGHT_UP:
+      return loadTimeData.getString('backlightUpKeyLabel');
+    case TopRowActionKey.NEXT_TRACK:
+      return loadTimeData.getString('trackNextKeyLabel');
+    case TopRowActionKey.PREVIOUS_TRACK:
+      return loadTimeData.getString('trackPreviousKeyLabel');
+    case TopRowActionKey.PLAY_PAUSE:
+      return loadTimeData.getString('playPauseKeyLabel');
+    case TopRowActionKey.ALL_APPLICATIONS:
+      return loadTimeData.getString('allApplicationsKeyLabel');
+    case TopRowActionKey.EMOJI_PICKER:
+      return loadTimeData.getString('emojiPickerKeyLabel');
+    case TopRowActionKey.DICTATION:
+      return loadTimeData.getString('dicationKeyLabel');
+    case TopRowActionKey.PRIVACY_SCREEN_TOGGLE:
+      return loadTimeData.getString('privacyScreenToggleKeyLabel');
+    case TopRowActionKey.SCREEN_MIRROR:
+      return loadTimeData.getString('screenMirrorKeyLabel');
+  }
+}
 
 const fKeyLabels = {
   [Fkey.F11]: loadTimeData.getString('f11KeyLabel'),
   [Fkey.F12]: loadTimeData.getString('f12KeyLabel'),
 };
 
-export class FkeyRowElement extends PolymerElement {
+const FkeyRowElementBase = RouteObserverMixin(I18nMixin(PolymerElement));
+
+export class FkeyRowElement extends FkeyRowElementBase {
   static get is() {
     return 'fkey-row' as const;
   }
@@ -47,19 +105,73 @@ export class FkeyRowElement extends PolymerElement {
       pref: {
         type: Object,
       },
+
+      keyboard: {
+        type: Object,
+      },
+
+      shortcutOptions: {
+        type: Array,
+      },
     };
   }
 
   key: Fkey;
   keyLabel: string;
   pref: chrome.settingsPrivate.PrefObject;
+  keyboard: Keyboard;
+  shortcutOptions: DropdownMenuOptionList;
+
+  override currentRouteChanged(route: Route): void {
+    // Does not apply to this page.
+    if (route !== routes.PER_DEVICE_KEYBOARD_REMAP_KEYS) {
+      return;
+    }
+
+    this.shortcutOptions = this.getMenuOptions();
+  }
+
+  getTopRowKeyLabel(): string {
+    // F11 shortcuts include the key in the F1 position which corresponds
+    // to the 1st entry in our `topRowActionKeys` array.
+    const fkeyIndex = this.key === Fkey.F11 ? 0 : 1;
+    assert(this.keyboard.topRowActionKeys);
+    return getTopRowActionKeyString(this.keyboard.topRowActionKeys[fkeyIndex]);
+  }
 
   private computeKeyLabel(): string {
     assert(this.key in fKeyLabels);
     return fKeyLabels[this.key];
   }
-}
 
+  private getFkeyShortcutOptions(): DropdownMenuOptionList {
+    const topRowKeyLabel = this.getTopRowKeyLabel();
+    return [
+      {
+        value: ExtendedFkeysModifier.SHIFT,
+        name: this.i18n('fKeyShiftOptionSearch', topRowKeyLabel),
+      },
+      {
+        value: ExtendedFkeysModifier.CTRL_SHIFT,
+        name: this.i18n('fKeyCtrlShiftOptionSearch', topRowKeyLabel),
+      },
+      {
+        value: ExtendedFkeysModifier.ALT,
+        name: this.i18n('fKeyAltOptionSearch', topRowKeyLabel),
+      },
+    ];
+  }
+
+  protected getMenuOptions(): DropdownMenuOptionList {
+    return [
+      {
+        value: ExtendedFkeysModifier.DISABLED,
+        name: this.i18n('perDeviceKeyboardKeyDisabled'),
+      },
+      ...this.getFkeyShortcutOptions(),
+    ];
+  }
+}
 
 declare global {
   interface HTMLElementTagNameMap {

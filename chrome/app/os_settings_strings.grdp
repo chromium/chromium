@@ -3315,6 +3315,93 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_F12_KEY_LABEL" translateable="false" desc="In the keyboard settings subpage, the label for the F12 row.">
     F12
   </message>
+  <message name="IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_SEARCH" translateable="false" desc="">
+    search + shift + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_LAUNCHER" translateable="false" desc="">
+    launcher + shift + <ph name="TOP_ROW_KEY">$1<ex>refresh</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_SEARCH" translateable="false" desc="">
+    search + alt + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_LAUNCHER" translateable="false" desc="">
+    launcher + alt + <ph name="TOP_ROW_KEY">$1<ex>refresh</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_SEARCH" translateable="false" desc="">
+    search + ctrl + shift + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_LAUNCHER" translateable="false" desc="">
+    launcher + ctrl + shift + <ph name="TOP_ROW_KEY">$1<ex>refresh</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BACK" translateable="false" desc="Describes the Back key on the top row of a ChromeOS keyboard.">
+    back
+  </message>
+  <message name="IDS_SETTINGS_FORWARD" translateable="false" desc="Describes the Forward key on the top row of a ChromeOS keyboard.">
+    forward
+  </message>
+  <message name="IDS_SETTINGS_FULLSCREEN" translateable="false" desc="Describes the Fullscreen key on the top row of a ChromeOS keyboard.">
+    fullscreen
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_BACKLIGHT_DOWN" translateable="false" desc="Describes the key for decreasing keyboard backlight brightness on the top row of a ChromeOS keyboard.">
+    keyboard brightness down
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_BACKLIGHT_TOGGLE" translateable="false" desc="Describes the key for toggling the keyboard backlight on the top row of a ChromeOS keyboard.">
+    keyboard backlight toggle
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_BACKLIGHT_UP" translateable="false" desc="Describes the key for increasing keyboard backlight brightness on the top row of a ChromeOS keyboard.">
+    keyboard brightness up
+  </message>
+  <message name="IDS_SETTINGS_MICROPHONE_MUTE" translateable="false" desc="Describes the key on the top row of a ChromeOS keyboard.">
+    microphone mute
+  </message>
+  <message name="IDS_SETTINGS_MUTE" translateable="false" desc="Describes the Mute key on the top row of a ChromeOS keyboard.">
+    mute
+  </message>
+  <message name="IDS_SETTINGS_OVERVIEW" translateable="false" desc="Describes the Overview key on the top row of a ChromeOS keyboard.">
+    overview
+  </message>
+  <message name="IDS_SETTINGS_PLAY_PAUSE" translateable="false" desc="Describes the play/pause key on the top row of a ChromeOS keyboard.">
+    play/pause
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SCREEN_TOGGLE" translateable="false" desc="Describes the key on the top row of a ChromeOS keyboard.">
+    privacy screen toggle
+  </message>
+  <message name="IDS_SETTINGS_REFRESH" translateable="false" desc="Describes the Refresh key on the top row of a ChromeOS keyboard.">
+    refresh
+  </message>
+  <message name="IDS_SETTINGS_SCREENSHOT" translateable="false" desc="Describes the Screenshot key on the top row of a ChromeOS keyboard.">
+    screenshot
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_BRIGHTNESS_DOWN" translateable="false" desc="Describes the key for decreasing display brightness on the top row of a ChromeOS keyboard.">
+    display brightness down
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_BRIGHTNESS_UP" translateable="false" desc="Describes the key for increasing display brightness on the top row of a ChromeOS keyboard.">
+    display brightness up
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MIRROR" translateable="false" desc="Describes the key on the top row of a ChromeOS keyboard.">
+    screen mirror
+  </message>
+  <message name="IDS_SETTINGS_TRACK_NEXT" translateable="false" desc="Describes the next track key on the top row of a ChromeOS keyboard.">
+    next track
+  </message>
+  <message name="IDS_SETTINGS_TRACK_PREVIOUS" translateable="false" desc="Describes the previous track key on the top row of a ChromeOS keyboard.">
+    previous track
+  </message>
+  <message name="IDS_SETTINGS_VOLUME_DOWN" translateable="false" desc="Describes the volume down key on the top row of a ChromeOS keyboard.">
+    volume down
+  </message>
+  <message name="IDS_SETTINGS_VOLUME_UP" translateable="false" desc="Describes the volume up key on the top row of a ChromeOS keyboard.">
+    volume up
+  </message>
+  <message name="IDS_SETTINGS_ALL_APPLICATIONS" translateable="false" desc="Describes the all applications key on the top row of a ChromeOS keyboard.">
+    all applications
+  </message>
+  <message name="IDS_SETTINGS_EMOJI_PICKER" translateable="false" desc="Describes the emoji picker key on the top row of a ChromeOS keyboard.">
+    emoji pciker
+  </message>
+  <message name="IDS_SETTINGS_DICTATION" translateable="false" desc="Describes the dictation key on the top row of a ChromeOS keyboard.">
+    dictation
+  </message>
 
   <!-- Printing Page (OS Settings)-->
   <message name="IDS_SETTINGS_PRINT_AND_SCAN" desc="Title of the printing and scanning page and navigation item to get there.">
