@@ -432,4 +432,5 @@ Refer to README.md for content description and update process.
  <item id="interest_feedv2_resource_send" added_in_milestone="118" content_hash_code="04189a4f" os_list="linux,windows,android,chromeos" file_path="components/feed/core/v2/resource_fetcher.cc" />
  <item id="almanac_launcher_app" added_in_milestone="118" content_hash_code="0556e032" os_list="chromeos" file_path="chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.cc" />
  <item id="ip_protection_service_get_proxy_config" added_in_milestone="118" content_hash_code="025110db" os_list="windows,android,linux,chromeos" file_path="chrome/browser/ip_protection/ip_protection_config_http.cc" />
+ <item id="chrome_commerce_parcels_status" added_in_milestone="119" content_hash_code="042f0cf7" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/parcel/parcels_server_proxy.cc" />
 </annotations>

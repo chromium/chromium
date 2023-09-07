@@ -131,6 +131,9 @@ BASE_DECLARE_FEATURE(kCodeBasedRBD);
 // Feature flag for DOM-based heuristics for ChromeCart.
 BASE_DECLARE_FEATURE(kChromeCartDomBasedHeuristics);
 
+// Feature flag for parcel tracking.
+BASE_DECLARE_FEATURE(kParcelTracking);
+
 // Shopping list update interval.
 constexpr base::FeatureParam<base::TimeDelta>
     kShoppingListBookmarkpdateIntervalParam(
