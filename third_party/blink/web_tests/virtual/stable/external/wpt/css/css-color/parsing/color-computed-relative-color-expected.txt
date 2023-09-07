@@ -897,7 +897,7 @@ FAIL Property color value 'color(from color(xyz-d65 7 none 100) xyz-d65 x y z)' 
 FAIL Property color value 'color(from color(xyz-d65 7 -20.5 100 / none) xyz-d65 x y z / alpha)' assert_true: 'color(from color(xyz-d65 7 -20.5 100 / none) xyz-d65 x y z / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'rgb(from var(--bg-color) r g b / 80%)' Colors do not match.
 Actual:   rgb(0, 0, 0)
-Expected: rgba(0, 0, 255, 0.8).
+Expected: color(srgb 0 0 1 / 0.8).
 Error: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
 FAIL Property color value 'lch(from var(--color) calc(l / 2) c h)' Colors do not match.
 Actual:   rgb(0, 0, 0)
@@ -905,8 +905,8 @@ Expected: lch(23.14 67.99 134.39).
 Error: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 23.14 +/- 0.02, expected 23.14 but got 0
 FAIL Property color value 'rgb(from var(--color) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11))' Colors do not match.
 Actual:   rgb(0, 0, 0)
-Expected: rgb(76, 76, 76).
-Error: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 76 +/- 0.0001, expected 76 but got 0
+Expected: color(srgb 0.3 0.3 0.3).
+Error: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.3 +/- 0.02, expected 0.3 but got 0
 FAIL Property color value 'lch(from var(--color) l 0 h)' Colors do not match.
 Actual:   rgb(0, 0, 0)
 Expected: lch(46.28 0 134.39).
@@ -914,8 +914,8 @@ Error: assert_array_approx_equals: Numeric parameters are approximately equal. p
 FAIL Property color value 'rgb(from indianred 255 g b)' assert_true: 'rgb(from indianred 255 g b)' is a supported value for color. expected true got false
 FAIL Property color value 'hsl(from var(--accent) calc(h + 180) s l)' Colors do not match.
 Actual:   rgb(0, 0, 0)
-Expected: rgb(178, 32, 40).
-Error: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 178 +/- 0.0001, expected 178 but got 0
+Expected: color(srgb 0.7 0.13 0.16).
+Error: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.7 +/- 0.02, expected 0.7 but got 0
 FAIL Property color value 'lab(from var(--mycolor) l a b / 100%)' Colors do not match.
 Actual:   rgb(0, 0, 0)
 Expected: lab(62.75 52.46 -34.12).

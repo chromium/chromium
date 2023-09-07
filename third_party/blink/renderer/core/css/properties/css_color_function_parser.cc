@@ -424,7 +424,7 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     // See compositing/background-color/background-color-alpha.html for example.
     // Ideally we would allow alpha to be any float value, but we have to clean
     // up all spots where this compression happens before this is possible.
-    if (alpha_.has_value() && isfinite(alpha_.value())) {
+    if (!is_relative_color_ && alpha_.has_value()) {
       alpha_ = round(alpha_.value() * 255.0) / 255.0;
     }
   }
@@ -540,12 +540,11 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     return false;
   }
 
-  // TODO(crbug.com/1447327) We should return color(srgb ... ) colors for
-  // relative colors in legacy color spaces, but a lot of test expectations
-  // need to change for that.
-  // See: https://github.com/w3c/csswg-drafts/issues/8444
   result = Color::FromColorSpace(color_space_, channels_[0], channels_[1],
                                  channels_[2], alpha_);
+  if (is_relative_color_ && Color::IsLegacyColorSpace(color_space_)) {
+    result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+  }
   // The parsing was successful, so we need to consume the input.
   input_range = range;
 
