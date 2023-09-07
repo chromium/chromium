@@ -352,7 +352,7 @@ template("generate_jni_impl") {
       }
 
       if (enable_profiling) {
-        args += [ "--enable_profiling" ]
+        args += [ "--enable-profiling" ]
       }
     }
   }
