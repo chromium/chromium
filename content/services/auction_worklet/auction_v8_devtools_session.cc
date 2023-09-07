@@ -60,6 +60,8 @@ class AuctionV8DevToolsSession::BreakpointHandler
     }
   }
 
+  void DetachFromV8Session() { v8_session_ = nullptr; }
+
  private:
   crdtp::DispatchResponse SetInstrumentationBreakpoint(
       const std::string& event_name) override {
@@ -75,8 +77,7 @@ class AuctionV8DevToolsSession::BreakpointHandler
     return crdtp::DispatchResponse::Success();
   }
 
-  const raw_ptr<v8_inspector::V8InspectorSession, DanglingUntriaged>
-      v8_session_;
+  raw_ptr<v8_inspector::V8InspectorSession> v8_session_;
   std::set<std::string> instrumentation_breakpoints_;
   SEQUENCE_CHECKER(v8_sequence_checker_);
 };
@@ -192,6 +193,7 @@ AuctionV8DevToolsSession::AuctionV8DevToolsSession(
 AuctionV8DevToolsSession::~AuctionV8DevToolsSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   std::move(on_delete_callback_).Run(this);
+  breakpoint_handler_->DetachFromV8Session();
   v8_session_.reset();
 }
 

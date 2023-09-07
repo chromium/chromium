@@ -136,7 +136,7 @@ class CONTENT_EXPORT AuctionV8Helper
 
    private:
     friend class AuctionV8Helper;
-    raw_ptr<uint8_t, DanglingUntriaged> buffer_;
+    raw_ptr<uint8_t> buffer_;
     size_t size_;
   };
 
