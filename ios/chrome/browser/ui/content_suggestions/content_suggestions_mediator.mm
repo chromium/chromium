@@ -88,6 +88,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
@@ -339,7 +340,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     [sceneState addObserver:self];
     _browser = browser;
 
-    if (IsSafetyCheckMagicStackEnabled()) {
+    if (IsSafetyCheckMagicStackEnabled() &&
+        !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
       IOSChromeSafetyCheckManager* safetyCheckManager =
           IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
               browser->GetBrowserState());
@@ -462,6 +464,25 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)disableTabResumption {
   tab_resumption_prefs::DisableTabResumption(_localState);
   [self hideTabResumption];
+}
+
+- (void)disableSafetyCheck {
+  safety_check_prefs::DisableSafetyCheckInMagicStack(_localState);
+
+  ContentSuggestionsModuleType type;
+  int checkIssuesCount = CheckIssuesCount(_safetyCheckState);
+  if (checkIssuesCount > 2) {
+    type = ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow;
+  } else if (checkIssuesCount > 1) {
+    type = ContentSuggestionsModuleType::kSafetyCheckMultiRow;
+  } else {
+    type = ContentSuggestionsModuleType::kSafetyCheck;
+  }
+
+  MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
+  change.old_module = type;
+  change.index = [self indexForMagicStackModule:type];
+  [self.consumer updateMagicStackOrder:change];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -1034,7 +1055,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [magicStackModules
       addObject:@(int(ContentSuggestionsModuleType::kShortcuts))];
 
-  if (IsSafetyCheckMagicStackEnabled()) {
+  if (IsSafetyCheckMagicStackEnabled() &&
+      !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
     [self addSafetyCheckToMagicStackOrder:magicStackModules];
   }
 
@@ -1054,7 +1076,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     ContentSuggestionsModuleType moduleType =
         (ContentSuggestionsModuleType)[moduleNumber intValue];
     if (moduleType == ContentSuggestionsModuleType::kSafetyCheck) {
-      if (!IsSafetyCheckMagicStackEnabled()) {
+      if (!IsSafetyCheckMagicStackEnabled() ||
+          safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
         continue;
       }
       // If ShouldHideIrrelevantModules() is enabled and it is not the first
@@ -1420,6 +1443,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)runningStateChanged:(RunningSafetyCheckState)state {
   _safetyCheckState.runningState = state;
+
+  if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
+    // Safety Check can be disabled by long-pressing the module, so
+    // SafetyCheckManager can still be running and returning results even after
+    // disabling.
+    return;
+  }
 
   // Ensures the consumer gets the latest Safety Check state only when the
   // running state changes; this avoids calling the consumer every time an

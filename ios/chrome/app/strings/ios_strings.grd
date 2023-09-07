@@ -5296,6 +5296,12 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE" desc="This string is on a sign-in page, shown several weeks after the user has installed Chrome. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
         Get your bookmarks, passwords, and more on all your devices.
       </message>
+      <message name="IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu of the module that presents the Safety Check.">
+          This card shows any privacy or security issues that Safety Check automatically detects for you.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_DESCRIPTION" desc="Descripiton for the long-press context menu of the module that presents the Safety Check.">
+        Hide "Safety Check"
+      </message>
       <message name="IDS_IOS_SAFETY_CHECK_TITLE_ALL_SAFE" desc="Tag label title displayed for the Safety Check module in the Magic Stack when there are no Safety Check issue found. [iOS only]">
         Your Browser Looks Good
       </message>
