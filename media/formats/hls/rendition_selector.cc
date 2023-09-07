@@ -223,7 +223,7 @@ RenditionSelector::PreferredVariants RenditionSelector::GetPreferredVariants(
     acceptable_resolutions = acceptable_bitrates;
   }
 
-  PreferredVariants result = {nullptr, nullptr};
+  PreferredVariants result;
 
   // This could be audio only, so it's not quite an error yet. Lets grab the
   // optimal audio variant, and try that. If that's also null, then we have no

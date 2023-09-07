@@ -82,11 +82,11 @@ class MEDIA_EXPORT RenditionSelector {
   struct PreferredVariants {
     // Use this playlist for video, and use it for audio too if the audio-only
     // variant is nullptr.
-    raw_ptr<const VariantStream> selected_variant;
+    raw_ptr<const VariantStream> selected_variant = nullptr;
 
     // Use this variant for audio content if it is not nullptr.
-    raw_ptr<const VariantStream> audio_override_variant;
-    raw_ptr<const AudioRendition> audio_override_rendition;
+    raw_ptr<const VariantStream> audio_override_variant = nullptr;
+    raw_ptr<const AudioRendition> audio_override_rendition = nullptr;
   };
 
   RenditionSelector(scoped_refptr<MultivariantPlaylist> playlist,
