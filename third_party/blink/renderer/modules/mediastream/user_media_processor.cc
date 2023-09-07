@@ -813,6 +813,9 @@ void UserMediaProcessor::SetupVideoInput() {
   stream_controls->dynamic_surface_switching_requested =
       request->dynamic_surface_switching_requested();
 
+  stream_controls->exclude_monitor_type_surfaces =
+      request->exclude_monitor_type_surfaces();
+
   if (blink::IsDeviceMediaType(video_controls.stream_type)) {
     GetMediaDevicesDispatcher()->GetVideoInputCapabilities(
         WTF::BindOnce(&UserMediaProcessor::SelectVideoDeviceSettings,

@@ -2425,6 +2425,15 @@
       status: "test",
       base_feature: "none",
     },
+    {
+      // When a Web application calls getDisplayMedia() and asks for video,
+      // allow a hint to be provided as to whether it prefers that the user
+      // has the option to choose display surfaces whose type is monitor.
+      //
+      // https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-monitortypesurfaces
+      name: "MonitorTypeSurfaces",
+      status: "stable",
+    },
     // crbug.com/1446498: This feature is being used for the deprecation of
     // Mutation Events.
     {

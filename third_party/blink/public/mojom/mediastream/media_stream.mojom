@@ -105,7 +105,7 @@ struct StreamSelectionInfo {
   mojo_base.mojom.UnguessableToken? session_id;
 };
 
-// See public/common/media_stream_request.h.
+// See public/common/mediastream/media_stream_request.h.
 struct MediaStreamDevice {
   MediaStreamType type;
   string id;
@@ -119,13 +119,13 @@ struct MediaStreamDevice {
   media.mojom.DisplayMediaInformation? display_media_info;
 };
 
-// See common/media/media_stream_controls.h.
+// See common/mediastream/media_stream_controls.h.
 struct TrackControls {
   MediaStreamType stream_type;
   string device_id;
 };
 
-// See common/media/media_stream_controls.h.
+// See common/mediastream/media_stream_controls.h.
 struct StreamControls {
   TrackControls audio;
   TrackControls video;
@@ -138,6 +138,7 @@ struct StreamControls {
   bool request_all_screens;
   PreferredDisplaySurface preferred_display_surface;
   bool dynamic_surface_switching_requested;
+  bool exclude_monitor_type_surfaces;
 };
 
 // Results returned by a successful GetOpenDevice call.

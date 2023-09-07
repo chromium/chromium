@@ -798,6 +798,12 @@ MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
     if (controls.disable_local_echo) {
       return bad_message::MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED;
     }
+
+    if (controls.exclude_monitor_type_surfaces &&
+        controls.preferred_display_surface ==
+            blink::mojom::PreferredDisplaySurface::MONITOR) {
+      return bad_message::MSDH_EXCLUDE_MONITORS_BUT_PREFERRED_MONITOR_REQUESTED;
+    }
   }
 
   return absl::nullopt;

@@ -314,8 +314,10 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   DCHECK(web_contents);
 
   std::vector<DesktopMediaList::Type> media_types{
-      DesktopMediaList::Type::kWebContents, DesktopMediaList::Type::kWindow,
-      DesktopMediaList::Type::kScreen};
+      DesktopMediaList::Type::kWebContents, DesktopMediaList::Type::kWindow};
+  if (!pending_request.request.exclude_monitor_type_surfaces) {
+    media_types.push_back(DesktopMediaList::Type::kScreen);
+  }
   if (pending_request.request.video_type ==
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
     media_types.insert(media_types.begin(),

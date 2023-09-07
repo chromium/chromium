@@ -3097,6 +3097,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.GetDisplayMedia.Constraints.MonitorTypeSurfaces"
+    enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2024-09-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>fbeaufort@chromium.org</owner>
+  <summary>
+    Records whether getDisplayMedia was called with the monitorTypeSurfaces
+    constraint.
+  </summary>
+</histogram>
+
 <histogram name="Media.GetDisplayMedia.Constraints.SelfBrowserSurface"
     enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2023-05-07">
   <owner>eladalon@chromium.org</owner>

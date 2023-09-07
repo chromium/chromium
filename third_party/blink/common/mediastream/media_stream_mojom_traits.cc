@@ -76,6 +76,7 @@ bool StructTraits<blink::mojom::StreamControlsDataView, blink::StreamControls>::
   out->preferred_display_surface = input.preferred_display_surface();
   out->dynamic_surface_switching_requested =
       input.dynamic_surface_switching_requested();
+  out->exclude_monitor_type_surfaces = input.exclude_monitor_type_surfaces();
   return true;
 }
 

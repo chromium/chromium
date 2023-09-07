@@ -137,6 +137,11 @@ struct BLINK_COMMON_EXPORT
     return controls.dynamic_surface_switching_requested;
   }
 
+  static bool exclude_monitor_type_surfaces(
+      const blink::StreamControls& controls) {
+    return controls.exclude_monitor_type_surfaces;
+  }
+
   static bool Read(blink::mojom::StreamControlsDataView input,
                    blink::StreamControls* out);
 };

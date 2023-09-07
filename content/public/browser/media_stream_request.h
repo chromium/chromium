@@ -97,9 +97,12 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // tabs offered to the user.
   bool exclude_self_browser_surface = false;
 
+  // Flag to indicate whether monitor type surfaces (screens) should be offered
+  // to the user.
+  bool exclude_monitor_type_surfaces = false;
+
   // Flag to indicate a preference for which display surface type (screen,
-  // windows, or tabs) should be most prominently offered to the user. The
-  // browser may disregard this preference.
+  // windows, or tabs) should be most prominently offered to the user.
   blink::mojom::PreferredDisplaySurface preferred_display_surface =
       blink::mojom::PreferredDisplaySurface::NO_PREFERENCE;
 

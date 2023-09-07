@@ -363,9 +363,10 @@ void SendVideoCaptureLogMessage(const std::string& message) {
 // Returns MediaStreamDevices for getDisplayMedia() calls.
 // Returns a video device built with DesktopMediaID with fake initializers if
 // |kUseFakeDeviceForMediaStream| is set and |preferred_display_surface| is no
-// preference. Otherwise, if |preferred_display_surface| specifies a screen,
-// window, or tab, returns a video device with matching DesktopMediaID. Returns
-// a video device with default DesktopMediaID otherwise.
+// preference. If |exclude_monitor_type_surfaces| is true, returns tab
+// DesktopMediaID. Otherwise, if |preferred_display_surface| specifies a screen,
+// window, or tab, returns a video device with matching DesktopMediaID
+// Returns a video device with default DesktopMediaID otherwise.
 // Returns an audio device with default device parameters.
 // If |kUseFakeDeviceForMediaStream| specifies a
 // browser window, use |render_process_id| and |render_frame_id| as the browser
@@ -375,7 +376,8 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
     bool request_audio,
     int render_process_id,
     int render_frame_id,
-    blink::mojom::PreferredDisplaySurface preferred_display_surface) {
+    blink::mojom::PreferredDisplaySurface preferred_display_surface,
+    bool exclude_monitor_type_surfaces) {
   MediaStreamDevices devices;
   DesktopMediaID::Type desktop_media_type = DesktopMediaID::TYPE_SCREEN;
   DesktopMediaID::Id desktop_media_id_id = DesktopMediaID::kNullId;
@@ -412,6 +414,10 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
           break;
       }
     }
+  }
+  if (exclude_monitor_type_surfaces &&
+      desktop_media_type == DesktopMediaID::TYPE_SCREEN) {
+    preferred_display_surface = blink::mojom::PreferredDisplaySurface::BROWSER;
   }
   switch (preferred_display_surface) {
     case blink::mojom::PreferredDisplaySurface::NO_PREFERENCE:
@@ -652,6 +658,8 @@ class MediaStreamManager::DeviceRequest {
         stream_controls_.exclude_self_browser_surface;
     ui_request_->preferred_display_surface =
         stream_controls_.preferred_display_surface;
+    ui_request_->exclude_monitor_type_surfaces =
+        stream_controls_.exclude_monitor_type_surfaces;
   }
 
   // Creates a tab capture specific MediaStreamRequest object that is used by
@@ -4254,7 +4262,8 @@ std::unique_ptr<MediaStreamUIProxy> MediaStreamManager::MakeFakeUIProxy(
         request->video_type(),
         request->audio_type() == MediaStreamType::DISPLAY_AUDIO_CAPTURE,
         request->requesting_process_id, request->requesting_frame_id,
-        request->stream_controls().preferred_display_surface);
+        request->stream_controls().preferred_display_surface,
+        request->stream_controls().exclude_monitor_type_surfaces);
   } else if (request->video_type() ==
              MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE) {
     // Cache the |label| in the device name field, for unit test purpose only.

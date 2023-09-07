@@ -99,6 +99,13 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
     return request;
   }
 
+  content::MediaStreamRequest MakeExcludeMonitorTypeSurfacesRequest(
+      bool exclude_monitor_type_surfaces) {
+    content::MediaStreamRequest request = MakeRequest(/*request_audio=*/false);
+    request.exclude_monitor_type_surfaces = exclude_monitor_type_surfaces;
+    return request;
+  }
+
   content::MediaResponseCallback MakeCallback(
       base::RunLoop* wait_loop,
       blink::mojom::MediaStreamRequestResult* request_result,
@@ -829,4 +836,38 @@ TEST_P(DisplayMediaAccessHandlerTestWithSelfBrowserSurface,
       &wait_loop, &result, devices);
   wait_loop.Run();
   EXPECT_EQ(exclude_self_browser_surface_, IsWebContentsExcluded());
+}
+
+class DisplayMediaAccessHandlerTestWithMonitorTypeSurfaces
+    : public DisplayMediaAccessHandlerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DisplayMediaAccessHandlerTestWithMonitorTypeSurfaces()
+      : exclude_monitor_type_surfaces_(GetParam()) {}
+
+  ~DisplayMediaAccessHandlerTestWithMonitorTypeSurfaces() override = default;
+
+ protected:
+  const bool exclude_monitor_type_surfaces_;
+};
+
+INSTANTIATE_TEST_SUITE_P(_,
+                         DisplayMediaAccessHandlerTestWithMonitorTypeSurfaces,
+                         ::testing::Bool());
+
+TEST_P(DisplayMediaAccessHandlerTestWithMonitorTypeSurfaces,
+       CheckMonitorTypeSurfacesAreExcluded) {
+  SetTestFlags({{/*expect_screens=*/!exclude_monitor_type_surfaces_,
+                 /*expect_windows=*/true,
+                 /*expect_tabs=*/true, /*expect_current_tab=*/false,
+                 /*expect_audio=*/false, content::DesktopMediaID(),
+                 /*cancelled=*/false}});
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  base::RunLoop wait_loop;
+
+  HandleRequest(
+      MakeExcludeMonitorTypeSurfacesRequest(exclude_monitor_type_surfaces_),
+      &wait_loop, &result, devices);
+  wait_loop.Run();
 }

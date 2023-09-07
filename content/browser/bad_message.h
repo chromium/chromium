@@ -331,6 +331,7 @@ enum BadMessageReason {
   PERMISSION_SERVICE_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE = 304,
   RFH_FOCUS_ACROSS_FENCED_BOUNDARY = 305,
   RFH_RECEIVED_INVALID_SHARED_STORAGE_WRITABLE_ATTRIBUTE = 306,
+  MSDH_EXCLUDE_MONITORS_BUT_PREFERRED_MONITOR_REQUESTED = 307,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

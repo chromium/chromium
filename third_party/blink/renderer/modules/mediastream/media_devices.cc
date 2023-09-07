@@ -330,6 +330,9 @@ MediaStreamConstraints* ToMediaStreamConstraints(
   if (source->hasSurfaceSwitching()) {
     constraints->setSurfaceSwitching(source->surfaceSwitching());
   }
+  if (source->hasMonitorTypeSurfaces()) {
+    constraints->setMonitorTypeSurfaces(source->monitorTypeSurfaces());
+  }
   return constraints;
 }
 
