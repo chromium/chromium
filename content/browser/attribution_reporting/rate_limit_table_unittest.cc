@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -34,7 +35,6 @@
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -1381,7 +1381,7 @@ class RateLimitTableFieldTrialLimitsTest : public RateLimitTableTest {
  public:
   RateLimitTableFieldTrialLimitsTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kConversionMeasurement,
+        {{attribution_reporting::features::kConversionMeasurement,
           {{"max_reporting_origins_per_source_reporting_site", "2"}}}},
         /*disabled_features=*/{});
   }

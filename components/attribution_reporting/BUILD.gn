@@ -22,6 +22,19 @@ mojom("mojom") {
   disallow_interfaces = true
 }
 
+component("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//base" ]
+
+  defines = [ "IS_ATTRIBUTION_REPORTING_FEATURES_IMPL" ]
+}
+
 component("attribution_reporting") {
   sources = [
     "aggregatable_dedup_key.cc",
@@ -39,8 +52,6 @@ component("attribution_reporting") {
     "event_report_windows.h",
     "event_trigger_data.cc",
     "event_trigger_data.h",
-    "features.cc",
-    "features.h",
     "filters.cc",
     "filters.h",
     "os_registration.cc",
@@ -60,6 +71,7 @@ component("attribution_reporting") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":features",
     ":mojom",
     ":source_type_mojom",
     "//base",

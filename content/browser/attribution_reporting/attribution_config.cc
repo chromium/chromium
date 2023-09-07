@@ -8,55 +8,61 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/features.h"
+#include "components/attribution_reporting/features.h"
 
 namespace content {
 
 namespace {
 
 const base::FeatureParam<int> kMaxReportingOriginsPerSiteParam{
-    &blink::features::kConversionMeasurement,
+    &attribution_reporting::features::kConversionMeasurement,
     "max_reporting_origins_per_source_reporting_site",
     AttributionConfig::RateLimitConfig::
         kDefaultMaxReportingOriginsPerSourceReportingSite};
 
 const base::FeatureParam<int> kMaxAttributionsPerEventSourceParam{
-    &blink::features::kConversionMeasurement,
+    &attribution_reporting::features::kConversionMeasurement,
     "max_attributions_per_event_source",
     AttributionConfig::EventLevelLimit::kDefaultMaxAttributionsPerEventSource};
 
 const base::FeatureParam<base::TimeDelta> kFirstNavigationReportWindowDeadline{
-    &blink::features::kConversionMeasurement, "first_report_window_deadline",
+    &attribution_reporting::features::kConversionMeasurement,
+    "first_report_window_deadline",
     AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline};
 
 const base::FeatureParam<base::TimeDelta> kSecondNavigationReportWindowDeadline{
-    &blink::features::kConversionMeasurement, "second_report_window_deadline",
+    &attribution_reporting::features::kConversionMeasurement,
+    "second_report_window_deadline",
     AttributionConfig::EventLevelLimit::kDefaultSecondReportWindowDeadline};
 
 const base::FeatureParam<base::TimeDelta> kFirstEventReportWindowDeadline{
-    &blink::features::kConversionMeasurement,
+    &attribution_reporting::features::kConversionMeasurement,
     "first_event_report_window_deadline",
     AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline};
 
 const base::FeatureParam<base::TimeDelta> kSecondEventReportWindowDeadline{
-    &blink::features::kConversionMeasurement,
+    &attribution_reporting::features::kConversionMeasurement,
     "second_event_report_window_deadline",
     AttributionConfig::EventLevelLimit::kDefaultSecondReportWindowDeadline};
 
 const base::FeatureParam<base::TimeDelta> kAggregateReportMinDelay{
-    &blink::features::kConversionMeasurement, "aggregate_report_min_delay",
+    &attribution_reporting::features::kConversionMeasurement,
+    "aggregate_report_min_delay",
     AttributionConfig::AggregateLimit::kDefaultMinDelay};
 
 const base::FeatureParam<base::TimeDelta> kAggregateReportDelaySpan{
-    &blink::features::kConversionMeasurement, "aggregate_report_delay_span",
+    &attribution_reporting::features::kConversionMeasurement,
+    "aggregate_report_delay_span",
     AttributionConfig::AggregateLimit::kDefaultDelaySpan};
 
 const base::FeatureParam<double> kNavigationMaxInfoGain{
-    &blink::features::kConversionMeasurement, "navigation_max_info_gain",
+    &attribution_reporting::features::kConversionMeasurement,
+    "navigation_max_info_gain",
     AttributionConfig::EventLevelLimit::kDefaultMaxNavigationInfoGain};
 
 const base::FeatureParam<double> kEventMaxInfoGain{
-    &blink::features::kConversionMeasurement, "event_max_info_gain",
+    &attribution_reporting::features::kConversionMeasurement,
+    "event_max_info_gain",
     AttributionConfig::EventLevelLimit::kDefaultMaxEventInfoGain};
 
 bool AreReportWindowDeadlinesValid(

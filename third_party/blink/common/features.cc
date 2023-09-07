@@ -531,11 +531,6 @@ BASE_FEATURE(kContentCaptureConstantStreaming,
              "ContentCaptureConstantStreaming",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the Conversion Measurement API infrastructure is enabled.
-BASE_FEATURE(kConversionMeasurement,
-             "ConversionMeasurement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCorrectFloatExtensionTestForWebGL,
              "CorrectFloatExtensionTestForWebGL",
              base::FEATURE_ENABLED_BY_DEFAULT);

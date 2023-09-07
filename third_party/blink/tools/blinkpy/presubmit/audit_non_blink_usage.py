@@ -1890,7 +1890,15 @@ _CONFIG = [
             'third_party/blink/renderer/core/frame/attribution_src_loader.h',
         ],
         'allowed': [
-            'attribution_reporting:.*',
+            'attribution_reporting::.*',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/origin_trials/origin_trial_context.cc',
+        ],
+        'allowed': [
+            'attribution_reporting::features::.*',
         ]
     },
     {

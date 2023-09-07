@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
@@ -539,7 +540,8 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   }
 
   if (trial_name == "AttributionReportingCrossAppWeb") {
-    return base::FeatureList::IsEnabled(features::kConversionMeasurement) &&
+    return base::FeatureList::IsEnabled(
+               attribution_reporting::features::kConversionMeasurement) &&
            base::FeatureList::IsEnabled(
                network::features::kAttributionReportingCrossAppWeb);
   }
@@ -571,8 +573,10 @@ Vector<OriginTrialFeature> OriginTrialContext::RestrictedFeaturesForTrial(
         !base::FeatureList::IsEnabled(features::kBrowsingTopicsDocumentAPI)) {
       restricted.push_back(OriginTrialFeature::kTopicsDocumentAPI);
     }
-    if (!base::FeatureList::IsEnabled(features::kConversionMeasurement))
+    if (!base::FeatureList::IsEnabled(
+            attribution_reporting::features::kConversionMeasurement)) {
       restricted.push_back(OriginTrialFeature::kAttributionReporting);
+    }
     if (!base::FeatureList::IsEnabled(features::kFencedFrames))
       restricted.push_back(OriginTrialFeature::kFencedFrames);
     if (!base::FeatureList::IsEnabled(features::kSharedStorageAPI))

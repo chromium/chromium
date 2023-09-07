@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
@@ -20,7 +21,6 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 namespace content {
@@ -28,19 +28,19 @@ namespace content {
 namespace {
 
 const base::FeatureParam<base::TimeDelta> kFirstNavigationReportWindowDeadline{
-    &blink::features::kConversionMeasurement, "first_report_window_deadline",
-    base::Days(2)};
+    &attribution_reporting::features::kConversionMeasurement,
+    "first_report_window_deadline", base::Days(2)};
 
 const base::FeatureParam<base::TimeDelta> kSecondNavigationReportWindowDeadline{
-    &blink::features::kConversionMeasurement, "second_report_window_deadline",
-    base::Days(7)};
+    &attribution_reporting::features::kConversionMeasurement,
+    "second_report_window_deadline", base::Days(7)};
 
 const base::FeatureParam<base::TimeDelta> kFirstEventReportWindowDeadline{
-    &blink::features::kConversionMeasurement,
+    &attribution_reporting::features::kConversionMeasurement,
     "first_event_report_window_deadline", base::Days(2)};
 
 const base::FeatureParam<base::TimeDelta> kSecondEventReportWindowDeadline{
-    &blink::features::kConversionMeasurement,
+    &attribution_reporting::features::kConversionMeasurement,
     "second_event_report_window_deadline", base::Days(7)};
 
 // Ensure that both version numbers are updated together to prevent crashes on

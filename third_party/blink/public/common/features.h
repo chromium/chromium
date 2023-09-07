@@ -242,8 +242,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConsumeCodeCacheOffThread);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kContentCaptureConstantStreaming);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConversionMeasurement);
-
 // Enable the correction testing for float extension for webgl version 1.
 // This is simply a killswitch in case we need to restore original behavior.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCorrectFloatExtensionTestForWebGL);

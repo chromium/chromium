@@ -387,7 +387,7 @@ AttributionStorageDelegateImpl::GetNullAggregatableReports(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(
-          attribution_reporting::
+          attribution_reporting::features::
               kAttributionReportingNullAggregatableReports)) {
     return {};
   }

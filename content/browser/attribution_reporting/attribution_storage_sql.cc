@@ -37,6 +37,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
@@ -74,7 +75,6 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
@@ -96,7 +96,7 @@ const base::FilePath::CharType kDatabasePath[] =
 constexpr int64_t kUnsetRecordId = -1;
 
 const base::FeatureParam<bool> kSourceDeactivationAfterFiltering{
-    &blink::features::kConversionMeasurement,
+    &attribution_reporting::features::kConversionMeasurement,
     "source_deactivation_after_filtering", false};
 
 void RecordInitializationStatus(

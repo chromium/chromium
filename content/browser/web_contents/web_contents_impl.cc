@@ -46,6 +46,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/attribution_reporting/features.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
@@ -3348,7 +3349,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
 
   // AttributionHost must be created after `view_->CreateView()` is called as it
   // may invoke `WebContentsAndroid::AddObserver()`.
-  if (base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
+  if (base::FeatureList::IsEnabled(
+          attribution_reporting::features::kConversionMeasurement)) {
     AttributionHost::CreateForWebContents(this);
   }
 

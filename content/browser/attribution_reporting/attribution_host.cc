@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
@@ -43,7 +44,6 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
@@ -105,7 +105,8 @@ AttributionHost::AttributionHost(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       WebContentsUserData<AttributionHost>(*web_contents),
       receivers_(web_contents, this) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kConversionMeasurement));
+  DCHECK(base::FeatureList::IsEnabled(
+      attribution_reporting::features::kConversionMeasurement));
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(

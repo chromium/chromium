@@ -34,6 +34,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -57,7 +58,6 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1314,7 +1314,7 @@ TEST_F(AttributionStorageTest,
        AttributeFalseImpression_OtherSourceDeactivated) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kConversionMeasurement,
+      attribution_reporting::features::kConversionMeasurement,
       {{"source_deactivation_after_filtering", "true"}});
 
   storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());

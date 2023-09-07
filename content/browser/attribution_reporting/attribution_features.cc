@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "third_party/blink/public/common/features.h"
+#include "components/attribution_reporting/features.h"
 
 namespace content {
 
@@ -22,7 +22,7 @@ BASE_FEATURE(kAttributionVerboseDebugReporting,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kVTCEarlyReportingWindows(
-    &blink::features::kConversionMeasurement,
+    &attribution_reporting::features::kConversionMeasurement,
     "vtc_early_reporting_windows",
     false);
 

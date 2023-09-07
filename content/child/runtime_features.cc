@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
+#include "components/attribution_reporting/features.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_features.h"
@@ -697,12 +698,14 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableSharedStorageAPIM118(false);
   }
 
-  if (!base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
+  if (!base::FeatureList::IsEnabled(
+          attribution_reporting::features::kConversionMeasurement)) {
     LOG_IF(WARNING, WebRuntimeFeatures::IsAttributionReportingEnabled())
         << "AttributionReporting cannot be enabled in this "
            "configuration. Use --"
         << switches::kEnableFeatures << "="
-        << blink::features::kConversionMeasurement.name << " in addition.";
+        << attribution_reporting::features::kConversionMeasurement.name
+        << " in addition.";
     WebRuntimeFeatures::EnableAttributionReporting(false);
   }
 

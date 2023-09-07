@@ -189,7 +189,7 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   auto source_registration_time_config =
       mojom::SourceRegistrationTimeConfig::kInclude;
   if (base::FeatureList::IsEnabled(
-          kAttributionReportingNullAggregatableReports)) {
+          features::kAttributionReportingNullAggregatableReports)) {
     ASSIGN_OR_RETURN(source_registration_time_config,
                      ParseAggregatableSourceRegistrationTime(registration.Find(
                          kAggregatableSourceRegistrationTime)));
@@ -288,7 +288,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   }
 
   if (base::FeatureList::IsEnabled(
-          kAttributionReportingNullAggregatableReports)) {
+          features::kAttributionReportingNullAggregatableReports)) {
     dict.Set(kAggregatableSourceRegistrationTime,
              SerializeAggregatableSourceRegistrationTime(
                  source_registration_time_config));
