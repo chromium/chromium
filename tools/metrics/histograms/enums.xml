@@ -53839,6 +53839,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="5" label="Handwriting"/>
   <int value="6" label="Emoji"/>
   <int value="7" label="StylusHandwriting"/>
+  <int value="8" label="Multipaste"/>
+  <int value="9" label="unknown"/>
 </enum>
 
 <enum name="IMEVKMode">
