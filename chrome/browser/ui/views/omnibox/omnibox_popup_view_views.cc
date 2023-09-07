@@ -258,6 +258,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     views::Widget* popup_parent = location_bar_view_->GetWidget();
 
     // If the popup is currently closed, we need to create it.
+    popup_create_start_time_ = base::TimeTicks::Now();
     popup_ = (new AutocompletePopupWidget(popup_parent))->AsWeakPtr();
     popup_->InitOmniboxPopup(popup_parent);
     // Third-party software such as DigitalPersona identity verification can
@@ -493,6 +494,29 @@ void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,
   }
 
   UpdatePopupAppearance();
+}
+
+void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                      bool visible) {
+  if (!popup_ || widget != popup_.get()) {
+    return;
+  }
+
+  if (visible && popup_create_start_time_.has_value()) {
+    // Use the popup's compositor. The next presentation time will correspond to
+    // the first visual presentation of the bubble's content after the Widget
+    // has been created.
+    popup_->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+        base::BindOnce(
+            [](base::TimeTicks popup_create_start_time,
+               base::TimeTicks presentation_timestamp) {
+              base::UmaHistogramTimes(
+                  "Omnibox.Views.PopupFirstPaint",
+                  presentation_timestamp - popup_create_start_time);
+            },
+            popup_create_start_time_.value()));
+    popup_create_start_time_.reset();
+  }
 }
 
 gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
