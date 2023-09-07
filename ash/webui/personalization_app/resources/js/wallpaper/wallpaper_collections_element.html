@@ -132,6 +132,20 @@
               tabindex$="[[tabIndex]]">
           </wallpaper-grid-item>
         </template>
+        <template is="dom-if" if="[[isSeaPenTile_(item)]]">
+          <wallpaper-grid-item
+              data-sea-pen
+              aria-posinset$="[[getAriaIndex_(index)]]"
+              disabled="[[!isSelectableTile_(item)]]"
+              index="[[index]]"
+              on-wallpaper-grid-item-selected="onCollectionSelected_"
+              primary-text="Sea Pen"
+              primary-text="[[item.name]]"
+              role="option"
+              src="[[item.preview]]"
+              tabindex$="[[tabIndex]]">
+          </wallpaper-grid-item>
+        </template>
         <template is="dom-if" if="[[isGooglePhotosTile_(item)]]">
           <wallpaper-grid-item
               data-google-photos

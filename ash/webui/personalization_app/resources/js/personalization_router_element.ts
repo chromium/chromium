@@ -27,6 +27,7 @@ export enum Paths {
   GOOGLE_PHOTOS_COLLECTION = '/wallpaper/google-photos',
   LOCAL_COLLECTION = '/wallpaper/local',
   ROOT = '/',
+  SEA_PEN_COLLECTION = '/wallpaper/sea-pen',
   USER = '/user',
 }
 

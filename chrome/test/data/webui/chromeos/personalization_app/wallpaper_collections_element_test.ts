@@ -490,4 +490,26 @@ suite('WallpaperCollectionsElementTest', function() {
         expectedTilesAfterLoading, getTiles(),
         'expected tiles match the second time');
   });
+
+  test('no SeaPen tile for ineligible users', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: false});
+    wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const seaPenTile = wallpaperCollectionsElement.shadowRoot!
+                           .querySelector<WallpaperGridItemElement>(
+                               `${WallpaperGridItemElement.is}[data-sea-pen]`);
+    assertFalse(!!seaPenTile, 'SeaPen tile is not present');
+  });
+
+  test('shows SeaPen tile for eligible users', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const seaPenTile = wallpaperCollectionsElement.shadowRoot!
+                           .querySelector<WallpaperGridItemElement>(
+                               `${WallpaperGridItemElement.is}[data-sea-pen]`);
+    assertTrue(!!seaPenTile, 'SeaPen tile is present');
+  });
 });

@@ -22,7 +22,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
+import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isSeaPenEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
@@ -36,12 +36,14 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 const kGooglePhotosCollectionId = 'google_photos_';
 const kLocalCollectionId = 'local_';
+const kSeaPenId = 'sea_pen_';
 
 enum TileType {
   IMAGE_GOOGLE_PHOTOS = 'image_google_photos',
   IMAGE_LOCAL = 'image_local',
   IMAGE_ONLINE = 'image_online',
   LOADING = 'loading',
+  SEA_PEN = 'sea_pen',
 }
 
 interface LoadingTile {
@@ -55,6 +57,14 @@ interface GooglePhotosTile {
   name: string;
   type: TileType.IMAGE_GOOGLE_PHOTOS;
   preview: [Url];
+}
+
+interface SeaPenTile {
+  disabled: boolean;
+  id: typeof kSeaPenId;
+  name: string;
+  preview: [Url];
+  type: TileType.SEA_PEN;
 }
 
 interface LocalTile {
@@ -76,7 +86,7 @@ interface OnlineTile {
   type: TileType.IMAGE_ONLINE;
 }
 
-type Tile = LoadingTile|GooglePhotosTile|LocalTile|OnlineTile;
+type Tile = LoadingTile|GooglePhotosTile|LocalTile|OnlineTile|SeaPenTile;
 
 // "regular" backdrop collections are displayed differently than the special
 // "timeOfDay" wallpaper collection. Split them to make them easier to handle.
@@ -208,6 +218,17 @@ function getOnlineTile(
   };
 }
 
+function getSeaPenTile(): SeaPenTile {
+  return {
+    disabled: false,
+    id: kSeaPenId,
+    name: 'Sea Pen',
+    type: TileType.SEA_PEN,
+    // TODO(b/299359804): Replace with the real preview.
+    preview: [{url: 'chrome://personalization/images/google_photos.svg'}],
+  };
+}
+
 function getTemporaryBackdropCollectionId(index: number) {
   return `backdrop_collection_${index}`;
 }
@@ -303,6 +324,11 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
             currentIndex++;
           }
 
+          if (isSeaPenEnabled()) {
+            placeholders[currentIndex].id = kSeaPenId;
+            currentIndex++;
+          }
+
           // Local images tile.
           placeholders[currentIndex].id = kLocalCollectionId;
           currentIndex++;
@@ -335,6 +361,13 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
           return isPersonalizationJellyEnabled();
         },
       },
+
+      isSeaPenEnabled_: {
+        type: Boolean,
+        value() {
+          return isSeaPenEnabled();
+        },
+      },
     };
   }
 
@@ -345,6 +378,7 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
   private imagesLoading_: Record<string, boolean>;
   private imageCounts_: Record<string, number|null>;
   private googlePhotosEnabled_: GooglePhotosEnablementState|undefined;
+  private seaPenEnabled_: boolean;
   private localImages_: Array<FilePath|DefaultImageSymbol>|null;
   private localImagesLoading_: boolean;
   private localImageData_: Record<string|DefaultImageSymbol, Url>;
@@ -396,6 +430,7 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     if (isGooglePhotosIntegrationEnabled()) {
       fetchGooglePhotosEnabled(getWallpaperProvider(), this.getStore());
     }
+    this.setSeaPenTile_();
   }
 
   /**
@@ -407,7 +442,8 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
   private getFirstRegularBackdropTileIndex(): number {
     const firstBackdropIndex = this.tiles_.findIndex(
         tile => tile.id !== kLocalCollectionId &&
-            tile.id !== kGooglePhotosCollectionId && !isTimeOfDay(tile));
+            tile.id !== kGooglePhotosCollectionId && !isTimeOfDay(tile) &&
+            tile.id !== kSeaPenId);
     assert(
         firstBackdropIndex > 0,
         'first backdrop index must always be greater than 0');
@@ -584,6 +620,16 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     }
   }
 
+  private setSeaPenTile_() {
+    if (!isSeaPenEnabled()) {
+      return;
+    }
+    const tile = getSeaPenTile();
+    const index = this.tiles_.findIndex(tile => tile.id === kSeaPenId);
+    assert(index >= 0, `${kSeaPenId} not found`);
+    this.set(`tiles_.${index}`, tile);
+  }
+
   /**
    * Called with updated local image list or local image thumbnail data when
    * either of those properties changes.
@@ -622,6 +668,10 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
         PersonalizationRouterElement.instance().goToRoute(
             Paths.LOCAL_COLLECTION);
         return;
+      case kSeaPenId:
+        PersonalizationRouterElement.instance().goToRoute(
+            Paths.SEA_PEN_COLLECTION);
+        return;
       default:
         assert(
             isNonEmptyArray(this.collections_), 'collections array required');
@@ -639,6 +689,10 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
 
   private isLocalTile_(item: Tile|null): item is LocalTile {
     return !!item && item.type === TileType.IMAGE_LOCAL;
+  }
+
+  private isSeaPenTile_(item: Tile|null): item is SeaPenTile {
+    return !!item && item.type === TileType.SEA_PEN;
   }
 
   private isOnlineTile_(item: Tile|null): item is OnlineTile {

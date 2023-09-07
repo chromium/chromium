@@ -410,4 +410,18 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         assertEquals(Paths.AMBIENT, path);
         assertDeepEquals({}, queryParams);
       });
+
+  test('show breadcrumbs for SeaPen', async () => {
+    breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+      'path': Paths.SEA_PEN_COLLECTION,
+    });
+
+    const breadcrumbContainer =
+        breadcrumbElement.shadowRoot!.getElementById('selector');
+    assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+    assertBreadcrumbs(breadcrumbContainer, [
+      breadcrumbElement.i18n('wallpaperLabel'),
+      'Sea Pen',
+    ]);
+  });
 });

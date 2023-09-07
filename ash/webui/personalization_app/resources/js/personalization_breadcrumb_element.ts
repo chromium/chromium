@@ -204,6 +204,10 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         breadcrumbs.push(this.i18n('myImagesLabel'));
         break;
+      case Paths.SEA_PEN_COLLECTION:
+        breadcrumbs.push(this.i18n('wallpaperLabel'));
+        breadcrumbs.push('Sea Pen');
+        break;
       case Paths.USER:
         breadcrumbs.push(this.i18n('avatarLabel'));
         break;
