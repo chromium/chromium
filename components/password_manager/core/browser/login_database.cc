@@ -1950,6 +1950,13 @@ LoginDatabase::SyncMetadataStore::SyncMetadataStore(sql::Database* db)
 
 LoginDatabase::SyncMetadataStore::~SyncMetadataStore() = default;
 
+std::unique_ptr<sync_pb::EntityMetadata>
+LoginDatabase::SyncMetadataStore::GetSyncEntityMetadataForStorageKeyForTest(
+    syncer::ModelType model_type,
+    const std::string& storage_key) {
+  return GetSyncEntityMetadataForStorageKey(model_type, storage_key);
+}
+
 std::unique_ptr<syncer::MetadataBatch>
 LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
     syncer::ModelType model_type) {
@@ -1974,6 +1981,34 @@ LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
     return nullptr;
   }
   return metadata_batch;
+}
+
+std::unique_ptr<sync_pb::EntityMetadata>
+LoginDatabase::SyncMetadataStore::GetSyncEntityMetadataForStorageKey(
+    syncer::ModelType model_type,
+    const std::string& storage_key) {
+  CHECK_EQ(model_type, syncer::PASSWORDS);
+
+  int storage_key_int = 0;
+  if (!base::StringToInt(storage_key, &storage_key_int)) {
+    DLOG(ERROR) << "Invalid storage key. Failed to convert the storage key to "
+                   "an integer.";
+    return nullptr;
+  }
+
+  sql::Statement s(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      base::StringPrintf("SELECT metadata FROM %s WHERE storage_key=?",
+                         kPasswordsSyncEntitiesMetadataTableName)
+          .c_str()));
+  s.BindInt(0, storage_key_int);
+
+  if (!s.Step()) {
+    // No entity metadata found for this storage key.
+    return nullptr;
+  }
+
+  return DecryptAndParseSyncEntityMetadata(s.ColumnString(0));
 }
 
 std::unique_ptr<sync_pb::ModelTypeState>
@@ -2074,9 +2109,23 @@ bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
     return s.Run();
   }
   CHECK_EQ(model_type, syncer::PASSWORDS);
-  bool had_unsynced_deletions = HasUnsyncedPasswordDeletions();
+
+  // This ongoing operation may influence the value returned by
+  // HasUnsyncedPasswordDeletions() only if the storage key being updated
+  // represents a pending deletion AND the new metadata is not (necessary but
+  // not sufficient condition). Because HasUnsyncedPasswordDeletions() may be
+  // expensive, it is evaluated lazily to avoid performance issues.
+  //
+  // Note: No need for an explicit "is unsynced" check: Once the deletion is
+  // committed, the metadata entry is removed.
+  std::unique_ptr<sync_pb::EntityMetadata> previous_metadata =
+      GetSyncEntityMetadataForStorageKey(model_type, storage_key);
+  bool was_unsynced_deletion =
+      previous_metadata && previous_metadata->is_deleted();
+
   bool result = s.Run();
-  if (result && had_unsynced_deletions && !HasUnsyncedPasswordDeletions() &&
+  if (result && was_unsynced_deletion && !metadata.is_deleted() &&
+      !HasUnsyncedPasswordDeletions() &&
       password_deletions_have_synced_callback_) {
     password_deletions_have_synced_callback_.Run(/*success=*/true);
   }
@@ -2105,9 +2154,22 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
     return s.Run();
   }
   CHECK_EQ(model_type, syncer::PASSWORDS);
-  bool had_unsynced_deletions = HasUnsyncedPasswordDeletions();
+
+  // This ongoing operation may influence the value returned by
+  // HasUnsyncedPasswordDeletions() only if the storage key being cleared
+  // represents a pending deletion (necessary but not sufficient condition).
+  // Because HasUnsyncedPasswordDeletions() may be expensive, it is evaluated
+  // lazily to avoid performance issues.
+  //
+  // Note: No need for an explicit "is unsynced" check: Once the deletion is
+  // committed, the metadata entry is removed.
+  std::unique_ptr<sync_pb::EntityMetadata> previous_metadata =
+      GetSyncEntityMetadataForStorageKey(model_type, storage_key);
+  bool was_unsynced_deletion =
+      previous_metadata && previous_metadata->is_deleted();
+
   bool result = s.Run();
-  if (result && had_unsynced_deletions && !HasUnsyncedPasswordDeletions() &&
+  if (result && was_unsynced_deletion && !HasUnsyncedPasswordDeletions() &&
       password_deletions_have_synced_callback_) {
     password_deletions_have_synced_callback_.Run(/*success=*/true);
   }
