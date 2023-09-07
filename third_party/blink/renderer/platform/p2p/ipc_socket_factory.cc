@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc/api/async_dns_resolver.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 
 namespace blink {
@@ -225,21 +226,25 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
 };
 
 // Simple wrapper around P2PAsyncAddressResolver. The main purpose of this
-// class is to send SignalDone, after OnDone callback from
-// P2PAsyncAddressResolver. Libjingle sig slots are not thread safe. In case
-// of MT sig slots clients must call disconnect. This class is to make sure
-// we destruct from the same thread on which is created.
-class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
+// class is to call the right callback after OnDone callback from
+// P2PAsyncAddressResolver, and keep track of the result.
+// Thread jumping is handled by P2PAsyncAddressResolver.
+class AsyncDnsAddressResolverImpl : public webrtc::AsyncDnsResolverInterface,
+                                    public webrtc::AsyncDnsResolverResult {
  public:
-  AsyncAddressResolverImpl(P2PSocketDispatcher* dispatcher);
-  ~AsyncAddressResolverImpl() override;
+  explicit AsyncDnsAddressResolverImpl(P2PSocketDispatcher* dispatcher);
+  ~AsyncDnsAddressResolverImpl() override;
 
-  // rtc::AsyncResolverInterface interface.
-  void Start(const rtc::SocketAddress& addr) override;
-  void Start(const rtc::SocketAddress& addr, int address_family) override;
+  // webrtc::AsyncDnsResolverInterface interface.
+  void Start(const rtc::SocketAddress& addr,
+             absl::AnyInvocable<void()> callback) override;
+  void Start(const rtc::SocketAddress& addr,
+             int address_family,
+             absl::AnyInvocable<void()> callback) override;
+  const AsyncDnsResolverResult& result() const override { return *this; }
+  // webrtc::AsyncDnsResolverResult interface
   bool GetResolvedAddress(int family, rtc::SocketAddress* addr) const override;
   int GetError() const override;
-  void Destroy(bool wait) override;
 
  private:
   virtual void OnAddressResolved(const Vector<net::IPAddress>& addresses);
@@ -249,9 +254,11 @@ class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
   THREAD_CHECKER(thread_checker_);
 
   rtc::SocketAddress addr_;           // Address to resolve.
+  bool started_ = false;
+  absl::AnyInvocable<void()> callback_;
   Vector<rtc::IPAddress> addresses_;  // Resolved addresses.
 
-  base::WeakPtrFactory<AsyncAddressResolverImpl> weak_factory_{this};
+  base::WeakPtrFactory<AsyncDnsAddressResolverImpl> weak_factory_{this};
 };
 
 IpcPacketSocket::IpcPacketSocket()
@@ -682,38 +689,47 @@ void IpcPacketSocket::OnDataReceived(const net::IPEndPoint& address,
                    timestamp.since_origin().InMicroseconds());
 }
 
-AsyncAddressResolverImpl::AsyncAddressResolverImpl(
+AsyncDnsAddressResolverImpl::AsyncDnsAddressResolverImpl(
     P2PSocketDispatcher* dispatcher)
     : resolver_(base::MakeRefCounted<P2PAsyncAddressResolver>(dispatcher)) {}
 
-AsyncAddressResolverImpl::~AsyncAddressResolverImpl() {
+AsyncDnsAddressResolverImpl::~AsyncDnsAddressResolverImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void AsyncAddressResolverImpl::Start(const rtc::SocketAddress& addr) {
+void AsyncDnsAddressResolverImpl::Start(const rtc::SocketAddress& addr,
+                                        absl::AnyInvocable<void()> callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!started_);
+  started_ = true;
   // Port and hostname must be copied to the resolved address returned from
   // GetResolvedAddress.
   addr_ = addr;
+  callback_ = std::move(callback);
 
-  resolver_->Start(addr, /*address_family=*/absl::nullopt,
-                   WTF::BindOnce(&AsyncAddressResolverImpl::OnAddressResolved,
-                                 weak_factory_.GetWeakPtr()));
+  resolver_->Start(
+      addr, /*address_family=*/absl::nullopt,
+      WTF::BindOnce(&AsyncDnsAddressResolverImpl::OnAddressResolved,
+                    weak_factory_.GetWeakPtr()));
 }
 
-void AsyncAddressResolverImpl::Start(const rtc::SocketAddress& addr,
-                                     int address_family) {
+void AsyncDnsAddressResolverImpl::Start(const rtc::SocketAddress& addr,
+                                        int address_family,
+                                        absl::AnyInvocable<void()> callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!started_);
+  started_ = true;
   // Port and hostname must be copied to the resolved address returned from
   // GetResolvedAddress.
   addr_ = addr;
-
-  resolver_->Start(addr, absl::make_optional(address_family),
-                   WTF::BindOnce(&AsyncAddressResolverImpl::OnAddressResolved,
-                                 weak_factory_.GetWeakPtr()));
+  callback_ = std::move(callback);
+  resolver_->Start(
+      addr, absl::make_optional(address_family),
+      WTF::BindOnce(&AsyncDnsAddressResolverImpl::OnAddressResolved,
+                    weak_factory_.GetWeakPtr()));
 }
 
-bool AsyncAddressResolverImpl::GetResolvedAddress(
+bool AsyncDnsAddressResolverImpl::GetResolvedAddress(
     int family,
     rtc::SocketAddress* addr) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -728,20 +744,12 @@ bool AsyncAddressResolverImpl::GetResolvedAddress(
   return false;
 }
 
-int AsyncAddressResolverImpl::GetError() const {
+int AsyncDnsAddressResolverImpl::GetError() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return addresses_.empty() ? -1 : 0;
 }
 
-void AsyncAddressResolverImpl::Destroy(bool wait) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  resolver_->Cancel();
-  // Libjingle doesn't need this object any more and it's not going to delete
-  // it explicitly.
-  delete this;
-}
-
-void AsyncAddressResolverImpl::OnAddressResolved(
+void AsyncDnsAddressResolverImpl::OnAddressResolved(
     const Vector<net::IPAddress>& addresses) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   for (wtf_size_t i = 0; i < addresses.size(); ++i) {
@@ -752,7 +760,7 @@ void AsyncAddressResolverImpl::OnAddressResolved(
     }
     addresses_.push_back(socket_address.ipaddr());
   }
-  SignalDone(this);
+  callback_();
 }
 
 }  // namespace
@@ -830,10 +838,11 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
   return socket.release();
 }
 
-rtc::AsyncResolverInterface* IpcPacketSocketFactory::CreateAsyncResolver() {
+std::unique_ptr<webrtc::AsyncDnsResolverInterface>
+IpcPacketSocketFactory::CreateAsyncDnsResolver() {
   auto socket_dispatcher = socket_dispatcher_.Lock();
   DCHECK(socket_dispatcher);
-  return new AsyncAddressResolverImpl(socket_dispatcher);
+  return absl::make_unique<AsyncDnsAddressResolverImpl>(socket_dispatcher);
 }
 
 }  // namespace blink

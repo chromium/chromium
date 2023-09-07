@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc/api/async_dns_resolver.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 
@@ -116,9 +117,9 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   virtual std::unique_ptr<cricket::PortAllocator> CreatePortAllocator(
       blink::WebLocalFrame* web_frame);
 
-  // Creates an AsyncResolverFactory that uses the networking Mojo service.
-  virtual std::unique_ptr<webrtc::AsyncResolverFactory>
-  CreateAsyncResolverFactory();
+  // Creates an AsyncDnsResolverFactory that uses the networking Mojo service.
+  virtual std::unique_ptr<webrtc::AsyncDnsResolverFactoryInterface>
+  CreateAsyncDnsResolverFactory();
 
   // Creates a libjingle representation of an ice candidate.
   virtual webrtc::IceCandidateInterface* CreateIceCandidate(

@@ -19,6 +19,7 @@ webrtc_public_deps = [
   ":metrics",
   ":task_queue_factory",
   "//third_party/webrtc/api:array_view",
+  "//third_party/webrtc/api:async_dns_resolver",
   "//third_party/webrtc/api:callfactory_api",
   "//third_party/webrtc/api:candidate",
   "//third_party/webrtc/api:dtls_transport_interface",
