@@ -164,6 +164,7 @@ public abstract class ChromeFeatureList {
     public static final String BACK_GESTURE_REFACTOR_ACTIVITY =
             "BackGestureRefactorActivityAndroid";
     public static final String BASELINE_GM3_SURFACE_COLORS = "BaselineGM3SurfaceColors";
+    public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOOKMARKS_REFRESH = "BookmarksRefresh";
     public static final String CACHE_DEPRECATED_SYSTEM_LOCATION_SETTING =
             "CacheDeprecatedSystemLocationSetting";
@@ -515,6 +516,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(BACK_GESTURE_REFACTOR, false);
     public static final CachedFlag sBaselineGm3SurfaceColors =
             new CachedFlag(BASELINE_GM3_SURFACE_COLORS, true);
+    public static final CachedFlag sBlockIntentsWhileLocked =
+            new CachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sCctAutoTranslate = new CachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBottomBarSwipeUpGesture =
             new CachedFlag(CCT_BOTTOM_BAR_SWIPE_UP_GESTURE, true);
@@ -632,6 +635,7 @@ public abstract class ChromeFeatureList {
         sBackGestureRefactorActivityAndroid,
         sBackGestureRefactorAndroid,
         sBaselineGm3SurfaceColors,
+        sBlockIntentsWhileLocked,
         sCctAutoTranslate,
         sCctBottomBarSwipeUpGesture,
         sCctBrandTransparencyMemoryImprovement,

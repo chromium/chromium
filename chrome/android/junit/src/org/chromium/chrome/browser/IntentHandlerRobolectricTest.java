@@ -11,10 +11,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 
+import android.app.KeyguardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.PowerManager;
 import android.provider.Browser;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -34,7 +36,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowKeyguardManager;
+import org.robolectric.shadows.ShadowPowerManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -165,6 +170,9 @@ public class IntentHandlerRobolectricTest {
     @Captor
     ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
+    private ShadowPowerManager mShadowPowerManager;
+    private ShadowKeyguardManager mShadowKeyguardManager;
+
     private void processUrls(String[] urls, boolean isValid) {
         List<String> failedTests = new ArrayList<String>();
 
@@ -202,8 +210,13 @@ public class IntentHandlerRobolectricTest {
         // To allow use of Origin.
         LibraryLoader.getInstance().ensureMainDexInitialized();
         IntentHandler.setTestIntentsEnabled(false);
-        mIntentHandler = new IntentHandler(null, mDelegate);
+        mIntentHandler = new IntentHandler(mDelegate);
         mIntent = new Intent();
+        Context appContext = ApplicationProvider.getApplicationContext();
+        mShadowPowerManager =
+                Shadows.shadowOf((PowerManager) appContext.getSystemService(Context.POWER_SERVICE));
+        mShadowKeyguardManager = Shadows.shadowOf(
+                (KeyguardManager) appContext.getSystemService(Context.KEYGUARD_SERVICE));
     }
 
     @Test
@@ -555,5 +568,38 @@ public class IntentHandlerRobolectricTest {
                 "LoadUrlParams should match.", loadUrlParams, mLoadUrlParamsCaptor.getValue());
         Assert.assertNotNull(
                 "The referrer should be non-null.", mLoadUrlParamsCaptor.getValue().getReferrer());
+    }
+
+    @Test
+    @SmallTest
+    public void testScreenOff() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(GOOGLE_URL));
+        mShadowPowerManager.setIsInteractive(false);
+        Assert.assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
+        mShadowPowerManager.setIsInteractive(true);
+        Assert.assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        mShadowPowerManager.setIsInteractive(false);
+        intent = new Intent(Intent.ACTION_MAIN);
+        Assert.assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        intent.setData(Uri.parse(GOOGLE_URL));
+        Assert.assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BLOCK_INTENTS_WHILE_LOCKED)
+    public void testPhoneLocked() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(GOOGLE_URL));
+        mShadowKeyguardManager.setKeyguardLocked(true);
+        Assert.assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
+        mShadowKeyguardManager.setKeyguardLocked(false);
+        Assert.assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        mShadowKeyguardManager.setKeyguardLocked(true);
+        intent = new Intent(Intent.ACTION_MAIN);
+        Assert.assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        intent.setData(Uri.parse(GOOGLE_URL));
+        Assert.assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
     }
 }

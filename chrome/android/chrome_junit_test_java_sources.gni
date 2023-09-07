@@ -14,7 +14,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/ChromeBaseAppCompatActivityUnitTest.java",
   "junit/src/org/chromium/chrome/browser/ChromeLocalizationUtilsTest.java",
   "junit/src/org/chromium/chrome/browser/DeferredStartupHandlerTest.java",
-  "junit/src/org/chromium/chrome/browser/DelayedScreenLockIntentHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/DragAndDropLauncherActivityUnitTest.java",
   "junit/src/org/chromium/chrome/browser/HomeSurfaceTrackerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/IntentHandlerRobolectricTest.java",

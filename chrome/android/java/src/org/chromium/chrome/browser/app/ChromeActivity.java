@@ -411,7 +411,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private TabModalLifetimeHandler mTabModalLifetimeHandler;
 
     protected ChromeActivity() {
-        mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
+        mIntentHandler = new IntentHandler(createIntentHandlerDelegate());
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
     }
 

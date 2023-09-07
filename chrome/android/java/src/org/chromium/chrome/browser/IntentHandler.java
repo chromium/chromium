@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
-import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
@@ -18,7 +17,6 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Browser;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.speech.RecognizerResultsIntent;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -357,12 +355,6 @@ public class IntentHandler {
     private static boolean sTestIntentsEnabled;
 
     private final IntentHandlerDelegate mDelegate;
-    private final Activity mActivity;
-
-    /**
-     * Receiver for screen unlock broadcast.
-     */
-    private static DelayedScreenLockIntentHandler sDelayedScreenIntentHandler;
 
     @IntDef({TabOpenType.OPEN_NEW_TAB, TabOpenType.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB,
             TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB, TabOpenType.CLOBBER_CURRENT_TAB,
@@ -425,9 +417,8 @@ public class IntentHandler {
         sTestIntentsEnabled = enabled;
     }
 
-    public IntentHandler(Activity activity, IntentHandlerDelegate delegate) {
+    public IntentHandler(IntentHandlerDelegate delegate) {
         mDelegate = delegate;
-        mActivity = activity;
     }
 
     /**
@@ -525,16 +516,6 @@ public class IntentHandler {
         }
     }
 
-    private void updateDeferredIntent(Intent intent) {
-        if (sDelayedScreenIntentHandler == null && intent != null) {
-            sDelayedScreenIntentHandler = new DelayedScreenLockIntentHandler(mActivity);
-        }
-
-        if (sDelayedScreenIntentHandler != null) {
-            sDelayedScreenIntentHandler.updateDeferredIntent(intent);
-        }
-    }
-
     /**
      * Handles an Intent after the ChromeTabbedActivity decides that it shouldn't ignore the
      * Intent.
@@ -542,8 +523,6 @@ public class IntentHandler {
      * @return Whether the Intent was successfully handled.
      */
     public boolean onNewIntent(Intent intent) {
-        updateDeferredIntent(null);
-
         assert intentHasValidUrl(intent);
         String url = getUrlFromIntent(intent);
         @TabOpenType
@@ -965,23 +944,20 @@ public class IntentHandler {
                 return false;
             }
 
+            if (isInternal) return false;
+
             // Ignore all intents that specify a Chrome internal scheme if they did not come from
             // a trustworthy source.
             String scheme = ExternalNavigationHandler.getSanitizedUrlScheme(url);
-            if (!isInternal) {
-                if (intentHasUnsafeInternalScheme(scheme, url, intent)) {
-                    Log.w(TAG, "Ignoring internal Chrome URL from untrustworthy source.");
-                    return true;
-                }
-
-                return false;
+            if (intentHasUnsafeInternalScheme(scheme, url, intent)) {
+                Log.w(TAG, "Ignoring internal Chrome URL from untrustworthy source.");
+                return true;
             }
 
-            // We must check for screen state at this point.
-            // These might be slow.
-            boolean internalOrVisible = isInternal || isIntentUserVisible();
-            if (!internalOrVisible) {
-                updateDeferredIntent(intent);
+            // Checking screen on/keyguard last as these calls can be slow.
+            // If the screen is off, ignore any intents.
+            if (!isScreenOn()) return true;
+            if (ChromeFeatureList.sBlockIntentsWhileLocked.isEnabled() && isKeyguardLocked()) {
                 return true;
             }
             return false;
@@ -1087,26 +1063,18 @@ public class IntentHandler {
         return false;
     }
 
-    @VisibleForTesting
-    static boolean isIntentUserVisible() {
-        // Only process Intents if the screen is on and the device is unlocked;
-        // i.e. the user will see what is going on.
-        Context appContext = ContextUtils.getApplicationContext();
+    private static boolean isScreenOn() {
         PowerManager powerManager =
-                (PowerManager) appContext.getSystemService(Context.POWER_SERVICE);
+                (PowerManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.POWER_SERVICE);
 
-        if (!powerManager.isInteractive()) return false;
-        if (!isDeviceProvisioned(appContext)) return true;
-
-        return !((KeyguardManager) appContext.getSystemService(Context.KEYGUARD_SERVICE))
-                .inKeyguardRestrictedInputMode();
+        return powerManager.isInteractive();
     }
 
-    private static boolean isDeviceProvisioned(Context context) {
-        if (context == null || context.getContentResolver() == null) return true;
-        return Settings.Global.getInt(
-                       context.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0)
-                != 0;
+    private static boolean isKeyguardLocked() {
+        return ((KeyguardManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.KEYGUARD_SERVICE))
+                .isKeyguardLocked();
     }
 
     /*
@@ -1140,7 +1108,7 @@ public class IntentHandler {
 
         // Intents from chrome open in the same tab by default, all others only clobber
         // tabs created by the same app.
-        return mActivity.getPackageName().equals(appId)
+        return ContextUtils.getApplicationContext().getPackageName().equals(appId)
                 ? TabOpenType.CLOBBER_CURRENT_TAB
                 : TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB;
     }

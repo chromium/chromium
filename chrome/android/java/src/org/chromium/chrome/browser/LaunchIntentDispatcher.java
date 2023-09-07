@@ -111,7 +111,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     public static @Action int dispatchToCustomTabActivity(Activity currentActivity, Intent intent) {
         LaunchIntentDispatcher dispatcher = new LaunchIntentDispatcher(currentActivity, intent);
         if (!isCustomTabIntent(dispatcher.mIntent)) return Action.CONTINUE;
-        if (dispatcher.launchCustomTabActivity(new IntentHandler(currentActivity, dispatcher))) {
+        if (dispatcher.launchCustomTabActivity(new IntentHandler(dispatcher))) {
             return Action.FINISH_ACTIVITY;
         } else {
             return Action.CONTINUE;
@@ -159,7 +159,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         }
 
         // Check if a web search Intent is being handled.
-        IntentHandler intentHandler = new IntentHandler(mActivity, this);
+        IntentHandler intentHandler = new IntentHandler(this);
         if (url == null && tabId == Tab.INVALID_TAB_ID && !incognito
                 && intentHandler.handleWebSearchIntent(mIntent)) {
             return Action.FINISH_ACTIVITY;
