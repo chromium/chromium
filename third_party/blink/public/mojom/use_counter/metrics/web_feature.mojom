@@ -3983,6 +3983,15 @@ enum WebFeature {
   kScrollSnapNestedSnapAreas = 4643,
   kScrollSnapCoveringSnapArea = 4644,
   kV8RTCEncodedAudioFrame_SetMetadata_Method = 4645,
+  kV8FetchLaterResult_Activated_AttributeGetter = 4646,
+  kV8Window_FetchLater_Method = 4647,
+  kFetchLaterInvokeStateDeferred = 4648,
+  kFetchLaterInvokeStateScheduled = 4649,
+  kFetchLaterInvokeStateTerminated = 4650,
+  kFetchLaterInvokeStateAborted = 4651,
+  kFetchLaterInvokeStateActivated = 4652,
+  kFetchLaterErrorUnknownBodyLength = 4653,
+  kFetchLaterErrorQuotaExceeded = 4654,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

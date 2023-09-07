@@ -1096,6 +1096,30 @@ class FetchManager::DeferredLoader : public FetchManager::Loader {
     ACTIVATED
   };
   void SetInvokeState(InvokeState state) {
+    switch (state) {
+      case InvokeState::DEFERRED:
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kFetchLaterInvokeStateDeferred);
+        break;
+      case InvokeState::SCHEDULED:
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kFetchLaterInvokeStateScheduled);
+        break;
+      case InvokeState::TERMINATED:
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kFetchLaterInvokeStateTerminated);
+        break;
+      case InvokeState::ABORTED:
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kFetchLaterInvokeStateAborted);
+        break;
+      case InvokeState::ACTIVATED:
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kFetchLaterInvokeStateActivated);
+        break;
+      default:
+        NOTREACHED();
+    };
     invoke_state_ = state;
     fetch_later_result_->SetActivated(state == InvokeState::ACTIVATED);
   }
@@ -1183,6 +1207,8 @@ FetchLaterResult* FetchManager::FetchLater(ScriptState* script_state,
   if (request->Buffer()) {
     // 3.1 If request’s body’s length is null, then throw a TypeError.
     if (request->BufferByteLength() == 0) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kFetchLaterErrorUnknownBodyLength);
       exception_state.ThrowTypeError(
           "fetchLater doesn't support body with unknown length.");
       return nullptr;
@@ -1192,6 +1218,8 @@ FetchLaterResult* FetchManager::FetchLater(ScriptState* script_state,
   }
   // Run Step 5 for potential early termination.
   if (bytes_for_origin > kMaxScheduledDeferredBytesPerOrigin) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kFetchLaterErrorQuotaExceeded);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kQuotaExceededError,
         "fetchLater exceeds its quota for the origin.");
@@ -1209,6 +1237,8 @@ FetchLaterResult* FetchManager::FetchLater(ScriptState* script_state,
     // 5. If `bytes_for_origin` is greater than 64 kilobytes, then throw a
     // QuotaExceededError.
     if (bytes_for_origin > kMaxScheduledDeferredBytesPerOrigin) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kFetchLaterErrorQuotaExceeded);
       exception_state.ThrowDOMException(
           DOMExceptionCode::kQuotaExceededError,
           "fetchLater exceeds its quota for the origin.");

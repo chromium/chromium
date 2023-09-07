@@ -10,7 +10,7 @@
     SecureContext
 ]
 interface FetchLaterResult {
-  readonly attribute boolean activated;
+  [Measure] readonly attribute boolean activated;
 };
 
 [
@@ -20,6 +20,7 @@ interface FetchLaterResult {
 ] partial interface Window {
     [
         CallWith=ScriptState,
+        Measure,
         NewObject,
         RaisesException
     ] FetchLaterResult fetchLater(RequestInfo input, optional DeferredRequestInit init = {});
