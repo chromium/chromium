@@ -18,7 +18,7 @@ import sys
 
 _CLOUD_PROJECT_ID = 'chrome-trooper-analytics'
 
-# TODO(crbug.com/1418199): Replace with queried, per-suite overheads, once
+# TODO(crbug.com/1480065): Replace with queried, per-suite overheads, once
 # infra is set up to support automated overhead measurements.
 # See go/nplus1shardsproposal
 DEFAULT_OVERHEAD_SEC = 60
