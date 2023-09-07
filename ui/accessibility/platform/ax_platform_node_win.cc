@@ -7164,6 +7164,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kStrong:
     case ax::mojom::Role::kSubscript:
     case ax::mojom::Role::kSuperscript:
+    case ax::mojom::Role::kTerm:
     case ax::mojom::Role::kTime:
       ia2_role = IA2_ROLE_TEXT_FRAME;
       break;
