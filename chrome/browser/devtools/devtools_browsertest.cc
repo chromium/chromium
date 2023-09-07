@@ -1718,7 +1718,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestConsoleContextNames) {
   RunTest("testConsoleContextNames", kPageWithContentScript);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectNewTabPage) {
+// TODO(https://crbug.com/1479768): Flaky on Linux Tests.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CantInspectNewTabPage DISABLED_CantInspectNewTabPage
+#else
+#define MAYBE_CantInspectNewTabPage CantInspectNewTabPage
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, MAYBE_CantInspectNewTabPage) {
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
           base::StrCat({kArbitraryPage, "#chrome://newtab/"}));
