@@ -3346,7 +3346,7 @@
   {
     "name": "enable-preferences-account-storage",
     "owners": [ "ankushkush@google.com", "treib" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "enable-prevent-close",
@@ -7761,7 +7761,7 @@
   {
     "name": "sync-poll-immediately-on-every-startup",
     "owners": [ "treib", "//components/search/OWNERS" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "sync-segments-data",
