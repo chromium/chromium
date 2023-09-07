@@ -15,13 +15,38 @@
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 
 namespace performance_manager {
-
 class Graph;
 class PageNode;
-
 }  // namespace performance_manager
 
 namespace performance_manager::resource_attribution {
+
+// The Resource Attribution result and metadata structs described in
+// https://bit.ly/resource-attribution-api#heading=h.k8fjwkwxxdj6.
+// TODO(crbug.com/1471683): Implement the rest of the ResourceAttribution query
+// API, make it the interface to CPUMeasurementMonitor.
+
+struct ResourceUsageResultMetadata {
+  // The time this measurement was taken.
+  base::TimeTicks measurement_time;
+};
+
+struct CPUTimeResult {
+  ResourceUsageResultMetadata metadata;
+
+  // The time that Resource Attribution started monitoring the CPU usage of this
+  // context.
+  base::TimeTicks start_time;
+
+  // Total time the context spent on CPU between `start_time` and
+  // `metadata.measurement_time`.
+  //
+  // `cumulative_cpu` / (`metadata.measurement_time` - `start_time`)
+  // gives percentage of CPU used as a fraction in the range 0% to 100% *
+  // SysInfo::NumberOfProcessors(), the same as
+  // ProcessMetrics::GetPlatformIndependentCPUUsage().
+  base::TimeDelta cumulative_cpu;
+};
 
 // Periodically collect CPU usage from process nodes.
 //
@@ -49,14 +74,6 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
     [[nodiscard]] virtual base::TimeDelta GetCumulativeCPUUsage() = 0;
   };
 
-  // A map from FrameNode's or WorkerNode's to the estimated CPU usage of each.
-  // The estimate is a fraction in the range 0% to 100% *
-  // SysInfo::NumberOfProcessors(), the same as the return value of
-  // ProcessMetrics::GetPlatformIndependentCPUUsage().
-  // TODO(crbug.com/1471683): Also store PageContext's in this map, replacing
-  // EstimatePageCPUUsage().
-  using CPUUsageMap = std::map<ResourceContext, double>;
-
   CPUMeasurementMonitor();
   ~CPUMeasurementMonitor() override;
 
@@ -75,14 +92,16 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
   void StopMonitoring(Graph* graph);
 
   // Updates the CPU measurements for each ProcessNode being tracked and returns
-  // the estimated CPU usage of each frame and worker in those processes since
-  // the last time UpdateCPUMeasurements() was called.
-  CPUUsageMap UpdateCPUMeasurements();
+  // the estimated CPU usage of each frame and worker in those processes.
+  // TODO(crbug.com/1471683): Also store PageContext's in this map, replacing
+  // EstimatePageCPUUsage().
+  std::map<ResourceContext, CPUTimeResult> UpdateAndGetCPUMeasurements();
 
   // Helper to estimate the CPU usage of a PageNode given the estimates for all
   // frames and workers.
-  static double EstimatePageCPUUsage(const PageNode* page_node,
-                                     const CPUUsageMap& cpu_usage_map);
+  static base::TimeDelta EstimatePageCPUUsage(
+      const PageNode* page_node,
+      const std::map<ResourceContext, CPUTimeResult>& cpu_usage_map);
 
   // ProcessNode::Observer:
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
@@ -111,24 +130,32 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
       return most_recent_measurement_;
     }
 
-    // Measures the CPU usage of `process_node`, calculates the proportion of
-    // usage over the period `measurement_interval_end` -
-    // `measurement_interval_start`, and allocates the results to frames and
-    // workers in the process.
+    // Measures the CPU usage of `process_node`, calculates the change in CPU
+    // usage over the period (`last_measurement_time_` ... now], and allocates
+    // the results to frames and workers in the process.
     void MeasureAndDistributeCPUUsage(
         const ProcessNode* process_node,
-        base::TimeTicks measurement_interval_start,
-        base::TimeTicks measurement_interval_end,
-        CPUUsageMap& cpu_usage_map);
+        std::map<ResourceContext, CPUTimeResult>& cpu_usage_map);
 
    private:
     std::unique_ptr<CPUMeasurementDelegate> delegate_;
+
+    // The most recent CPU measurement that was taken.
     base::TimeDelta most_recent_measurement_;
+
+    // Last time CPU measurements were taken (for calculating the total length
+    // of a measurement interval).
+    base::TimeTicks last_measurement_time_;
   };
 
   // Creates a CPUMeasurement tracker for `process_node` and adds it to
   // `cpu_measurement_map_`.
   void MonitorCPUUsage(const ProcessNode* process_node);
+
+  // Updates the CPU measurements for each ProcessNode being tracked, adding
+  // the estimated CPU usage of each frame and worker in those processes since
+  // the last time UpdateCPUMeasurements() was called to `measurement_results_`.
+  void UpdateCPUMeasurements();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -136,14 +163,17 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
   std::map<const ProcessNode*, CPUMeasurement> cpu_measurement_map_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Last time CPU measurements were taken (for calculating the total length of
-  // a measurement interval).
-  base::TimeTicks last_measurement_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // A map from resource contexts to the estimated CPU usage of each.
+  std::map<ResourceContext, CPUTimeResult> measurement_results_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Callback that will be invoked to create CPUMeasurementDelegate objects for
   // each ProcessNode being measured.
   CPUMeasurementDelegate::FactoryCallback cpu_measurement_delegate_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // True if StartMonitoring() was called and StopMonitoring() was not.
+  bool is_monitoring_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };
 
 }  // namespace performance_manager::resource_attribution
