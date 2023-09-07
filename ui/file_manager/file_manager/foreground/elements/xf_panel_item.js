@@ -182,7 +182,6 @@ export class PanelItem extends HTMLElement {
         secondaryButton.id =
             (hasExtraButton) ? 'secondary-action' : 'primary-action';
         secondaryButton.onclick = assert(this.onclick);
-        // TODO(b/281830923): Use Cancel instead of X.
         secondaryButton.dataset.category = 'cancel';
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
         if (hasExtraButton) {
