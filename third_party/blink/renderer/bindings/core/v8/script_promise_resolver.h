@@ -153,7 +153,9 @@ class CORE_EXPORT ScriptPromiseResolver
   void KeepAliveWhilePending();
 
   void SetClassLikeName(const char* name) { class_like_name_ = name; }
-  void SetPropertyName(const char* name) { property_like_name_ = name; }
+  void SetPropertyName(const char* name) {
+    property_like_name_ = String(name);
+  }
 
   void Trace(Visitor*) const override;
 
@@ -219,9 +221,9 @@ class CORE_EXPORT ScriptPromiseResolver
   TaskHandle deferred_resolve_task_;
   Resolver resolver_;
   TraceWrapperV8Reference<v8::Value> value_;
-  ExceptionContext exception_context_;
+  const ExceptionContext exception_context_;
   const char* class_like_name_ = nullptr;
-  const char* property_like_name_ = nullptr;
+  String property_like_name_;
 
   // To support keepAliveWhilePending(), this object needs to keep itself
   // alive while in that state.

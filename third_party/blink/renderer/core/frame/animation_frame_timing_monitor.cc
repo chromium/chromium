@@ -347,7 +347,7 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::MaybeAddScript(
         AtomicString(pending_script_info_->class_like_name));
   }
 
-  if (pending_script_info_->property_like_name) {
+  if (!pending_script_info_->property_like_name.IsNull()) {
     script_timing_info->SetPropertyLikeName(
         AtomicString(pending_script_info_->property_like_name));
   }
@@ -408,7 +408,7 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
     ScriptState* script_state,
     bool resolving,
     const char* class_like_name,
-    const char* property_like_name) {
+    const String& property_like_name) {
   // Make sure we only monitor top-level promise resolvers that are outside the
   // update-the-rendering phase (promise resolvers directly handled from a
   // posted task).

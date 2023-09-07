@@ -209,5 +209,5 @@ PASS: canGetDescriptor(targetWindow, 'self') should be 'true' and is.
 PASS: canGetDescriptor(targetWindow, 'top') should be 'true' and is.
 PASS: canGetDescriptor(targetWindow, 'window') should be 'true' and is.
 ----- tests access to cross domain history object -----
-PASS: targetWindow.history should have thrown an exception, and did: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: targetWindow.history should have thrown an exception, and did: SecurityError: Failed to read a named property 'history' from 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
 

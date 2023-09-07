@@ -6,8 +6,8 @@ PASS Origin of Blob URL matches our origin
 PASS Blob URL parses correctly
 PASS Origin of Blob URL matches our origin for Files
 PASS Blob URLs can be used in <script> tags
-FAIL Blob URLs can be used in iframes, and are treated same origin Blocked a frame with origin "null" from accessing a cross-origin frame.
-FAIL Blob URL fragment is implemented. Blocked a frame with origin "null" from accessing a cross-origin frame.
+FAIL Blob URLs can be used in iframes, and are treated same origin Failed to read a named property 'test_result' from 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
+FAIL Blob URL fragment is implemented. Failed to set a named property 'onscroll' on 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
 PASS Blob URLs can be used in XHR
 PASS XHR with a fragment should succeed
 PASS XHR of a revoked URL should fail

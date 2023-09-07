@@ -32,18 +32,20 @@ class PLATFORM_EXPORT ExceptionContext final {
     kConstantGet,
     kConstructorOperationInvoke,
     kOperationInvoke,
-    kIndexedPropertyGet,
-    kIndexedPropertySet,
-    kIndexedPropertyDefine,
-    kIndexedPropertyDelete,
+    kIndexedPropertyGetter,
+    kIndexedPropertyDescriptor,
+    kIndexedPropertySetter,
+    kIndexedPropertyDefiner,
+    kIndexedPropertyDeleter,
     kIndexedPropertyQuery,
-    kIndexedPropertyEnumerate,
-    kNamedPropertyGet,
-    kNamedPropertySet,
-    kNamedPropertyDefine,
-    kNamedPropertyDelete,
+    kIndexedPropertyEnumerator,
+    kNamedPropertyGetter,
+    kNamedPropertyDescriptor,
+    kNamedPropertySetter,
+    kNamedPropertyDefiner,
+    kNamedPropertyDeleter,
     kNamedPropertyQuery,
-    kNamedPropertyEnumerate,
+    kNamedPropertyEnumerator,
     // IDL Dictionary
     kDictionaryMemberGet,
     kDictionaryMemberSet,
@@ -78,18 +80,20 @@ class PLATFORM_EXPORT ExceptionContext final {
         DCHECK(property_name);
         break;
       case Context::kConstructorOperationInvoke:
-      case Context::kIndexedPropertyGet:
-      case Context::kIndexedPropertySet:
-      case Context::kIndexedPropertyDefine:
-      case Context::kIndexedPropertyDelete:
+      case Context::kIndexedPropertyGetter:
+      case Context::kIndexedPropertyDescriptor:
+      case Context::kIndexedPropertySetter:
+      case Context::kIndexedPropertyDefiner:
+      case Context::kIndexedPropertyDeleter:
       case Context::kIndexedPropertyQuery:
-      case Context::kIndexedPropertyEnumerate:
-      case Context::kNamedPropertyGet:
-      case Context::kNamedPropertySet:
-      case Context::kNamedPropertyDefine:
-      case Context::kNamedPropertyDelete:
+      case Context::kIndexedPropertyEnumerator:
+      case Context::kNamedPropertyGetter:
+      case Context::kNamedPropertyDescriptor:
+      case Context::kNamedPropertySetter:
+      case Context::kNamedPropertyDefiner:
+      case Context::kNamedPropertyDeleter:
       case Context::kNamedPropertyQuery:
-      case Context::kNamedPropertyEnumerate:
+      case Context::kNamedPropertyEnumerator:
       case Context::kCallbackFunctionConstruct:
       case Context::kCallbackFunctionInvoke:
         DCHECK(class_name);
@@ -112,6 +116,16 @@ class PLATFORM_EXPORT ExceptionContext final {
     DCHECK_EQ(Context::kFunctionArgument, context);
   }
 
+  // Named and indexed property interceptors have a dynamic property name. This
+  // variant ensures that the string backing that property name remains alive
+  // for the lifetime of the ExceptionContext.
+  explicit ExceptionContext(Context context,
+                            const char* class_name,
+                            const String& property_name)
+      : context_(context),
+        class_name_(class_name),
+        property_name_string_(property_name) {}
+
   ExceptionContext(const ExceptionContext&) = default;
   ExceptionContext(ExceptionContext&&) = default;
   ExceptionContext& operator=(const ExceptionContext&) = default;
@@ -121,13 +135,18 @@ class PLATFORM_EXPORT ExceptionContext final {
 
   Context GetContext() const { return context_; }
   const char* GetClassName() const { return class_name_; }
-  const char* GetPropertyName() const { return property_name_; }
+  String GetPropertyName() const {
+    DCHECK(!property_name_ || property_name_string_.IsNull());
+    return property_name_ ? String(property_name_)
+                          : property_name_string_;
+  }
   int16_t GetArgumentIndex() const { return argument_index_; }
 
   // This is used for a performance hack to reduce the number of construction
   // and destruction times of ExceptionContext when iterating over properties.
   // Only the generated bindings code is allowed to use this hack.
   void ChangePropertyNameAsOptimizationHack(const char* property_name) {
+    DCHECK(property_name_string_.IsNull());
     property_name_ = property_name;
   }
 
@@ -136,6 +155,7 @@ class PLATFORM_EXPORT ExceptionContext final {
   int16_t argument_index_ = 0;
   const char* class_name_ = nullptr;
   const char* property_name_ = nullptr;
+  String property_name_string_;
 };
 
 }  // namespace blink

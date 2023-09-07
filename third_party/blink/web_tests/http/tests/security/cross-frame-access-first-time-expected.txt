@@ -1,6 +1,6 @@
 This test checks cross-frame access security for first-time access to the document (rdar://problem/5251309).
 
-Exception thrown trying to get cross-domain document: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+Exception thrown trying to get cross-domain document: SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
 canGet(frames[0], 'document'): false
 canGet(frames[0].document, 'cookie'): false
 canGet(frames[0].document, 'body'): false

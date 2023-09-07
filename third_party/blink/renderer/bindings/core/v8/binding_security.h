@@ -39,6 +39,7 @@
 namespace blink {
 
 class DOMWindow;
+class ExceptionState;
 class LocalDOMWindow;
 class Location;
 class Node;
@@ -91,7 +92,8 @@ class CORE_EXPORT BindingSecurity {
 
   static void FailedAccessCheckFor(v8::Isolate*,
                                    const WrapperTypeInfo*,
-                                   v8::Local<v8::Object> holder);
+                                   v8::Local<v8::Object> holder,
+                                   ExceptionState&);
 
  private:
   // Checks if a wrapper creation of the given wrapper type associated with

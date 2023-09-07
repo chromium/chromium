@@ -2,39 +2,39 @@ Certain window properties are readable cross-origin, but ought not be writable.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS iWindow.focus = function () {}; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.blur = function () {}; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.close = function () {}; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.postMessage = function () {}; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.toString = function () {}; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.clientInformation = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.devicePixelRatio = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.event = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.frames = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.history = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.innerHeight = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.innerWidth = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.length = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.locationbar = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.menubar = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.navigator = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.offscreenBuffering = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.opener = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.outerHeight = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.outerWidth = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.parent = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.personalbar = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.screen = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.screenLeft = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.screenTop = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.screenX = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.screenY = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.scrollX = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.scrollY = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.scrollbars = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.self = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.statusbar = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS iWindow.toolbar = 1; threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.focus = function () {}; threw exception SecurityError: Failed to set a named property 'focus' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.blur = function () {}; threw exception SecurityError: Failed to set a named property 'blur' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.close = function () {}; threw exception SecurityError: Failed to set a named property 'close' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.postMessage = function () {}; threw exception SecurityError: Failed to set a named property 'postMessage' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.toString = function () {}; threw exception SecurityError: Failed to set a named property 'toString' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.clientInformation = 1; threw exception SecurityError: Failed to set a named property 'clientInformation' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.devicePixelRatio = 1; threw exception SecurityError: Failed to set a named property 'devicePixelRatio' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.event = 1; threw exception SecurityError: Failed to set a named property 'event' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.frames = 1; threw exception SecurityError: Failed to set a named property 'frames' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.history = 1; threw exception SecurityError: Failed to set a named property 'history' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.innerHeight = 1; threw exception SecurityError: Failed to set a named property 'innerHeight' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.innerWidth = 1; threw exception SecurityError: Failed to set a named property 'innerWidth' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.length = 1; threw exception SecurityError: Failed to set a named property 'length' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.locationbar = 1; threw exception SecurityError: Failed to set a named property 'locationbar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.menubar = 1; threw exception SecurityError: Failed to set a named property 'menubar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.navigator = 1; threw exception SecurityError: Failed to set a named property 'navigator' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.offscreenBuffering = 1; threw exception SecurityError: Failed to set a named property 'offscreenBuffering' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.opener = 1; threw exception SecurityError: Failed to set a named property 'opener' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.outerHeight = 1; threw exception SecurityError: Failed to set a named property 'outerHeight' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.outerWidth = 1; threw exception SecurityError: Failed to set a named property 'outerWidth' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.parent = 1; threw exception SecurityError: Failed to set a named property 'parent' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.personalbar = 1; threw exception SecurityError: Failed to set a named property 'personalbar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.screen = 1; threw exception SecurityError: Failed to set a named property 'screen' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.screenLeft = 1; threw exception SecurityError: Failed to set a named property 'screenLeft' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.screenTop = 1; threw exception SecurityError: Failed to set a named property 'screenTop' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.screenX = 1; threw exception SecurityError: Failed to set a named property 'screenX' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.screenY = 1; threw exception SecurityError: Failed to set a named property 'screenY' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.scrollX = 1; threw exception SecurityError: Failed to set a named property 'scrollX' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.scrollY = 1; threw exception SecurityError: Failed to set a named property 'scrollY' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.scrollbars = 1; threw exception SecurityError: Failed to set a named property 'scrollbars' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.self = 1; threw exception SecurityError: Failed to set a named property 'self' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.statusbar = 1; threw exception SecurityError: Failed to set a named property 'statusbar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
+PASS iWindow.toolbar = 1; threw exception SecurityError: Failed to set a named property 'toolbar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
 PASS successfullyParsed is true
 
 TEST COMPLETE

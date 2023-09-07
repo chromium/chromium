@@ -41,23 +41,22 @@ class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
 };
 
 ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
-      state_(kPending),
-      script_state_(script_state),
-      resolver_(script_state) {
-  if (GetExecutionContext()->IsContextDestroyed()) {
-    state_ = kDetached;
-    resolver_.Clear();
-  }
-}
+    : ScriptPromiseResolver(script_state, ExceptionContext()) {}
 
 ScriptPromiseResolver::ScriptPromiseResolver(
     ScriptState* script_state,
     const ExceptionContext& exception_context)
-    : ScriptPromiseResolver(script_state) {
-  exception_context_ = exception_context;
-  class_like_name_ = exception_context.GetClassName();
-  property_like_name_ = exception_context.GetPropertyName();
+    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+      state_(kPending),
+      script_state_(script_state),
+      resolver_(script_state),
+      exception_context_(exception_context),
+      class_like_name_(exception_context_.GetClassName()),
+      property_like_name_(exception_context_.GetPropertyName()) {
+  if (GetExecutionContext()->IsContextDestroyed()) {
+    state_ = kDetached;
+    resolver_.Clear();
+  }
 }
 
 ScriptPromiseResolver::~ScriptPromiseResolver() = default;

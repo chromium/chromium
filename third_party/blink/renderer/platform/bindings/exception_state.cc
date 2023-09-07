@@ -208,7 +208,7 @@ namespace {
 String AddContextToMessage(const String& message,
                            const ExceptionContext& context) {
   const char* c = context.GetClassName();
-  const char* p = context.GetPropertyName();
+  const String& p = context.GetPropertyName();
   const String& m = message;
 
   switch (context.GetContext()) {
@@ -220,22 +220,26 @@ String AddContextToMessage(const String& message,
       return ExceptionMessages::FailedToGet(p, c, m);
     case ExceptionContext::Context::kAttributeSet:
       return ExceptionMessages::FailedToSet(p, c, m);
-    case ExceptionContext::Context::kNamedPropertyEnumerate:
+    case ExceptionContext::Context::kNamedPropertyEnumerator:
       return ExceptionMessages::FailedToEnumerate(c, m);
     case ExceptionContext::Context::kNamedPropertyQuery:
       break;
-    case ExceptionContext::Context::kIndexedPropertyGet:
-      return ExceptionMessages::FailedToGetIndexed(c, m);
-    case ExceptionContext::Context::kIndexedPropertySet:
-      return ExceptionMessages::FailedToSetIndexed(c, m);
-    case ExceptionContext::Context::kIndexedPropertyDelete:
-      return ExceptionMessages::FailedToDeleteIndexed(c, m);
-    case ExceptionContext::Context::kNamedPropertyGet:
-      return ExceptionMessages::FailedToGetNamed(c, m);
-    case ExceptionContext::Context::kNamedPropertySet:
-      return ExceptionMessages::FailedToSetNamed(c, m);
-    case ExceptionContext::Context::kNamedPropertyDelete:
-      return ExceptionMessages::FailedToDeleteNamed(c, m);
+    case ExceptionContext::Context::kIndexedPropertyGetter:
+    case ExceptionContext::Context::kIndexedPropertyDescriptor:
+      return ExceptionMessages::FailedToGetIndexed(p, c, m);
+    case ExceptionContext::Context::kIndexedPropertySetter:
+    case ExceptionContext::Context::kIndexedPropertyDefiner:
+      return ExceptionMessages::FailedToSetIndexed(p, c, m);
+    case ExceptionContext::Context::kIndexedPropertyDeleter:
+      return ExceptionMessages::FailedToDeleteIndexed(p, c, m);
+    case ExceptionContext::Context::kNamedPropertyGetter:
+    case ExceptionContext::Context::kNamedPropertyDescriptor:
+      return ExceptionMessages::FailedToGetNamed(p, c, m);
+    case ExceptionContext::Context::kNamedPropertySetter:
+    case ExceptionContext::Context::kNamedPropertyDefiner:
+      return ExceptionMessages::FailedToSetNamed(p, c, m);
+    case ExceptionContext::Context::kNamedPropertyDeleter:
+      return ExceptionMessages::FailedToDeleteNamed(p, c, m);
     case ExceptionContext::Context::kDictionaryMemberGet:
       return ExceptionMessages::FailedToGet(p, c, m);
     case ExceptionContext::Context::kDictionaryMemberSet:

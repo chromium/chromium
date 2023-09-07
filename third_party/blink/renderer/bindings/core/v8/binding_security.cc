@@ -346,7 +346,8 @@ void BindingSecurity::RethrowWrapperCreationException(
 
 void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
                                            const WrapperTypeInfo* type,
-                                           v8::Local<v8::Object> holder) {
+                                           v8::Local<v8::Object> holder,
+                                           ExceptionState& exception_state) {
   DOMWindow* target = FindWindow(isolate, type, holder);
   // Failing to find a target means something is wrong. Failing to throw an
   // exception could be a security issue, so just crash.
@@ -361,11 +362,6 @@ void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
        IsSameWindowAgentFactory(local_dom_window, target->ToLocalDOMWindow()))
           ? DOMWindow::CrossDocumentAccessPolicy::kAllowed
           : DOMWindow::CrossDocumentAccessPolicy::kDisallowed;
-
-  // TODO(dcheng): Add ContextType, interface name, and property name as
-  // arguments, so the generated exception can be more descriptive.
-  ExceptionState exception_state(isolate, ExceptionState::kUnknownContext,
-                                 nullptr, nullptr);
   exception_state.ThrowSecurityError(
       target->SanitizedCrossDomainAccessErrorMessage(local_dom_window,
                                                      cross_document_access),

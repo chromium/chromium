@@ -12900,7 +12900,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_THAT(
       result,
       ::testing::MatchesRegex(
-          "SecurityError: Blocked a frame with origin \"http://a.com:\\d+\" "
+          "SecurityError: Failed to read a named property 'document' from "
+          "'Window': Blocked a frame with origin \"http://a.com:\\d+\" "
           "from accessing a cross-origin frame."));
 }
 

@@ -1,3 +1,3 @@
-Exception thrown trying to get cross-domain document: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+Exception thrown trying to get cross-domain document: SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
 PASS: Cross-site access denied.
 

@@ -23,6 +23,8 @@ class PromiseActivationDelegate
                             const ExceptionContext& exception_context)
       : resolver_(resolver), exception_context_(exception_context) {}
 
+  virtual ~PromiseActivationDelegate() = default;
+
   void ActivationDidSucceed() final { resolver_->Resolve(); }
 
   void ActivationDidFail(const String& message) final {

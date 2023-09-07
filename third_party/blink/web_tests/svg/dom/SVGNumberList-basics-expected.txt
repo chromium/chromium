@@ -90,10 +90,10 @@ PASS text1.rotate.baseVal.replaceItem(null, 0) threw exception TypeError: Failed
 
 
 Test uncommon values for indexed setter
-PASS text1.rotate.baseVal[0] = 30 threw exception TypeError: Failed to set an indexed property on 'SVGNumberList': parameter 2 is not of type 'SVGNumber'..
-PASS text1.rotate.baseVal[0] = 'aString' threw exception TypeError: Failed to set an indexed property on 'SVGNumberList': parameter 2 is not of type 'SVGNumber'..
-PASS text1.rotate.baseVal[0] = text1 threw exception TypeError: Failed to set an indexed property on 'SVGNumberList': parameter 2 is not of type 'SVGNumber'..
-PASS text1.rotate.baseVal[0] = null threw exception TypeError: Failed to set an indexed property on 'SVGNumberList': parameter 2 is not of type 'SVGNumber'..
+PASS text1.rotate.baseVal[0] = 30 threw exception TypeError: Failed to set an indexed property [0] on 'SVGNumberList': parameter 2 is not of type 'SVGNumber'..
+PASS text1.rotate.baseVal[0] = 'aString' threw exception TypeError: Failed to set an indexed property [0] on 'SVGNumberList': parameter 2 is not of type 'SVGNumber'..
+PASS text1.rotate.baseVal[0] = text1 threw exception TypeError: Failed to set an indexed property [0] on 'SVGNumberList': parameter 2 is not of type 'SVGNumber'..
+PASS text1.rotate.baseVal[0] = null threw exception TypeError: Failed to set an indexed property [0] on 'SVGNumberList': parameter 2 is not of type 'SVGNumber'..
 PASS text1.rotate.baseVal.replaceItem(text1.rotate.baseVal.getItem(0), 0) is text1.rotate.baseVal.getItem(0)
 PASS text1.rotate.baseVal.numberOfItems is 4
 PASS text1.rotate.baseVal.getItem(0).value is 1

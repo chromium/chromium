@@ -14886,9 +14886,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                            .ExtractString();
   DLOG(INFO) << "Result: " << result;
   EXPECT_THAT(result,
-              ::testing::MatchesRegex("SecurityError: Blocked a frame with "
-                                      "origin \"http://a.com:\\d+\" from "
-                                      "accessing a cross-origin frame."));
+              ::testing::MatchesRegex("SecurityError: Failed to read a named "
+                                      "property 'document' from 'Window': "
+                                      "Blocked a frame with origin "
+                                      "\"http://a.com:\\d+\" from accessing a "
+                                      "cross-origin frame."));
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,

@@ -78,7 +78,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
                          ScriptState*,
                          bool resolving,
                          const char* class_like,
-                         const char* property_like);
+                         const String& property_like);
   void Will(const probe::CompileAndRunScript&);
   void Did(const probe::CompileAndRunScript&);
   void Will(const probe::ExecuteScript&);
@@ -112,7 +112,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     base::TimeDelta pause_duration;
     int layout_depth = 0;
     const char* class_like_name = nullptr;
-    const char* property_like_name = nullptr;
+    String property_like_name;
     ScriptTimingInfo::ScriptSourceLocation source_location;
   };
 

@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL Restoring window.name on cross-origin history traversal Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
+FAIL Restoring window.name on cross-origin history traversal Failed to read a named property from 'Location': Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
 Harness: the test ran to completion.
 

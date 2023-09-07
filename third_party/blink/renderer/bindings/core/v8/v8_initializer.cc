@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
@@ -339,10 +340,14 @@ static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {
 static void FailedAccessCheckCallbackInMainThread(v8::Local<v8::Object> holder,
                                                   v8::AccessType type,
                                                   v8::Local<v8::Value> data) {
-  // FIXME: We should modify V8 to pass in more contextual information (context,
-  // property, and object).
+  // FIXME: This is the access check callback of last resort. We should modify
+  // V8 to pass in more contextual information, so that we can build a full
+  // ExceptionState.
+  ExceptionState exception_state(
+      holder->GetIsolate(), ExceptionState::kUnknownContext, nullptr, nullptr);
   BindingSecurity::FailedAccessCheckFor(holder->GetIsolate(),
-                                        WrapperTypeInfo::Unwrap(data), holder);
+                                        WrapperTypeInfo::Unwrap(data), holder,
+                                        exception_state);
 }
 
 // Check whether Content Security Policy allows script execution.

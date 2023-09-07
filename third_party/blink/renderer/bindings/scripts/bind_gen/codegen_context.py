@@ -105,8 +105,10 @@ class CodeGenContext(object):
             "operation_group": None,
 
             # Special member-ish definition
+            "indexed_interceptor_kind": None,
             "indexed_property_getter": None,
             "indexed_property_setter": None,
+            "named_interceptor_kind": None,
             "named_property_getter": None,
             "named_property_setter": None,
             "named_property_deleter": None,

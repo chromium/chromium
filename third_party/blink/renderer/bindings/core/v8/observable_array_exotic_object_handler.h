@@ -160,7 +160,7 @@ class ObservableArrayExoticObjectHandler {
         }
         ScriptState* script_state = ScriptState::From(current_context);
         ExceptionState exception_state(
-            isolate, ExceptionContext::Context::kIndexedPropertyDelete,
+            isolate, ExceptionContext::Context::kIndexedPropertyDeleter,
             BackingListWrappable::ObservableArrayNameInIDL());
         if (!RunDeleteAlgorithm(script_state, backing_list, index,
                                 exception_state)) {
@@ -407,7 +407,7 @@ class ObservableArrayExoticObjectHandler {
       v8::Local<v8::Uint32> v8_index;
       if (v8_property->ToArrayIndex(current_context).ToLocal(&v8_index)) {
         ExceptionState exception_state(
-            isolate, ExceptionContext::Context::kIndexedPropertySet,
+            isolate, ExceptionContext::Context::kIndexedPropertySetter,
             BackingListWrappable::ObservableArrayNameInIDL());
         uint32_t index = v8_index->Value();
         bool result =

@@ -325,7 +325,8 @@ v8::Local<v8::Value> DOMWindow::AnonymousNamedGetter(const AtomicString& name) {
       return v8::Local<v8::Value>();
     }
     ExceptionState exception_state(isolate, ExceptionState::kNamedGetterContext,
-                                   "Window", name.Utf8().c_str());
+                                   "Window", name,
+                                   ExceptionState::kForInterceptor);
     exception_state.ThrowSecurityError(
         "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
         "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the "
