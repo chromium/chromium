@@ -4,59 +4,122 @@
 
 #include "chrome/browser/ash/printing/enterprise_printers_provider.h"
 
-#include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
-#include "base/debug/dump_without_crashing.h"
-#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_util.h"
-#include "base/time/time.h"
+#include "base/values.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/printing/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
-#include "chrome/browser/ash/printing/printers_sync_bridge.h"
-#include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/printing/printer_configuration.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 namespace {
 
 using ::chromeos::Printer;
+using ::testing::UnorderedElementsAre;
 
-constexpr char kLexJson[] = R"({
-        "display_name": "LexaPrint",
-        "description": "Laser on the test shelf",
-        "manufacturer": "LexaPrint, Inc.",
-        "model": "MS610de",
-        "uri": "ipp://192.168.1.5",
-        "ppd_resource": {
-          "effective_manufacturer": "LexaPrint",
-          "effective_model": "MS610de",
-        },
-      } )";
+std::vector<std::string> GetPrinterIds(const std::vector<Printer>& printers) {
+  std::vector<std::string> ids(printers.size());
+  base::ranges::transform(printers, ids.begin(),
+                          [](const Printer& p) { return p.id(); });
+  return ids;
+}
 
-constexpr char kColorLaserJson[] = R"json({
-      "display_name": "Color Laser",
-      "description": "The printer next to the water cooler.",
-      "manufacturer": "Printer Manufacturer",
-      "model":"Color Laser 2004",
-      "uri":"ipps://print-server.intranet.example.com:443/ipp/cl2k4",
-      "uuid":"1c395fdb-5d93-4904-b246-b2c046e79d12",
-      "ppd_resource":{
-          "effective_manufacturer": "MakesPrinters",
-          "effective_model":"ColorLaser2k4"
-       }
-      })json";
+base::Value::List StringsToValueList(const std::vector<std::string>& strings) {
+  base::Value::List list;
+  list.reserve(strings.size());
+  for (const std::string& s : strings) {
+    list.Append(s);
+  }
+  return list;
+}
+
+constexpr char kFirstId[] = "First";
+constexpr char kSecondId[] = "Second";
+constexpr char kThirdId[] = "Third";
+
+constexpr char kRecommendedPrinter[] = R"json(
+  {
+    "id": "First",
+    "display_name": "LexaPrint",
+    "description": "Laser on the test shelf",
+    "manufacturer": "LexaPrint, Inc.",
+    "model": "MS610de",
+    "uri": "ipp://192.168.1.5",
+    "ppd_resource": {
+      "effective_model": "MS610de"
+    }
+  }
+)json";
+
+// Bulk printer configuration file.
+constexpr char kBulkPolicyContents[] = R"json(
+[
+  {
+    "id": "First",
+    "display_name": "LexaPrint",
+    "description": "Laser on the test shelf",
+    "manufacturer": "LexaPrint, Inc.",
+    "model": "MS610de",
+    "uri": "ipp://192.168.1.5",
+    "ppd_resource": {
+      "effective_model": "MS610de"
+    }
+  }, {
+    "id": "Incorrect uri",
+    "display_name": "aaa",
+    "description": "bbbb",
+    "manufacturer": "cccc",
+    "model":"dddd",
+    "uri":"ipp://:",
+    "uuid":"1c555fdb-1193-2204-3346-44c046e79d12",
+    "ppd_resource":{
+      "effective_manufacturer": "eee",
+      "effective_model": "fff"
+    }
+  }, {
+    "id": "Second",
+    "display_name": "Color Laser",
+    "description": "The printer next to the water cooler.",
+    "manufacturer": "Printer Manufacturer",
+    "model":"Color Laser 2004",
+    "uri":"ipps://print-server.intranet.example.com:443/ipp/cl2k4",
+    "uuid":"1c395fdb-5d93-4904-b246-b2c046e79d12",
+    "ppd_resource":{
+      "effective_manufacturer": "MakesPrinters",
+      "effective_model": "ColorLaser2k4"
+    }
+  }, {
+    "id": "Third",
+    "display_name": "YaLP",
+    "description": "Fancy Fancy Fancy",
+    "manufacturer": "LexaPrint, Inc.",
+    "model": "MS610de",
+    "uri": "ipp://192.168.1.8",
+    "ppd_resource": {
+      "effective_manufacturer": "LexaPrint",
+      "effective_model": "MS610de"
+    }
+  }
+])json";
 
 // Helper class to record observed events.
 class LoggingObserver : public EnterprisePrintersProvider::Observer {
@@ -83,65 +146,147 @@ class LoggingObserver : public EnterprisePrintersProvider::Observer {
 
 class EnterprisePrintersProviderTest : public testing::Test {
  protected:
-  EnterprisePrintersProviderTest()
-      : provider_(EnterprisePrintersProvider::Create(CrosSettings::Get(),
-                                                     &profile_)) {
+  EnterprisePrintersProviderTest() {
+    const AccountId kUserAccountId =
+        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
+    fake_user_manager_->AddUser(kUserAccountId);
+    fake_user_manager_->SwitchActiveUser(kUserAccountId);
+  }
+
+  void SetUp() override {
+    device_printers_calculator_ = bulk_factory.GetForDevice();
+    ASSERT_TRUE(device_printers_calculator_);
+    user_printers_calculator_ = bulk_factory.GetForAccountId(
+        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName));
+    ASSERT_TRUE(user_printers_calculator_);
+
+    prefs_ = profile_.GetTestingPrefService();
+    cros_settings_ = profile_.ScopedCrosSettingsTestHelper();
+    cros_settings_->ReplaceDeviceSettingsProviderWithStub();
+
+    // Explicitly set empty allowlist to disable all printers. Individual test
+    // cases will override this.
+    prefs_->SetManagedPref(prefs::kRecommendedPrintersAllowlist,
+                           base::Value::List());
+    cros_settings_->Set(kDevicePrintersAllowlist, base::Value());
+
+    prefs_->SetManagedPref(
+        prefs::kRecommendedPrintersAccessMode,
+        base::Value(BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
+    cros_settings_->Set(
+        kDevicePrintersAccessMode,
+        base::Value(BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
+
+    device_printers_calculator_->SetData(
+        std::make_unique<std::string>(kBulkPolicyContents));
+    user_printers_calculator_->SetData(
+        std::make_unique<std::string>(kBulkPolicyContents));
+
+    provider_ =
+        EnterprisePrintersProvider::Create(CrosSettings::Get(), &profile_);
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetPolicyPrinters(std::vector<std::string> printer_json_blobs) {
-    base::Value::List value;
-    for (std::string& blob : printer_json_blobs)
-      value.Append(std::move(blob));
+  void SetRecommendedPrinters(const std::vector<std::string>& printer_jsons) {
+    prefs_->SetManagedPref(prefs::kRecommendedPrinters,
+                           StringsToValueList(printer_jsons));
+    task_environment_.RunUntilIdle();
+  }
 
-    sync_preferences::TestingPrefServiceSyncable* prefs =
-        profile_.GetTestingPrefService();
-    // TestingPrefSyncableService assumes ownership of |value|.
-    prefs->SetManagedPref(prefs::kRecommendedPrinters,
-                          base::Value(std::move(value)));
+  void SetDevicePolicyPrinters(
+      const std::vector<std::string>& allowed_printer_ids) {
+    profile_.ScopedCrosSettingsTestHelper()->Set(
+        kDevicePrintersAllowlist,
+        base::Value(StringsToValueList(allowed_printer_ids)));
+    task_environment_.RunUntilIdle();
+  }
+
+  void SetUserPolicyPrinters(
+      const std::vector<std::string>& allowed_printer_ids) {
+    prefs_->SetManagedPref(prefs::kRecommendedPrintersAllowlist,
+                           StringsToValueList(allowed_printer_ids));
+
+    task_environment_.RunUntilIdle();
   }
 
   // Must outlive |profile_|.
   content::BrowserTaskEnvironment task_environment_;
 
-  // Must outlive |manager_|.
   TestingProfile profile_;
 
+  raw_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_;
+
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+
+  // Must outlive |provider_|.
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+
   BulkPrintersCalculatorFactory bulk_factory;
+  base::WeakPtr<BulkPrintersCalculator> user_printers_calculator_;
+  base::WeakPtr<BulkPrintersCalculator> device_printers_calculator_;
   std::unique_ptr<EnterprisePrintersProvider> provider_;
 };
 
-TEST_F(EnterprisePrintersProviderTest, SinglePrinter) {
+TEST_F(EnterprisePrintersProviderTest, SingleUserPrinter) {
   LoggingObserver observer(provider_.get());
-  SetPolicyPrinters({kLexJson});
+  SetUserPolicyPrinters({kFirstId});
+  EXPECT_THAT(GetPrinterIds(observer.printers()),
+              UnorderedElementsAre(kFirstId));
+}
 
-  const Printer& from_list = observer.printers().front();
-  EXPECT_EQ("LexaPrint", from_list.display_name());
-  EXPECT_EQ(Printer::Source::SRC_POLICY, from_list.source());
+TEST_F(EnterprisePrintersProviderTest, SingleDevicePrinter) {
+  LoggingObserver observer(provider_.get());
+  SetDevicePolicyPrinters({kThirdId});
+  EXPECT_THAT(GetPrinterIds(observer.printers()),
+              UnorderedElementsAre(kThirdId));
+}
+
+TEST_F(EnterprisePrintersProviderTest, RecommendedPrinters) {
+  LoggingObserver observer(provider_.get());
+  SetRecommendedPrinters({kRecommendedPrinter});
+
+  ASSERT_EQ(1u, observer.printers().size());
+  // Printer IDs are generated for recommended printers, so we check the display
+  // name in this test.
+  EXPECT_EQ("LexaPrint", observer.printers().front().display_name());
 }
 
 TEST_F(EnterprisePrintersProviderTest, MultiplePrinters) {
   LoggingObserver observer(provider_.get());
-  SetPolicyPrinters({kLexJson, kColorLaserJson});
-  ASSERT_EQ(2U, observer.printers().size());
-
-  const Printer& from_list = observer.printers().front();
-  EXPECT_EQ(Printer::Source::SRC_POLICY, from_list.source());
+  SetDevicePolicyPrinters({kFirstId, kSecondId});
+  EXPECT_THAT(GetPrinterIds(observer.printers()),
+              UnorderedElementsAre(kFirstId, kSecondId));
 }
 
 TEST_F(EnterprisePrintersProviderTest, ChangingEnterprisePrinter) {
   LoggingObserver observer(provider_.get());
-  SetPolicyPrinters({kLexJson});
+  SetUserPolicyPrinters({kFirstId});
+  EXPECT_THAT(GetPrinterIds(observer.printers()),
+              UnorderedElementsAre(kFirstId));
 
-  const Printer& from_list = observer.printers().front();
-  EXPECT_EQ("LexaPrint", from_list.display_name());
-  EXPECT_EQ(Printer::Source::SRC_POLICY, from_list.source());
+  SetUserPolicyPrinters({kSecondId});
+  EXPECT_THAT(GetPrinterIds(observer.printers()),
+              UnorderedElementsAre(kSecondId));
+}
 
-  SetPolicyPrinters({kColorLaserJson});
+TEST_F(EnterprisePrintersProviderTest, PrintersMergedWithNoDuplicates) {
+  LoggingObserver observer(provider_.get());
+  SetUserPolicyPrinters({kFirstId, kSecondId});
+  SetDevicePolicyPrinters({kSecondId, kThirdId});
+  EXPECT_THAT(GetPrinterIds(observer.printers()),
+              UnorderedElementsAre(kFirstId, kSecondId, kThirdId));
+}
 
-  const Printer& from_list2 = observer.printers().front();
-  EXPECT_EQ("Color Laser", from_list2.display_name());
-  EXPECT_EQ(Printer::Source::SRC_POLICY, from_list2.source());
+TEST_F(EnterprisePrintersProviderTest, PrinterSourceIsPolicy) {
+  LoggingObserver observer(provider_.get());
+  SetDevicePolicyPrinters({kFirstId});
+  SetUserPolicyPrinters({kSecondId});
+
+  std::vector<Printer> printers = observer.printers();
+  ASSERT_EQ(2u, printers.size());
+  EXPECT_THAT(printers[0].source(), Printer::SRC_POLICY);
+  EXPECT_THAT(printers[1].source(), Printer::SRC_POLICY);
 }
 
 }  // namespace

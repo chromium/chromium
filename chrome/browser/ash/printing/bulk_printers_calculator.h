@@ -79,11 +79,11 @@ class BulkPrintersCalculator
   // if there is no on-going calculations and the method below returns the
   // list of available printers that is up-to-date with current policies.
   virtual bool IsComplete() const = 0;
-  // Returns a reference to a resultant list of available printers. Keys are
-  // printers ids. If the list of available printers cannot be calculated
-  // (because of some error or missing policy), an empty map is returned.
-  virtual const std::unordered_map<std::string, chromeos::Printer>&
-  GetPrinters() const = 0;
+  // Returns the resultant list of available printers. Keys are printers ids. If
+  // the list of available printers cannot be calculated (because of some error
+  // or missing policy), an empty map is returned.
+  virtual std::unordered_map<std::string, chromeos::Printer> GetPrinters()
+      const = 0;
 };
 
 }  // namespace ash
