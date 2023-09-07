@@ -309,6 +309,11 @@ void OnInternalDisplayZoomChanged(float zoom_factor) {
       ->Add(std::round(zoom_factor * 100));
 }
 
+// Returns true if two ids has the same output index.
+bool HasSameOutputIndex(int64_t id1, int64_t id2) {
+  return (id1 & 0xFF) == (id2 & 0xFF);
+}
+
 }  // namespace
 
 DisplayManager::BeginEndNotifier::BeginEndNotifier(
@@ -1018,8 +1023,17 @@ void DisplayManager::UpdateDisplaysWith(
       new_displays.push_back(new_display);
       ++curr_iter;
       ++new_info_iter;
-    } else if (CompareDisplayIds(curr_iter->id(), new_info_iter->id())) {
-      // more displays in current list between ids, which means it is deleted.
+    } else if (HasSameOutputIndex(curr_iter->id(), new_info_iter->id()) ||
+               // Two different ids has the same index, which means the old
+               // display was disconnected and new display was connected to the
+               // same port. This can happen when a) a display was swapped while
+               // the device is on sleep, or b) output connector is dynamic
+               // (e.g. DP tunneling). Just remove the display now. A new
+               // display will be added in the next iteration.
+               CompareDisplayIds(curr_iter->id(), new_info_iter->id())
+               // more displays in current list between ids, which means it is
+               // deleted.
+    ) {
       removed_displays.push_back(*curr_iter);
       ++curr_iter;
     } else {
