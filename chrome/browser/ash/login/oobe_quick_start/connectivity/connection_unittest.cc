@@ -518,7 +518,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion_EmptyResponse) {
 TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
   MarkConnectionAuthenticated();
   fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
-      /*ack_received=*/true);
+      mojom::NotifySourceOfUpdateResponse::New(/*ack_received=*/true));
   base::test::TestFuture<bool> future;
   int32_t session_id = 1;
 
@@ -555,7 +555,7 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
 TEST_F(ConnectionTest, NotifySourceOfUpdate_FalseAckReceivedValue) {
   MarkConnectionAuthenticated();
   fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
-      /*ack_received=*/false);
+      mojom::NotifySourceOfUpdateResponse::New(/*ack_received=*/false));
   base::test::TestFuture<bool> future;
   int32_t session_id = 1;
 
@@ -572,8 +572,9 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_FalseAckReceivedValue) {
 
 TEST_F(ConnectionTest, NotifySourceOfUpdate_NoAckReceivedValue) {
   MarkConnectionAuthenticated();
-  fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
-      /*ack_received=*/absl::nullopt);
+  fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(nullptr);
+  fake_quick_start_decoder_->SetDecoderError(
+      mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
   base::test::TestFuture<bool> future;
   int32_t session_id = 1;
 

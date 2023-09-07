@@ -27,14 +27,16 @@ interface QuickStartDecoder {
   DecodeWifiCredentialsResponse(array<uint8>? data) => (
     WifiCredentials? credentials, QuickStartDecoderError? error);
 
-  // Decode a simple ack response to a message notifying the source device
-  // that the target device will update and reboot. This response is JSON,
-  // with a Base64 encoded JSON payload. The ack_received bool is the value of
-  // the ack key in the response payload. This value should always be 'true',
-  // but we handle the error case when the value is unexpectedly 'false'. If
-  // the ack key isn't found in the response, this returns nullopt.
+  // Decode a simple ack response to a message notifying the source device that
+  // the target device will update and reboot. This response is JSON, with a
+  // Base64 encoded JSON payload. The response contains an |ack_received|
+  // boolean, which should always be 'true', but we handle the error case when
+  // the value is unexpectedly 'false'. If the ack key isn't found in the
+  // response, |error| will be non-null and |notify_source_of_update_response|
+  // will be null.
   DecodeNotifySourceOfUpdateResponse(array<uint8>? data) => (
-    bool? ack_received);
+    NotifySourceOfUpdateResponse? notify_source_of_update_response,
+    QuickStartDecoderError? error);
 
   // Decode a FIDO CTAP2 GetAssertionResponse from the phone into a struct
   // that details fields we need to pass along to GAIA as well as error

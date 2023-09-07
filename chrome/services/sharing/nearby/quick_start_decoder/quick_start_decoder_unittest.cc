@@ -130,10 +130,11 @@ class QuickStartDecoderTest : public testing::Test {
         ConvertMessageToBytes(message), std::move(callback));
   }
 
-  absl::optional<bool> DoDecodeNotifySourceOfUpdateResponse(
-      QuickStartMessage* message) {
-    return decoder_->DoDecodeNotifySourceOfUpdateResponse(
-        ConvertMessageToBytes(message));
+  void DoDecodeNotifySourceOfUpdateResponse(
+      QuickStartMessage* message,
+      QuickStartDecoder::DecodeNotifySourceOfUpdateResponseCallback callback) {
+    decoder_->DecodeNotifySourceOfUpdateResponse(ConvertMessageToBytes(message),
+                                                 std::move(callback));
   }
 
   absl::optional<std::vector<uint8_t>> ExtractFidoDataFromJsonResponse(
@@ -876,20 +877,38 @@ TEST_F(QuickStartDecoderTest, DecodeNotifySourceOfUpdateResponseSuccess) {
   QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
   message.GetPayload()->Set(kNotifySourceOfUpdateAckKey, true);
 
-  EXPECT_TRUE(DoDecodeNotifySourceOfUpdateResponse(&message).has_value());
-  EXPECT_TRUE(DoDecodeNotifySourceOfUpdateResponse(&message).value());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::NotifySourceOfUpdateResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future1;
+
+  DoDecodeNotifySourceOfUpdateResponse(&message, future1.GetCallback());
+  EXPECT_TRUE(future1.Get<0>());
+  EXPECT_TRUE(future1.Get<0>()->ack_received);
 
   message.GetPayload()->Set(kNotifySourceOfUpdateAckKey, false);
 
-  EXPECT_TRUE(DoDecodeNotifySourceOfUpdateResponse(&message).has_value());
-  EXPECT_FALSE(DoDecodeNotifySourceOfUpdateResponse(&message).value());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::NotifySourceOfUpdateResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future2;
+
+  DoDecodeNotifySourceOfUpdateResponse(&message, future2.GetCallback());
+  EXPECT_TRUE(future2.Get<0>());
+  EXPECT_FALSE(future2.Get<0>()->ack_received);
 }
 
 TEST_F(QuickStartDecoderTest,
        DecodeNotifySourceOfUpdateResponseFailsWhenMissingValue) {
   QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
 
-  EXPECT_FALSE(DoDecodeNotifySourceOfUpdateResponse(&message).has_value());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::NotifySourceOfUpdateResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeNotifySourceOfUpdateResponse(&message, future.GetCallback());
+  EXPECT_FALSE(future.Get<0>());
 }
 
 TEST_F(QuickStartDecoderTest, DecodeUserVerificationResultSucceeds) {

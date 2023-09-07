@@ -59,3 +59,7 @@ struct FidoAssertionResponse {
   array<uint8> auth_data;
   array<uint8> signature;
 };
+
+struct NotifySourceOfUpdateResponse {
+  bool ack_received;
+};

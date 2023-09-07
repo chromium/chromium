@@ -68,10 +68,9 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
       DecodeWifiCredentialsResponseCallback callback);
   absl::optional<std::vector<uint8_t>> ExtractFidoDataFromJsonResponse(
       const std::vector<uint8_t>& data);
-  // If the kNotifySourceOfUpdateAckKey boolean is present in the response, this
-  // method returns its value.
-  absl::optional<bool> DoDecodeNotifySourceOfUpdateResponse(
-      const absl::optional<std::vector<uint8_t>>& data);
+  void DoDecodeNotifySourceOfUpdateResponse(
+      const absl::optional<std::vector<uint8_t>>& data,
+      DecodeNotifySourceOfUpdateResponseCallback callback);
   mojo::Receiver<mojom::QuickStartDecoder> receiver_;
 };
 

@@ -558,14 +558,17 @@ QuickStartDecoder::ExtractFidoDataFromJsonResponse(
 void QuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
     const absl::optional<std::vector<uint8_t>>& data,
     DecodeNotifySourceOfUpdateResponseCallback callback) {
-  std::move(callback).Run(DoDecodeNotifySourceOfUpdateResponse(data));
+  DoDecodeNotifySourceOfUpdateResponse(data, std::move(callback));
 }
 
-absl::optional<bool> QuickStartDecoder::DoDecodeNotifySourceOfUpdateResponse(
-    const absl::optional<std::vector<uint8_t>>& data) {
+void QuickStartDecoder::DoDecodeNotifySourceOfUpdateResponse(
+    const absl::optional<std::vector<uint8_t>>& data,
+    DecodeNotifySourceOfUpdateResponseCallback callback) {
   if (!data.has_value()) {
     LOG(ERROR) << "No response bytes received.";
-    return absl::nullopt;
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kEmptyMessage);
+    return;
   }
 
   QuickStartMessage::ReadResult read_result = QuickStartMessage::ReadMessage(
@@ -574,11 +577,22 @@ absl::optional<bool> QuickStartDecoder::DoDecodeNotifySourceOfUpdateResponse(
   if (!read_result.has_value()) {
     LOG(ERROR) << "Notify Source of Update message cannot be parsed as a JSON "
                   "Dictionary.";
-    return absl::nullopt;
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    return;
   }
 
-  return read_result.value()->GetPayload()->FindBool(
-      kNotifySourceOfUpdateAckKey);
+  absl::optional<bool> ack_received =
+      read_result.value()->GetPayload()->FindBool(kNotifySourceOfUpdateAckKey);
+  if (!ack_received.has_value()) {
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  std::move(callback).Run(
+      mojom::NotifySourceOfUpdateResponse::New(ack_received.value()),
+      absl::nullopt);
 }
 
 }  // namespace ash::quick_start

@@ -61,6 +61,7 @@ void FakeQuickStartDecoder::DecodeGetAssertionResponse(
     DecodeGetAssertionResponseCallback callback) {
   if (error_.has_value()) {
     std::move(callback).Run(nullptr, error_);
+    return;
   }
 
   std::move(callback).Run(std::move(fido_assertion_), absl::nullopt);
@@ -69,7 +70,13 @@ void FakeQuickStartDecoder::DecodeGetAssertionResponse(
 void FakeQuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
     const absl::optional<std::vector<uint8_t>>& data,
     DecodeNotifySourceOfUpdateResponseCallback callback) {
-  std::move(callback).Run(/*ack_received=*/notify_source_of_update_response_);
+  if (error_.has_value()) {
+    std::move(callback).Run(nullptr, error_);
+    return;
+  }
+
+  std::move(callback).Run(std::move(notify_source_of_update_response_),
+                          absl::nullopt);
 }
 
 void FakeQuickStartDecoder::SetUserVerificationRequested(
@@ -108,8 +115,9 @@ void FakeQuickStartDecoder::SetWifiCredentialsResponse(
 }
 
 void FakeQuickStartDecoder::SetNotifySourceOfUpdateResponse(
-    absl::optional<bool> ack_received) {
-  notify_source_of_update_response_ = ack_received;
+    mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response) {
+  notify_source_of_update_response_ =
+      std::move(notify_source_of_update_response);
 }
 
 void FakeQuickStartDecoder::SetBootstrapConfigurationsResponse(

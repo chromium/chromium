@@ -125,8 +125,10 @@ void Connection::NotifySourceOfUpdate(int32_t session_id,
                                       NotifySourceOfUpdateCallback callback) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kQuickStartTestForcedUpdateSwitch)) {
-    HandleNotifySourceOfUpdateResponse(std::move(callback),
-                                       /*ack_received=*/true);
+    HandleNotifySourceOfUpdateResponse(
+        std::move(callback),
+        mojom::NotifySourceOfUpdateResponse::New(/*ack_received=*/true),
+        /*error=*/absl::nullopt);
     return;
   }
 
@@ -198,15 +200,17 @@ void Connection::OnNotifySourceOfUpdateResponse(
 
 void Connection::HandleNotifySourceOfUpdateResponse(
     NotifySourceOfUpdateCallback callback,
-    absl::optional<bool> ack_received) {
-  if (!ack_received.has_value()) {
+    mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response,
+    absl::optional<mojom::QuickStartDecoderError> error) {
+  if (!notify_source_of_update_response) {
+    CHECK(error.has_value());
     QS_LOG(ERROR)
         << "No ack received value in the NotifySourceOfUpdate response.";
     std::move(callback).Run(/*ack_successful=*/false);
     return;
   }
 
-  if (!ack_received.value()) {
+  if (!notify_source_of_update_response->ack_received) {
     QS_LOG(ERROR) << "The ack received value in the NotifySourceOfUpdate "
                      "response is unexpectedly 'false'.";
     std::move(callback).Run(/*ack_successful=*/false);

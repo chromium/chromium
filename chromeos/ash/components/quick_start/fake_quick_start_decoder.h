@@ -57,7 +57,8 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
       mojom::WifiCredentialsPtr credentials,
       absl::optional<mojom::QuickStartDecoderError> error);
 
-  void SetNotifySourceOfUpdateResponse(absl::optional<bool> ack_received);
+  void SetNotifySourceOfUpdateResponse(
+      mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response);
 
   void SetBootstrapConfigurationsResponse(
       const std::string& cryptauth_device_id,
@@ -66,7 +67,7 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
  private:
   std::vector<uint8_t> expected_data_;
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
-  absl::optional<bool> notify_source_of_update_response_;
+  mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response_;
   mojom::WifiCredentialsPtr credentials_;
   mojom::FidoAssertionResponsePtr fido_assertion_;
   mojom::UserVerificationRequestedPtr user_verification_request_;

@@ -131,8 +131,14 @@ class Connection
       NotifySourceOfUpdateCallback callback,
       absl::optional<std::vector<uint8_t>> response_bytes);
 
-  void HandleNotifySourceOfUpdateResponse(NotifySourceOfUpdateCallback callback,
-                                          absl::optional<bool> ack_received);
+  // Called when the source device's NotifySourceOfUpdateResponse has been
+  // decoded. Either |notify_source_of_update_response| will be non-null and
+  // |error| will be nullopt, or |notify_source_of_update_response| will be null
+  // and |error| will have a value.
+  void HandleNotifySourceOfUpdateResponse(
+      NotifySourceOfUpdateCallback callback,
+      mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response,
+      absl::optional<mojom::QuickStartDecoderError> error);
 
   // Parses a raw AssertionResponse and converts it into a FidoAssertionInfo
   void OnRequestAccountTransferAssertionResponse(
