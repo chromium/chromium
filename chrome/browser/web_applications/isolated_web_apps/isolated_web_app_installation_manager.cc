@@ -289,6 +289,36 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeProxy(
                                     std::move(location), std::move(callback));
 }
 
+void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeBundle(
+    const base::FilePath& path,
+    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+        callback) {
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!callback.is_null());
+
+  if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+    // If the browser is shutting down, then there is no point in attempting to
+    // install an IWA.
+    std::move(callback).Run(base::unexpected("Browser is shutting down"));
+    return;
+  }
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL,
+      KeepAliveRestartOption::DISABLED);
+  if (profile_->IsOffTheRecord()) {
+    std::move(callback).Run(
+        base::unexpected(std::string("incognito profiles are not supported")));
+    return;
+  }
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+      std::make_unique<ScopedProfileKeepAlive>(
+          &profile_.get(), ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
+
+  InstallIsolatedWebAppFromLocation(
+      std::move(keep_alive), std::move(profile_keep_alive),
+      DevModeBundle{.path = path}, std::move(callback));
+}
+
 void IsolatedWebAppInstallationManager::
     OnGetIsolatedWebAppLocationFromCommandLine(
         std::unique_ptr<ScopedKeepAlive> keep_alive,

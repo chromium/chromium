@@ -19,6 +19,8 @@ const debugInfoAsJsonString: Promise<string> =
 const iwaInstallButton =
     getRequiredElement('iwa-install-button') as HTMLButtonElement;
 const iwaInstallUrl = getRequiredElement('iwa-install-url') as HTMLInputElement;
+const iwaSelectFileButton =
+    getRequiredElement('iwa-select-bundle') as HTMLButtonElement;
 
 getRequiredElement('copy-button').addEventListener('click', async () => {
   navigator.clipboard.writeText(await debugInfoAsJsonString);
@@ -104,6 +106,24 @@ function updateIwaInstallButtonState(event: KeyboardEvent) {
 }
 iwaInstallUrl.addEventListener('keyup', updateIwaInstallButtonState);
 iwaInstallStateUpdate();
+
+async function iwaSelectFile() {
+  const iwaInstallMessageDiv = getRequiredElement('iwa-install-message-div');
+
+  iwaInstallMessageDiv.innerText = `Installing IWA from bundle...`;
+
+  const installFromDevBundle =
+      await webAppInternalsHandler
+          .selectFileAndInstallIsolatedWebAppFromDevBundle();
+  if (installFromDevBundle.result.success) {
+    iwaInstallMessageDiv.innerText = `Installing IWA: successfully installed.`;
+    return;
+  }
+
+  iwaInstallMessageDiv.innerText =
+      `Installing IWA: failed to install: ${installFromDevBundle.result.error}`;
+}
+iwaSelectFileButton.addEventListener('click', iwaSelectFile);
 
 document.addEventListener('DOMContentLoaded', async () => {
   getRequiredElement('json').innerText = await debugInfoAsJsonString;

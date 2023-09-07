@@ -71,6 +71,11 @@ class IsolatedWebAppInstallationManager {
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback);
 
+  void InstallIsolatedWebAppFromDevModeBundle(
+      const base::FilePath& path,
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+          callback);
+
   void OnReportInstallationResultForTesting(
       base::RepeatingCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           on_report_installation_result) {

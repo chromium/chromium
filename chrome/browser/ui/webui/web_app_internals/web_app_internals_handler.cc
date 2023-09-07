@@ -16,6 +16,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -28,6 +31,10 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom-shared.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
@@ -358,6 +365,45 @@ class ObliterateStoragePartitionHelper
 
 }  // namespace
 
+class WebAppInternalsHandler::IsolatedWebAppDevBundleSelectListener
+    : public content::FileSelectListener {
+ public:
+  explicit IsolatedWebAppDevBundleSelectListener(
+      base::OnceCallback<void(absl::optional<base::FilePath>)> callback)
+      : callback_(std::move(callback)) {}
+
+  void Show(content::WebContentsDelegate* web_contents_delegate,
+            content::RenderFrameHost* render_frame_host) {
+    blink::mojom::FileChooserParams params;
+    params.mode = blink::mojom::FileChooserParams::Mode::kOpen;
+    params.need_local_path = true;
+    params.accept_types.push_back(u".swbn");
+
+    web_contents_delegate->RunFileChooser(render_frame_host, this, params);
+  }
+
+  // content::FileSelectListener
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {
+    // `params.mode` is kOpen so a single file should have been selected.
+    CHECK_EQ(files.size(), 1u);
+    auto& file = *files[0];
+    // `params.need_local_path` is true so the result should be a native file.
+    CHECK(file.is_native_file());
+    std::move(callback_).Run(file.get_native_file()->file_path);
+  }
+
+  void FileSelectionCanceled() override {
+    std::move(callback_).Run(absl::nullopt);
+  }
+
+ private:
+  ~IsolatedWebAppDevBundleSelectListener() override = default;
+
+  base::OnceCallback<void(absl::optional<base::FilePath>)> callback_;
+};
+
 // static
 void WebAppInternalsHandler::BuildDebugInfo(
     Profile* profile,
@@ -392,9 +438,12 @@ void WebAppInternalsHandler::BuildDebugInfo(
 }
 
 WebAppInternalsHandler::WebAppInternalsHandler(
-    Profile* profile,
+    content::WebUI* web_ui,
     mojo::PendingReceiver<mojom::WebAppInternalsHandler> receiver)
-    : profile_(profile), receiver_(this, std::move(receiver)) {}
+    : web_ui_(web_ui),
+      profile_(Profile::FromBrowserContext(
+          web_ui_->GetWebContents()->GetBrowserContext())),
+      receiver_(this, std::move(receiver)) {}
 
 WebAppInternalsHandler::~WebAppInternalsHandler() = default;
 
@@ -418,19 +467,19 @@ void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
     const GURL& url,
     InstallIsolatedWebAppFromDevProxyCallback callback) {
   if (!web_app::AreWebAppsEnabled(profile_)) {
-    ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
-    mojo_result.success = false;
-    mojo_result.error = std::string("web apps not enabled");
-    std::move(callback).Run(mojo_result.Clone());
+    auto result = mojom::InstallIsolatedWebAppResult::New();
+    result->success = false;
+    result->error = std::string("web apps not enabled");
+    std::move(callback).Run(std::move(result));
     return;
   }
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   if (!provider) {
-    ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
-    mojo_result.success = false;
-    mojo_result.error = std::string("could not get web app provider");
-    std::move(callback).Run(mojo_result.Clone());
+    auto result = mojom::InstallIsolatedWebAppResult::New();
+    result->success = false;
+    result->error = std::string("could not get web app provider");
+    std::move(callback).Run(std::move(result));
     return;
   }
 
@@ -441,11 +490,75 @@ void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void WebAppInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
+    SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback) {
+  content::RenderFrameHost* render_frame_host = web_ui_->GetRenderFrameHost();
+  if (!render_frame_host) {
+    auto result = mojom::InstallIsolatedWebAppResult::New();
+    result->success = false;
+    result->error = "could not get render frame host";
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  Browser* browser =
+      chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+  if (!browser) {
+    auto result = mojom::InstallIsolatedWebAppResult::New();
+    result->success = false;
+    result->error = "could not get browser";
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  base::MakeRefCounted<IsolatedWebAppDevBundleSelectListener>(
+      base::BindOnce(
+          &WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelected,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)))
+      ->Show(browser, render_frame_host);
+}
+
+void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
+    SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback,
+    absl::optional<base::FilePath> path) {
+  if (!path) {
+    auto result = mojom::InstallIsolatedWebAppResult::New();
+    result->success = false;
+    result->error = "no file selected";
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  if (!web_app::AreWebAppsEnabled(profile_)) {
+    auto result = mojom::InstallIsolatedWebAppResult::New();
+    result->success = false;
+    result->error = std::string("web apps not enabled");
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  if (!provider) {
+    auto result = mojom::InstallIsolatedWebAppResult::New();
+    result->success = false;
+    result->error = std::string("could not get web app provider");
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  auto& manager = provider->isolated_web_app_installation_manager();
+  manager.InstallIsolatedWebAppFromDevModeBundle(
+      *path,
+      base::BindOnce(
+          &WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
     WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxyCallback callback,
     web_app::IsolatedWebAppInstallationManager::
         MaybeInstallIsolatedWebAppCommandSuccess result) {
-  ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
+  ::mojom::InstallIsolatedWebAppResult mojo_result;
   if (result.has_value()) {
     mojo_result.success = true;
   } else {

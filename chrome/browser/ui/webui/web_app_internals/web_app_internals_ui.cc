@@ -49,8 +49,6 @@ WebAppInternalsUI::~WebAppInternalsUI() = default;
 
 void WebAppInternalsUI::BindInterface(
     mojo::PendingReceiver<mojom::WebAppInternalsHandler> receiver) {
-  page_handler_ = std::make_unique<WebAppInternalsHandler>(
-      Profile::FromBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext()),
-      std::move(receiver));
+  page_handler_ =
+      std::make_unique<WebAppInternalsHandler>(web_ui(), std::move(receiver));
 }
