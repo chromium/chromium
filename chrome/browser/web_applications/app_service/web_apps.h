@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -134,6 +135,8 @@ class WebApps : public apps::AppPublisher,
 
   std::vector<apps::AppPtr> CreateWebApps();
   void InitWebApps();
+  void OnGetAppSize(AppId app_id,
+                    absl::optional<ComputeAppSizeCommand::Size> size);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // apps::AppPublisher overrides.
@@ -170,6 +173,7 @@ class WebApps : public apps::AppPublisher,
 #endif
 
   WebAppPublisherHelper publisher_helper_;
+  base::WeakPtrFactory<WebApps> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

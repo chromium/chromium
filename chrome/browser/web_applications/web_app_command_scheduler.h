@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/commands/compute_app_size_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
@@ -320,12 +321,18 @@ class WebAppCommandScheduler {
                         base::OnceClosure callback,
                         const base::Location& location = FROM_HERE);
 
+  // Schedules a command that calculates the app and data size of a web app.
+  void ComputeAppSize(
+      const AppId& app_id,
+      base::OnceCallback<void(absl::optional<ComputeAppSizeCommand::Size>)>
+          callback);
+
   // Schedules provided callback after `lock` is granted. The callback can
-  // access web app resources through the `lock`. The `operation_name` is used
-  // describe this operation in the WebAppCommandManager log, surfaced in
-  // chrome://web-app-internals for debugging purposes.
-  // If the system is shutting down, or has already shut down, then the callback
-  // will not be called & will simply be destroyed.
+  // access web app resources through the `lock`. The `operation_name` is
+  // used describe this operation in the WebAppCommandManager log, surfaced
+  // in chrome://web-app-internals for debugging purposes. If the system is
+  // shutting down, or has already shut down, then the callback will not be
+  // called & will simply be destroyed.
   template <typename LockType,
             typename DescriptionType = typename LockType::LockDescription>
   void ScheduleCallbackWithLock(

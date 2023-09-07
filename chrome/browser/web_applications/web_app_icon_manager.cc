@@ -19,6 +19,7 @@
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/identity.h"
@@ -945,6 +946,18 @@ class WriteIconsJob {
   IconsMap other_icons_;
 };
 
+uint64_t AccumulateIconsSizeForApp(std::vector<base::FilePath> icon_paths) {
+  uint64_t total_size = 0;
+
+  for (base::FilePath icon_path : icon_paths) {
+    int64_t file_size;
+    if (base::GetFileSize(std::move(icon_path), &file_size)) {
+      total_size += file_size;
+    }
+  }
+  return total_size;
+}
+
 }  // namespace
 
 WebAppIconManager::WebAppIconManager(Profile* profile)
@@ -1181,6 +1194,27 @@ void WebAppIconManager::ReadBestHomeTabIcon(
                      min_home_tab_icon_size_px),
       base::BindOnce(&LogErrorsCallCallback<SkBitmap>, GetWeakPtr(),
                      std::move(callback)));
+}
+
+void WebAppIconManager::GetIconsSizeForApp(
+    const AppId& app_id,
+    WebAppIconManager::GetIconsSizeCallback callback) const {
+  std::vector<base::FilePath> icon_paths;
+
+  for (IconPurpose purpose : kIconPurposes) {
+    for (SquareSizePx size : provider_->registrar_unsafe()
+                                 .GetAppById(app_id)
+                                 ->downloaded_icon_sizes(purpose)) {
+      IconId icon_id(app_id, purpose, size);
+      base::FilePath icon_path = GetIconFileName(web_apps_directory_, icon_id);
+      icon_paths.push_back(icon_path);
+    }
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&AccumulateIconsSizeForApp, std::move(icon_paths)),
+      std::move(callback));
 }
 
 void WebAppIconManager::ReadSmallestIcon(

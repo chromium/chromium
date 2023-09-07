@@ -13,6 +13,8 @@ source_set("web_applications") {
     "commands/callback_command.h",
     "commands/clear_browsing_data_command.cc",
     "commands/clear_browsing_data_command.h",
+    "commands/compute_app_size_command.cc",
+    "commands/compute_app_size_command.h",
     "commands/dedupe_install_urls_command.cc",
     "commands/dedupe_install_urls_command.h",
     "commands/externally_managed_install_command.cc",
@@ -834,6 +836,7 @@ source_set("web_applications_browser_tests") {
   testonly = true
 
   sources = [
+    "commands/compute_app_size_command_browsertest.cc",
     "commands/externally_managed_install_command_browsertest.cc",
     "commands/fetch_manifest_and_install_command_browsertest.cc",
     "commands/install_from_info_command_browsertest.cc",

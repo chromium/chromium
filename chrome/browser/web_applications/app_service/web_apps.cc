@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -302,8 +304,25 @@ void WebApps::InitWebApps() {
   RegisterPublisher(app_type());
 
   std::vector<apps::AppPtr> apps = CreateWebApps();
+  for (const auto& app : apps) {
+    provider_->scheduler().ComputeAppSize(
+        app->app_id,
+        base::BindOnce(&WebApps::OnGetAppSize, weak_ptr_factory_.GetWeakPtr(),
+                       app->app_id));
+  }
   apps::AppPublisher::Publish(std::move(apps), app_type(),
                               /*should_notify_initialized=*/true);
+}
+
+void WebApps::OnGetAppSize(AppId app_id,
+                           absl::optional<ComputeAppSizeCommand::Size> size) {
+  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  if (!size.has_value()) {
+    return;
+  }
+  app->app_size_in_bytes = size->app_size_in_bytes;
+  app->data_size_in_bytes = size->data_size_in_bytes;
+  PublishWebApp(std::move(app));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

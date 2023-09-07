@@ -167,6 +167,13 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
       SquareSizePx min_size_in_px,
       ReadCompressedIconWithPurposeCallback callback);
 
+  using ReadCompressedIconsSizeCallback =
+      base::OnceCallback<void(const AppId& app_id, uint64_t size)>;
+
+  using GetIconsSizeCallback = base::OnceCallback<void(uint64_t)>;
+  void GetIconsSizeForApp(const AppId& app_id,
+                          GetIconsSizeCallback callback) const;
+
   // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
   // found.
   SkBitmap GetFavicon(const AppId& app_id) const;

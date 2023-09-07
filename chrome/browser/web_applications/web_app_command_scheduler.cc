@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
+#include "chrome/browser/web_applications/commands/compute_app_size_command.h"
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 #include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
 #include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
@@ -682,6 +683,21 @@ void WebAppCommandScheduler::SetAppIsDisabled(const AppId& app_id,
           },
           app_id, is_disabled),
       location);
+}
+
+void WebAppCommandScheduler::ComputeAppSize(
+    const AppId& app_id,
+    base::OnceCallback<void(absl::optional<ComputeAppSizeCommand::Size>)>
+        callback) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<ComputeAppSizeCommand>(app_id, &profile_.get(),
+                                              std::move(callback)));
 }
 
 template <class LockType, class DescriptionType>
