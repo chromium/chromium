@@ -2516,7 +2516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromiumAndroidLinker.RelroSharingStatus2"
-    enum="RelroSharingStatus" expires_after="2022-12-04">
+    enum="RelroSharingStatus" expires_after="2023-12-04">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2526,6 +2526,9 @@ chromium-metrics-reviews@google.com.
 
     See a description of RELRO sharing here:
     https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/android_native_libraries.md#RELRO-Sharing
+
+    Warning: this histogram was expired from 2022-12-04 to 2023-09-07; data may
+    be missing.
   </summary>
 </histogram>
 
