@@ -80,8 +80,8 @@ enum class TutorialId {
   kMinValue,
   kTest1 = kMinValue,
   kTest2,
-  kWelcomeTourPrototype1,
-  kMaxValue = kWelcomeTourPrototype1,
+  kWelcomeTour,
+  kMaxValue = kWelcomeTour,
 };
 
 }  // namespace ash

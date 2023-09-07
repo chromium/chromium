@@ -4,7 +4,6 @@
 
 #include "ash/user_education/user_education_controller.h"
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -22,8 +21,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
-#include "components/user_education/common/tutorial_description.h"
-#include "components/user_education/common/tutorial_identifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,8 +31,6 @@ namespace {
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Return;
-using ::user_education::TutorialDescription;
-using ::user_education::TutorialIdentifier;
 
 }  // namespace
 
@@ -167,90 +162,6 @@ TEST_P(UserEducationControllerTest, GetElementIdentifierForAppId) {
   // Invoke `GetElementIdentifierForAppId()` and verify expectations.
   EXPECT_EQ(controller->GetElementIdentifierForAppId(kAppId), kElementId);
   testing::Mock::VerifyAndClearExpectations(delegate);
-}
-
-// UserEducationControllerUserTypeTest -----------------------------------------
-
-// Base class for tests of the `UserEducationController` parameterized by user
-// type and whether user education features are enabled.
-class UserEducationControllerUserTypeTest
-    : public UserEducationControllerTestBase,
-      public testing::WithParamInterface<
-          std::tuple</*capture_mode_tour_enabled=*/bool,
-                     /*holding_space_tour_enabled=*/bool,
-                     /*welcome_tour_enabled=*/bool,
-                     /*user_type=*/user_manager::UserType>> {
- public:
-  UserEducationControllerUserTypeTest()
-      : UserEducationControllerTestBase(
-            /*capture_mode_tour_enabled=*/std::get<0>(GetParam()),
-            /*holding_space_tour_enabled=*/std::get<1>(GetParam()),
-            /*welcome_tour_enabled=*/std::get<2>(GetParam())) {}
-
-  // Returns user type given test parameterization.
-  user_manager::UserType GetUserType() const { return std::get<3>(GetParam()); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserEducationControllerUserTypeTest,
-                         testing::Combine(
-                             /*capture_mode_tour_enabled=*/testing::Bool(),
-                             /*holding_space_tour_enabled=*/testing::Bool(),
-                             /*welcome_tour_enabled=*/testing::Bool(),
-                             /*user_type=*/
-                             testing::Values(user_manager::USER_TYPE_GUEST,
-                                             user_manager::USER_TYPE_REGULAR)));
-
-// Tests -----------------------------------------------------------------------
-
-// Verifies that tutorials are registered when the primary user session is
-// added. Note that this test is skipped if the controller does not exist.
-TEST_P(UserEducationControllerUserTypeTest, RegistersTutorials) {
-  auto* user_education_controller = UserEducationController::Get();
-  if (!user_education_controller) {
-    GTEST_SKIP();
-  }
-
-  // Ensure delegate exists and disallow any unexpected tutorial registrations.
-  auto* user_education_delegate = this->user_education_delegate();
-  ASSERT_TRUE(user_education_delegate);
-  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
-
-  // Create and cache an account ID for the primary user.
-  AccountId primary_user_account_id = AccountId::FromUserEmail("primary@test");
-
-  // Expect tutorials to be registered with user education services in the
-  // browser if and only if the user is associated with a regular profile.
-  if (GetUserType() == user_manager::USER_TYPE_REGULAR) {
-    // Expect Welcome Tour tutorials to be registered with user education
-    // services in the browser iff the Welcome Tour feature is enabled.
-    if (IsWelcomeTourEnabled()) {
-      auto* welcome_tour_controller = WelcomeTourController::Get();
-      ASSERT_TRUE(welcome_tour_controller);
-      for (const auto& [tutorial_id, ignore] :
-           static_cast<UserEducationFeatureController*>(welcome_tour_controller)
-               ->GetTutorialDescriptions()) {
-        EXPECT_CALL(
-            *user_education_delegate,
-            RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _))
-            .RetiresOnSaturation();
-      }
-    }
-  }
-
-  // Add the primary user session and verify expectations.
-  SimulateUserLogin(primary_user_account_id, GetUserType());
-  testing::Mock::VerifyAndClearExpectations(user_education_delegate);
-
-  // Abort any tutorials that started automatically when the primary user
-  // session started since this test only cares about tutorial registration.
-  user_education_delegate->AbortTutorial(primary_user_account_id,
-                                         /*tutorial_id=*/absl::nullopt);
-
-  // Add a secondary user session and verify that *no* tutorials are registered
-  // with user education services in the browser.
-  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
-  SimulateUserLogin(AccountId::FromUserEmail("secondary@test"), GetUserType());
 }
 
 }  // namespace ash

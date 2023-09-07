@@ -11,6 +11,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
+#include "components/user_education/common/tutorial_description.h"
 
 namespace ash {
 namespace {
@@ -43,6 +44,18 @@ UserEducationTutorialController::~UserEducationTutorialController() {
 // static
 UserEducationTutorialController* UserEducationTutorialController::Get() {
   return g_instance;
+}
+
+void UserEducationTutorialController::RegisterTutorial(
+    UserEducationPrivateApiKey,
+    TutorialId tutorial_id,
+    user_education::TutorialDescription tutorial_description) {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  const AccountId account_id = GetActiveAccountId();
+  CHECK(user_education_util::IsPrimaryAccountId(account_id));
+  delegate_->RegisterTutorial(account_id, tutorial_id,
+                              std::move(tutorial_description));
 }
 
 void UserEducationTutorialController::StartTutorial(

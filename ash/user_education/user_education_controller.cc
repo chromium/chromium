@@ -5,8 +5,6 @@
 #include "ash/user_education/user_education_controller.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/session/session_types.h"
-#include "ash/public/cpp/session/user_info.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/capture_mode_tour/capture_mode_tour_controller.h"
@@ -18,7 +16,6 @@
 #include "ash/user_education/welcome_tour/welcome_tour_prefs.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
-#include "components/user_education/common/tutorial_description.h"
 
 namespace ash {
 namespace {
@@ -47,12 +44,6 @@ UserEducationController::UserEducationController(
 
   if (features::IsWelcomeTourEnabled()) {
     feature_controllers_.emplace(std::make_unique<WelcomeTourController>());
-  }
-
-  auto* session_controller = Shell::Get()->session_controller();
-  session_observation_.Observe(session_controller);
-  for (const auto& user_session : session_controller->GetUserSessions()) {
-    OnUserSessionAdded(user_education_util::GetAccountId(user_session.get()));
   }
 }
 
@@ -97,36 +88,6 @@ void UserEducationController::LaunchSystemWebAppAsync(
   CHECK(user_education_util::IsPrimaryAccountId(account_id));
   delegate_->LaunchSystemWebAppAsync(account_id, system_web_app_type,
                                      display_id);
-}
-
-void UserEducationController::OnChromeTerminating() {
-  session_observation_.Reset();
-}
-
-void UserEducationController::OnUserSessionAdded(const AccountId& account_id) {
-  // NOTE: User education in Ash is currently only supported for the primary
-  // user profile. This is a self-imposed restriction.
-  if (!user_education_util::IsPrimaryAccountId(account_id)) {
-    return;
-  }
-
-  session_observation_.Reset();
-
-  // User education services are not currently supported for irregular profiles.
-  if (user_education_util::GetUserType(account_id) !=
-      user_manager::USER_TYPE_REGULAR) {
-    return;
-  }
-
-  // TODO(http://b/289292432): Move to `UserEducationTutorialController`.
-  // Register all tutorials with user education services in the browser.
-  for (auto& feature_controller : feature_controllers_) {
-    for (auto& [tutorial_id, tutorial_description] :
-         feature_controller->GetTutorialDescriptions()) {
-      delegate_->RegisterTutorial(account_id, tutorial_id,
-                                  std::move(tutorial_description));
-    }
-  }
 }
 
 }  // namespace ash

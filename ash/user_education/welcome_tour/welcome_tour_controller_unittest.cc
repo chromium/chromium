@@ -165,6 +165,43 @@ MATCHER_P2(ShownStep, element_specifier, context_mode, "") {
          arg.context_mode() == context_mode;
 }
 
+MATCHER_P(StepEq, step, "") {
+  return std::make_tuple(arg.arrow(), arg.body_text_id(), arg.context_mode(),
+                         arg.element_id(), arg.element_name(), arg.event_type(),
+                         arg.extended_properties(), arg.must_be_visible(),
+                         arg.must_remain_visible(),
+                         arg.name_elements_callback().is_null(),
+                         arg.next_button_callback().is_null(), arg.step_type(),
+                         arg.subsequence_mode(), arg.title_text_id(),
+                         arg.transition_only_on_event()) ==
+         std::make_tuple(step.arrow(), step.body_text_id(), step.context_mode(),
+                         step.element_id(), step.element_name(),
+                         step.event_type(), step.extended_properties(),
+                         step.must_be_visible(), step.must_remain_visible(),
+                         step.name_elements_callback().is_null(),
+                         step.next_button_callback().is_null(),
+                         step.step_type(), step.subsequence_mode(),
+                         step.title_text_id(), step.transition_only_on_event());
+}
+
+MATCHER_P(TutorialDescriptionEqInternal, tutorial_description, "") {
+  return std::tie(arg.can_be_restarted, arg.complete_button_text_id) ==
+             std::tie(tutorial_description->data.can_be_restarted,
+                      tutorial_description->data.complete_button_text_id) &&
+         base::ranges::equal(
+             arg.steps, tutorial_description->data.steps,
+             [](auto& a, auto& b) { return Matches(StepEq(a))(b); });
+}
+
+// NOTE: Exists only because `user_education::TutorialDescription` is move-only.
+auto TutorialDescriptionEq(
+    user_education::TutorialDescription tutorial_description) {
+  return TutorialDescriptionEqInternal(
+      base::MakeRefCounted<
+          base::RefCountedData<user_education::TutorialDescription>>(
+          std::move(tutorial_description)));
+}
+
 // MockPretargetEventHandler ---------------------------------------------------
 
 // A mock pre-target event handler to expose the received events.
@@ -259,84 +296,71 @@ class WelcomeTourControllerTest : public UserEducationAshTestBase {
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that `GetTutorialDescriptions()` returns expected values.
-TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
+// Verifies that `GetTutorialDescription()` returns expected values.
+TEST_F(WelcomeTourControllerTest, GetTutorialDescription) {
   auto* welcome_tour_controller = WelcomeTourController::Get();
   ASSERT_TRUE(welcome_tour_controller);
 
-  std::map<TutorialId, TutorialDescription> tutorial_descriptions_by_id =
-      static_cast<UserEducationFeatureController*>(welcome_tour_controller)
-          ->GetTutorialDescriptions();
-
-  // TODO(http://b/275616974): Implement tutorial descriptions.
-  EXPECT_EQ(tutorial_descriptions_by_id.size(), 1u);
   EXPECT_THAT(
-      tutorial_descriptions_by_id,
-      Contains(Pair(
-          Eq(TutorialId::kWelcomeTourPrototype1),
-          AllOf(
-              Field(&TutorialDescription::complete_button_text_id,
-                    Eq(IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT)),
-              Field(
-                  &TutorialDescription::steps,
-                  ElementsAre(
-                      ShownStep(ElementSpecifier(kWelcomeTourDialogElementId),
-                                ContextMode::kAny),
-                      HiddenStep(ElementSpecifier(kWelcomeTourDialogElementId),
-                                 ContextMode::kFromPreviousStep),
-                      BubbleStep(ElementSpecifier(kShelfViewElementId),
-                                 ContextMode::kInitial,
-                                 HelpBubbleId::kWelcomeTourShelf,
-                                 IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT,
-                                 HelpBubbleArrow::kBottomCenter,
-                                 /*has_next_button=*/true),
-                      EventStep(ElementSpecifier(kShelfViewElementId),
-                                ContextMode::kFromPreviousStep,
-                                /*has_name_elements_callback=*/true),
-                      BubbleStep(
-                          ElementSpecifier(kUnifiedSystemTrayElementName),
-                          ContextMode::kAny,
-                          HelpBubbleId::kWelcomeTourStatusArea,
-                          IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT,
-                          HelpBubbleArrow::kBottomRight,
-                          /*has_next_button=*/true),
-                      EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
-                                ContextMode::kFromPreviousStep,
-                                /*has_name_elements_callback=*/true),
-                      BubbleStep(
-                          ElementSpecifier(kHomeButtonElementName),
-                          ContextMode::kAny,
-                          HelpBubbleId::kWelcomeTourHomeButton,
-                          IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT,
-                          HelpBubbleArrow::kBottomLeft,
-                          /*has_next_button=*/true),
-                      BubbleStep(
-                          ElementSpecifier(kSearchBoxViewElementId),
-                          ContextMode::kAny,
-                          HelpBubbleId::kWelcomeTourSearchBox,
-                          IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
-                          HelpBubbleArrow::kTopCenter,
-                          /*has_next_button=*/true),
-                      EventStep(ElementSpecifier(kSearchBoxViewElementId),
-                                ContextMode::kFromPreviousStep,
-                                /*has_name_elements_callback=*/false),
-                      BubbleStep(
-                          ElementSpecifier(kSettingsAppElementId),
-                          ContextMode::kFromPreviousStep,
-                          HelpBubbleId::kWelcomeTourSettingsApp,
-                          IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
-                          HelpBubbleArrow::kBottomLeft,
-                          /*has_next_button=*/true),
-                      EventStep(ElementSpecifier(kSettingsAppElementId),
-                                ContextMode::kFromPreviousStep,
-                                /*has_name_elements_callback=*/false),
-                      BubbleStep(
-                          ElementSpecifier(kExploreAppElementId),
-                          ContextMode::kFromPreviousStep,
-                          HelpBubbleId::kWelcomeTourExploreApp,
-                          IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
-                          HelpBubbleArrow::kBottomLeft,
-                          /*has_next_button=*/false)))))));
+      welcome_tour_controller->GetTutorialDescription(),
+      AllOf(
+          Field(&TutorialDescription::complete_button_text_id,
+                Eq(IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT)),
+          Field(
+              &TutorialDescription::steps,
+              ElementsAre(
+                  ShownStep(ElementSpecifier(kWelcomeTourDialogElementId),
+                            ContextMode::kAny),
+                  HiddenStep(ElementSpecifier(kWelcomeTourDialogElementId),
+                             ContextMode::kFromPreviousStep),
+                  BubbleStep(ElementSpecifier(kShelfViewElementId),
+                             ContextMode::kInitial,
+                             HelpBubbleId::kWelcomeTourShelf,
+                             IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kBottomCenter,
+                             /*has_next_button=*/true),
+                  EventStep(ElementSpecifier(kShelfViewElementId),
+                            ContextMode::kFromPreviousStep,
+                            /*has_name_elements_callback=*/true),
+                  BubbleStep(ElementSpecifier(kUnifiedSystemTrayElementName),
+                             ContextMode::kAny,
+                             HelpBubbleId::kWelcomeTourStatusArea,
+                             IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kBottomRight,
+                             /*has_next_button=*/true),
+                  EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
+                            ContextMode::kFromPreviousStep,
+                            /*has_name_elements_callback=*/true),
+                  BubbleStep(ElementSpecifier(kHomeButtonElementName),
+                             ContextMode::kAny,
+                             HelpBubbleId::kWelcomeTourHomeButton,
+                             IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kBottomLeft,
+                             /*has_next_button=*/true),
+                  BubbleStep(ElementSpecifier(kSearchBoxViewElementId),
+                             ContextMode::kAny,
+                             HelpBubbleId::kWelcomeTourSearchBox,
+                             IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kTopCenter,
+                             /*has_next_button=*/true),
+                  EventStep(ElementSpecifier(kSearchBoxViewElementId),
+                            ContextMode::kFromPreviousStep,
+                            /*has_name_elements_callback=*/false),
+                  BubbleStep(ElementSpecifier(kSettingsAppElementId),
+                             ContextMode::kFromPreviousStep,
+                             HelpBubbleId::kWelcomeTourSettingsApp,
+                             IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kBottomLeft,
+                             /*has_next_button=*/true),
+                  EventStep(ElementSpecifier(kSettingsAppElementId),
+                            ContextMode::kFromPreviousStep,
+                            /*has_name_elements_callback=*/false),
+                  BubbleStep(ElementSpecifier(kExploreAppElementId),
+                             ContextMode::kFromPreviousStep,
+                             HelpBubbleId::kWelcomeTourExploreApp,
+                             IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kBottomLeft,
+                             /*has_next_button=*/false)))));
 }
 
 // Verifies that the Welcome Tour is started when the primary user session is
@@ -350,9 +374,10 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   auto* const welcome_tour_controller = WelcomeTourController::Get();
   ASSERT_TRUE(welcome_tour_controller);
 
-  // Ensure delegate exists and disallow any unexpected tutorial starts.
+  // Ensure delegate exists and disallow any tutorial registrations/starts.
   auto* const user_education_delegate = this->user_education_delegate();
   ASSERT_TRUE(user_education_delegate);
+  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
 
   // Observe the `WelcomeTourController` for start/end events.
@@ -372,14 +397,18 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
       /*provide_pref_service=*/true, /*is_new_profile=*/true);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
-  // to start as well as notify observers. Note that completed/aborted
-  // callbacks are cached for later verification.
+  // to be registered and started as well as notify observers. Note that
+  // completed/aborted callbacks are cached for later verification.
   base::OnceClosure completed_callback;
   base::OnceClosure aborted_callback;
   EXPECT_CALL(
       *user_education_delegate,
-      StartTutorial(Eq(primary_account_id),
-                    Eq(TutorialId::kWelcomeTourPrototype1),
+      RegisterTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
+                       TutorialDescriptionEq(
+                           welcome_tour_controller->GetTutorialDescription())));
+  EXPECT_CALL(
+      *user_education_delegate,
+      StartTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
                     Eq(welcome_tour_controller->GetInitialElementContext()),
                     /*completed_callback=*/_,
                     /*aborted_callback=*/_))
@@ -392,7 +421,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // The Welcome Tour dialog is expected to be shown at the start of the tour.
   EXPECT_TRUE(WelcomeTourDialog::Get());
 
-  // Disallow any unexpected tutorial starts.
+  // Disallow any tutorial registrations/starts.
+  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
 
   // Switch to the secondary user session and back again. This should *not*
@@ -434,12 +464,17 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
 TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
   const auto primary_account_id = AccountId::FromUserEmail("primary@test");
 
-  // Expect the Welcome Tour to start when logging in the primary user. Note
-  // that the `aborted_callback` is cached.
+  // Expect the Welcome Tour to be registered and started when logging in the
+  // primary user. Note that the `aborted_callback` is cached.
   base::OnceClosure aborted_callback;
   EXPECT_CALL(*user_education_delegate(),
+              RegisterTutorial(
+                  Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
+                  TutorialDescriptionEq(
+                      WelcomeTourController::Get()->GetTutorialDescription())));
+  EXPECT_CALL(*user_education_delegate(),
               StartTutorial(Eq(primary_account_id),
-                            Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+                            Eq(TutorialId::kWelcomeTour), _, _, _))
       .WillOnce(MoveArg<4>(&aborted_callback));
 
   // Start the Welcome Tour by logging in the primary user for the first time.
@@ -458,9 +493,9 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
 
   // Expect the Welcome Tour to be aborted when clicking the `cancel_button`.
   // Fulfill the request to abort the tour by running the `aborted_callback`.
-  EXPECT_CALL(*user_education_delegate(),
-              AbortTutorial(Eq(primary_account_id),
-                            Eq(TutorialId::kWelcomeTourPrototype1)))
+  EXPECT_CALL(
+      *user_education_delegate(),
+      AbortTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour)))
       .WillOnce(RunOnceClosure(std::move(aborted_callback)));
 
   // Expect an attempt to launch the Explore app when the tour is aborted.
@@ -494,9 +529,9 @@ TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
       .WillOnce(RunOnceClosure(ended_future.GetCallback()));
 
   // Expect the Welcome Tour to be aborted when enabling ChromeVox during tour.
-  EXPECT_CALL(*user_education_delegate(),
-              AbortTutorial(Eq(primary_account_id),
-                            Eq(TutorialId::kWelcomeTourPrototype1)));
+  EXPECT_CALL(
+      *user_education_delegate(),
+      AbortTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour)));
 
   // Expect an attempt to launch the Explore app when the tour is aborted.
   EXPECT_CALL(*user_education_delegate(),
@@ -527,8 +562,9 @@ TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
   EXPECT_TRUE(a11y_controller->spoken_feedback().enabled());
 
   // Start the Welcome Tour by activating the user session. Expect that the
-  // Welcome Tour is NOT started but that an attempt is made to launch the
-  // Explore app.
+  // Welcome Tour is NOT registered or started but that an attempt is made to
+  // launch the Explore app.
+  EXPECT_CALL(*user_education_delegate(), RegisterTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
@@ -583,9 +619,13 @@ TEST_P(WelcomeTourControllerCounterfactualTest,
   const auto primary_account_id = AccountId::FromUserEmail("primary@test");
 
   // Set expectations for whether the Welcome Tour will run.
+  EXPECT_CALL(
+      *user_education_delegate(),
+      RegisterTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour), _))
+      .Times(IsCounterfactual().value_or(false) ? 0u : 1u);
   EXPECT_CALL(*user_education_delegate(),
               StartTutorial(Eq(primary_account_id),
-                            Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+                            Eq(TutorialId::kWelcomeTour), _, _, _))
       .Times(IsCounterfactual().value_or(false) ? 0u : 1u);
 
   // Set expectations for whether the Explore app will launch.
@@ -712,8 +752,12 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
 
   // Set expectations for whether the Welcome Tour will run.
   EXPECT_CALL(*user_education_delegate(),
+              RegisterTutorial(Eq(primary_account_id()),
+                               Eq(TutorialId::kWelcomeTour), _))
+      .Times(is_user_eligibility_expected ? 1u : 0u);
+  EXPECT_CALL(*user_education_delegate(),
               StartTutorial(Eq(primary_account_id()),
-                            Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+                            Eq(TutorialId::kWelcomeTour), _, _, _))
       .Times(is_user_eligibility_expected ? 1u : 0u);
 
   // If the Welcome Tour is run, we delay attempts to launch the Explore app
@@ -796,12 +840,16 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
 
     const auto primary_account_id = AccountId::FromUserEmail("primary@test");
 
-    // When the Welcome Tour tutorial is started, cache the callback to invoke
-    // to complete the tutorial.
+    // When the Welcome Tour tutorial is registered and started, cache the
+    // callback to invoke to complete the tutorial.
     base::OnceClosure completed_callback;
-    EXPECT_CALL(*delegate,
-                StartTutorial(Eq(primary_account_id),
-                              Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+    EXPECT_CALL(
+        *delegate,
+        RegisterTutorial(
+            Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
+            TutorialDescriptionEq(controller->GetTutorialDescription())));
+    EXPECT_CALL(*delegate, StartTutorial(Eq(primary_account_id),
+                                         Eq(TutorialId::kWelcomeTour), _, _, _))
         .WillOnce(MoveArg<3>(&completed_callback));
 
     // Simulate login of the primary user for the first time. Note that this
@@ -1282,9 +1330,10 @@ TEST_F(WelcomeTourControllerTabletTest, DoesNotStart) {
   TabletMode::Get()->SetEnabledForTest(true);
 
   // Activate the primary user session for the first time. Since tablet mode is
-  // enabled, the Welcome Tour should not start, the dialog should not show,
-  // there should be no attempt to launch the Explore app, and no start or end
-  // calls should be made.
+  // enabled, the Welcome Tour should not be registered or started, the dialog
+  // should not show, there should be no attempt to launch the Explore app, and
+  // no start or end calls should be made.
+  EXPECT_CALL(*user_education_delegate(), RegisterTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
@@ -1302,15 +1351,20 @@ TEST_F(WelcomeTourControllerTabletTest, TriggersAbort) {
   const auto primary_account_id = AccountId::FromUserEmail("primary@test");
 
   // Activate the user session for the first time to trigger the Welcome Tour to
-  // start, as well as notify observers. Note that the aborted callback is
-  // cached for later verification.
+  // be registered and started, as well as notify observers. Note that the
+  // aborted callback is cached for later verification.
   base::OnceClosure aborted_callback;
   EXPECT_CALL(*user_education_delegate(),
-              StartTutorial(Eq(primary_account_id),
-                            Eq(TutorialId::kWelcomeTourPrototype1),
-                            /*element_context=*/_,
-                            /*completed_callback=*/_,
-                            /*aborted_callback=*/_))
+              RegisterTutorial(
+                  Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
+                  TutorialDescriptionEq(
+                      WelcomeTourController::Get()->GetTutorialDescription())));
+  EXPECT_CALL(
+      *user_education_delegate(),
+      StartTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
+                    /*element_context=*/_,
+                    /*completed_callback=*/_,
+                    /*aborted_callback=*/_))
       .WillOnce(MoveArgs<4>(&aborted_callback));
   EXPECT_CALL(*observer(), OnWelcomeTourStarted);
   SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());

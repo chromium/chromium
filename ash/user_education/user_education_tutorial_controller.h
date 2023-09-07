@@ -14,6 +14,10 @@ namespace ui {
 class ElementContext;
 }  // namespace ui
 
+namespace user_education {
+struct TutorialDescription;
+}  // namespace user_education
+
 namespace ash {
 
 class UserEducationDelegate;
@@ -34,6 +38,13 @@ class ASH_EXPORT UserEducationTutorialController {
   // Returns the singleton instance owned by the `UserEducationController`.
   // NOTE: Exists if and only if user education features are enabled.
   static UserEducationTutorialController* Get();
+
+  // Registers the tutorial with the specified `tutorial_id`.
+  // NOTE: Currently only the primary user profile is supported.
+  void RegisterTutorial(
+      UserEducationPrivateApiKey,
+      TutorialId tutorial_id,
+      user_education::TutorialDescription tutorial_description);
 
   // Starts the tutorial previously registered with the specified `tutorial_id`.
   // Any running tutorial is cancelled. One of either `completed_callback` or

@@ -10,12 +10,10 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_private_api_key.h"
 #include "ash/user_education/user_education_tutorial_controller.h"
-#include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
@@ -26,19 +24,18 @@ class ElementIdentifier;
 
 namespace ash {
 
-class SessionController;
 class UserEducationDelegate;
 class UserEducationFeatureController;
 
 enum class SystemWebAppType;
 
 // The controller, owned by `Shell`, for user education features in Ash.
-class ASH_EXPORT UserEducationController : public SessionObserver {
+class ASH_EXPORT UserEducationController {
  public:
   explicit UserEducationController(std::unique_ptr<UserEducationDelegate>);
   UserEducationController(const UserEducationController&) = delete;
   UserEducationController& operator=(const UserEducationController&) = delete;
-  ~UserEducationController() override;
+  ~UserEducationController();
 
   // Returns the singleton instance owned by `Shell`.
   // NOTE: Exists if and only if user education features are enabled.
@@ -70,10 +67,6 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
                                int64_t display_id);
 
  private:
-  // SessionObserver:
-  void OnChromeTerminating() override;
-  void OnUserSessionAdded(const AccountId& account_id) override;
-
   // The delegate  which facilitates communication between Ash and user
   // education services in the browser.
   std::unique_ptr<UserEducationDelegate> delegate_;
@@ -90,11 +83,6 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   // The set of controllers responsible for specific user education features.
   std::set<std::unique_ptr<UserEducationFeatureController>>
       feature_controllers_;
-
-  // Sessions are observed only until the primary user session is added at which
-  // point tutorials are registered with user education services in the browser.
-  base::ScopedObservation<SessionController, SessionObserver>
-      session_observation_{this};
 };
 
 }  // namespace ash

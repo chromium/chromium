@@ -5,7 +5,6 @@
 #ifndef ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_CONTROLLER_H_
 #define ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_CONTROLLER_H_
 
-#include <map>
 #include <memory>
 
 #include "ash/accessibility/accessibility_observer.h"
@@ -21,6 +20,10 @@
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "ui/base/interaction/element_identifier.h"
+
+namespace user_education {
+struct TutorialDescription;
+}  // namespace user_education
 
 namespace ash {
 
@@ -60,11 +63,10 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // Returns the initial element context to be used to start the Welcome Tour.
   ui::ElementContext GetInitialElementContext() const;
 
- private:
-  // UserEducationFeatureController:
-  std::map<TutorialId, user_education::TutorialDescription>
-  GetTutorialDescriptions() override;
+  // Returns the tutorial description for the Welcome Tour.
+  user_education::TutorialDescription GetTutorialDescription() const;
 
+ private:
   // AccessibilityObserver:
   void OnAccessibilityControllerShutdown() override;
   void OnAccessibilityStatusChanged() override;
