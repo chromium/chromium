@@ -2089,7 +2089,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5329858041417644019">Váš prehliadač nie je spravovaný</translation>
 <translation id="5332219387342487447">Spôsob dodania</translation>
 <translation id="5332769172018416402">Požiadať správou</translation>
-<translation id="5333022057423422993">Chrome našiel heslo, ktoré ste práve použili, v zozname hesiel odhalených pri porušení ochrany údajov. V rámci zabezpečenia účtov vám odporúčame skontrolovať uložené heslá.</translation>
 <translation id="5334013548165032829">Podrobné denníky systému</translation>
 <translation id="5334145288572353250">Chcete adresu uložiť?</translation>
 <translation id="5340250774223869109">Aplikácia je blokovaná</translation>
@@ -2298,7 +2297,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5784606427469807560">Pri overovaní karty sa vyskytol problém. Skontrolujte pripojenie k internetu a skúste to znova.</translation>
 <translation id="5785756445106461925">Táto stránka obsahuje aj iné zdroje, ktoré nie sú zabezpečené. Tieto zdroje môžu pri prenose vidieť ostatní používatelia a útočník ich môže upraviť tak, aby zmenil vzhľad stránky.</translation>
 <translation id="5786044859038896871">Chcete vyplniť informácie o karte?</translation>
-<translation id="578633867165174378">Chrome našiel heslo, ktoré ste práve použili, v zozname hesiel odhalených pri porušení ochrany údajov. Odporúčame, aby ste si ho okamžite zmenili.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Žiadne}=1{prihlasovacie údaje pre 1 účet}few{prihlasovacie údaje pre # účty}many{sign-in data for # accounts}other{prihlasovacie údaje pre # účtov}}</translation>
 <translation id="5800727402210090597">Opravy a servis mobilných telefónov</translation>
@@ -2672,7 +2670,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6579858392010591435">Dovolenky a sezónne udalosti</translation>
 <translation id="6579990219486187401">Svetloružová</translation>
 <translation id="6581831440014388355">Epilácia a depilácia</translation>
-<translation id="6587182488465657433">Chrome našiel heslo, ktoré ste práve použili, v zozname hesiel odhalených pri porušení ochrany údajov. V rámci zabezpečenia účtov vám odporúčame heslo okamžite zmeniť a skontrolovať všetky uložené heslá.</translation>
 <translation id="6587893660316489419">Obálka B5</translation>
 <translation id="6587923378399804057">Skopírovaný odkaz</translation>
 <translation id="6591833882275308647">Zariadenie <ph name="DEVICE_TYPE" /> nie je spravované</translation>
@@ -2990,6 +2987,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="722454870747268814">Nová karta inkognito</translation>
 <translation id="7226276626900992675">Tomuto webu ste povolili používať súbory cookie tretích strán. Znamená to, že väčšina funkcií webu bude k dispozícii, ale budete mať nižšiu ochranu.</translation>
 <translation id="7227293336683593977">História cien</translation>
+<translation id="7227747683324411744">Útočníci na webe, na ktorý skúšate prejsť, sa vás môžu pokúsiť podvodom presvedčiť, aby ste si nainštalovali škodlivý softvér ovplyvňujúci spôsob prehliadania – napríklad zmenou domovskej stránky alebo zobrazovaním ďalších reklám na weboch, ktoré navštevujete.</translation>
 <translation id="7233592378249864828">Vytlačiť potvrdzovací hárok</translation>
 <translation id="7234638337680728591">Ceny benzínu a pohonné hmoty</translation>
 <translation id="7236417832106250253">Dokončené: <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3189,6 +3187,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7599089013883397081">Vypršal čas stiahnutia</translation>
 <translation id="7600965453749440009">Nikdy neprekladať jazyk <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">K tomuto webu sa zvyčajne pripájate bezpečne, ale Chrome tentoraz nemohol použiť zabezpečené pripojenie. Útočník sa môže pokúsiť odpočúvať alebo upraviť vaše pripojenie k sieti. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Útočníci na webe, na ktorý skúšate prejsť, môžu nainštalovať škodlivý softvér, ktorý ukradne alebo odstráni informácie, ako je vaše heslo, fotky, správy či číslo kreditnej karty.</translation>
 <translation id="7610193165460212391">Hodnota (<ph name="VALUE" />) presahuje povolený rozsah.</translation>
 <translation id="7613889955535752492">Dátum vypršania platnosti: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter môžete zobraziť a spravovať heslá v nastaveniach Chromu</translation>
@@ -3587,6 +3586,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 Ďalšie podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofón je momentálne povolený</translation>
+<translation id="8422228580902424274">Útočníci na webe, na ktorý skúšate prejsť, sa vás môžu pokúsiť podvodom presvedčiť, aby ste si nainštalovali škodlivý softvér alebo prezradili informácie, akú sú vaše heslo, a číslo telefónu či kreditnej karty.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Nastavenia</translation>

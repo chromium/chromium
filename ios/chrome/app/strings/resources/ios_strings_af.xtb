@@ -158,6 +158,7 @@
 <translation id="1872096359983322073">Flits</translation>
 <translation id="1882901927376062252">{count,plural, =1{Boekmerk is in jou Google-rekening, {email}, gestoor}other{{count} boekmerke is in jou Google-rekening, {email}, gestoor}}</translation>
 <translation id="1883255238294161206">Vou lys in</translation>
+<translation id="1890237935065108104">Hierdie instelling is nie beskikbaar nie.</translation>
 <translation id="1894023287452300670">Spoor prys hier na</translation>
 <translation id="189531189292803889">Jou iPad is onlangs teruggestel, wat dalk jou verstekblaaier kon verander het.</translation>
 <translation id="1910975740091000991">Chrome vir iOS</translation>
@@ -418,6 +419,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3328801116991980348">Werfinligting</translation>
 <translation id="3340938510625667914">Chrome-handelinge</translation>
 <translation id="3344485292736684439">{count,plural, =1{Boekmerk is gestoor in “{title}” in jou rekening, {email}}other{Boekmerke is gestoor in “{title}” in jou rekening, {email}}}</translation>
+<translation id="3349676726073650389">Die werwe en soektogte wat jy volg, word in jou Google-rekening gestoor. Jy kan enige tyd in instellings bestuur wat jy volg.</translation>
 <translation id="3365529507898144230">Stoor in Foto’s</translation>
 <translation id="3371831930909698441">Vertaal is beskikbaar. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="3377063233124932127">Jou gestoorde boekmerke, wagwoorde en meer is nou aan die bokant.</translation>
@@ -781,6 +783,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5597915316964418992">Maak die oortjierooster oop</translation>
 <translation id="560322036295180549">Afgeskakel deur jou organisasie</translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
+<translation id="5619871095170816857">Hierdie kaart wys jou laaste gebruikte oop oortjie oor al jou gesinkroniseerde toestelle binne die afgelope 24 uur.</translation>
 <translation id="5626245204502895507">Die lêer kon nie nou afgelaai word nie.</translation>
 <translation id="562753339521713441">Voer veiligheidskontrole uit</translation>
 <translation id="5631164295104953411">Voeg betaalmetode by</translation>
@@ -1086,6 +1089,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7082853213442715471">Wanneer dit aangeskakel is, word sekere webtegnologieë geblokkeer, wat kan veroorsaak dat party webwerwe stadiger laai of nie reg werk nie.</translation>
 <translation id="7095110968493193530">Na Google Wagwoordbestuurder vir <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Onlangse oortjies</translation>
+<translation id="7101580180124131336">Jy sal nou inhoud vanaf en oor <ph name="CHANNEL_NAME" /> in Following sien.</translation>
 <translation id="7102005569666697658">Laai tans af … <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Versteek</translation>
 <translation id="7108762695052995889">Besoek webwerf</translation>
@@ -1166,6 +1170,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="764827086632467055">Tik op Verstekblaaierprogram.</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
+<translation id="7666861622396822790">Jy kan dit in <ph name="BEGIN_LINK" />Inhoudinstellings<ph name="END_LINK" /> bestuur.</translation>
 <translation id="7671141431838911305">INSTALLEER</translation>
 <translation id="7679915578945954324">Werfadresse is gekopieer</translation>
 <translation id="7687508192620387263">Kalenderlêer is beskikbaar</translation>
@@ -1239,6 +1244,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8032569120109842252">Volg tans</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Soekgeskiedenis<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />ander soorte aktiwiteit<ph name="END_LINK" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan hulle enige tyd uitvee.</translation>
 <translation id="804427445359061970">Jy sal jou oortjies van ander toestelle af hier sien</translation>
+<translation id="8044568254381073661">Stoor sonder enkripsie</translation>
 <translation id="8059533439631660104">Vou die afdeling in.</translation>
 <translation id="8065292699993359127">Maak URL'e in Chrome in Incognitomodus oop</translation>
 <translation id="806745655614357130">Hou my data apart</translation>
@@ -1293,7 +1299,9 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8386068868580335421">Stel terug</translation>
 <translation id="838867811594159347">Tik wagfrase in …</translation>
 <translation id="8393889347136007944">Oortjies nie in die afgelope <ph name="THRESHOLD" /> dae gebruik nie</translation>
+<translation id="8395339334550012808">Binnekort sal jy inhoud vanaf en oor <ph name="CHANNEL_NAME" /> in Following sien.</translation>
 <translation id="8395378633507873708">Adresbalk</translation>
+<translation id="8403629764260204788">Versteek “Hou aan blaai”</translation>
 <translation id="8407669440184693619">Geen wagwoorde is vir hierdie werf gekry nie</translation>
 <translation id="842017693807136194">Aangemeld met</translation>
 <translation id="8423121072346537366">Sopas</translation>

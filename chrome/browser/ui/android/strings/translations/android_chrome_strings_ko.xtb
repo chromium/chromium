@@ -58,6 +58,7 @@
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1246905108078336582">클립보드에서 추천 항목을 삭제하시겠습니까?</translation>
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">이제 팔로우 중에서 <ph name="SITE_NAME" /> 관련 콘텐츠를 볼 수 있습니다. 팔로우하는 사이트 및 검색은 Google 계정에 저장됩니다. 언제든지 설정에서 팔로우 항목을 관리할 수 있습니다.</translation>
 <translation id="1263231323834454256">읽기 목록</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1269129608791067105">여기에서 방문 기록을 확인할 수 있습니다</translation>
@@ -136,6 +137,7 @@
 <translation id="1671236975893690980">다운로드 대기 중...</translation>
 <translation id="1672586136351118594">다시 표시하지 않음</translation>
 <translation id="1680919990519905526">Google 렌즈로 이미지의 상품 구입 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">곧 팔로우 중에서 <ph name="SITE_NAME" /> 관련 콘텐츠를 볼 수 있습니다. 팔로우하는 사이트 및 검색은 Google 계정에 저장됩니다. 언제든지 설정에서 팔로우 항목을 관리할 수 있습니다.</translation>
 <translation id="1702543251015153180">어두운 테마 설정을 변경하시겠습니까?</translation>
 <translation id="1702907158640575240">관리 브라우저</translation>
 <translation id="1710099199314114079">탭 전환 또는 닫기</translation>
@@ -1473,6 +1475,7 @@
 <translation id="8497242791509864205">정렬 옵션 열기</translation>
 <translation id="8497480609928300907">개인 정보 보호 가이드 설명</translation>
 <translation id="8497726226069778601">아직 표시할 내용 없음</translation>
+<translation id="8501423924927196358">페이지 통계 로드 표시기</translation>
 <translation id="8503559462189395349">Chrome 비밀번호</translation>
 <translation id="8503813439785031346">사용자 이름</translation>
 <translation id="8505766168025405649">알림에서 다운로드 상태를 확인하세요.</translation>

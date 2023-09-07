@@ -2092,7 +2092,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5329858041417644019">Preglednikom se ne upravlja</translation>
 <translation id="5332219387342487447">Način otpreme</translation>
 <translation id="5332769172018416402">Pošalji upit u poruci</translation>
-<translation id="5333022057423422993">Chrome je saznao da je zaporka koju ste upravo upotrijebili otkrivena u povredi podataka. Da biste zaštitili svoje račune, preporučujemo da provjerite spremljene zaporke.</translation>
 <translation id="5334013548165032829">Detaljni zapisnici sustava</translation>
 <translation id="5334145288572353250">Želite li spremiti adresu?</translation>
 <translation id="5340250774223869109">Aplikacija je blokirana</translation>
@@ -2301,7 +2300,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5784606427469807560">Pojavio se problem prilikom potvrđivanja kartice. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="5785756445106461925">Nadalje, ova stranica sadrži druge resurse koji nisu sigurni. Te resurse mogu vidjeti drugi tijekom prijenosa i napadač ih može izmijeniti kako bi promijenio izgled stranice.</translation>
 <translation id="5786044859038896871">Želite li ispuniti podatke o kartici?</translation>
-<translation id="578633867165174378">Chrome je saznao da je zaporka koju ste upravo upotrijebili otkrivena u povredi podataka. Preporučujemo da odmah promijenite tu zaporku.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Nijedan}=1{podaci za prijavu za jedan račun}one{podaci za prijavu za # račun}few{podaci za prijavu za # računa}other{podaci za prijavu za # računa}}</translation>
 <translation id="5800727402210090597">Popravci i usluge u vezi s mobilnim telefonima</translation>
@@ -2676,7 +2674,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6579858392010591435">Blagdani i sezonski događaji</translation>
 <translation id="6579990219486187401">Svijetloružičasta</translation>
 <translation id="6581831440014388355">Uklanjanje neželjenih dlačica s tijela i lica</translation>
-<translation id="6587182488465657433">Chrome je saznao da je zaporka koju ste upravo upotrijebili otkrivena u povredi podataka. Da biste zaštitili svoje račune, preporučujemo da je odmah promijenite i zatim provjerite spremljene zaporke.</translation>
 <translation id="6587893660316489419">Omotnica B5</translation>
 <translation id="6587923378399804057">Veza koju ste kopirali</translation>
 <translation id="6591833882275308647">Uređaj <ph name="DEVICE_TYPE" /> nije upravljani uređaj</translation>

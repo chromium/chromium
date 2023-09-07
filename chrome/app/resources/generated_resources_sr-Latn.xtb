@@ -486,6 +486,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1390548061267426325">Otvori kao uobičajenu karticu</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> nema ovlašćenje da štampa na: <ph name="PRINTER_NAME" />. Obratite se administratoru.</translation>
 <translation id="1392047138650695757">Korisnički rečnici</translation>
+<translation id="139300021892314943">Ograniči ko može da se prijavi</translation>
 <translation id="1393283411312835250">Sunce i oblaci</translation>
 <translation id="1395730723686586365">Program za ažuriranje je pokrenut</translation>
 <translation id="1395832189806039783">Istaknite stavku pomoću fokusa tastature</translation>
@@ -2514,6 +2515,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2956070239128776395">Odeljak ugnežden u grupu: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Upozorenje o pakovanju dodatka</translation>
 <translation id="2959127025785722291">Došlo je do greške. Skeniranje nije dovršeno. Probajte ponovo.</translation>
+<translation id="2959474507964749987">Ovaj šifrovani fajl je možda virus ili malver.<ph name="LINE_BREAK" />Da biste proverili da li je nebezbedan, možete da pošaljete fajl i lozinku u Google bezbedno pregledanje. Skeniranje obično traje nekoliko sekundi.<ph name="LINE_BREAK" />Da biste skenirali, dodajte lozinku za fajl.</translation>
 <translation id="2959842337402130152">Vraćanje nije uspelo zbog nedostatka memorijskog prostora. Oslobodite <ph name="SPACE_REQUIRED" /> sa uređaja i probajte ponovo.</translation>
 <translation id="2960208947600937804">Došlo je do greške pri konfigurisanju Linux-a. Obratite se administratoru.</translation>
 <translation id="2960942820860729477">Učestalost osvežavanja</translation>
@@ -3880,7 +3882,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4067839975993712852">Označi aktuelnu karticu kao pročitanu</translation>
 <translation id="4068776064906523561">Sačuvani otisci prstiju</translation>
 <translation id="407173827865827707">Pri kliku</translation>
-<translation id="4072701974556190758">Lozinka će biti sačuvana na vašem Google nalogu, <ph name="ACCOUNT" />. Nećete morati da je pamtite.</translation>
 <translation id="4072805772816336153">Probajte ponovo kasnije</translation>
 <translation id="407520071244661467">Razmera</translation>
 <translation id="407543464472585404">Profil <ph name="NAME" /> je povezan sa imejlom <ph name="EMAIL" /></translation>
@@ -3977,6 +3978,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4147099377280085053">Izaberite tabelu sa Brajevom azbukom</translation>
 <translation id="4147911968024186208">Probajte ponovo. Ako se ova greška ponovo prikaže, kontaktirajte predstavnika podrške.</translation>
 <translation id="414800391140809654">može da koristi vaše podatke dok pregledate</translation>
+<translation id="4148195018520464922">Možete da ograničite prijavljivanje na određene korisnike. Time se uklanja opcija Dodaj osobu sa ekrana za prijavljivanje. Možete da uklonite i aktuelne korisnike.</translation>
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4150569944729499860">Kontekst ekrana</translation>
 <translation id="4151449637210235443">Podelite sa nama utiske o nedavnoj igri</translation>
@@ -5159,6 +5161,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5146896637028965135">Sistemski glas</translation>
 <translation id="5147992672778369947">Koristite preporučenu lozinku</translation>
 <translation id="5148277445782867161">Google usluga lokacije koristi izvore kao što su Wi‑Fi mreže, mobilne mreže i senzori da bi odredila približnu lokaciju uređaja.</translation>
+<translation id="5148285448107770349">Lozinka mora da sadrži najmanje 8 znakova</translation>
 <translation id="5150254825601720210">Naziv SSL servera Netscape sertifikata</translation>
 <translation id="5151354047782775295">Oslobodite prostor na disku ili će određeni podaci možda automatski biti izbrisani</translation>
 <translation id="5153234146675181447">Zaboravljanje telefona</translation>
@@ -7954,7 +7957,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7461924472993315131">Zakači</translation>
 <translation id="746216226901520237">Sledeći put će telefon otključati <ph name="DEVICE_TYPE" />. Možete da isključite Smart Lock u podešavanjima.</translation>
 <translation id="7464153996453281700">Komponenta je već ažurirana</translation>
-<translation id="7464637891177137294">Sačuvajte je na Google nalogu, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# otvorena kartica, pritisnite da biste uključili/isključili traku sa karticama}one{# otvorena kartica, pritisnite da biste uključili/isključili traku sa karticama}few{# otvorene kartice, pritisnite da biste uključili/isključili traku sa karticama}other{# otvorenih kartica, pritisnite da biste uključili/isključili traku sa karticama}}</translation>
 <translation id="7465635034594602553">Došlo je do greške. Sačekajte par minuta, pa ponovo pokrenite aplikaciju <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Uklonite okruženje za razvoj kojim se upravlja (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8033,7 +8035,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7524849817690367493">Centar za bezbednost</translation>
 <translation id="7525067979554623046">Napravi</translation>
 <translation id="7526989658317409655">Čuvar mesta</translation>
-<translation id="7527758104894292229">Ažurirajte je na Google nalogu, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Ne otvaraj</translation>
 <translation id="7529411698175791732">Proverite internet vezu. Ako se problem i dalje javlja, probajte da se odjavite i ponovo prijavite.</translation>
 <translation id="7529865045818406536">Željene mreže će se koristiti ako je dostupno više od jedne prethodne mreže</translation>
@@ -8138,6 +8139,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7617263010641145920">Uključite Play prodavnicu</translation>
 <translation id="7617648809369507487">Koristi nenametljivu razmenu poruka</translation>
 <translation id="7621382409404463535">Sistem nije uspeo da sačuva konfiguraciju uređaja.</translation>
+<translation id="7621480263311228380">Nemaju dozvolu da koriste informacije koje su sačuvali o vama</translation>
 <translation id="7621595347123595643">Nećete moći da povratite lokalne podatke ako zaboravite lozinku ili PIN.</translation>
 <translation id="7622114377921274169">Puni se.</translation>
 <translation id="7622768823216805500">Sajtovi obično instaliraju obrađivače plaćanja za potrebe funkcija kupovine poput lakšeg plaćanja</translation>
@@ -9485,6 +9487,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8680251145628383637">Prijavite se da bi vam obeleživači, istorija, lozinke i druga podešavanja bili dostupni na svim uređajima. Automatski ćete biti prijavljeni i na Google usluge.</translation>
 <translation id="8681886425883659911">Oglasi su blokirani na sajtovima za koje je poznato da prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>
 <translation id="8682730193597992579">Štampač <ph name="PRINTER_NAME" /> je povezan i spreman</translation>
+<translation id="8684471948980641888">Dozvoli sinhronizaciju na mrežama sa ograničenjem</translation>
 <translation id="8685540043423825702">Chrome profil</translation>
 <translation id="8686142379631285985">Prijavljeni ste kao <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Otkažite fajl <ph name="FILE_NAME" /></translation>

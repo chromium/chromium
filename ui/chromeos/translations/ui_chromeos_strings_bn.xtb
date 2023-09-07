@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">প্রসঙ্গ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" খোলা যায়নি</translation>
 <translation id="3280431534455935878">প্রস্তুতি</translation>
+<translation id="3280719573299097127">আপনি পরিমাপ করা নেটওয়ার্ক ব্যবহার করছেন। 'ফাইল সিঙ্ক' পজ হয়ে গেছে।</translation>
 <translation id="3280987981688031357">ভিনাইল রেকর্ড</translation>
 <translation id="3290356915286466215">সুরক্ষিত নেই</translation>
 <translation id="3291218047831493686">সিম লক সেটিং পরিবর্তন করতে এই নেটওয়ার্কে কানেক্ট করুন</translation>
@@ -631,6 +632,7 @@
 <translation id="5838451609423551646">সব বেছে নেওয়া এন্ট্রি সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="5838825566232597749">মার্কিন ওয়ার্কম্যান আন্তর্জাতিক</translation>
 <translation id="5845721951356578987">নার্স</translation>
+<translation id="5858478190805449225">'ব্যাটারি সেভার' মোড চালু আছে। 'ব্যাটারি সেভার' মোড বন্ধ করা হলে আবার চেষ্টা করুন।</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5861477046012235702">গেমার</translation>
 <translation id="5864471791310927901">DHCP লুকআপ ব্যর্থ</translation>
@@ -919,6 +921,7 @@
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" />, ডাউনলোড করুন</translation>
 <translation id="8106045200081704138">আমার সাথে শেয়ার করা</translation>
 <translation id="8116072619078571545">বরফ জল</translation>
+<translation id="8120392982188717723">পরিমাপ করা নেটওয়ার্ক সিঙ্ক করতে দিন</translation>
 <translation id="8124093710070495550">সিঙ্ক করা সম্পর্কিত সমস্যা</translation>
 <translation id="8128733386027980860">ইংরেজি (যুক্তরাজ্য) ভাষায় Dvorak কীবোর্ড</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" আপনার সাথে শেয়ার করা হয়েছে৷ আপনি এটিকে মুছে ফেলতে পারবেন না কারণ আপনি এটির মালিক নন৷</translation>

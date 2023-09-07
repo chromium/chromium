@@ -3883,7 +3883,6 @@
 <translation id="4067839975993712852">將目前的分頁標示為已讀取</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
 <translation id="407173827865827707">點擊時</translation>
-<translation id="4072701974556190758">密碼會儲存在你的 Google 帳戶 (<ph name="ACCOUNT" />) 中，因此你不必記住密碼。</translation>
 <translation id="4072805772816336153">請稍後再試</translation>
 <translation id="407520071244661467">縮放比例</translation>
 <translation id="407543464472585404"><ph name="NAME" />的設定檔已連結至 <ph name="EMAIL" /></translation>
@@ -4179,6 +4178,7 @@
 <translation id="4322394346347055525">關閉其他分頁</translation>
 <translation id="4324577459193912240">檔案未完成下載</translation>
 <translation id="4325237902968425115">正在解除安裝「<ph name="LINUX_APP_NAME" />」...</translation>
+<translation id="4325433082696797523">儲存空間與電源</translation>
 <translation id="4326146840124313313">Chrome 最強大的安全防護功能可進一步協助你防範危險的網站、下載內容和擴充功能</translation>
 <translation id="4326484226728068206">購物車中的商品在「<ph name="MERCHANT_NAME" />」享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，查看時間為 <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">冰水</translation>
@@ -5162,6 +5162,7 @@
 <translation id="5146896637028965135">系統語音</translation>
 <translation id="5147992672778369947">使用建議的密碼</translation>
 <translation id="5148277445782867161">Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，推測出這部裝置的所在位置。</translation>
+<translation id="5148285448107770349">密碼至少要有 8 個半形字元</translation>
 <translation id="5150254825601720210">Netscape 憑證 SSL 伺服器名稱</translation>
 <translation id="5151354047782775295">請釋出磁碟空間，或選取系統可自動刪除的資料</translation>
 <translation id="5153234146675181447">移除手機</translation>
@@ -7949,7 +7950,6 @@
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">下次手機會為你的 <ph name="DEVICE_TYPE" /> 解鎖。你可以在「設定」中停用 Smart Lock。</translation>
 <translation id="7464153996453281700">元件已是最新版本</translation>
-<translation id="7464637891177137294">將密碼儲存在你的 Google 帳戶 (<ph name="ACCOUNT" />) 中</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{已開啟 # 個分頁，按下即可切換分頁列}other{已開啟 # 個分頁，按下即可切換分頁列}}</translation>
 <translation id="7465635034594602553">發生錯誤，請過幾分鐘後再重新執行「<ph name="APP_NAME" />」。</translation>
 <translation id="7465777686629334728">移除受管理的開發環境 (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8028,7 +8028,6 @@
 <translation id="7524849817690367493">安全中心</translation>
 <translation id="7525067979554623046">建立</translation>
 <translation id="7526989658317409655">預留位置</translation>
-<translation id="7527758104894292229">更新 Google 帳戶 (<ph name="ACCOUNT" />) 中的密碼</translation>
 <translation id="7528224636098571080">不要開啟</translation>
 <translation id="7529411698175791732">檢查你的網際網路連線。如果問題持續發生，請嘗試登出，然後再次登入。</translation>
 <translation id="7529865045818406536">如果有多個先前的網路可用，系統會使用慣用網路</translation>

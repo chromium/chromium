@@ -87,6 +87,7 @@ Als je dit beleid niet toepast, is de functie voor autocorrectie op het fysieke 
       Ga naar https://support.google.com/chrome/a?p=Supported_directory_variables voor een lijst met variabelen die je kunt gebruiken.
 
       Als je deze instelling niet instelt, wordt de standaard profieldirectory gebruikt.</translation>
+<translation id="1053981429146436598">Een groep beleidsregels voor instellingen voor privénetwerkverzoeken.  Zie https://wicg.github.io/private-network-access/.</translation>
 <translation id="1059069692400941670">Import van standaard zoekmachine bij eerste uitvoering uitzetten</translation>
 <translation id="1062011392452772310">Externe bevestiging van apparaat aanzetten</translation>
 <translation id="1062407476771304334">Vervangen</translation>
@@ -244,6 +245,10 @@ Als je dit beleid niet toepast, is bescherming tegen phishing aan de clientzijde
 <translation id="120937472976628837">Ventilatorgegevens rapporteren</translation>
 <translation id="1212233008927724662">Lazy loading van WebUI voor inloggen uitzetten.</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange-ondersteuning (SXG) aanzetten</translation>
+<translation id="1218658069098810124">Als je het beleid toepast, kunnen WebRTC-peerverbindingen worden gedowngraded naar verouderde versies van de TLS/DTLS-protocollen (DTLS 1.0, TLS 1.0 en TLS 1.1).
+      Als je dit beleid niet toepast of niet instelt, worden deze TLS/DTLS-versies uitgezet.
+
+      Dit beleid is beëindigd en wordt verwijderd in versie M121 van <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1219027971768347970">De standaardconfiguratie gebruiken voor de audio-sandbox</translation>
 <translation id="1219695476179627719">Geeft aan of het apparaat moet terugkeren naar de versie die is ingesteld met <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> als er al een latere versie is geïnstalleerd.
 

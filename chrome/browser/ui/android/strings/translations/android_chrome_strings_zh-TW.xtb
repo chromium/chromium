@@ -58,6 +58,7 @@
 <translation id="124678866338384709">關閉目前的分頁</translation>
 <translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">你現在會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中，隨時可以前往設定管理追蹤項目。</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">這裡會顯示你的歷史記錄</translation>
@@ -137,6 +138,7 @@
 <translation id="1671236975893690980">正在等候下載…</translation>
 <translation id="1672586136351118594">不要再顯示</translation>
 <translation id="1680919990519905526">選購 Google 智慧鏡頭拍攝的產品<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">不久後，你會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中，隨時可以前往設定管理追蹤項目。</translation>
 <translation id="1702543251015153180">要變更深色主題設定嗎？</translation>
 <translation id="1702907158640575240">受管理的瀏覽器</translation>
 <translation id="1710099199314114079">切換或關閉分頁</translation>
@@ -1472,6 +1474,7 @@
 <translation id="8497242791509864205">開啟排序選項</translation>
 <translation id="8497480609928300907">隱私權指南說明</translation>
 <translation id="8497726226069778601">目前還沒有任何常用網頁…</translation>
+<translation id="8501423924927196358">網頁深入分析資訊載入指標</translation>
 <translation id="8503559462189395349">Chrome 密碼</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8505766168025405649">查看下載狀態通知</translation>

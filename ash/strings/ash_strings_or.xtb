@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">ସୂର୍ଯ୍ୟାସ୍ତ ପର୍ଯ୍ୟନ୍ତ ବନ୍ଦ ଅଛି</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। Insert କୀକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + Shift + Backspace ଦବାନ୍ତୁ।</translation>
 <translation id="1770726142253415363">ଧାଡ଼ି <ph name="ROW_NUMBER" />, ସ୍ତମ୍ଭ <ph name="COLUMN_NUMBER" />କୁ ମୁଭ କରାଯାଇଛି।</translation>
+<translation id="1771458705381257690">ଆପଣଙ୍କ ଡିଭାଇସକୁ ସେଟ ଅପ ଓ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ <ph name="NAME" /> ଖୋଲନ୍ତୁ</translation>
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1774796056689732716">କ୍ୟାଲେଣ୍ଡର, <ph name="CURRENT_MONTH_YEAR" />, ବର୍ତ୍ତମାନ <ph name="DATE" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />ଟିରୁ <ph name="NUM_SHOWN_ITEMS" />ଟି ଦେଖାଉଛି</translation>
@@ -1192,6 +1193,7 @@
 <translation id="5876666360658629066">ବାପାମା କୋଡ୍ ଲେଖନ୍ତୁ</translation>
 <translation id="5881540930187678962">ଫୋନ୍ ହବ୍ ପରେ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="5881663018261910378">ବନ୍ଦ ଅଛି</translation>
+<translation id="5883017113634523865">ଉପଲବ୍ଧ ସମସ୍ତ ଫିଚର ଦେଖିବା ପାଇଁ Google Playରୁ <ph name="NAME" /> ପାଇଁ ଆପ ଇନଷ୍ଟଲ କରନ୍ତୁ</translation>
 <translation id="5887954372087850114"><ph name="DESK_TITLE" /> ପାଇଁ Window <ph name="WINDOW_TITLE" /> ଆସାଇନ କରାଯାଇଛି ଏବଂ ଏହାକୁ ଅନ୍ୟ ସମସ୍ତ ଡେସ୍କରୁ ଅନଆସାଇନ କରାଯାଇଛି</translation>
 <translation id="588817334757907802">Chrome ବ୍ରାଉଜରରେ ଫାଇଲ ଖୋଲନ୍ତୁ</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>

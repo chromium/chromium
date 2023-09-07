@@ -58,6 +58,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="124678866338384709">Aizvērt pašreizējo cilni</translation>
 <translation id="1246905108078336582">Vai noņemt ieteikumu no starpliktuves?</translation>
 <translation id="1258753120186372309">Google svētku logotips: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Tagad sadaļā “Sekojat” tiks rādīts saturs no vietnes <ph name="SITE_NAME" /> vai par šo vietni. Vietnes un meklēšanas vaicājumi, kuriem sekojat, tiek saglabāti jūsu Google kontā. Jebkurā laikā iestatījumos varat pārvaldīt saturu, kam sekojat.</translation>
 <translation id="1263231323834454256">Lasīšanas saraksts</translation>
 <translation id="1266864766717917324">Nevarēja kopīgot: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Šeit varat skatīt savu vēsturi</translation>
@@ -136,6 +137,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="1671236975893690980">Lejupielāde tiek gaidīta...</translation>
 <translation id="1672586136351118594">Vairs nerādīt</translation>
 <translation id="1680919990519905526">Veikals rīkā Google Lens <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Drīzumā sadaļā “Sekojat” tiks rādīts saturs no vietnes <ph name="SITE_NAME" /> vai par šo vietni. Vietnes un meklēšanas vaicājumi, kuriem sekojat, tiek saglabāti jūsu Google kontā. Jebkurā laikā iestatījumos varat pārvaldīt saturu, kam sekojat.</translation>
 <translation id="1702543251015153180">Vai mainīt jūsu tumšā motīva iestatījumus?</translation>
 <translation id="1702907158640575240">Pārvaldīts pārlūks</translation>
 <translation id="1710099199314114079">Pārslēgt vai aizvērt cilnes</translation>
@@ -1473,6 +1475,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8497242791509864205">Atvērt kārtošanas opcijas</translation>
 <translation id="8497480609928300907">Paskaidrojums par konfidencialitātes ceļvedi</translation>
 <translation id="8497726226069778601">Šeit vēl nekā nav...</translation>
+<translation id="8501423924927196358">Lapu ieskatu ielādes indikators</translation>
 <translation id="8503559462189395349">Chrome paroles</translation>
 <translation id="8503813439785031346">Lietotājvārds</translation>
 <translation id="8505766168025405649">Skatiet paziņojumu par lejupielādes statusu.</translation>

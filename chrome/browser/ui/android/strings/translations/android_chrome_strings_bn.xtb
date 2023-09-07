@@ -58,6 +58,7 @@
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246905108078336582">ক্লিপবোর্ড থেকে সাজেশন সরাতে চান?</translation>
 <translation id="1258753120186372309">Google ডুডল: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">'ফলো করা হচ্ছে' বিকল্পে এখন আপনি <ph name="SITE_NAME" /> থেকে এবং এটির সম্বন্ধে কন্টেন্ট দেখতে পাবেন। আপনি যেসব সাইট সার্চ এবং ফলো করেন, সেগুলি আপনার Google অ্যাকাউন্টে সেভ হয়ে যায়। সেটিংস থেকে যেকোনও সময় আপনার ফলো করা কন্টেন্ট ম্যানেজ করতে পারবেন।</translation>
 <translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> শেয়ার করা যায়নি</translation>
 <translation id="1269129608791067105">এখানে আপনার ইতিহাস দেখতে পাবেন</translation>
@@ -136,6 +137,7 @@
 <translation id="1671236975893690980">ডাউনলোড মুলতবি হয়ে আছে...</translation>
 <translation id="1672586136351118594">আর দেখতে চাই না</translation>
 <translation id="1680919990519905526">Google Lens-এ ছবি কিনুন <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">'ফলো করা হচ্ছে' বিকল্পে শীঘ্রই আপনি <ph name="SITE_NAME" /> থেকে এবং এটির সম্বন্ধে কন্টেন্ট দেখতে পাবেন। আপনি যেসব সাইট সার্চ এবং ফলো করেন, সেগুলি আপনার Google অ্যাকাউন্টে সেভ হয়ে যায়। সেটিংস থেকে যেকোনও সময় আপনার ফলো করা কন্টেন্ট ম্যানেজ করতে পারবেন।</translation>
 <translation id="1702543251015153180">ডার্ক থিম সেটিংস পরিবর্তন করবেন?</translation>
 <translation id="1702907158640575240">ম্যানেজ করা ব্রাউজার</translation>
 <translation id="1710099199314114079">ট্যাব পাল্টান বা বন্ধ করুন</translation>
@@ -1475,6 +1477,7 @@
 <translation id="8497242791509864205">সাজানোর বিকল্প খুলুন</translation>
 <translation id="8497480609928300907">গোপনীয়তা সম্পর্কিত গাইডের ব্যাখ্যা</translation>
 <translation id="8497726226069778601">এখানে... দেখার মতো এখনো কিছু নেই</translation>
+<translation id="8501423924927196358">পেজের ইনসাইট লোড হওয়ার ইন্ডিকেটর</translation>
 <translation id="8503559462189395349">Chrome পাসওয়ার্ডগুলি</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="8505766168025405649">ডাউনলোড স্ট্যাটাস সম্পর্কিত বিজ্ঞপ্তি দেখুন</translation>

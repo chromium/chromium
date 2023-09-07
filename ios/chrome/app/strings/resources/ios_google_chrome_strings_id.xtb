@@ -73,6 +73,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="3655656110921623717">Artinya, Chrome akan selalu meminta situs seluler.</translation>
 <translation id="3720541637541300822">Kunci Tab Samaran Saat Anda Menutup Chrome</translation>
 <translation id="3741995255368156336">Membuka Daftar Bacaan Chrome.</translation>
+<translation id="3744018071945602754">Kelola Sandi di Chrome</translation>
 <translation id="3827545470516145620">Anda mendapatkan perlindungan keamanan standar di perangkat ini</translation>
 <translation id="384394811301901750">Google Chrome saat ini tidak dapat menggunakan kamera</translation>
 <translation id="3901001113120561395">Dapatkan manfaat optimal dari Chrome</translation>
@@ -87,6 +88,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> menggunakan Chrome dan meninggalkan bookmark, sandi, serta setelan lainnya di perangkat ini.</translation>
 <translation id="424864128008805179">Logout dari Chrome?</translation>
 <translation id="4251174643044751591">Membuka Halaman Setelan Metode Pembayaran di Chrome.</translation>
+<translation id="4453284704333523777">Kelola Setelan Chrome</translation>
 <translation id="4508370294876102450">Buka Chrome dari Aplikasi Apa Saja</translation>
 <translation id="4523886039239821078">Beberapa pengaya (pengaya) menyebabkan Chrome mogok. Uninstal:</translation>
 <translation id="4633328489441962921">Chrome tidak dapat memeriksa update</translation>
@@ -123,6 +125,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="571296537125272375">Offline, Chrome tidak dapat memeriksa update</translation>
 <translation id="5716154293141027663">Membuka Chrome setiap kali Anda mengetuk link di aplikasi lainnya</translation>
 <translation id="5808435672482059465">Lihat Histori Chrome Anda</translation>
+<translation id="589695154992054845">Membuka Pengelola Sandi di Chrome.</translation>
 <translation id="5998675059699164418">Organisasi mengharuskan Anda login untuk menggunakan Chrome.</translation>
 <translation id="6054613632208573261">Gunakan Chrome secara Default</translation>
 <translation id="6063091872902370735">Izinkan Login Chrome</translation>
@@ -215,6 +218,7 @@ Hal-hal yang perlu dipertimbangkan:
   • Jika Chrome mengalami error, detail tentang error tersebut dapat menyertakan beberapa info pribadi.
 
   • Jika Anda mengaktifkan sinkronisasi, metrik juga dapat menyertakan info tentang URL yang Anda buka.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Membuka Setelan di Chrome.</translation>
 <translation id="9112744793181547300">Setel Chrome sebagai Default?</translation>
 <translation id="9122931302567044771">Artinya, Chrome akan selalu meminta situs desktop.</translation>
 <translation id="9181628561061032322">Membuka Tab Terbaru Chrome.</translation>

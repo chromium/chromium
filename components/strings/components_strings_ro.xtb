@@ -2093,7 +2093,6 @@
 <translation id="5329858041417644019">Browserul tău nu este gestionat</translation>
 <translation id="5332219387342487447">Metoda de expediere</translation>
 <translation id="5332769172018416402">Solicită într-un mesaj</translation>
-<translation id="5333022057423422993">Chrome a găsit parola pe care tocmai ai folosit-o într-o încălcare a securității datelor. Pentru a-ți securiza conturile, verifică parolele salvate.</translation>
 <translation id="5334013548165032829">Jurnale de sistem detaliate</translation>
 <translation id="5334145288572353250">Salvezi adresa?</translation>
 <translation id="5340250774223869109">Aplicația a fost blocată</translation>
@@ -2302,7 +2301,6 @@
 <translation id="5784606427469807560">A apărut o eroare la confirmarea cardului. Verifică conexiunea la internet și încearcă din nou.</translation>
 <translation id="5785756445106461925">În plus, această pagină include alte resurse care nu sunt securizate. Aceste resurse sunt vizibile pentru alți utilizatori în cursul transferului și pot fi modificate de un atacator pentru a schimba aspectul paginii.</translation>
 <translation id="5786044859038896871">Dorești să completezi datele cardului de credit?</translation>
-<translation id="578633867165174378">Chrome a găsit parola pe care tocmai ai folosit-o într-o încălcare a securității datelor. Îți recomandăm să schimbi acum parola.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Fără}=1{date de conectare pentru un cont}few{date de conectare pentru # conturi}other{date de conectare pentru # de conturi}}</translation>
 <translation id="5800727402210090597">Service și reparații pentru telefoane mobile</translation>
@@ -2677,7 +2675,6 @@
 <translation id="6579858392010591435">Sărbători și evenimente de sezon</translation>
 <translation id="6579990219486187401">Roz deschis</translation>
 <translation id="6581831440014388355">Eliminarea părului nedorit de pe corp și față</translation>
-<translation id="6587182488465657433">Chrome a găsit parola pe care tocmai ai folosit-o într-o încălcare a securității datelor. Pentru a-ți securiza conturile, îți recomandăm să o schimbi acum și apoi să verifici parolele salvate.</translation>
 <translation id="6587893660316489419">Plic B5</translation>
 <translation id="6587923378399804057">Linkul copiat de tine</translation>
 <translation id="6591833882275308647">Dispozitivul <ph name="DEVICE_TYPE" /> nu este gestionat</translation>

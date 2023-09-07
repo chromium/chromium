@@ -619,6 +619,7 @@ Se non viene configurato, il selettore di emoji verrà attivato per gli utenti n
 <translation id="1516486219683984217">Non consentire l'uso delle notifiche di sistema</translation>
 <translation id="1519092983270375506">Impostazione predefinita di partizionamento dello spazio di archiviazione di terze parti</translation>
 <translation id="1522425503138261032">Consenti ai siti di monitorare la posizione fisica degli utenti</translation>
+<translation id="1523282650847750947">Non ripristinare l'ultima sessione.</translation>
 <translation id="1523587744262636189">porta 10080 (può essere sbloccata fino al 01/04/2022)</translation>
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
 <translation id="1524243669991877602">Se il criterio viene impostato su Attivato, è possibile unire i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> ai criteri a livello di macchina.
@@ -4401,6 +4402,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio è impostato su false o non viene impostato, le informazioni sull'aggiornamento del sistema operativo non verranno
       segnalate. Se è impostato su true, le informazioni sull'aggiornamento del sistema operativo verranno segnalate.</translation>
 <translation id="4857223512478723171">Non consentire la modalità a schermo intero</translation>
+<translation id="4857888176748302062">Consenti alle origini di richiedere gli attributi dei dispositivi</translation>
 <translation id="4858735034935305895">Consenti modalità a schermo intero</translation>
 <translation id="4860900625632464759">Consenti agli utenti di sincronizzare i messaggi SMS tra il telefono e Chromebook</translation>
 <translation id="486146220825734683">Non consentire agli utenti di memorizzare le password Kerberos</translation>
@@ -6603,6 +6605,7 @@ Il criterio verrà rimosso da <ph name="PRODUCT_NAME" /> in futuro.</translation
       Il criterio di controllo di https_latency e network_telemetry è ReportDeviceNetworkStatus.
 
       Se non viene impostato, non verranno segnalati dati di telemetria aggiuntivi per gli eventi di variazione dell'intensità del segnale.</translation>
+<translation id="6751612743847158732">Ripristina sempre l'ultima sessione.</translation>
 <translation id="6752711782954612641">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di un URL con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> non viene configurato, le richieste di ricerca vengono inviate utilizzando il metodo Get.</translation>
@@ -8128,6 +8131,7 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_LOC
       Questo criterio è stato rimosso nella versione 88 di Chrome e viene ignorato se viene impostato.
 
       Visita la pagina https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="8137443729340035928">Chiedi all'utente all'accesso se ripristinare l'ultima sessione.</translation>
 <translation id="8141795997560411818">Questa norma non impedisce all'utente di utilizzare l'app Google Drive per Android. Se vuoi impedire l'accesso a Google Drive, non devi consentire l'installazione dell'app Google Drive per Android.</translation>
 <translation id="8142894094385450823">Questa norma consente di impostare le impostazioni internazionali consigliate per una sessione gestita</translation>
 <translation id="8147132931626030921">Consente di impostare lo stato della funzionalità Schermata sulla privacy nella schermata di accesso.
@@ -8437,6 +8441,9 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="8369602308428138533">Ritardo disattivazione schermo in caso di utilizzo di CA</translation>
 <translation id="8371178326720637170">Consente alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
 <translation id="8373176843640227330">Disattiva i report sulle informazioni Bluetooth del dispositivo</translation>
+<translation id="8373940728202278176">La configurazione del criterio consente alle origini elencate di ottenere gli attributi dei dispositivi (ad es. numero di serie, nome host) utilizzando l'API Device Attributes.
+
+      Le origini devono corrispondere alle applicazioni web con installazione forzata tramite il criterio <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o configurate come app kiosk. Per le specifiche dell'API Device Attributes, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Blocca l'accesso di scrittura di file e directory su questi siti</translation>
 <translation id="8378266419596669629">Blocca l'autorizzazione per i caratteri locali su questi siti</translation>
 <translation id="8379317372795444261">L'autenticazione <ph name="BASIC_AUTH" /> è consentita per le connessioni HTTP</translation>
@@ -8510,6 +8517,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="8470317291588703478">Non viene forzata la Modalità con restrizioni di YouTube</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">Quando cerca il percorso migliore, WebRTC utilizzerà tutte le interfacce disponibili.</translation>
+<translation id="8482518340010585741">Configura il ripristino delle app all'accesso</translation>
 <translation id="8483004350080020634">Consente di rimuovere le parti sensibili per la privacy e la sicurezza dagli URL https:// prima di trasmetterli agli script PAC (Proxy Auto Config) utilizzati da <ph name="PRODUCT_NAME" /> durante la risoluzione proxy.
 
       Se la norma viene impostata su True, la funzione di sicurezza viene attivata e vengono rimosse le parti sensibili dagli URL https:// prima di inviarli allo script PAC. In questo modo lo script PAC non può visualizzare i dati solitamente protetti tramite un canale criptato (ad esempio il percorso e la query dell'URL).
@@ -9243,6 +9251,8 @@ Se il criterio non viene configurato, per impostazione predefinita <ph name="PRO
 
       Se imposti il criterio, gli utenti non possono modificarlo. Se il criterio non è impostato, i tasti permanenti risultano disattivati all'inizio, ma gli utenti possono attivarli in qualsiasi momento.</translation>
 <translation id="91206085111961438">Stabilisci la disponibilità delle estensioni Manifest v2</translation>
+<translation id="9122865885571719292">Consente di stabilire se e come <ph name="PRODUCT_OS_NAME" /> ripristina l'ultima sessione all'accesso.
+Questo criterio ha effetto soltanto se il criterio <ph name="FULL_RESTORE_ENABLED_NAME" /> viene impostato su true.</translation>
 <translation id="9123211093995421438">Consente di specificare il numero minimo di obiettivi di <ph name="PRODUCT_OS_NAME" /> consentiti per il rollback a partire dalla versione stabile in qualsiasi momento.
 
       L'impostazione predefinita è 0 per il consumatore, 4 (circa sei mesi) per i dispositivi aziendali registrati.

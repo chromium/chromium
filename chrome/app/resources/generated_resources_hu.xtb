@@ -3897,7 +3897,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4067839975993712852">Aktuális lap megjelölése olvasottként</translation>
 <translation id="4068776064906523561">Mentett ujjlenyomatok</translation>
 <translation id="407173827865827707">Kattintásra</translation>
-<translation id="4072701974556190758">Jelszava mentésre kerül Google-fiókjába (<ph name="ACCOUNT" />). Így nem kell észben tartania.</translation>
 <translation id="4072805772816336153">Próbálja újra később</translation>
 <translation id="407520071244661467">Átméretezés</translation>
 <translation id="407543464472585404"><ph name="NAME" /> profilja ehhez az e-mail-címhez van társítva: <ph name="EMAIL" /></translation>
@@ -7970,7 +7969,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7461924472993315131">Rögzítés</translation>
 <translation id="746216226901520237">Legközelebb a telefonjával oldhatja fel <ph name="DEVICE_TYPE" /> eszköze lezárását. A Smart Lock funkciót a Beállításokban kapcsolhatja ki.</translation>
 <translation id="7464153996453281700">Az összetevő már naprakész</translation>
-<translation id="7464637891177137294">Elmentheti a Google-fiókjába (<ph name="ACCOUNT" />)</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# megnyitott lap, nyomja meg a lapsor be-/kikapcsolásához}other{# megnyitott lap, nyomja meg a lapsor be-/kikapcsolásához}}</translation>
 <translation id="7465635034594602553">Hiba történt. Várjon néhány percet, majd próbálja meg újra futtatni a(z) <ph name="APP_NAME" /> alkalmazást.</translation>
 <translation id="7465777686629334728">Felügyelt fejlesztői környezet eltávolítása (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8049,7 +8047,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7524849817690367493">Biztonsági központ</translation>
 <translation id="7525067979554623046">Létrehozás</translation>
 <translation id="7526989658317409655">Helyőrző</translation>
-<translation id="7527758104894292229">Frissítheti a Google-fiókjában (<ph name="ACCOUNT" />)</translation>
 <translation id="7528224636098571080">Ne nyissa meg</translation>
 <translation id="7529411698175791732">Ellenőrizze az internetkapcsolatot. Ha a probléma továbbra is fennáll, próbáljon ki-, majd újra bejelentkezni.</translation>
 <translation id="7529865045818406536">A rendszer a preferált hálózatokat használja, ha egynél több korábbi hálózat áll rendelkezésre</translation>
@@ -9502,6 +9499,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8680251145628383637">Ha bejelentkezik, könyvjelzőit, előzményeit és egyéb beállításait bármilyen eszközről elérheti. Ráadásul automatikusan bejelentkezik a Google-szolgáltatásokba.</translation>
 <translation id="8681886425883659911">A hirdetések le vannak tiltva a köztudottan tolakodó vagy félrevezető hirdetéseket megjelenítő webhelyeken</translation>
 <translation id="8682730193597992579">A(z) <ph name="PRINTER_NAME" /> csatlakoztatva van, és használatra kész</translation>
+<translation id="8684471948980641888">Szinkronizálás engedélyezése forgalomkorlátos hálózatokon</translation>
 <translation id="8685540043423825702">Az Ön Chrome-profilja</translation>
 <translation id="8686142379631285985">Bejelentkezve mint <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">A következő fájl letöltésének megszakítása: <ph name="FILE_NAME" /></translation>

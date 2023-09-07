@@ -234,6 +234,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1432187715652018471">Cette page veut installer un gestionnaire de services.</translation>
 <translation id="1432581352905426595">Gérer les moteurs de recherche</translation>
 <translation id="1433225466058025572">Réessayez de déplacer vos fichiers</translation>
+<translation id="1434317006812369578">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google. La navigation sécurisée <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant sur le site <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de consulter.</translation>
 <translation id="1435940442311036198">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="1436185428532214179">Peut demander à modifier des fichiers et des dossiers sur votre appareil</translation>
 <translation id="1442386063175183758">Pli du volet droit</translation>
@@ -384,6 +385,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1732445923934584865">Demander en personne</translation>
 <translation id="1733064249834771892">polices</translation>
 <translation id="1733631169686303142">Équipement audio</translation>
+<translation id="1733762317901693627">Même les sites normalement sûrs sont parfois compromis par des pirates informatiques. Ne consultez ce <ph name="BEGIN_LINK" />site non sécurisé<ph name="END_LINK" /> que si vous êtes sûr de bien comprendre les risques encourus.</translation>
 <translation id="1734864079702812349">American Express</translation>
 <translation id="1734878702283171397">Essayez de contacter l'administrateur système.</translation>
 <translation id="1736420071277903564">Ordinateur</translation>
@@ -717,6 +719,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2480300195898055381">Dans votre compte Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="248348093745724435">Règles associées à la machine</translation>
+<translation id="2490199669743245365">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter pourraient installer des logiciels malveillants dérobant ou supprimant des éléments tels que votre mot de passe, vos photos, vos messages ou votre numéro de carte de crédit. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Le certificat du serveur contient des erreurs.</translation>
 <translation id="2491414235131909199">Cette page a été bloquée par une extension</translation>
 <translation id="2495083838625180221">Analyse de fichiers JSON</translation>
@@ -1051,6 +1054,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Valeur relative</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Mise à jour requise maintenant}=2{Mise à jour requise d'ici demain}one{Mise à jour requise d'ici # jour}other{Mise à jour requise d'ici # jours}}</translation>
+<translation id="3218388919950135939">Ne consultez ce <ph name="BEGIN_LINK" />site non sécurisé<ph name="END_LINK" /> que si vous êtes sûr de bien comprendre les risques encourus.</translation>
 <translation id="3220264767789936523">Vêtements habillés</translation>
 <translation id="3223287115535306850">Indicateur de lancement de l'appli</translation>
 <translation id="3223425961342298674">Position non autorisée</translation>
@@ -1337,6 +1341,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3772211998634047851">Papier (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer rapidement une note dans Google Keep</translation>
 <translation id="3778403066972421603">Voulez-vous enregistrer cette carte dans votre compte Google et sur cet appareil ?</translation>
+<translation id="378026377453746707">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google. La navigation sécurisée <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant sur le site <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de consulter.</translation>
 <translation id="3780694243617746492">Bac de sortie</translation>
 <translation id="3781428340399460090">Rose foncé</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1348,6 +1353,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3795344968043407227">Musique indie et alternative</translation>
 <translation id="3799805948399000906">Police demandée</translation>
 <translation id="380329542618494757">Nom</translation>
+<translation id="3806932344025766608">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter peuvent vous inciter à installer des logiciels ou à divulguer des éléments tels que votre mot de passe, votre numéro de téléphone ou votre numéro de carte de crédit. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Opérateurs de téléphonie</translation>
 <translation id="3807366285948165054">Décalage X de l'image</translation>
 <translation id="3807873520724684969">Contenu malveillant bloqué.</translation>
@@ -1413,6 +1419,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="3953505489397572035">Ce prix est dans la gamme habituelle</translation>
 <translation id="3958057596965527988">4 x 4 pouces</translation>
+<translation id="3959121317419633580">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google. La navigation sécurisée <ph name="BEGIN_LINK" />a récemment détecté un procédé d'hameçonnage sur le site <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de consulter.<ph name="NEW_LINE" />Même des sites normalement sûrs sont parfois compromis par des pirates informatiques. <ph name="BEGIN_ERROR_LINK" />Contactez-nous<ph name="END_ERROR_LINK" /> si vous pensez qu'il s'agit d'une erreur et que ce site ne présente aucun danger.</translation>
 <translation id="3961148744525529027">La feuille du gestionnaire de paiement est ouverte à moitié</translation>
 <translation id="3962859241508114581">Titre précédent</translation>
 <translation id="3963721102035795474">Mode lecture</translation>
@@ -1436,6 +1443,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="401170183602135785">Enveloppe C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF contenant {COUNT} page}one{Document PDF contenant {COUNT} page}other{Document PDF contenant {COUNT} pages}}</translation>
 <translation id="4014895360827978999">Services marchands et systèmes de paiement</translation>
+<translation id="4018819349042761761">Clé publique</translation>
 <translation id="4023431997072828269">Comme ce formulaire est envoyé via une connexion non sécurisée, vos informations seront visibles par les autres utilisateurs.</translation>
 <translation id="4030383055268325496">&amp;Annuler l'ajout</translation>
 <translation id="4030545038933060179">Lorsque ce paramètre est activé, une liste de thèmes s'affiche ici en fonction de votre historique de navigation récent</translation>
@@ -1612,6 +1620,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="433013776994920042">Hébergement Web et enregistrement de domaines</translation>
 <translation id="4331519897422864041">Empileur 5</translation>
 <translation id="4331708818696583467">Non sécurisé</translation>
+<translation id="4333295216031073611">Liste de courses</translation>
 <translation id="4333561522337981382">Gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4340575312453649552">Cette annonce a utilisé trop de ressources pour votre appareil. Par conséquent, Chrome l'a supprimée.</translation>
 <translation id="4340810192899866471">Importer à partir d'un fichier JSON</translation>
@@ -1664,6 +1673,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4451684391620232683">Texte présenté à l'utilisateur :</translation>
 <translation id="4452328064229197696">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe Google vous recommande de vérifier vos mots de passe enregistrés.</translation>
 <translation id="4464826014807964867">Sites Web avec des infos fournies par votre organisation</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activez la protection renforcée<ph name="END_ENHANCED_PROTECTION_LINK" /> pour bénéficier du plus haut niveau de sécurité de Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ce formulaire n'est pas sécurisé. La saisie automatique a été désactivée.</translation>
 <translation id="4477350412780666475">Titre suivant</translation>
@@ -2083,7 +2093,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>
 <translation id="5332219387342487447">Mode de livraison</translation>
 <translation id="5332769172018416402">Demander dans un message</translation>
-<translation id="5333022057423422993">Chrome a trouvé le mot de passe que vous venez d'utiliser lors d'une violation de données. Pour la sécurité de vos comptes, nous vous recommandons de vérifier immédiatement vos mots de passe enregistrés.</translation>
 <translation id="5334013548165032829">Journaux système détaillés</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse ?</translation>
 <translation id="5340250774223869109">Application bloquée</translation>
@@ -2292,7 +2301,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5784606427469807560">Un problème est survenu lors de la validation de votre carte. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="5785756445106461925">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer l'aspect de cette page.</translation>
 <translation id="5786044859038896871">Souhaitez-vous indiquer vos informations de carte de paiement ?</translation>
-<translation id="578633867165174378">Chrome a trouvé le mot de passe que vous venez d'utiliser lors d'une violation de données. Nous vous recommandons de le modifier immédiatement.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Aucune}=1{données de connexion pour 1 compte}one{données de connexion pour # compte}other{données de connexion pour # comptes}}</translation>
 <translation id="5800727402210090597">Réparation de téléphones mobiles et autres services</translation>
@@ -2382,6 +2390,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5992805036496113940">Voir les informations utilisées pour vous montrer des annonces</translation>
 <translation id="5995727681868049093">Gérez vos infos, la confidentialité de vos données et votre sécurité dans votre compte Google</translation>
 <translation id="5997247540087773573">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe de Google vous recommande de le modifier immédiatement et de vérifier vos mots de passe enregistrés.</translation>
+<translation id="5999271311987646952">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google, qui <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant<ph name="END_LINK" /> sur le site que vous essayez de consulter.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6005659677094197001">Continu</translation>
@@ -2666,7 +2675,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6579858392010591435">Fêtes et événements saisonniers</translation>
 <translation id="6579990219486187401">Rose clair</translation>
 <translation id="6581831440014388355">Épilation corporelle et faciale</translation>
-<translation id="6587182488465657433">Chrome a trouvé le mot de passe que vous venez d'utiliser lors d'une violation de données. Pour la sécurité de vos comptes, nous vous recommandons de le modifier immédiatement, puis de vérifier vos mots de passe enregistrés.</translation>
 <translation id="6587893660316489419">Enveloppe B5</translation>
 <translation id="6587923378399804057">Lien copié</translation>
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
@@ -2686,6 +2694,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Cours d'informatique</translation>
 <translation id="6633476656216409494">Logiciels d'entreprise et de productivité</translation>
+<translation id="6638353438328951386">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google, qui <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant<ph name="END_LINK" /> sur le site que vous essayez de consulter.</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6645291930348198241">Accéder aux cookies et aux données de site.</translation>
 <translation id="6645478838938543427">Les alertes en cas de baisse de prix seront envoyées à <ph name="EMAIL_ADDRESS" /></translation>
@@ -2881,6 +2890,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="702146556168549005">Les URL des pages que vous consultez sont envoyées à Google Cloud ou à des tiers pour analyse (par exemple, pour détecter les sites dangereux ou filtrer des sites en fonction des règles définies par l'administrateur).</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7023162328967545559">Avertissement de l'administrateur</translation>
+<translation id="7024932305105294144">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google, qui <ph name="BEGIN_LINK" />a récemment détecté un procédé d'hameçonnage<ph name="END_LINK" /> sur le site que vous essayez de consulter. Les sites d'hameçonnage se font passer pour d'autres sites dans le but de vous tromper.<ph name="NEW_LINE" />Même les sites normalement sûrs sont parfois compromis par des pirates informatiques. <ph name="BEGIN_ERROR_LINK" />Contactez-nous<ph name="END_ERROR_LINK" /> si vous pensez qu'il s'agit d'une erreur et que ce site ne présente aucun danger.</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7030436163253143341">Certificat non valide</translation>
 <translation id="7031646650991750659">Les applications Google Play que vous avez installées</translation>
@@ -2916,6 +2926,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7105998430540165694">Clé d'accès du trousseau iCloud</translation>
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
 <translation id="7107249414147762907">Impossible d'accéder à ce PDF. Aucun texte extrait.</translation>
+<translation id="7107427078069498123">Empreintes SHA-256</translation>
 <translation id="7108338896283013870">Masquer</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> souhaite utiliser votre appareil photo</translation>
 <translation id="7108819624672055576">Autorisé par une extension</translation>
@@ -2982,6 +2993,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 </translation>
 <translation id="7226276626900992675">Vous avez autorisé ce site à utiliser des cookies tiers. Cela signifie que la plupart des fonctionnalités devraient fonctionner, mais que votre protection est réduite.</translation>
 <translation id="7227293336683593977">Historique des prix</translation>
+<translation id="7227747683324411744">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter peuvent vous inciter à installer un logiciel malveillant affectant votre façon de naviguer, par exemple en modifiant votre page d'accueil ou en vous montrant des annonces supplémentaires sur les sites que vous consultez.</translation>
 <translation id="7233592378249864828">Imprimer la feuille de confirmation</translation>
 <translation id="7234638337680728591">Prix de l'essence et carburants pour véhicules</translation>
 <translation id="7236417832106250253">Progression : <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3081,6 +3093,7 @@ Informations supplémentaires :
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">Ajouter des coordonnées</translation>
 <translation id="7437490109271760224">Jeux de cartes</translation>
+<translation id="7438338505272634288">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter peuvent vous inciter à installer des logiciels malveillants affectant votre façon de naviguer, par exemple en modifiant votre page d'accueil ou en vous montrant des annonces supplémentaires sur les sites que vous consultez. Chrome vous recommande vivement de revenir en lieu sûr pour éviter tout danger. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Parcourir hors connexion</translation>
 <translation id="7441627299479586546">Objet de la règle incorrect.</translation>
 <translation id="7441864845853794192">Épiceries fines</translation>
@@ -3180,6 +3193,7 @@ Informations supplémentaires :
 <translation id="7599089013883397081">Délai de téléchargement dépassé</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>
 <translation id="7601297359530599375">La connexion à ce site est généralement sécurisée, mais Chrome n'a pas pu utiliser de connexion sécurisée pour le moment. Il est possible qu'un pirate informatique tente d'espionner vos activités en ligne ou de modifier votre connexion réseau. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter pourraient installer un logiciel malveillant dérobant ou supprimant des éléments tels que votre mot de passe, vos photos, vos messages ou votre numéro de carte de crédit.</translation>
 <translation id="7610193165460212391">La valeur <ph name="VALUE" /> est hors limites.</translation>
 <translation id="7613889955535752492">Date d'expiration : <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis sur Entrée pour consulter et gérer vos mots de passe dans les paramètres Chrome</translation>
@@ -3407,6 +3421,7 @@ Informations supplémentaires :
 <translation id="8078006011486731853">{0,plural, =1{Importer le fichier confidentiel ?}one{Importer le fichier confidentiel ?}other{Importer les fichiers confidentiels ?}}</translation>
 <translation id="8078141288243656252">Impossible d'ajouter des annotations si le document a pivoté</translation>
 <translation id="8079031581361219619">Actualiser le site Web ?</translation>
+<translation id="8079976827192572403">Site dangereux</translation>
 <translation id="8081087320434522107">Berlines</translation>
 <translation id="8086971161893892807">Brouillon</translation>
 <translation id="8088680233425245692">Échec de l'affichage de l'article.</translation>
@@ -3577,6 +3592,7 @@ Informations supplémentaires :
 Informations supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Accès au micro autorisé cette fois-ci</translation>
+<translation id="8422228580902424274">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter peuvent vous inciter à installer un logiciel ou à divulguer des éléments tels que votre mot de passe, votre numéro de téléphone ou votre numéro de carte de crédit.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Paramètres</translation>
@@ -3689,6 +3705,7 @@ Informations supplémentaires :
 <translation id="8680536109547170164"><ph name="QUERY" />, réponse, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Impossible de charger la page Web <ph name="PAGE" /> pour la raison suivante :</translation>
 <translation id="8686424632716064939">Sécurité informatique</translation>
+<translation id="8687278439622293018">L'entrée <ph name="ENTRY_VOICEOVER" /> a été supprimée</translation>
 <translation id="8687429322371626002">Votre appareil et votre compte sont gérés par <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Pages par ensemble</translation>
@@ -3900,6 +3917,7 @@ Informations supplémentaires :
 <translation id="9128870381267983090">Connectez-vous au réseau</translation>
 <translation id="9131119348384879525">Capturer le contenu confidentiel ?</translation>
 <translation id="9133985615769429248">Si vous partagez cet appareil, vous pouvez utiliser le verrouillage de l'écran pour confirmer votre identité chaque fois que vous utilisez un mot de passe enregistré</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, carte virtuelle</translation>
 <translation id="9136861683332321024">Voitures de luxe</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9137248913990643158">Veuillez démarrer Chrome et vous connecter à votre compte avant d'utiliser cette application</translation>

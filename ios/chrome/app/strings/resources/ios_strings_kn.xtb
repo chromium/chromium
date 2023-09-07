@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">ಈ ವಿಳಾಸವನ್ನು ಪ್ರಸ್ತುತವಾಗಿ Chrome ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಲು, ಅದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">ನಿಮ್ಮ ಸಿಂಕ್ ಡೇಟಾವನ್ನು ನೀವು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗುವ ಹಾಗೆ ನೋಡಿಕೊಳ್ಳಲು, ಅದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="1836891464494477513">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, {email}}one{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ, {email}}other{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ, {email}}}</translation>
+<translation id="1847795903283049083">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಓದುವ ಪಟ್ಟಿ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ನೀವು ಈ ಐಟಂಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು ಮತ್ತು ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="1870148520156231997">ಪಾಸ್‌ವರ್ಡ್‌ ತೋರಿಸಿ</translation>
 <translation id="1872096359983322073">ಟಾರ್ಚ್</translation>
 <translation id="1882901927376062252">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {email}}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {email}}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {email}}}</translation>
@@ -515,6 +516,7 @@
 <translation id="3892144330757387737">ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ನೀವು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="3897092660631435901">ಮೆನು</translation>
 <translation id="3904829425754749514">ನಿಮ್ಮ ಸಂಸ್ಥೆ ಸಿಂಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದೆ. ನೀವು ಈಗಲೂ ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೋಡಬಹುದು. ನೀವು ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಿದರೆ, ಅವುಗಳು ನಿಮ್ಮ ಖಾತೆಗೆ ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.</translation>
+<translation id="3909222758573607742">ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3913386780052199712">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3915450441834151894">ಸೈಟ್ ಮಾಹಿತಿ</translation>
 <translation id="3922310737605261887">ನಕಲಿಸಿದ ಪಠ್ಯವನ್ನು ಹುಡುಕಿ</translation>
@@ -525,6 +527,7 @@
 <translation id="3959736869653157332">ಮೆನು → ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌</translation>
 <translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3968505803272650567">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="3971789053442864420">{count,plural, =1{{count} ಪಾಸ್‌ವರ್ಡ್}one{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="3989635538409502728">ಸೈನ್ ಔಟ್</translation>
 <translation id="3995521777587992544">ಪುಟ ಲೋಡ್ ಪ್ರಗತಿ ಪಟ್ಟಿ, <ph name="EMAIL" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4002019827078931033">ಅಡ್ರೆಸ್ ಬಾರ್ ಅನ್ನು ಮೇಲಕ್ಕೆ ಮೂವ್ ಮಾಡಿ</translation>
@@ -636,6 +639,7 @@
 <translation id="4645575059429386691">ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ಆಗಿ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4652817563047461855">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಸುರಕ್ಷಿತವಾಗಿವೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ, ಅವುಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆಯೇ ಎಂಬುದನ್ನು ಕಂಡುಕೊಳ್ಳಿ ಮತ್ತು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಿಕೊಳ್ಳಲು ಸಲಹೆಯನ್ನು ಪಡೆಯಿರಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
+<translation id="4659194143325814340">{count,plural, =1{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿನ {count} ಪುಟ}one{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿನ {count} ಪುಟಗಳು}other{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿನ {count} ಪುಟಗಳು}}</translation>
 <translation id="4659667755519643272">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್ ನಮೂದಿಸಿ</translation>
 <translation id="46614316059270592">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಿ</translation>
 <translation id="4682686630151240767">1. iPhone ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -644,6 +648,7 @@
 <translation id="4697071790493980729">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="470966556546083668">ಸಿಂಕ್ ಆನ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="4711809265250406889">ಆನ್ ಆಗಿರುವಾಗ</translation>
+<translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ 1}one{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ {more_count}}other{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ {more_count}}}</translation>
 <translation id="4737560986434232178">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
 <translation id="4746926359847517643">ನೀವು ಅವುಗಳನ್ನು ಯಾವಾಗಲೂ ಇತಿಹಾಸದಲ್ಲಿ ಮರಳಿ ಪಡೆಯಬಹುದು.</translation>
@@ -688,6 +693,7 @@
 <translation id="4918086044614829423">ಸಮ್ಮತಿಸು</translation>
 <translation id="4922154083994158612">ಹೆಚ್ಚಿನ ಭದ್ರತೆಯನ್ನು ಪಡೆಯಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="4930714375720679147">ಆನ್ ಮಾಡಿ</translation>
+<translation id="4937410517508563815">ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="4938338714234463591">ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ಕೆಲವು ಫೀಚರ್‌ಗಳೊಂದಿಗೆ ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ಬಳಸಲು ಇದು ನಿಮಗೆ ಅನುಮತಿ ನೀಡುತ್ತದೆ.</translation>
 <translation id="4941089862236492464">ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಐಟಂ ಅನ್ನು ಹಂಚುವಲ್ಲಿ ಸಮಸ್ಯೆ ಇದೆ.</translation>
 <translation id="4944543191714094452">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ…</translation>
@@ -1184,6 +1190,7 @@
 <translation id="7711440461521638739">ನೀವು ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಮರುಬಳಕೆ ಮಾಡುತ್ತಿಲ್ಲ</translation>
 <translation id="7719038820139380048">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="7720410380936703141">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="7724085059277147439">{count,plural, =1{ನಿಮ್ಮ {email} Google ಖಾತೆಯಲ್ಲಿ ಐಟಂ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}one{ನಿಮ್ಮ {email} Google ಖಾತೆಯಲ್ಲಿ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}other{ನಿಮ್ಮ {email} Google ಖಾತೆಯಲ್ಲಿ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7726702057919861819">ಮೆನು → ಇತಿಹಾಸ → ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="7729458878441927652">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಲು, ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ.</translation>
@@ -1275,6 +1282,7 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ಖಾತೆಗಳು</translation>
 <translation id="8159358225423560600">ಇದೀಗ</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8182037667962849780">{count,plural, =1{{website_1} ಗಾಗಿ}=2{{website_1}, {website_2} ಗಾಗಿ}=3{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ 1 ಕ್ಕಾಗಿ}one{{website_1}, {website_2}, ಮತ್ತು ಇನ್ನೂ {more_count} ಕ್ಕಾಗಿ}other{{website_1}, {website_2}, ಮತ್ತು ಇನ್ನೂ {more_count} ಕ್ಕಾಗಿ}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="8205564605687841303">ರದ್ದುಮಾಡಿ</translation>
@@ -1300,6 +1308,7 @@
 <translation id="8328777765163860529">ಎಲ್ಲವನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="8343993175958086504">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ ಹಾಗೂ ಅದನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಿ.</translation>
 <translation id="834783239627985533">ಹೆಚ್ಚು ಭೇಟಿ ನೀಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
+<translation id="8356276002902955750">{count,plural, =1{{count} ಬುಕ್‌ಮಾರ್ಕ್}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}}</translation>
 <translation id="8378714024927312812">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="8386068868580335421">ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="838867811594159347">ಪಾಸ್‌ಫ್ರೇಸ್ ನಮೂದಿಸಿ…</translation>
@@ -1415,6 +1424,7 @@
 <translation id="8976414606286374109">ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="8981454092730389528">Google ಚಟುವಟಿಕೆ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="8985320356172329008">Google ಗೆ ಹೀಗೆ ಸೈನ್‌ ಇನ್‌ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="8991382496704361510">ಈ ಸಾಧನದಲ್ಲಿರುವುದು</translation>
 <translation id="8998289560386111590">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="8999545564078155498">ಫೇಸ್ ID ಬಳಸಿ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="9000089900434778519">ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ <ph name="DSE_NAME" /> ಆಗಿದೆ. ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ಅವರ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>

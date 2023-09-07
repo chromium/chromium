@@ -1616,6 +1616,7 @@
 <translation id="7714767791242455379">Добавить мобильную сеть</translation>
 <translation id="7720400844887872976">Вкл. до <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ПОВТОРИТЬ</translation>
+<translation id="7721132362314201794">Название рабочего стола</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 уведомление}one{# уведомление}few{# уведомления}many{# уведомлений}other{# уведомления}}</translation>
 <translation id="7723703419796509666">Показать или скрыть консоль инструментов разработчика</translation>
 <translation id="7724603315864178912">Вырезать</translation>

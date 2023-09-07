@@ -3868,7 +3868,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4067839975993712852">Oznacz bieżącą kartę jako przeczytaną</translation>
 <translation id="4068776064906523561">Zapisane odciski palców</translation>
 <translation id="407173827865827707">Po kliknięciu</translation>
-<translation id="4072701974556190758">Hasło zostanie zapisane na Twoim koncie Google <ph name="ACCOUNT" />. Nie musisz go zapamiętywać.</translation>
 <translation id="4072805772816336153">Spróbuj ponownie później</translation>
 <translation id="407520071244661467">Skala</translation>
 <translation id="407543464472585404"><ph name="NAME" /> ma profil połączony z kontem <ph name="EMAIL" /></translation>
@@ -7939,7 +7938,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7461924472993315131">Przypnij</translation>
 <translation id="746216226901520237">Następnym razem Twój telefon odblokuje urządzenie <ph name="DEVICE_TYPE" />. Smart Lock możesz wyłączyć w Ustawieniach.</translation>
 <translation id="7464153996453281700">Komponent jest już aktualny</translation>
-<translation id="7464637891177137294">Zapisz je na swoim koncie Google <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# otwarta karta – naciśnij, by przełączyć pasek kart}few{# otwarte karty – naciśnij, by przełączyć pasek kart}many{# otwartych kart – naciśnij, by przełączyć pasek kart}other{# otwartej karty – naciśnij, by przełączyć pasek kart}}</translation>
 <translation id="7465635034594602553">Coś poszło nie tak. Zaczekaj kilka minut, a potem uruchom <ph name="APP_NAME" /> ponownie.</translation>
 <translation id="7465777686629334728">Usuń zarządzane środowisko programistyczne (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8018,7 +8016,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7524849817690367493">Centrum bezpieczeństwa</translation>
 <translation id="7525067979554623046">Utwórz</translation>
 <translation id="7526989658317409655">Zmienna</translation>
-<translation id="7527758104894292229">Zaktualizuj je na swoim koncie Google <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Nie otwieraj</translation>
 <translation id="7529411698175791732">Sprawdź połączenie z internetem. Jeśli problem nie ustąpi, wyloguj się i zaloguj ponownie.</translation>
 <translation id="7529865045818406536">Jeśli będzie dostępna więcej niż 1 wcześniejsza sieć, będą używane sieci preferowane</translation>
@@ -9471,6 +9468,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8680251145628383637">Zaloguj się, by korzystać ze swoich zakładek, historii, haseł i innych ustawień na wszystkich urządzeniach. Będziesz też automatycznie logować się do usług Google, których używasz.</translation>
 <translation id="8681886425883659911">Reklamy są blokowane w witrynach, o których wiadomo, że wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>
 <translation id="8682730193597992579">Drukarka <ph name="PRINTER_NAME" /> jest podłączona i gotowa do pracy</translation>
+<translation id="8684471948980641888">Zezwalaj na synchronizację w sieciach z pomiarem użycia danych</translation>
 <translation id="8685540043423825702">Twój profil Chrome</translation>
 <translation id="8686142379631285985">Zalogowano jako <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Anuluj <ph name="FILE_NAME" /></translation>

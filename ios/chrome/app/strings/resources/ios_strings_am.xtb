@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">ዓዓዓዓ</translation>
 <translation id="1013952917065545813">በቅርብ ጊዜ የዘጓቸውን ትሮች መልሰው ለመክፈት ወደዚህ ተመልሰው መምጣት ይችላሉ</translation>
 <translation id="1016495303386450659">ንጥል ተዘምኗል</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{የይለፍ ቃል በመለያ ውስጥ ያስቀምጡ}one{የይለፍ ቃል በመለያ ውስጥ ያስቀምጡ}other{የይለፍ ቃላትን በመለያ ውስጥ ያስቀምጡ}}</translation>
 <translation id="1035980983510608210">ሁሉንም ትሮች መዝጋት እንዲሁም የተሰኩ ትሮችን ይዘጋል።</translation>
 <translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1044891598689252897">ጣቢያዎች እንደተለመደው ሆነው ይሠራሉ</translation>
@@ -72,6 +73,7 @@
 <translation id="132683371494960526">የቀድሞ አቃፊውን ለመለወጥ ሁለቴ መታ ያድርጉ።</translation>
 <translation id="1332723353863236763">አንዳንድ ውሂብ እስካሁን አልተቀመጠም</translation>
 <translation id="1335348992705722518">ቅንብሮችን አስተዳድር...</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{{COUNT} የይለፍ ቃል በGoogle መለያዎ ውስጥ ያስቀምጡ}one{{COUNT} የይለፍ ቃል በGoogle መለያዎ ውስጥ ያስቀምጡ}other{{COUNT} የይለፍ ቃላት በGoogle መለያዎ ውስጥ ያስቀምጡ}}</translation>
 <translation id="1340643665687018190">ምናሌን ዝጋ</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">የቀዱትን አገናኝ ይጎብኙ</translation>
@@ -158,6 +160,7 @@
 <translation id="1872096359983322073">የባትሪ ብርሃን</translation>
 <translation id="1882901927376062252">{count,plural, =1{ዕልባት Google መለያዎ ላይ ተቀምጧል፣ {email}}one{{count} ዕልባት Google መለያዎ ላይ ተቀምጠዋል፣ {email}}other{{count} ዕልባቶች Google መለያዎ ላይ ተቀምጠዋል፣ {email}}}</translation>
 <translation id="1883255238294161206">ዝርዝር ሰብስብ</translation>
+<translation id="1890237935065108104">ይህ ቅንብር አይገኝም።</translation>
 <translation id="1894023287452300670">ዋጋን እዚህ ይከታተሉ</translation>
 <translation id="189531189292803889">የእርስዎ iPad በቅርቡ ወደነበረበት ተመልሷል፣ ይህም ነባሪ አሳሽዎን ቀይሮ ሊሆን ይችላል።</translation>
 <translation id="1910975740091000991">Chrome ለiOS</translation>
@@ -314,6 +317,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">አገናኝን መፍጠር አልተቻለም</translation>
 <translation id="2786701870377699570">በመላው የሰመሩ መሣሪያዎች ላይ ትሮችን ይፈልጉ</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{የይለፍ ቃል በእርስዎ Google መለያ {EMAIL} ውስጥ ተቀምጧል}one{የይለፍ ቃል በእርስዎ Google መለያ {EMAIL} ውስጥ ተቀምጧል}other{የይለፍ ቃላት በእርስዎ Google መለያ {EMAIL} ውስጥ ተቀምጠዋል}}</translation>
 <translation id="2797029671965852011">ታሪክ አሳይ</translation>
 <translation id="2800683595868705743">ከየትር መቀያየሪያ ውጣ</translation>
 <translation id="2815198996063984598">2. ነባሪ የአሳሽ መተግበሪያን መታ ያድርጉ</translation>
@@ -646,6 +650,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />፣ <ph name="STATE" />፣ በዚህ መሣሪያ ላይ ብቻ፣ <ph name="URL" /></translation>
 <translation id="4751645464639803239">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="4766112107778026136">ምርምር እና በመከተል ላይ</translation>
+<translation id="47677902929517676">የይለፍ ቃላትን በመለያዎ ውስጥ ለማስቀመጥ በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማቀናበር አለብዎት።</translation>
 <translation id="4775879719735953715">ነባሪ አሳሽ፦</translation>
 <translation id="4778644898150334464">ሌላ የይለፍ ቃል ይጠቀሙ</translation>
 <translation id="478808905805139173">በማንነትን የማያሳውቅ ይከፈት?</translation>
@@ -1112,6 +1117,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7265758999917665941">ለዚህ ጣቢያ በጭራሽ</translation>
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
 <translation id="7291368939935408496">የይለፍ ቃላትን በማዘጋጀት ላይ...</translation>
+<translation id="7302503784943202842">በሁሉም መሣሪያዎችዎ ላይ የይለፍ ቃላትን ይጠቀሙ</translation>
 <translation id="730958329302570991">ወደ Google የይለፍ ቃል አስተዳዳሪ በማንኛውም ጊዜ የጣቢያ የይለፍ ቃላትን በቀላሉ ያክሉ።</translation>
 <translation id="7313347584264171202">የእርስዎን ማንነት የማያሳውቁ ትሮች እዚህ ያገኛሉ</translation>
 <translation id="7331371412779932885">የእርስዎን Google መለያ በመጠቀም ሌሎች መሣሪያዎችዎ ላይ ባለዎት የአሰሳ እንቅስቃሴ መሰረት ጥቆማዎችን ይሰጥዎታል። መሣሪያዎችዎ ተመሳሳይ የሆነው Google መለያን በመጠቀም በመለያ የገቡ እና የሰመሩ መሆን አለባቸው።</translation>
@@ -1457,6 +1463,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="953008885340860025">Chrome ዘግቶ ወጥቷል</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" />ን እየተከተሉ ነው</translation>
 <translation id="96615566463761848">ከሌሎች መሣሪያዎች የትር ጥቆማዎችን አሳይ</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE} የይለፍ ቃልዎን ማስቀመጥ ይችላሉ}=2{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE} እና {DOMAIN_TWO} የይለፍ ቃላትዎን ማስቀመጥ ይችላሉ}=3{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE}፣ {DOMAIN_TWO} እና {OTHER_DOMAINS_COUNT} የይለፍ ቃላትዎን ማስቀመጥ ይችላሉ}one{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE}፣ {DOMAIN_TWO} እና {OTHER_DOMAINS_COUNT} የይለፍ ቃልዎን ማስቀመጥ ይችላሉ}other{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE}፣ {DOMAIN_TWO} እና {OTHER_DOMAINS_COUNT} የይለፍ ቃላትዎን ማስቀመጥ ይችላሉ}}</translation>
 <translation id="97300214378190234">በሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞች ላይ መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን ይጠቀሙ።</translation>
 <translation id="973493300226275298">በመላው የመስመር ላይ መደብሮች ላይ የአንድን ምርት ዋጋ ይከታተሉ። ዋጋው በሚቀንበት ጊዜ ማንቂያዎች ይደርሱዎታል።</translation>
 <translation id="981498610235328462">በተወሰኑ መለያዎች አማካኝነት ብቻ እንዲገቡ ድርጅትዎ ይፈቅድልዎታል። ያልተፈቀዱ መለያዎች ተደብቀዋል።</translation>

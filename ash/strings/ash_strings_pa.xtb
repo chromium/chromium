@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">ਸੂਰਜ ਡੁੱਬਣ ਤੱਕ ਬੰਦ ਰਹੇਗੀ</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Insert ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + Shift + Backspace ਦਬਾਓ।</translation>
 <translation id="1770726142253415363">ਕਤਾਰ <ph name="ROW_NUMBER" />, ਕਾਲਮ <ph name="COLUMN_NUMBER" /> 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ।</translation>
+<translation id="1771458705381257690">ਆਪਣੇ ਡੀਵਾਈਸ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਅਤੇ ਉਸਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ <ph name="NAME" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="1771761307086386028">ਸੱਜੇ ਪਾਸੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="1774796056689732716"><ph name="CURRENT_MONTH_YEAR" /> ਦੇ ਕੈਲੰਡਰ ਵਿੱਚ ਫ਼ਿਲਹਾਲ <ph name="DATE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> ਵਿੱਚੋਂ <ph name="NUM_SHOWN_ITEMS" /> ਨੂੰ ਦਿਖਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -1193,6 +1194,7 @@
 <translation id="5876666360658629066">ਮਾਂ-ਪਿਓ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5881540930187678962">ਫ਼ੋਨ ਹੱਬ ਦਾ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="5881663018261910378">ਬੰਦ ਹੈ</translation>
+<translation id="5883017113634523865">ਸਾਰੀਆਂ ਉਪਲਬਧ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੇਖਣ ਲਈ Google Play ਤੋਂ <ph name="NAME" /> ਲਈ ਐਪ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="5887954372087850114">ਵਿੰਡੋ <ph name="WINDOW_TITLE" /> ਨੂੰ <ph name="DESK_TITLE" /> ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਇਆ ਗਿਆ ਅਤੇ ਹੋਰ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਤੋਂ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="588817334757907802">Chrome ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਫ਼ਾਈਲ ਖੋਲ੍ਹੋ</translation>
 <translation id="5895138241574237353">ਰੀਸਟਾਰਟ ਕਰੋ</translation>
@@ -1622,6 +1624,7 @@
 <translation id="7714767791242455379">ਨਵਾਂ ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> ਤੱਕ ਚਾਲੂ ਰਹੇਗੀ</translation>
 <translation id="7720410380936703141">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
+<translation id="7721132362314201794">ਡਿਸਕ ਦਾ ਨਾਮ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ਸੂਚਨਾ}one{# ਸੂਚਨਾ}other{# ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="7723703419796509666">ਵਿਕਾਸਕਾਰ ਟੂਲ ਕੰਸੋਲ ਨੂੰ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ</translation>
 <translation id="7724603315864178912">ਕੱਟੋ</translation>

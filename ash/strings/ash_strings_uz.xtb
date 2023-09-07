@@ -200,6 +200,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1757857692711134412">Quyosh botishigacha oʻchiq</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nuqta tezkor tugmasi oʻzgardi. Insert tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Shift + Backspace tugmalarini bosing.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-qator, <ph name="COLUMN_NUMBER" />-ustunga oʻtdi.</translation>
+<translation id="1771458705381257690">Qurilmani sozlash va moslash uchun <ph name="NAME" /> ilovasini oching</translation>
 <translation id="1771761307086386028">Oʻngga aylantirish</translation>
 <translation id="1774796056689732716">Taqvim, <ph name="CURRENT_MONTH_YEAR" />, hozir <ph name="DATE" /> tanlangan.</translation>
 <translation id="1775598828170459419">Chiqarilgan: <ph name="NUM_SHOWN_ITEMS" /> / <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1192,6 +1193,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5876666360658629066">Ota-ona kodini kiriting</translation>
 <translation id="5881540930187678962">Phone Hub funksiyasini keyin sozlash</translation>
 <translation id="5881663018261910378">Oʻchiq</translation>
+<translation id="5883017113634523865">Barcha mavjud funksiyalarni koʻrish uchun Google Play orqali <ph name="NAME" /> ilovasini oʻrnating</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> oynasi <ph name="DESK_TITLE" /> ish stoliga biriktirildi va barcha boshqa ish stollaridan yechildi</translation>
 <translation id="588817334757907802">Faylni Chrome brauzerida ochish</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>

@@ -2532,7 +2532,7 @@
 <translation id="2956070239128776395">群組中具有巢狀部份：<ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">封裝擴充功能警告</translation>
 <translation id="2959127025785722291">發生錯誤，無法完成掃瞄。請再試一次。</translation>
-<translation id="2959474507964749987">這個加密的檔案可能是病毒或惡意軟體。<ph name="LINE_BREAK" />如要檢查檔案是否不安全，你可以將檔案和密碼提供給 Google 安全瀏覽功能。檔案掃描作業通常需要幾秒鐘的時間。<ph name="LINE_BREAK" />如要掃描，請提供檔案的密碼。</translation>
+<translation id="2959474507964749987">此加密檔案可能是病毒或惡意軟件。<ph name="LINE_BREAK" />如要檢查檔案是否不安全，你可將檔案和密碼傳送至「Google 安全瀏覽」。掃瞄通常需時幾秒鐘。<ph name="LINE_BREAK" />如要掃瞄，請提供檔案的密碼。</translation>
 <translation id="2959842337402130152">儲存空間不足，因此無法還原。請騰出 <ph name="SPACE_REQUIRED" /> 的裝置儲存空間，然後再試一次。</translation>
 <translation id="2960208947600937804">設定 Linux 時發生錯誤。請聯絡您的管理員。</translation>
 <translation id="2960942820860729477">更新率</translation>
@@ -3895,7 +3895,6 @@
 <translation id="4067839975993712852">將目前的分頁標示為已讀</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
 <translation id="407173827865827707">僅在點擊時</translation>
-<translation id="4072701974556190758">密碼將會儲存在您的 Google 帳戶 (<ph name="ACCOUNT" />) 中，您無需記住密碼。</translation>
 <translation id="4072805772816336153">請稍後再試</translation>
 <translation id="407520071244661467">縮放比例</translation>
 <translation id="407543464472585404"><ph name="NAME" />的設定檔已連結至 <ph name="EMAIL" /></translation>
@@ -3992,7 +3991,7 @@
 <translation id="4147099377280085053">選取點字表</translation>
 <translation id="4147911968024186208">請重試。如果出現同樣問題，請聯絡您的支援代表。</translation>
 <translation id="414800391140809654">可在你瀏覽時使用你的資料</translation>
-<translation id="4148195018520464922">你可以限制只有特定使用者才能登入。設定完成後，系統會移除登入畫面上的「新增使用者」選項。你也可以移除現有的使用者。</translation>
+<translation id="4148195018520464922">你可限制只有特定使用者才能登入。設定完成後，系統會移除登入畫面上的「新增使用者」選項。你亦可移除現有的使用者。</translation>
 <translation id="4150201353443180367">顯示屏</translation>
 <translation id="4150569944729499860">畫面內容</translation>
 <translation id="4151449637210235443">與我們分享您最近的遊戲體驗</translation>
@@ -4191,6 +4190,7 @@
 <translation id="4322394346347055525">關閉其他分頁</translation>
 <translation id="4324577459193912240">檔案未完成下載</translation>
 <translation id="4325237902968425115">正在解除安裝 <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4325433082696797523">儲存空間與電源</translation>
 <translation id="4326146840124313313">Chrome 最強大的安全功能可進一步保護您免受危險網站、下載檔案和擴充程式威脅</translation>
 <translation id="4326484226728068206">購物車入面嘅商品喺 <ph name="MERCHANT_NAME" /> 享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，已經喺 <ph name="RELATIVE_TIME" />睇過</translation>
 <translation id="4330191372652740264">冰水</translation>
@@ -5175,6 +5175,7 @@
 <translation id="5146896637028965135">系統語音</translation>
 <translation id="5147992672778369947">使用建議的密碼</translation>
 <translation id="5148277445782867161">Google 的位置資訊服務會透過 Wi-Fi、流動網絡及感應器等來源協助估計裝置位置。</translation>
+<translation id="5148285448107770349">密碼至少要有 8 個半形字元</translation>
 <translation id="5150254825601720210">Netscape 憑證 SSL 伺服器名稱</translation>
 <translation id="5151354047782775295">請釋出磁碟儲存空間，否則系統可能會自動刪除部分資料</translation>
 <translation id="5153234146675181447">刪除手機</translation>
@@ -7963,7 +7964,6 @@
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
 <translation id="7464153996453281700">組件已是最新版本</translation>
-<translation id="7464637891177137294">將密碼儲存在 Google 帳戶 (<ph name="ACCOUNT" />) 中</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{已開啟 # 個分頁，按下即可切換標籤列}other{已開啟 # 個分頁，按下即可切換標籤列}}</translation>
 <translation id="7465635034594602553">發生錯誤，請等候數分鐘，然後再次執行 <ph name="APP_NAME" />。</translation>
 <translation id="7465777686629334728">移除受管開發環境 (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8042,7 +8042,6 @@
 <translation id="7524849817690367493">安全控制中心</translation>
 <translation id="7525067979554623046">建立</translation>
 <translation id="7526989658317409655">佔位符</translation>
-<translation id="7527758104894292229">更新 Google 帳戶 (<ph name="ACCOUNT" />) 中的密碼</translation>
 <translation id="7528224636098571080">不要開啟</translation>
 <translation id="7529411698175791732">請檢查您的互聯網連線。如果問題持續，請嘗試登出，然後再次登入。</translation>
 <translation id="7529865045818406536">如果有多個先前的網絡可用，系統會使用慣用網絡</translation>
@@ -8147,7 +8146,7 @@
 <translation id="7617263010641145920">開啟「Play 商店」</translation>
 <translation id="7617648809369507487">使用低擾式通知</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
-<translation id="7621480263311228380">這個網站不可使用與你相關的既有資訊</translation>
+<translation id="7621480263311228380">此網站不可使用與你相關的既有資料</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN，就無法復原本機資料。</translation>
 <translation id="7622114377921274169">正在充電。</translation>
 <translation id="7622768823216805500">網站通常會安裝付款處理常式以提供購物功能，例如較易結帳</translation>

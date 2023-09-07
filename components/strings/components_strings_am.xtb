@@ -234,6 +234,7 @@
 <translation id="1432187715652018471">ገፅ የአገልግሎት ተቆጣጣሪን መጫን ይፈልጋል።</translation>
 <translation id="1432581352905426595">የፍለጋ ፕሮግራሞችን ያቀናብሩ</translation>
 <translation id="1433225466058025572">ፋይሎችዎን እንደገና ለማንቀሳቀስ ይሞክሩ</translation>
+<translation id="1434317006812369578">Chrome እንደ የGoogle ጥንቃቄ አሰሳ ያሉ በሚያስሱበት ጊዜ እርስዎን የሚጠብቁ ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አለው። ደህንነቱ የተጠበቀ አሰሳ ለመጎብኘት በሚሞክሩበት ጣቢያ ውስጥ የሚካተት <ph name="BEGIN_LINK" /><ph name="SITE" /> ላይ በቅርብ ጊዜ ተንኮል አዘል ዌር አግኝቷል<ph name="END_LINK" />።</translation>
 <translation id="1435940442311036198">አንድ የይለፍ ቁልፍን በተለየ መሣሪያ ላይ ይጠቀሙ</translation>
 <translation id="1436185428532214179">በመሣሪያዎ ላይ ያሉ ፋይሎችን እና አቃፊዎችን ለማርትዕ መጠየቅ ይችላል</translation>
 <translation id="1442386063175183758">ቀኝ በር እጠፍ</translation>
@@ -384,6 +385,7 @@
 <translation id="1732445923934584865">በምትኩ በአካል ተገኝተው ይጠይቁ</translation>
 <translation id="1733064249834771892">ቅርጸ-ቁምፊዎች</translation>
 <translation id="1733631169686303142">የድምጽ መሣሪያዎች</translation>
+<translation id="1733762317901693627">በተለምዶ ደህንነታቸው የተጠበቀ ጣቢያዎች እንኳን አንዳንድ ጊዜ በጥቃት አድራሾች ይጠለፋሉ። ስጋቶቹን መረዳትዎን እርግጠኛ ከሆኑ ብቻ <ph name="BEGIN_LINK" />ይህ ደህንነቱ ያልተጠበቀ ጣቢያ<ph name="END_LINK" /> የሚለውን ይጎብኙ።</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">የሥርዓት አስተዳዳሪውን ለማነጋገር ይሞክሩ።</translation>
 <translation id="1736420071277903564">ኮምፒውተር</translation>
@@ -717,6 +719,7 @@
 <translation id="2480300195898055381">በእርስዎ Google መለያ ውስጥ፣ <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="248348093745724435">የማሽን መመሪያዎች</translation>
+<translation id="2490199669743245365">ለመጎብኘት እየሞከሩ ያሉት ጣቢያ ላይ ያሉ ጥቃት አድራሾች እንደ የእርስዎ የይለፍ ቃል፣ ፎቶዎች፣ መልዕክቶች ወይም የክሬዲት ካርድ ቁጥር ያሉ ነገሮችን የሚሰርቅ ወይም የሚሰርዝ ጎጂ ሶፍትዌርን ሊጭኑ ይችላሉ። Chrome ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">የአገልጋይ እውቅና ማረጋገጫ ስህተቶችን ይዟል።</translation>
 <translation id="2491414235131909199">ይህ ገፅ በቅጥያ ታግዷል</translation>
 <translation id="2495083838625180221">JSON ተንታኝ</translation>
@@ -1050,6 +1053,7 @@
 <translation id="3216313131063488104">ብሉዝ</translation>
 <translation id="3218181027817787318">አንጻራዊ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ዝማኔው አሁን ያስፈልጋል}=2{ዝማኔው እስከ ነገ ድረስ ያስፈልጋል}one{ዝማኔው በ# ቀን ውስጥ ያስፈልጋል}other{ዝማኔው በ# ቀናት ውስጥ ያስፈልጋል}}</translation>
+<translation id="3218388919950135939">ስጋቶቹን መረዳትዎን እርግጠኛ ከሆኑ ብቻ <ph name="BEGIN_LINK" />ይህ ደህንነቱ ያልተጠበቀ ጣቢያ<ph name="END_LINK" /> የሚለውን ይጎብኙ።</translation>
 <translation id="3220264767789936523">የስነ ስርዓት ልብሶች</translation>
 <translation id="3223287115535306850">የመተግበሪያ ማስጀመሪያ የጭነት አዶ</translation>
 <translation id="3223425961342298674">አካባቢ አይፈቀድም</translation>
@@ -1336,6 +1340,7 @@
 <translation id="3772211998634047851">ወረቀት (ቦንድ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle Keep ውስጥ በፍጥነት አዲስ ማስታወሻ ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="3778403066972421603">ይህን ካርድ በእርስዎ የGoogle መለያ እና በዚህ መሣሪያ ላይ ማስቀመጥ ይፈልጋሉ?</translation>
+<translation id="378026377453746707">Chrome እንደ የGoogle ጥንቃቄ አሰሳ ያሉ በሚያስሱበት ጊዜ እርስዎን የሚጠብቁ ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አለው። ደህንነቱ የተጠበቀ አሰሳ ለመጎብኘት በሚሞክሩበት ጣቢያው ውስጥ የተካተተ <ph name="BEGIN_LINK" />በቅርብ ጊዜ <ph name="SITE" /> ላይ አደገኛ ሶፍትዌር ተገኝቷል<ph name="END_LINK" />።</translation>
 <translation id="3780694243617746492">የውጽዓት መጣያ</translation>
 <translation id="3781428340399460090">ደመቅ ያለ ሮዝ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1347,6 +1352,7 @@
 <translation id="3795344968043407227">ነፃ እና አማራጭ ሙዚቃ</translation>
 <translation id="3799805948399000906">ቅርጸ-ቁምፊ ተጠይቋል</translation>
 <translation id="380329542618494757">ስም</translation>
+<translation id="3806932344025766608">ለመጎብኘት በሚሞክሩበት ጣቢያ ላይ ያሉ ጥቃት አድራሾች ሶፍትዌር እንዲጭኑ ወይም እንደ የእርስዎ ይለፍ ቃል፣ ስልክ ወይም የክሬዲት ካርድ ቁጥር ያሉ ነገሮችን እንዲገልጹ ሊሸውዱዎት ይችላሉ። Chrome ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">የስልክ ግልጋሎት ሰጪዎች</translation>
 <translation id="3807366285948165054">የምስል X ፈረቃ</translation>
 <translation id="3807873520724684969">ጎጂ ይዘት ታግዷል።</translation>
@@ -1412,6 +1418,7 @@
 <translation id="3950820424414687140">በመለያ ይግቡ</translation>
 <translation id="3953505489397572035">ዋጋው የተለመደ ነው</translation>
 <translation id="3958057596965527988">4 x 4 ኢንች</translation>
+<translation id="3959121317419633580">Chrome እንደ የGoogle ጥንቃቄ አሰሳ ያሉ በሚያስሱበት ጊዜ እርስዎን የሚጠብቁ ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አለው። ደህንነቱ የተጠበቀ አሰሳ በቅርብ ጊዜ ለመጎብኘት በሚሞክሩበት ጣቢያ ውስጥ የሚካተት <ph name="BEGIN_LINK" /><ph name="SITE" /> ላይ ማስገር አግኝቷል<ph name="END_LINK" />።<ph name="NEW_LINE" />በተለምዶ ደህንነታቸው የተጠበቀ ጣቢያዎች እንኳን አንዳንድ ጊዜ በጥቃት አድራሾች ይጠለፋሉ። ስህተት ተፈጥሯል ብለው ካሰቡ እና ይህ ጣቢያ አደጋ የማያስከትል ከሆነ <ph name="BEGIN_ERROR_LINK" />ያሳወቁን<ph name="END_ERROR_LINK" />።</translation>
 <translation id="3961148744525529027">ክፍያ ተቆጣጣሪ ሉህ በግማሽ ተከፍቷል</translation>
 <translation id="3962859241508114581">ቀዳሚ ትራክ</translation>
 <translation id="3963721102035795474">የአንባቢ ሁነታ</translation>
@@ -1435,6 +1442,7 @@
 <translation id="401170183602135785">ሲ6 ፖስታ</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ገፅ የያዘ የፒዲኤፍ ሰነድ}one{{COUNT} ገጾችን የያዘ የፒዲኤፍ ሰነድ}other{{COUNT} ገጾችን የያዘ የፒዲኤፍ ሰነድ}}</translation>
 <translation id="4014895360827978999">የነጋዴ አገልግሎቶች እና የክፍያ ስርዓቶች</translation>
+<translation id="4018819349042761761">ይፋዊ ቁልፍ</translation>
 <translation id="4023431997072828269">ይህ ቅጽ ደህንነቱ በማያስተማምን ግንኙነት በመጠቀም እየገባ ያለ ስለሆነ የእርስዎ መረጃ ለሌሎች የሚታይ ይሆናል።</translation>
 <translation id="4030383055268325496">&amp;አክልን ቀልብስ</translation>
 <translation id="4030545038933060179">በሚበራበት ጊዜ የርዕሶች ዝርዝር በአሰሳ ታሪክዎ ላይ በመመስረት እዚህ ላይ ይታያል</translation>
@@ -1611,6 +1619,7 @@
 <translation id="433013776994920042">የድር ማስተናገድ እና የጎራ ምዝገባ</translation>
 <translation id="4331519897422864041">ቁልል 5</translation>
 <translation id="4331708818696583467">ደህንነቱ አልተጠበቀም</translation>
+<translation id="4333295216031073611">የሚገዙ ነገሮች ዝርዝር</translation>
 <translation id="4333561522337981382">በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን ማስተዳደር</translation>
 <translation id="4340575312453649552">ይህ ማስታወቂያ ለመሣሪያዎ በጣም ብዙ ሀብቶችን ተጠቅሟል፣ ስለዚህ Chrome አስወግደውታል።</translation>
 <translation id="4340810192899866471">ከJSON አምጣ</translation>
@@ -1663,6 +1672,7 @@
 <translation id="4451684391620232683">ለተጠቃሚ የሚቀርብ ጽሁፍ፦</translation>
 <translation id="4452328064229197696">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ፣ Google የይለፍ ቃል አስተዳዳሪ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ ይመክራል።</translation>
 <translation id="4464826014807964867">ከድርጅትዎ መረጃ ያላቸው ድርጣቢያዎች</translation>
+<translation id="4473643328224505070">የChrome ከፍተኛ ደረጃ ጥበቃን ለማግኘት <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />የላቀ ጥበቃን ያብሩ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />። <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ይህ ቅጽ ደህንነቱ የተጠበቀ አይደለም። ራስ-ሙላ ጠፍቷል።</translation>
 <translation id="4477350412780666475">ቀጣይ ትራክ</translation>
@@ -2082,7 +2092,6 @@
 <translation id="5329858041417644019">የእርስዎ አሳሽ አይተዳደርም</translation>
 <translation id="5332219387342487447">የመላኪያ መንገድ</translation>
 <translation id="5332769172018416402">በመልዕክት ውስጥ ጠይቅ</translation>
-<translation id="5333022057423422993">Chrome እርስዎ አሁን የተጠቀሙበትን የይለፍ ቃል በውሂብ ጥሰት ውስጥ አግኝቷል። የመለያዎችዎን ደህንነት ለማስጠበቅ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ እንመክራለን።</translation>
 <translation id="5334013548165032829">ዝርዝር የስርዓት ምዝግብ ማስታወሻዎች</translation>
 <translation id="5334145288572353250">አድራሻ ይቀመጥ?</translation>
 <translation id="5340250774223869109">መተግበሪያ ታግዷል</translation>
@@ -2291,7 +2300,6 @@
 <translation id="5784606427469807560">የእርስዎን ካርድ ማረጋገጥ ላይ አንድ ችግር ነበር። የበይነመረብ ግንኙነትዎን ይፈትሹት እና እንደገና ይሞክሩ።</translation>
 <translation id="5785756445106461925">በተጨማሪ፣ ይህ ገፅ ደህንነታቸው ያልተጠበቀ ሌሎች ንብረቶችን አካትቷል። እነዚህ ንብረቶች በሽግግር ወቅት በሌሎች ሊታዩ ይችላሉ፣ እናም የገጹን መልክ ለመለወጥ በአጥቂዎች ሊቀየሩ ይችላሉ።</translation>
 <translation id="5786044859038896871">የካርድዎን መረጃ መሙላት ይፈልጋሉ?</translation>
-<translation id="578633867165174378">Chrome እርስዎ አሁን የተጠቀሙበትን የይለፍ ቃል በውሂብ ጥሰት ውስጥ አግኝቷል። ይህንን የይለፍ ቃል አሁን እንዲቀይሩ እንመክራለን።</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{ምንም}=1{የ1 መለያ የመለያ መግቢያ ውሂብ}one{የ# መለያ የመለያ መግቢያ ውሂብ}other{የ# መለያዎች የመለያ መግቢያ ውሂብ}}</translation>
 <translation id="5800727402210090597">የተንቀሳቃሽ ስልክ ጥገና እና አገልግሎቶች</translation>
@@ -2381,6 +2389,7 @@
 <translation id="5992805036496113940">ለእርስዎ ማስታወቂያዎችን ለማሳየት ጥቅም ላይ የዋለ መረጃን ይመልከቱ</translation>
 <translation id="5995727681868049093">በGoogle መለያዎ ውስጥ የእርስዎን መረጃ፣ ግላዊነት እና ደህንነት ያስተዳድሩ</translation>
 <translation id="5997247540087773573">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ Google የይለፍ ቃል አስተዳዳሪ አሁኑኑ እንዲቀይሩት እና የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ ይመክራል።</translation>
+<translation id="5999271311987646952">Chrome እያሰሱ ሳለ እርስዎን ለመጠበቅ ለመጎብኘት በሚሞክሩበት ጣቢያ ላይ እንደ የGoogle ጥንቃቄ አሰሳ ያሉ — <ph name="BEGIN_LINK" />በቅርብ ጊዜ ተንኮል አዘል ዌር ያገኙ<ph name="END_LINK" /> ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አሉት።</translation>
 <translation id="6000758707621254961">ለ«<ph name="SEARCH_TEXT" />» <ph name="RESULT_COUNT" /> ውጤቶችን አሳይ</translation>
 <translation id="6002122790816966947">የእርስዎ መሣሪያዎች</translation>
 <translation id="6005659677094197001">ተከታታይ</translation>
@@ -2665,7 +2674,6 @@
 <translation id="6579858392010591435">የበዓላት እና ወቅታዊ ክስተቶች</translation>
 <translation id="6579990219486187401">ፈዛዛ ሮዝ</translation>
 <translation id="6581831440014388355">ያልተፈለገ የሰውነት እና የፊት ጸጉር ማስወገድ</translation>
-<translation id="6587182488465657433">Chrome እርስዎ አሁን የተጠቀሙበትን የይለፍ ቃል በውሂብ ጥሰት ውስጥ አግኝቷል። የመለያዎችዎን ደህንነት ለመጠበቅ አሁኑኑ እንዲለውጡት እና የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ እንመክራለን።</translation>
 <translation id="6587893660316489419">ቢ5 ፖስታ</translation>
 <translation id="6587923378399804057">እርስዎ የቀዱት አገናኝ</translation>
 <translation id="6591833882275308647">የእርስዎ <ph name="DEVICE_TYPE" /> የሚተዳደር አይደለም</translation>
@@ -2685,6 +2693,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">የኮምፒውተር ትምህርት</translation>
 <translation id="6633476656216409494">የንግድ እና አምራች ሶፍትዌር</translation>
+<translation id="6638353438328951386">Chrome እያሰሱ ሳለ እርስዎን ለመጠበቅ ለመጎብኘት በሚሞክሩበት ጣቢያ ላይ — እንደ የGoogle ጥንቃቄ አሰሳ ያሉ <ph name="BEGIN_LINK" />በቅርብ ጊዜ ተንኮል አዘል ዌር ያገኙ<ph name="END_LINK" /> ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አሉት።</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6645291930348198241">ኩኪዎችን እና የጣቢያ ውሂብን ይድረሱ።</translation>
 <translation id="6645478838938543427">የዋጋ ቅነሳ ማንቂያዎች ወደ <ph name="EMAIL_ADDRESS" /> ይላካሉ</translation>
@@ -2880,6 +2889,7 @@
 <translation id="702146556168549005">የሚጎበኟቸው ገጾች ዩአርኤሎች ወደ Google ደመና ወይም ሦስተኛ ወገኖች ለትንታኔ ይላካሉ። ለምሳሌ በአስተዳዳሪው በተቀናበሩ ደንቦች ላይ በመመስረት ደህንነታቸው ያልተጠበቁ ድር ጣቢያዎችን ወይም ማጣሪያ ድር ጣቢያዎችን ለመለየት ሊቃኙ ይችላሉ።</translation>
 <translation id="702275896380648118">ይህ ጣቢያ እርስዎ የሚወዷቸውን ነገሮች ይወስናል እና ከዚያም ማስታወቂያዎችን ለሌሎች ጣቢያዎች ይጠቁማል። እንዲሁም ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል።</translation>
 <translation id="7023162328967545559">የአስተዳዳሪ ማስጠንቀቂያ</translation>
+<translation id="7024932305105294144">Chrome እያሰሱ ሳለ እርስዎን ለመጠበቅ ለመጎብኘት በሚሞክሩበት ጣቢያ ላይ — እንደ የGoogle ጥንቃቄ አሰሳ ያሉ<ph name="BEGIN_LINK" />በቅርብ ጊዜ ማስገር ያገኙ<ph name="END_LINK" /> ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አሉት። የሚያሰግሩ ጣቢያዎች እርስዎን ለመሸወድ ሌሎች ጣቢያዎችን እንደሆኑ ያስመስላሉ።<ph name="NEW_LINE" />በተለምዶ ደህንነታቸው የተጠበቀ ጣቢያዎች እንኳን አንዳንድ ጊዜ በጥቃት አድራሾች ይጠለፋሉ። ስህተት ተፈጥሯል ብለው ካሰቡ እና ይህ ጣቢያ አደጋ የማያስከትል ከሆነ <ph name="BEGIN_ERROR_LINK" />ያሳወቁን<ph name="END_ERROR_LINK" />።</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
 <translation id="7030436163253143341">የዕውቅና ማረጋገጫው ልክ ያልሆነ ነው</translation>
 <translation id="7031646650991750659">የትኛዎቹን የGoogle Play መተግበሪያዎች እንደጫኑ</translation>
@@ -2915,6 +2925,7 @@
 <translation id="7105998430540165694">የይለፍ ቁልፍ ከiCloud Keychain</translation>
 <translation id="7106762743910369165">የእርስዎ አሳሽ በእርስዎ ድርጅት የሚተዳደር ነው</translation>
 <translation id="7107249414147762907">ይህ PDF ተደራሽ አይደለም። ምንም ጽሁፍ አልወጣም</translation>
+<translation id="7107427078069498123">SHA-256 የጣት አሻራዎች</translation>
 <translation id="7108338896283013870">ደብቅ</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ካሜራዎን መጠቀም ይፈልጋል</translation>
 <translation id="7108819624672055576">በቅጥያ የተፈቀደ</translation>
@@ -3080,6 +3091,7 @@
 <translation id="7429429656042611765">አስፈጻሚ</translation>
 <translation id="7437289804838430631">የእውቂያ መረጃ አክል</translation>
 <translation id="7437490109271760224">የካርታ ጨዋታዎች</translation>
+<translation id="7438338505272634288">ለመጎብኘት እየሞከሩ ያሉት ጣቢያ ላይ ያሉ ጥቃት አድራሾች በሚያስሱበት መንገድ ላይ ተጽዕኖ የሚያደርስ ጎጂ ሶፍትዌር እንዲጭኑ ሊያታልሉዎት ይችላሉ — ለምሳሌ፣ የእርስዎን መነሻ ገፅ በመለወጥ ወይም በሚጎበኟቸው ጣቢያዎች ላይ ተጨማሪ ማስታወቂያዎችን ለእርስዎ በማሳየት። Chrome ጉዳትን ለማስወገድ ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">ከመስመር ውጭ ሆነው ሳለ ያስሱ</translation>
 <translation id="7441627299479586546">የተሳሳተ የመምሪያ ርዕሰ ጉዳይ</translation>
 <translation id="7441864845853794192">ቡፌ እና ልዩ ምግቦች</translation>
@@ -3407,6 +3419,7 @@
 <translation id="8078006011486731853">{0,plural, =1{ምስጢራዊ ፋይል ይሰቀል?}one{ምስጢራዊ ፋይል ይሰቀል?}other{ምስጢራዊ ፋይሎች ይሰቀሉ?}}</translation>
 <translation id="8078141288243656252">በሚሸከርከርበት ጊዜ ማብራራት አይችልም</translation>
 <translation id="8079031581361219619">ጣቢያ ዳግም ይጫን?</translation>
+<translation id="8079976827192572403">አደገኛ ጣቢያ</translation>
 <translation id="8081087320434522107">ሴዳኖች</translation>
 <translation id="8086971161893892807">ረቂቅ</translation>
 <translation id="8088680233425245692">ጽሑፉን ማየት አልተቻለም።</translation>
@@ -3691,6 +3704,7 @@
 <translation id="8680536109547170164"><ph name="QUERY" />፣ መልስ፣ <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">በ<ph name="PAGE" /> ላይ ያለው ድረ-ገፅ ሊጫን አልቻለም ምክንያቱም፦</translation>
 <translation id="8686424632716064939">የኮምፒውተር ደህንነት</translation>
+<translation id="8687278439622293018">የገባው <ph name="ENTRY_VOICEOVER" /> ተሰርዟል</translation>
 <translation id="8687429322371626002">የእርስዎ መሣሪያ እና መለያ የሚተዳደሩት በ<ph name="MANAGER" /> ነው።</translation>
 <translation id="8688672835843460752">ይገኛል</translation>
 <translation id="868922510921656628">ገጾች በስብስብብ</translation>
@@ -3902,6 +3916,7 @@
 <translation id="9128870381267983090">ከአውታረ መረብ ጋር ይገናኙ</translation>
 <translation id="9131119348384879525">ሚስጥራዊ ይዘት ይቀረጹ?</translation>
 <translation id="9133985615769429248">ይህን መሣሪያ ከሌሎች ጋር የሚጋሩ ከሆነ የተቀመጠ የይለፍ ቃልን በተጠቀሙ ቁጥር እርስዎ መሆንዎን ለማረጋገጥ ማያ ገፅ መቆለፊያዎን መጠቀም ይችላሉ</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />፣ ምናባዊ ካርድ</translation>
 <translation id="9136861683332321024">የቅንጦት ተሽከርካሪዎች</translation>
 <translation id="9137013805542155359">የመጀመሪያውን አሳይ</translation>
 <translation id="9137248913990643158">ይህን መተግበሪያ ከመጠቀምዎ በፊት እባክዎ ይጀምሩና ወደ Chrome ይግቡ።</translation>

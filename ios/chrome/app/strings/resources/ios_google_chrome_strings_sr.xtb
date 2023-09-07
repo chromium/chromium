@@ -36,6 +36,7 @@
 <translation id="2120238739383482109">Отвара Chrome обележиваче.</translation>
 <translation id="2147651015520127414">Chrome је потврдио да је <ph name="ISSUER" /> издао сертификат овог веб-сајта.</translation>
 <translation id="2199719347983604670">Подаци из Chrome синхронизације</translation>
+<translation id="2311240109311056604">Отвара игру Chrome диносаурус.</translation>
 <translation id="2339201583852607431">Лозинка се чува на вашем Google налогу (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome дели локацију са сајтовима које дозволите.</translation>
 <translation id="2347208864470321755">Када је ова функција укључена, Chrome ће нудити да преведе странице написане на другим језицима помоћу Google преводиоца. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -64,6 +65,7 @@
 <translation id="322254490661677575">Да бисте користили и чували Chrome податке на Google налогу, унесите приступну фразу.</translation>
 <translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3345341804167540816">Користите Chrome свуда</translation>
+<translation id="3472587960215700950">Chrome користи Google мапе да би вам пружао путању и локалне информације о откривеним адресама.</translation>
 <translation id="3503014945441706099">Набавите побољшано безбедно прегледање и за овај Chrome профил</translation>
 <translation id="3522659714780527202">Да бисте видели картице на било којем уређају на ком користите Chrome, укључите синхронизацију</translation>
 <translation id="3533694711092285624">Нема сачуваних лозинки. Chrome може да проверава лозинке када их сачувате.</translation>
@@ -75,14 +77,17 @@
 <translation id="3827545470516145620">Добијате стандардну безбедносну заштиту на овом уређају</translation>
 <translation id="384394811301901750">Google Chrome тренутно не може да користи камеру</translation>
 <translation id="3901001113120561395">Искористите Chrome на најбољи начин.</translation>
+<translation id="3967382818307165056">Управљајте начинима плаћања у Chrome-у</translation>
 <translation id="3980220367029651214">Мењате налог за синхронизацију из <ph name="USER_EMAIL1" /> у <ph name="USER_EMAIL2" />. Постојећим Chrome подацима управља <ph name="DOMAIN" />. Промена ће избрисати податке са овог уређаја, али ће подаци остати на <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Организација захтева да останете одјављени са Chrome-а.</translation>
 <translation id="3988789688219830639">Google Chrome не може да приступа сликама или видео снимцима. Омогућите приступ у iOS Settings (Подешавања iOS-а) &gt; Privacy (Приватност) &gt; Photos (Слике).</translation>
 <translation id="4064699917955374540">Да бисте користили и чували Chrome податке на Google налогу, потврдите свој идентитет.</translation>
+<translation id="4067858366537947361">Отвори Chrome картицу без архивирања</translation>
 <translation id="4093042601582616698">Желите да подесите Chrome као подразумевани прегледач?</translation>
 <translation id="417201473131094001">Није подржано у верзији Chrome Canary</translation>
 <translation id="4233521129555661685">Корисник <ph name="USER_EMAIL1" /> је користио Chrome и оставио обележиваче, лозинке и друга подешавања на овом уређају.</translation>
 <translation id="424864128008805179">Желите ли да се одјавите из Chrome-а?</translation>
+<translation id="4251174643044751591">Отвара страницу Подешавање начина плаћања у Chrome-у.</translation>
 <translation id="4453284704333523777">Управљајте подешавањима Chrome-а</translation>
 <translation id="4508370294876102450">Отворите Chrome из било које апликације</translation>
 <translation id="4523886039239821078">Неки програмски додаци изазивају отказивање Chrome-а. Деинсталирајте:</translation>
@@ -97,10 +102,12 @@
 <translation id="484033449593719797">Није подржано у верзији Chrome бета</translation>
 <translation id="4840404732697892756">Google менаџер лозинки може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
 <translation id="4903674399067644695">Ова картица вам приказује предлоге о томе како да искористите Chrome на најбољи начин.</translation>
+<translation id="49200511069271369">Ваша организација, <ph name="DOMAIN" />, управља налогом на који се пријављујете и начином на који Chrome може да се користи. Администратор може да подеси или ограничи одређене функције.</translation>
 <translation id="5030102366287574140">Chrome може да вас штити од упада у податке, небезбедних веб-сајтова и других ствари.</translation>
 <translation id="5108659628347594808">Побољшајте Chrome</translation>
 <translation id="5112925986883715005">Прикажи Chrome листу за читање</translation>
 <translation id="5119391094379141756">Изаберите Chrome</translation>
+<translation id="5156818928311866442">Отвара подешавање Chrome-а да би га подесило као подразумевани прегледач.</translation>
 <translation id="5162467219239570114">Chrome је застарео. Ако ажурирање није доступно у <ph name="BEGIN_LINK" />App Store-у<ph name="END_LINK" />, уређај можда не подржава нове верзије Chrome-а.</translation>
 <translation id="5190139289262548459">Ваша организација, <ph name="DOMAIN" />, управља налогом на који сте пријављени и начином на који се Chrome користи.</translation>
 <translation id="5389212809648216794">Google Chrome не може да користи камеру зато што је већ користи друга апликација</translation>
@@ -124,6 +131,7 @@
 <translation id="6063091872902370735">Дозволите пријављивање у Chrome</translation>
 <translation id="6110625574506755980">Неке Chrome функције више неће бити доступне.</translation>
 <translation id="6181930887571472871">Пређите на Chrome</translation>
+<translation id="6228768456496298352">Chrome открива адресе помоћу Google мапа да би вам пружао путању и локалне информације.</translation>
 <translation id="6238746320622508509">Дозволите Chrome-у да закључа картице без архивирања.</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>
 <translation id="6412673304250309937">Проверава URL-ове са листом небезбедних сајтова који се чувају у Chrome-у. Ако неки сајт покуша да украде вашу лозинку или пробате да преузмете штетну датотеку, Chrome може да пошаље URL-ове, укључујући делове садржаја странице, у Безбедно прегледање.</translation>
@@ -133,6 +141,7 @@
 <translation id="6646696210740573446">Шаље маскирани део URL-а Google-у преко сервера за приватност који крије IP адресу. Chrome може да пошаље URL-ове Google-у, укључујући делове садржаја странице, и ако неки сајт покуша да украде вашу лозинку или пробате да преузмете штетни фајл.</translation>
 <translation id="6648150602980899529">Пријављујете се помоћу налога којим управља <ph name="DOMAIN" /> и дајете његовом администратору контролу над својим Chrome подацима. Подаци ће постати трајно повезани са тим налогом. Одјављивањем из Chrome-а ћете избрисати податке са овог уређаја, али ће они остати сачувани на Google налогу.</translation>
 <translation id="6676840375528380067">Желите ли да обришете Chrome податке са овог уређаја?</translation>
+<translation id="6683891932310469419">Отвара страницу историје Chrome-а.</translation>
 <translation id="6709398533399187136">Ваша лозинка је откривена при упаду у податке. Google менаџер лозинки препоручује да је одмах промените.</translation>
 <translation id="6815466750807582739">Начини плаћања и адресе неће бити шифровани. Историја прегледања из Chrome-а се неће синхронизовати.
 
@@ -141,6 +150,7 @@
 <translation id="6916015246697034114">Претражујте гласом у у Chrome-у</translation>
 <translation id="6964931465519938134">Сада можете да користите Chrome сваки пут када додирнете линкове у порукама, документима и другим апликацијама.</translation>
 <translation id="6975725306479268850">Изаберите Chrome за аутоматско попуњавање</translation>
+<translation id="7056826488869329999">Отвара и покреће Проверу безбедности у Chrome-у.</translation>
 <translation id="7059914902409643750">Прилагодите Chrome себи</translation>
 <translation id="7124339256045485976">Редовно ажурирају Chrome</translation>
 <translation id="7161390184744336561">Google Chrome је застарео</translation>
@@ -148,6 +158,7 @@
 <translation id="7173660919484573146">Chrome користи Face ID да би лозинкама могле да приступају само овлашћене особе.</translation>
 <translation id="7187993566681480880">Штити вас у Chrome-у и може да се користи за побољшање безбедности у другим Google апликацијама када сте пријављени.</translation>
 <translation id="72119412072970160">Можете да користите лозинке које сте сачували у Google менаџеру лозинки у другим апликацијама на iPad-у.</translation>
+<translation id="7254380941803999489">Подеси Chrome као подразумевани прегледач</translation>
 <translation id="7261678641327190792">Chrome не може да вам проверава лозинке</translation>
 <translation id="7272930098487145294">Да бисте сачували слике, додирните Подешавања да бисте омогућили Chrome-у да додаје слике</translation>
 <translation id="7275945473750112644">Налогом управља <ph name="HOSTED_DOMAIN" />, па ће се Chrome подаци обрисати са овог уређаја</translation>
@@ -171,6 +182,7 @@
 <translation id="8160472928944011082">Chrome не може да се ажурира</translation>
 <translation id="8174679664544842874">Отвара нову картицу у Chrome-у.</translation>
 <translation id="8213758103105806860">Прикажи Chrome обележиваче</translation>
+<translation id="8328903609881776074">Отвара нову Chrome картицу без архивирања.</translation>
 <translation id="8357607116237445042">Одаберите да ли ћете обрисати Chrome податке са овог уређаја или их задржати</translation>
 <translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>
 <translation id="840168496893712993">Неки програмски додаци изазивају отказивање Chrome-а. Покушајте да их деинсталирате.</translation>

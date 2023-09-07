@@ -484,6 +484,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1390548061267426325">Abrir como pestaña normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> no tiene autorización para imprimir en <ph name="PRINTER_NAME" />. Ponte en contacto con tu administrador.</translation>
 <translation id="1392047138650695757">Diccionarios del usuario</translation>
+<translation id="139300021892314943">Limitar quién puede iniciar sesión</translation>
 <translation id="1393283411312835250">Sol y nubes</translation>
 <translation id="1395730723686586365">Herramienta de actualización iniciada</translation>
 <translation id="1395832189806039783">Destacar elemento con el enfoque del teclado</translation>
@@ -2517,6 +2518,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2956070239128776395">Sección anidada dentro de un grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Advertencia sobre el empaquetado de extensión</translation>
 <translation id="2959127025785722291">Se ha producido un error. No se ha podido completar el análisis. Vuelve a intentarlo.</translation>
+<translation id="2959474507964749987">Este archivo cifrado puede ser un virus o malware.<ph name="LINE_BREAK" />Para comprobar si no es seguro, puedes enviar el archivo y la contraseña a Navegación segura de Google. Los análisis suelen tardar unos segundos.<ph name="LINE_BREAK" />Añade la contraseña del archivo para analizarlo.</translation>
 <translation id="2959842337402130152">No se ha podido restablecer porque falta espacio de almacenamiento. Libera <ph name="SPACE_REQUIRED" /> de espacio del dispositivo e inténtalo de nuevo.</translation>
 <translation id="2960208947600937804">No se ha podido configurar Linux. Ponte en contacto con el administrador.</translation>
 <translation id="2960942820860729477">Tasa de refresco</translation>
@@ -3882,7 +3884,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4067839975993712852">Marcar la pestaña actual como leída</translation>
 <translation id="4068776064906523561">Huellas digitales guardadas</translation>
 <translation id="407173827865827707">Al hacer clic</translation>
-<translation id="4072701974556190758">La contraseña se guardará en tu cuenta de Google (<ph name="ACCOUNT" />). No te hará falta recordarla.</translation>
 <translation id="4072805772816336153">Inténtalo de nuevo más tarde</translation>
 <translation id="407520071244661467">Escala</translation>
 <translation id="407543464472585404">El perfil de <ph name="NAME" /> está vinculado a <ph name="EMAIL" /></translation>
@@ -3979,6 +3980,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4147099377280085053">Selecciona una tabla braille</translation>
 <translation id="4147911968024186208">Inténtalo de nuevo. Si el error persiste, ponte en contacto con tu representante de asistencia.</translation>
 <translation id="414800391140809654">puede usar tu información mientras navegas</translation>
+<translation id="4148195018520464922">Puedes limitar el inicio de sesión a algunos usuarios. Se quitará la opción "Añadir persona" de la pantalla de inicio de sesión. También puedes quitar usuarios.</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4150569944729499860">Contexto de la pantalla</translation>
 <translation id="4151449637210235443">Cuéntanos qué te ha parecido tu reciente experiencia de juego</translation>
@@ -5160,6 +5162,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5146896637028965135">Voz del sistema</translation>
 <translation id="5147992672778369947">Usa una contraseña recomendada</translation>
 <translation id="5148277445782867161">El servicio de ubicación de Google utiliza fuentes como las redes Wi‑Fi y sensores para determinar la ubicación de tu dispositivo.</translation>
+<translation id="5148285448107770349">La contraseña debe tener al menos 8 caracteres</translation>
 <translation id="5150254825601720210">Nombre de servidor SSL de certificado de Netscape</translation>
 <translation id="5151354047782775295">Libera espacio en el disco o puede que se eliminen automáticamente ciertos datos</translation>
 <translation id="5153234146675181447">Olvidar teléfono</translation>
@@ -7951,7 +7954,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746216226901520237">La próxima vez, el teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración.</translation>
 <translation id="7464153996453281700">El componente ya está actualizado</translation>
-<translation id="7464637891177137294">Guardarla en tu cuenta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# pestaña abierta: pulsar para activar o desactivar la barra de pestañas}other{# pestañas abiertas; pulsar para activar o desactivar la barra de pestañas}}</translation>
 <translation id="7465635034594602553">Algo no va bien. Espera unos minutos y vuelve a ejecutar <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Quitar entorno de desarrollo gestionado (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8030,7 +8032,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7524849817690367493">Centro de seguridad</translation>
 <translation id="7525067979554623046">Crear</translation>
 <translation id="7526989658317409655">Marcador de posición</translation>
-<translation id="7527758104894292229">Actualizarla en tu cuenta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="7528224636098571080">No abrir</translation>
 <translation id="7529411698175791732">Comprueba tu conexión a Internet. Si el problema persiste, prueba a cerrar sesión y volver a iniciarla.</translation>
 <translation id="7529865045818406536">Se usarán las redes preferidas si hay más de una red anterior disponible</translation>
@@ -8135,6 +8136,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7617263010641145920">Activar Play Store</translation>
 <translation id="7617648809369507487">Usar notificaciones más discretas</translation>
 <translation id="7621382409404463535">El sistema no ha podido guardar la configuración del dispositivo.</translation>
+<translation id="7621480263311228380">No tienen permiso para usar la información que han guardado sobre ti</translation>
 <translation id="7621595347123595643">No podrás recuperar los datos locales si olvidas tu contraseña o PIN.</translation>
 <translation id="7622114377921274169">Cargando.</translation>
 <translation id="7622768823216805500">Los sitios suelen instalar controladores de pago para utilizarlos en funciones relacionadas con compras, como facilitar los pagos.</translation>
@@ -9482,6 +9484,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8680251145628383637">Inicia sesión para acceder a tus marcadores, tu historial, tus contraseñas y tu configuración en todos tus dispositivos. Además, iniciarás sesión automáticamente en tus servicios de Google.</translation>
 <translation id="8681886425883659911">Los anuncios se bloquean en sitios que se caracterizan por mostrar anuncios invasivos o engañosos</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> está conectada y lista</translation>
+<translation id="8684471948980641888">Permitir la sincronización en redes de uso medido</translation>
 <translation id="8685540043423825702">Tu perfil de Chrome</translation>
 <translation id="8686142379631285985">Has iniciado sesión como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Cancelar <ph name="FILE_NAME" /></translation>

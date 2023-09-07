@@ -426,6 +426,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1335929031622236846">Registra il tuo dispositivo</translation>
 <translation id="133660899895084533">Lettura di dati e informazioni delle periferiche Bluetooth</translation>
 <translation id="1336902454946927954">Il token di sicurezza è bloccato perché non è stato possibile riconoscere la tua impronta. Per sbloccarlo, inserisci il PIN.</translation>
+<translation id="1337066099824654054">La guida contestuale è disattivata</translation>
 <translation id="1338631221631423366">Accoppiamento in corso…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vuole aprire questa applicazione.</translation>
 <translation id="1338950911836659113">Eliminazione in corso...</translation>
@@ -3444,6 +3445,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3738632186060045350">I dati del <ph name="DEVICE_TYPE" /> verranno eliminati tra 24 ore</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Aprire <ph name="APPLICATION" />?</translation>
+<translation id="3740396996321407665">Ricevi una guida contestuale da alcune funzionalità</translation>
 <translation id="3740945083753997630">Riduci dimensioni di visualizzazione e testo</translation>
 <translation id="3741056951918180319">Puoi sempre fare clic sull'estensione per usarla su qualsiasi sito</translation>
 <translation id="3742235229730461951">Layout tastiera coreana</translation>
@@ -3884,7 +3886,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4067839975993712852">Contrassegna la scheda corrente come già letta</translation>
 <translation id="4068776064906523561">Impronte digitali salvate</translation>
 <translation id="407173827865827707">Al clic</translation>
-<translation id="4072701974556190758">La password verrà salvata nel tuo Account Google <ph name="ACCOUNT" /> e non dovrai memorizzarla.</translation>
 <translation id="4072805772816336153">Riprova più tardi</translation>
 <translation id="407520071244661467">Scala</translation>
 <translation id="407543464472585404">Il profilo di <ph name="NAME" /> è collegato a <ph name="EMAIL" /></translation>
@@ -5163,6 +5164,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5146896637028965135">Voce di sistema</translation>
 <translation id="5147992672778369947">Usa password consigliata</translation>
 <translation id="5148277445782867161">Il servizio di geolocalizzazione di Google utilizza fonti quali le reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa del dispositivo.</translation>
+<translation id="5148285448107770349">La password deve avere almeno 8 caratteri</translation>
 <translation id="5150254825601720210">Nome server SSL certificato Netscape</translation>
 <translation id="5151354047782775295">Libera spazio sul disco, altrimenti alcuni dati potrebbero essere eliminati automaticamente</translation>
 <translation id="5153234146675181447">Elimina telefono</translation>
@@ -6403,6 +6405,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6173623053897475761">Digita di nuovo il PIN</translation>
 <translation id="6175314957787328458">GUID di dominio Microsoft</translation>
 <translation id="6175910054050815932">Ottieni un link</translation>
+<translation id="6176701216248282552">La guida contestuale è attiva. Queste funzionalità possono inviare pagine aperte a Google.</translation>
 <translation id="6177412385419165772">Rimozione in corso…</translation>
 <translation id="6178664161104547336">Seleziona un certificato</translation>
 <translation id="6178682841350631965">I dati di accesso sono stati aggiornati</translation>
@@ -7951,7 +7954,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7461924472993315131">Blocca</translation>
 <translation id="746216226901520237">La prossima volta potrai usare il tuo telefono per sbloccare il dispositivo <ph name="DEVICE_TYPE" />. Puoi disattivare Smart Lock nelle Impostazioni.</translation>
 <translation id="7464153996453281700">Componente già aggiornato</translation>
-<translation id="7464637891177137294">Salvala nel tuo Account Google, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# scheda aperta; premi per attivare/disattivare la tabstrip}other{# schede aperte; premi per attivare/disattivare la tabstrip}}</translation>
 <translation id="7465635034594602553">Si è verificato un problema. Attendi qualche minuto ed esegui di nuovo <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Rimuovi ambiente di sviluppo gestito (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8030,7 +8032,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7524849817690367493">Centro sicurezza</translation>
 <translation id="7525067979554623046">Crea</translation>
 <translation id="7526989658317409655">Segnaposto</translation>
-<translation id="7527758104894292229">Aggiornala nel tuo Account Google, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Non aprire</translation>
 <translation id="7529411698175791732">Controlla la connessione a Internet. Se il problema persiste, prova a uscire e ad accedere di nuovo.</translation>
 <translation id="7529865045818406536">Le reti preferite verranno utilizzate se sarà disponibile più di una rete precedente</translation>

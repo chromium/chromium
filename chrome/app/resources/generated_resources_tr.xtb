@@ -484,6 +484,7 @@
 <translation id="1390548061267426325">Normal Sekme Olarak Aç</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> kullanıcısının, <ph name="PRINTER_NAME" /> yazıcısında yazdırma yetkisi yok. Lütfen yöneticinizle iletişime geçin.</translation>
 <translation id="1392047138650695757">Kullanıcı sözlükleri</translation>
+<translation id="139300021892314943">Oturum açabilecek kişileri sınırlandırın</translation>
 <translation id="1393283411312835250">Güneş ve bulutlar</translation>
 <translation id="1395730723686586365">Güncelleyici başladı</translation>
 <translation id="1395832189806039783">Klavye odağını kullanarak öğeyi vurgula</translation>
@@ -2514,6 +2515,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2956070239128776395">Grupta iç içe yerleşmiş bölüm: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Uzantı paketleme uyarısı</translation>
 <translation id="2959127025785722291">Bir sorun oluştu. Tarama tamamlanamadı. Lütfen tekrar deneyin.</translation>
+<translation id="2959474507964749987">Bu şifrelenmiş dosya, virüs veya kötü amaçlı yazılım olabilir.<ph name="LINE_BREAK" />Güvenli olup olmadığını kontrol etmek için dosyayı ve şifreyi Google Güvenli Tarama'ya gönderebilirsiniz. Taramalar genellikle birkaç saniye sürer.<ph name="LINE_BREAK" />Taramak için dosyanın şifresini ekleyin.</translation>
 <translation id="2959842337402130152">Depolama alanı olmadığı için geri yüklenemiyor. Cihazda <ph name="SPACE_REQUIRED" /> yer açıp tekrar deneyin.</translation>
 <translation id="2960208947600937804">Linux yapılandırılırken bir hata oluştu. Yöneticinizle iletişime geçin.</translation>
 <translation id="2960942820860729477">Yenileme hızı</translation>
@@ -3880,7 +3882,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4067839975993712852">Geçerli sekmeyi okundu olarak işaretle</translation>
 <translation id="4068776064906523561">Kayıtlı parmak izleri</translation>
 <translation id="407173827865827707">Tıklandığında</translation>
-<translation id="4072701974556190758">Şifreniz <ph name="ACCOUNT" /> Google Hesabınızda kaydedilir. Ezberlemeniz gerekmiyor.</translation>
 <translation id="4072805772816336153">Daha sonra tekrar deneyin</translation>
 <translation id="407520071244661467">Ölçek</translation>
 <translation id="407543464472585404"><ph name="NAME" /> adlı kişinin profili <ph name="EMAIL" /> hesabına bağlı</translation>
@@ -3977,6 +3978,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4147099377280085053">Braille tablosu seç</translation>
 <translation id="4147911968024186208">Lütfen yeniden deneyin. Bu hatayı tekrar görürseniz lütfen destek temsilcinizle iletişime geçin.</translation>
 <translation id="414800391140809654">siz gezinirken bilgilerinizi kullanabilir</translation>
+<translation id="4148195018520464922">Oturum açabilecek kişileri belirli kullanıcılarla sınırlandırabilirsiniz. Bu işlem, oturum açma ekranındaki "Kişi ekle" seçeneğini kaldırır. Ayrıca, mevcut kullanıcıları da kaldırabilirsiniz.</translation>
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4150569944729499860">Ekran bağlamı</translation>
 <translation id="4151449637210235443">Bize son oyun deneyiminizden bahsedin</translation>
@@ -4175,6 +4177,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4322394346347055525">Diğer Sekmeleri Kapat</translation>
 <translation id="4324577459193912240">Dosya eksik</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> uygulamasının yüklemesi kaldırılıyor...</translation>
+<translation id="4325433082696797523">Depolama ve güç</translation>
 <translation id="4326146840124313313">Chrome’un en güçlü güvenlik özelliği sizi tehlikeli web sitelerinden, indirmelerden ve uzantılardan korumak için daha fazlasını yapar</translation>
 <translation id="4326484226728068206">Alışveriş sepetinizdeki ürünler için <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) adlı satıcıda <ph name="DISCOUNT_TEXT" /> mevcut. Görüntüleme zamanı: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Buzlu su</translation>
@@ -5158,6 +5161,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5146896637028965135">Sistem sesi</translation>
 <translation id="5147992672778369947">Önerilen şifreyi kullanın</translation>
 <translation id="5148277445782867161">Google'ın konum hizmeti, cihazınızın konumunu tahmin etmeye yardımcı olması için kablosuz bağlantı, mobil ağlar ve sensörler gibi kaynakları kullanır.</translation>
+<translation id="5148285448107770349">Şifre en az 8 karakter olmalıdır</translation>
 <translation id="5150254825601720210">Netscape Sertifikası SSL Sunucu Adı</translation>
 <translation id="5151354047782775295">Disk alanını boşaltmazsanız bazı veriler otomatik olarak silinebilir</translation>
 <translation id="5153234146675181447">Telefonu unutma</translation>
@@ -7949,7 +7953,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7461924472993315131">Sabitle</translation>
 <translation id="746216226901520237">Bir dahaki sefere telefonunuzu kullanarak <ph name="DEVICE_TYPE" /> cihazınızın kilidini açabilirsiniz. Smart Lock'u Ayarlar'dan kapatabilirsiniz.</translation>
 <translation id="7464153996453281700">Bileşen zaten güncel</translation>
-<translation id="7464637891177137294"><ph name="ACCOUNT" /> adlı Google Hesabınıza kaydedin</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# açık sekme, sekme şeridini açıp kapatmak için basın}other{# açık sekme, sekme şeridini açıp kapatmak için basın}}</translation>
 <translation id="7465635034594602553">Bir sorun oldu. Lütfen birkaç dakika bekleyip <ph name="APP_NAME" /> uygulamasını tekrar çalıştırın.</translation>
 <translation id="7465777686629334728">Yönetilen geliştirme ortamını (<ph name="SPECIFIC_NAME" />) kaldırın</translation>
@@ -8028,7 +8031,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7524849817690367493">Güvenlik Merkezi</translation>
 <translation id="7525067979554623046">Oluştur</translation>
 <translation id="7526989658317409655">Yer Tutucu</translation>
-<translation id="7527758104894292229"><ph name="ACCOUNT" /> adlı Google Hesabınızda güncelleyin</translation>
 <translation id="7528224636098571080">Açma</translation>
 <translation id="7529411698175791732">İnternet bağlantınızı kontrol edin. Sorun devam ederse oturumu kapatıp tekrar açmayı deneyin.</translation>
 <translation id="7529865045818406536">Birden fazla eski ağ mevcutsa tercih edilen ağlar kullanılır</translation>
@@ -8133,6 +8135,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7617263010641145920">Play Store'u aç</translation>
 <translation id="7617648809369507487">Sessiz bildirim kullanılsın</translation>
 <translation id="7621382409404463535">Sistem cihaz yapılandırmasını kaydedemedi.</translation>
+<translation id="7621480263311228380">Sizinle ilgili kaydettiği bilgileri kullanmasına izin verilmeyen siteler</translation>
 <translation id="7621595347123595643">Şifrenizi veya PIN'inizi unutursanız yerel verileri kurtaramazsınız.</translation>
 <translation id="7622114377921274169">Şarj oluyor.</translation>
 <translation id="7622768823216805500">Daha kolay ödeme gibi alışveriş özelliklerinin kullanılması için siteler genellikle ödeme işleyiciler yükler</translation>
@@ -9480,6 +9483,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8680251145628383637">Tüm cihazlarınızdaki sekmeleri, geçmişi ve diğer ayarları almak için oturum açın. Google hizmetlerinizde de otomatik olarak oturum açarsınız.</translation>
 <translation id="8681886425883659911">Araya giren veya yanıltıcı reklamlar gösterdiği bilinen sitelerdeki reklamlar engellenir</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> bağlandı ve hazır</translation>
+<translation id="8684471948980641888">Sayaçlı ağlarda senkronizasyona izin ver</translation>
 <translation id="8685540043423825702">Chrome profiliniz</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> olarak oturum açıldı</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> dosyasını iptal et</translation>

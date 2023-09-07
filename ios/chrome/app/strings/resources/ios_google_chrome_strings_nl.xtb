@@ -36,6 +36,7 @@ Aandachtspunten:
 <translation id="2120238739383482109">Opent de Chrome-bookmarks.</translation>
 <translation id="2147651015520127414">Chrome heeft geverifieerd dat <ph name="ISSUER" /> het certificaat voor deze website heeft verstrekt.</translation>
 <translation id="2199719347983604670">Gegevens van Chrome-synchronisatie</translation>
+<translation id="2311240109311056604">Opent de Chrome Dino-game.</translation>
 <translation id="2339201583852607431">Je wachtwoord wordt opgeslagen in je Google-account (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome deelt je locatie met sites die je toestaat.</translation>
 <translation id="2347208864470321755">Als deze functie aanstaat, biedt Chrome aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@ Aandachtspunten:
 <translation id="3655656110921623717">Dit betekent dat Chrome altijd de mobiele site opvraagt.</translation>
 <translation id="3720541637541300822">Incognitotabbladen vergrendelen als je Chrome sluit</translation>
 <translation id="3741995255368156336">Opent de Chrome-leeslijst.</translation>
+<translation id="3744018071945602754">Wachtwoorden beheren in Chrome</translation>
 <translation id="3827545470516145620">Je krijgt standaardbeveiliging op dit apparaat</translation>
 <translation id="384394811301901750">Google Chrome kan je camera momenteel niet gebruiken</translation>
 <translation id="3901001113120561395">Haal het maximale uit Chrome.</translation>
@@ -86,6 +88,7 @@ Aandachtspunten:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> heeft Chrome gebruikt en heeft bookmarks, wachtwoorden en andere instellingen op dit apparaat laten staan.</translation>
 <translation id="424864128008805179">Uitloggen bij Chrome?</translation>
 <translation id="4251174643044751591">Opent de pagina met instellingen voor betaalmethoden in Chrome.</translation>
+<translation id="4453284704333523777">Chrome-instellingen beheren</translation>
 <translation id="4508370294876102450">Chrome openen via elke app</translation>
 <translation id="4523886039239821078">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder de volgende add-ons:</translation>
 <translation id="4633328489441962921">Chrome kan niet checken op updates</translation>
@@ -99,10 +102,12 @@ Aandachtspunten:
 <translation id="484033449593719797">Niet ondersteund in Chrome (bèta)</translation>
 <translation id="4840404732697892756">Google Wachtwoordmanager kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
 <translation id="4903674399067644695">Op deze kaart zie je suggesties voor hoe je het maximale uit Chrome kunt halen.</translation>
+<translation id="49200511069271369">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je inlogt en hoe Chrome kan worden gebruikt. Je beheerder kan bepaalde functies instellen of beperken.</translation>
 <translation id="5030102366287574140">Chrome kan je beschermen tegen gegevenslekken, onveilige websites en meer.</translation>
 <translation id="5108659628347594808">Chrome verbeteren</translation>
 <translation id="5112925986883715005">Chrome-leeslijst bekijken</translation>
 <translation id="5119391094379141756">Selecteer Chrome</translation>
+<translation id="5156818928311866442">Opent de Chrome-instelling om Chrome in te stellen als standaardbrowser.</translation>
 <translation id="5162467219239570114">Chrome is verouderd. Als er geen update beschikbaar is in de <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ondersteunt je apparaat nieuwe versies van Chrome mogelijk niet.</translation>
 <translation id="5190139289262548459">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je bent ingelogd en hoe Chrome wordt gebruikt.</translation>
 <translation id="5389212809648216794">Google Chrome kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
@@ -120,6 +125,7 @@ Aandachtspunten:
 <translation id="571296537125272375">Offline. Chrome kan niet checken op updates</translation>
 <translation id="5716154293141027663">Chrome openen wanneer je op links in andere apps tikt</translation>
 <translation id="5808435672482059465">Je Chrome-geschiedenis bekijken</translation>
+<translation id="589695154992054845">Opent Wachtwoordmanager in Chrome.</translation>
 <translation id="5998675059699164418">Je organisatie vereist dat je inlogt om Chrome te gebruiken.</translation>
 <translation id="6054613632208573261">Chrome standaard gebruiken</translation>
 <translation id="6063091872902370735">Inloggen bij Chrome toestaan</translation>
@@ -152,6 +158,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7173660919484573146">Chrome gebruikt Face ID om geautoriseerde toegang tot je wachtwoorden mogelijk te maken.</translation>
 <translation id="7187993566681480880">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
 <translation id="72119412072970160">Je kunt de wachtwoorden die je in Google Wachtwoordmanager hebt opgeslagen, gebruiken in andere apps op je iPad.</translation>
+<translation id="7254380941803999489">Chrome instellen als standaardbrowser</translation>
 <translation id="7261678641327190792">Chrome kan je wachtwoorden niet checken</translation>
 <translation id="7272930098487145294">Als je afbeeldingen wilt opslaan, tik je op Instellingen om deze door Chrome aan je foto's te laten toevoegen</translation>
 <translation id="7275945473750112644">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chrome-gegevens worden verwijderd van dit apparaat</translation>
@@ -211,6 +218,7 @@ Aandachtspunten:
   • Als Chrome crasht, kunnen details over de crash bepaalde persoonlijke informatie bevatten.
 
   • Als je synchronisatie aanzet, kunnen statistieken ook informatie bevatten over de URL's die je bezoekt.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Opent Instellingen in Chrome.</translation>
 <translation id="9112744793181547300">Chrome instellen als standaard?</translation>
 <translation id="9122931302567044771">Dit betekent dat Chrome altijd de desktopsite opvraagt.</translation>
 <translation id="9181628561061032322">Opent de recente Chrome-tabbladen.</translation>

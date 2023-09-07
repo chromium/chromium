@@ -2093,7 +2093,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5329858041417644019">Nettleseren din administreres ikke</translation>
 <translation id="5332219387342487447">Leveringsmetode</translation>
 <translation id="5332769172018416402">Spør i en melding</translation>
-<translation id="5333022057423422993">Chrome har funnet passordet du nettopp brukte, i et databrudd. For å sikre kontoene dine anbefaler vi at du sjekker de lagrede passordene dine.</translation>
 <translation id="5334013548165032829">Detaljerte systemlogger</translation>
 <translation id="5334145288572353250">Lagre adresse?</translation>
 <translation id="5340250774223869109">Programmet er blokkert</translation>
@@ -2302,7 +2301,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5784606427469807560">Det oppsto et problem under forsøket på å bekrefte kortet ditt. Kontroller Internett-tilkoblingen din, og prøv igjen.</translation>
 <translation id="5785756445106461925">Denne siden inneholder i tillegg andre ressurser som ikke er sikre. Disse ressursene er synlige for andre mens de sendes frem og tilbake, og eventuelle angripere kan modifisere dem for å endre på utseendet til siden.</translation>
 <translation id="5786044859038896871">Vil du fylle ut kortinformasjonen?</translation>
-<translation id="578633867165174378">Chrome har funnet passordet du nettopp brukte, i et databrudd. Vi anbefaler at du endrer dette passordet nå.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Ingen}=1{påloggingsinformasjon for 1 konto}other{påloggingsinformasjon for # kontoer}}</translation>
 <translation id="5800727402210090597">Mobilreparasjon og -tjenester</translation>
@@ -2677,7 +2675,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6579858392010591435">Høytider og sesongspesifikke begivenheter</translation>
 <translation id="6579990219486187401">Lys rosa</translation>
 <translation id="6581831440014388355">Fjerning av uønsket kropps- og ansiktshår</translation>
-<translation id="6587182488465657433">Chrome har funnet passordet du nettopp brukte, i et databrudd. For å sikre kontoene dine anbefaler vi at du endrer passordet nå, og deretter sjekker de lagrede passordene dine.</translation>
 <translation id="6587893660316489419">B5-konvolutt</translation>
 <translation id="6587923378399804057">Linken du kopierte</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> administreres ikke</translation>

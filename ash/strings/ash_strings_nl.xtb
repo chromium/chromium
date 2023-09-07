@@ -200,6 +200,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1757857692711134412">Uit tot zonsondergang</translation>
 <translation id="1768366657309696705">De sneltoets <ph name="LAUNCHER_KEY_NAME" /> + punt is veranderd. Als je de toets Insert wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Verplaatst naar rij <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Open <ph name="NAME" /> om je apparaat in te stellen en aan te passen</translation>
 <translation id="1771761307086386028">Naar rechts scrollen</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, momenteel is <ph name="DATE" /> geselecteerd.</translation>
 <translation id="1775598828170459419"><ph name="NUM_SHOWN_ITEMS" /> van <ph name="NUM_TOTAL_ITEMS" /> tonen</translation>
@@ -1192,6 +1193,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5876666360658629066">Voer de oudercode in</translation>
 <translation id="5881540930187678962">Telefoonhub later instellen</translation>
 <translation id="5881663018261910378">Uit</translation>
+<translation id="5883017113634523865">Installeer de app voor <ph name="NAME" /> via Google Play om alle beschikbare functies te bekijken</translation>
 <translation id="5887954372087850114">Venster <ph name="WINDOW_TITLE" /> is toegewezen aan <ph name="DESK_TITLE" /> en is niet meer toegewezen aan andere bureaus</translation>
 <translation id="588817334757907802">Bestand openen in Chrome-browser</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
@@ -1618,6 +1620,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7714767791242455379">Een nieuw mobiel netwerk toevoegen</translation>
 <translation id="7720400844887872976">Aan tot <ph name="TIME" /></translation>
 <translation id="7720410380936703141">OPNIEUW PROBEREN</translation>
+<translation id="7721132362314201794">Naam bureau</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Eén melding}other{# meldingen}}</translation>
 <translation id="7723703419796509666">Developer Tools-console tonen of verbergen</translation>
 <translation id="7724603315864178912">Knip</translation>

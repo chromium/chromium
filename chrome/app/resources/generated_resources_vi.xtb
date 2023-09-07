@@ -3899,7 +3899,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4067839975993712852">Đánh dấu thẻ hiện tại là đã đọc</translation>
 <translation id="4068776064906523561">Vân tay đã lưu</translation>
 <translation id="407173827865827707">Khi nhấp chuột</translation>
-<translation id="4072701974556190758">Mật khẩu sẽ được lưu trong Tài khoản Google, <ph name="ACCOUNT" />. Bạn sẽ không phải nhớ mật khẩu.</translation>
 <translation id="4072805772816336153">Thử lại sau</translation>
 <translation id="407520071244661467">Tỷ lệ</translation>
 <translation id="407543464472585404">Hồ sơ của <ph name="NAME" /> được liên kết với <ph name="EMAIL" /></translation>
@@ -7972,7 +7971,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7461924472993315131">Ghim</translation>
 <translation id="746216226901520237">Vào lần tới, điện thoại của bạn sẽ mở khóa <ph name="DEVICE_TYPE" />. Bạn có thể tắt tính năng Smart Lock trong phần Cài đặt.</translation>
 <translation id="7464153996453281700">Thành phần đã được cập nhật</translation>
-<translation id="7464637891177137294">Lưu mật khẩu vào Tài khoản Google của bạn, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# thẻ đang mở, nhấn để ẩn/hiện thanh thẻ}other{# thẻ đang mở, nhấn để ẩn/hiện thanh thẻ}}</translation>
 <translation id="7465635034594602553">Đã xảy ra lỗi. Vui lòng đợi vài phút rồi chạy lại <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Xoá môi trường phát triển được quản lý (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8051,7 +8049,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7524849817690367493">Trung tâm an toàn</translation>
 <translation id="7525067979554623046">Tạo</translation>
 <translation id="7526989658317409655">Trình giữ chỗ</translation>
-<translation id="7527758104894292229">Cập nhật mật khẩu trong Tài khoản Google của bạn, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Không mở</translation>
 <translation id="7529411698175791732">Kiểm tra kết nối Internet. Nếu sự cố vẫn tiếp diễn, hãy thử đăng xuất và đăng nhập lại.</translation>
 <translation id="7529865045818406536">Mạng ưu tiên sẽ được sử dụng nếu có nhiều mạng trước đó</translation>

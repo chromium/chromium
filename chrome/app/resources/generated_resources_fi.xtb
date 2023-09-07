@@ -486,6 +486,7 @@
 <translation id="1390548061267426325">Avaa tavallisella välilehdellä</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> on nyt valtuutettu tulostamaan: <ph name="PRINTER_NAME" />. Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="1392047138650695757">Käyttäjän sanakirjat</translation>
+<translation id="139300021892314943">Rajoita sisäänkirjautumista</translation>
 <translation id="1393283411312835250">Aurinko ja pilviä</translation>
 <translation id="1395730723686586365">Päivittäjä käynnistyi</translation>
 <translation id="1395832189806039783">Korosta kohde näppäimistön kohdistuksella</translation>
@@ -2530,6 +2531,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2956070239128776395">Osio sisällytetty ryhmään: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Varoitus: pakattu laajennus</translation>
 <translation id="2959127025785722291">Jotain meni pieleen. Tarkistusta ei voitu suorittaa loppuun. Yritä uudelleen.</translation>
+<translation id="2959474507964749987">Salattu tiedosto saattaa olla virus tai haittaohjelma.<ph name="LINE_BREAK" />Voit tarkistaa, onko se vaarallinen, lähettämällä tiedoston ja salasanan Googlen selaussuojalle. Tarkastuksessa menee yleensä muutama sekunti.<ph name="LINE_BREAK" />Lisää tiedoston salasana tarkastusta varten.</translation>
 <translation id="2959842337402130152">Palauttaminen ei onnistu, koska tallennustila ei riitä. Vapauta laitteelta <ph name="SPACE_REQUIRED" /> ja yritä uudelleen.</translation>
 <translation id="2960208947600937804">Linuxin määrityksessä tapahtui virhe. Ota yhteyttä järjestelmänvalvojaan.</translation>
 <translation id="2960942820860729477">Päivittymistiheys</translation>
@@ -3893,7 +3895,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4067839975993712852">Merkitse nykyinen välilehti luetuksi</translation>
 <translation id="4068776064906523561">Tallennetut sormenjäljet</translation>
 <translation id="407173827865827707">Klikkaamalla</translation>
-<translation id="4072701974556190758">Salasana tallennetaan Google-tilillesi: <ph name="ACCOUNT" />. Sinun ei tarvitse muistaa sitä.</translation>
 <translation id="4072805772816336153">Yritä myöhemmin uudelleen</translation>
 <translation id="407520071244661467">Asteikko</translation>
 <translation id="407543464472585404">Profiili (<ph name="NAME" />) on linkitetty tilille <ph name="EMAIL" /></translation>
@@ -3990,6 +3991,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4147099377280085053">Valitse pistekirjoitustaulukko</translation>
 <translation id="4147911968024186208">Yritä uudelleen. Jos näet tämän virheen uudelleen, ota yhteyttä tukihenkilöön.</translation>
 <translation id="414800391140809654">voi käyttää tietojasi selaamisen aikana</translation>
+<translation id="4148195018520464922">Voit rajoittaa sisäänkirjautumisen tietyille käyttäjille. Tämä poistaa Lisää henkilö ‐vaihtoehdon kirjautumisnäkymästä. Voit myös poistaa nykyisiä käyttäjiä.</translation>
 <translation id="4150201353443180367">Näyttö</translation>
 <translation id="4150569944729499860">Näyttökonteksti</translation>
 <translation id="4151449637210235443">Kerro meille äskeisen pelin pelattavuudesta</translation>
@@ -5172,6 +5174,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5146896637028965135">Järjestelmän ääni</translation>
 <translation id="5147992672778369947">Käytä suositeltua salasanaa</translation>
 <translation id="5148277445782867161">Googlen sijaintipalvelut pyrkivät arvioimaan laitteen sijainnin esim. Wi-Fi- ja mobiiliverkkojen sekä anturien avulla.</translation>
+<translation id="5148285448107770349">Salasanan vähimmäispituus on kahdeksan merkkiä</translation>
 <translation id="5150254825601720210">Netscape-varmenteen SSL-palvelimen nimi</translation>
 <translation id="5151354047782775295">Vapauta levytilaa, tai tiettyjä tietoja voidaan poistaa automaattisesti.</translation>
 <translation id="5153234146675181447">Unohda puhelin</translation>
@@ -7963,7 +7966,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7461924472993315131">Kiinnitä</translation>
 <translation id="746216226901520237">Ensi kerralla <ph name="DEVICE_TYPE" /> avataan lukituksesta puhelimellasi. Voit poistaa Smart Lockin käytöstä asetuksissa.</translation>
 <translation id="7464153996453281700">Osa on jo päivitetty</translation>
-<translation id="7464637891177137294">Tallenna se Google-tilillesi, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# avoin välilehti, laita välilehtirivi päälle tai pois päältä painamalla}other{# avointa välilehteä, laita välilehtirivi päälle tai pois päältä painamalla}}</translation>
 <translation id="7465635034594602553">Jotain meni pieleen. Odota muutama minuutti ja käynnistä <ph name="APP_NAME" /> uudelleen.</translation>
 <translation id="7465777686629334728">Poista hallinnoitu kehitysympäristö (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8042,7 +8044,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7524849817690367493">Turvallisuuskeskus</translation>
 <translation id="7525067979554623046">Luo</translation>
 <translation id="7526989658317409655">Paikkamerkki</translation>
-<translation id="7527758104894292229">Päivitä se Google-tililläsi, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Älä avaa</translation>
 <translation id="7529411698175791732">Tarkista internetyhteytesi. Jos ongelma jatkuu, kirjaudu ulos ja sitten takaisin sisään.</translation>
 <translation id="7529865045818406536">Ensisijaisia verkkoja käytetään, jos vähintään kaksi aiempaa verkkoa on saatavilla</translation>
@@ -8147,6 +8148,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7617263010641145920">Ota Play Kauppa käyttöön</translation>
 <translation id="7617648809369507487">Käytä hiljaisempia viestejä</translation>
 <translation id="7621382409404463535">Laitteen kokoonpanon tallentaminen järjestelmään epäonnistui.</translation>
+<translation id="7621480263311228380">Ei saa käyttää sinusta tallentamiaan tietoja</translation>
 <translation id="7621595347123595643">Et voi palauttaa paikallista dataa, jos unohdat salasanan tai PIN-koodin.</translation>
 <translation id="7622114377921274169">Ladataan</translation>
 <translation id="7622768823216805500">Sivustot asentavat yleensä maksunkäsittelijöitä tarjotakseen osto-ominaisuuksia, esim. helpomman maksamisen</translation>
@@ -9493,6 +9495,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8680251145628383637">Kirjaudu sisään, niin voit käyttää kirjanmerkkejä, historiaa, salasanoja ja muita asetuksiasi kaikilla laitteilla. Sinut kirjataan lisäksi automaattisesti sisään käyttämiisi Googlen palveluihin.</translation>
 <translation id="8681886425883659911">Mainokset estetään sivustoilla, joiden tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> on yhdistetty ja valmiina</translation>
+<translation id="8684471948980641888">Salli synkronointi maksullisissa verkoissa</translation>
 <translation id="8685540043423825702">Chrome-profiilisi</translation>
 <translation id="8686142379631285985">Kirjautunut tilillä <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Peru <ph name="FILE_NAME" /></translation>

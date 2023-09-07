@@ -10,6 +10,7 @@
 <translation id="1431818719585918472">Chromium ला तुमचे गुप्त टॅब लॉक करू द्या.</translation>
 <translation id="1472013873724362412">तुमचे खाते Chromium वर कार्य करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
 <translation id="1507010443238049608">Chromium च्या वैशिष्ट्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
+<translation id="1513122820609681462">Chromium डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
 <translation id="1531155317299575425">Chromium मध्ये साइन इन करण्यासाठी सूचना दाखवते.</translation>
 <translation id="1591119736686995611">Chromium टॅब ग्रिड उघडते.</translation>
 <translation id="1617663976202781617">Chromium सिंकवरील डेटा</translation>
@@ -139,11 +140,13 @@
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium तुमचा डेटा खाजगी कसा ठेवते<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या</translation>
 <translation id="6625409903340039086">Chromium आता तुमच्या व्यवस्थापित केलेल्या खात्यासाठी वापरकर्ता धोरणांना सपोर्ट करते</translation>
 <translation id="6752854822223394465">तुमची संस्था Chromium सेट करत आहे...</translation>
+<translation id="6794054469102824109">Chromium Dino गेम उघडते.</translation>
 <translation id="6820823224820483452">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
 <translation id="6911341667534646387">तुमच्या Google खाते मधील Chromium डेटा वापरणे सुरू ठेवा</translation>
 <translation id="7006920032187763988">तुम्ही पासवर्ड व्यवस्थापक यामध्ये सेव्ह केलेले पासवर्ड तुमच्या iPad वरील इतर अ‍ॅप्समध्ये वापरू शकता.</translation>
 <translation id="7018284295775193585">Chromium अपडेट करू शकत नाही</translation>
 <translation id="7045244423563602563">Chromium ला तुमचे हक्काचे ठिकाण बनवा</translation>
+<translation id="7055269218854630176">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन करत असलेले खाते आणि Chromium कसे वापरले जाऊ शकते हे व्यवस्थापित करते. तुमचा अ‍ॅडमिनिस्ट्रेटर काही वैशिष्ट्ये सेट करू शकतो किंवा प्रतिबंधित करू शकतो.</translation>
 <translation id="7099326575020694068">Chromium विभाजित दृश्य मोड मध्ये तुमचा कॅमेरा वापरू शकत नाही</translation>
 <translation id="7165402419892018581">ऑटोफिल साठी Chromium निवडा</translation>
 <translation id="7175400662502680481">तुमचा पासवर्ड डेटा भंगामध्ये उघड झाला होता. पासवर्ड व्यवस्थापक तो आता बदलण्याची शिफारस करतो.</translation>
@@ -183,6 +186,7 @@
 <translation id="865600487977764604">तुम्ही साइन इन केलेले असते, तेव्हा तुम्हाला Chromium वर सुरक्षित ठेवतो आणि इतर Google अ‍ॅप्सवरील तुमच्या सुरक्षेमध्ये सुधारणा करण्यासाठी वापरला जाऊ शकतो.</translation>
 <translation id="8663480472502753423">Chromium अप टू डेट ठेवा</translation>
 <translation id="8685813584220679697">ही साइट आणि Chromium मध्ये साइन इन करा.</translation>
+<translation id="8730503818204408000">डीफॉल्ट ब्राउझर म्हणून Chromium सेट करण्यासाठी Chromium सेटिंग उघडते.</translation>
 <translation id="8747378496147986285">सुरू असल्यास:
 <ph name="BEGIN_INDENT" />  • तुमच्याप्रमाणे Chromium वापरणाऱ्या लोकांसाठी ते आणखी चांगले करण्यात मदत करा.<ph name="END_INDENT" />
 
@@ -203,5 +207,6 @@
 <translation id="9110075932708282655">बाय डीफॉल्ट Chromium वापरा</translation>
 <translation id="921174536258924340">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>
 <translation id="971488683725792095">तुम्ही मेसेज, दस्तऐवज आणि इतर ॲप्समधील लिंकवर टॅप करता, तेव्हा आपोआप Chromium वापरा.</translation>
+<translation id="981812233959540767">Chromium Dino गेम खेळा</translation>
 <translation id="985602178874221306">Chromium लेखक</translation>
 </translationbundle>

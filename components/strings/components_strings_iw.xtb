@@ -434,6 +434,7 @@
 <translation id="1842969606798536927">לתשלום</translation>
 <translation id="1846432862466000825">Plastic (Archival)</translation>
 <translation id="1848982255014129637">Photo (High-Gloss)</translation>
+<translation id="1853392626017747777">רישום הכרטיס הווירטואלי נסגר</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
 <translation id="1855370856221982654">אגרוף</translation>
 <translation id="1856713167556118146">מה לא קורה במצב האנונימי</translation>
@@ -470,6 +471,7 @@
 <translation id="1924727005275031552">חדשה</translation>
 <translation id="1935995810530254458">אעתיק בכל זאת</translation>
 <translation id="1939175642807587452">האתר יכול לבקש הרשאה לשלוח התראות</translation>
+<translation id="1940441167050915935">מחיקה של קודי האבטחה שנשמרו</translation>
 <translation id="1943994668912612445">עיצוב</translation>
 <translation id="1945968466830820669">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chromium, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="1946849748901605102">‏12x15 אינץ'</translation>
@@ -1726,6 +1728,7 @@
 <translation id="4628948037717959914">תמונה</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">הקאשבק מקושר</translation>
+<translation id="4631881646528206880">רישום כרטיס וירטואלי</translation>
 <translation id="4636930964841734540">מידע</translation>
 <translation id="4638670630777875591">‏מצב פרטי ב-Chromium</translation>
 <translation id="464342062220857295">תכונות חיפוש</translation>
@@ -1844,6 +1847,7 @@ Del</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
 <translation id="485902285759009870">הקוד בתהליך אימות…</translation>
 <translation id="4862630594858951805">רוצה לקבל אימיילים על ירידות במחיר?</translation>
+<translation id="4864406669374375262">מחרוזת הגרסה הועתקה ללוח</translation>
 <translation id="486459320933704969">כדי לבקר באתר הזה, עליך לקבל אישור מהורה או מאפוטרופוס</translation>
 <translation id="4866506163384898554">צריך להקיש על |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| כדי להציג את הסמן</translation>
 <translation id="4873616204573862158">משקפיים</translation>
@@ -2078,7 +2082,6 @@ Del</translation>
 <translation id="5329858041417644019">הדפדפן שלך לא מנוהל</translation>
 <translation id="5332219387342487447">שיטת משלוח</translation>
 <translation id="5332769172018416402">בקשה בהודעה</translation>
-<translation id="5333022057423422993">‏Chrome איתר את הסיסמה שבה השתמשת עכשיו בפרצה באבטחת מידע. כדי לאבטח את החשבונות שלך, מומלץ לבדוק את הסיסמאות השמורות.</translation>
 <translation id="5334013548165032829">יומני מערכת מפורטים</translation>
 <translation id="5334145288572353250">לשמור את הכתובת?</translation>
 <translation id="5340250774223869109">האפליקציה חסומה</translation>
@@ -2288,7 +2291,6 @@ Del</translation>
 <translation id="5784606427469807560">הייתה בעיה באישור הכרטיס. יש לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="5785756445106461925">כמו כן, דף זה כולל משאבים נוספים שאינם מאובטחים. גורמים אחרים עלולים לראות את המשאבים האלה במהלך העברתם, ותוקף עלול לשנות אותם באופן שישנה את מראה הדף.</translation>
 <translation id="5786044859038896871">האם ברצונך למלא את פרטי הכרטיס שלך?</translation>
-<translation id="578633867165174378">‏Chrome איתר את הסיסמה שבה השתמשת עכשיו בפרצה באבטחת מידע. מומלץ לשנות את הסיסמה הזו מיד.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{אין פרטי כניסה}=1{פרטי כניסה לחשבון אחד}one{פרטי כניסה ל-# חשבונות}two{פרטי כניסה ל-# חשבונות}other{פרטי כניסה ל-# חשבונות}}</translation>
 <translation id="5800727402210090597">שירותים ותיקונים לטלפונים ניידים</translation>
@@ -2662,7 +2664,6 @@ Del</translation>
 <translation id="6579858392010591435">חגים ואירועים עונתיים</translation>
 <translation id="6579990219486187401">ורוד בהיר</translation>
 <translation id="6581831440014388355">הסרת שיער מהפנים ומהגוף</translation>
-<translation id="6587182488465657433">‏Chrome איתר את הסיסמה שבה השתמשת עכשיו בפרצה באבטחת מידע. כדי לאבטח את החשבונות שלך, מומלץ לשנות אותה מיד ואז לבדוק את הסיסמאות השמורות.</translation>
 <translation id="6587893660316489419">‏מעטפה – B5</translation>
 <translation id="6587923378399804057">קישור שהעתקת</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> זה אינו מנוהל</translation>
@@ -3532,6 +3533,7 @@ Del</translation>
 <translation id="8339163506404995330">דפים ב<ph name="LANGUAGE" /> לא יתורגמו</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">אם הבנת את סיכוני האבטחה, באפשרותך <ph name="BEGIN_LINK" />להיכנס לאתר לא בטוח זה<ph name="END_LINK" /> לפני הסרת התכניות המסוכנות.</translation>
+<translation id="8344776605855290140">רישום הכרטיס הווירטואלי נפתח בגובה מלא</translation>
 <translation id="8347658365704983341">למידה מרחוק</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
 <translation id="8351131234907093545">יצירת הערה</translation>

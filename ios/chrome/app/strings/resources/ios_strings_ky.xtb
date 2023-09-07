@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">ЖЖЖЖ</translation>
 <translation id="1013952917065545813">Бул жерге кайтып келип, жакында жабылган өтмөктөрдү кайра ача аласыз</translation>
 <translation id="1016495303386450659">Нерсе жаңырды</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{Сырсөздү аккаунтка сактоо}other{Сырсөздөрдү аккаунтка сактоо}}</translation>
 <translation id="1035980983510608210">Бардык өтмөктөр жабылса, кадалган өтмөктөр да жабылат.</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1044891598689252897">Сайттар кадимкидей иштейт</translation>
@@ -72,6 +73,7 @@
 <translation id="132683371494960526">Түпкү куржунду өзгөртүү үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1332723353863236763">Айрым маалымат сактала элек</translation>
 <translation id="1335348992705722518">Тууралоо...</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{{COUNT} сырсөздү Google аккаунтуңузга сактаңыз}other{{COUNT} сырсөздү Google аккаунтуңузга сактаңыз}}</translation>
 <translation id="1340643665687018190">Менюну жабуу</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Көчүрүп алган шилтеме менен өтүңүз</translation>
@@ -158,6 +160,7 @@
 <translation id="1872096359983322073">Колчырак</translation>
 <translation id="1882901927376062252">{count,plural, =1{Кыстарма Google аккаунтуңузга ({email}) сакталды}other{{count} кыстарма Google аккаунтуңузга ({email}) сакталды}}</translation>
 <translation id="1883255238294161206">Тизмени жыйнап коюу</translation>
+<translation id="1890237935065108104">Бул параметр жеткиликсиз.</translation>
 <translation id="1894023287452300670">Баасына бул жерден көз сала аласыз</translation>
 <translation id="189531189292803889">iPad түзмөгүңүз жакында калыбына келтирилген. Бул демейки серепчиңизди өзгөрткөн болушу мүмкүн.</translation>
 <translation id="1910975740091000991">iOS үчүн Chrome</translation>
@@ -213,7 +216,7 @@
 <translation id="2239626343334228536">Серептөө дайындары тазаланууда…</translation>
 <translation id="2242467532204595597">Эми билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду Chrome'до ача аласыз.</translation>
 <translation id="2251686759395008410">Меню → Таржымал</translation>
-<translation id="2252674110805316998">Вебде издөө</translation>
+<translation id="2252674110805316998">Интернетте издөө</translation>
 <translation id="2256933947031277845">Уюмуңуз белгилүү бир аккаунттар менен гана кирүүгө уруксат берет.</translation>
 <translation id="225943865679747347">Ката коду: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Аккаунт кошуу</translation>
@@ -314,6 +317,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Шилтеме түзүлгөн жок</translation>
 <translation id="2786701870377699570">Шайкештирилген түзмөктөрдө өтмөктөрдү издеңиз</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{Сырсөз Google аккаунтуңузга ({EMAIL}) сакталды}other{Сырсөздөр Google аккаунтуңузга ({EMAIL}) сакталды}}</translation>
 <translation id="2797029671965852011">Таржымалды көрсөтүү</translation>
 <translation id="2800683595868705743">Өтмөк которуштургучтан кетүү</translation>
 <translation id="2815198996063984598">2. Демейки серепчи колдонмосун басыңыз</translation>
@@ -418,6 +422,7 @@
 <translation id="3328801116991980348">Сайт жөнүндө маалымат</translation>
 <translation id="3340938510625667914">Chrome'догу аракеттер</translation>
 <translation id="3344485292736684439">{count,plural, =1{Кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}other{Кыстармалар {email} аккаунтуңуздагы "{title}" папкасына сакталды}}</translation>
+<translation id="3349676726073650389">Сиз жазылган сайттар жана издеген нерселер Google аккаунтуңузда сакталат. Жазылгандарды параметрлерден каалаган убакта тескей аласыз.</translation>
 <translation id="3365529507898144230">Фотого сактоо</translation>
 <translation id="3371831930909698441">Котормочу жеткиликтүү. Параметрлер экрандын төмөн жагында берилген.</translation>
 <translation id="3377063233124932127">Эми сакталган кыстармаларыңыз, сырсөздөрүңүз жана башка нерселер жогору жакта.</translation>
@@ -645,6 +650,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, ушул түзмөктө гана, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Жаңы жашыруун өтмөк</translation>
 <translation id="4766112107778026136">Сунуштар жана жазылуу</translation>
+<translation id="47677902929517676">Сырсөздөрдү аккаунтуңузга сактоо үчүн адегенде түзмөгүңүзгө өткөрүүчү кодду коюшуңуз керек.</translation>
 <translation id="4775879719735953715">Демейки серепчи</translation>
 <translation id="4778644898150334464">Башка сырсөздү колдонуу</translation>
 <translation id="478808905805139173">Жашыруун режимде ачылсынбы?</translation>
@@ -781,6 +787,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5597915316964418992">Өтмөк торчосун ачуу</translation>
 <translation id="560322036295180549">Уюмуңуз тарабынан өчүрүлгөн</translation>
 <translation id="5614553682702429503">Сырсөз сакталсынбы?</translation>
+<translation id="5619871095170816857">Бул картада акыркы 24 саатта бардык шайкештирилген түзмөктөрдө ачылган өтмөк көрүнөт.</translation>
 <translation id="5626245204502895507">Файлды учурда жүктөп алуу мүмкүн эмес.</translation>
 <translation id="562753339521713441">Коопсуздукту текшерүү</translation>
 <translation id="5631164295104953411">Төлөм ыкмасын кошуу</translation>
@@ -1086,6 +1093,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7082853213442715471">Күйүп турганда айрым веб-технологиялар бөгөттөлгөндүктөн, кээ бир вебсайттар жайыраак жүктөлүп же туура эмес иштеп калышы мүмкүн.</translation>
 <translation id="7095110968493193530">Google Сырсөздөрдү башкаргычка (<ph name="EMAIL" /> аккаунту)</translation>
 <translation id="7099761977003084116">Акыркы өтмөктөр</translation>
+<translation id="7101580180124131336">Эми <ph name="CHANNEL_NAME" /> каналындагы контентти жана маалыматты Жазылгансыз бөлүмүндө көрөсүз.</translation>
 <translation id="7102005569666697658">Жүктөлүп алынууда… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Жашыруу</translation>
 <translation id="7108762695052995889">Сайтка баш багуу</translation>
@@ -1109,6 +1117,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7265758999917665941">Бул сайт үчүн эч качан</translation>
 <translation id="7272437679830969316">Аныктыгыңыз тастыкталган жок. Сырсөз көчүрүлгөн жок.</translation>
 <translation id="7291368939935408496">Сырсөздөр даярдалууда…</translation>
+<translation id="7302503784943202842">Бардык түзмөктөрүңүздө сырсөздөрдү колдонуңуз</translation>
 <translation id="730958329302570991">Каалаган убакта Сырсөздөрдү башкаргычка сайттагы сырсөздөрдү оңой кошо аласыз.</translation>
 <translation id="7313347584264171202">Жашыруун өтмөктөрүңүздү ушул жерден табасыз</translation>
 <translation id="7331371412779932885">Google аккаунтуңузга кирип турган башка түзмөктөрдө көргөн вебсайттарыңыздын негизинде өтмөктөр боюнча сунуштар көрсөтүлөт. Түзмөктөрүңүз бир Google аккаунтуна кирип, шайкештирилиши керек.</translation>
@@ -1166,6 +1175,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="764827086632467055">Демейки серепчи колдонмосун таптаңыз</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
+<translation id="7666861622396822790">Муну <ph name="BEGIN_LINK" />Контент параметрлеринен<ph name="END_LINK" /> тескей аласыз.</translation>
 <translation id="7671141431838911305">ОРНОТУУ</translation>
 <translation id="7679915578945954324">Сайттын даректери көчүрүлдү</translation>
 <translation id="7687508192620387263">Жылнаама файлы жеткиликтүү</translation>
@@ -1239,6 +1249,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8032569120109842252">Жазылгансыз</translation>
 <translation id="804225253087497565">Аккаунтуңузга кирип турсаңыз, <ph name="BEGIN_LINK" />издөө таржымалы<ph name="END_LINK" /> жана <ph name="BEGIN_LINK" />башка аракеттер<ph name="END_LINK" /> Google аккаунтуңузга сакталышы мүмкүн. Аларды каалаган убакта жок кылсаңыз болот.</translation>
 <translation id="804427445359061970">Башка түзмөктөрдөгү өтмөктөрүңүздү ушул жерден табасыз</translation>
+<translation id="8044568254381073661">Шифрлебей сактоо</translation>
 <translation id="8059533439631660104">Бөлүмдү жыйыштырат.</translation>
 <translation id="8065292699993359127">URL даректерин Chrome'до Жашыруун режимде ачуу</translation>
 <translation id="806745655614357130">Дайындарды өзүнчө сактоо</translation>
@@ -1293,7 +1304,9 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8386068868580335421">Кайра коюу</translation>
 <translation id="838867811594159347">Сыр сүйлөмдү киргизиңиз…</translation>
 <translation id="8393889347136007944">Өтмөктөр <ph name="THRESHOLD" /> күн колдонулган жок</translation>
+<translation id="8395339334550012808">Жакында <ph name="CHANNEL_NAME" /> каналындагы контентти жана маалыматты Жазылгансыз бөлүмүндө көрөсүз.</translation>
 <translation id="8395378633507873708">Дарек тилкеси</translation>
+<translation id="8403629764260204788">"Үзгүлтүксүз серептөөнү" жашыруу</translation>
 <translation id="8407669440184693619">Бул сайт үчүн бир да сырсөз табылган жок</translation>
 <translation id="842017693807136194">Төмөнкү дайындар менен кирүү:</translation>
 <translation id="8423121072346537366">Жаңы эле</translation>
@@ -1450,6 +1463,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="953008885340860025">Chrome тутумдан чыгып кетти</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> жаңылыктарына жазылдыңыз</translation>
 <translation id="96615566463761848">Башка түзмөктөрдөгү өтмөктөр боюнча сунуштарды көрсөтүү</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{{DOMAIN_ONE} үчүн сырсөзүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз}=2{{DOMAIN_ONE} жана {DOMAIN_TWO} үчүн сырсөздөрүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз}=3{{DOMAIN_ONE}, {DOMAIN_TWO} жана {OTHER_DOMAINS_COUNT} үчүн сырсөздөрүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз}other{{DOMAIN_ONE}, {DOMAIN_TWO} жана {OTHER_DOMAINS_COUNT} үчүн сырсөздөрүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз}}</translation>
 <translation id="97300214378190234">Эми башка колдонмолордогу шилтемелерди Chrome'до ача аласыз.</translation>
 <translation id="973493300226275298">Интернет дүкөндөрүндөгү товардын баасына көз салыңыз. Баасы арзандаганда, билдирүүлөрдү аласыз.</translation>
 <translation id="981498610235328462">Уюмуңуз белгилүү бир аккаунттар менен гана кирүүгө уруксат берет. Тыюу салынган аккаунттар жашырылып турат.</translation>

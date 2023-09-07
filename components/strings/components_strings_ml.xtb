@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">സാധാരണയായി സുരക്ഷിതമായ സൈറ്റുകൾ പോലും ചിലപ്പോൾ ആക്രമണകാരികൾ അപഹരിക്കാറുണ്ട്. അപകടസാധ്യതകളെക്കുറിച്ച് നിങ്ങൾക്ക് ഉറപ്പുണ്ടെങ്കിൽ മാത്രം <ph name="BEGIN_LINK" />ഈ സുരക്ഷിതമല്ലാത്ത സൈറ്റ്<ph name="END_LINK" /> സന്ദർശിക്കുക.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">സിസ്റ്റം അഡ്‌മിനെ ബന്ധപ്പെടാൻ ശ്രമിക്കുക.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="1736420071277903564">കമ്പ്യൂട്ടർ</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode, <ph name="SECURE_DNS_MODE_SECURE" /> ആയിരിക്കുമ്പോൾ അക്കാര്യം വ്യക്തമാക്കിയിരിക്കണം, കൂടാതെ സാധുവായ സ്ട്രിംഗ് ആയിരിക്കുകയും വേണം.</translation>
 <translation id="1743393865165844832">കിടക്കയും കിടക്ക വിരികളും</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">മാംസവും കടൽവിഭവങ്ങളും</translation>
 <translation id="2367567093518048410">നില</translation>
 <translation id="23703388716193220">ഗോൾഫ് ഉപകരണം</translation>
+<translation id="2378084239755710604">'കാർഡ് സംരക്ഷിക്കുക' അടച്ചു.</translation>
 <translation id="2380886658946992094">നിയമപരം</translation>
 <translation id="2383455408879745299">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കുക</translation>
 <translation id="2384307209577226199">എന്റര്‍പ്രൈസ് ഡിഫോൾട്ട്</translation>
@@ -2092,7 +2094,6 @@
 <translation id="5329858041417644019">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="5332219387342487447">ഷിപ്പിംഗ് രീതി</translation>
 <translation id="5332769172018416402">സന്ദേശത്തിലൂടെ ആവശ്യപ്പെടുക</translation>
-<translation id="5333022057423422993">Chrome, നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ ഞങ്ങൾ നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="5334013548165032829">വിശദമായ സിസ്‌റ്റം ലോഗുകൾ</translation>
 <translation id="5334145288572353250">വിലാസം സംരക്ഷിക്കണോ?</translation>
 <translation id="5340250774223869109">ആപ്പ് ബ്ലോക്ക് ചെയ്‌തു</translation>
@@ -2247,6 +2248,7 @@
 <translation id="5653432653077411130">ജലവിതരണവും സംസ്ക്കരണവും</translation>
 <translation id="5654927323611874862">അപ്‌ലോഡ് ചെയ്ത ക്രാഷ് റിപ്പോർട്ട് ഐഡി:</translation>
 <translation id="5659593005791499971">ഇമെയില്‍</translation>
+<translation id="5660122698869360728">നിങ്ങളുടെ എല്ലാ ഷോപ്പിംഗ് പേജുകളും ഒരിടത്ത് സംരക്ഷിക്കാനും വിലകൾ സ്വയമേവ ട്രാക്ക് ചെയ്യാനും നിരക്ക് ഉൾക്കാഴ്‌ചകൾ നേടാനും മറ്റും സഹായിക്കുന്ന ഒരു പുതിയ സ്‌മാർട്ട് ഫോൾഡർ.</translation>
 <translation id="5663955426505430495">ഈ ഉപകരണത്തിൻ്റെ അഡ്‌മിനിസ്‌ട്രേറ്റർ അധിക ഫംഗ്ഷനുകൾക്കുള്ള വിപുലീകരണങ്ങൾ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്നു. വിപുലീകരണങ്ങൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
 <translation id="5666606186680807225">ബീച്ചുകളും ദ്വീപുകളും</translation>
 <translation id="5667827081946850877">ഓഡിയോ ബുക്കുകൾ</translation>
@@ -2259,6 +2261,7 @@
 <translation id="5689199277474810259">JSON-ലേക്ക് ‌എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
 <translation id="5689516760719285838">ലൊക്കേഷൻ</translation>
 <translation id="569000877158168851">DnsOverHttpsMode നയം <ph name="SECURE_DNS_MODE_AUTOMATIC" /> എന്നതിലേക്ക് അല്ലെങ്കിൽ <ph name="SECURE_DNS_MODE_SECURE" /> എന്നതിലേക്ക് സജ്ജീകരിക്കുന്നില്ലെങ്കിൽ DnsOverHttpsTemplates മൂല്യം പ്രസക്തമായിരിക്കില്ല, അത് ഉപയോഗിക്കുകയുമില്ല.</translation>
+<translation id="5691848789297492617">'കാർഡ് സംരക്ഷിക്കുക' മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="5695542892312572833">പരിശോധിച്ചുറപ്പിക്കാനും വാങ്ങൽ പൂർത്തിയാക്കാനും Windows Hello ഉപയോഗിക്കണോ?</translation>
 <translation id="5699628521141772782">പാലുൽപ്പന്നങ്ങളും മുട്ടയും</translation>
 <translation id="5701381305118179107">മധ്യഭാഗം</translation>
@@ -2301,7 +2304,6 @@
 <translation id="5784606427469807560">നിങ്ങളുടെ കാർഡ് സ്ഥിരീകരിക്കുന്നതിൽ പ്രശ്‌നമുണ്ടായി. ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച്, വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="5785756445106461925">കൂടാതെ, ഈ പേജിൽ സുരക്ഷിതമല്ലാത്ത മറ്റ് ഉറവിടങ്ങൾ ഉൾപ്പെടുന്നു. ഈ ഉറവിടങ്ങൾ കൈമാറുന്നതിനിടെ മറ്റുള്ളവർക്ക് കാണാനും പേജിന്റെ രൂപം മാറ്റുന്ന തരത്തിൽ ഒരു ആക്രമണകാരിയ്‌ക്ക് പരിഷ്‌ക്കരിക്കാനുമായേക്കും.</translation>
 <translation id="5786044859038896871">നിങ്ങളുടെ കാർഡ് വിവരം പൂരിപ്പിക്കണോ?</translation>
-<translation id="578633867165174378">Chrome, നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. ഈ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ മാറ്റാൻ ഞങ്ങൾ നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു അക്കൗണ്ടിന്റെ സൈൻ ഇൻ ഡാറ്റ}other{# അക്കൗണ്ടുകളുടെ സൈൻ ഇൻ ഡാറ്റ}}</translation>
 <translation id="5800727402210090597">മൊബൈൽ ഫോൺ റിപ്പയറും സേവനങ്ങളും</translation>
@@ -2676,7 +2678,6 @@
 <translation id="6579858392010591435">അവധിക്കാലവും സീസണൽ ഇവന്റുകളും</translation>
 <translation id="6579990219486187401">ഇളം പിങ്ക്</translation>
 <translation id="6581831440014388355">ശരീരത്തിലെയും മുഖത്തെയും അനാവശ്യ രോമങ്ങൾ നീക്കം ചെയ്യൽ</translation>
-<translation id="6587182488465657433">Chrome, നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ ഇപ്പോൾ തന്നെ ഈ പാസ്‌വേഡ് മാറ്റി, സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ ഞങ്ങൾ നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">നിങ്ങൾ പകർത്തിയ ലിങ്ക്</translation>
 <translation id="6591833882275308647">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യപ്പെടുന്നില്ല</translation>
@@ -3011,6 +3012,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">പിൻഭാഗത്തെ ട്രേ</translation>
 <translation id="725866823122871198">നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്കുള്ള സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാവില്ല.</translation>
+<translation id="7260075294900977274">നിങ്ങളുടെ എല്ലാ ഷോപ്പിംഗ് പേജുകളും ഒരിടത്ത് സംരക്ഷിക്കാനും വിലകൾ സ്വയമേവ ട്രാക്ക് ചെയ്യാനും നിരക്ക് ഉൾക്കാഴ്‌ചകൾ നേടാനും മറ്റും സഹായിക്കുന്ന പുതിയ സ്‌മാർട്ട് ഫോൾഡർ</translation>
 <translation id="7265608370113700582">വിലാസം ഈ ഉപകരണത്തിൽ മാത്രമേ ലഭ്യമാകൂ</translation>
 <translation id="7275334191706090484">നിയന്ത്രിത ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="7277998515889183784">മേക്കപ്പും സൗന്ദര്യവർദ്ധക വസ്‌തുക്കളും</translation>
@@ -3233,6 +3235,7 @@
 <translation id="7676643023259824263">ക്ലിപ്പ്‌ബോർഡ് ടെക്‌സ്‌റ്റിനായി തിരയുക, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="7679947978757153706">ബേസ്ബോൾ</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="7681273392938116652">ഫാന്റസി സ്‌പോർട്‌സുകൾ</translation>
 <translation id="7682287625158474539">ഷിപ്പിംഗ്</translation>
 <translation id="7682451652090915298">റഗ്‌ബി</translation>
@@ -3310,6 +3313,7 @@
 <translation id="7822611063308883975">കൈയിൽ പിടിക്കാവുന്ന ഗെയിം കൺസോൾ</translation>
 <translation id="7825558994363763489">മൈക്രോവേവുകൾ</translation>
 <translation id="782886543891417279">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi (<ph name="WIFI_NAME" />) അതിന്റെ ലോഗിൻ പേജ് സന്ദർശിക്കാൻ ആവശ്യപ്പെടാം.</translation>
+<translation id="7831993212387676366">എന്താണ് ഷോപ്പിംഗ് ലിസ്റ്റ്?</translation>
 <translation id="7840103971441592723">സ്ക്രീൻ ക്യാപ്‌ചർ ആരംഭിച്ചു</translation>
 <translation id="784137052867620416">Shopping ഉൾക്കാഴ്ചകൾ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

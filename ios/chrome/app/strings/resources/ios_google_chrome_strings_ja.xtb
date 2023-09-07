@@ -73,6 +73,7 @@
 <translation id="3655656110921623717">Chrome は毎回モバイルサイトをリクエストします。</translation>
 <translation id="3720541637541300822">Chrome を終了するときにシークレット タブをロックする</translation>
 <translation id="3741995255368156336">Chrome リーディング リストを開きます。</translation>
+<translation id="3744018071945602754">Chrome でパスワードを管理する</translation>
 <translation id="3827545470516145620">このデバイスは標準のセキュリティ機能で保護されます</translation>
 <translation id="384394811301901750">現在 Google Chrome ではカメラを使用できません</translation>
 <translation id="3901001113120561395">Chrome を最大限に活用しましょう。</translation>
@@ -87,6 +88,7 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> は Chrome を使用しており、ブックマークやパスワードなどの設定がこのデバイスに残っています。</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4251174643044751591">Chrome でお支払い方法の設定ページを開きます。</translation>
+<translation id="4453284704333523777">Chrome の設定を管理する</translation>
 <translation id="4508370294876102450">他のアプリから Chrome を開く</translation>
 <translation id="4523886039239821078">アドオンが原因でChromeがクラッシュしました。次をアンインストールしてください:</translation>
 <translation id="4633328489441962921">Chrome でアップデートを確認できません</translation>
@@ -123,6 +125,7 @@
 <translation id="571296537125272375">オフラインのため Chrome でアップデートを確認できません</translation>
 <translation id="5716154293141027663">他のアプリでタップしたリンクを Chrome で開くことができます</translation>
 <translation id="5808435672482059465">Chrome 履歴を表示</translation>
+<translation id="589695154992054845">Chrome でパスワード マネージャーを開きます。</translation>
 <translation id="5998675059699164418">Chrome を使用するためにログインするよう、組織が求めています。</translation>
 <translation id="6054613632208573261">Chrome をデフォルトに設定</translation>
 <translation id="6063091872902370735">Chrome へのログインを許可する</translation>
@@ -215,6 +218,7 @@
   • Chrome がクラッシュした場合、クラッシュに関する情報として、一部の個人情報が送信される場合があります。
 
   • 同期をオンにした場合、アクセスした URL に関する情報も送信される場合があります。<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Chrome で [設定] を開きます。</translation>
 <translation id="9112744793181547300">Chrome を既定に設定しますか？</translation>
 <translation id="9122931302567044771">Chrome は毎回 PC 版サイトをリクエストします。</translation>
 <translation id="9181628561061032322">Chrome で最近使ったタブを開きます。</translation>

@@ -3892,7 +3892,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4067839975993712852">Merk denne fanen som lest</translation>
 <translation id="4068776064906523561">Lagrede fingeravtrykk</translation>
 <translation id="407173827865827707">Ved klikk</translation>
-<translation id="4072701974556190758">Passordet blir lagret i Google-kontoen din, <ph name="ACCOUNT" />. Du trenger ikke å huske det.</translation>
 <translation id="4072805772816336153">Prøv på nytt senere</translation>
 <translation id="407520071244661467">Skalér</translation>
 <translation id="407543464472585404">Profilen til <ph name="NAME" /> er knyttet til <ph name="EMAIL" /></translation>
@@ -4188,6 +4187,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4322394346347055525">Lukk andre faner</translation>
 <translation id="4324577459193912240">Filen er ufullstendig</translation>
 <translation id="4325237902968425115">Avinstallerer <ph name="LINUX_APP_NAME" /> …</translation>
+<translation id="4325433082696797523">Lagring og strøm</translation>
 <translation id="4326146840124313313">Den sterkeste sikkerheten i Chrome gjør mer for å beskytte deg mot farlige nettsteder, nedlastinger og utvidelser</translation>
 <translation id="4326484226728068206">Varer i handlekurven med <ph name="DISCOUNT_TEXT" /> fra <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, sett <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Isvann</translation>
@@ -7961,7 +7961,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746216226901520237">Neste gang låser telefonen opp <ph name="DEVICE_TYPE" />-enheten din. Du kan slå av Smart Lock i innstillingene.</translation>
 <translation id="7464153996453281700">Komponenten er allerede oppdatert</translation>
-<translation id="7464637891177137294">Lagre det i Google-kontoen din, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# åpen fane – trykk for å slå av/på faneraden}other{# åpne faner – trykk for å slå av/på faneraden}}</translation>
 <translation id="7465635034594602553">Noe gikk galt. Vent noen minutter, og kjør <ph name="APP_NAME" /> på nytt.</translation>
 <translation id="7465777686629334728">Fjern det administrerte utviklingsmiljøet (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8040,7 +8039,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7524849817690367493">Sikkerhetssenter</translation>
 <translation id="7525067979554623046">Opprett</translation>
 <translation id="7526989658317409655">Plassholder</translation>
-<translation id="7527758104894292229">Oppdater det i Google-kontoen din, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Ikke åpne</translation>
 <translation id="7529411698175791732">Sjekk Internett-tilkoblingen din. Hvis problemet vedvarer, bør du prøve å logge av og så logge på igjen.</translation>
 <translation id="7529865045818406536">Foretrukne nettverk brukes hvis mer enn ett tidligere nettverk er tilgjengelig</translation>

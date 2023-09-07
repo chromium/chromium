@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">तपाईं पछि यहाँ फर्केर आफूले हालसालै बन्द गरेका ट्याबहरू पुनः खोल्न सक्नुहुन्छ</translation>
 <translation id="1016495303386450659">वस्तु अद्यावधिक गरियो</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{यो पासवर्ड खातामा सेभ गर्नुहोस्}other{यी पासवर्डहरू खातामा सेभ गर्नुहोस्}}</translation>
 <translation id="1035980983510608210">तपाईंले सबै ट्याबहरू बन्द गर्नुभयो भने पिन गरिएका ट्याबहरू पनि बन्द हुने छन्।</translation>
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1044891598689252897">साइटहरू सामान्य रूपमा चल्ने छन्</translation>
@@ -72,6 +73,7 @@
 <translation id="132683371494960526">मूल फोल्डरलाई परिवर्तन गर्न डबल ट्याप गर्नुहोस्।</translation>
 <translation id="1332723353863236763">केही डेटा अहिलेसम्म सेभ गरिएका छैनन्</translation>
 <translation id="1335348992705722518">सेटिङ मिलाउनुहोस्...</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{आफ्नो Google खातामा {COUNT} वटा पासवर्ड सेभ गर्नुहोस्}other{आफ्नो Google खातामा {COUNT} वटा पासवर्ड सेभ गर्नुहोस्}}</translation>
 <translation id="1340643665687018190">बन्द मेनु</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">तपाईंले प्रतिलिपि गरेको लिंकमा जानुहोस्</translation>
@@ -316,6 +318,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">लिंक सिर्जना गर्न सकिएन</translation>
 <translation id="2786701870377699570">सिंक गरिएका डिभाइसमा ट्याबहरू खोज्नुहोस्</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{यो पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएको छ}other{यी पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएका छन्}}</translation>
 <translation id="2797029671965852011">इतिहास देखाइयोस्</translation>
 <translation id="2800683595868705743">ट्याब स्विचर छोड्नुहोस्</translation>
 <translation id="2815198996063984598">२. डिफल्ट ब्राउजर एपमा ट्याप गर्नुहोस्</translation>
@@ -652,6 +655,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, यो डिभाइसमा मात्र, <ph name="URL" /></translation>
 <translation id="4751645464639803239">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="4766112107778026136">डिस्कभर तथा फलोइङ</translation>
+<translation id="47677902929517676">तपाईंले आफ्नो डिभाइसको पासकोड सेट गरेपछि मात्र तपाईं आफ्नो खातामा पासवर्डहरू सेभ गर्न सक्नुहुन्छ।</translation>
 <translation id="4775879719735953715">डिफल्ट ब्राउजर</translation>
 <translation id="4778644898150334464">अर्को पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="478808905805139173">इन्कोग्निटो मोडमा खोल्ने हो?</translation>
@@ -1119,6 +1123,7 @@
 <translation id="7265758999917665941">यो साइटका हकमा कहिल्यै पनि नसम्झनुहोस्</translation>
 <translation id="7272437679830969316">तपाईंको पहिचान पुष्टि गर्न सकिएन। पासवर्डको प्रतिलिपि गरिएको छैन।</translation>
 <translation id="7291368939935408496">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
+<translation id="7302503784943202842">आफ्ना सबै डिभाइसमा पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="730958329302570991">जुनसुकै बेला Google पासवर्ड म्यानेजरमा साइटको पासवर्ड सजिलैसँग हाल्नुहोस्।</translation>
 <translation id="7313347584264171202">तपाईंका इन्कोग्निटो ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="7331371412779932885">यसले तपाईंलाई तपाईंको Google खाता प्रयोग गरेर तपाईंका अन्य डिभाइसहरूमा तपाईंले ब्राउजर प्रयोग गरी गरेको क्रियाकलापका आधारमा ट्याबमा दिइने सुझावहरू दिन्छ। तपाईंका डिभाइसहरूमा अनिवार्य रूपमा एउटै Google खाता प्रयोग गरेर साइन इन तथा सिंक गरिनु पर्छ।</translation>
@@ -1468,6 +1473,7 @@
 <translation id="953008885340860025">तपाईंलाई Chrome बाट साइन आउट गरिएको छ</translation>
 <translation id="959066944189734975">तपाईं <ph name="CHANNEL_NAME" /> फलो गर्दै हुनुहुन्छ</translation>
 <translation id="96615566463761848">अन्य डिभाइसमार्फत ट्याबमा दिइने सुझावहरू देखाइयोस्</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE} को पासवर्ड सेभ गर्न सक्नुहुन्छ}=2{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE} र {DOMAIN_TWO} का पासवर्डहरू सेभ गर्न सक्नुहुन्छ}=3{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE}, {DOMAIN_TWO} र अन्य {OTHER_DOMAINS_COUNT} वटा डोमेनका पासवर्डहरू सेभ गर्न सक्नुहुन्छ}other{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE}, {DOMAIN_TWO} र अन्य {OTHER_DOMAINS_COUNT} वटा डोमेनका पासवर्डहरू सेभ गर्न सक्नुहुन्छ}}</translation>
 <translation id="97300214378190234">जुनसुकै बेला अन्य एपहरूमा भएका लिंकहरूमा ट्याप गरेर Chrome प्रयोग गर्नुहोस्।</translation>
 <translation id="973493300226275298">विभिन्न अनलाइन स्टोरहरूमा कुनै उत्पादनको मूल्य ट्रयाक गर्नुहोस्। उक्त उत्पादनको मूल्य घटेका खण्डमा तपाईंलाई अलर्ट पठाइने छ।</translation>
 <translation id="981498610235328462">तपाईंको सङ्गठनको नीतिअनुसार तपाईं निश्चित खातामार्फत मात्र साइन इन गर्न पाउनुहुन्छ। साइन इन गर्ने अनुमति नदिइएका खाताहरू लुकाइन्छन्।</translation>

@@ -3887,7 +3887,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4067839975993712852">Označi trenutačnu karticu kao pročitano</translation>
 <translation id="4068776064906523561">Spremljeni otisci prstiju</translation>
 <translation id="407173827865827707">Na klik</translation>
-<translation id="4072701974556190758">Zaporka će se spremiti na vaš Google račun, <ph name="ACCOUNT" />. Ne morate je pamtiti.</translation>
 <translation id="4072805772816336153">Pokušajte ponovo kasnije</translation>
 <translation id="407520071244661467">Skaliranje</translation>
 <translation id="407543464472585404">Profil korisnika <ph name="NAME" /> povezan je s e-adresom <ph name="EMAIL" /></translation>
@@ -4183,6 +4182,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4322394346347055525">Zatvori ostale kartice</translation>
 <translation id="4324577459193912240">Nepotpuna datoteka</translation>
 <translation id="4325237902968425115">Deinstaliranje aplikacije <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">Pohrana i napajanje</translation>
 <translation id="4326146840124313313">Chromeova najjača zaštita čini više toga kako bi vas zaštitila od opasnih web-lokacija, preuzimanja i proširenja</translation>
 <translation id="4326484226728068206">Artikli u košarici: <ph name="DISCOUNT_TEXT" /> kod trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, pregledani <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Ledena voda</translation>
@@ -5166,6 +5166,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5146896637028965135">Glas sustava</translation>
 <translation id="5147992672778369947">Upotrijebite preporučenu zaporku</translation>
 <translation id="5148277445782867161">Za procjenu lokacije vašeg uređaja Googleova usluga lokacije upotrebljava izvore kao što su Wi-Fi, mobilne mreže i senzori.</translation>
+<translation id="5148285448107770349">Zaporka mora imati barem 8 znakova</translation>
 <translation id="5150254825601720210">Naziv certifikata SSL poslužitelja za Netscape</translation>
 <translation id="5151354047782775295">Oslobodite prostor na disku ili će se određeni podaci automatski izbrisati.</translation>
 <translation id="5153234146675181447">Zaboravljanje telefona</translation>
@@ -7958,7 +7959,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7461924472993315131">Prikvači</translation>
 <translation id="746216226901520237">Sljedeći će put vaš telefon otključati vaš uređaj <ph name="DEVICE_TYPE" />. Smart Lock možete isključiti u Postavkama.</translation>
 <translation id="7464153996453281700">Komponenta je već ažurirana</translation>
-<translation id="7464637891177137294">Spremite je na svojem Google računu, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# otvorena kartica, pritisnite da biste uključili ili isključili vrpcu kartica}one{# otvorena kartica, pritisnite da biste uključili ili isključili vrpcu kartica}few{# otvorene kartice, pritisnite da biste uključili ili isključili vrpcu kartica}other{# otvorenih kartica, pritisnite da biste uključili ili isključili vrpcu kartica}}</translation>
 <translation id="7465635034594602553">Nešto nije u redu. Pričekajte nekoliko minuta, a zatim ponovo pokrenite <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Uklanjanje okruženja za upravljani razvoj (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8037,7 +8037,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7524849817690367493">Kontrolni centar za sigurnost</translation>
 <translation id="7525067979554623046">Stvori</translation>
 <translation id="7526989658317409655">Rezervirano mjesto</translation>
-<translation id="7527758104894292229">Ažurirajte je na svojem Google računu, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Ne otvaraj</translation>
 <translation id="7529411698175791732">Provjerite internetsku vezu. Ako se problem ne riješi, pokušajte se odjaviti i ponovo prijaviti.</translation>
 <translation id="7529865045818406536">Upotrebljavat će se preferirane mreže ako je dostupno više od jedne prethodno poznate mreže</translation>

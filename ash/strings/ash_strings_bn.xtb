@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">সূর্যাস্ত পর্যন্ত বন্ধ আছে</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + পিরিয়ড কীবোর্ড শর্টকাট পরিবর্তিত হয়েছে। Insert বোতাম ব্যবহার করার জন্য, <ph name="LAUNCHER_KEY_NAME" /> বোতাম + Shift + Backspace প্রেস করুন।</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" /> নম্বর সারির <ph name="COLUMN_NUMBER" /> নম্বর কলামে সরানো হয়েছে।</translation>
+<translation id="1771458705381257690">আপনার ডিভাইস সেট-আপ ও কাস্টমাইজ করতে <ph name="NAME" /> খুলুন</translation>
 <translation id="1771761307086386028">ডান দিকে স্ক্রল করুন</translation>
 <translation id="1774796056689732716">ক্যালেন্ডার, <ph name="CURRENT_MONTH_YEAR" />, বর্তমানে <ph name="DATE" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />টির মধ্যে <ph name="NUM_SHOWN_ITEMS" />টি টাস্ক দেখানো হচ্ছে</translation>
@@ -1192,6 +1193,7 @@
 <translation id="5876666360658629066">অভিভাবকীয় কোডটি লিখুন</translation>
 <translation id="5881540930187678962">পরে ফোন হাব সেট আপ করুন</translation>
 <translation id="5881663018261910378">বন্ধ আছে</translation>
+<translation id="5883017113634523865">উপলভ্য সব ফিচার দেখতে, <ph name="NAME" />-এর জন্য Google Play থেকে অ্যাপ ইনস্টল করুন</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> উইন্ডো <ph name="DESK_TITLE" /> ডেস্কে অ্যাসাইন এবং অন্যান্য সব ডেস্ক থেকে আনঅ্যাসাইন করা হয়েছে</translation>
 <translation id="588817334757907802">Chrome ব্রাউজারে ফাইল খুলুন</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
@@ -1621,6 +1623,7 @@
 <translation id="7714767791242455379">নতুন মোবাইল নেটওয়ার্ক যোগ করুন</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> পর্যন্ত চালু আছে</translation>
 <translation id="7720410380936703141">আবার চেষ্টা করুন</translation>
+<translation id="7721132362314201794">ডেস্কের নাম</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টি বিজ্ঞপ্তি}one{#টি বিজ্ঞপ্তি}other{#টি বিজ্ঞপ্তি}}</translation>
 <translation id="7723703419796509666">ডেভেলপার টুল কনসোল দেখুন অথবা লুকান</translation>
 <translation id="7724603315864178912">কাটুন</translation>

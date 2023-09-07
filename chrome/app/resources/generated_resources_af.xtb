@@ -486,6 +486,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1390548061267426325">Maak as gewone oortjie oop</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> is nie gemagtig om drukwerk na <ph name="PRINTER_NAME" /> toe te stuur nie. Kontak jou administrateur.</translation>
 <translation id="1392047138650695757">Gebruikerwoordeboeke</translation>
+<translation id="139300021892314943">Beperk wie kan aanmeld</translation>
 <translation id="1393283411312835250">Son en wolke</translation>
 <translation id="1395730723686586365">Opdateerder is begin</translation>
 <translation id="1395832189806039783">Merk item met sleutelbordfokus</translation>
@@ -2531,6 +2532,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2956070239128776395">Afdeling genes in groep: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Waarskuwing oor pakketuitbreiding</translation>
 <translation id="2959127025785722291">Iets is fout. Kon nie skandering voltooi nie. Probeer weer.</translation>
+<translation id="2959474507964749987">Hierdie geënkripteerde lêer kan dalk ’n virus of wanware wees.<ph name="LINE_BREAK" />Om te kyk of dit onveilig is, kan jy die lêer en wagwoord na Google Veiligblaai stuur. Skanderings neem gewoonlik ’n paar sekondes.<ph name="LINE_BREAK" />Voeg die lêer se wagwoord by om te skandeer.</translation>
 <translation id="2959842337402130152">Kon weens 'n tekort aan bergingspasie nie terugstel nie. Stel <ph name="SPACE_REQUIRED" /> op die toestel beskikbaar en probeer weer.</translation>
 <translation id="2960208947600937804">Kon nie Linux opstel nie. Kontak jou administrateur.</translation>
 <translation id="2960942820860729477">Herlaaitempo</translation>
@@ -3897,7 +3899,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4067839975993712852">Merk huidige oortjie as gelees</translation>
 <translation id="4068776064906523561">Gestoorde vingerafdrukke</translation>
 <translation id="407173827865827707">Met klik</translation>
-<translation id="4072701974556190758">Wagwoord sal in jou Google-rekening <ph name="ACCOUNT" /> gestoor word. Jy hoef dit nie te onthou nie.</translation>
 <translation id="4072805772816336153">Probeer later weer</translation>
 <translation id="407520071244661467">Skaal</translation>
 <translation id="407543464472585404"><ph name="NAME" /> se profiel is gekoppel aan <ph name="EMAIL" /></translation>
@@ -3994,6 +3995,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4147099377280085053">Kies ’n brailletabel</translation>
 <translation id="4147911968024186208">Herprobeer asseblief. Kontak jou steundiensverteenwoordiger as jy weer hierdie fout sien.</translation>
 <translation id="414800391140809654">kan jou inligting gebruik terwyl jy blaai</translation>
+<translation id="4148195018520464922">Jy kan aanmelding tot sekere gebruikers beperk. Dit verwyder die “Voeg persoon by”-opsie op die aanmeldskerm. Jy kan ook huidige gebruikers verwyder.</translation>
 <translation id="4150201353443180367">Vertoon</translation>
 <translation id="4150569944729499860">Skermkonteks</translation>
 <translation id="4151449637210235443">Vertel ons van jou onlangse speluitleg</translation>
@@ -7967,7 +7969,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Jou foon sal volgende keer jou <ph name="DEVICE_TYPE" /> ontsluit. Jy kan Smart Lock in Instellings afskakel.</translation>
 <translation id="7464153996453281700">Komponent is reeds bygewerk</translation>
-<translation id="7464637891177137294">Stoor dit in jou Google-rekening, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# oop oortjie; druk om oortjiestrook te wissel}other{# oop oortjies; druk om oortjiestrook te wissel}}</translation>
 <translation id="7465635034594602553">Iets is fout. Wag asseblief 'n paar minute en laat loop <ph name="APP_NAME" /> dan weer.</translation>
 <translation id="7465777686629334728">Verwyder bestuurde ontwikkelingsomgewing (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8046,7 +8047,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7524849817690367493">Veiligheidsentrum</translation>
 <translation id="7525067979554623046">Skep</translation>
 <translation id="7526989658317409655">Plekhouer</translation>
-<translation id="7527758104894292229">Dateer dit op in jou Google-rekening, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Moenie oopmaak nie</translation>
 <translation id="7529411698175791732">Gaan jou internetverbinding na. As die probleem voortduur, probeer afmeld en weer aanmeld.</translation>
 <translation id="7529865045818406536">Voorkeurnetwerke sal gebruik word indien meer as een vorige netwerk beskikbaar is</translation>
@@ -8151,6 +8151,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7617263010641145920">Skakel Play Winkel aan</translation>
 <translation id="7617648809369507487">Gebruik stiller boodskapdiens</translation>
 <translation id="7621382409404463535">Die stelsel het nie toestelopstelling gestoor nie.</translation>
+<translation id="7621480263311228380">Nie toegelaat om inligting te gebruik wat hulle oor jou gestoor het nie</translation>
 <translation id="7621595347123595643">Jy sal nie plaaslike data kan terugstel as jy jou wagwoord of PIN vergeet nie.</translation>
 <translation id="7622114377921274169">Laai tans.</translation>
 <translation id="7622768823216805500">Werwe installeer gewoonlik betalinghanteerders vir inkopiekenmerke soos makliker betaalpunte</translation>
@@ -9497,6 +9498,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8680251145628383637">Meld aan om jou boekmerke, geskiedenis, wagwoorde en ander instellings op al jou toestelle te kry. Jy sal ook outomaties by jou Google-dienste aangemeld word.</translation>
 <translation id="8681886425883659911">Advertensies word geblokkeer op werwe wat bekend is daarvoor dat hulle indringerige of misleidende advertensies wys</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is gekoppel en gereed</translation>
+<translation id="8684471948980641888">Laat sinkronisering op beperkte netwerke toe</translation>
 <translation id="8685540043423825702">Jou Chrome-profiel</translation>
 <translation id="8686142379631285985">Aangemeld as <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Kanselleer <ph name="FILE_NAME" /></translation>

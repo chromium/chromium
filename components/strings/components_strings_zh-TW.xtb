@@ -2092,7 +2092,6 @@
 <translation id="5329858041417644019">你的瀏覽器未受管理</translation>
 <translation id="5332219387342487447">運送方式</translation>
 <translation id="5332769172018416402">透過訊息詢問</translation>
-<translation id="5333022057423422993">Chrome 發現你剛才使用的密碼因為資料侵害事件而遭到外洩。如要確保帳戶安全，建議你檢查已儲存的密碼。</translation>
 <translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5334145288572353250">要儲存地址嗎？</translation>
 <translation id="5340250774223869109">應用程式已遭封鎖</translation>
@@ -2301,7 +2300,6 @@
 <translation id="5784606427469807560">驗證您的信用卡時發生問題。請檢查網際網路連線，然後再試一次。</translation>
 <translation id="5785756445106461925">此外，這個網頁含有其他不安全的資源。其他人可能會在資源傳輸期間檢視這些資源，攻擊者也可能會修改這些資源，進而變更網頁外觀。</translation>
 <translation id="5786044859038896871">要填入你的信用卡資訊嗎？</translation>
-<translation id="578633867165174378">Chrome 發現你剛才使用的密碼因為資料侵害事件而遭到外洩。建議你立即變更密碼。</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{無}=1{1 個帳戶的登入資料}other{# 個帳戶的登入資料}}</translation>
 <translation id="5800727402210090597">手機維修與服務</translation>
@@ -2676,7 +2674,6 @@
 <translation id="6579858392010591435">假日與節慶</translation>
 <translation id="6579990219486187401">淺粉紅色</translation>
 <translation id="6581831440014388355">身體與臉部除毛</translation>
-<translation id="6587182488465657433">Chrome 發現你剛才使用的密碼因為資料侵害事件而遭到外洩。如要確保帳戶安全，建議你立即變更密碼，並檢查已儲存的密碼。</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">你複製的連結</translation>
 <translation id="6591833882275308647">你的 <ph name="DEVICE_TYPE" /> 未受管理</translation>

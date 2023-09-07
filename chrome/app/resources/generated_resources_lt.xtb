@@ -3902,7 +3902,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4067839975993712852">Pažymėti dabartinį skirtuką kaip skaitytą</translation>
 <translation id="4068776064906523561">Išsaugoti kontroliniai kodai</translation>
 <translation id="407173827865827707">Spustelėjus</translation>
-<translation id="4072701974556190758">Slaptažodis bus išsaugotas „Google“ paskyroje (<ph name="ACCOUNT" />). Jums nereikės jo prisiminti.</translation>
 <translation id="4072805772816336153">Vėliau bandykite dar kartą</translation>
 <translation id="407520071244661467">Mastelis</translation>
 <translation id="407543464472585404"><ph name="NAME" /> profilis yra susietas su <ph name="EMAIL" /></translation>
@@ -7982,7 +7981,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7461924472993315131">Prisegti</translation>
 <translation id="746216226901520237">Kitą kartą telefonu galėsite atrakinti „<ph name="DEVICE_TYPE" />“. Funkciją „Smart Lock“ galite išjungti „Nustatymų“ skiltyje.</translation>
 <translation id="7464153996453281700">Komponentas jau atnaujintas</translation>
-<translation id="7464637891177137294">Išsaugokite „Google“ paskyroje, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# atidarytas skirtukas, paspauskite perjungdami skirtuko juostelę}one{# atidarytas skirtukas, paspauskite perjungdami skirtuko juostelę}few{# atidaryti skirtukai, paspauskite perjungdami skirtuko juostelę}many{# atidaryto skirtuko, paspauskite perjungdami skirtuko juostelę}other{# atidarytų skirtukų, paspauskite perjungdami skirtuko juostelę}}</translation>
 <translation id="7465635034594602553">Kažkas nepavyko. Palaukite kelias minutes ir paleiskite programą „<ph name="APP_NAME" />“ dar kartą.</translation>
 <translation id="7465777686629334728">Pašalinti valdomą kūrimo aplinką („<ph name="SPECIFIC_NAME" />“)</translation>
@@ -8061,7 +8059,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7524849817690367493">Saugos centras</translation>
 <translation id="7525067979554623046">Sukurti</translation>
 <translation id="7526989658317409655">Rezervuota vieta</translation>
-<translation id="7527758104894292229">Atnaujinkite jį „Google“ paskyroje, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Neatidaryti</translation>
 <translation id="7529411698175791732">Patikrinkite interneto ryšį. Jei problema kartosis, pabandykite atsijungti ir vėl prisijungti.</translation>
 <translation id="7529865045818406536">Pageidaujami tinklai bus naudojami, jei bus pasiekiamas daugiau nei vienas ankstesnis tinklas</translation>

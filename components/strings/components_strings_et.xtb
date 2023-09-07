@@ -2093,7 +2093,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5329858041417644019">Teie brauserit ei hallata</translation>
 <translation id="5332219387342487447">Tarneviis</translation>
 <translation id="5332769172018416402">Küsi sõnumis</translation>
-<translation id="5333022057423422993">Chrome leidis äsja kasutatud parooli andmetega seotud rikkumisest. Oma kontode turvalisuse tagamiseks soovitame teil oma salvestatud paroole kontrollida.</translation>
 <translation id="5334013548165032829">Üksikasjalikud süsteemilogid</translation>
 <translation id="5334145288572353250">Kas salvestada aadress?</translation>
 <translation id="5340250774223869109">Rakendus on blokeeritud</translation>
@@ -2302,7 +2301,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5784606427469807560">Kaardi kinnitamisel tekkis probleem. Kontrollige Interneti-ühendust ja proovige uuesti.</translation>
 <translation id="5785756445106461925">Lisaks sisaldab see leht teisi ressursse, mis pole turvalised. Edastamise ajal võivad ressursse vaadata ka teised ja ründajad saavad lehe välimuse muutmiseks ressursse muuta.</translation>
 <translation id="5786044859038896871">Kas soovite sisestada oma kaarditeabe?</translation>
-<translation id="578633867165174378">Chrome leidis äsja kasutatud parooli andmetega seotud rikkumisest. Soovitame parooli kohe muuta.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Puudub}=1{sisselogimisandmete üksus 1 konto kohta}other{sisselogimisandmete üksust # konto kohta}}</translation>
 <translation id="5800727402210090597">Mobiiltelefonide remont ja hooldus</translation>
@@ -2677,7 +2675,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6579858392010591435">Pühad ja hooajalised sündmused</translation>
 <translation id="6579990219486187401">Heleroosa</translation>
 <translation id="6581831440014388355">Soovimatute keha- ja näokarvade eemaldamine</translation>
-<translation id="6587182488465657433">Chrome leidis äsja kasutatud parooli andmetega seotud rikkumisest. Oma kontode turvalisuse tagamiseks soovitame teil seda kohe muuta ja seejärel oma salvestatud paroole kontrollida.</translation>
 <translation id="6587893660316489419">Ümbrik B5</translation>
 <translation id="6587923378399804057">Teie kopeeritud link</translation>
 <translation id="6591833882275308647">Teie seadet <ph name="DEVICE_TYPE" /> ei hallata</translation>

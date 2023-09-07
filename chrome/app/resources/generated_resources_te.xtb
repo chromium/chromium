@@ -390,7 +390,7 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> కింది ఫైళ్లను సవరించగలదు</translation>
 <translation id="1302227299132585524">Apple ఈవెంట్‌ల నుండి JavaScriptని అనుమతించండి</translation>
 <translation id="1302654693270046655"><ph name="GROUP_NAME" /> గ్రూప్ - <ph name="OPENED_STATE" /></translation>
-<translation id="1303101771013849280">HTML ఫైల్‌ని బుక్‌మార్క్ చేస్తుంది</translation>
+<translation id="1303101771013849280">బుక్‌మార్క్‌ల HTML ఫైల్</translation>
 <translation id="1303671224831497365">బ్లూటూత్ పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="130491383855577612">Linux యాప్‌లు, ఫైళ్లు విజయంతంగా భర్తీ చేయబడ్డాయి</translation>
 <translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" />‌ను తెరవండి</translation>
@@ -3897,7 +3897,6 @@
 <translation id="4067839975993712852">ప్రస్తుత ట్యాబ్‌ను చదివినట్లుగా మార్క్ చేయండి</translation>
 <translation id="4068776064906523561">సేవ్ చేయబడిన వేలిముద్రలు</translation>
 <translation id="407173827865827707">క్లిక్ చేసినప్పుడు</translation>
-<translation id="4072701974556190758">పాస్‌వర్డ్, మీ Google ఖాతా <ph name="ACCOUNT" />లో సేవ్ చేయబడుతుంది. మీరు దీన్ని గుర్తుంచుకోవాల్సిన అవసరం లేదు.</translation>
 <translation id="4072805772816336153">తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="407520071244661467">ప్రమాణం</translation>
 <translation id="407543464472585404"><ph name="NAME" /> ప్రొఫైల్, <ph name="EMAIL" />కు లింక్ చేయబడింది</translation>
@@ -7970,7 +7969,6 @@
 <translation id="7461924472993315131">పిన్ చేయండి</translation>
 <translation id="746216226901520237">తదుపరిసారి మీ ఫోన్ మీ <ph name="DEVICE_TYPE" />‌ను అన్‌లాక్ చేస్తుంది. మీరు సెట్టింగ్‌లలో Smart Lockను ఆఫ్ చేయవచ్చు.</translation>
 <translation id="7464153996453281700">కాంపోనెంట్ ఇప్పటికే అప్‌డేట్ అయ్యి ఉంది</translation>
-<translation id="7464637891177137294">దీనిని మీ Google ఖాతా, <ph name="ACCOUNT" />లో సేవ్ చేయండి</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ట్యాబ్ తెరిచి, ట్యాబ్‌ స్ట్రిప్‌ను టోగుల్ చేయడానికి నొక్కండి}other{# ట్యాబ్‌లు తెరిచి, ట్యాబ్‌ స్ట్రిప్‌ను టోగుల్ చేయడానికి నొక్కండి}}</translation>
 <translation id="7465635034594602553">ఏదో తప్పు జరిగింది. దయచేసి కొద్ది నిమిషాలు వేచి ఉండి, <ph name="APP_NAME" />ను మళ్లీ రన్ చేయండి.</translation>
 <translation id="7465777686629334728">మేనేజ్ చేయబడే డెవలప్‌మెంట్ వాతావరణాన్ని (<ph name="SPECIFIC_NAME" />) తీసివేయండి</translation>
@@ -8049,7 +8047,6 @@
 <translation id="7524849817690367493">సేఫ్టీ హబ్</translation>
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
 <translation id="7526989658317409655">ప్లేస్‌హోల్డర్</translation>
-<translation id="7527758104894292229">మీ Google ఖాతా <ph name="ACCOUNT" />లో దానిని అప్‌డేట్ చేయండి</translation>
 <translation id="7528224636098571080">తెరవవద్దు</translation>
 <translation id="7529411698175791732">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి. సమస్య కొనసాగితే, సైన్ అవుట్ చేసి, మళ్లీ సైన్ ఇన్ చేయడాన్ని ప్రయత్నించండి.</translation>
 <translation id="7529865045818406536">ఒకటి కంటే ఎక్కువ మునుపటి నెట్‌వర్క్‌లు అందుబాటులో ఉంటే, ప్రాధాన్య నెట్‌వర్క్ ఉపయోగించబడుతుంది</translation>
@@ -8599,7 +8596,7 @@
 <translation id="7947964080535614577">సైట్‌లు సాధారణంగా యాడ్‌లను చూపిస్తాయి, తద్వారా అవి కంటెంట్ లేదా సర్వీస్‌లను ఎటువంటి ఛార్జీ లేకుండా అందించగలవు. కానీ, కొన్ని సైట్‌లు అనుచితమైన లేదా తప్పుదారి పట్టించే యాడ్‌లను చూపిస్తాయి.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />లోని అన్ని పేజీలు</translation>
 <translation id="7950629216186736592">కారణం: LBS http://, https://, file:// URLలను మాత్రమే సపోర్ట్ చేస్తాయి.</translation>
-<translation id="7951265006188088697">Google Payలో వాడే పేమెంట్ ఆప్షన్‌లను జోడించడానికి లేదా మేనేజ్ చేయడానికి, మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />ను సందర్శించండి</translation>
+<translation id="7951265006188088697">Google Payలో వాడే పేమెంట్ ఆప్షన్‌లను జోడించడానికి లేదా మేనేజ్ చేయడానికి, మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />కు వెళ్లండి</translation>
 <translation id="795130320946928025">వర్చువల్ కార్డ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="795240231873601803">వర్క్, స్కూల్ ఖాతాల కోసం ఎంటర్‌ప్రైజ్ ఎన్‌రోల్‌మెంట్‌ను ఉపయోగించండి</translation>
 <translation id="7952708427581814389">మీ క్లిప్‌బోర్డ్‌లోని టెక్స్ట్, ఇమేజ్‌లను చూడటానికి సైట్‌లు అడగగలవు</translation>
@@ -9551,7 +9548,7 @@
 <translation id="8724409975248965964">వేలిముద్ర జోడించబడింది</translation>
 <translation id="8724859055372736596">ఫోల్డర్‌లో &amp;చూపించు</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
-<translation id="8725178340343806893">ఇష్టమైనవి/బుక్‌మార్క్‌లు</translation>
+<translation id="8725178340343806893">ఫేవరెట్స్/బుక్‌మార్క్‌లు</translation>
 <translation id="87254326763805752">పాస్-కీని నిర్ధారించండి</translation>
 <translation id="8726206820263995930">విధాన సెట్టింగ్‌లను సర్వర్ నుండి పొందుతున్నప్పుడు ఎర్రర్: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Chrome నుండి అత్యధిక ప్రయోజనాలను పొందండి</translation>

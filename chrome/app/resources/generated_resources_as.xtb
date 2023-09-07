@@ -3896,7 +3896,6 @@
 <translation id="4067839975993712852">বৰ্তমানৰ টেবটো পঢ়া হৈছে বুলি চিহ্নিত কৰক</translation>
 <translation id="4068776064906523561">ছেভ কৰি থোৱা ফিংগাৰপ্ৰিণ্ট</translation>
 <translation id="407173827865827707">ক্লিক কৰিলে আৰম্ভ হয়</translation>
-<translation id="4072701974556190758">আপোনাৰ Google একাউণ্টত <ph name="ACCOUNT" /> পাছৱৰ্ডটো ছেভ কৰা হ’ব। আপুনি এইটো মনত ৰাখিব নালাগে।</translation>
 <translation id="4072805772816336153">পাছত পুনৰ চেষ্টা কৰক</translation>
 <translation id="407520071244661467">স্কেল</translation>
 <translation id="407543464472585404"><ph name="NAME" />ৰ প্ৰ'ফাইলটো <ph name="EMAIL" />ৰ লগত লিংক কৰা হৈছে</translation>
@@ -5177,6 +5176,7 @@
 <translation id="5146896637028965135">ছিষ্টেম কণ্ঠধ্বনি</translation>
 <translation id="5147992672778369947">চুপাৰিছ কৰা পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
 <translation id="5148277445782867161">Googleৰ অৱস্থান সেৱাই আপোনাৰ ডিভাইচৰ অৱস্থান নির্ধাৰণ কৰাত সহায় কৰিবলৈ ৱাই-ফাই, ম’বাইল নেটৱৰ্ক আৰু ছেন্সৰসমূহ দৰে উৎসবোৰ ব্যৱহাৰ কৰে।</translation>
+<translation id="5148285448107770349">পাছৱৰ্ডটোত কমেও ৮ টা বৰ্ণ থাকিবই লাগিব</translation>
 <translation id="5150254825601720210">Netscape প্ৰমাণপত্ৰ SSL ছার্ভাৰৰ নাম</translation>
 <translation id="5151354047782775295">ডিস্কৰ ঠাই খালী কৰক অন্যথা বাছনি কৰ ডেটা স্বয়ংক্ৰিয়ভাৱে মচা হ’ব</translation>
 <translation id="5153234146675181447">ফ’নৰ জৰিয়াতে ব্যৱহাৰ কৰা সুবিধাসমূহ বাদ দিয়ক</translation>
@@ -7969,7 +7969,6 @@
 <translation id="7461924472993315131">পিন</translation>
 <translation id="746216226901520237">আগলৈ আপোনাৰ ফ’নটোৱে আপোনাৰ <ph name="DEVICE_TYPE" /> আনলক কৰিব। আপুনি ছেটিংসমূহ-লৈ গৈ স্মাৰ্ট লক অফ কৰিব পাৰে।</translation>
 <translation id="7464153996453281700">উপাদান ইতিমধ্যে আপ টু ডে’ট হৈ আছে</translation>
-<translation id="7464637891177137294">এইটো আপোনাৰ Google একাউণ্টত ছেভ কৰক, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{#টা খোলা টেব আছে, টেবৰ ষ্ট্রিপটো ট’গল কৰিবলৈ টিপক}one{#টা খোলা টেব আছে, টেবৰ ষ্ট্রিপটো ট’গল কৰিবলৈ টিপক}other{#টা খোলা টেব আছে, টেবৰ ষ্ট্রিপটো ট’গল কৰিবলৈ টিপক}}</translation>
 <translation id="7465635034594602553">কিবা ভুল হ’ল। অনুগ্ৰহ কৰি কেইমিনিটমান অপেক্ষা কৰক আৰু পুনৰ <ph name="APP_NAME" /> চলাওক।</translation>
 <translation id="7465777686629334728">পৰিচালিত উন্নয়ন পৰিৱেশ (<ph name="SPECIFIC_NAME" />) আঁতৰাওক</translation>
@@ -8048,7 +8047,6 @@
 <translation id="7524849817690367493">সুৰক্ষা হাব</translation>
 <translation id="7525067979554623046">সৃষ্টি কৰক</translation>
 <translation id="7526989658317409655">প্লে’চহ’ল্ডাৰ</translation>
-<translation id="7527758104894292229">আপোনাৰ Google একাউণ্টত এইটো আপডে’ট কৰক, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">নুখুলিব</translation>
 <translation id="7529411698175791732">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক। তথাপিও যদি সমস্যাটো থাকেই, ছাইন আউট কৰি পুনৰ ছাইন ইন কৰি চাওক।</translation>
 <translation id="7529865045818406536">এটাতকৈ অধিক পূৰ্বৱৰ্তী নেটৱৰ্ক উপলব্ধ হ’লে অগ্ৰাধিকাৰ দিয়া নেটৱৰ্কটো ব্যৱহাৰ কৰা হ’ব</translation>

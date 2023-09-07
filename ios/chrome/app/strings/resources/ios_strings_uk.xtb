@@ -158,6 +158,7 @@
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1882901927376062252">{count,plural, =1{Закладку збережено у вашому обліковому записі Google ({email})}one{{count} закладку збережено у вашому обліковому записі Google ({email})}few{{count} закладки збережено у вашому обліковому записі Google ({email})}many{{count} закладок збережено у вашому обліковому записі Google ({email})}other{{count} закладки збережено у вашому обліковому записі Google ({email})}}</translation>
 <translation id="1883255238294161206">Згорнути список</translation>
+<translation id="1890237935065108104">Це налаштування недоступне.</translation>
 <translation id="1894023287452300670">Відстежуйте ціну тут</translation>
 <translation id="189531189292803889">Ваш пристрій iPad нещодавно було відновлено, тому веб-переглядач за умовчанням міг змінитися.</translation>
 <translation id="1910975740091000991">Chrome для iOS</translation>
@@ -418,6 +419,7 @@
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="3340938510625667914">Дії в Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Закладку збережено в папці "{title}" у вашому обліковому записі ({email})}one{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}few{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}many{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}other{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}}</translation>
+<translation id="3349676726073650389">Сайти й пошукові запити, на які ви підписалися, зберігаються в обліковому записі Google. Ви можете будь-коли керувати підписками в налаштуваннях.</translation>
 <translation id="3365529507898144230">Зберегти у Фото</translation>
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
 <translation id="3377063233124932127">Тепер ваші збережені закладки, паролі тощо відображаються вгорі екрана.</translation>
@@ -781,6 +783,7 @@
 <translation id="5597915316964418992">Відкрийте сітку вкладок</translation>
 <translation id="560322036295180549">Вимкнено адміністратором організації</translation>
 <translation id="5614553682702429503">Зберегти пароль?</translation>
+<translation id="5619871095170816857">На цій картці показано вкладку, яку ви востаннє відкривали на всіх синхронізованих пристроях протягом останніх 24 годин.</translation>
 <translation id="5626245204502895507">Зараз неможливо завантажити цей файл.</translation>
 <translation id="562753339521713441">Виконайте перевірку безпеки</translation>
 <translation id="5631164295104953411">Додати спосіб оплати</translation>
@@ -1086,6 +1089,7 @@
 <translation id="7082853213442715471">Коли цей режим увімкнено, деякі веб-технології блокуються, через що певні веб-сайти можуть завантажуватися повільніше або працювати неналежним чином.</translation>
 <translation id="7095110968493193530">У Google Менеджері паролів для облікового запису <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Останні вкладки</translation>
+<translation id="7101580180124131336">Тепер у розділі "Підписки" відображатиметься контент із каналу <ph name="CHANNEL_NAME" /> і про нього.</translation>
 <translation id="7102005569666697658">Завантаження файлу… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Сховати</translation>
 <translation id="7108762695052995889">Перейти на сайт</translation>
@@ -1166,6 +1170,7 @@
 <translation id="764827086632467055">Натисніть "Веб-переглядач за умовчанням"</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
+<translation id="7666861622396822790">Ви можете змінити цей параметр у <ph name="BEGIN_LINK" />налаштуваннях контенту<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALL</translation>
 <translation id="7679915578945954324">Адреси сайтів скопійовано</translation>
 <translation id="7687508192620387263">Доступний файл календаря</translation>
@@ -1239,6 +1244,7 @@
 <translation id="8032569120109842252">У підписках</translation>
 <translation id="804225253087497565">Коли ви входите в обліковий запис Google, у ньому можуть зберігатись <ph name="BEGIN_LINK" />Історія пошуку<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />дані про інші дії<ph name="END_LINK" />. Ви можете будь-коли видалити їх.</translation>
 <translation id="804427445359061970">Тут відображатимуться вкладки, які ви відкрили на інших пристроях</translation>
+<translation id="8044568254381073661">Зберегти без шифрування</translation>
 <translation id="8059533439631660104">Згортає розділ.</translation>
 <translation id="8065292699993359127">Відкривати URL-адреси в Chrome в анонімному режимі</translation>
 <translation id="806745655614357130">Зберігати мої дані окремо</translation>
@@ -1293,7 +1299,9 @@
 <translation id="8386068868580335421">Скинути</translation>
 <translation id="838867811594159347">Ввести парольну фразу…</translation>
 <translation id="8393889347136007944">Вкладки, які не використовуються протягом <ph name="THRESHOLD" /> дн.</translation>
+<translation id="8395339334550012808">Невдовзі в розділі "Підписки" відображатиметься контент із каналу <ph name="CHANNEL_NAME" /> і про нього.</translation>
 <translation id="8395378633507873708">Адресний рядок</translation>
+<translation id="8403629764260204788">Приховати розділ "Продовжити перегляд"</translation>
 <translation id="8407669440184693619">Немає паролів для цього сайту</translation>
 <translation id="842017693807136194">Ви ввійшли як</translation>
 <translation id="8423121072346537366">Щойно</translation>

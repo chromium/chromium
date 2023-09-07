@@ -36,6 +36,7 @@
 <translation id="2120238739383482109">የChrome እልባቶችን ይከፍታል።</translation>
 <translation id="2147651015520127414">Chrome የዚህ ድር ጣቢያ እውቅና ማረጋገጫ ያወጣው <ph name="ISSUER" /> መሆኑን አረጋግጧል።</translation>
 <translation id="2199719347983604670">ውሂብ ከChrome ስምረት</translation>
+<translation id="2311240109311056604">የChrome Dino ጨዋታውን ይከፍታል።</translation>
 <translation id="2339201583852607431">የይለፍ ቃልዎ በGoogle መለያዎ (<ph name="EMAIL" />) ላይ ይቀመጣል።</translation>
 <translation id="2342919707875585281">Chrome እርስዎ ከሚፈቅዷቸው ጣቢያዎች ጋር አካባቢዎን ያጋራል።</translation>
 <translation id="2347208864470321755">ይህ ባህሪ ሲበራ Chrome በሌሎች ቋንቋዎች የተጻፉ ገጾች Google ትርጉምን በመጠቀም እንዲተረጎምልዎ ይጠይቀዎታል። <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="3655656110921623717">ይህ ማለት Chrome የተንቀሳቃሽ ስልክ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 <translation id="3720541637541300822">Chromeን ሲዘጉ ማንነት የማያሳውቁ ትሮችን ይቆልፉ</translation>
 <translation id="3741995255368156336">የChrome የንባብ ዝርዝርን ይከፍታል።</translation>
+<translation id="3744018071945602754">በChrome ውስጥ የይለፍ ቃላትን ያስተዳድሩ</translation>
 <translation id="3827545470516145620">እርስዎ በዚህ መሣሪያ ላይ መደበኛ የደህንነት ጥበቃ እያገኙ ነው</translation>
 <translation id="384394811301901750">Google Chrome አሁን ካሜራዎን መጠቀም አይችልም</translation>
 <translation id="3901001113120561395">ከChrome ምርጡን ያግኙ።</translation>
@@ -86,6 +88,7 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> በዚህ መሣሪያ ላይ Chromeን እና ግራ ዕልባቶችን፣ የይለፍ ቃላትን እና ሌሎች ቅንብሮችን እየተጠቀመ ነበር።</translation>
 <translation id="424864128008805179">ከChrome ተዘግቶ ይወጣ?</translation>
 <translation id="4251174643044751591">በChrome ውስጥ የመክፈያ ዘዴዎች ቅንብር ገፅን ይከፍታል።</translation>
+<translation id="4453284704333523777">የChrome ቅንብሮችን ያስተዳድሩ</translation>
 <translation id="4508370294876102450">Chromeን ከማንኛውም መተግበሪያ ይክፈቱ</translation>
 <translation id="4523886039239821078">አንዳንድ ተጨማሪዎች Chrome እንዲበላሽ ያደርጋሉ። እባክዎ የሚከተለውን ያራግፉ፦</translation>
 <translation id="4633328489441962921">Chrome ዝማኔዎች ካሉ መፈተሽ አይችልም</translation>
@@ -99,10 +102,12 @@
 <translation id="484033449593719797">በChrome ቅድመ-ይሁንታ ላይ አይደገፍም</translation>
 <translation id="4840404732697892756">Google የይለፍ ቃል አስተዳዳሪ እርስዎ በGoogle መለያዎ ሲገቡ የይለፍ ቃላትዎን ሊፈትሻቸው ይችላል።</translation>
 <translation id="4903674399067644695">ይህ ካርድ እንዴት ከChrome ምርጡን ማግኘት እንደሚችሉ ጥቆማዎችን ያሳይዎታል።</translation>
+<translation id="49200511069271369">ድርጅትዎ፣ <ph name="DOMAIN" />፣ የሚገቡበትን መለያ እና Chrome እንዴት ጥቅም ላይ እንደሚውል ያስተዳድራል። አስተዳዳሪዎ የተወሰኑ ባህሪያትን ማዋቀር ወይም መገደብ ይችላል።</translation>
 <translation id="5030102366287574140">Chrome ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ደህንነትዎን ለመጠበቅ ሊያግዘዎት ይችላል።</translation>
 <translation id="5108659628347594808">Chromeን የተሻለ ያድርጉት</translation>
 <translation id="5112925986883715005">የChromium የንባብ ዝርዝርን ይመልከቱ</translation>
 <translation id="5119391094379141756">Chromeን ይምረጡ</translation>
+<translation id="5156818928311866442">Chromeን እንደ ነባሪ አሳሸ ለማቀናበር የChrome ቅንብርን ይከፍታል።</translation>
 <translation id="5162467219239570114">Chrome ጊዜው አልፎበታል። በ<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ውስጥ ምንም ዝማኔ ከሌለ የእርስዎ መሣሪያ አዲስ የChrome ስሪቶችን ከእንግዲህ ላይደግፍ ይችላል።</translation>
 <translation id="5190139289262548459">ድርጅትዎ፣ <ph name="DOMAIN" />፣ የገቡበትን መለያ እና Chrome እንዴት ጥቅም ላይ እንደሚውል ያስተዳድራል።</translation>
 <translation id="5389212809648216794">ሌላ መተግበሪያ ካሜራዎን እየተጠቀመበት ስለሆነ Google Chrome ካሜራዎን መጠቀም አይችልም</translation>
@@ -120,6 +125,7 @@
 <translation id="571296537125272375">ከመስመር ውጭ፣ Chrome ዝማኔዎች ካሉ መፈተሽ አልቻለም</translation>
 <translation id="5716154293141027663">በሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞችን በማንኛውም ጊዜ መታ ሲያደርጉ Chromeን ይክፈቱ</translation>
 <translation id="5808435672482059465">የChrome ታሪክዎን ይመልከቱ</translation>
+<translation id="589695154992054845">በChrome ውስጥ የሚስጥር ቁልፍ አስተዳዳሪውን ይከፍታል።</translation>
 <translation id="5998675059699164418">Chromeን ለመጠቀም የእርስዎ ድርጅት እርስዎ በመለያ እንዲገቡ ይጠይቃል።</translation>
 <translation id="6054613632208573261">በነባሪነት Chromeን ይጠቀሙ</translation>
 <translation id="6063091872902370735">የChrome በመለያ መግባትን ይፍቀዱ</translation>
@@ -152,6 +158,7 @@
 <translation id="7173660919484573146">Chrome ፈቀዳ ያለው የይለፍ ቃላትዎ መዳረሻ ለማረጋገጥ የመልክ መታወቂያን ይጠቀማል።</translation>
 <translation id="7187993566681480880">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ሥራ ላይ ሊውል ይችላል።</translation>
 <translation id="72119412072970160">በእርስዎ iPad ላይ ባሉ ሌሎች መተግበሪያዎች ውስጥ ወደ የGoogle የይለፍ ቃል አስተዳዳሪ ያስቀመጧቸውን የይለፍ ቃላት መጠቀም ይችላሉ።</translation>
+<translation id="7254380941803999489">Chromeን እንደ ነባሪ አሳሽ ያቀናብሩ</translation>
 <translation id="7261678641327190792">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
 <translation id="7272930098487145294">ምስሎችን ለማስቀመጥ፣ Chrome ወደ የእርስዎ ፎቶዎች ማከል እንዲችል ለማድረግ ቅንብሮች ላይ መታ ያድርጉ</translation>
 <translation id="7275945473750112644">የእርስዎ መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ነው፣ ስለሆነም የእርስዎ የChrome ውሂብ ከዚህ መሣሪያ ይጸዳል</translation>
@@ -209,6 +216,7 @@
 <ph name="BEGIN_INDENT" />  • ስለ Chrome አጠቃቀምዎ መረጃ ወደ Google ተልኳል፣ ነገር ግን ከእርስዎ ጋር አልተያያዘም።
   • Chrome ከተበላሸ፣ ስለ ብልሽቱ ዝርዝሮች አንዳንድ የግል መረጃዎችን ሊያካትቱ ይችላሉ።
   • ማስመርን ካበሩት፣ መለኪያዎች እርስዎ ስለሚጎበኟቸው ዩአርኤሎች መረጃንም ሊያካትቱ ይችላሉ።<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">በChrome ውስጥ ቅንብሮቹን ይከፍታል።</translation>
 <translation id="9112744793181547300">Chrome እንደ ነባሪ ይቀናበር?</translation>
 <translation id="9122931302567044771">ይህ ማለት Chrome የዴስክቶፕ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 <translation id="9181628561061032322">የChrome የቅርብ ጊዜ ትሮችን ይከፍታል።</translation>

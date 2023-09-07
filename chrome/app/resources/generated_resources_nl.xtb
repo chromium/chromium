@@ -484,6 +484,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1390548061267426325">Openen als normaal tabblad</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> is niet geautoriseerd om af te drukken naar <ph name="PRINTER_NAME" />. Neem contact op met je beheerder.</translation>
 <translation id="1392047138650695757">Gebruikerswoordenboeken</translation>
+<translation id="139300021892314943">Beperken wie kan inloggen</translation>
 <translation id="1393283411312835250">Zon en wolken</translation>
 <translation id="1395730723686586365">Updater gestart</translation>
 <translation id="1395832189806039783">Item markeren met toetsenbordfocus</translation>
@@ -2516,6 +2517,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2956070239128776395">Onderliggende sectie in groep: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Waarschuwing over pakketextensie</translation>
 <translation id="2959127025785722291">Er is iets misgegaan. De scan kan niet worden voltooid. Probeer het opnieuw.</translation>
+<translation id="2959474507964749987">Dit versleutelde bestand is misschien een virus of malware.<ph name="LINE_BREAK" />Als je wilt checken of het bestand onveilig is, kun je het bestand en wachtwoord naar Google Safe Browsing sturen. Scans duren meestal een paar seconden.<ph name="LINE_BREAK" />Voeg het wachtwoord van het bestand toe om het bestand te scannen.</translation>
 <translation id="2959842337402130152">Herstellen is niet mogelijk vanwege onvoldoende opslagruimte. Maak <ph name="SPACE_REQUIRED" /> vrij op het apparaat en probeer het opnieuw.</translation>
 <translation id="2960208947600937804">Er is een fout opgetreden bij het configureren van Linux. Neem contact op met je beheerder.</translation>
 <translation id="2960942820860729477">Vernieuwingssnelheid</translation>
@@ -3882,7 +3884,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4067839975993712852">Huidig tabblad markeren als gelezen</translation>
 <translation id="4068776064906523561">Opgeslagen vingerafdrukken</translation>
 <translation id="407173827865827707">Bij klik</translation>
-<translation id="4072701974556190758">Het wachtwoord wordt opgeslagen in je Google-account, <ph name="ACCOUNT" />. Je hoeft het niet te onthouden.</translation>
 <translation id="4072805772816336153">Probeer het later opnieuw</translation>
 <translation id="407520071244661467">Schaal</translation>
 <translation id="407543464472585404">Het profiel van <ph name="NAME" /> is gekoppeld aan <ph name="EMAIL" /></translation>
@@ -3978,6 +3979,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4147099377280085053">Brailletabel selecteren</translation>
 <translation id="4147911968024186208">Probeer het opnieuw. Als je deze fout opnieuw ziet, neem je contact op met een medewerker van support.</translation>
 <translation id="414800391140809654">kan je informatie gebruiken terwijl je browset</translation>
+<translation id="4148195018520464922">Je kunt inloggen beperken tot bepaalde gebruikers. Hierdoor wordt de optie Persoon toevoegen van het inlogscherm verwijderd. Je kunt ook huidige gebruikers verwijderen.</translation>
 <translation id="4150201353443180367">Weergave</translation>
 <translation id="4150569944729499860">Schermcontext</translation>
 <translation id="4151449637210235443">Vertel ons over je recente gameplay</translation>
@@ -4176,6 +4178,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4322394346347055525">Andere tabbladen sluiten</translation>
 <translation id="4324577459193912240">Bestand onvolledig</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> verwijderen...</translation>
+<translation id="4325433082696797523">Opslag en voeding</translation>
 <translation id="4326146840124313313">De krachtigste beveiliging van Chrome doet meer om je te beschermen tegen gevaarlijke websites, downloads en extensies</translation>
 <translation id="4326484226728068206">Artikelen in je winkelwagen <ph name="DISCOUNT_TEXT" /> bij <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> bekeken</translation>
 <translation id="4330191372652740264">IJswater</translation>
@@ -5158,6 +5161,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5146896637028965135">Systeemstem</translation>
 <translation id="5147992672778369947">Aanbevolen wachtwoord gebruiken</translation>
 <translation id="5148277445782867161">De locatieservice van Google maakt gebruik van bronnen zoals wifi, mobiele netwerken en sensoren om de locatie van je apparaat te schatten.</translation>
+<translation id="5148285448107770349">Wachtwoord moet minstens 8 tekens lang zijn</translation>
 <translation id="5150254825601720210">SSL-servernaam van Netscape-certificaat</translation>
 <translation id="5151354047782775295">Maak schijfruimte vrij of bepaalde gegevens kunnen automatisch worden verwijderd</translation>
 <translation id="5153234146675181447">Telefoon vergeten</translation>
@@ -7943,7 +7947,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7461924472993315131">Vastzetten</translation>
 <translation id="746216226901520237">De volgende keer wordt <ph name="DEVICE_TYPE" /> ontgrendeld met je telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
 <translation id="7464153996453281700">Component is al up-to-date</translation>
-<translation id="7464637891177137294">Sla het op in je Google-account, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# geopend tabblad, druk om de tabbladstrook aan of uit te zetten}other{# geopende tabbladen, druk om de tabbladstrook aan of uit te zetten}}</translation>
 <translation id="7465635034594602553">Er is iets misgegaan. Wacht enkele minuten en voer <ph name="APP_NAME" /> opnieuw uit.</translation>
 <translation id="7465777686629334728">Beheerde ontwikkelomgeving verwijderen (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8022,7 +8025,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7524849817690367493">Veiligheidshub</translation>
 <translation id="7525067979554623046">Maken</translation>
 <translation id="7526989658317409655">Tijdelijke aanduiding</translation>
-<translation id="7527758104894292229">Update dit in je Google-account, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Niet openen</translation>
 <translation id="7529411698175791732">Controleer de internetverbinding. Als het probleem blijft optreden, log je uit en weer in.</translation>
 <translation id="7529865045818406536">Voorkeursnetwerken worden gebruikt als er meer dan één eerder netwerk beschikbaar is</translation>
@@ -8127,6 +8129,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7617263010641145920">Play Store aanzetten</translation>
 <translation id="7617648809369507487">Stillere berichten gebruiken</translation>
 <translation id="7621382409404463535">Het systeem kan de apparaatconfiguratie niet opslaan.</translation>
+<translation id="7621480263311228380">Mag de informatie niet gebruiken die over jou is opgeslagen</translation>
 <translation id="7621595347123595643">Als je je wachtwoord of pincode vergeet, kun je geen lokale gegevens herstellen.</translation>
 <translation id="7622114377921274169">Opladen.</translation>
 <translation id="7622768823216805500">Sites installeren betalingshandlers meestal voor winkelfuncties zoals gemakkelijk betalen</translation>

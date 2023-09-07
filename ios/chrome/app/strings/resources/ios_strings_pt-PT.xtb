@@ -423,6 +423,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3340938510625667914">Ações do Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{Marcadores guardados em "{title}" na sua conta, {email}}}</translation>
+<translation id="3349676726073650389">Os sites e as pesquisas que segue são guardados na sua Conta Google. Pode gerir o que segue nas definições em qualquer altura.</translation>
 <translation id="3365529507898144230">Guardar no Fotos</translation>
 <translation id="3371831930909698441">A tradução está disponível. Opções disponíveis junto à parte inferior do ecrã.</translation>
 <translation id="3377063233124932127">Agora, os seus marcadores, palavras-passe e outros itens guardados estão na parte superior.</translation>
@@ -792,6 +793,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5597915316964418992">Abra a grelha de separadores</translation>
 <translation id="560322036295180549">Desativado pela sua entidade</translation>
 <translation id="5614553682702429503">Guardar a palavra-passe?</translation>
+<translation id="5619871095170816857">Este cartão mostra o último separador aberto usado em todos os seus dispositivos sincronizados nas últimas 24 horas.</translation>
 <translation id="5626245204502895507">De momento não é possível transferir o ficheiro.</translation>
 <translation id="562753339521713441">Execute a verificação de segurança</translation>
 <translation id="5631164295104953411">Adicionar método de pagamento</translation>
@@ -1097,6 +1099,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7082853213442715471">Quando está ativado, determinadas tecnologias Web são bloqueadas, o que pode fazer com que alguns Websites sejam carregados mais lentamente ou não funcionem corretamente.</translation>
 <translation id="7095110968493193530">Para o Gestor de Palavras-passe da Google da conta <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Separadores recentes</translation>
+<translation id="7101580180124131336">Vai ver conteúdo de e sobre o canal <ph name="CHANNEL_NAME" /> no separador A seguir.</translation>
 <translation id="7102005569666697658">A transferir… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108762695052995889">Visitar site</translation>
@@ -1178,6 +1181,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="764827086632467055">Toque em App de navegador predefinida</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7666861622396822790">Pode gerir esta opção nas <ph name="BEGIN_LINK" />Definições de conteúdo<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALAR</translation>
 <translation id="7679915578945954324">Endereços dos sites copiados</translation>
 <translation id="7687508192620387263">Ficheiro de calendário disponível</translation>
@@ -1252,6 +1256,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8032569120109842252">A seguir</translation>
 <translation id="804225253087497565">O <ph name="BEGIN_LINK" />histórico de pesquisas<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser guardados na sua Conta Google quando tem sessão iniciada. Pode eliminá-los em qualquer altura.</translation>
 <translation id="804427445359061970">Os seus separadores de outros dispositivos serão apresentados aqui</translation>
+<translation id="8044568254381073661">Guarde sem encriptação</translation>
 <translation id="8059533439631660104">Reduz a secção.</translation>
 <translation id="8065292699993359127">Abrir URLs no Chrome na Navegação anónima</translation>
 <translation id="806745655614357130">Manter os meus dados separados</translation>
@@ -1308,7 +1313,9 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8386068868580335421">Repor</translation>
 <translation id="838867811594159347">Introduzir frase de acesso…</translation>
 <translation id="8393889347136007944">Separadores não usados há <ph name="THRESHOLD" /> dias</translation>
+<translation id="8395339334550012808">Em breve, vai ver conteúdo de e sobre o canal <ph name="CHANNEL_NAME" /> no separador A seguir.</translation>
 <translation id="8395378633507873708">Barra de endereço</translation>
+<translation id="8403629764260204788">Oculte a opção "Continuar a navegar"</translation>
 <translation id="8407669440184693619">Não foram encontradas palavras-passe para este site</translation>
 <translation id="842017693807136194">Iniciar sessão com</translation>
 <translation id="8423121072346537366">Agora mesmo</translation>

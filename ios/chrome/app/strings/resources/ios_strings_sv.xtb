@@ -158,6 +158,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1872096359983322073">Ficklampa</translation>
 <translation id="1882901927376062252">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{{count} bokmärken har sparats i ditt Google-konto, {email}}}</translation>
 <translation id="1883255238294161206">Komprimera lista</translation>
+<translation id="1890237935065108104">Inställningen är inte tillgänglig.</translation>
 <translation id="1894023287452300670">Bevaka pris här</translation>
 <translation id="189531189292803889">Din iPad återställdes nyligen. Detta kan ha ändrat standardwebbläsaren.</translation>
 <translation id="1910975740091000991">Chrome för iOS</translation>
@@ -418,6 +419,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3328801116991980348">Platsinformation</translation>
 <translation id="3340938510625667914">Chrome-åtgärder</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{Bokmärkena har sparats i {title} i ditt konto, {email}}}</translation>
+<translation id="3349676726073650389">Webbplatser och sökningar du följer sparas i ditt Google-konto. Du kan när som helst hantera vad du följer i inställningarna.</translation>
 <translation id="3365529507898144230">Spara i Foto</translation>
 <translation id="3371831930909698441">Översättning finns. Alternativ visas nära skärmens nedre kant.</translation>
 <translation id="3377063233124932127">Nu visas dina sparade bokmärken, lösenord och annat högst upp.</translation>
@@ -781,6 +783,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5597915316964418992">Öppna rutnätet med flikar</translation>
 <translation id="560322036295180549">Inaktiverat av organisationen</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
+<translation id="5619871095170816857">På kortet visas din senast använda flik på alla dina synkroniserade enheter under de senaste 24 timmarna.</translation>
 <translation id="5626245204502895507">Det gick inte att ladda ned filen just nu.</translation>
 <translation id="562753339521713441">Kör säkerhetskontroll</translation>
 <translation id="5631164295104953411">Lägg till betalningsmetod</translation>
@@ -1086,6 +1089,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7082853213442715471">När det här läget är aktiverat blockeras viss webbteknik, vilket kan få vissa webbplatser att läsas in långsammare eller inte fungera korrekt.</translation>
 <translation id="7095110968493193530">I Google Lösenordshantering för <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Senaste flikarna</translation>
+<translation id="7101580180124131336">Nu visas innehåll från och om <ph name="CHANNEL_NAME" /> i Följer.</translation>
 <translation id="7102005569666697658">Laddar ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Dölj</translation>
 <translation id="7108762695052995889">Besök webbplats</translation>
@@ -1166,6 +1170,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="764827086632467055">Tryck på Standardwebbläsarapp</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7666861622396822790">Du kan hantera detta i <ph name="BEGIN_LINK" />innehållsinställningarna<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALLERA</translation>
 <translation id="7679915578945954324">Webbadresser har kopierats</translation>
 <translation id="7687508192620387263">Kalenderfil tillgänglig</translation>
@@ -1239,6 +1244,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8032569120109842252">Följer</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Sökhistorik<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />annan aktivitet<ph name="END_LINK" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="804427445359061970">Flikar från andra enheter visas här</translation>
+<translation id="8044568254381073661">Spara utan kryptering</translation>
 <translation id="8059533439631660104">Komprimera avsnittet.</translation>
 <translation id="8065292699993359127">Öppna webbadresser i Chrome i inkognitoläge</translation>
 <translation id="806745655614357130">Håll min data separat</translation>
@@ -1293,7 +1299,9 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8386068868580335421">Återställ</translation>
 <translation id="838867811594159347">Ange lösenfras …</translation>
 <translation id="8393889347136007944">Flikar som inte har använts på <ph name="THRESHOLD" /> dagar</translation>
+<translation id="8395339334550012808">Snart visas innehåll från och om <ph name="CHANNEL_NAME" /> i Följer.</translation>
 <translation id="8395378633507873708">Adressfält</translation>
+<translation id="8403629764260204788">Dölj kontinuerlig bläddring</translation>
 <translation id="8407669440184693619">Inga lösenord hittades för webbplatsen</translation>
 <translation id="842017693807136194">Inloggad med</translation>
 <translation id="8423121072346537366">Alldeles nyss</translation>

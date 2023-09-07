@@ -2093,7 +2093,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5329858041417644019">Twoja przeglądarka nie jest zarządzana</translation>
 <translation id="5332219387342487447">Metoda wysyłki</translation>
 <translation id="5332769172018416402">Poproś w wiadomości</translation>
-<translation id="5333022057423422993">Przeglądarka Chrome znalazła użyte właśnie hasło w naruszeniu bezpieczeństwa danych. W trosce o bezpieczeństwo Twoich kont zalecamy jak najszybsze sprawdzenie zapisanych haseł.</translation>
 <translation id="5334013548165032829">Szczegółowe dzienniki systemowe</translation>
 <translation id="5334145288572353250">Zapisać adres?</translation>
 <translation id="5340250774223869109">Aplikacja jest zablokowana</translation>
@@ -2302,7 +2301,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5784606427469807560">Podczas potwierdzania karty wystąpił problem. Sprawdź połączenie internetowe i spróbuj ponownie.</translation>
 <translation id="5785756445106461925">Ta strona zawiera także niezabezpieczone zasoby. Podczas przesyłania mogą je wyświetlić inni użytkownicy, a osoby atakujące mogą je zmodyfikować, by zmienić wygląd strony.</translation>
 <translation id="5786044859038896871">Chcesz wpisać dane swojej karty?</translation>
-<translation id="578633867165174378">Przeglądarka Chrome znalazła użyte właśnie hasło w naruszeniu bezpieczeństwa danych. Zalecamy jak najszybszą zmianę tego hasła.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Brak}=1{dane logowania dla 1 konta}few{dane logowania dla # kont}many{dane logowania dla # kont}other{dane logowania dla # konta}}</translation>
 <translation id="5800727402210090597">Naprawa telefonów komórkowych i powiązane usługi</translation>
@@ -2677,7 +2675,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6579858392010591435">Święta i wydarzenia sezonowe</translation>
 <translation id="6579990219486187401">Jasnoróżowy</translation>
 <translation id="6581831440014388355">Depilacja ciała i twarzy</translation>
-<translation id="6587182488465657433">Przeglądarka Chrome znalazła użyte właśnie hasło w naruszeniu bezpieczeństwa danych. W trosce o bezpieczeństwo Twoich kont zalecamy jak najszybszą jego zmianę i sprawdzenie zapisanych haseł.</translation>
 <translation id="6587893660316489419">Koperta B5</translation>
 <translation id="6587923378399804057">Skopiowany link</translation>
 <translation id="6591833882275308647">Twoje urządzenie <ph name="DEVICE_TYPE" /> nie jest zarządzane</translation>
@@ -2995,6 +2992,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="722454870747268814">Nowa karta incognito</translation>
 <translation id="7226276626900992675">Zezwalasz tej witrynie na korzystanie z plików cookie innych firm. Oznacza to, że większość jej funkcji powinna działać, ale masz słabszą ochronę.</translation>
 <translation id="7227293336683593977">Historia cen</translation>
+<translation id="7227747683324411744">Osoby przeprowadzające atak na stronę, którą chcesz odwiedzić, mogą podstępem nakłonić Cię do zainstalowania szkodliwego oprogramowania wpływającego na sposób korzystania z internetu. Na przykład może ono zmienić stronę główną lub wyświetlać na odwiedzanych stronach dodatkowe reklamy.</translation>
 <translation id="7233592378249864828">Drukuj arkusz potwierdzenia</translation>
 <translation id="7234638337680728591">Ceny paliw i paliwa samochodowe</translation>
 <translation id="7236417832106250253">Ukończono <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3194,6 +3192,7 @@ Dodatkowe informacje:
 <translation id="7599089013883397081">Przekroczono limit czasu pobierania</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Zazwyczaj łączysz się z tą witryną w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Osoby przeprowadzające atak na stronę, którą próbujesz otworzyć, mogą zainstalować szkodliwe oprogramowanie, które kradnie lub usuwa takie dane jak hasło, zdjęcia, wiadomości czy numer karty kredytowej.</translation>
 <translation id="7610193165460212391">Wartość spoza zakresu (<ph name="VALUE" />)</translation>
 <translation id="7613889955535752492">Wygasa: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by wyświetlić hasła i zarządzać nimi w ustawieniach Chrome.</translation>
@@ -3592,6 +3591,7 @@ Dodatkowe informacje:
 Dodatkowe informacje:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Przyznano jednorazowy dostęp do mikrofonu</translation>
+<translation id="8422228580902424274">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasło, numer telefonu czy numer karty kredytowej.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Ustawienia</translation>

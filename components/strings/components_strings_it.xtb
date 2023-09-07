@@ -2090,7 +2090,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5329858041417644019">Il browser in uso non è gestito</translation>
 <translation id="5332219387342487447">Modalità di spedizione</translation>
 <translation id="5332769172018416402">Chiedi in un messaggio</translation>
-<translation id="5333022057423422993">Chrome ha rilevato che la password appena usata è stata esposta a una violazione dei dati. Per proteggere i tuoi account, ti consigliamo di controllare le password che hai salvato.</translation>
 <translation id="5334013548165032829">Log di sistema dettagliati</translation>
 <translation id="5334145288572353250">Vuoi salvare l'indirizzo?</translation>
 <translation id="5340250774223869109">L'applicazione è bloccata</translation>
@@ -2299,7 +2298,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5784606427469807560">Si è verificato un problema durante la conferma della carta. Controlla la connessione Internet e riprova.</translation>
 <translation id="5785756445106461925">Inoltre, questa pagina include altre risorse che non sono sicure. Tali risorse possono essere visualizzate da altri durante il transito dei dati e possono essere modificate da un utente malintenzionato al fine di modificare l'aspetto della pagina.</translation>
 <translation id="5786044859038896871">Vuoi inserire automaticamente i dati della carta?</translation>
-<translation id="578633867165174378">Chrome ha rilevato che la password appena usata è stata esposta a una violazione dei dati. Ti consigliamo di cambiare subito questa password.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Nessuno}=1{dati di accesso per 1 account}other{dati di accesso per # account}}</translation>
 <translation id="5800727402210090597">Riparazione e assistenza cellulari</translation>
@@ -2659,7 +2657,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
 <translation id="6547208576736763147">Perforatura doppia a sinistra</translation>
 <translation id="6549443526281184652">Costumi</translation>
-<translation id="6551873053534932690">Salvare l'indirizzo nell'account?</translation>
+<translation id="6551873053534932690">Vuoi salvare l'indirizzo nell'account?</translation>
 <translation id="6554732001434021288">Ultima visita: <ph name="NUM_DAYS" /> giorni fa</translation>
 <translation id="6556866813142980365">Ripeti</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>
@@ -2673,7 +2671,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6579858392010591435">Vacanze ed eventi stagionali</translation>
 <translation id="6579990219486187401">Rosa chiaro</translation>
 <translation id="6581831440014388355">Rimozione della pelosità facciale e corporea in eccesso</translation>
-<translation id="6587182488465657433">Chrome ha rilevato che la password appena usata è stata esposta a una violazione dei dati. Per proteggere i tuoi account, ti consigliamo di cambiarla subito e di controllare le password che hai salvato.</translation>
 <translation id="6587893660316489419">Busta B5</translation>
 <translation id="6587923378399804057">Link copiato</translation>
 <translation id="6591833882275308647">Il tuo dispositivo <ph name="DEVICE_TYPE" /> non è gestito</translation>
@@ -3772,7 +3769,7 @@ Ulteriori dettagli:
 <translation id="8806696968588872703">Plastica (satinata)</translation>
 <translation id="8807160976559152894">Taglia dopo ciascuna pagina</translation>
 <translation id="8809203544698246977">Gli argomenti bloccati vengono mostrati qui</translation>
-<translation id="8811470563853401328">Salvare l'indirizzo nell'account?</translation>
+<translation id="8811470563853401328">Vuoi salvare l'indirizzo nell'account?</translation>
 <translation id="8813277370772331957">Ricordamelo dopo</translation>
 <translation id="8814707942599948500">Busta C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aggiornare Chrome dalle relative impostazioni</translation>

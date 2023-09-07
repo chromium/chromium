@@ -58,6 +58,7 @@
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1246905108078336582">クリップボードから候補を削除してもよろしいですか？</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">[フォロー中] に <ph name="SITE_NAME" /> のコンテンツや関連するコンテンツが表示されるようになりました。フォローするサイトや検索は Google アカウントに保存されます。フォローはいつでも設定で管理できます。</translation>
 <translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> を共有できませんでした</translation>
 <translation id="1269129608791067105">履歴はここに表示されます</translation>
@@ -137,6 +138,7 @@
 <translation id="1671236975893690980">ダウンロードを待機しています...</translation>
 <translation id="1672586136351118594">次回から表示しない</translation>
 <translation id="1680919990519905526">Google レンズで画像を購入 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">まもなく、[フォロー中] に <ph name="SITE_NAME" /> のコンテンツや関連するコンテンツが表示されるようになります。フォローするサイトや検索は Google アカウントに保存されます。フォローはいつでも設定で管理できます。</translation>
 <translation id="1702543251015153180">ダークモードの設定を変更しますか？</translation>
 <translation id="1702907158640575240">管理対象ブラウザ</translation>
 <translation id="1710099199314114079">タブを切り替える、または閉じる</translation>
@@ -1475,6 +1477,7 @@
 <translation id="8497242791509864205">並べ替えオプションを開く</translation>
 <translation id="8497480609928300907">プライバシー ガイドの説明</translation>
 <translation id="8497726226069778601">表示するものがまだありません</translation>
+<translation id="8501423924927196358">ページの関連情報の読み込みインジケーター</translation>
 <translation id="8503559462189395349">Chrome パスワード</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8505766168025405649">ダウンロード ステータスの通知を表示</translation>

@@ -58,6 +58,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="124678866338384709">Zapiranje trenutnega zavihka</translation>
 <translation id="1246905108078336582">Ali želite odstraniti predlog iz odložišča?</translation>
 <translation id="1258753120186372309">Googlov priložnostni logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">V razdelku »Spremljano« bo zdaj prikazana vsebina iz vira <ph name="SITE_NAME" /> in o njem. Spletna mesta in iskanja, ki jih spremljate, se shranjujejo v računu Google. Tisto, kar spremljate, lahko kadar koli upravljate v nastavitvah.</translation>
 <translation id="1263231323834454256">Bralni seznam</translation>
 <translation id="1266864766717917324">Ni bilo mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Tukaj bo prikazana zgodovina</translation>
@@ -136,6 +137,7 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="1671236975893690980">Čakanje na prenos …</translation>
 <translation id="1672586136351118594">Tega ne prikaži več</translation>
 <translation id="1680919990519905526">Kupi z Googlom Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Kmalu bo v razdelku »Spremljano« prikazana vsebina iz vira <ph name="SITE_NAME" /> in o njem. Spletna mesta in iskanja, ki jih spremljate, se shranjujejo v računu Google. Tisto, kar spremljate, lahko kadar koli upravljate v nastavitvah.</translation>
 <translation id="1702543251015153180">Želite spremeniti nastavitve temne teme?</translation>
 <translation id="1702907158640575240">Upravljan brskalnik</translation>
 <translation id="1710099199314114079">Preklopite med zavihki ali jih zaprite</translation>
@@ -1473,6 +1475,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8497242791509864205">Odpiranje možnosti razvrščanja</translation>
 <translation id="8497480609928300907">Pojasnilo glede vodnika po zasebnosti</translation>
 <translation id="8497726226069778601">Nimate česa videti ... Za zdaj.</translation>
+<translation id="8501423924927196358">Indikator nalaganja strani s podrobnimi podatki o strani</translation>
 <translation id="8503559462189395349">Gesla za Chrome</translation>
 <translation id="8503813439785031346">Uporabniško ime</translation>
 <translation id="8505766168025405649">Ogled obvestila za stanje prenosa</translation>

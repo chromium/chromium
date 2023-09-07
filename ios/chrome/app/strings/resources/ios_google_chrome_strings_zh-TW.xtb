@@ -73,6 +73,7 @@
 <translation id="3655656110921623717">這代表 Chrome 每次都會對行動版網站發出要求。</translation>
 <translation id="3720541637541300822">關閉 Chrome 時鎖定無痕分頁</translation>
 <translation id="3741995255368156336">開啟 Chrome 閱讀清單。</translation>
+<translation id="3744018071945602754">在 Chrome 中管理密碼</translation>
 <translation id="3827545470516145620">這部裝置即將啟用標準安全防護機制</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用你的相機</translation>
 <translation id="3901001113120561395">充分運用 Chrome 的各項功能。</translation>
@@ -87,6 +88,7 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，並將書籤、密碼和其他設定儲存在裝置上。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251174643044751591">使用 Chrome 開啟「付款方式設定」頁面。</translation>
+<translation id="4453284704333523777">管理 Chrome 設定</translation>
 <translation id="4508370294876102450">從任何應用程式開啟 Chrome</translation>
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
@@ -123,6 +125,7 @@
 <translation id="571296537125272375">目前處於離線狀態，因此 Chrome 無法檢查更新</translation>
 <translation id="5716154293141027663">只要輕觸其他應用程式中的連結，即可透過 Chrome 開啟</translation>
 <translation id="5808435672482059465">查看 Chrome 歷史記錄</translation>
+<translation id="589695154992054845">在 Chrome 中開啟密碼管理工具。</translation>
 <translation id="5998675059699164418">貴機構要求你先登入才能使用 Chrome。</translation>
 <translation id="6054613632208573261">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="6063091872902370735">允許登入 Chrome</translation>
@@ -215,6 +218,7 @@
   • Chrome 當機時，有關當機的詳細資料可能會包含一些個人資訊。
 
   • 開啟同步功能後，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">在 Chrome 中開啟設定。</translation>
 <translation id="9112744793181547300">要將 Chrome 設為預設瀏覽器嗎？</translation>
 <translation id="9122931302567044771">這代表 Chrome 每次都會對電腦版網站發出要求。</translation>
 <translation id="9181628561061032322">開啟最近使用 Chrome 開啟的分頁。</translation>

@@ -2093,7 +2093,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5329858041417644019">Your browser is not managed</translation>
 <translation id="5332219387342487447">Delivery method</translation>
 <translation id="5332769172018416402">Ask in a message</translation>
-<translation id="5333022057423422993">Chrome found the password that you just used in a data breach. To secure your accounts, we recommend checking your saved passwords.</translation>
 <translation id="5334013548165032829">Detailed system logs</translation>
 <translation id="5334145288572353250">Save Address?</translation>
 <translation id="5340250774223869109">Application is blocked</translation>
@@ -2302,7 +2301,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5784606427469807560">There was a problem confirming your card. Check your Internet connection and try again.</translation>
 <translation id="5785756445106461925">Further, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the look of the page.</translation>
 <translation id="5786044859038896871">Do you want to fill in your card info?</translation>
-<translation id="578633867165174378">Chrome found the password that you just used in a data breach. We recommend changing this password now.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{None}=1{sign-in data for 1 account}other{sign-in data for # accounts}}</translation>
 <translation id="5800727402210090597">Mobile Phone Repair and Services</translation>
@@ -2677,7 +2675,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6579858392010591435">Holidays and Seasonal Events</translation>
 <translation id="6579990219486187401">Light pink</translation>
 <translation id="6581831440014388355">Unwanted Body and Facial Hair Removal</translation>
-<translation id="6587182488465657433">Chrome found the password that you just used in a data breach. To secure your accounts, we recommend changing it now and then checking your saved passwords.</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">Link that you copied</translation>
 <translation id="6591833882275308647">Your <ph name="DEVICE_TYPE" /> is not managed</translation>

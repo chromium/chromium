@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">日の入りまでオフ</translation>
 <translation id="1768366657309696705">キーボード ショートカット「<ph name="LAUNCHER_KEY_NAME" />+ピリオド」が変更されました。Insert キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Shift+Backspace キーを押してください。</translation>
 <translation id="1770726142253415363">行 <ph name="ROW_NUMBER" />、列 <ph name="COLUMN_NUMBER" /> に移動しました。</translation>
+<translation id="1771458705381257690">デバイスのセットアップとカスタマイズを行うには <ph name="NAME" /> を開いてください</translation>
 <translation id="1771761307086386028">右にスクロール</translation>
 <translation id="1774796056689732716">カレンダー、<ph name="CURRENT_MONTH_YEAR" />、現在 <ph name="DATE" /> が選択されています。</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> 件中 <ph name="NUM_SHOWN_ITEMS" /> 件を表示しています</translation>
@@ -1192,6 +1193,7 @@
 <translation id="5876666360658629066">保護者のコードを入力してください</translation>
 <translation id="5881540930187678962">スマートフォン ハブを後で設定</translation>
 <translation id="5881663018261910378">オフ</translation>
+<translation id="5883017113634523865">利用可能なすべての機能を見るには、Google Play から <ph name="NAME" /> のアプリをインストールしてください</translation>
 <translation id="5887954372087850114">ウィンドウ <ph name="WINDOW_TITLE" /> を <ph name="DESK_TITLE" /> に割り当て、他のすべてのデスクへの割り当てを解除しました</translation>
 <translation id="588817334757907802">Chrome ブラウザでファイルを開く</translation>
 <translation id="5895138241574237353">再起動</translation>

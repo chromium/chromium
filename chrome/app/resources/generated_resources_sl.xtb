@@ -3902,7 +3902,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4067839975993712852">Označi trenutni zavihek kot prebran</translation>
 <translation id="4068776064906523561">Shranjeni prstni odtisi</translation>
 <translation id="407173827865827707">Ob kliku</translation>
-<translation id="4072701974556190758">Geslo bo shranjeno v računu Google, <ph name="ACCOUNT" />. Ne bo si vam ga treba zapomniti.</translation>
 <translation id="4072805772816336153">Poskusite znova pozneje</translation>
 <translation id="407520071244661467">Prilagajanje velikosti</translation>
 <translation id="407543464472585404">Profil osebe <ph name="NAME" /> je povezan z računom <ph name="EMAIL" />.</translation>
@@ -4198,6 +4197,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4322394346347055525">Zapri druge zavihke</translation>
 <translation id="4324577459193912240">Datoteka je nedokončana</translation>
 <translation id="4325237902968425115">Odmeščanje aplikacije <ph name="LINUX_APP_NAME" /> …</translation>
+<translation id="4325433082696797523">Shramba in napajanje</translation>
 <translation id="4326146840124313313">Chromova najmočnejša zaščita vas bolje varuje pred nevarnimi spletnimi mesti, prenosi in razširitvami.</translation>
 <translation id="4326484226728068206">Izdelki v vozičku <ph name="DISCOUNT_TEXT" /> od trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, ogledani <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Voda z ledom</translation>
@@ -5182,6 +5182,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5146896637028965135">Sistemski glas</translation>
 <translation id="5147992672778369947">Uporabite priporočeno geslo</translation>
 <translation id="5148277445782867161">Googlova lokacijska storitev si pri določanju lokacije vaše naprave pomaga z viri, kot so omrežja Wi-Fi, mobilna omrežja in tipala.</translation>
+<translation id="5148285448107770349">Geslo mora imeti najmanj 8 znakov</translation>
 <translation id="5150254825601720210">Ime strežnika SLL Netscapeovega potrdila</translation>
 <translation id="5151354047782775295">Sprostite prostor na disku, sicer bodo nekateri podatki morda samodejno izbrisani</translation>
 <translation id="5153234146675181447">Pozabi telefon</translation>
@@ -7981,7 +7982,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7461924472993315131">Pripni</translation>
 <translation id="746216226901520237">Naslednjič bo telefon odklenil napravo <ph name="DEVICE_TYPE" />. Funkcijo Smart Lock lahko izklopite v nastavitvah.</translation>
 <translation id="7464153996453281700">Komponenta je že posodobljena.</translation>
-<translation id="7464637891177137294">Shranite ga v računu Google, <ph name="ACCOUNT" />.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# odprt zavihek, pritisnite za preklop traka z zavihki}one{# odprt zavihek, pritisnite za preklop traka z zavihki}two{# odprta zavihka, pritisnite za preklop traka z zavihki}few{# odprti zavihki, pritisnite za preklop traka z zavihki}other{# odprtih zavihkov, pritisnite za preklop traka z zavihki}}</translation>
 <translation id="7465635034594602553">Prišlo je do napake. Počakajte nekaj minut, nato znova zaženite aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Odstranitev upravljanega razvojnega okolja (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8060,7 +8060,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7524849817690367493">Varnostno središče</translation>
 <translation id="7525067979554623046">Ustvari</translation>
 <translation id="7526989658317409655">Nadomestni znak</translation>
-<translation id="7527758104894292229">Posodobite ga v računu Google, <ph name="ACCOUNT" />.</translation>
 <translation id="7528224636098571080">Ne odpri</translation>
 <translation id="7529411698175791732">Preverite internetno povezavo. Če težave ne odpravite, se poskusite odjaviti in znova prijaviti.</translation>
 <translation id="7529865045818406536">Če je na voljo več kot eno prejšnje omrežje, bodo uporabljena prednostna omrežja</translation>

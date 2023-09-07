@@ -2093,7 +2093,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5329858041417644019">O seu navegador não é gerido</translation>
 <translation id="5332219387342487447">Método de envio</translation>
 <translation id="5332769172018416402">Pedir numa mensagem</translation>
-<translation id="5333022057423422993">O Chrome encontrou a palavra-passe que acabou de utilizar numa violação de dados. Para proteger as suas contas, recomendamos que verifique as suas palavras-passe guardadas.</translation>
 <translation id="5334013548165032829">Registos de sistema detalhados</translation>
 <translation id="5334145288572353250">Quer guardar o endereço?</translation>
 <translation id="5340250774223869109">A app está bloqueada</translation>
@@ -2302,7 +2301,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5784606427469807560">Ocorreu um erro ao confirmar o cartão. Verifique a sua ligação à Internet e tente novamente.</translation>
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Estes recursos podem ser vistos por outros utilizadores em trânsito e modificados por um utilizador mal intencionado com o intuito de alterar o aspeto da página.</translation>
 <translation id="5786044859038896871">Quer preencher as informações do cartão?</translation>
-<translation id="578633867165174378">O Chrome encontrou a palavra-passe que acabou de utilizar numa violação de dados. Recomendamos que altere agora esta palavra-passe.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Nenhuns}=1{dados de início de sessão para 1 conta}other{dados de início de sessão para # contas}}</translation>
 <translation id="5800727402210090597">Serviços e reparação de telemóveis</translation>
@@ -2677,7 +2675,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6579858392010591435">Férias e eventos sazonais</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6581831440014388355">Depilação corporal e facial</translation>
-<translation id="6587182488465657433">O Chrome encontrou a palavra-passe que acabou de utilizar numa violação de dados. Para proteger as suas contas, recomendamos que a altere agora e que verifique as suas palavras-passe guardadas.</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">Link copiado por si</translation>
 <translation id="6591833882275308647">O seu <ph name="DEVICE_TYPE" /> não é gerido.</translation>
@@ -2995,6 +2992,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="722454870747268814">Novo separador anónimo</translation>
 <translation id="7226276626900992675">Permitiu que este site use cookies de terceiros. Isto significa que a maioria das funcionalidades do site deve funcionar, mas tem menos proteção.</translation>
 <translation id="7227293336683593977">Histórico de preços</translation>
+<translation id="7227747683324411744">Os atacantes no site que está a tentar visitar podem enganar o utilizador para que instale software prejudicial que afeta a forma como navega, por exemplo, alterando a sua página inicial ou apresentando anúncios adicionais nos sites que visita.</translation>
 <translation id="7233592378249864828">Imprimir folha de confirmação</translation>
 <translation id="7234638337680728591">Preços da gasolina e combustíveis</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% concluído | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3193,6 +3191,7 @@ Detalhes adicionais:
 <translation id="7599089013883397081">A transferência excedeu o tempo limite</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Costuma estabelecer ligação a este site em segurança, mas o Chrome não conseguiu usar uma ligação segura desta vez. Um atacante pode estar a tentar intercetar ou modificar a sua ligação de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Os atacantes no site que está a tentar visitar podem instalar software prejudicial que rouba ou elimina, por exemplo, a sua palavra-passe, fotos, mensagens ou número do cartão de crédito.</translation>
 <translation id="7610193165460212391">O valor está fora do intervalo <ph name="VALUE" /> .</translation>
 <translation id="7613889955535752492">Exp.: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para ver e gerir as suas palavras-passe nas Definições do Chrome.</translation>
@@ -3591,6 +3590,7 @@ Detalhes adicionais:
 Detalhes adicionais:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfone permitido desta vez</translation>
+<translation id="8422228580902424274">Os atacantes no site que está a tentar visitar podem tentar enganar o utilizador para que instale software ou revele informações como a palavra-passe, o número de telefone ou o número do cartão de crédito.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Definições</translation>

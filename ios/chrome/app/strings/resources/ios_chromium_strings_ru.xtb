@@ -10,6 +10,7 @@
 <translation id="1431818719585918472">Разрешите Chromium блокировать для посторонних доступ к вашим вкладкам инкогнито.</translation>
 <translation id="1472013873724362412">Ваш аккаунт не поддерживается в Chromium. Обратитесь к администратору домена или войдите с помощью обычного аккаунта Google.</translation>
 <translation id="1507010443238049608">Помочь улучшить производительность и функции Chromium</translation>
+<translation id="1513122820609681462">Сделать Chromium браузером по умолчанию</translation>
 <translation id="1531155317299575425">Показывать подсказки для входа в Chromium</translation>
 <translation id="1591119736686995611">Открывает страницу вкладок в Chromium.</translation>
 <translation id="1617663976202781617">Данные, сохраненные с помощью синхронизации Chromium</translation>
@@ -129,11 +130,13 @@
 <translation id="6563921047760808519">Подробнее о том, <ph name="BEGIN_LINK" />как Chromium обеспечивает конфиденциальность ваших данных<ph name="END_LINK" />…</translation>
 <translation id="6625409903340039086">Chromium теперь поддерживает правила для пользователей, применимые к вашему управляемому аккаунту</translation>
 <translation id="6752854822223394465">Ваша организация настраивает браузер Chromium…</translation>
+<translation id="6794054469102824109">Открыть игру Chromium Dino.</translation>
 <translation id="6820823224820483452">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра.</translation>
 <translation id="6911341667534646387">Продолжайте использовать данные Chromium в аккаунте Google.</translation>
 <translation id="7006920032187763988">Вы можете использовать пароли, сохраненные в Менеджере паролей, для других приложений на своем устройстве iPad.</translation>
 <translation id="7018284295775193585">Не удается обновить Chromium</translation>
 <translation id="7045244423563602563">Войдите в Chromium</translation>
+<translation id="7055269218854630176">Аккаунтом, в который вы входите, и использованием Chromium управляет ваша организация (<ph name="DOMAIN" />). Администратор может настраивать определенные функции и ограничивать к ним доступ.</translation>
 <translation id="7099326575020694068">Chromium не может использовать камеру в режиме Split View.</translation>
 <translation id="7165402419892018581">Укажите значение Chromium для параметра "Автозаполнение"</translation>
 <translation id="7175400662502680481">Ваш пароль раскрыт из-за утечки данных. Измените его прямо сейчас в Менеджере паролей.</translation>
@@ -171,6 +174,7 @@
 <translation id="865600487977764604">Защищает вас в браузере Chrome и может использоваться для повышения безопасности в других приложениях Google, когда выполнен вход в аккаунт.</translation>
 <translation id="8663480472502753423">Обновляет Chromium до последней версии</translation>
 <translation id="8685813584220679697">Войдите на этот сайт и в Chromium.</translation>
+<translation id="8730503818204408000">Открыть настройки, чтобы сделать Chromium браузером по умолчанию.</translation>
 <translation id="8747378496147986285">Если параметр включен:
 <ph name="BEGIN_INDENT" />  • Вы помогаете нам делать Chromium удобнее для всех пользователей браузера.<ph name="END_INDENT" />
 
@@ -190,5 +194,6 @@
 <translation id="9110075932708282655">Используйте Chromium по умолчанию</translation>
 <translation id="921174536258924340">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра или <ph name="BEGIN_LINK" />проверьте пароли в аккаунте Google<ph name="END_LINK" />.</translation>
 <translation id="971488683725792095">При переходе по ссылкам в сообщениях, документах и приложениях страницы могут автоматически открываться в браузере Chromium.</translation>
+<translation id="981812233959540767">Играть в Chromium Dino</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
 </translationbundle>

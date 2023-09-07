@@ -625,6 +625,7 @@ Jika kebijakan ini tidak disetel, Pemilih emoji akan diaktifkan untuk pengguna n
 <translation id="1516486219683984217">Jangan izinkan penggunaan notifikasi sistem</translation>
 <translation id="1519092983270375506">Setelan partisi penyimpanan pihak ketiga default</translation>
 <translation id="1522425503138261032">Izinkan situs melacak lokasi fisik pengguna</translation>
+<translation id="1523282650847750947">Jangan pulihkan sesi terakhir.</translation>
 <translation id="1523587744262636189">port 10080 (blokir dapat dibatalkan hingga 01/04/2022)</translation>
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
 <translation id="1524243669991877602">Jika kebijakan disetel ke Aktif, kebijakan yang terkait dengan akun <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> akan diizinkan untuk digabungkan ke kebijakan tingkat mesin.
@@ -986,6 +987,17 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="1829839214911753838">Jika kebijakan disetel ke Aktif, host bantuan jarak jauh akan berjalan dalam proses dengan izin <ph name="UIACCESS_PERMISSION_NAME" />. Ini memungkinkan pengguna jarak jauh berinteraksi dengan jendela administrator di desktop pengguna lokal.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host bantuan jarak jauh akan berjalan dalam konteks pengguna, dan pengguna jarak jauh tidak dapat berinteraksi dengan jendela administrator di desktop.</translation>
+<translation id="183438382744421768">Kebijakan ini mengontrol perilaku browser setelah akun terkelola login ke area konten.
+
+Kebijakan ini menggantikan <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
+
+Jika kebijakan ini disetel ke Disarankan, setelah akun terkelola login, pengguna akan diminta untuk terus menggunakan profil terkelola seolah-olah kebijakan ini diterapkan. Jika pengguna menolak, pengguna dapat melanjutkan penjelajahannya di lingkungan yang tidak dikelola.
+
+Jika kebijakan ini disetel ke Diterapkan, setelah akun terkelola login, pengguna akan diwajibkan untuk terus menggunakan profil terkelola. Jika pengguna menolak, pengguna akan diminta logout dari akunnya. Penerapan ini tidak terpengaruh oleh kebijakan <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna mungkin akan melihat balon yang meminta mereka membuat profil baru setelah akun terkelola login. Balon tersebut dapat ditutup dan pengguna dapat melanjutkan penjelajahan di lingkungan yang tidak dikelola. Balon tersebut dikontrol oleh kebijakan <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Kebijakan ini tidak berpengaruh jika disetel di tingkat perangkat.</translation>
 <translation id="1837165432382702436">Tinggi halaman dalam mikrometer.</translation>
 <translation id="1838910874018595451">Konfigurasi yang diisi otomatis untuk tiket Kerberos</translation>
 <translation id="1843102210803941014">Hanya mengaktifkan cookie dan data penting di penelusuran</translation>
@@ -1063,6 +1075,11 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
       Jika kebijakan <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke nonaktif, nilai kebijakan ini tidak akan berpengaruh karena seluruh fungsi <ph name="PRODUCT_NAME" /> dinonaktifkan.</translation>
 <translation id="1894790493260633497">Aktifkan mode pencetakan grafis latar belakang secara default</translation>
+<translation id="1894798677636924604">Jika kebijakan ini tidak disetel, login akun tidak akan diperlukan untuk membuat profil baru yang terpisah.
+
+Jika kebijakan ini disetel, login akun dari domain yang tercantum tidak akan diperlukan untuk membuat profil baru yang terpisah.
+
+Kebijakan ini dapat disetel ke string kosong sehingga semua login akun diwajibkan untuk membuat profil baru yang terpisah.</translation>
 <translation id="1895052641245790471">Jika <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> disetel ke RestoreOnStartupIsURLs, menyetel <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> ke daftar URL akan menentukan URL mana yang akan dibuka.
 
 Jika tidak disetel, halaman Tab Baru akan dibuka saat browser mulai dijalankan.
@@ -2414,6 +2431,19 @@ Pengguna dapat menyetel gambar avatar dari salah satu opsi ini jika kebijakan in
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="305106159605171619">Pengurangan Agen Pengguna dinonaktifkan, dan tidak diaktifkan oleh Uji Coba Kolom atau Uji Coba Asal.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3053695107741362368">Kebijakan ini mengontrol apakah pengguna diizinkan menyimpan data penjelajahan yang sudah ada ke profil terkelola yang dibuat setelah akun terkelola login di area konten.
+
+Jika kebijakan ini tidak disetel atau disetel ke UserOptInData, pengguna dapat memilih apakah akan menyimpan data penjelajahan yang sudah ada ke profil terkelola. Kotak centang dalam dialog pembuatan profil akan terlihat dan tidak dicentang secara default.
+
+Jika kebijakan ini disetel ke UserOptOutData, pengguna dapat memilih apakah akan menyimpan data penjelajahan yang sudah ada ke profil terkelola. Kotak centang dalam dialog pembuatan profil akan terlihat dan dicentang secara default. Opsi ini hanya diizinkan di perangkat terkelola.
+
+Jika kebijakan ini disetel ke AlwaysSeparateData, pengguna tidak dapat menyimpan data penjelajahan yang sudah ada ke profil terkelola. Kotak centang dalam dialog pembuatan profil tidak akan terlihat.
+
+Jika data penjelajahan yang ada dipindahkan ke profil terkelola, berarti profil saat ini akan menjadi profil terkelola. Tidak ada profil baru yang akan dibuat.
+
+Dengan tidak memindahkan data penjelajahan yang ada ke profil terkelola, artinya profil bersih baru akan dibuat. Data penjelajahan yang sudah ada akan tetap berada di profil yang tidak dikelola, yang masih dapat diakses oleh pengguna melalui pemilih profil.
+
+Kebijakan ini mengharuskan kebijakan <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> disetel agar dapat diterapkan.</translation>
 <translation id="3063302084011279315">Nonaktifkan Screencast</translation>
 <translation id="3063307261083019730">Larang halaman dengan header <ph name="CACHE_CONTROL_NO_STORE_NAME" /> disimpan di back-forward cache.</translation>
 <translation id="3064530882228745118">Gunakan pencarian CNAME selama autentikasi Kerberos</translation>
@@ -4516,6 +4546,7 @@ Jika kebijakan disetel ke Salah (False), perilaku default akan digunakan.</trans
       Jika kebijakan ditetapkan ke false atau tidak ditetapkan, informasi update OS tidak akan
       dilaporkan. Jika ditetapkan ke true, informasi update OS akan dilaporkan.</translation>
 <translation id="4857223512478723171">Jangan izinkan mode layar penuh</translation>
+<translation id="4857888176748302062">Mengizinkan origin mengkueri atribut perangkat</translation>
 <translation id="4858735034935305895">Izinkan mode layar penuh</translation>
 <translation id="4860900625632464759">Izinkan pengguna menyinkronkan pesan SMS antara ponsel dan Chromebook mereka</translation>
 <translation id="486146220825734683">Jangan izinkan pengguna mengingat sandi Kerberos</translation>
@@ -6778,6 +6809,7 @@ Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> pada masa mendatang.<
       Kebijakan kontrol untuk https_latency dan network_telemetry adalah ReportDeviceNetworkStatus.
 
       Jika tidak disetel, tidak ada data telemetri tambahan yang akan dilaporkan saat peristiwa perubahan kekuatan sinyal terjadi.</translation>
+<translation id="6751612743847158732">Selalu pulihkan sesi terakhir.</translation>
 <translation id="6752711782954612641">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> akan menentukan parameter saat menelusuri URL dengan POST. Kebijakan terdiri dari pasangan nama kunci yang dipisahkan koma. Jika nilai adalah parameter template seperti <ph name="SEARCH_TERM_MARKER" />, data istilah penelusuran nyata akan menggantikannya.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran akan dikirimkan menggunakan metode GET.</translation>
@@ -8358,6 +8390,7 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_S
       Kebijakan ini dihapus di Chrome 88 dan akan diabaikan jika disetel.
 
       Buka https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="8137443729340035928">Tanyakan kepada pengguna saat login apakah ingin memulihkan sesi terakhir.</translation>
 <translation id="8141795997560411818">Kebijakan ini tidak mencegah pengguna menggunakan aplikasi Google Drive Android. Jika ingin mencegah akses ke Google Drive, sebaiknya Anda tidak mengizinkan penginstalan aplikasi Google Drive Android.</translation>
 <translation id="8142894094385450823">Menetapkan lokal yang direkomendasikan untuk sesi terkelola</translation>
 <translation id="8147132931626030921">Menetapkan status fitur layar privasi di layar login.
@@ -8675,6 +8708,9 @@ perangkat akan digunakan selama pengguna login.</translation>
 <translation id="8369602308428138533">Penundaan mematikan layar saat menggunakan daya AC</translation>
 <translation id="8371178326720637170">Memungkinkan ekstensi terkelola untuk menggunakan Enterprise Hardware Platform API</translation>
 <translation id="8373176843640227330">Nonaktifkan pelaporan info Bluetooth perangkat</translation>
+<translation id="8373940728202278176">Jika kebijakan ini disetel, origin yang tercantum bisa mendapatkan atribut perangkat (mis. nomor seri, nama host) menggunakan Device Attributes API.
+
+      Origin harus sesuai dengan aplikasi web yang diinstal otomatis menggunakan kebijakan <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> atau disiapkan sebagai aplikasi kios. Untuk spesifikasi Device Attributes API, lihat https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Blokir akses tulis ke file dan direktori di situs ini</translation>
 <translation id="8378266419596669629">Memblokir izin Font Lokal di situs ini</translation>
 <translation id="8379317372795444261">Autentikasi <ph name="BASIC_AUTH" /> diizinkan di koneksi HTTP</translation>
@@ -8748,6 +8784,7 @@ perangkat akan digunakan selama pengguna login.</translation>
 <translation id="8470317291588703478">Jangan terapkan Mode Terbatas YouTube</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC akan menggunakan antarmuka yang tersedia saat menelusuri jalur terbaik.</translation>
+<translation id="8482518340010585741">Mengonfigurasi pemulihan aplikasi saat login</translation>
 <translation id="8483004350080020634">Menyembunyikan bagian sensitif terhadap privasi dan keamanan pada URL https:// sebelum meneruskannya ke skrip PAC (Proxy Auto Config) yang digunakan oleh <ph name="PRODUCT_NAME" /> selama resolusi proxy.
 
 Jika disetel ke True, fitur keamanan akan aktif dan URL https:// akan disembunyikan sebelum mengirimnya ke skrip PAC. Dengan cara ini, skrip PAC tidak dapat melihat data yang umumnya dilindungi oleh saluran terenkripsi (seperti jalur dan kueri URL).
@@ -9498,6 +9535,8 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan m
 
       Jika kebijakan ditetapkan, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, tombol lekat mula-mula akan dinonaktifkan, tetapi pengguna dapat mengaktifkannya kapan saja.</translation>
 <translation id="91206085111961438">Mengontrol ketersediaan ekstensi Manifes v2</translation>
+<translation id="9122865885571719292">Mengontrol apakah dan bagaimana <ph name="PRODUCT_OS_NAME" /> akan memulihkan sesi terakhir saat login.
+Kebijakan ini hanya berlaku jika kebijakan <ph name="FULL_RESTORE_ENABLED_NAME" /> disetel ke benar (true).</translation>
 <translation id="9123211093995421438">Penerapan jumlah minimum rollback milestone <ph name="PRODUCT_OS_NAME" /> akan diizinkan mulai versi yang stabil kapan saja.
 
       Jumlah defaultnya adalah 0 untuk pelanggan, 4 (sekitar setengah tahun) untuk perangkat yang didaftarkan perusahaan.

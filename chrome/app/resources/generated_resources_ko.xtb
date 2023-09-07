@@ -486,6 +486,7 @@
 <translation id="1390548061267426325">일반 탭으로 열기</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />님은 <ph name="PRINTER_NAME" /> 프린터로 인쇄할 권한이 없습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1392047138650695757">사용자 사전</translation>
+<translation id="139300021892314943">로그인할 수 있는 사용자 제한하기</translation>
 <translation id="1393283411312835250">태양과 구름</translation>
 <translation id="1395730723686586365">업데이터 시작됨</translation>
 <translation id="1395832189806039783">키보드 포커스로 항목 강조표시</translation>
@@ -2533,6 +2534,7 @@
 <translation id="2956070239128776395">그룹에 섹션이 중첩됨: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">확장 프로그램 패키지 경고</translation>
 <translation id="2959127025785722291">문제가 발생했습니다. 스캔을 완료할 수 없습니다. 다시 시도해 보세요.</translation>
+<translation id="2959474507964749987">암호화된 파일이 바이러스나 멀웨어일 수도 있습니다.<ph name="LINE_BREAK" />안전하지 않은 파일인지 확인하려면 Google 세이프 브라우징에 파일과 비밀번호를 전송하세요. 검사는 일반적으로 몇 초 정도 걸립니다.<ph name="LINE_BREAK" />검사하려면 파일의 비밀번호를 추가하세요.</translation>
 <translation id="2959842337402130152">저장공간이 부족하여 복원할 수 없습니다. 기기에서 <ph name="SPACE_REQUIRED" />를 확보한 후 다시 시도해 보세요.</translation>
 <translation id="2960208947600937804">Linux를 설정하는 중에 오류가 발생했습니다. 관리자에게 문의하세요.</translation>
 <translation id="2960942820860729477">화면 재생 빈도</translation>
@@ -3899,7 +3901,6 @@
 <translation id="4067839975993712852">현재 탭을 읽음으로 표시</translation>
 <translation id="4068776064906523561">저장된 지문</translation>
 <translation id="407173827865827707">클릭 시</translation>
-<translation id="4072701974556190758">비밀번호가 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다. 기억하지 않아도 됩니다.</translation>
 <translation id="4072805772816336153">나중에 다시 시도해 보세요.</translation>
 <translation id="407520071244661467">배율</translation>
 <translation id="407543464472585404"><ph name="NAME" />님의 프로필이 <ph name="EMAIL" />에 연결되었습니다.</translation>
@@ -3994,6 +3995,7 @@
 <translation id="4147099377280085053">점자표 선택</translation>
 <translation id="4147911968024186208">다시 시도해 주세요. 이 오류가 다시 표시되면 지원 담당자에게 문의하시기 바랍니다.</translation>
 <translation id="414800391140809654">인터넷을 사용하는 동안 내 정보를 사용할 수 있습니다.</translation>
+<translation id="4148195018520464922">특정 사용자만 로그인할 수 있도록 제한할 수 있습니다. 이렇게 하면 로그인 화면에서 '사용자 추가' 옵션이 삭제됩니다. 현재 사용자를 삭제할 수도 있습니다.</translation>
 <translation id="4150201353443180367">디스플레이</translation>
 <translation id="4150569944729499860">화면 컨텍스트</translation>
 <translation id="4151449637210235443">최근 게임플레이에 관해 알려주세요.</translation>
@@ -4192,6 +4194,7 @@
 <translation id="4322394346347055525">다른 탭 닫기</translation>
 <translation id="4324577459193912240">파일 다운로드가 완료되지 않음</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> 제거 중...</translation>
+<translation id="4325433082696797523">저장용량 및 전원</translation>
 <translation id="4326146840124313313">Chrome의 가장 강력한 보안 기능은 위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="4326484226728068206"><ph name="MERCHANT_NAME" />(<ph name="MERCHANT_DOMAIN" />)에서 장바구니에 있는 상품 <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" />에 확인함</translation>
 <translation id="4330191372652740264">얼음물</translation>
@@ -5176,6 +5179,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5146896637028965135">시스템 음성</translation>
 <translation id="5147992672778369947">권장 비밀번호 사용</translation>
 <translation id="5148277445782867161">Google 위치 서비스는 기기 위치를 파악하는 데에 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.</translation>
+<translation id="5148285448107770349">비밀번호는 8자 이상이어야 합니다.</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">디스크 저장 공간을 확보하지 않으면 일부 데이터가 자동으로 삭제됩니다.</translation>
 <translation id="5153234146675181447">휴대전화 지우기</translation>
@@ -7966,7 +7970,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="746216226901520237">다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="7464153996453281700">구성요소가 이미 최신 상태임</translation>
-<translation id="7464637891177137294">비밀번호를 Google 계정(<ph name="ACCOUNT" />)에 저장합니다.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{열려 있는 탭 #개, 눌러서 탭 표시줄 표시/숨기기}other{열려 있는 탭 #개, 눌러서 탭 표시줄 표시/숨기기}}</translation>
 <translation id="7465635034594602553">문제가 발생했습니다. 잠시 후 <ph name="APP_NAME" /> 앱을 다시 실행해 주세요.</translation>
 <translation id="7465777686629334728">관리형 개발 환경(<ph name="SPECIFIC_NAME" />) 삭제</translation>
@@ -8045,7 +8048,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7524849817690367493">안전 허브</translation>
 <translation id="7525067979554623046">만들기</translation>
 <translation id="7526989658317409655">자리표시자</translation>
-<translation id="7527758104894292229">Google 계정(<ph name="ACCOUNT" />)에서 비밀번호를 업데이트합니다.</translation>
 <translation id="7528224636098571080">열지 않음</translation>
 <translation id="7529411698175791732">인터넷 연결 상태를 확인하세요. 문제가 계속되면 로그아웃한 뒤 다시 로그인해보세요.</translation>
 <translation id="7529865045818406536">두 개 이상의 이전 네트워크를 사용할 수 있는 경우 기본 네트워크가 사용됩니다.</translation>
@@ -8150,6 +8152,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7617263010641145920">Play 스토어 사용 설정</translation>
 <translation id="7617648809369507487">조용한 메시지 전송 사용</translation>
 <translation id="7621382409404463535">시스템에서 기기 설정을 저장하지 못했습니다.</translation>
+<translation id="7621480263311228380">다른 사람이 나에 관해 저장한 정보를 사용하도록 허용하지 않음</translation>
 <translation id="7621595347123595643">비밀번호 또는 PIN을 잊어버린 경우 로컬 데이터를 복구할 수 없습니다.</translation>
 <translation id="7622114377921274169">충전 중</translation>
 <translation id="7622768823216805500">사이트에서는 일반적으로 간편 결제와 같은 쇼핑 기능을 사용하기 위해 결제 핸들러를 설치합니다.</translation>

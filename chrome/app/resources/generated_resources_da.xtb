@@ -487,6 +487,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1390548061267426325">Åbn som almindelig fane</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> har ikke tilladelse til at udskrive på <ph name="PRINTER_NAME" />. Kontakt din administrator.</translation>
 <translation id="1392047138650695757">Brugerordbøger</translation>
+<translation id="139300021892314943">Begræns, hvem der kan logge ind</translation>
 <translation id="1393283411312835250">Sol og skyer</translation>
 <translation id="1395730723686586365">Opdateringsprogrammet er startet</translation>
 <translation id="1395832189806039783">Fremhæv element med tastaturfokus</translation>
@@ -2532,6 +2533,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2956070239128776395">Sektionen er indlejret i en gruppe: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Advarsel om pakkeudvidelse</translation>
 <translation id="2959127025785722291">Noget gik galt. Scanningen kunne ikke gennemføres Prøv igen.</translation>
+<translation id="2959474507964749987">Denne krypterede fil kan være en virus eller malware.<ph name="LINE_BREAK" />Du kan tjekke, om den er usikker, ved at sende filen og adgangskoden til Google Beskyttet browsing. Det tager normalt et par sekunder at scanne filen.<ph name="LINE_BREAK" />Tilføj filens adgangskode for at scanne den.</translation>
 <translation id="2959842337402130152">Gendannelsen mislykkedes på grund af manglende lagerplads. Frigør <ph name="SPACE_REQUIRED" /> på enheden, og prøv igen.</translation>
 <translation id="2960208947600937804">Der opstod en fejl under konfigurationen af Linux. Kontakt din administrator.</translation>
 <translation id="2960942820860729477">Opdateringshastighed</translation>
@@ -3898,7 +3900,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4067839975993712852">Markér den aktuelle fane som læst</translation>
 <translation id="4068776064906523561">Gemte fingeraftryk</translation>
 <translation id="407173827865827707">Ved klik</translation>
-<translation id="4072701974556190758">Adgangskoden gemmes på din Google-konto <ph name="ACCOUNT" />. Du behøver ikke at huske den.</translation>
 <translation id="4072805772816336153">Prøv igen senere</translation>
 <translation id="407520071244661467">Skaler</translation>
 <translation id="407543464472585404">Profilen tilhørende <ph name="NAME" /> er knyttet til <ph name="EMAIL" /></translation>
@@ -3995,6 +3996,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4147099377280085053">Vælg en brailletabel</translation>
 <translation id="4147911968024186208">Prøv igen. Hvis du ser denne fejl igen, skal du kontakte din supportrepræsentant.</translation>
 <translation id="414800391140809654">kan bruge dine oplysninger, når du browser</translation>
+<translation id="4148195018520464922">Du kan angive begrænsninger, så det kun er bestemte brugere, der kan logge ind. Hvis du gør dette, fjernes valgmuligheden "Tilføj person" på loginskærmen. Du kan også fjerne aktuelle brugere.</translation>
 <translation id="4150201353443180367">Skærm</translation>
 <translation id="4150569944729499860">Skærmkontekst</translation>
 <translation id="4151449637210235443">Fortæl os om dit seneste gameplay</translation>
@@ -4193,6 +4195,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4322394346347055525">Luk alle andre faner</translation>
 <translation id="4324577459193912240">Filen er ufuldstændig</translation>
 <translation id="4325237902968425115">Afinstallerer <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">Lagerplads og strøm</translation>
 <translation id="4326146840124313313">Chromes stærkeste sikkerhedsfunktioner gør mere for at beskytte dig mod skadelige websites, downloads og udvidelser</translation>
 <translation id="4326484226728068206">Du har varer i din kurv fra <ph name="MERCHANT_NAME" /> med <ph name="DISCOUNT_TEXT" />, som du har set på <ph name="MERCHANT_DOMAIN" /> <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Isvand</translation>
@@ -5177,6 +5180,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5146896637028965135">Systemstemme</translation>
 <translation id="5147992672778369947">Brug anbefalet adgangskode</translation>
 <translation id="5148277445782867161">Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere din enheds lokation.</translation>
+<translation id="5148285448107770349">Adgangskoden skal bestå af mindst 8 tegn</translation>
 <translation id="5150254825601720210">SSL-servernavn for Netscape-certifikat</translation>
 <translation id="5151354047782775295">Hvis du ikke frigør diskplads, slettes udvalgte data muligvis automatisk</translation>
 <translation id="5153234146675181447">Glem telefon</translation>
@@ -7970,7 +7974,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7461924472993315131">Fastgør</translation>
 <translation id="746216226901520237">Næste gang låser din telefon din <ph name="DEVICE_TYPE" /> op. Du kan deaktivere Smart Lock i Indstillinger.</translation>
 <translation id="7464153996453281700">Komponenten er allerede opdateret</translation>
-<translation id="7464637891177137294">Gem den på din Google-konto, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# åben fane. Tryk for at vise eller skjule fanelinje.}one{# åben fane. Tryk for at vise eller skjule fanelinje.}other{# åbne faner. Tryk for at vise eller skjule fanelinje.}}</translation>
 <translation id="7465635034594602553">Noget gik galt. Vent et øjeblik, og prøv derefter at køre <ph name="APP_NAME" /> igen.</translation>
 <translation id="7465777686629334728">Fjern administreret udviklingsmiljø (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8049,7 +8052,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7524849817690367493">Sikkerhedscenter</translation>
 <translation id="7525067979554623046">Opret</translation>
 <translation id="7526989658317409655">Pladsholder</translation>
-<translation id="7527758104894292229">Opdater den på din Google-konto, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Åbn ikke</translation>
 <translation id="7529411698175791732">Tjek din internetforbindelse. Hvis problemet fortsætter, kan du prøve at logge ud og logge ind igen.</translation>
 <translation id="7529865045818406536">Foretrukne netværk anvendes, hvis der er mere end ét tilgængeligt netværk</translation>
@@ -8154,6 +8156,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7617263010641145920">Slå Play Butik til</translation>
 <translation id="7617648809369507487">Få lydløse meddelelser</translation>
 <translation id="7621382409404463535">Systemet kunne ikke gemme enhedskonfigurationen.</translation>
+<translation id="7621480263311228380">Har ikke tilladelse til at bruge oplysninger, der er gemt om dig</translation>
 <translation id="7621595347123595643">Du kan ikke gendanne lokale data, hvis du glemmer din adgangskode eller pinkode.</translation>
 <translation id="7622114377921274169">Oplader.</translation>
 <translation id="7622768823216805500">Websites installerer normalt betalingshandlere til shoppingformål såsom nemmere betaling</translation>
@@ -9500,6 +9503,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8680251145628383637">Log ind for at få dine bogmærker, din historik, dine adgangskoder og dine øvrige indstillinger på alle dine enheder. Du bliver også automatisk logget ind på dine Google-tjenester.</translation>
 <translation id="8681886425883659911">Annoncer blokeres på websites, som er kendt for at vise påtrængende eller vildledende annoncer</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> er tilsluttet og klar</translation>
+<translation id="8684471948980641888">Tillad synkronisering på forbrugsafregnede netværk</translation>
 <translation id="8685540043423825702">Din Chrome-profil</translation>
 <translation id="8686142379631285985">Logget ind som <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Annuller <ph name="FILE_NAME" /></translation>

@@ -73,6 +73,7 @@ Kaj je treba upoštevati:
 <translation id="3655656110921623717">To pomeni, da bo Chrome vsakič zahteval spletno mesto za mobilne naprave.</translation>
 <translation id="3720541637541300822">Zaklepanje anonimnih zavihkov po zaprtju Chroma</translation>
 <translation id="3741995255368156336">Odpre bralni seznam v Chromu.</translation>
+<translation id="3744018071945602754">Upravljanje gesel v Chromu</translation>
 <translation id="3827545470516145620">V tej napravi uporabljate standardno varnostno zaščito</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne more uporabljati fotoaparata</translation>
 <translation id="3901001113120561395">Izkoristite Chrome na najboljši način.</translation>
@@ -87,6 +88,7 @@ Kaj je treba upoštevati:
 <translation id="4233521129555661685">Uporabnik <ph name="USER_EMAIL1" /> je uporabljal Chrome in pustil zaznamke, gesla in druge nastavitve v tej napravi.</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4251174643044751591">V Chromu odpre stran z nastavitvijo plačilnih sredstev.</translation>
+<translation id="4453284704333523777">Upravljanje Chromovih nastavitev</translation>
 <translation id="4508370294876102450">Odpiranje Chroma v poljubni aplikaciji</translation>
 <translation id="4523886039239821078">Nekateri dodatki povzročajo zrušitve Chroma. Odstranite jih:</translation>
 <translation id="4633328489441962921">Chrome ne more preveriti, ali so na voljo posodobitve</translation>
@@ -123,6 +125,7 @@ Kaj je treba upoštevati:
 <translation id="571296537125272375">Chrome brez povezave ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="5716154293141027663">Odpiranje Chroma ob vsakem dotiku povezav v drugih aplikacijah.</translation>
 <translation id="5808435672482059465">Ogled zgodovine v Chromu</translation>
+<translation id="589695154992054845">V Chromu odpre upravitelja gesel.</translation>
 <translation id="5998675059699164418">Vaša organizacija zahteva, da se za uporabo Chroma prijavite.</translation>
 <translation id="6054613632208573261">Privzeto uporabljajte Chrome</translation>
 <translation id="6063091872902370735">Omogočanje prijave v Chrome</translation>
@@ -215,6 +218,7 @@ Kaj je treba upoštevati:
   • Če se Chrome zruši, bodo med podatki o zrušitvi morda nekateri osebni podatki.
 
   • Če vklopite sinhronizacijo, bodo meritve vključevale tudi podatke o URL-jih, ki jih obiščete.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">V Chromu odpre nastavitve.</translation>
 <translation id="9112744793181547300">Želite nastaviti Chrome kot privzeto možnost?</translation>
 <translation id="9122931302567044771">To pomeni, da bo Chrome vsakič zahteval spletno mesto za namizne naprave.</translation>
 <translation id="9181628561061032322">Odpiranje nedavnih zavihkov v Chromu.</translation>

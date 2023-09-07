@@ -36,6 +36,7 @@
 <translation id="2120238739383482109">เปิดบุ๊กมาร์ก Chrome</translation>
 <translation id="2147651015520127414">Chrome ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="2199719347983604670">ข้อมูลจากการซิงค์ของ Chrome</translation>
+<translation id="2311240109311056604">เปิดเกมไดโนเสาร์ของ Chrome</translation>
 <translation id="2339201583852607431">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี Google (<ph name="EMAIL" />)</translation>
 <translation id="2342919707875585281">Chrome แชร์ตำแหน่งกับเว็บไซต์ที่คุณอนุญาต</translation>
 <translation id="2347208864470321755">เมื่อเปิดฟีเจอร์นี้ Chrome จะเสนอให้แปลหน้าต่างๆ ที่เขียนด้วยภาษาอื่นโดยใช้ Google แปลภาษา <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="3655656110921623717">ซึ่งหมายความว่า Chrome จะขอเว็บไซต์ในอุปกรณ์เคลื่อนที่ทุกครั้ง</translation>
 <translation id="3720541637541300822">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chrome</translation>
 <translation id="3741995255368156336">เปิดเรื่องรออ่านใน Chrome</translation>
+<translation id="3744018071945602754">จัดการรหัสผ่านใน Chrome</translation>
 <translation id="3827545470516145620">คุณกำลังได้รับการรักษาความปลอดภัยแบบมาตรฐานในอุปกรณ์นี้</translation>
 <translation id="384394811301901750">Google Chrome ไม่สามารถใช้กล้องถ่ายรูปได้ในขณะนี้</translation>
 <translation id="3901001113120561395">รับประโยชน์สูงสุดจาก Chrome</translation>
@@ -86,6 +88,7 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> ได้ใช้ Chrome และเก็บบุ๊กมาร์ก รหัสผ่าน รวมถึงการตั้งค่าอื่นๆ ไว้ในอุปกรณ์นี้</translation>
 <translation id="424864128008805179">ต้องการออกจากระบบ Chrome ไหม</translation>
 <translation id="4251174643044751591">เปิดหน้าการตั้งค่าวิธีการชำระเงินใน Chrome</translation>
+<translation id="4453284704333523777">จัดการการตั้งค่า Chrome</translation>
 <translation id="4508370294876102450">เปิด Chrome จากแอปใดก็ได้</translation>
 <translation id="4523886039239821078">ส่วนเสริมบางรายการทำให้ Chrome ขัดข้อง โปรดถอนการติดตั้ง</translation>
 <translation id="4633328489441962921">Chrome ตรวจหาอัปเดตไม่ได้</translation>
@@ -99,10 +102,12 @@
 <translation id="484033449593719797">ไม่รองรับใน Chrome เบต้า</translation>
 <translation id="4840404732697892756">เครื่องมือจัดการรหัสผ่านบน Google จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
 <translation id="4903674399067644695">การ์ดนี้แสดงคำแนะนำเกี่ยวกับวิธีใช้ Chrome ให้เกิดประโยชน์สูงสุด</translation>
+<translation id="49200511069271369">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chrome ผู้ดูแลระบบจะตั้งค่าหรือจำกัดฟีเจอร์บางอย่างได้</translation>
 <translation id="5030102366287574140">Chrome ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ ได้</translation>
 <translation id="5108659628347594808">ปรับปรุง Chrome ให้ดีขึ้น</translation>
 <translation id="5112925986883715005">ดูเรื่องรออ่านใน Chrome</translation>
 <translation id="5119391094379141756">เลือก Chrome</translation>
+<translation id="5156818928311866442">เปิดการตั้งค่า Chrome เพื่อตั้งค่า Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="5162467219239570114">Chrome เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chrome เวอร์ชันใหม่อีกต่อไป</translation>
 <translation id="5190139289262548459">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chrome</translation>
 <translation id="5389212809648216794">Google Chrome ไม่สามารถใช้กล้องถ่ายรูปเนื่องจากแอปพลิเคชันอื่นใช้งานอยู่</translation>
@@ -120,6 +125,7 @@
 <translation id="571296537125272375">ออฟไลน์อยู่ Chrome ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="5716154293141027663">คุณแตะลิงก์ในแอปอื่นๆ เพื่อเปิด Chrome ได้ทุกเมื่อ</translation>
 <translation id="5808435672482059465">ดูประวัติการเข้าชมใน Chrome</translation>
+<translation id="589695154992054845">เปิดเครื่องมือจัดการรหัสผ่านใน Chrome</translation>
 <translation id="5998675059699164418">องค์กรกำหนดให้คุณต้องลงชื่อเพื่อเข้าใช้ Chrome</translation>
 <translation id="6054613632208573261">ใช้ Chrome โดยค่าเริ่มต้น</translation>
 <translation id="6063091872902370735">อนุญาตให้ลงชื่อเข้าใช้ Chrome</translation>
@@ -152,6 +158,7 @@
 <translation id="7173660919484573146">Chrome ใช้ Face ID เพื่อยืนยันสิทธิ์ในการเข้าถึงรหัสผ่าน</translation>
 <translation id="7187993566681480880">รักษาความปลอดภัยของคุณใน Chrome และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="72119412072970160">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในแอปอื่นๆ บน iPad ได้</translation>
+<translation id="7254380941803999489">ตั้งค่า Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="7261678641327190792">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="7272930098487145294">หากต้องการบันทึกรูปภาพ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chrome เพิ่มไปยังรูปภาพ</translation>
 <translation id="7275945473750112644">บัญชีของคุณจัดการโดย <ph name="HOSTED_DOMAIN" /> ระบบจึงจะล้างข้อมูล Chrome จากอุปกรณ์นี้</translation>
@@ -209,6 +216,7 @@
 <ph name="BEGIN_INDENT" />  • ระบบจะส่งข้อมูลเกี่ยวกับการใช้งาน Chrome ของคุณไปยัง Google แต่จะไม่มีการเชื่อมโยงกับคุณ
   • หาก Chrome ขัดข้อง รายละเอียดเกี่ยวกับการขัดข้องอาจมีข้อมูลส่วนบุคคลบางอย่างรวมอยู่ด้วย
   • หากคุณเปิดการซิงค์ เมตริกต่างๆ อาจมีข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมด้วย<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">เปิดการตั้งค่าใน Chrome</translation>
 <translation id="9112744793181547300">ตั้งค่า Chrome เป็นค่าเริ่มต้นไหม</translation>
 <translation id="9122931302567044771">ซึ่งหมายความว่า Chrome จะขอเว็บไซต์ในเดสก์ท็อปทุกครั้ง</translation>
 <translation id="9181628561061032322">เปิดแท็บล่าสุดใน Chrome</translation>

@@ -1621,6 +1621,7 @@
 <translation id="7714767791242455379">새 셀룰러 네트워크 추가</translation>
 <translation id="7720400844887872976"><ph name="TIME" />까지 켜기</translation>
 <translation id="7720410380936703141">다시 시도</translation>
+<translation id="7721132362314201794">데스크 이름</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{알림 1개}other{알림 #개}}</translation>
 <translation id="7723703419796509666">개발자 도구 콘솔 표시 또는 숨기기</translation>
 <translation id="7724603315864178912">잘라내기</translation>

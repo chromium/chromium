@@ -610,6 +610,7 @@ Ist die Richtlinie nicht konfiguriert, ist die Emoji-Auswahl für normale Nutzer
 <translation id="1516486219683984217">Verwendung von Systembenachrichtigungen nicht zulassen</translation>
 <translation id="1519092983270375506">Standardeinstellung für die Drittanbieter-Speicherpartitionierung</translation>
 <translation id="1522425503138261032">Ermittlung des physischen Standorts des Nutzers durch Websites zulassen</translation>
+<translation id="1523282650847750947">Letzte Sitzung nicht wiederherstellen.</translation>
 <translation id="1523587744262636189">Port 10080 (Blockierung kann bis 01.04.2022 aufgehoben werden)</translation>
 <translation id="1523774894176285446">Für konfigurierte Websites soll ein alternativer Browser geöffnet werden.</translation>
 <translation id="1524243669991877602">Wenn die Richtlinie aktiviert ist, dürfen Richtlinien, die mit einem <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-Konto verknüpft sind, zu Richtlinien auf Maschinenebene zusammengeführt werden.
@@ -4356,6 +4357,7 @@ Wenn die Richtlinie auf „False“ gesetzt ist, wird die Standardeinstellung ve
 
       Wird die Richtlinie auf "false" gesetzt oder nicht konfiguriert, werden die Informationen zum Betriebssystem-Update nicht gemeldet. Wird die Richtlinie auf "true" gesetzt, werden die Informationen zum Betriebssystem-Update gemeldet.</translation>
 <translation id="4857223512478723171">Vollbildmodus nicht zulassen</translation>
+<translation id="4857888176748302062">Ursprüngen erlauben, Geräteattribute abzufragen</translation>
 <translation id="4858735034935305895">Vollbildmodus zulassen</translation>
 <translation id="4860900625632464759">Nutzern erlauben, SMS zwischen Smartphone und Chromebook zu synchronisieren</translation>
 <translation id="486146220825734683">Nicht zulassen, dass Nutzer Kerberos-Passwörter speichern</translation>
@@ -6516,6 +6518,7 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
       Die Steuerrichtlinie für https_latency und network_telemetry ist ReportDeviceNetworkStatus.
 
       Wenn die Richtlinie nicht konfiguriert ist, werden keine zusätzlichen Telemetriedaten zu Änderungen der Signalstärke gesendet.</translation>
+<translation id="6751612743847158732">Letzte Sitzung immer wiederherstellen.</translation>
 <translation id="6752711782954612641">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />" die Parameter für die Suche nach einer URL mit POST an. Die Richtlinie besteht aus kommagetrennten Name/Wert-Paaren. Wenn ein Wert ein Vorlagenparameter wie <ph name="SEARCH_TERM_MARKER" /> ist, wird er durch echte Suchbegriffsdaten ersetzt.
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />" nicht konfiguriert, werden Suchanfragen mithilfe der GET-Methode gesendet.</translation>
@@ -8035,6 +8038,7 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVE
       Diese Richtlinie wurde in Chrome 88 entfernt und wird ignoriert, wenn sie aktiviert wurde.
 
       Weitere Informationen findest du unter https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="8137443729340035928">Nutzer bei der Anmeldung fragen, ob die letzte Sitzung wiederhergestellt werden soll.</translation>
 <translation id="8141795997560411818">Diese Richtlinie verhindert nicht, dass der Nutzer die Android Google Drive App verwendet. Wenn du den Zugriff auf Google Drive verhindern möchtest, solltest du auch das Installieren der Android Google Drive App nicht zulassen.</translation>
 <translation id="8142894094385450823">Empfohlene Sprachen für eine verwaltete Sitzung festlegen</translation>
 <translation id="8147132931626030921">Mit dieser Richtlinie legst du den Status des Datenschutzbildschirms auf dem Anmeldebildschirm fest.
@@ -8363,6 +8367,9 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="8369602308428138533">Verzögerung für die Bildschirmabschaltung im Netzbetrieb</translation>
 <translation id="8371178326720637170">Ermöglicht verwalteten Erweiterungen, die Enterprise Hardware Platform API zu verwenden</translation>
 <translation id="8373176843640227330">Melden der Bluetooth-Informationen auf Geräten deaktivieren</translation>
+<translation id="8373940728202278176">Wenn diese Richtlinie aktiviert ist, dürfen die aufgelisteten Ursprünge Geräteattribute wie die Seriennummer und den Hostnamen über die Device Attributes API abrufen.
+
+      Die Ursprünge müssen Webanwendungen sein, deren Installation über die Richtlinie „<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ erzwungen wird oder die als Kiosk-App eingerichtet sind. Technische Daten und Informationen zur Device Attributes API findest du unter https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Schreibzugriff auf Dateien und Verzeichnisse auf diesen Websites blockieren</translation>
 <translation id="8378266419596669629">Berechtigung für lokale Schriftarten auf diesen Websites blockieren</translation>
 <translation id="8379317372795444261"><ph name="BASIC_AUTH" />-Authentifizierung ist bei HTTP-Verbindungen zulässig</translation>
@@ -8436,6 +8443,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
 <translation id="8470317291588703478">Eingeschränkten Modus für YouTube nicht erzwingen</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC verwendet bei der Suche nach dem besten Pfad alle verfügbaren Schnittstellen.</translation>
+<translation id="8482518340010585741">App-Wiederherstellung bei der Anmeldung konfigurieren</translation>
 <translation id="8483004350080020634">Entfernt datenschutz- und sicherheitsrelevante Teile aus https://-URLs, bevor diese an PAC-Scripts (Proxy Auto Config) übergeben werden, die <ph name="PRODUCT_NAME" /> während der Proxy-Auflösung verwendet.
 
 Wenn diese Richtlinie auf "true" gesetzt ist, wird die Sicherheitsfunktion aktiviert und ein Stripping für https://-URLs durchgeführt, bevor diese an ein PAC-Script übergeben werden. Auf diese Weise können für das PAC-Script keine Daten eingesehen werden, die normalerweise durch einen verschlüsselten Kanal geschützt sind, etwa Pfad und Abfrage der URL.
@@ -9169,6 +9177,8 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Einfingerbedienung erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
 <translation id="91206085111961438">Verfügbarkeit von Manifest V2-Erweiterungen festlegen</translation>
+<translation id="9122865885571719292">Legt fest, ob und wie <ph name="PRODUCT_OS_NAME" /> bei der Anmeldung die letzte Sitzung wiederherstellt.
+Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_RESTORE_ENABLED_NAME" />“ auf „true“ gesetzt ist.</translation>
 <translation id="9123211093995421438">Gibt die Mindestanzahl der <ph name="PRODUCT_OS_NAME" />-Meilensteine an. Wird diese erreicht, sollte ein Rollback jederzeit von der stabilen Version aus möglich sein.
 
       Standardwert ist 0 für Kundengeräte und 4 (ca. ein halbes Jahr) für unternehmenseigene Geräte.

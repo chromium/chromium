@@ -2091,7 +2091,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5329858041417644019">A böngésző nem áll felügyelet alatt</translation>
 <translation id="5332219387342487447">Szállítási mód</translation>
 <translation id="5332769172018416402">Kérés üzenetben</translation>
-<translation id="5333022057423422993">A Chrome észlelte, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonsága érdekében javasoljuk a mentett jelszavak ellenőrzését.</translation>
 <translation id="5334013548165032829">Részletes rendszernaplók</translation>
 <translation id="5334145288572353250">Menti a címet?</translation>
 <translation id="5340250774223869109">Alkalmazás letiltva</translation>
@@ -2300,7 +2299,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5784606427469807560">A kártya ellenőrzése során hiba történt. Ellenőrizze az internetkapcsolatot, majd próbálkozzon újra.</translation>
 <translation id="5785756445106461925">Emellett az oldal azonban más forrásokat is tartalmaz, amelyek nem biztonságosak. Ezeket a forrásokat mások is megtekinthetik átvitel közben, és megváltoztatásukkal a támadók módosíthatják az oldal viselkedését.</translation>
 <translation id="5786044859038896871">Ki szeretné tölteni a kártyaadatait?</translation>
-<translation id="578633867165174378">A Chrome észlelte, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Javasoljuk a jelszó azonnali módosítását.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Egy sincs}=1{bejelentkezési adat 1 fiókhoz}other{bejelentkezési adat # fiókhoz}}</translation>
 <translation id="5800727402210090597">Mobiltelefon-javítás és kapcsolódó szolgáltatások</translation>
@@ -2675,7 +2673,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6579858392010591435">Ünnepek és szezonális események</translation>
 <translation id="6579990219486187401">Világos rózsaszín</translation>
 <translation id="6581831440014388355">Test- és arcszőrzet eltávolítása</translation>
-<translation id="6587182488465657433">A Chrome észlelte, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonsága érdekében javasoljuk ennek a jelszónak az azonnali módosítását, majd a mentett jelszavai ellenőrzését.</translation>
 <translation id="6587893660316489419">B5 boríték</translation>
 <translation id="6587923378399804057">Vágólapra másolt link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> eszköze nem áll felügyelet alatt</translation>
@@ -2993,6 +2990,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="722454870747268814">Új inkognitó lap</translation>
 <translation id="7226276626900992675">Engedélyezte ennek a webhelynek a harmadik féltől származó cookie-k használatát. Ez azt jelenti, hogy várhatóan működik a legtöbb webhelyfunkció, de Ön kevesebb védelemmel rendelkezik.</translation>
 <translation id="7227293336683593977">Árelőzmények</translation>
+<translation id="7227747683324411744">A felkeresni kívánt webhelyen tartózkodó támadók megpróbálhatják rávenni Önt olyan kártékony szoftver telepítésére, amely befolyásolja a böngészés módját – például módosítja a kezdőlapot, vagy további hirdetéseket jelenít meg a felkeresett webhelyeken.</translation>
 <translation id="7233592378249864828">Megerősítő lap nyomtatása</translation>
 <translation id="7234638337680728591">Üzemanyagárak és töltőállomások</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% kész, <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3192,6 +3190,7 @@ További részletek:
 <translation id="7599089013883397081">Időtúllépés történt a letöltés során</translation>
 <translation id="7600965453749440009">Soha ne fordítsa le a(z) <ph name="LANGUAGE" /> nyelvű szöveget</translation>
 <translation id="7601297359530599375">Ön általában biztonságosan csatlakozik ehhez a webhelyhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy egy támadó megpróbálja lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
+<translation id="7605377493722372900">Előfordulhat, hogy az Ön által felkeresni próbált webhelyen a támadók olyan kártékony szoftvereket telepítenek, amelyek ellopják vagy törlik például az Ön jelszavát, fotóit, üzeneteit vagy hitelkártyaszámát.</translation>
 <translation id="7610193165460212391">Az érték kívül esik a következő tartományon: <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Lejárat: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a jelszavaknak a Chrome beállításaiban való megtekintéséhez és kezeléséhez</translation>
@@ -3590,6 +3589,7 @@ További részletek:
 További részletek:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">A mikrofon erre az alkalomra engedélyezve van</translation>
+<translation id="8422228580902424274">A felkeresni kívánt webhelyen tartózkodó támadók szoftver telepítésére vagy olyan adatok megadására vehetik rá Önt, mint a jelszava, telefonszáma vagy hitelkártyaszáma.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Beállítások</translation>

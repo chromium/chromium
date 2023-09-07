@@ -484,6 +484,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1390548061267426325">Abrir como pestana normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> non ten a autorización necesaria para enviar documentos á impresora <ph name="PRINTER_NAME" />. Ponte en contacto co teu administrador.</translation>
 <translation id="1392047138650695757">Dicionarios do usuario</translation>
+<translation id="139300021892314943">Limitar quen pode iniciar sesión</translation>
 <translation id="1393283411312835250">Sol e nubes</translation>
 <translation id="1395730723686586365">Iniciouse o actualizador</translation>
 <translation id="1395832189806039783">Destacar elemento co enfoque do teclado</translation>
@@ -2515,6 +2516,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2956070239128776395">Hai unha sección aniñada dentro dun grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Advertencia de extensión de paquete</translation>
 <translation id="2959127025785722291">Produciuse un erro. Non se puido completar a análise. Téntao de novo.</translation>
+<translation id="2959474507964749987">O ficheiro encriptado podería ser un virus ou software malicioso.<ph name="LINE_BREAK" />Para comprobar se o ficheiro é seguro ou non, podes envialo, xunto co contrasinal, a Navegación segura de Google. As análises adoitan tardar uns segundos.<ph name="LINE_BREAK" />Para levala a cabo, engade o contrasinal do ficheiro.</translation>
 <translation id="2959842337402130152">Non se puido restaurar debido á falta de espazo de almacenamento. Libera <ph name="SPACE_REQUIRED" /> no dispositivo e téntao de novo.</translation>
 <translation id="2960208947600937804">Produciuse un erro ao configurar Linux. Ponte en contacto co teu administrador.</translation>
 <translation id="2960942820860729477">Frecuencia de actualización</translation>
@@ -3884,7 +3886,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4067839975993712852">Marcar pestana actual como lida</translation>
 <translation id="4068776064906523561">Impresións dixitais gardadas</translation>
 <translation id="407173827865827707">Ao facer clic</translation>
-<translation id="4072701974556190758">O contrasinal gardarase na túa Conta de Google, <ph name="ACCOUNT" />. Non terás que recordalo.</translation>
 <translation id="4072805772816336153">Téntao de novo máis tarde</translation>
 <translation id="407520071244661467">Escala</translation>
 <translation id="407543464472585404">O perfil de <ph name="NAME" /> está vinculado a <ph name="EMAIL" /></translation>
@@ -3981,6 +3982,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4147099377280085053">Seleccionar unha táboa de braille</translation>
 <translation id="4147911968024186208">Téntao de novo. Se se produce este erro outra vez, ponte en contacto co representante do servizo de asistencia.</translation>
 <translation id="414800391140809654">poderá usar a túa información mentres navegas</translation>
+<translation id="4148195018520464922">Podes limitar o inicio de sesión a determinados usuarios. Se o fas, a opción Engadir unha persoa quitarase da pantalla de inicio de sesión. Tamén podes quitar usuarios.</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4150569944729499860">Contexto da pantalla</translation>
 <translation id="4151449637210235443">Cóntanos que tal foi a túa partida máis recente</translation>
@@ -7949,7 +7951,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7461924472993315131">Marcar cun alfinete</translation>
 <translation id="746216226901520237">A próxima vez, o teléfono desbloqueará o teu <ph name="DEVICE_TYPE" />. Podes desactivar Smart Lock en Configuración.</translation>
 <translation id="7464153996453281700">O compoñente xa está actualizado</translation>
-<translation id="7464637891177137294">Gárdao na túa Conta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# pestana aberta, preme o botón para activar/desactivar a franxa de pestanas}other{# pestanas abertas, preme o botón para activar/desactivar a franxa de pestanas}}</translation>
 <translation id="7465635034594602553">Produciuse un erro. Agarda uns poucos minutos e executa <ph name="APP_NAME" /> de novo.</translation>
 <translation id="7465777686629334728">Quitar contorno de desenvolvemento xestionado (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8028,7 +8029,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7524849817690367493">Centro de seguranza</translation>
 <translation id="7525067979554623046">Crear</translation>
 <translation id="7526989658317409655">Marcador de posición</translation>
-<translation id="7527758104894292229">Actualízao na túa Conta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Non abrir</translation>
 <translation id="7529411698175791732">Comproba a túa conexión a Internet. Se o problema continúa, tenta pechar sesión e volver iniciala.</translation>
 <translation id="7529865045818406536">As redes preferidas usaranse se hai máis dunha rede anterior dispoñible</translation>
@@ -8133,6 +8133,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7617263010641145920">Activar Play Store</translation>
 <translation id="7617648809369507487">Usar notificacións máis silenciosas para as mensaxes</translation>
 <translation id="7621382409404463535">Produciuse un erro no sistema e non se puido gardar a configuración do dispositivo.</translation>
+<translation id="7621480263311228380">Sitios sen permiso para usar a información que garden sobre ti</translation>
 <translation id="7621595347123595643">Non poderás recuperar os datos locais se esqueces o contrasinal ou o PIN.</translation>
 <translation id="7622114377921274169">Cargando.</translation>
 <translation id="7622768823216805500">Os sitios adoitan instalar controladores de pago para ofrecerche determinadas funcións relacionadas coas compras (por exemplo, procesar as compras de forma máis fácil)</translation>

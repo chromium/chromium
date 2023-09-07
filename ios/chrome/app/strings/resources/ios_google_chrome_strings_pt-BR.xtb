@@ -36,6 +36,7 @@ Considerações:
 <translation id="2120238739383482109">Abre os favoritos do Chrome.</translation>
 <translation id="2147651015520127414">O Chrome verificou que <ph name="ISSUER" /> emitiu o certificado desse website.</translation>
 <translation id="2199719347983604670">Dados da "Sincronização do Chrome"</translation>
+<translation id="2311240109311056604">Abre o jogo do dinossauro do Chrome.</translation>
 <translation id="2339201583852607431">A senha será salva na sua Conta do Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">O Chrome compartilha sua localização com os sites aos quais você concede permissão.</translation>
 <translation id="2347208864470321755">Quando este recurso está ativado, o Google Chrome disponibiliza a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@ Considerações:
 <translation id="3655656110921623717">Isso significa que o Chrome vai solicitar sempre o site para dispositivo móvel.</translation>
 <translation id="3720541637541300822">Bloquear guias anônimas ao fechar o Chrome</translation>
 <translation id="3741995255368156336">Abre a Lista de leitura do Chrome.</translation>
+<translation id="3744018071945602754">Gerenciar senhas no Chrome</translation>
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode usar a câmera agora</translation>
 <translation id="3901001113120561395">Aproveite o Chrome ao máximo.</translation>
@@ -86,6 +88,7 @@ Considerações:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estava usando o Chrome e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
 <translation id="4251174643044751591">Abre a página de configurações de formas de pagamento do Chrome.</translation>
+<translation id="4453284704333523777">Gerenciar as configurações do Chrome</translation>
 <translation id="4508370294876102450">Abrir o Chrome por qualquer app</translation>
 <translation id="4523886039239821078">Alguns complementos causam a falha do Google Chrome. Desinstale-os.</translation>
 <translation id="4633328489441962921">Não é possível verificar se há atualizações</translation>
@@ -99,10 +102,12 @@ Considerações:
 <translation id="484033449593719797">Indisponível no Chrome Beta</translation>
 <translation id="4840404732697892756">O Gerenciador de senhas do Google pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="4903674399067644695">Este card mostra sugestões para você aproveitar o Chrome ao máximo.</translation>
+<translation id="49200511069271369">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
 <translation id="5108659628347594808">Melhorar o Chrome</translation>
 <translation id="5112925986883715005">Visualizar Lista de leitura do Chrome</translation>
 <translation id="5119391094379141756">Selecione o Chrome</translation>
+<translation id="5156818928311866442">Abre as configurações do Chrome para defini-lo como navegador padrão.</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja mais compatível com novas versões do Chrome.</translation>
 <translation id="5190139289262548459">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você fez login e a forma como o Chrome é usado.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>
@@ -120,6 +125,7 @@ Considerações:
 <translation id="571296537125272375">Off-line. Não é possível verificar se há atualizações</translation>
 <translation id="5716154293141027663">Abrir o Chrome sempre que você tocar nos links em outros apps</translation>
 <translation id="5808435672482059465">Ver seu histórico do Chrome</translation>
+<translation id="589695154992054845">Abre o Gerenciador de senhas no Chrome.</translation>
 <translation id="5998675059699164418">Sua organização exige que você faça login para usar o Chrome.</translation>
 <translation id="6054613632208573261">Usar o Chrome por padrão</translation>
 <translation id="6063091872902370735">Permitir login no Chrome</translation>
@@ -152,6 +158,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7173660919484573146">O Chrome usa o Face ID para garantir o acesso autorizado às suas senhas.</translation>
 <translation id="7187993566681480880">Protege você no Chrome e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>
 <translation id="72119412072970160">Você pode usar as senhas armazenadas no Gerenciador de senhas do Google em outros apps do iPad.</translation>
+<translation id="7254380941803999489">Definir o Chrome como o navegador padrão</translation>
 <translation id="7261678641327190792">Não é possível verificar suas senhas com o Chrome.</translation>
 <translation id="7272930098487145294">Para salvar imagens, toque em "Configurações" e permita que o Chrome as adicione às suas fotos</translation>
 <translation id="7275945473750112644">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chrome serão apagados deste dispositivo</translation>
@@ -211,6 +218,7 @@ Considerações:
   • Se o Chrome falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
 
   • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Abre as configurações do Chrome.</translation>
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>
 <translation id="9122931302567044771">Isso significa que o Chrome vai solicitar sempre o site para computador.</translation>
 <translation id="9181628561061032322">Abre as guias recentes do Chrome.</translation>
