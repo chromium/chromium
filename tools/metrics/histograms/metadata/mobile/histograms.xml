@@ -1170,38 +1170,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilDismiss"
-    units="impressions" expires_after="2024-04-01">
-  <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times the signin promo is implicitly dismissed (by closing
-    the settings view) per impression.
-  </summary>
-</histogram>
-
-<histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="2024-04-01">
-  <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times one of the &quot;sign in&quot; buttons (any of the
-    signed-out &quot;Sign in to Chrome&quot; button, the &quot;Continue as
-    |name|&quot; button, or the &quot;Not |email|?&quot; button) is clicked per
-    impression.
-  </summary>
-</histogram>
-
-<histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilXButton"
-    units="impressions" expires_after="2024-04-01">
-  <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times the explicit &quot;X&quot;-to-close button is clicked
-    per impression.
-  </summary>
-</histogram>
-
 <histogram name="MobileStartup.DailyLaunchCount" units="units"
     expires_after="2024-01-14">
   <owner>tedchoc@chromium.org</owner>

@@ -211,10 +211,6 @@ bool IsBottomOmniboxSteadyStateEnabled();
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 
-// Feature flag to hide the sync promo card in the main settings screen. The
-// "Turn On Sync" row will still be shown when this is enabled.
-BASE_DECLARE_FEATURE(kHideSettingsSyncPromo);
-
 // Feature flag that enables default browser promo to be displayed without
 // matching all the criteria and in depth metrics collection for the displayed
 // promo.

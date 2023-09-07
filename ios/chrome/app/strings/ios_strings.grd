@@ -5018,9 +5018,6 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_SIGNIN_PROMO_RECENT_TABS_WITH_UNITY" desc="Text to inform the user that they can sign in and sync to get tabs shared between devices. [iOS only]">
         To get your tabs from your other devices, turn on sync.
       </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_SETTINGS_WITH_UNITY" desc="Text to inform the user that they can sign in and sync to get tabs shared between devices. [iOS only]">
-        To sync and personalize across devices, turn on sync.
-      </message>
       <message name="IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS" desc="This confirmation message is intended to help users understand that they have signed in to Chrome with their Google Account. The confirmation message appears at the bottom of the Bookmarks page after users choose an account to sign in to. The tone should be informative. [iOS only]">
         Signed in as <ph name="USER_EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>

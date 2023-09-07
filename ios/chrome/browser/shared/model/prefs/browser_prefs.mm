@@ -140,6 +140,12 @@ const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
 // Deprecated 07/2023.
 const char kNewTabPageFieldTrialPref[] = "new_tab_page.trial_version";
 
+// Deprecated 09/2023.
+const char kObsoleteIosSettingsPromoAlreadySeen[] =
+    "ios.settings.promo_already_seen";
+const char kObsoleteIosSettingsSigninPromoDisplayedCount[] =
+    "ios.settings.signin_promo_displayed_count";
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -502,6 +508,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kIosParcelTrackingOptInPromptDisplayed,
                                 false);
+
+  registry->RegisterBooleanPref(kObsoleteIosSettingsPromoAlreadySeen, false);
+  registry->RegisterIntegerPref(kObsoleteIosSettingsSigninPromoDisplayedCount,
+                                0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -590,6 +600,10 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   invalidation::InvalidatorRegistrarWithMemory::ClearDeprecatedPrefs(prefs);
   invalidation::PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(prefs);
   invalidation::FCMInvalidationService::ClearDeprecatedPrefs(prefs);
+
+  // Added 09/2023.
+  prefs->ClearPref(kObsoleteIosSettingsPromoAlreadySeen);
+  prefs->ClearPref(kObsoleteIosSettingsSigninPromoDisplayedCount);
 }
 
 void MigrateObsoleteUserDefault(void) {

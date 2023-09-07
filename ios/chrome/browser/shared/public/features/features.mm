@@ -252,10 +252,6 @@ BASE_FEATURE(kOnlyAccessClipboardAsync,
              "OnlyAccessClipboardAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHideSettingsSyncPromo,
-             "HideSettingsSyncPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
              "DefaultBrowserTriggerCriteriaExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);

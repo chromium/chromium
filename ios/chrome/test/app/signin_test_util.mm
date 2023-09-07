@@ -148,8 +148,6 @@ void ResetSigninPromoPreferences() {
   PrefService* prefs = browser_state->GetPrefs();
   prefs->SetInteger(prefs::kIosBookmarkSigninPromoDisplayedCount, 0);
   prefs->SetBoolean(prefs::kIosBookmarkPromoAlreadySeen, false);
-  prefs->SetInteger(prefs::kIosSettingsSigninPromoDisplayedCount, 0);
-  prefs->SetBoolean(prefs::kIosSettingsPromoAlreadySeen, false);
   prefs->SetInteger(prefs::kIosNtpFeedTopSigninPromoDisplayedCount, 0);
   prefs->SetBoolean(prefs::kIosNtpFeedTopPromoAlreadySeen, false);
   prefs->SetInteger(prefs::kIosReadingListSigninPromoDisplayedCount, 0);

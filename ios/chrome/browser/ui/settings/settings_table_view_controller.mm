@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -87,12 +88,9 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
@@ -183,8 +181,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     SafetyCheckCoordinatorDelegate,
     SettingsControllerProtocol,
     SearchEngineObserving,
-    SigninPresenter,
-    SigninPromoViewConsumer,
     SyncObserverModelBridge> {
   // The browser where the settings are being displayed.
   Browser* _browser;
@@ -220,9 +216,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // The item related to the safety check.
   SettingsCheckItem* _safetyCheckItem;
 
-  // Mediator to configure the sign-in promo cell. Also used to received
-  // identity update notifications.
-  SigninPromoViewMediator* _signinPromoViewMediator;
   GoogleServicesSettingsCoordinator* _googleServicesSettingsCoordinator;
   ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 
@@ -616,46 +609,15 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     // Note when the same flag is enabled, the normal item leads to the sign-in
     // screen, which is allowed with SyncDisabled.
     item = [self signinDisabledByPolicyTextItem];
-  } else if (self.shouldDisplaySyncPromo) {
-    // Create the sign-in promo mediator if it doesn't exist.
-    if (!_signinPromoViewMediator) {
-      _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-          initWithAccountManagerService:self.accountManagerService
-                            authService:AuthenticationServiceFactory::
-                                            GetForBrowserState(_browserState)
-                            prefService:_browserState->GetPrefs()
-                            syncService:SyncServiceFactory::GetForBrowserState(
-                                            _browserState)
-                            accessPoint:signin_metrics::AccessPoint::
-                                            ACCESS_POINT_SETTINGS
-                              presenter:self
-                     baseViewController:self];
-      _signinPromoViewMediator.consumer = self;
-    }
-    TableViewSigninPromoItem* signinPromoItem =
-        [[TableViewSigninPromoItem alloc]
-            initWithType:SettingsItemTypeSigninPromo];
-    signinPromoItem.text =
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SETTINGS_WITH_UNITY);
-    signinPromoItem.configurator =
-        [_signinPromoViewMediator createConfigurator];
-    signinPromoItem.delegate = _signinPromoViewMediator;
-    [_signinPromoViewMediator signinPromoViewIsVisible];
-
-    item = signinPromoItem;
   } else if ((authServiceStatus ==
                   AuthenticationService::ServiceStatus::SigninForcedByPolicy ||
               authServiceStatus ==
                   AuthenticationService::ServiceStatus::SigninAllowed) &&
              !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     item = [self accountSignInItem];
-    [_signinPromoViewMediator disconnect];
-    _signinPromoViewMediator = nil;
   } else {
     [self.tableViewModel
         removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-    [_signinPromoViewMediator disconnect];
-    _signinPromoViewMediator = nil;
 
     if (!_hasRecordedSigninImpression) {
       // Once the Settings are open, this button impression will at most be
@@ -695,32 +657,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // Google Services item.
   [model addItem:[self googleServicesCellItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAccount];
-}
-
-#pragma mark - Properties
-
-// Returns YES if the Sync service is available and all promos have not been
-// previously closed or seen too many times by a single user account.
-- (BOOL)shouldDisplaySyncPromo {
-  if ([self isSyncDisabledByPolicy])
-    return false;
-
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  const BOOL shouldDisplay =
-      [SigninPromoViewMediator
-          shouldDisplaySigninPromoViewWithAccessPoint:
-              signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-                                authenticationService:authenticationService
-                                          prefService:_browserState
-                                                          ->GetPrefs()] &&
-      !syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
-  return shouldDisplay &&
-         !base::FeatureList::IsEnabled(kHideSettingsSyncPromo) &&
-         !base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos);
 }
 
 #pragma mark - Model Items
@@ -1320,10 +1256,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     case SettingsItemTypeSignInButton:
       signin_metrics::RecordSigninUserActionForAccessPoint(
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
-      [self showSignInWithIdentity:nil
-                       promoAction:signin_metrics::PromoAction::
-                                       PROMO_ACTION_NO_SIGNIN_PROMO
-                        completion:nil];
+      [self showSignIn];
       break;
     case SettingsItemTypeAccount: {
       if ([self shouldReplaceSyncSettingsWithAccountSettings]) {
@@ -1351,10 +1284,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       switch (
           GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState))) {
         case SyncState::kSyncConsentOff: {
-          [self showSignInWithIdentity:nil
-                           promoAction:signin_metrics::PromoAction::
-                                           PROMO_ACTION_NO_SIGNIN_PROMO
-                            completion:nil];
+          [self showSignIn];
           break;
         }
         case SyncState::kSyncOff: {
@@ -1994,17 +1924,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [self reconfigureCellsForItems:@[ _notificationsItem ]];
 }
 
-#pragma mark - SigninPresenter
-
-- (void)showSignin:(ShowSigninCommand*)command {
-  [self.applicationCommandsHandler showSignin:command baseViewController:self];
-}
-
 #pragma mark Sign in
 
-- (void)showSignInWithIdentity:(id<SystemIdentity>)identity
-                   promoAction:(signin_metrics::PromoAction)promoAction
-                    completion:(ShowSigninCommandCompletionCallback)completion {
+- (void)showSignIn {
   DCHECK(!self.isSigninInProgress);
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
@@ -2014,14 +1936,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           : AuthenticationOperation::kSigninAndSync;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
-               identity:identity
+               identity:nil
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-            promoAction:promoAction
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
                callback:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
                  BOOL success = result == SigninCoordinatorResultSuccess;
-                 if (completion)
-                   completion(result, completionInfo);
                  [weakSelf didFinishSignin:success];
                }];
   [self.applicationCommandsHandler showSignin:command baseViewController:self];
@@ -2054,8 +1975,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Disconnect the sign-in mediator.
   DCHECK(!self.isSigninInProgress);
-  [_signinPromoViewMediator disconnect];
-  _signinPromoViewMediator = nil;
 
   // Stop children coordinators.
   [_googleServicesSettingsCoordinator stop];
@@ -2302,39 +2221,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     // changing.
     [self reloadData];
   }
-}
-
-#pragma mark - SigninPromoViewConsumer
-
-- (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)configurator
-                             identityChanged:(BOOL)identityChanged {
-  if (self.isSigninInProgress ||
-      ![self.tableViewModel
-          hasItemForItemType:SettingsItemTypeSigninPromo
-           sectionIdentifier:SettingsSectionIdentifierSignIn]) {
-    // Don't reload the sign-in promo if sign-in is in progress, to avoid having
-    // UI glitches. The table view should be reloaded once the sign-in is
-    // finished.
-    return;
-  }
-  NSIndexPath* signinPromoCellIndexPath = [self.tableViewModel
-      indexPathForItemType:SettingsItemTypeSigninPromo
-         sectionIdentifier:SettingsSectionIdentifierSignIn];
-  DCHECK(signinPromoCellIndexPath.item != NSNotFound);
-  TableViewSigninPromoItem* signinPromoItem =
-      base::apple::ObjCCast<TableViewSigninPromoItem>(
-          [self.tableViewModel itemAtIndexPath:signinPromoCellIndexPath]);
-  if (signinPromoItem) {
-    signinPromoItem.configurator = configurator;
-    signinPromoItem.delegate = _signinPromoViewMediator;
-    [self reconfigureCellsForItems:@[ signinPromoItem ]];
-  }
-}
-
-- (void)signinPromoViewMediatorCloseButtonWasTapped:
-    (SigninPromoViewMediator*)mediator {
-  [self reloadData];
 }
 
 #pragma mark - GoogleServicesSettingsCoordinatorDelegate
