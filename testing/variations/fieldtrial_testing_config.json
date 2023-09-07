@@ -42,6 +42,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "AdjustForOSLevel": "false"
+                    },
                     "enable_features": [
                         "AccessibilityPageZoom"
                     ]
