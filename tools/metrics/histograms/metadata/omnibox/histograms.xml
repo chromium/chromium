@@ -1581,7 +1581,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.Search.CtrlEnterResolvedAsUrl" enum="Boolean"
+<histogram name="Omnibox.Search.CtrlEnter.ResolvedAsUrl" enum="Boolean"
     expires_after="2024-04-01">
   <owner>ender@google.com</owner>
   <owner>chrome-search@google.com</owner>
@@ -1592,6 +1592,18 @@ chromium-metrics-reviews@google.com.
     affixing &quot;.com&quot; would not produce a valid URL).
 
     Recorded each time Ctrl+Enter is used to complete an interaction.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Search.CtrlEnter.Used" enum="BooleanUsage"
+    expires_after="2024-04-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Whether Ctrl+Enter key combination was used to complete an interaction with
+    the Omnibox.
+
+    Recorded each time user accepts Omnibox text via Keyboard.
   </summary>
 </histogram>
 
