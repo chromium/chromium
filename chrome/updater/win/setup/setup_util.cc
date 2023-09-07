@@ -346,6 +346,19 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 
   const std::vector<CLSID> clsids(
       GetServers(internal_service, UpdaterScope::kSystem));
+
+  // Delete any old registrations in the 32-bit and 64-bit hives, because
+  // `installer::InstallServiceWorkItem` does not do this. This is important for
+  // scenarios where the machine may have a pre-existing 32-bit installation,
+  // and the current install is 64-bit. If any 32-bit keys remain, they will
+  // shadow the 64-bit keys.
+  for (const auto& clsid : clsids) {
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      list->AddDeleteRegKeyWorkItem(
+          HKEY_LOCAL_MACHINE, GetComServerClsidRegistryPath(clsid), key_flag);
+    }
+  }
+
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
       GetServiceDisplayName(internal_service).c_str(), SERVICE_AUTO_START,
