@@ -1774,6 +1774,53 @@ void AutofillMetrics::LogFieldFillingStats(
                               filling_stats.Total());
 }
 
+// static
+void AutofillMetrics::LogFormFillingScore(
+    FormType form_type,
+    const FormGroupFillingStats& filling_stats) {
+  // Do not acquire metrics if Autofill was not used in this form group.
+  if (filling_stats.TotalFilled() == 0) {
+    return;
+  }
+
+  const int score =
+      2 * filling_stats.num_accepted - 3 * filling_stats.TotalCorrected() + 100;
+
+  // Make sure that the score is between 0 and 200 since we are only emitting to
+  // a histogram with equally distributed 201 buckets.
+  base::UmaHistogramCustomCounts(
+      base::StrCat(
+          {"Autofill.FormFillingScore.", FormTypeToStringPiece(form_type)}),
+      std::clamp(score, 1, 200), 1, 200, 200);
+}
+
+// static
+void AutofillMetrics::LogFormFillingComplexScore(
+    FormType form_type,
+    const FormGroupFillingStats& filling_stats) {
+  // Do not acquire metrics if Autofill was not used in this form group.
+  if (filling_stats.TotalFilled() == 0) {
+    return;
+  }
+
+  // Limit the number of accepted fields to 19 and the number of corrected
+  // fields to 9.
+  const size_t value_min = 0;
+
+  const size_t clamped_accepted = std::clamp(
+      filling_stats.num_accepted, value_min, static_cast<size_t>(19));
+  const size_t clamped_corrected = std::clamp(
+      filling_stats.TotalCorrected(), value_min, static_cast<size_t>(9));
+
+  const int complex_score = clamped_accepted * 10 + clamped_corrected;
+
+  // The metric is tracked to an histogram with 199 equally distributed buckets.
+  base::UmaHistogramCustomCounts(
+      base::StrCat({"Autofill.FormFillingComplexScore.",
+                    FormTypeToStringPiece(form_type)}),
+      complex_score, 1, 199, 199);
+}
+
 void AutofillMetrics::LogSectioningMetrics(
     const base::flat_map<Section, size_t>& fields_per_section) {
   constexpr base::StringPiece kBaseHistogramName = "Autofill.Sectioning.";

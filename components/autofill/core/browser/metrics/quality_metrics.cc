@@ -392,6 +392,16 @@ void LogQualityMetrics(
     AutofillMetrics::LogFieldFillingStats(FormType::kCreditCardForm,
                                           cc_field_stats);
 
+    AutofillMetrics::LogFormFillingScore(FormType::kAddressForm,
+                                         address_field_stats);
+    AutofillMetrics::LogFormFillingScore(FormType::kCreditCardForm,
+                                         cc_field_stats);
+
+    AutofillMetrics::LogFormFillingComplexScore(FormType::kAddressForm,
+                                                address_field_stats);
+    AutofillMetrics::LogFormFillingComplexScore(FormType::kCreditCardForm,
+                                                cc_field_stats);
+
     if (card_form) {
       AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
           autofilled_field_types);
