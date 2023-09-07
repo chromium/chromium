@@ -1,5 +1,0 @@
-CONSOLE ERROR: Uncaught PASS: toString called on exception value thrown from event handler
-CONSOLE ERROR: Uncaught PASS: toString called on exception value thrown from sql transaction callback
-CONSOLE ERROR: Uncaught PASS: toString called on exception value thrown from sql error callback
-CONSOLE ERROR: Uncaught PASS: toString called on exception value thrown from timer
-This test ensures that exceptions are handled correctly by the various callback mechanisms present in WebCore.

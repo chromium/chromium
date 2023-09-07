@@ -4,7 +4,6 @@
 <script>
 
 window.onload = function() {
-    shouldBeTrue("window.openDatabase('SandboxedIframeStorageAllowed', '1.0', '', 1) != null");
     shouldBeTrue("window.localStorage != null");
     shouldBeTrue("window.sessionStorage != null");
     shouldBeTrue("document.cookie != null");
