@@ -499,25 +499,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocNoHooks(size_t requested_size,
                                                    size_t slot_span_alignment)
       PA_MALLOC_ALIGNED;
-  // Deprecated compatibility method.
-  // TODO(mikt): remove this once all third party usage is gone.
-  PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocWithFlags(unsigned int flags,
-                                                     size_t requested_size,
-                                                     const char* type_name)
-      PA_MALLOC_ALIGNED {
-    // These conditional branching should be optimized away.
-    if (flags == (AllocFlags::kReturnNull)) {
-      return AllocInline<AllocFlags::kReturnNull>(requested_size, type_name);
-    } else if (flags == (AllocFlags::kZeroFill)) {
-      return AllocInline<AllocFlags::kZeroFill>(requested_size, type_name);
-    } else if (flags == (AllocFlags::kReturnNull | AllocFlags::kZeroFill)) {
-      return AllocInline<AllocFlags::kReturnNull | AllocFlags::kZeroFill>(
-          requested_size, type_name);
-    } else {
-      PA_CHECK(0);
-      PA_NOTREACHED();
-    }
-  }
 
   template <unsigned int flags = 0>
   PA_NOINLINE void* Realloc(void* ptr,
@@ -534,15 +515,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_NOINLINE void* TryRealloc(void* ptr,
                                size_t new_size,
                                const char* type_name) PA_MALLOC_ALIGNED {
-    return ReallocInline<AllocFlags::kReturnNull>(ptr, new_size, type_name);
-  }
-  // Deprecated compatibility method.
-  // TODO(mikt): remove this once all third party usage is gone.
-  PA_NOINLINE void* ReallocWithFlags(unsigned int flags,
-                                     void* ptr,
-                                     size_t new_size,
-                                     const char* type_name) PA_MALLOC_ALIGNED {
-    PA_CHECK(flags == AllocFlags::kReturnNull);
     return ReallocInline<AllocFlags::kReturnNull>(ptr, new_size, type_name);
   }
 
