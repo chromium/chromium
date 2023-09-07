@@ -1378,11 +1378,6 @@
     "expiry_milestone": 107
   },
   {
-    "name": "cr2023-mac-font-smoothing",
-    "owners": [ "kerenzhu", "//ui/views/OWNERS", "chrome-mac-dev@google.com" ],
-    "expiry_milestone": 117
-  },
-  {
     "name": "cras-split-alsa-usb-internal",
     "owners": [ "whalechang@google.com", "chromeos-audio-sw@google.com" ],
     "expiry_milestone": 125

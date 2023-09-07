@@ -5140,13 +5140,6 @@ const char kUseXpsForPrintingFromPdfDescription[] =
 
 #if BUILDFLAG(IS_MAC)
 
-const char kCr2023MacFontSmoothingName[] =
-    "Chrome Refresh 2023 Mac Font Smoothing";
-const char kCr2023MacFontSmoothingDescription[] =
-    "Enables Mac Font Smoothing that simulates optical sizes "
-    "to enhance text readability at smaller scales. "
-    "Only effective when Chrome Refresh 2023 is enabled.";
-
 #if BUILDFLAG(ENABLE_PRINTING)
 const char kCupsIppPrintingBackendName[] = "CUPS IPP Printing Backend";
 const char kCupsIppPrintingBackendDescription[] =
