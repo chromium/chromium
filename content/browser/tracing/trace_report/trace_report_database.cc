@@ -389,4 +389,44 @@ TraceReportDatabase::GetNextReportPendingUpload() {
   return absl::nullopt;
 }
 
+absl::optional<size_t> TraceReportDatabase::UploadCountSince(
+    std::string scenario_name,
+    base::Time since) {
+  if (!database_.is_open()) {
+    return absl::nullopt;
+  }
+
+  sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
+      SELECT COUNT(uuid) FROM local_traces
+      WHERE scenario_name = ? AND creation_time > ?
+    )sql"));
+  statement.BindString(0, scenario_name);
+  statement.BindTime(1, since);
+  CHECK(statement.is_valid());
+
+  while (statement.Step()) {
+    return static_cast<uint64_t>(statement.ColumnInt64(0));
+  }
+  return absl::nullopt;
+}
+
+base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCounts() {
+  base::flat_map<std::string, size_t> scenario_counts;
+  if (!database_.is_open()) {
+    return scenario_counts;
+  }
+
+  sql::Statement statement(
+      database_.GetCachedStatement(SQL_FROM_HERE,
+                                   R"sql(SELECT scenario_name, COUNT(uuid) FROM
+                                   local_traces GROUP BY scenario_name)sql"));
+  CHECK(statement.is_valid());
+
+  while (statement.Step()) {
+    scenario_counts.emplace(statement.ColumnString(0),
+                            static_cast<uint64_t>(statement.ColumnInt64(1)));
+  }
+  return scenario_counts;
+}
+
 }  // namespace content

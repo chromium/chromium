@@ -135,6 +135,13 @@ class CONTENT_EXPORT TraceReportDatabase {
   // Get string if the current Trace exists.
   absl::optional<std::string> GetProtoValue(const base::Uuid& uuid);
 
+  // Returns the number of trace for |scenario_name| since |since|.
+  absl::optional<size_t> UploadCountSince(std::string scenario_name,
+                                          base::Time since);
+
+  // Returns the saved count per scenario.
+  base::flat_map<std::string, size_t> GetScenarioCounts();
+
   // Returns all the reports currently stored in the database.
   std::vector<ClientTraceReport> GetAllReports();
 
