@@ -33,6 +33,7 @@ const bool kFakeMeasureLatency = false;
 const bool kFakeSendStartSignaling = true;
 const bool kFakeDisableStunServer = false;
 const bool kFakeCheckAndroidNetworkInfo = true;
+const bool kFakeProcessAndroidAccessibilityTree = false;
 
 void ParseJson(const std::string& json,
                std::string& device_name,
@@ -47,7 +48,8 @@ void ParseJson(const std::string& json,
                bool& measure_latency,
                bool& send_start_signaling,
                bool& disable_stun_server,
-               bool& check_android_network_info) {
+               bool& check_android_network_info,
+               bool& process_android_accessibility_tree) {
   absl::optional<base::Value> message_value = base::JSONReader::Read(json);
   base::Value::Dict* message_dictionary = message_value->GetIfDict();
   const std::string* device_name_ptr =
@@ -104,6 +106,10 @@ void ParseJson(const std::string& json,
       message_dictionary->FindBool(kJsonCheckAndroidNetworkInfoKey);
   if (check_android_network_info_opt.has_value())
     check_android_network_info = check_android_network_info_opt.value();
+  absl::optional<bool> process_android_accessibility_tree_opt =
+      message_dictionary->FindBool(kJsonProcessAndroidAccessibilityTreeKey);
+  if (process_android_accessibility_tree_opt.has_value())
+    process_android_accessibility_tree = process_android_accessibility_tree_opt.value();
 }
 
 class TaskRunner {
@@ -369,13 +375,14 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   bool send_start_signaling = false;
   bool disable_stun_server = true;
   bool check_android_network_info = true;
+  bool process_android_accessibility_tree = true;
 
   GetSystemInfo();
   std::string json = Callback::GetSystemInfo();
   ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state,
             debug_mode, gaia_id, device_type, os_version, channel,
             measure_latency, send_start_signaling, disable_stun_server,
-            check_android_network_info);
+            check_android_network_info, process_android_accessibility_tree);
 
   EXPECT_EQ(device_name, kFakeDeviceName);
   EXPECT_EQ(board_name, kFakeBoardName);
@@ -390,6 +397,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   EXPECT_EQ(send_start_signaling, kFakeSendStartSignaling);
   EXPECT_EQ(disable_stun_server, kFakeDisableStunServer);
   EXPECT_EQ(check_android_network_info, kFakeCheckAndroidNetworkInfo);
+  EXPECT_EQ(process_android_accessibility_tree, kFakeProcessAndroidAccessibilityTree);
 }
 
 TEST_F(SystemInfoProviderTest, ObserverCalledWhenBacklightChanged) {

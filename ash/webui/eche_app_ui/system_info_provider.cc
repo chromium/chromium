@@ -34,6 +34,7 @@ const char kJsonMeasureLatencyKey[] = "measure_latency";
 const char kJsonSendStartSignalingKey[] = "send_start_signaling";
 const char kJsonDisableStunServerKey[] = "disable_stun_server";
 const char kJsonCheckAndroidNetworkInfoKey[] = "check_android_network_info";
+const char kJsonProcessAndroidAccessibilityTreeKey[] = "process_android_accessibility_tree";
 
 const std::map<ConnectionStateType, const char*> CONNECTION_STATE_TYPE{
     {ConnectionStateType::kOnline, "online"},
@@ -113,6 +114,9 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.Set(
       kJsonCheckAndroidNetworkInfoKey,
       base::FeatureList::IsEnabled(features::kEcheSWACheckAndroidNetworkInfo));
+  json_dictionary.Set(
+      kJsonProcessAndroidAccessibilityTreeKey,
+      base::FeatureList::IsEnabled(features::kEcheSWAProcessAndroidAccessibilityTree));
 
   std::string json_message;
   base::JSONWriter::Write(json_dictionary, &json_message);

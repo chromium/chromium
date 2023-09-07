@@ -29,6 +29,7 @@
  *    sendStartSignaling: boolean,
  *    disable_stun_server: boolean,
  *    check_android_network_info: boolean,
+ *    process_android_accessibility_tree: boolean
  * }}
  */
 /* #export */ let SystemInfo;
@@ -122,4 +123,6 @@
   KEYBOARD_LAYOUT_REQUEST: 'keyboard_layout_request',
   // Message for sending keyboard layout information.
   KEYBOARD_LAYOUT_INFO: 'keyboard_layout_info',
+  // Message for processing Android device accessibility tree
+  PROCESS_ANDROID_ACCESSIBILITY_TREE: 'process_android_accessibility_tree',
 };
