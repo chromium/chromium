@@ -315,7 +315,9 @@ void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
         sources.size());
     std::vector<ThumbnailCapturer::SourceId> source_ids;
     for (size_t i = 0; i < target_size; ++i) {
-      source_ids.push_back(sources[i].id);
+      if (sources[i].id != excluded_window_id_) {
+        source_ids.push_back(sources[i].id);
+      }
     }
     capturer_->SelectSources(source_ids);
   }
@@ -373,27 +375,21 @@ void NativeDesktopMediaList::Worker::RefreshThumbnails(
   // the specific sources that should be captured. This will result in several
   // callbacks to OnRecurrentCaptureResult for each source. If the source list
   // is updated, there will be a call to OnSourceListUpdated() and the selection
-  // of sources may be changed. RefreshThumbnails() is still expected to be
-  // called periodically to keep the list of source_ids in sync with the
-  // captured sources.
+  // of sources may be changed.
 
-  // Ignore if refresh is already in progress and the frame delivery method is
-  // on request. The reason to proceed if the frame delivery method is not on
-  // request is that we need to store the native_ids for later use in
-  // OnRecurrentCaptureResult.
-  if (refresh_thumbnails_state_ &&
+  // Ignore if refresh is already in progress or the frame delivery method is
+  // multiple sources recurrent.
+  if (refresh_thumbnails_state_ ||
       frame_delivery_method_ ==
-          ThumbnailCapturer::FrameDeliveryMethod::kOnRequest) {
+          ThumbnailCapturer::FrameDeliveryMethod::kMultipleSourcesRecurrent) {
     return;
   }
 
   refresh_thumbnails_state_ = std::make_unique<RefreshThumbnailsState>();
   refresh_thumbnails_state_->source_ids = std::move(native_ids);
   refresh_thumbnails_state_->thumbnail_size = thumbnail_size;
-  if (frame_delivery_method_ ==
-      ThumbnailCapturer::FrameDeliveryMethod::kOnRequest) {
-    RefreshNextThumbnail();
-  }
+
+  RefreshNextThumbnail();
 }
 
 // static
@@ -572,23 +568,16 @@ void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
     ThumbnailCapturer::SourceId source_id) {
   // |frame| may be null if capture failed (e.g. because window has been
   // closed).
-  if (!frame || !refresh_thumbnails_state_) {
+  if (!frame) {
     return;
   }
 
-  // Determine id.
-  auto id_it = base::ranges::find_if(
-      refresh_thumbnails_state_->source_ids,
-      [source_id](const DesktopMediaID& i) { return i.id == source_id; });
-  if (id_it == refresh_thumbnails_state_->source_ids.end()) {
-    return;
-  }
-
-  gfx::ImageSkia thumbnail = ScaleDesktopFrame(
-      std::move(frame), refresh_thumbnails_state_->thumbnail_size);
+  gfx::ImageSkia thumbnail =
+      ScaleDesktopFrame(std::move(frame), kDefaultThumbnailSize);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnail,
-                                media_list_, *id_it, thumbnail));
+      FROM_HERE,
+      base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnailForId,
+                     media_list_, source_id, thumbnail));
 }
 
 void NativeDesktopMediaList::Worker::OnSourceListUpdated() {
