@@ -56,10 +56,11 @@ std::string GetActivityLabel(const IntentFilterPtr& filter,
 
 }  // anonymous namespace
 
-AppServiceProxyBase::InnerIconLoader::InnerIconLoader(AppServiceProxyBase* host)
+AppServiceProxyBase::AppInnerIconLoader::AppInnerIconLoader(
+    AppServiceProxyBase* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}
 
-absl::optional<IconKey> AppServiceProxyBase::InnerIconLoader::GetIconKey(
+absl::optional<IconKey> AppServiceProxyBase::AppInnerIconLoader::GetIconKey(
     const std::string& id) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->GetIconKey(id);
@@ -73,7 +74,7 @@ absl::optional<IconKey> AppServiceProxyBase::InnerIconLoader::GetIconKey(
 }
 
 std::unique_ptr<IconLoader::Releaser>
-AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
+AppServiceProxyBase::AppInnerIconLoader::LoadIconFromIconKey(
     const std::string& id,
     const IconKey& icon_key,
     IconType icon_type,
@@ -107,10 +108,10 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
 }
 
 AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
-    : inner_icon_loader_(this),
-      icon_coalescer_(&inner_icon_loader_),
-      outer_icon_loader_(&icon_coalescer_,
-                         IconCache::GarbageCollectionPolicy::kEager),
+    : app_inner_icon_loader_(this),
+      app_icon_coalescer_(&app_inner_icon_loader_),
+      app_outer_icon_loader_(&app_icon_coalescer_,
+                             IconCache::GarbageCollectionPolicy::kEager),
       profile_(profile) {
   preferred_apps_impl_ = std::make_unique<apps::PreferredAppsImpl>(
       this, profile ? profile->GetPath() : base::FilePath());
@@ -208,7 +209,7 @@ void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
 }
 
 absl::optional<IconKey> AppServiceProxyBase::GetIconKey(const std::string& id) {
-  return outer_icon_loader_.GetIconKey(id);
+  return app_outer_icon_loader_.GetIconKey(id);
 }
 
 std::unique_ptr<apps::IconLoader::Releaser>
@@ -218,7 +219,7 @@ AppServiceProxyBase::LoadIconFromIconKey(const std::string& id,
                                          int32_t size_hint_in_dip,
                                          bool allow_placeholder_icon,
                                          LoadIconCallback callback) {
-  return outer_icon_loader_.LoadIconFromIconKey(
+  return app_outer_icon_loader_.LoadIconFromIconKey(
       id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
       std::move(callback));
 }
@@ -454,8 +455,8 @@ void AppServiceProxyBase::OpenNativeSettings(const std::string& app_id) {
 apps::IconLoader* AppServiceProxyBase::OverrideInnerIconLoaderForTesting(
     apps::IconLoader* icon_loader) {
   apps::IconLoader* old =
-      inner_icon_loader_.overriding_icon_loader_for_testing_;
-  inner_icon_loader_.overriding_icon_loader_for_testing_ = icon_loader;
+      app_inner_icon_loader_.overriding_icon_loader_for_testing_;
+  app_inner_icon_loader_.overriding_icon_loader_for_testing_ = icon_loader;
   return old;
 }
 

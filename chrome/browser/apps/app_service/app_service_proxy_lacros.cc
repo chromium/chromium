@@ -47,10 +47,10 @@
 namespace apps {
 
 AppServiceProxyLacros::AppServiceProxyLacros(Profile* profile)
-    : inner_icon_loader_(this),
-      icon_coalescer_(&inner_icon_loader_),
-      outer_icon_loader_(&icon_coalescer_,
-                         apps::IconCache::GarbageCollectionPolicy::kEager),
+    : app_inner_icon_loader_(this),
+      app_icon_coalescer_(&app_inner_icon_loader_),
+      app_outer_icon_loader_(&app_icon_coalescer_,
+                             apps::IconCache::GarbageCollectionPolicy::kEager),
       profile_(profile) {
   if (web_app::IsWebAppsCrosapiEnabled()) {
     auto* service = chromeos::LacrosService::Get();
@@ -114,7 +114,7 @@ AppServiceProxyLacros::WebsiteMetricsService() {
 
 absl::optional<IconKey> AppServiceProxyLacros::GetIconKey(
     const std::string& id) {
-  return outer_icon_loader_.GetIconKey(id);
+  return app_outer_icon_loader_.GetIconKey(id);
 }
 
 std::unique_ptr<apps::IconLoader::Releaser>
@@ -124,7 +124,7 @@ AppServiceProxyLacros::LoadIconFromIconKey(const std::string& id,
                                            int32_t size_hint_in_dip,
                                            bool allow_placeholder_icon,
                                            apps::LoadIconCallback callback) {
-  return outer_icon_loader_.LoadIconFromIconKey(
+  return app_outer_icon_loader_.LoadIconFromIconKey(
       id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
       std::move(callback));
 }
@@ -307,8 +307,8 @@ void AppServiceProxyLacros::OpenNativeSettings(const std::string& app_id) {
 apps::IconLoader* AppServiceProxyLacros::OverrideInnerIconLoaderForTesting(
     apps::IconLoader* icon_loader) {
   apps::IconLoader* old =
-      inner_icon_loader_.overriding_icon_loader_for_testing_;
-  inner_icon_loader_.overriding_icon_loader_for_testing_ = icon_loader;
+      app_inner_icon_loader_.overriding_icon_loader_for_testing_;
+  app_inner_icon_loader_.overriding_icon_loader_for_testing_ = icon_loader;
   return old;
 }
 
@@ -447,11 +447,11 @@ base::WeakPtr<AppServiceProxyLacros> AppServiceProxyLacros::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-AppServiceProxyLacros::InnerIconLoader::InnerIconLoader(
+AppServiceProxyLacros::AppInnerIconLoader::AppInnerIconLoader(
     AppServiceProxyLacros* host)
     : host_(host) {}
 
-absl::optional<IconKey> AppServiceProxyLacros::InnerIconLoader::GetIconKey(
+absl::optional<IconKey> AppServiceProxyLacros::AppInnerIconLoader::GetIconKey(
     const std::string& id) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->GetIconKey(id);
@@ -469,7 +469,7 @@ absl::optional<IconKey> AppServiceProxyLacros::InnerIconLoader::GetIconKey(
 }
 
 std::unique_ptr<IconLoader::Releaser>
-AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
+AppServiceProxyLacros::AppInnerIconLoader::LoadIconFromIconKey(
     const std::string& id,
     const IconKey& icon_key,
     IconType icon_type,

@@ -336,20 +336,20 @@ class AppServiceProxyBase : public KeyedService,
   //           |                                         |  |       or
   //           +-----------------------------------------+  +=c=> Fake
   //
-  // The inner_icon_loader_ field (of type InnerIconLoader) is the "Inner"
-  // component: the one that ultimately talks to the Mojo service.
+  // The app_inner_icon_loader_ field (of type AppInnerIconLoader) is the
+  // "Inner" component: the one that ultimately talks to the Mojo service.
   //
-  // The outer_icon_loader_ field (of type IconCache) is the "Outer" component:
-  // the entry point for calls into the AppServiceProxyBase.
+  // The app_outer_icon_loader_ field (of type IconCache) is the "Outer"
+  // component: the entry point for calls into the AppServiceProxyBase.
   //
   // Note that even if the ASP provides some icon caching, upstream UI clients
   // may want to introduce further icon caching. See the commentary where
   // IconCache::GarbageCollectionPolicy is defined.
   //
   // IPC coalescing would be one of the "MoreDecorators".
-  class InnerIconLoader : public apps::IconLoader {
+  class AppInnerIconLoader : public apps::IconLoader {
    public:
-    explicit InnerIconLoader(AppServiceProxyBase* host);
+    explicit AppInnerIconLoader(AppServiceProxyBase* host);
 
     // apps::IconLoader overrides.
     absl::optional<IconKey> GetIconKey(const std::string& id) override;
@@ -430,9 +430,9 @@ class AppServiceProxyBase : public KeyedService,
   // inner. Fields are listed from inner to outer, the opposite of call order,
   // as each one depends on the previous one, and in the constructor,
   // initialization happens in field order.
-  InnerIconLoader inner_icon_loader_;
-  IconCoalescer icon_coalescer_;
-  IconCache outer_icon_loader_;
+  AppInnerIconLoader app_inner_icon_loader_;
+  IconCoalescer app_icon_coalescer_;
+  IconCache app_outer_icon_loader_;
 
   std::unique_ptr<apps::PreferredAppsImpl> preferred_apps_impl_;
 
