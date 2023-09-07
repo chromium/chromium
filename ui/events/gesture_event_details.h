@@ -154,6 +154,26 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     return data_.swipe.down;
   }
 
+  void set_swipe_left(bool swipe) {
+    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    data_.swipe.left = swipe;
+  }
+
+  void set_swipe_right(bool swipe) {
+    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    data_.swipe.right = swipe;
+  }
+
+  void set_swipe_up(bool swipe) {
+    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    data_.swipe.up = swipe;
+  }
+
+  void set_swipe_down(bool swipe) {
+    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    data_.swipe.down = swipe;
+  }
+
   int tap_count() const {
     DCHECK(type_ == ET_GESTURE_TAP ||
            type_ == ET_GESTURE_TAP_UNCONFIRMED ||

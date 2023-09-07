@@ -32,13 +32,33 @@ struct LocationData {
   gfx.mojom.PointF root_location;
 };
 
+// Data for a "pinch" gesture event.
+struct GesturePinchData {
+  float scale;
+};
+
+// Data for a "swipe" gesture event.
+struct GestureSwipeData {
+  bool left;
+  bool right;
+  bool up;
+  bool down;
+};
+
+union GestureDataDetails {
+  GesturePinchData pinch;
+  GestureSwipeData swipe;
+};
+
 // Data to support gesture events.
 // TODO(crbug.com/767087): Expand GestureEvent and GestureEventDetails support.
 struct GestureData {
   LocationData location;
   GestureDeviceType device_type;
-  // The scale of pinch update events.
-  float scale;
+  // Details depending on the type of the event. Should be consistent with the
+  // `action` field of the `Event` this struct is embedded in. Optional as not
+  // all event types are supported or have extra details.
+  GestureDataDetails? details;
 };
 
 // Data to support scroll events.
