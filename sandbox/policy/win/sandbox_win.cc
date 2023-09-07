@@ -124,6 +124,7 @@ const wchar_t* const kTroublesomeDlls[] = {
     L"npggNT.dll",                 // GameGuard (older).
     L"nphooks.dll",                // Neilsen//NetRatings NetSight.
     L"oawatch.dll",                // Online Armor.
+    L"opls64.dll",                 // PremierOpinion and Relevant-Knowledge.
     L"pastali32.dll",              // PastaLeads.
     L"pavhook.dll",                // Panda Internet Security.
     L"pavlsphook.dll",             // Panda Antivirus.
@@ -133,6 +134,8 @@ const wchar_t* const kTroublesomeDlls[] = {
     L"pctgmhk.dll",                // PC Tools Spyware Doctor.
     L"picrmi32.dll",               // PicRec.
     L"picrmi64.dll",               // PicRec.
+    L"pmls64.dll",                 // PremierOpinion and Relevant-Knowledge.
+    L"prls64.dll",                 // PremierOpinion and Relevant-Knowledge.
     L"prntrack.dll",               // Pharos Systems.
     L"prochook.dll",               // Unknown (GBill-Tools?) (crbug.com/974722).
     L"protector.dll",              // Unknown (suspected malware).
@@ -140,6 +143,8 @@ const wchar_t* const kTroublesomeDlls[] = {
     L"radprlib.dll",               // Radiant Naomi Internet Filter.
     L"rapportnikko.dll",           // Trustware Rapport.
     L"rlhook.dll",                 // Trustware Bufferzone.
+    L"rlls.dll",                   // PremierOpinion and Relevant-Knowledge.
+    L"rlls64.dll",                 // PremierOpinion and Relevant-Knowledge.
     L"rooksdol.dll",               // Trustware Rapport.
     L"rndlpepperbrowserrecordhelper.dll",  // RealPlayer.
     L"rpchromebrowserrecordhelper.dll",    // RealPlayer.
