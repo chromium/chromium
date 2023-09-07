@@ -8,20 +8,39 @@
 
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/url_pattern_set.h"
 
 namespace chromeos {
 
-AppUiObserver::AppUiObserver(content::WebContents* contents,
-                             extensions::URLPatternSet pattern_set,
-                             base::OnceClosure on_app_ui_closed_callback)
+AppUiObserver::AppUiObserver(
+    content::WebContents* contents,
+    extensions::URLPatternSet pattern_set,
+    base::OnceClosure on_app_ui_closed_callback,
+    base::RepeatingCallback<void(bool)> on_app_ui_focus_change_callback)
     : content::WebContentsObserver(contents),
       pattern_set_(std::move(pattern_set)),
-      on_app_ui_closed_callback_(std::move(on_app_ui_closed_callback)) {}
+      on_app_ui_closed_callback_(std::move(on_app_ui_closed_callback)),
+      on_app_ui_focus_change_callback_(
+          std::move(on_app_ui_focus_change_callback)) {}
 
 AppUiObserver::~AppUiObserver() = default;
+
+void AppUiObserver::OnWebContentsFocused(
+    content::RenderWidgetHost* render_widget_host) {
+  if (on_app_ui_focus_change_callback_) {
+    on_app_ui_focus_change_callback_.Run(true);
+  }
+}
+
+void AppUiObserver::OnWebContentsLostFocus(
+    content::RenderWidgetHost* render_widget_host) {
+  if (on_app_ui_focus_change_callback_) {
+    on_app_ui_focus_change_callback_.Run(false);
+  }
+}
 
 void AppUiObserver::PrimaryPageChanged(content::Page& page) {
   if (pattern_set_.MatchesURL(web_contents()->GetLastCommittedURL())) {

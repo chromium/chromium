@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation_crosapi.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
@@ -16,6 +17,23 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {
+
+namespace {
+
+constexpr auto kCategoriesWithFocusRestriction =
+    base::MakeFixedFlatSet<crosapi::mojom::TelemetryEventCategoryEnum>({
+        crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadButton,
+        crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadTouch,
+        crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected,
+        crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch,
+        crosapi::mojom::TelemetryEventCategoryEnum::kStylusConnected,
+        crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenTouch,
+        crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenConnected,
+    });
+
+}  // namespace
+
+class EventObservationCrosapi;
 
 class EventRouter {
  public:
@@ -44,11 +62,28 @@ class EventRouter {
       extensions::ExtensionId extension_id,
       crosapi::mojom::TelemetryEventCategoryEnum category);
 
+  // Prevent the mojom pipe from sending focus-restricted events to all
+  // connected remotes for a certain extension.
+  void RestrictReceiversOfExtension(extensions::ExtensionId extension_id);
+
+  // Allow the mojom pipe from sending focus-restricted events to all
+  // connected remotes for a certain extension.
+  void UnrestrictReceiversOfExtension(extensions::ExtensionId extension_id);
+
   // Checks whether an extension is observing any event.
   bool IsExtensionObserving(extensions::ExtensionId extension_id);
 
   // Checks whether an extension is observing a certain category of event.
   bool IsExtensionObservingForCategory(
+      extensions::ExtensionId extension_id,
+      crosapi::mojom::TelemetryEventCategoryEnum category);
+
+  // Checks whether an extension is blocked from focus-restricted events.
+  bool IsExtensionRestricted(extensions::ExtensionId extension_id);
+
+  // Checks whether an extension is allowed (i.e., not restricted) for a certain
+  // category of event.
+  bool IsExtensionAllowedForCategory(
       extensions::ExtensionId extension_id,
       crosapi::mojom::TelemetryEventCategoryEnum category);
 
@@ -58,6 +93,10 @@ class EventRouter {
                  base::flat_map<crosapi::mojom::TelemetryEventCategoryEnum,
                                 std::unique_ptr<EventObservationCrosapi>>>
       observers_;
+
+  // Extensions in the restricted state (i.e., blocked from focus-restricted
+  // events).
+  base::flat_set<extensions::ExtensionId> restricted_extensions_;
 
   const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 };
