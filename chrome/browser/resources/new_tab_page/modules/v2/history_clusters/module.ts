@@ -7,6 +7,7 @@ import './header_tile.js';
 import './visit_tile.js';
 import './suggest_tile.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '../../../discount.mojom-webui.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -53,6 +54,15 @@ export class HistoryClustersModuleElement extends I18nMixin
         value: null,
       },
 
+      /**
+        The discounts displayed on the visit tiles of this element, could be
+        empty.
+      */
+      discounts: {
+        type: Array,
+        value: [],
+      },
+
       /** The cluster displayed by this element. */
       cluster: {
         type: Object,
@@ -78,6 +88,7 @@ export class HistoryClustersModuleElement extends I18nMixin
   }
 
   cart: Cart|null;
+  discounts: string[];
   cluster: Cluster;
   format: string;
   showRelatedSearches: boolean;
@@ -249,6 +260,23 @@ async function createElement(cluster: Cluster):
     element.cart = cart;
   }
 
+  element.discounts = [];
+  if (loadTimeData.getBoolean('historyClustersModuleDiscountsEnabled')) {
+    const {discounts} = await HistoryClustersProxyImpl.getInstance()
+                            .handler.getDiscountsForCluster(cluster);
+    for (const visit of cluster.visits) {
+      let discountInValue = '';
+      for (const [url, discount] of discounts) {
+        if (url.url === visit.normalizedUrl.url && discount.length > 0) {
+          discountInValue = discount[0].valueInText;
+          visit.normalizedUrl.url = discount[0].annotatedVisitUrl.url;
+        }
+      }
+      element.discounts.push(discountInValue);
+    }
+  } else {
+    element.discounts = Array(cluster.visits.length).fill('');
+  }
   return element;
 }
 

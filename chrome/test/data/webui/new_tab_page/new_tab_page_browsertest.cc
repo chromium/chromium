@@ -254,6 +254,12 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, CartTileV2) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, DiscountV2) {
+  RunTest("new_tab_page/modules/v2/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersV2ModuleTest "
+          "Discounts')");
+}
+
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, Layouts) {
   RunTest(
       "new_tab_page/modules/history_clusters/module_test.js",

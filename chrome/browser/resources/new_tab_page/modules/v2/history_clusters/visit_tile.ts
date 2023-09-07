@@ -65,9 +65,14 @@ export class VisitTileModuleElement extends I18nMixin
         reflectToAttribute: true,
       },
 
+      // The texts for the discount chip.
+      discount: {
+        type: String,
+      },
+
       hasDiscount: {
         type: Boolean,
-        value: false,
+        computed: `computeHasDiscount_(discount)`,
         reflectToAttribute: true,
       },
     };
@@ -76,6 +81,7 @@ export class VisitTileModuleElement extends I18nMixin
   format: string;
   imagesEnabled: boolean;
   visit: URLVisit;
+  discount: string;
   hasDiscount: boolean;
   private imageUrl_: Url|null;
 
@@ -94,6 +100,10 @@ export class VisitTileModuleElement extends I18nMixin
     let domain = (new URL(this.visit.normalizedUrl.url)).hostname;
     domain = domain.replace('www.', '');
     return domain;
+  }
+
+  private computeHasDiscount_(): boolean {
+    return !!this.discount && this.discount.length !== 0;
   }
 
   // Set imageUrl when visit is set/updated.

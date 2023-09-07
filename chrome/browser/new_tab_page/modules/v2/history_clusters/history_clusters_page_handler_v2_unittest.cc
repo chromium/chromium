@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
@@ -26,6 +27,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/commerce/core/mock_shopping_service.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -71,6 +73,8 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
             profile(), ServiceAccessType::EXPLICIT_ACCESS));
     mock_cart_service_ = static_cast<MockCartService*>(
         CartServiceFactory::GetForProfile(profile()));
+    mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
+        commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
     handler_ = std::make_unique<HistoryClustersPageHandlerV2>(
         mojo::PendingReceiver<ntp::history_clusters_v2::mojom::PageHandler>(),
         web_contents_.get());
@@ -94,6 +98,10 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
   MockHistoryService& mock_history_service() { return *mock_history_service_; }
 
   MockCartService& mock_cart_service() { return *mock_cart_service_; }
+
+  commerce::MockShoppingService& mock_shopping_service() {
+    return *mock_shopping_service_;
+  }
 
   HistoryClustersPageHandlerV2& handler() { return *handler_; }
 
@@ -121,9 +129,14 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
                                      -> std::unique_ptr<KeyedService> {
                return std::make_unique<MockCartService>(
                    Profile::FromBrowserContext(context));
+             })},
+            {commerce::ShoppingServiceFactory::GetInstance(),
+             base::BindRepeating([](content::BrowserContext* context) {
+               return commerce::MockShoppingService::Build();
              })}};
   }
 
+  // TODO(crbug.com/1476124): Clean up the dangling pointers here.
   std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<MockHistoryClustersModuleService, DanglingUntriaged>
       mock_history_clusters_module_service_;
@@ -131,6 +144,8 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
       mock_history_clusters_tab_helper_;
   raw_ptr<MockHistoryService, DanglingUntriaged> mock_history_service_;
   raw_ptr<MockCartService, DanglingUntriaged> mock_cart_service_;
+  raw_ptr<commerce::MockShoppingService, DisableDanglingPtrDetection>
+      mock_shopping_service_;
   std::unique_ptr<HistoryClustersPageHandlerV2> handler_;
   ukm::SourceId ukm_source_id_;
 };
@@ -455,6 +470,14 @@ TEST_F(HistoryClustersPageHandlerV2Test, NotLoadCartWithoutFeature) {
   handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
 }
 
+TEST_F(HistoryClustersPageHandlerV2Test, NotLoadDiscountWithoutFeature) {
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  EXPECT_CALL(mock_shopping_service(),
+              GetDiscountInfoForUrls(testing::_, testing::_))
+      .Times(0);
+  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
+}
+
 class HistoryClustersPageHandlerV2CartInQuestTest
     : public HistoryClustersPageHandlerV2Test {
  public:
@@ -473,4 +496,24 @@ TEST_F(HistoryClustersPageHandlerV2CartInQuestTest, LoadCartWithFeature) {
   handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
 }
 
+class HistoryClustersPageHandlerV2DiscountInQuestTest
+    : public HistoryClustersPageHandlerV2Test {
+ public:
+  HistoryClustersPageHandlerV2DiscountInQuestTest() {
+    features_.InitAndEnableFeature(
+        ntp_features::kNtpHistoryClustersModuleDiscounts);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(HistoryClustersPageHandlerV2DiscountInQuestTest,
+       LoadDiscountWithFeature) {
+  auto cluster_mojom = history_clusters::mojom::Cluster::New();
+  EXPECT_CALL(mock_shopping_service(),
+              GetDiscountInfoForUrls(testing::_, testing::_))
+      .Times(1);
+  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
+}
 }  // namespace

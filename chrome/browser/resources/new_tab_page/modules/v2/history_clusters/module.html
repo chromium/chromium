@@ -148,9 +148,9 @@
       show-related-searches$="[[showRelatedSearches]]">
   </history-clusters-header-v2>
   <ntp-history-clusters-visit-tile id="first-tile"
-      visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
-      on-aux-click="onVisitTileClick_" format="[[format]]"
-      show-related-searches$="[[showRelatedSearches]]"
+      visit="[[cluster.visits.1]]" discount="[[discounts.1]]"
+      on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_"
+      format="[[format]]" show-related-searches$="[[showRelatedSearches]]"
       images-enabled="[[imagesEnabled_]]">
   </ntp-history-clusters-visit-tile>
   <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
@@ -162,9 +162,9 @@
   </template>
   <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
     <ntp-history-clusters-visit-tile id="last-tile"
-        visit="[[cluster.visits.2]]" on-click="onVisitTileClick_"
-        on-aux-click="onVisitTileClick_" format="[[format]]"
-        show-related-searches$="[[showRelatedSearches]]"
+        visit="[[cluster.visits.2]]" discount="[[discounts.2]]"
+        on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_"
+        format="[[format]]" show-related-searches$="[[showRelatedSearches]]"
         images-enabled="[[imagesEnabled_]]">
     </ntp-history-clusters-visit-tile>
   </template>
