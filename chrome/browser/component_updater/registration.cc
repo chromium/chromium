@@ -49,7 +49,6 @@
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/component_updater/sw_reporter_installer_win.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/component_updater/third_party_module_list_component_installer_win.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -147,15 +146,6 @@ void RegisterComponentsForUpdate() {
 
     // Clean up any remaining desktop sharing hub state.
     component_updater::DeleteDesktopSharingHub(path);
-
-#if BUILDFLAG(IS_WIN)
-    // TODO(crbug/1407233): Remove this call once it has rolled out for a few
-    // milestones
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::GetDeleteFileCallback(
-            path.Append(FILE_PATH_LITERAL("SwReporter"))));
-#endif  // BUILDFLAG(IS_WIN)
   }
   RegisterSSLErrorAssistantComponent(cus);
 

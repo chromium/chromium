@@ -5819,8 +5819,6 @@ static_library("browser") {
       "chrome_browser_main_win.cc",
       "chrome_browser_main_win.h",
       "component_updater/recovery_improved_component_installer_win.cc",
-      "component_updater/sw_reporter_installer_win.cc",
-      "component_updater/sw_reporter_installer_win.h",
       "device_reauth/win/authenticator_win.cc",
       "device_reauth/win/authenticator_win.h",
       "device_reauth/win/device_authenticator_win.cc",
@@ -5982,8 +5980,6 @@ static_library("browser") {
       "//base/win:base_win_buildflags",
       "//chrome/app:chrome_exe_main_exports",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//chrome/browser/safe_browsing/chrome_cleaner",
-      "//chrome/browser/safe_browsing/chrome_cleaner:public",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//chrome/browser/win/conflicts:module_info",
       "//chrome/chrome_elf:constants",
@@ -5997,7 +5993,6 @@ static_library("browser") {
       "//chrome/notification_helper:constants",
       "//chrome/services/util_win/public/mojom",
       "//chrome/updater/app/server/win:updater_legacy_idl_idl",
-      "//components/chrome_cleaner/public/constants",
       "//components/crash/core/app",
       "//components/crash/core/app:crash_export_thunk_include",
       "//sandbox/win:sandbox",
@@ -6011,8 +6006,6 @@ static_library("browser") {
       "//ui/color:accent_color_observer",
       "//ui/display/util:util",
     ]
-    allow_circular_includes_from +=
-        [ "//chrome/browser/safe_browsing/chrome_cleaner" ]
 
     all_dependent_configs = [ ":browser_win_linker_flags" ]
 

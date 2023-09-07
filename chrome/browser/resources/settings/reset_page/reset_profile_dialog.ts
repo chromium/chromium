@@ -137,13 +137,8 @@ export class SettingsResetProfileDialogElement extends
         this.showDialog_();
       });
     } else {
-      // For the non-triggered reset dialog, a '#cct' hash indicates that the
-      // reset request came from the Chrome Cleanup Tool by launching Chrome
-      // with the startup URL chrome://settings/resetProfileSettings#cct.
-      const origin = window.location.hash.slice(1).toLowerCase() === 'cct' ?
-          'cct' :
-          Router.getInstance().getQueryParameters().get('origin');
-      this.resetRequestOrigin_ = origin || '';
+      this.resetRequestOrigin_ =
+          Router.getInstance().getQueryParameters().get('origin') || '';
       this.showDialog_();
     }
   }

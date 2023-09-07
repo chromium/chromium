@@ -140,7 +140,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 #include "device/fido/win/webauthn_api.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -456,7 +456,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/component_updater/sw_reporter_installer_win.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 #include "chrome/browser/media/cdm_pref_service_helper.h"
@@ -467,10 +466,7 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
-#include "chrome/browser/safe_browsing/chrome_cleaner/settings_resetter_win.h"
-#include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_prefs_manager.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "components/os_crypt/sync/os_crypt.h"
@@ -1504,8 +1500,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
                                 true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kNativeWindowOcclusionEnabled, true);
-  component_updater::RegisterPrefsForSwReporter(registry);
-  safe_browsing::RegisterChromeCleanerScanCompletionTimePref(registry);
   MediaFoundationServiceMonitor::RegisterPrefs(registry);
   os_crypt::RegisterLocalStatePrefs(registry);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1852,12 +1846,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(IS_WIN)
   CdmPrefServiceHelper::RegisterProfilePrefs(registry);
-  component_updater::RegisterProfilePrefsForSwReporter(registry);
   FontPrewarmerTabHelper::RegisterProfilePrefs(registry);
   NetworkProfileBubble::RegisterProfilePrefs(registry);
-  safe_browsing::SettingsResetPromptPrefsManager::RegisterProfilePrefs(
-      registry);
-  safe_browsing::PostCleanupSettingsResetter::RegisterProfilePrefs(registry);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

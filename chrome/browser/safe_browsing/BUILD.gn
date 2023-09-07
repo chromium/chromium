@@ -68,35 +68,6 @@ static_library("safe_browsing") {
     "//services/preferences/public/cpp",
   ]
 
-  if (enable_extensions) {
-    sources += [
-      "settings_reset_prompt/default_settings_fetcher.cc",
-      "settings_reset_prompt/default_settings_fetcher.h",
-      "settings_reset_prompt/settings_reset_prompt_config.cc",
-      "settings_reset_prompt/settings_reset_prompt_config.h",
-      "settings_reset_prompt/settings_reset_prompt_controller.cc",
-      "settings_reset_prompt/settings_reset_prompt_controller.h",
-      "settings_reset_prompt/settings_reset_prompt_model.cc",
-      "settings_reset_prompt/settings_reset_prompt_model.h",
-      "settings_reset_prompt/settings_reset_prompt_prefs_manager.cc",
-      "settings_reset_prompt/settings_reset_prompt_prefs_manager.h",
-    ]
-    if (is_win) {
-      sources += [
-        "settings_reset_prompt/settings_reset_prompt_util_win.cc",
-        "settings_reset_prompt/settings_reset_prompt_util_win.h",
-      ]
-    }
-    deps += [
-      # TODO(crbug.com/1216213): Adding ":ntp_background_proto" is a band-aid
-      # fix, figure out a better solution.
-      "//chrome/browser:ntp_background_proto",
-      "//chrome/browser/profiles:profile",
-      "//components/paint_preview/buildflags",
-      "//extensions/browser",
-    ]
-  }
-
   if (safe_browsing_mode != 0) {
     # "Safe Browsing Basic" files used for safe browsing in full mode
     # (safe_browsing=1) and mobile (=2)
@@ -421,6 +392,7 @@ static_library("safe_browsing") {
         "//components/security_interstitials/core:unsafe_resource",
         "//components/sync",
         "//content/public/browser",
+        "//extensions/browser",
         "//net",
         "//services/network/public/cpp:cpp",
       ]

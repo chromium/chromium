@@ -54,9 +54,6 @@
 #include "chrome/browser/os_crypt/app_bound_encryption_metrics_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
-#include "chrome/browser/safe_browsing/chrome_cleaner/settings_resetter_win.h"
-#include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_config.h"
-#include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_util_win.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/ui/accessibility_util.h"
 #include "chrome/browser/ui/simple_message_box.h"
@@ -325,15 +322,6 @@ void ShowCloseBrowserFirstMessageBox() {
       l10n_util::GetStringUTF16(IDS_UNINSTALL_CLOSE_APP));
 }
 
-void MaybePostSettingsResetPrompt() {
-  if (base::FeatureList::IsEnabled(safe_browsing::kSettingsResetPrompt)) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(
-                       safe_browsing::MaybeShowSettingsResetPromptWithDelay));
-  }
-}
-
 // Updates all Progressive Web App launchers in |profile_dir| to the latest
 // version.
 void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
@@ -556,24 +544,6 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   DCHECK(__pfnDliFailureHook2);
 
   InitializeChromeElf();
-
-  // Reset settings for the current profile if it's tagged to be reset after a
-  // complete run of the Chrome Cleanup tool. If post-cleanup settings reset is
-  // enabled, we delay checks for settings reset prompt until the scheduled
-  // reset is finished.
-  if (safe_browsing::PostCleanupSettingsResetter::IsEnabled() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAppId)) {
-    // Using last opened profiles, because we want to find reset the profile
-    // that was open in the last Chrome run, which may not be open yet in
-    // the current run.
-    safe_browsing::PostCleanupSettingsResetter().ResetTaggedProfiles(
-        g_browser_process->profile_manager()->GetLastOpenedProfiles(),
-        base::BindOnce(&MaybePostSettingsResetPrompt),
-        std::make_unique<
-            safe_browsing::PostCleanupSettingsResetter::Delegate>());
-  } else {
-    MaybePostSettingsResetPrompt();
-  }
 
   // Query feature first, to include full population in field trial.
   if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics) &&
