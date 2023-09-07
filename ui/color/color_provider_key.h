@@ -47,6 +47,14 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     // Native system renders the browser frame. Currently GTK only.
     kNative,
   };
+  // The style in which Chrome-rendered frames are painted. This only applies
+  // for the kChromium frame type.
+  enum class FrameStyle {
+    // Paints the default Chrome frame.
+    kDefault,
+    // Paints an emulated system style frame.
+    kSystem,
+  };
   // The type of color palette that is generated.
   enum class SchemeVariant {
     kTonalSpot,
@@ -105,12 +113,15 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
 
   ColorProviderKey();  // For test convenience.
 
+  // TODO(tluk): Switch to using named initializers so clients can set only the
+  // necessary parameters on the key.
   ColorProviderKey(
       ColorMode color_mode,
       ContrastMode contrast_mode,
       ForcedColors forced_colors,
       SystemTheme system_theme,
       FrameType frame_type,
+      FrameStyle = FrameStyle::kDefault,
       UserColorSource user_color_source = UserColorSource::kAccent,
       absl::optional<SkColor> user_color = absl::nullopt,
       absl::optional<SchemeVariant> scheme_variant = absl::nullopt,
@@ -127,6 +138,7 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
   ElevationMode elevation_mode;
   SystemTheme system_theme;
   FrameType frame_type;
+  FrameStyle frame_style;
   UserColorSource user_color_source;
   absl::optional<SkColor> user_color;
   absl::optional<SchemeVariant> scheme_variant;
@@ -140,12 +152,13 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     auto* lhs_app_controller = app_controller.get();
     auto* rhs_app_controller = other.app_controller.get();
     return std::tie(color_mode, contrast_mode, forced_colors, elevation_mode,
-                    system_theme, frame_type, user_color_source, user_color,
-                    scheme_variant, custom_theme, lhs_app_controller) <
+                    system_theme, frame_type, frame_style, user_color_source,
+                    user_color, scheme_variant, custom_theme,
+                    lhs_app_controller) <
            std::tie(other.color_mode, other.contrast_mode, other.forced_colors,
                     other.elevation_mode, other.system_theme, other.frame_type,
-                    other.user_color_source, other.user_color,
-                    other.scheme_variant, other.custom_theme,
+                    other.frame_style, other.user_color_source,
+                    other.user_color, other.scheme_variant, other.custom_theme,
                     rhs_app_controller);
   }
 };

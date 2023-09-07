@@ -60,6 +60,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
       system_theme_,
       use_custom_frame ? ui::ColorProviderKey::FrameType::kChromium
                        : ui::ColorProviderKey::FrameType::kNative,
+      ui::ColorProviderKey::FrameStyle::kDefault,
       should_use_system_accent_color_
           ? ui::ColorProviderKey::UserColorSource::kAccent
           : ui::ColorProviderKey::UserColorSource::kBaseline,

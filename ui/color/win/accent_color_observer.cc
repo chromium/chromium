@@ -36,6 +36,18 @@ base::CallbackListSubscription AccentColorObserver::Subscribe(
   return callbacks_.Add(std::move(callback));
 }
 
+void AccentColorObserver::SetAccentColorForTesting(
+    absl::optional<SkColor> accent_color) {
+  accent_color_ = accent_color;
+  callbacks_.Notify();
+}
+
+void AccentColorObserver::SetUseDwmFrameColorForTesting(
+    bool use_dwm_frame_color) {
+  use_dwm_frame_color_ = use_dwm_frame_color;
+  callbacks_.Notify();
+}
+
 void AccentColorObserver::OnDwmKeyUpdated() {
   accent_border_color_ = absl::nullopt;
   DWORD colorization_color, colorization_color_balance;
