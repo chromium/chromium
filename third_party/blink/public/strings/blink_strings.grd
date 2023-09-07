@@ -510,6 +510,10 @@ below:
         show closed captions menu
       </message>
 
+      <message name="IDS_AX_MEDIA_SHOW_AUDIO_DESCRIPTIONS_MENU_BUTTON" desc="Accessibility label for show audio descriptions menu button">
+        show audio descriptions menu
+      </message>
+
       <message name="IDS_AX_MEDIA_SHOW_PLAYBACK_SPEED_MENU_BUTTON" desc="Accessibility label for show playback speed menu button">
         show playback speed menu
       </message>
