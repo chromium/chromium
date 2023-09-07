@@ -136,7 +136,7 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
 
   if (!WebFormElementToFormData(web_form, WebFormControlElement(),
                                 field_data_manager, form_util::EXTRACT_VALUE,
-                                form_data.get(), nullptr /* FormFieldData */)) {
+                                form_data.get(), /*field=*/nullptr)) {
     return nullptr;
   }
   form_data->username_predictions =
@@ -166,7 +166,7 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
   if (!UnownedFormElementsToFormData(control_elements, iframe_elements, nullptr,
                                      frame.GetDocument(), field_data_manager,
                                      form_util::EXTRACT_VALUE, form_data.get(),
-                                     nullptr /* FormFieldData */)) {
+                                     /*field=*/nullptr)) {
     return nullptr;
   }
 

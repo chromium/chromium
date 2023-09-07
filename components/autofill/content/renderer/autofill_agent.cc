@@ -955,7 +955,8 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
 
   return form_util::UnownedFormElementsToFormData(
       control_elements, iframe_elements, nullptr, document,
-      field_data_manager_.get(), extract_mask, output, nullptr);
+      field_data_manager_.get(), extract_mask, output,
+      /*field=*/nullptr);
 }
 
 void AutofillAgent::ShowSuggestions(

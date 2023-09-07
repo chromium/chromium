@@ -54,6 +54,17 @@ enum FieldPropertiesFlags : uint32_t {
   kAutofilled = kAutofilledOnUserTrigger | kAutofilledOnPageLoad,
 };
 
+// Autofill supports assigning <label for=x> tags to inputs if x is id/name,
+// or the id/name of a shadow host element containing the input.
+// This enum is used to track how often each case occurs in practice.
+enum class AssignedLabelSource {
+  kId = 0,
+  kName = 1,
+  kShadowHostId = 2,
+  kShadowHostName = 3,
+  kMaxValue = kShadowHostName,
+};
+
 // FieldPropertiesMask is used to contain combinations of FieldPropertiesFlags
 // values.
 using FieldPropertiesMask = std::underlying_type_t<FieldPropertiesFlags>;

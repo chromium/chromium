@@ -2198,7 +2198,7 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
   FormData form_data;
   if (WebFormElementToFormData(cleared_form, WebFormControlElement(),
                                field_data_manager_.get(), extract_mask,
-                               &form_data, nullptr)) {
+                               &form_data, /*field=*/nullptr)) {
     GetPasswordManagerDriver().PasswordFormCleared(form_data);
   }
 }

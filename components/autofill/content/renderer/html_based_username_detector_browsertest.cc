@@ -66,7 +66,7 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
     FormData form_data;
     EXPECT_TRUE(form_util::WebFormElementToFormData(
         form, WebFormControlElement(), nullptr, form_util::EXTRACT_NONE,
-        &form_data, nullptr));
+        &form_data, /*field=*/nullptr));
 
     return form_data;
   }

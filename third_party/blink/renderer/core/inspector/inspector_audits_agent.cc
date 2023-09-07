@@ -225,7 +225,6 @@ protocol::Response InspectorAuditsAgent::checkFormsIssues(
               protocol::Audits::GenericIssueDetails::create()
                   .setErrorType(AuditsIssue::GenericIssueErrorTypeToProtocol(
                       form_issue.issue_type))
-                  .setFrameId(form_issue.frame_id)
                   .setViolatingNodeAttribute(
                       form_issue.violating_node_attribute)
                   .setViolatingNodeId(form_issue.violating_node)

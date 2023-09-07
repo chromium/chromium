@@ -47,20 +47,15 @@ class WebElement;
 class WebAutofillClient {
  public:
   struct FormIssue {
-    FormIssue(blink::WebString frame,
-              blink::mojom::GenericIssueErrorType type,
+    FormIssue(blink::mojom::GenericIssueErrorType type,
               int node,
               blink::WebString attribute)
-        : frame_id(frame),
-          issue_type(type),
+        : issue_type(type),
           violating_node(node),
           violating_node_attribute(attribute) {}
-    FormIssue(blink::WebString frame,
-              blink::mojom::GenericIssueErrorType type,
-              int node)
-        : frame_id(frame), issue_type(type), violating_node(node) {}
+    FormIssue(blink::mojom::GenericIssueErrorType type, int node)
+        : issue_type(type), violating_node(node) {}
 
-    blink::WebString frame_id;
     blink::mojom::GenericIssueErrorType issue_type;
     int violating_node;
     blink::WebString violating_node_attribute;

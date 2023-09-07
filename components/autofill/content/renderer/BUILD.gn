@@ -6,6 +6,8 @@ static_library("renderer") {
   sources = [
     "autofill_agent.cc",
     "autofill_agent.h",
+    "form_autofill_issues.cc",
+    "form_autofill_issues.h",
     "form_autofill_util.cc",
     "form_autofill_util.h",
     "form_cache.cc",

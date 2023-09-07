@@ -35,6 +35,7 @@ class WebFormElement;
 class WebInputElement;
 class WebLocalFrame;
 class WebNode;
+class WebString;
 }  // namespace blink
 
 namespace content {
@@ -287,6 +288,12 @@ GetUnownedAutofillableFormFieldElements(const blink::WebDocument& document);
 std::vector<blink::WebElement> GetUnownedIframeElements(
     const blink::WebDocument& document);
 
+// Returns a list of elements whose id matches one of the ids found in
+// `id_list`.
+std::vector<blink::WebElement> GetWebElementsFromIdList(
+    const blink::WebDocument& document,
+    const blink::WebString& id_list);
+
 // Returns false iff the extraction fails because the number of fields exceeds
 // |kMaxExtractableFields|, or |field| and |element| are not nullptr but
 // |element| is not among |control_elements|.
@@ -393,6 +400,8 @@ bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
 blink::WebFormElement FindFormByUniqueRendererId(
     const blink::WebDocument& doc,
     FormRendererId form_renderer_id);
+
+std::string GetAutocompleteAttribute(const blink::WebElement& element);
 
 // Returns the form control element by unique renderer id. It searches the
 // |form_to_be_searched| if specified, otherwise the whole document. Returns the
