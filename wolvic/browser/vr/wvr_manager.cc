@@ -157,16 +157,29 @@ device::mojom::XRViewPtr CreateView(
   return view;
 }
 
+gfx::Size GetSuggestedFrameSize(WvrApi* wvr_api) {
+  // Make sure we're fetching an up to date state.
+  wvr_api->PullSystemState();
+
+  const mozilla::gfx::VRDisplayState& ds =
+      wvr_api->get_system_state().displayState;
+
+  // We compute the suggested frame size based on eye resolution.
+  gfx::Size frame_size(ds.eyeResolution.width * 2, ds.eyeResolution.height);
+  return frame_size;
+}
+
 std::vector<device::mojom::XRViewPtr> CreateViews(
-    const mozilla::gfx::VRDisplayState& display_state,
-    const mozilla::gfx::VRPose* pose,
-    gfx::Size maximum_size) {
+    WvrApi* wvr_api, const mozilla::gfx::VRPose* pose) {
+  const mozilla::gfx::VRDisplayState& display_state =
+    wvr_api->get_system_state().displayState;
+  gfx::Size suggested_size = GetSuggestedFrameSize(wvr_api);
+
   std::vector<device::mojom::XRViewPtr> views(2);
   views[0] = CreateView(mozilla::gfx::VRDisplayState::Eye::Eye_Left,
-                        display_state, maximum_size, pose);
+                        display_state, suggested_size, pose);
   views[1] = CreateView(mozilla::gfx::VRDisplayState::Eye::Eye_Right,
-                        display_state, maximum_size, pose);
-
+                        display_state, suggested_size, pose);
   return views;
 }
 
@@ -216,18 +229,6 @@ bool WvrManager::IsOnWvrThread() const {
   return task_runner_->BelongsToCurrentThread();
 }
 
-gfx::Size WvrManager::GetSuggestedFrameSize() const {
-  // Make sure we're fetching an up to date state.
-  wvr_api_->PullSystemState();
-
-  const mozilla::gfx::VRDisplayState& ds =
-      wvr_api_->get_system_state().displayState;
-
-  // We compute the suggested frame size based on eye resolution.
-  gfx::Size frame_size(ds.eyeResolution.width * 2, ds.eyeResolution.height);
-  return frame_size;
-}
-
 void WvrManager::CreateOrResizeWebXrSurface(const gfx::Size& size) {
   DCHECK(IsOnWvrThread());
   if (!graphics_->CreateOrResizeWebXrSurface(
@@ -268,8 +269,7 @@ void WvrManager::ConnectPresentingService(
   ClosePresentationBindings();
 
   std::vector<device::mojom::XRViewPtr> views =
-      CreateViews(wvr_api_->get_system_state().displayState, nullptr /*pose*/,
-                  graphics_->get_screen_size());
+      CreateViews(wvr_api_, nullptr /*pose*/);
   int width = 0;
   int height = 0;
   for (const auto& view : views) {
@@ -616,10 +616,7 @@ void WvrManager::WebXrTryStartAnimatingFrame() {
   mozilla::gfx::VRSystemState system_state = wvr_api_->get_system_state();
   const mozilla::gfx::VRPose* pose = &system_state.sensorState.pose;
 
-  frame_data->views =
-      CreateViews(wvr_api_->get_system_state().displayState,
-                  pose,
-                  graphics_->webxr_surface_size());
+  frame_data->views = CreateViews(wvr_api_, pose);
 
   frame_data->mojo_space_reset = true;
 

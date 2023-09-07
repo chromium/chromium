@@ -35,8 +35,7 @@ class WvrGraphicsDelegate {
     webxr_ = webxr;
   }
 
-  void InitializeGl(const gfx::Size& frame_size,
-                    base::OnceClosure callback);
+  void InitializeGl(base::OnceClosure callback);
 
   base::WeakPtr<WvrGraphicsDelegate> GetWeakPtr();
 
@@ -47,7 +46,6 @@ class WvrGraphicsDelegate {
   gl::SurfaceTexture* webxr_surface_texture() {
     return webxr_surface_texture_.get();
   }
-  gfx::Size get_screen_size() const { return screen_size_; }
   gfx::Size webxr_surface_size() const { return webxr_surface_size_; }
   int32_t webxr_texture_handle() const { return texture_handle_id_; }
 
@@ -65,7 +63,6 @@ class WvrGraphicsDelegate {
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::SurfaceTexture> webxr_surface_texture_;
 
-  gfx::Size screen_size_;
   gfx::Size webxr_surface_size_;
 
   base::WeakPtrFactory<WvrGraphicsDelegate> weak_ptr_factory_{this};
