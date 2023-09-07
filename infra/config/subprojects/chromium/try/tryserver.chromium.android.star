@@ -228,7 +228,7 @@ try_.builder(
         "$build/binary_size": {
             "analyze_targets": [
                 "//chrome/android:monochrome_public_minimal_apks",
-                "//chrome/android:trichrome_minimal_apks",
+                "//chrome/android:trichrome_32_minimal_apks",
                 "//chrome/android:validate_expectations",
                 "//tools/binary_size:binary_size_trybot_py",
             ],
