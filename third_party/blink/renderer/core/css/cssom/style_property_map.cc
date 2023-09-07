@@ -81,6 +81,20 @@ const CSSValue* StyleValueToCSSValue(
       }
       break;
     }
+    case CSSPropertyID::kClipPath: {
+      // level 1 only accepts single keywords
+      const auto* value = style_value.ToCSSValue();
+      // only 'none' is stored as an identifier, the other keywords are
+      // wrapped in a list.
+      auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+      if (identifier_value && !value->IsCSSWideKeyword() &&
+          identifier_value->GetValueID() != CSSValueID::kNone) {
+        CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+        list->Append(*style_value.ToCSSValue());
+        return list;
+      }
+      break;
+    }
     case CSSPropertyID::kContain:
     case CSSPropertyID::kContainerType: {
       // level 1 only accepts single values, which are stored internally

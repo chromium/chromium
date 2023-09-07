@@ -5,13 +5,13 @@ PASS Can set 'clip-path' to CSS-wide keywords: unset
 PASS Can set 'clip-path' to CSS-wide keywords: revert
 PASS Can set 'clip-path' to var() references:  var(--A)
 PASS Can set 'clip-path' to the 'none' keyword: none
-FAIL Can set 'clip-path' to the 'fill-box' keyword: fill-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'stroke-box' keyword: stroke-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'view-box' keyword: view-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'margin-box' keyword: margin-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'border-box' keyword: border-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'padding-box' keyword: padding-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'content-box' keyword: content-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'clip-path' to the 'fill-box' keyword: fill-box
+PASS Can set 'clip-path' to the 'stroke-box' keyword: stroke-box
+PASS Can set 'clip-path' to the 'view-box' keyword: view-box
+PASS Can set 'clip-path' to the 'margin-box' keyword: margin-box
+PASS Can set 'clip-path' to the 'border-box' keyword: border-box
+PASS Can set 'clip-path' to the 'padding-box' keyword: padding-box
+PASS Can set 'clip-path' to the 'content-box' keyword: content-box
 PASS Setting 'clip-path' to a length: 0px throws TypeError
 PASS Setting 'clip-path' to a length: -3.14em throws TypeError
 PASS Setting 'clip-path' to a length: 3.14cm throws TypeError

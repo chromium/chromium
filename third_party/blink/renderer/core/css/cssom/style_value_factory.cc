@@ -123,6 +123,19 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       return MakeGarbageCollected<CSSUnsupportedStyleValue>(
           CSSPropertyName(property_id), value);
     }
+    case CSSPropertyID::kClipPath: {
+      if (value.IsIdentifierValue()) {
+        return CreateStyleValue(value);
+      }
+
+      if (const auto* value_list = DynamicTo<CSSValueList>(&value)) {
+        // Only single keywords are supported in level 1.
+        if (value_list->length() == 1U) {
+          return CreateStyleValue(value_list->Item(0));
+        }
+      }
+      return nullptr;
+    }
     case CSSPropertyID::kContain:
     case CSSPropertyID::kContainerType: {
       if (value.IsIdentifierValue()) {

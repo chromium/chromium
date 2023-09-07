@@ -2452,7 +2452,7 @@
       type_name: "ClipPathOperation",
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertClipPath",
-      keywords: ["none"],
+      keywords: ["border-box", "padding-box", "content-box", "margin-box", "fill-box", "stroke-box", "view-box", "none"],
       typedom_types: ["Keyword"],
     },
     {
