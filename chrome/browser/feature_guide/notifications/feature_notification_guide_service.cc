@@ -13,10 +13,6 @@ BASE_FEATURE(kFeatureNotificationGuide,
              "FeatureNotificationGuide",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSegmentationModelLowEngagedUsers,
-             "SegmentationModelLowEngagedUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSkipCheckForLowEngagedUsers,
              "FeatureNotificationGuideSkipCheckForLowEngagedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);

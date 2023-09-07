@@ -102,7 +102,9 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {feature_guide::features::kSegmentationModelLowEngagedUsers}, {});
+        {segmentation_platform::features::
+             kSegmentationPlatformLowEngagementFeature},
+        {});
     config_.enabled_features.emplace_back(FeatureType::kIncognitoTab);
     config_.enabled_features.emplace_back(FeatureType::kVoiceSearch);
     config_.notification_deliver_time_delta = base::Days(7);

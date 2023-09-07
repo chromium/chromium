@@ -23,6 +23,7 @@ source_set("public") {
     "//base",
     "//chrome/browser/notifications/scheduler/public",
     "//components/keyed_service/core",
+    "//components/segmentation_platform/public",
   ]
 }
 

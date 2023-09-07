@@ -107,7 +107,8 @@ void FeatureNotificationGuideServiceImpl::CheckForLowEnagedUser() {
   }
 
   if (!base::FeatureList::IsEnabled(
-          feature_guide::features::kSegmentationModelLowEngagedUsers)) {
+          segmentation_platform::features::
+              kSegmentationPlatformLowEngagementFeature)) {
     is_low_engaged_user_ = false;
     std::move(closure).Run();
     return;
