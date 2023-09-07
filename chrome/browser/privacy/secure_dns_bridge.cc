@@ -146,16 +146,6 @@ static jint JNI_SecureDnsBridge_GetManagementMode(JNIEnv* env) {
           .management_mode());
 }
 
-static void JNI_SecureDnsBridge_UpdateDropdownHistograms(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& old_config,
-    const JavaParamRef<jstring>& new_config) {
-  secure_dns::UpdateDropdownHistograms(
-      GetFilteredProviders(),
-      base::android::ConvertJavaStringToUTF8(old_config),
-      base::android::ConvertJavaStringToUTF8(new_config));
-}
-
 static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,
                                                           jboolean valid) {
   secure_dns::UpdateValidationHistogram(valid);

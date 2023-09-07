@@ -27,7 +27,6 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
       'getSecureDnsSetting',
       'isValidConfig',
       'probeConfig',
-      'recordUserDropdownInteraction',
     ]);
 
     this.metricsReporting = {
@@ -111,10 +110,5 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
     const result = this.probeConfigResults_[entry];
     assertFalse(result === undefined);
     return Promise.resolve(result || false);
-  }
-
-  recordUserDropdownInteraction(oldSelection: string, newSelection: string) {
-    this.methodCalled(
-        'recordUserDropdownInteraction', [oldSelection, newSelection]);
   }
 }

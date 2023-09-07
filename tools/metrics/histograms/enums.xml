@@ -29299,20 +29299,6 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Same Site Different Scheme Script"/>
 </enum>
 
-<enum name="DohProviderId">
-  <int value="0" label="CUSTOM"/>
-  <int value="1" label="CLEANBROWSING_FAMILY"/>
-  <int value="2" label="CLOUDFLARE"/>
-  <int value="3" label="GOOGLE"/>
-  <int value="4" label="IIJ"/>
-  <int value="5" label="QUAD9_SECURE"/>
-  <int value="6" label="DNS_SB"/>
-  <int value="7" label="CZ_NIC"/>
-  <int value="8" label="NEXT_DNS"/>
-  <int value="9" label="OPEN_DNS"/>
-  <int value="10" label="ALEK_BERG_NL"/>
-</enum>
-
 <enum name="DohServerAutoupgradeStatus">
   <int value="0" label="SuccessWithNoPriorFailures"/>
   <int value="1" label="SuccessWithSomePriorFailures"/>

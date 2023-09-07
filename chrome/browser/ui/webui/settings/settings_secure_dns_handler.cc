@@ -85,12 +85,6 @@ void SecureDnsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "probeConfig", base::BindRepeating(&SecureDnsHandler::HandleProbeConfig,
                                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "recordUserDropdownInteraction",
-      base::BindRepeating(
-          &SecureDnsHandler::HandleRecordUserDropdownInteraction,
-          base::Unretained(this)));
 }
 
 void SecureDnsHandler::OnJavascriptAllowed() {
@@ -222,15 +216,6 @@ void SecureDnsHandler::HandleProbeConfig(const base::Value::List& args) {
       secure_dns::MakeProbeRunner(std::move(*parsed), network_context_getter_);
   runner_->RunProbe(base::BindOnce(&SecureDnsHandler::OnProbeComplete,
                                    base::Unretained(this)));
-}
-
-void SecureDnsHandler::HandleRecordUserDropdownInteraction(
-    const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
-  const std::string& old_provider = args[0].GetString();
-  const std::string& new_provider = args[1].GetString();
-
-  secure_dns::UpdateDropdownHistograms(providers_, old_provider, new_provider);
 }
 
 void SecureDnsHandler::OnProbeComplete() {

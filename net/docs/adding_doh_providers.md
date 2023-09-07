@@ -52,10 +52,6 @@ Chrome team on approval of the request.
         the feature is disabled, either by default or remotely by an experiment
         config, the provider is not eligible for autoupgrade and it will not be
         listed in the "Secure DNS" settings.
-    *   `provider_id_for_histogram` is a
-        [`DohProviderIdForHistogram`](/net/dns/public/doh_provider_entry.h) enum
-        value used for histograms data regarding UI interaction. It is only
-        needed for providers that will be listed in the "Secure DNS" settings.
     *   `ip_addresses` is the list of Classic DNS server IP addresses that are
         eligible for upgrade to the provider\'s DoH server. The addresses do not
         need to be unique within the overall provider list. If multiple DoH
@@ -104,13 +100,6 @@ Chrome team on approval of the request.
         only for the couple most-used providers in the list, newly-entered
         providers with some risk of issues, or providers with a history of
         issues requiring that provider to be disabled for auto upgrade.
-1.  Update histogram entries as necessary.
-    *   If new providers were added, new `provider` strings must be added to the
-        [`DohProviderId`](/tools/metrics/histograms/metadata/histogram_suffixes_list.xml)
-        histogram suffix.
-    *   If new enum values were added for `provider_id_for_histogram`, the value
-        must also be added to the
-        [`DohProviderId`](/tools/metrics/histograms/enums.xml) histogram enum.
 1.  Manually test the new addition/modification.
     *** promo
     If running tests on enterprise-maintained machines, DoH may be disabled,

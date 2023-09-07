@@ -1525,13 +1525,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="DevTools.Launch"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DnsDropdownSelectionEvent" separator=".">
-  <suffix name="Ignored" label=""/>
-  <suffix name="Selected" label=""/>
-  <suffix name="Unselected" label=""/>
-  <affected-histogram name="Net.DNS.UI.DropdownSelectionEvent"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="DnsImpact2" separator="_">
   <suffix name="disabled_prefetch"
       label="DNS pre-resolving is disabled in these clients"/>

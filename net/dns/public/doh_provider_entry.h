@@ -19,24 +19,6 @@
 
 namespace net {
 
-// Provider ids for usage in histograms. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "DohProviderId" in src/tools/metrics/histograms/enums.xml.
-enum class DohProviderIdForHistogram {
-  kCustom = 0,
-  kCleanBrowsingFamily = 1,
-  kCloudflare = 2,
-  kGoogle = 3,
-  kIij = 4,
-  kQuad9Secure = 5,
-  kDnsSb = 6,
-  kCznic = 7,
-  kNextDns = 8,
-  kOpenDns = 9,
-  kAlekBergNl = 10,
-  kMaxValue = kAlekBergNl,
-};
-
 // Represents insecure DNS, DoT, and DoH services run by the same provider.
 // These entries are used to support upgrade from insecure DNS or DoT services
 // to associated DoH services in automatic mode and to populate the dropdown
@@ -69,9 +51,6 @@ struct NET_EXPORT DohProviderEntry {
   // This field is not a raw_ref<> because it was filtered by the rewriter for:
   // #global-scope
   RAW_PTR_EXCLUSION const base::Feature& feature;
-  // A provider_id_for_histogram is required for entries that are intended to
-  // be visible in the UI.
-  absl::optional<DohProviderIdForHistogram> provider_id_for_histogram;
   std::set<IPAddress> ip_addresses;
   std::set<std::string> dns_over_tls_hostnames;
   DnsOverHttpsServerConfig doh_server_config;
@@ -89,7 +68,6 @@ struct NET_EXPORT DohProviderEntry {
   static DohProviderEntry ConstructForTesting(
       std::string provider,
       const base::Feature* feature,
-      absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
       std::set<base::StringPiece> dns_over_53_server_ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
       std::string dns_over_https_template,
@@ -113,7 +91,6 @@ struct NET_EXPORT DohProviderEntry {
       // Disallow implicit copying of the `feature` parameter because there
       // cannot be more than one `base::Feature` for a given feature name.
       const base::Feature* feature,
-      absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
       std::set<base::StringPiece> dns_over_53_server_ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
       std::string dns_over_https_template,

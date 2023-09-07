@@ -48,8 +48,6 @@ namespace {
 constexpr char kGetSecureDnsResolverList[] = "getSecureDnsResolverList";
 constexpr char kIsValidConfig[] = "isValidConfig";
 constexpr char kProbeConfig[] = "probeConfig";
-constexpr char kRecordUserDropdownInteraction[] =
-    "recordUserDropdownInteraction";
 constexpr char kWebUiFunctionName[] = "webUiCallbackName";
 
 net::DohProviderEntry::List GetDohProviderListForTesting() {
@@ -58,8 +56,8 @@ net::DohProviderEntry::List GetDohProviderListForTesting() {
                       base::FEATURE_ENABLED_BY_DEFAULT);
   static const auto global1 = net::DohProviderEntry::ConstructForTesting(
       "Provider_Global1", &kDohProviderFeatureForProvider_Global1,
-      net::DohProviderIdForHistogram{-1}, {} /*ip_strs */,
-      {} /* dot_hostnames */, "https://global1.provider/dns-query{?dns}",
+      {} /*ip_strs */, {} /* dot_hostnames */,
+      "https://global1.provider/dns-query{?dns}",
       "Global Provider 1" /* ui_name */,
       "https://global1.provider/privacy_policy/" /* privacy_policy */,
       true /* display_globally */, {} /* display_countries */);
@@ -68,8 +66,8 @@ net::DohProviderEntry::List GetDohProviderListForTesting() {
                       base::FEATURE_ENABLED_BY_DEFAULT);
   static const auto no_display = net::DohProviderEntry::ConstructForTesting(
       "Provider_NoDisplay", &kDohProviderFeatureForProvider_NoDisplay,
-      net::DohProviderIdForHistogram{-2}, {} /*ip_strs */,
-      {} /* dot_hostnames */, "https://nodisplay.provider/dns-query{?dns}",
+      {} /*ip_strs */, {} /* dot_hostnames */,
+      "https://nodisplay.provider/dns-query{?dns}",
       "No Display Provider" /* ui_name */,
       "https://nodisplay.provider/privacy_policy/" /* privacy_policy */,
       false /* display_globally */, {} /* display_countries */);
@@ -77,8 +75,7 @@ net::DohProviderEntry::List GetDohProviderListForTesting() {
                       "DohProviderFeatureForProvider_EE_FR",
                       base::FEATURE_ENABLED_BY_DEFAULT);
   static const auto ee_fr = net::DohProviderEntry::ConstructForTesting(
-      "Provider_EE_FR", &kDohProviderFeatureForProvider_EE_FR,
-      net::DohProviderIdForHistogram{-3}, {} /*ip_strs */,
+      "Provider_EE_FR", &kDohProviderFeatureForProvider_EE_FR, {} /*ip_strs */,
       {} /* dot_hostnames */, "https://ee.fr.provider/dns-query{?dns}",
       "EE/FR Provider" /* ui_name */,
       "https://ee.fr.provider/privacy_policy/" /* privacy_policy */,
@@ -87,8 +84,7 @@ net::DohProviderEntry::List GetDohProviderListForTesting() {
                       "DohProviderFeatureForProvider_FR",
                       base::FEATURE_ENABLED_BY_DEFAULT);
   static const auto fr = net::DohProviderEntry::ConstructForTesting(
-      "Provider_FR", &kDohProviderFeatureForProvider_FR,
-      net::DohProviderIdForHistogram{-4}, {} /*ip_strs */,
+      "Provider_FR", &kDohProviderFeatureForProvider_FR, {} /*ip_strs */,
       {} /* dot_hostnames */, "https://fr.provider/dns-query{?dns}",
       "FR Provider" /* ui_name */,
       "https://fr.provider/privacy_policy/" /* privacy_policy */,
@@ -98,8 +94,8 @@ net::DohProviderEntry::List GetDohProviderListForTesting() {
                       base::FEATURE_ENABLED_BY_DEFAULT);
   static const auto global2 = net::DohProviderEntry::ConstructForTesting(
       "Provider_Global2", &kDohProviderFeatureForProvider_Global2,
-      net::DohProviderIdForHistogram{-5}, {} /*ip_strs */,
-      {} /* dot_hostnames */, "https://global2.provider/dns-query{?dns}",
+      {} /*ip_strs */, {} /* dot_hostnames */,
+      "https://global2.provider/dns-query{?dns}",
       "Global Provider 2" /* ui_name */,
       "https://global2.provider/privacy_policy/" /* privacy_policy */,
       true /* display_globally */, {} /* display_countries */);
@@ -379,21 +375,6 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
                                  entry->doh_server_config.server_template(),
                                  entry->privacy_policy));
   }
-}
-
-IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListChange) {
-  handler_->SetProvidersForTesting(GetDohProviderListForTesting());
-
-  base::HistogramTester histograms;
-  base::Value::List args;
-  args.Append(std::string() /* old_provider */);
-  args.Append("https://global1.provider/dns-query{?dns}" /* new_provider */);
-  web_ui_.HandleReceivedMessage(kRecordUserDropdownInteraction, args);
-
-  const std::string kUmaBase = "Net.DNS.UI.DropdownSelectionEvent";
-  histograms.ExpectTotalCount(kUmaBase + ".Ignored", 4u);
-  histograms.ExpectTotalCount(kUmaBase + ".Selected", 1u);
-  histograms.ExpectTotalCount(kUmaBase + ".Unselected", 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {

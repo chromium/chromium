@@ -121,12 +121,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       resolverOptions_: Array,
 
       /**
-       * Track the selected dropdown option so that it can be logged when a
-       * user- initiated UI dropdown selection change event occurs.
-       */
-      lastResolverOption_: String,
-
-      /**
        * String displaying the privacy policy of the resolver selected in the
        * dropdown menu.
        */
@@ -144,7 +138,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private showRadioGroup_: boolean;
   private secureDnsRadio_: SecureDnsMode;
   private resolverOptions_: ResolverOption[];
-  private lastResolverOption_: string;
   private privacyPolicyString_: TrustedHTML;
   private secureDnsInputValue_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
@@ -157,7 +150,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     // to match the underlying host resolver configuration.
     this.browserProxy_.getSecureDnsResolverList().then(resolvers => {
       this.resolverOptions_ = resolvers;
-      this.lastResolverOption_ = this.resolverOptions_[0].value;
       this.browserProxy_.getSecureDnsSetting().then(
           (setting: SecureDnsSetting) =>
               this.onSecureDnsPrefsChanged_(setting));
@@ -291,10 +283,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     if (!this.$.secureResolverSelect.value) {
       this.$.secureDnsInput.focus();
     }
-
-    this.browserProxy_.recordUserDropdownInteraction(
-        this.lastResolverOption_, this.$.secureResolverSelect.value);
-    this.lastResolverOption_ = this.$.secureResolverSelect.value;
   }
 
   /**
@@ -375,13 +363,11 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         this.resolverOptions_.slice(1).find(r => r.value === secureDnsConfig);
     if (resolver) {
       this.$.secureResolverSelect.value = resolver.value;
-      this.lastResolverOption_ = resolver.value;
       return;
     }
 
     // Otherwise, select the custom option.
     this.$.secureResolverSelect.value = '';
-    this.lastResolverOption_ = '';
 
     // Only update the custom input field if the config string is non-empty.
     // Otherwise, we may be clearing a previous value that the user wishes to

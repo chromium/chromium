@@ -220,10 +220,7 @@ suite('SettingsSecureDnsInteractive', function() {
     // Change to resolver2
     dropdownMenu.value = resolverList[2]!.value;
     dropdownMenu.dispatchEvent(new Event('change'));
-    let args =
-        await testBrowserProxy.whenCalled('recordUserDropdownInteraction');
-    assertEquals(resolverList[1]!.value, args[0]);
-    assertEquals(resolverList[2]!.value, args[1]);
+    assertEquals(resolverList[2]!.value, dropdownMenu.value);
     assertEquals(2, dropdownMenu.selectedIndex);
     assertEquals(
         'block', getComputedStyle(testElement.$.privacyPolicy).display);
@@ -237,9 +234,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testBrowserProxy.reset();
     dropdownMenu.value = '';
     dropdownMenu.dispatchEvent(new Event('change'));
-    args = await testBrowserProxy.whenCalled('recordUserDropdownInteraction');
-    assertEquals(resolverList[2]!.value, args[0]);
-    assertEquals('', args[1]);
+    assertEquals('', dropdownMenu.value);
     assertEquals(0, dropdownMenu.selectedIndex);
     assertEquals('none', getComputedStyle(testElement.$.privacyPolicy).display);
     assertTrue(testElement.$.secureDnsInput.matches(':focus-within'));
@@ -259,9 +254,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.$.secureDnsInput.value = 'some_input';
     dropdownMenu.value = resolverList[1]!.value;
     dropdownMenu.dispatchEvent(new Event('change'));
-    args = await testBrowserProxy.whenCalled('recordUserDropdownInteraction');
-    assertEquals('', args[0]);
-    assertEquals(resolverList[1]!.value, args[1]);
+    assertEquals(resolverList[1]!.value, dropdownMenu.value);
     assertEquals(
         SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
     assertEquals(
@@ -270,9 +263,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testBrowserProxy.reset();
     dropdownMenu.value = '';
     dropdownMenu.dispatchEvent(new Event('change'));
-    args = await testBrowserProxy.whenCalled('recordUserDropdownInteraction');
-    assertEquals(resolverList[1]!.value, args[0]);
-    assertEquals('', args[1]);
+    assertEquals('', dropdownMenu.value);
     assertEquals('some_input', testElement.$.secureDnsInput.value);
   });
 
@@ -294,10 +285,7 @@ suite('SettingsSecureDnsInteractive', function() {
     assertNotEquals(3, dropdownMenu.selectedIndex);
     dropdownMenu.value = resolverList[3]!.value;
     dropdownMenu.dispatchEvent(new Event('change'));
-    const args =
-        await testBrowserProxy.whenCalled('recordUserDropdownInteraction');
-    assertNotEquals(resolverList[3]!.value, args[0]);
-    assertEquals(resolverList[3]!.value, args[1]);
+    assertEquals(resolverList[3]!.value, dropdownMenu.value);
     assertEquals(3, dropdownMenu.selectedIndex);
     assertEquals(
         'block', getComputedStyle(testElement.$.privacyPolicy).display);

@@ -118,15 +118,6 @@ class SecureDnsBridge {
     }
 
     /**
-     * Record a DoH selection action for statistical purposes.
-     * @param oldEntry The previous selection.
-     * @param newEntry The current selection.
-     */
-    static void updateDropdownHistograms(Entry oldEntry, Entry newEntry) {
-        SecureDnsBridgeJni.get().updateDropdownHistograms(oldEntry.config, newEntry.config);
-    }
-
-    /**
      * Record whether a custom DoH config entered was valid for statistical purposes.
      * @param valid True if the config was valid.
      */
@@ -156,7 +147,6 @@ class SecureDnsBridge {
         boolean setConfig(String config);
         @SecureDnsManagementMode
         int getManagementMode();
-        void updateDropdownHistograms(String oldConfig, String newConfig);
         void updateValidationHistogram(boolean valid);
         boolean probeConfig(String dohConfig);
     }

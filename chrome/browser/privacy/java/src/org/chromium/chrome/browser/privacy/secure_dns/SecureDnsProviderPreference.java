@@ -297,11 +297,8 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
             // attaching an adapter triggers a spurious onItemSelected event.
             return;
         }
-        Entry oldEntry = (Entry) parent.getItemAtPosition(oldPos);
         Entry entry = (Entry) parent.getItemAtPosition(pos);
         tryUpdate(mState.withConfig(entry.config));
-
-        SecureDnsBridge.updateDropdownHistograms(oldEntry, entry);
     }
 
     @Override

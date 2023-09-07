@@ -1655,19 +1655,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Net.DNS.UI.DropdownSelectionEvent"
-    enum="DohProviderId" expires_after="2023-09-03">
-<!-- Name completed by histogram_suffixes
-   name="DnsDropdownSelectionEvent" -->
-
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
-  <summary>
-    Provider in a user-initiated dropdown change event that occured when this
-    provider was one of the dropown options.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.UI.ProbeAttemptSuccess" enum="Boolean"
     expires_after="2023-12-17">
   <owner>awillia@chromium.org</owner>
