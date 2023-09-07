@@ -9,7 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -61,6 +64,14 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
       const std::u16string& generated_password) = 0;
+
+  // Processes the server predictions received from Autofill.
+  virtual void ProcessAutofillPredictions(
+      PasswordManagerDriver* driver,
+      base::span<const autofill::FormData* const> forms,
+      const base::flat_map<autofill::FieldGlobalId,
+                           autofill::AutofillType::ServerPrediction>&
+          field_predictions) = 0;
 
   // Getter for the PasswordManagerClient.
   virtual PasswordManagerClient* GetClient() = 0;

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/ios/browser/autofill_manager_observer_bridge.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -71,6 +72,7 @@ class PasswordManagerClient;
 @interface SharedPasswordController
     : NSObject <CRWWebFramesManagerObserver,
                 CRWWebStateObserver,
+                AutofillManagerObserver,
                 FormActivityObserver,
                 FormSuggestionProvider,
                 PasswordFormHelperDelegate,

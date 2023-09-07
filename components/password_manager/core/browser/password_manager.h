@@ -95,6 +95,12 @@ class PasswordManager : public PasswordManagerInterface {
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
       const std::u16string& generated_password) override;
+  void ProcessAutofillPredictions(
+      PasswordManagerDriver* driver,
+      base::span<const autofill::FormData* const> forms,
+      const base::flat_map<autofill::FieldGlobalId,
+                           autofill::AutofillType::ServerPrediction>&
+          field_predictions) override;
 
   PasswordManagerClient* GetClient() override;
 #if BUILDFLAG(IS_IOS)
@@ -162,13 +168,6 @@ class PasswordManager : public PasswordManagerInterface {
   // Used to determine whether manual password generation can be offered
   // Automatic password generation already waits for that signal.
   bool HaveFormManagersReceivedData(const PasswordManagerDriver* driver);
-
-  void ProcessAutofillPredictions(
-      PasswordManagerDriver* driver,
-      base::span<const autofill::FormData* const> forms,
-      const base::flat_map<autofill::FieldGlobalId,
-                           autofill::AutofillType::ServerPrediction>&
-          field_predictions);
 
   // Causes all |pending_login_managers_| to query the password store again.
   // Results in updating the fill information on the page.

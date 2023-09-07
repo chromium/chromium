@@ -21,8 +21,10 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
+#import "components/autofill/core/browser/test_autofill_client.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -251,6 +253,8 @@ class PasswordControllerTest : public PlatformTest {
     PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
 
     UniqueIDDataTabHelper::CreateForWebState(web_state());
+    autofill::AutofillDriverIOSFactory::CreateForWebState(
+        web_state(), &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
 
     passwordController_ = CreatePasswordController(
         browser_state_->GetPrefs(), web_state(), store_.get(), &weak_client_);
@@ -500,6 +504,7 @@ class PasswordControllerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
+  autofill::TestAutofillClient autofill_client_;
 
   // SuggestionController for testing.
   PasswordsTestSuggestionController* suggestionController_;
@@ -1269,6 +1274,8 @@ class PasswordControllerTestSimple : public PlatformTest {
          password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
 
     UniqueIDDataTabHelper::CreateForWebState(&web_state_);
+    autofill::AutofillDriverIOSFactory::CreateForWebState(
+        &web_state_, &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
 
     web::ContentWorld content_world =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance()
@@ -1297,6 +1304,7 @@ class PasswordControllerTestSimple : public PlatformTest {
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<web::FakeBrowserState> browser_state_;
+  autofill::TestAutofillClient autofill_client_;
   PasswordController* passwordController_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
   MockPasswordManagerClient* weak_client_;

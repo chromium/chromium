@@ -28,8 +28,6 @@
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#import "components/password_manager/ios/ios_password_manager_driver.h"
-#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -398,28 +396,6 @@ using UserDecision =
   } else if (_saver) {
     [_saver loadRiskData:std::move(callback)];
   }
-}
-
-- (void)propagateAutofillPredictionsForForms:
-            (const std::vector<autofill::FormStructure*>&)forms
-                                     inFrame:(web::WebFrame*)frame {
-  IOSPasswordManagerDriver* driver =
-      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
-                                                               frame);
-  if (!driver) {
-    return;
-  }
-  // TODO(crbug.com/1466435): Remove this interim mapping once AutofillManager
-  // transitions to events that will already have this signature.
-  autofill::FormDataAndServerPredictions args =
-      autofill::GetFormDataAndServerPredictions(forms);
-  std::vector<const FormData*> form_pointers;
-  form_pointers.reserve(args.form_datas.size());
-  for (const FormData& form : args.form_datas) {
-    form_pointers.push_back(&form);
-  }
-  _passwordManager->ProcessAutofillPredictions(driver, form_pointers,
-                                               args.predictions);
 }
 
 - (void)

@@ -18,7 +18,6 @@
 #import "components/autofill/core/browser/payments/payments_client.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/common/autofill_prefs.h"
-#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/security_state/ios/security_state_utils.h"
@@ -351,11 +350,6 @@ bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() {
 void WebViewAutofillClientIOS::PropagateAutofillPredictionsDeprecated(
     AutofillDriver* driver,
     const std::vector<FormStructure*>& forms) {
-  [bridge_
-      propagateAutofillPredictionsForForms:forms
-                                   inFrame:(static_cast<AutofillDriverIOS*>(
-                                                driver))
-                                               ->web_frame()];
 }
 
 void WebViewAutofillClientIOS::DidFillOrPreviewForm(

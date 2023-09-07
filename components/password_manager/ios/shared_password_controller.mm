@@ -17,9 +17,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -29,6 +31,8 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_manager_observer_bridge.h"
 #include "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -40,6 +44,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
+#include "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
@@ -55,10 +60,13 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
 
+using autofill::AutofillManager;
+using autofill::AutofillManagerObserverBridge;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FormActivityObserverBridge;
 using autofill::FormData;
+using autofill::FormGlobalId;
 using autofill::FormRendererId;
 using autofill::PasswordFormGenerationData;
 using autofill::password_generation::LogPasswordGenerationEvent;
@@ -122,6 +130,13 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   std::unique_ptr<web::WebFramesManagerObserverBridge>
       _webFramesManagerObserverBridge;
 
+  // Bridge to observe the AutofillManagers for this `_webState`.
+  std::unique_ptr<AutofillManagerObserverBridge> _autofillManagerObserverBridge;
+
+  std::unique_ptr<base::ScopedMultiSourceObservation<AutofillManager,
+                                                     AutofillManager::Observer>>
+      _autofillManagerObservation;
+
   // Bridge to observe form activity in |_webState|.
   std::unique_ptr<FormActivityObserverBridge> _formActivityObserverBridge;
 
@@ -170,6 +185,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
         password_manager::PasswordManagerJavaScriptFeature::GetInstance()
             ->GetWebFramesManager(_webState);
     framesManager->AddObserver(_webFramesManagerObserverBridge.get());
+    _autofillManagerObserverBridge =
+        std::make_unique<AutofillManagerObserverBridge>(self);
+    _autofillManagerObservation =
+        std::make_unique<base::ScopedMultiSourceObservation<
+            AutofillManager, AutofillManager::Observer>>(
+            _autofillManagerObserverBridge.get());
     _formActivityObserverBridge =
         std::make_unique<FormActivityObserverBridge>(_webState, self);
     _formHelper = formHelper;
@@ -281,6 +302,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   [self.formHelper setUpForUniqueIDsWithInitialState:nextAvailableRendererID
                                              inFrame:webFrame];
 
+  auto* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, webFrame);
+  if (driver) {
+    _autofillManagerObservation->AddObservation(&driver->GetAutofillManager());
+  }
+
   if (_webState->ContentIsHTML()) {
     [self findPasswordFormsAndSendToPasswordStoreForFormChange:false
                                                        inFrame:webFrame];
@@ -340,6 +367,40 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   _lastFocusedFrame = nullptr;
   _passwordManager = nullptr;
   _lastSubmittedPasswordManagerDriver = nullptr;
+}
+
+#pragma mark - AutofillManagerObserver
+
+- (void)onAutofillManagerDestroyed:(AutofillManager&)manager {
+  _autofillManagerObservation->RemoveObservation(&manager);
+}
+
+- (void)onFieldTypesDetermined:(AutofillManager&)manager
+                       forForm:(FormGlobalId)form
+                    fromSource:
+                        (AutofillManager::Observer::FieldTypeSource)source {
+  auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
+  web::WebFrame* frame = driver.web_frame();
+  if (!frame) {
+    return;
+  }
+
+  autofill::FormStructure* form_structure = manager.FindCachedFormById(form);
+  if (!form_structure) {
+    return;
+  }
+  autofill::FormDataAndServerPredictions forms_and_predictions =
+      autofill::GetFormDataAndServerPredictions(
+          base::make_span(&form_structure, 1u));
+  // `GetFormDataAndServerPredictions` returns the same number of `FormData` as
+  // `FormStructure` that are passed to it, i.e. one in this case. Therefore
+  // take the front.
+  std::array<const autofill::FormData*, 1> form_pointers = {
+      &forms_and_predictions.form_datas.front()};
+  _passwordManager->ProcessAutofillPredictions(
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                               frame),
+      form_pointers, forms_and_predictions.predictions);
 }
 
 #pragma mark - FormSuggestionProvider

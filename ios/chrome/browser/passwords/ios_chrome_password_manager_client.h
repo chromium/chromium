@@ -9,11 +9,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/language_code.h"
-#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_feature_manager_impl.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -27,7 +24,6 @@
 #include "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/safe_browsing/input_event_observer.h"
 #import "ios/chrome/browser/safe_browsing/password_protection_java_script_feature.h"
-#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -61,9 +57,7 @@ enum class WarningAction;
 // An iOS implementation of password_manager::PasswordManagerClient.
 // TODO(crbug.com/958833): write unit tests for this class.
 class IOSChromePasswordManagerClient
-    : public password_manager::PasswordManagerClient,
-      public web::WebFramesManager::Observer,
-      public autofill::AutofillManager::Observer {
+    : public password_manager::PasswordManagerClient {
  public:
   explicit IOSChromePasswordManagerClient(
       id<IOSChromePasswordManagerClientBridge> bridge);
@@ -153,16 +147,6 @@ class IOSChromePasswordManagerClient
       const override;
 
  private:
-  // web::WebFramesManager::Observer:
-  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
-                               web::WebFrame* web_frame) override;
-
-  // autofill::AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
-  void OnFieldTypesDetermined(autofill::AutofillManager& manager,
-                              autofill::FormGlobalId form_id,
-                              FieldTypeSource source) override;
-
   __weak id<IOSChromePasswordManagerClientBridge> bridge_;
 
   password_manager::PasswordFeatureManagerImpl password_feature_manager_;
@@ -184,17 +168,6 @@ class IOSChromePasswordManagerClient
   // Helper for performing logic that is common between
   // ChromePasswordManagerClient and IOSChromePasswordManagerClient.
   password_manager::PasswordManagerClientHelper helper_;
-
-  // Responsible for adding AutofillManager observations as new frames are
-  // created.
-  base::ScopedObservation<web::WebFramesManager,
-                          web::WebFramesManager::Observer>
-      frames_manager_observation_{this};
-
-  // An observation of the AutofillManagers of this tab.
-  base::ScopedMultiSourceObservation<autofill::AutofillManager,
-                                     autofill::AutofillManager::Observer>
-      autofill_manager_observations_{this};
 
   base::WeakPtrFactory<IOSChromePasswordManagerClient> weak_factory_{this};
 };
