@@ -14,8 +14,6 @@
  * but will also be done by the test framework when an assert test fails
  * or an exception is thrown.
  */
-GEN_INCLUDE(
-    ['//chrome/test/data/webui/net_internals/net_internals_test_base.js']);
 
 // Include the C++ browser test class when generating *.cc files.
 GEN('#include ' +
@@ -24,22 +22,25 @@ GEN('#include "content/public/test/browser_test.h"');
 
 /**
  * @constructor
- * @extends NetInternalsTest
+ * @extends testing.Test
  */
-function NetInternalsBrowserTest() {
-  NetInternalsTest.call(this);
-}
+function NetInternalsBrowserTest() {}
 
 NetInternalsBrowserTest.prototype = {
-  __proto__: NetInternalsTest.prototype,
+  __proto__: testing.Test.prototype,
 
   /** @inheritDoc */
   browsePreload: 'chrome://net-internals/',
 
-  setUp: function() {
-    NetInternalsTest.prototype.setUp.call(this);
-    NetInternalsTest.activeTest = this;
-  },
+  /**
+   * Define the C++ fixture class and include it.
+   * @type {?string}
+   * @override
+   */
+  typedefCppFixture: 'NetInternalsTest',
+
+  /** @override */
+  isAsync: true,
 
   /** @override */
   extraLibraries: [
