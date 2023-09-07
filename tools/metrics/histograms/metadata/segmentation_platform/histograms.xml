@@ -929,7 +929,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.SyncSessions.{TimeInterval}TabCountAtFirstSyncUpdate"
-    units="tabs" expires_after="2023-10-01">
+    units="tabs" expires_after="2024-02-04">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
