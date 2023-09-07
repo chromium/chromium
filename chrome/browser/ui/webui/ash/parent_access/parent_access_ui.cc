@@ -47,7 +47,7 @@ void ParentAccessUI::SetUpForTest(signin::IdentityManager* identity_manager) {
 }
 
 void ParentAccessUI::BindInterface(
-    mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUIHandler>
+    mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUiHandler>
         receiver) {
   signin::IdentityManager* identity_manager =
       test_identity_manager_
@@ -56,7 +56,7 @@ void ParentAccessUI::BindInterface(
 
   // The dialog instance could be null if the webui's url is entered in the
   // browser address bar.  The handler should handle that scenario.
-  mojo_api_handler_ = std::make_unique<ParentAccessUIHandlerImpl>(
+  mojo_api_handler_ = std::make_unique<ParentAccessUiHandlerImpl>(
       std::move(receiver), identity_manager, ParentAccessDialog::GetInstance());
 }
 
@@ -66,7 +66,7 @@ void ParentAccessUI::BindInterface(
       web_ui()->GetWebContents(), std::move(receiver));
 }
 
-parent_access_ui::mojom::ParentAccessUIHandler*
+parent_access_ui::mojom::ParentAccessUiHandler*
 ParentAccessUI::GetHandlerForTest() {
   return mojo_api_handler_.get();
 }

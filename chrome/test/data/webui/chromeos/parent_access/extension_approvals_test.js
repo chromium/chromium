@@ -6,11 +6,11 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://parent-access/parent_access_before.js';
 import 'chrome://parent-access/strings.m.js';
 
-import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
+import {setParentAccessUiHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {buildExtensionApprovalsParamsWithoutPermissions, buildExtensionApprovalsParamsWithPermissions} from './parent_access_test_utils.js';
-import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';
+import {TestParentAccessUiHandler} from './test_parent_access_ui_handler.js';
 
 window.extension_approvals_tests = {};
 extension_approvals_tests.suiteName = 'ExtensionApprovalsTest';
@@ -29,10 +29,10 @@ suite(extension_approvals_tests.suiteName, function() {
 
   test(extension_approvals_tests.TestNames.TestNoPermissions, async () => {
     // Set up the ParentAccessParams and handler for the web approvals flow.
-    const handler = new TestParentAccessUIHandler();
+    const handler = new TestParentAccessUiHandler();
     handler.setParentAccessParams(
         buildExtensionApprovalsParamsWithoutPermissions());
-    setParentAccessUIHandlerForTest(handler);
+    setParentAccessUiHandlerForTest(handler);
 
     // Render ParentAccessAfter element
     const parentAccessBefore = document.createElement('parent-access-before');
@@ -53,10 +53,10 @@ suite(extension_approvals_tests.suiteName, function() {
 
   test(extension_approvals_tests.TestNames.TestWithPermissions, async () => {
     // Set up the ParentAccessParams and handler for the web approvals flow.
-    const handler = new TestParentAccessUIHandler();
+    const handler = new TestParentAccessUiHandler();
     handler.setParentAccessParams(
         buildExtensionApprovalsParamsWithPermissions());
-    setParentAccessUIHandlerForTest(handler);
+    setParentAccessUiHandlerForTest(handler);
 
     // Render ParentAccessAfter element
     const parentAccessBefore = document.createElement('parent-access-before');
@@ -82,11 +82,11 @@ suite(extension_approvals_tests.suiteName, function() {
       extension_approvals_tests.TestNames.TestWithPermissionDetails,
       async () => {
         // Set up the ParentAccessParams and handler for the web approvals flow.
-        const handler = new TestParentAccessUIHandler();
+        const handler = new TestParentAccessUiHandler();
         handler.setParentAccessParams(
             buildExtensionApprovalsParamsWithPermissions(
                 /*isDisabled=*/ false, /*hasDetails=*/ true));
-        setParentAccessUIHandlerForTest(handler);
+        setParentAccessUiHandlerForTest(handler);
 
         // Render ParentAccessAfter element
         const parentAccessBefore =

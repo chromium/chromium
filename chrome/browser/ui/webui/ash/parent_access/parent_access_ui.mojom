@@ -7,7 +7,7 @@ module parent_access_ui.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
-enum GetOAuthTokenStatus {
+enum GetOauthTokenStatus {
   kSuccess,
   kError,
   kOnlyOneFetchAtATime,
@@ -107,9 +107,9 @@ enum ParentAccessResult {
 
 // Interface that supports integration between the ParentAccess WebUI and
 // ChromeOS.
-interface ParentAccessUIHandler {
+interface ParentAccessUiHandler {
   // Returns the oauth token to be passed to the server.
-  GetOAuthToken() => (GetOAuthTokenStatus status, string oauth_token);
+  GetOauthToken() => (GetOauthTokenStatus status, string oauth_token);
 
   // When called, signals that the server widget has provided a result.
   // Returns a ParentAccessServerMessage parsed from the encoded proto string.
@@ -120,7 +120,7 @@ interface ParentAccessUIHandler {
   GetParentAccessParams() => (ParentAccessParams params);
 
   // Returns the URL for the parent access widget endpoint.
-  GetParentAccessURL() => (string url);
+  GetParentAccessUrl() => (string url);
 
   // When called, indicates that that the request has completed with the
   // specified result, which will cause the Parent Access UI to close.

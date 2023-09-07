@@ -4,10 +4,10 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {ParentAccessServerMessageType, ParentAccessUIHandler} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
+import {ParentAccessServerMessageType, ParentAccessUiHandler} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 
 window.parent_access_ui_handler_tests = {};
-parent_access_ui_handler_tests.suiteName = 'ParentAccessUIHandlerTest';
+parent_access_ui_handler_tests.suiteName = 'ParentAccessUiHandlerTest';
 
 /** @enum {string} */
 parent_access_ui_handler_tests.TestNames = {
@@ -16,7 +16,7 @@ parent_access_ui_handler_tests.TestNames = {
 };
 
 suite(parent_access_ui_handler_tests.suiteName, function() {
-  const parentAccessUIHandler = ParentAccessUIHandler.getRemote();
+  const parentAccessUIHandler = ParentAccessUiHandler.getRemote();
   test(
       parent_access_ui_handler_tests.TestNames
           .TestOnParentAccessCallbackReceived,

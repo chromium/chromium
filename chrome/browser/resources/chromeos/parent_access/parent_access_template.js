@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ParentAccessResult} from './parent_access_ui.mojom-webui.js';
-import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
+import {getParentAccessUiHandler} from './parent_access_ui_handler.js';
 
 /**
  * The Parent Access template component wraps each Parent Access
@@ -20,7 +20,7 @@ import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
 class ParentAccessTemplate extends PolymerElement {
   constructor() {
     super();
-    this.parentAccessUIHandler = getParentAccessUIHandler();
+    this.parentAccessUIHandler = getParentAccessUiHandler();
   }
 
   static get is() {

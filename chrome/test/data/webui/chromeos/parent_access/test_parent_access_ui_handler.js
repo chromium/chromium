@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GetOAuthTokenStatus, ParentAccessParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
+import {GetOauthTokenStatus, ParentAccessParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {ParentAccessUIHandlerInterface} */
-export class TestParentAccessUIHandler extends TestBrowserProxy {
+/** @implements {ParentAccessUiHandlerInterface} */
+export class TestParentAccessUiHandler extends TestBrowserProxy {
   constructor() {
     super([
-      'getOAuthToken',
+      'getOauthToken',
       'onParentAccessCallbackReceived',
       'getParentAccessParams',
-      'getParentAccessURL',
+      'getParentAccessUrl',
       'onParentAccessDone',
       'onBeforeScreenDone',
     ]);
@@ -23,13 +23,13 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
     /** @private {?string} */
     this.oAuthToken_ = null;
 
-    /** @private {?GetOAuthTokenStatus} */
+    /** @private {?GetOauthTokenStatus} */
     this.oAuthTokenStatus_ = null;
   }
 
   /** @override */
-  getOAuthToken() {
-    this.methodCalled('getOAuthToken');
+  getOauthToken() {
+    this.methodCalled('getOauthToken');
     return Promise.resolve({
       oauthToken: this.oAuthToken_,
       status: this.oAuthTokenStatus_,
@@ -48,8 +48,8 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
   }
 
   /** @override */
-  getParentAccessURL() {
-    this.methodCalled('getParentAccessURL');
+  getParentAccessUrl() {
+    this.methodCalled('getParentAccessUrl');
     return Promise.resolve({url: 'https://families.google.com/parentaccess'});
   }
 
@@ -72,9 +72,9 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
 
   /**
    * @param {string} token
-   * @param {!GetOAuthTokenStatus} status
+   * @param {!GetOauthTokenStatus} status
    */
-  setOAuthTokenStatus(token, status) {
+  setOauthTokenStatus(token, status) {
     this.oAuthToken_ = token;
     this.oAuthTokenStatus_ = status;
   }

@@ -7,13 +7,13 @@ import 'chrome://parent-access/parent_access_app.js';
 import 'chrome://parent-access/strings.m.js';
 
 import {ParentAccessEvent, Screens} from 'chrome://parent-access/parent_access_app.js';
-import {GetOAuthTokenStatus} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
-import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
+import {GetOauthTokenStatus} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
+import {setParentAccessUiHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {buildExtensionApprovalsParamsWithPermissions, buildWebApprovalsParams} from './parent_access_test_utils.js';
-import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';
+import {TestParentAccessUiHandler} from './test_parent_access_ui_handler.js';
 
 window.parent_access_app_tests = {};
 parent_access_app_tests.suiteName = 'ParentAccessAppTest';
@@ -26,7 +26,7 @@ parent_access_app_tests.TestNames = {
       'Tests that the extension approvals flow is shown',
   TestShowExtensionApprovalsDisabledScreen:
       'Tests that the extensions disabled flow is shown and is terminal',
-  TestShowErrorScreenOnOAuthFailure: 'Tests that the error screen is shown',
+  TestShowErrorScreenOnOauthFailure: 'Tests that the error screen is shown',
   TestWebApprovalsOffline:
       'Tests that dialog switches in/out of offline screen',
   TestErrorStateIsTerminal:
@@ -41,11 +41,11 @@ suite(parent_access_app_tests.suiteName, function() {
   test(
       parent_access_app_tests.TestNames.TestShowWebApprovalsAfterFlow,
       async () => {
-        // Set up the TestParentAccessUIHandler
-        const handler = new TestParentAccessUIHandler();
+        // Set up the TestParentAccessUiHandler
+        const handler = new TestParentAccessUiHandler();
         handler.setParentAccessParams(buildWebApprovalsParams());
-        handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kSuccess);
-        setParentAccessUIHandlerForTest(handler);
+        handler.setOauthTokenStatus('token', GetOauthTokenStatus.kSuccess);
+        setParentAccessUiHandlerForTest(handler);
 
         // Create app element.
         const parentAccessApp = document.createElement('parent-access-app');
@@ -72,12 +72,12 @@ suite(parent_access_app_tests.suiteName, function() {
   test(
       parent_access_app_tests.TestNames.TestShowExtensionApprovalsFlow,
       async () => {
-        // Set up the TestParentAccessUIHandler
-        const handler = new TestParentAccessUIHandler();
+        // Set up the TestParentAccessUiHandler
+        const handler = new TestParentAccessUiHandler();
         handler.setParentAccessParams(
             buildExtensionApprovalsParamsWithPermissions());
-        handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kSuccess);
-        setParentAccessUIHandlerForTest(handler);
+        handler.setOauthTokenStatus('token', GetOauthTokenStatus.kSuccess);
+        setParentAccessUiHandlerForTest(handler);
 
         // Create app element.
         const parentAccessApp = document.createElement('parent-access-app');
@@ -123,13 +123,13 @@ suite(parent_access_app_tests.suiteName, function() {
       parent_access_app_tests.TestNames
           .TestShowExtensionApprovalsDisabledScreen,
       async () => {
-        // Set up the TestParentAccessUIHandler
-        const handler = new TestParentAccessUIHandler();
+        // Set up the TestParentAccessUiHandler
+        const handler = new TestParentAccessUiHandler();
         handler.setParentAccessParams(
             buildExtensionApprovalsParamsWithPermissions(
                 /*is_disabled=*/ true));
-        handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kSuccess);
-        setParentAccessUIHandlerForTest(handler);
+        handler.setOauthTokenStatus('token', GetOauthTokenStatus.kSuccess);
+        setParentAccessUiHandlerForTest(handler);
 
         // Create app element.
         const parentAccessApp = document.createElement('parent-access-app');
@@ -153,13 +153,13 @@ suite(parent_access_app_tests.suiteName, function() {
       });
 
   test(
-      parent_access_app_tests.TestNames.TestShowErrorScreenOnOAuthFailure,
+      parent_access_app_tests.TestNames.TestShowErrorScreenOnOauthFailure,
       async () => {
-        // Set up the TestParentAccessUIHandler
-        const handler = new TestParentAccessUIHandler();
+        // Set up the TestParentAccessUiHandler
+        const handler = new TestParentAccessUiHandler();
         handler.setParentAccessParams(buildWebApprovalsParams());
-        handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kError);
-        setParentAccessUIHandlerForTest(handler);
+        handler.setOauthTokenStatus('token', GetOauthTokenStatus.kError);
+        setParentAccessUiHandlerForTest(handler);
 
         // Create app element.
         const parentAccessApp = document.createElement('parent-access-app');
@@ -172,10 +172,10 @@ suite(parent_access_app_tests.suiteName, function() {
 
   test(parent_access_app_tests.TestNames.TestWebApprovalsOffline, async () => {
     // Set up the ParentAccessParams for the web approvals flow.
-    const handler = new TestParentAccessUIHandler();
+    const handler = new TestParentAccessUiHandler();
     handler.setParentAccessParams(buildWebApprovalsParams());
-    handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kSuccess);
-    setParentAccessUIHandlerForTest(handler);
+    handler.setOauthTokenStatus('token', GetOauthTokenStatus.kSuccess);
+    setParentAccessUiHandlerForTest(handler);
 
     // Create app element.
     const parentAccessApp = document.createElement('parent-access-app');
@@ -198,11 +198,11 @@ suite(parent_access_app_tests.suiteName, function() {
   });
 
   test(parent_access_app_tests.TestNames.TestErrorStateIsTerminal, async () => {
-    // Set up the TestParentAccessUIHandler
-    const handler = new TestParentAccessUIHandler();
+    // Set up the TestParentAccessUiHandler
+    const handler = new TestParentAccessUiHandler();
     handler.setParentAccessParams(buildWebApprovalsParams());
-    handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kError);
-    setParentAccessUIHandlerForTest(handler);
+    handler.setOauthTokenStatus('token', GetOauthTokenStatus.kError);
+    setParentAccessUiHandlerForTest(handler);
 
     // Create app element.
     const parentAccessApp = document.createElement('parent-access-app');

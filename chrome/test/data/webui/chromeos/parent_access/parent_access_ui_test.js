@@ -7,12 +7,12 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://parent-access/parent_access_ui.js';
 import 'chrome://parent-access/strings.m.js';
 
-import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
+import {setParentAccessUiHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';
+import {TestParentAccessUiHandler} from './test_parent_access_ui_handler.js';
 
 window.parent_access_ui_tests = {};
 parent_access_ui_tests.suiteName = 'ParentAccessUITest';
@@ -30,8 +30,8 @@ suite(parent_access_ui_tests.suiteName, function() {
 
   setup(function() {
     PolymerTest.clearBody();
-    handler = new TestParentAccessUIHandler();
-    setParentAccessUIHandlerForTest(handler);
+    handler = new TestParentAccessUiHandler();
+    setParentAccessUiHandlerForTest(handler);
     parentAccessUI = document.createElement('parent-access-ui');
     document.body.appendChild(parentAccessUI);
     flush();
@@ -66,7 +66,7 @@ suite(parent_access_ui_tests.suiteName, function() {
       parent_access_ui_tests.TestNames.TestShouldReceiveAuthHeader,
       async function() {
         // Auth header should be sent to webview URL.
-        const webviewUrl = (await handler.getParentAccessURL()).url;
+        const webviewUrl = (await handler.getParentAccessUrl()).url;
         assertTrue(parentAccessUI.shouldReceiveAuthHeader(webviewUrl));
 
         // Nothing else should receive the auth header.

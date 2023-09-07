@@ -20,7 +20,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
-import {getParentAccessParams, getParentAccessUIHandler} from './parent_access_ui_handler.js';
+import {getParentAccessParams, getParentAccessUiHandler} from './parent_access_ui_handler.js';
 
 /** @enum {string} */
 export const Screens = {
@@ -103,7 +103,7 @@ class ParentAccessApp extends PolymerElement {
 
     this.addEventListener(ParentAccessEvent.SHOW_AUTHENTICATION_FLOW, () => {
       this.switchScreen_(Screens.AUTHENTICATION_FLOW);
-      getParentAccessUIHandler().onBeforeScreenDone();
+      getParentAccessUiHandler().onBeforeScreenDone();
     });
 
     this.addEventListener(ParentAccessEvent.SHOW_ERROR, () => {
@@ -143,7 +143,7 @@ class ParentAccessApp extends PolymerElement {
    */
   onError_() {
     this.switchScreen_(Screens.ERROR);
-    getParentAccessUIHandler().onParentAccessDone(ParentAccessResult.kError);
+    getParentAccessUiHandler().onParentAccessDone(ParentAccessResult.kError);
   }
 
   /**

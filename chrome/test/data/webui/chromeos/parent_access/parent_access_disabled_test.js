@@ -7,11 +7,11 @@ import 'chrome://parent-access/parent_access_disabled.js';
 import 'chrome://parent-access/strings.m.js';
 
 import {ParentAccessResult} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
-import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
+import {setParentAccessUiHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {buildExtensionApprovalsParamsWithoutPermissions} from './parent_access_test_utils.js';
-import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';
+import {TestParentAccessUiHandler} from './test_parent_access_ui_handler.js';
 
 window.parent_access_disabled_tests = {};
 parent_access_disabled_tests.suiteName = 'ParentAccessDisabledTest';
@@ -28,11 +28,11 @@ suite(parent_access_disabled_tests.suiteName, function() {
 
   test(parent_access_disabled_tests.TestNames.TestOkButton, async () => {
     // Set up the ParentAccessParams for the extension approvals flow.
-    const handler = new TestParentAccessUIHandler();
+    const handler = new TestParentAccessUiHandler();
     handler.setParentAccessParams(
         buildExtensionApprovalsParamsWithoutPermissions(
             /**isDisabled=*/ true));
-    setParentAccessUIHandlerForTest(handler);
+    setParentAccessUiHandlerForTest(handler);
 
     // Render ParentAccessDisabled element
     const parentAccessDisabled =

@@ -60,9 +60,9 @@ TEST_F(
                             .TestShowExtensionApprovalsDisabledScreen);
     });
 
-TEST_F('ParentAccessAppTest', 'TestShowErrorScreenOnOAuthFailure', function() {
+TEST_F('ParentAccessAppTest', 'TestShowErrorScreenOnOauthFailure', function() {
   this.runMochaTest(
-      parent_access_app_tests.TestNames.TestShowErrorScreenOnOAuthFailure);
+      parent_access_app_tests.TestNames.TestShowErrorScreenOnOauthFailure);
 });
 
 TEST_F('ParentAccessAppTest', 'TestWebApprovalsOffline', function() {
@@ -144,7 +144,7 @@ TEST_F('ParentAccessUITest', 'TestShouldReceiveAuthHeader', function() {
 });
 
 
-var ParentAccessUIHandlerTest = class extends testing.Test {
+var ParentAccessUiHandlerTest = class extends testing.Test {
   /** @override */
   get typedefCppFixture() {
     return 'MojoWebUIBrowserTest';
@@ -168,7 +168,7 @@ var ParentAccessUIHandlerTest = class extends testing.Test {
 };
 
 TEST_F(
-    'ParentAccessUIHandlerTest', 'TestOnParentAccessCallbackReceived',
+    'ParentAccessUiHandlerTest', 'TestOnParentAccessCallbackReceived',
     function() {
       this.runMochaTest(parent_access_ui_handler_tests.TestNames
                             .TestOnParentAccessCallbackReceived);

@@ -13,7 +13,7 @@ import {ExtensionApprovalsDisabled} from './flows/extension_approvals_disabled.j
 import {isParentAccessJellyEnabled, ParentAccessEvent} from './parent_access_app.js';
 import {ParentAccessScreenInterface} from './parent_access_screen.js';
 import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
-import {getParentAccessParams, getParentAccessUIHandler} from './parent_access_ui_handler.js';
+import {getParentAccessParams, getParentAccessUiHandler} from './parent_access_ui_handler.js';
 
 /** @implements {ParentAccessScreenInterface} */
 class ParentAccessDisabled extends PolymerElement {
@@ -54,7 +54,7 @@ class ParentAccessDisabled extends PolymerElement {
 
   /** @private */
   onDisabledScreenClosed_() {
-    getParentAccessUIHandler().onParentAccessDone(ParentAccessResult.kDisabled);
+    getParentAccessUiHandler().onParentAccessDone(ParentAccessResult.kDisabled);
   }
 }
 

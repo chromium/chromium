@@ -7,11 +7,11 @@ import 'chrome://parent-access/parent_access_after.js';
 import 'chrome://parent-access/strings.m.js';
 
 import {ParentAccessResult} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
-import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
+import {setParentAccessUiHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {buildWebApprovalsParams} from './parent_access_test_utils.js';
-import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';
+import {TestParentAccessUiHandler} from './test_parent_access_ui_handler.js';
 
 window.parent_access_after_tests = {};
 parent_access_after_tests.suiteName = 'ParentAccessAfterTest';
@@ -29,9 +29,9 @@ suite(parent_access_after_tests.suiteName, function() {
 
   test(parent_access_after_tests.TestNames.TestApproveButton, async () => {
     // Set up the ParentAccessParams and handler for the web approvals flow.
-    const handler = new TestParentAccessUIHandler();
+    const handler = new TestParentAccessUiHandler();
     handler.setParentAccessParams(buildWebApprovalsParams());
-    setParentAccessUIHandlerForTest(handler);
+    setParentAccessUiHandlerForTest(handler);
 
     // Render ParentAccessAfter element
     const parentAccessAfter = document.createElement('parent-access-after');
@@ -50,9 +50,9 @@ suite(parent_access_after_tests.suiteName, function() {
 
   test(parent_access_after_tests.TestNames.TestDenyButton, async () => {
     // Set up the ParentAccessParams and handler for the web approvals flow.
-    const handler = new TestParentAccessUIHandler();
+    const handler = new TestParentAccessUiHandler();
     handler.setParentAccessParams(buildWebApprovalsParams());
-    setParentAccessUIHandlerForTest(handler);
+    setParentAccessUiHandlerForTest(handler);
 
     // Render ParentAccessAfter element
     const parentAccessAfter = document.createElement('parent-access-after');

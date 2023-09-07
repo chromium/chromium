@@ -12,9 +12,9 @@
 
 namespace ash {
 
-// Interface for the ParentAccessUIHandlerDelegate.  Declares behaviors that
+// Interface for the ParentAccessUiHandlerDelegate.  Declares behaviors that
 // the handler requires of components that communicate with it.
-class ParentAccessUIHandlerDelegate {
+class ParentAccessUiHandlerDelegate {
  public:
   // Clones the incoming ParentAccessParams and returns ownership to the caller.
   virtual parent_access_ui::mojom::ParentAccessParamsPtr

@@ -1342,7 +1342,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::multidevice_setup::MultiDeviceSetupDialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      parent_access_ui::mojom::ParentAccessUIHandler, ash::ParentAccessUI>(map);
+      parent_access_ui::mojom::ParentAccessUiHandler, ash::ParentAccessUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter, ash::OobeUI>(

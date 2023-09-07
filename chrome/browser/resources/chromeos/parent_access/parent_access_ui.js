@@ -11,8 +11,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ParentAccessEvent} from './parent_access_app.js';
 import {ParentAccessController} from './parent_access_controller.js';
-import {GetOAuthTokenStatus, ParentAccessServerMessageType} from './parent_access_ui.mojom-webui.js';
-import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
+import {GetOauthTokenStatus, ParentAccessServerMessageType} from './parent_access_ui.mojom-webui.js';
+import {getParentAccessUiHandler} from './parent_access_ui_handler.js';
 import {WebviewManager} from './webview_manager.js';
 
 /**
@@ -38,7 +38,7 @@ class ParentAccessUi extends PolymerElement {
     super();
     this.webview_manager_ = null;
     this.server = null;
-    this.parentAccessUIHandler = getParentAccessUIHandler();
+    this.parentAccessUIHandler = getParentAccessUiHandler();
   }
 
   static get is() {
@@ -114,7 +114,7 @@ class ParentAccessUi extends PolymerElement {
      * @private {string} The initial URL for the webview.
      */
     this.webviewUrl_ =
-        (await this.parentAccessUIHandler.getParentAccessURL()).url;
+        (await this.parentAccessUIHandler.getParentAccessUrl()).url;
 
     try {
       const parsedWebviewUrl = new URL(this.webviewUrl_);
@@ -122,8 +122,8 @@ class ParentAccessUi extends PolymerElement {
       // only.
       const eventOriginFilter = parsedWebviewUrl.origin;
 
-      const oauthFetchResult = await this.parentAccessUIHandler.getOAuthToken();
-      if (oauthFetchResult.status != GetOAuthTokenStatus.kSuccess) {
+      const oauthFetchResult = await this.parentAccessUIHandler.getOauthToken();
+      if (oauthFetchResult.status != GetOauthTokenStatus.kSuccess) {
         throw new Error('OAuth token was not successfully fetched.');
       }
 
@@ -173,7 +173,7 @@ class ParentAccessUi extends PolymerElement {
         this.server.whenInitializationError(),
       ]);
 
-      // Notify ParentAccessUIHandler that we received a ParentAccessCallback.
+      // Notify ParentAccessUiHandler that we received a ParentAccessCallback.
       // The handler will attempt to parse the callback and return the status.
       const parentAccessServerMessage =
           await this.parentAccessUIHandler.onParentAccessCallbackReceived(
