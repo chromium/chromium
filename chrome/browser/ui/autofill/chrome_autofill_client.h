@@ -323,6 +323,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::u16string GetAccountHolderName();
   std::u16string GetAccountHolderEmail();
   bool SupportsConsentlessExecution(const url::Origin& origin);
+#if BUILDFLAG(IS_ANDROID)
+  AutofillSaveCardBottomSheetBridge*
+  GetOrCreateAutofillSaveCardBottomSheetBridge();
+#endif
 
   std::unique_ptr<LogManager> log_manager_;
 

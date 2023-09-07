@@ -83,8 +83,11 @@ import java.util.function.Consumer;
      * @param uiInfo Contains the UI resources to be applied to this bottom sheet content's view.
      */
     /*package*/ void setUiInfo(AutofillSaveCardUiInfo uiInfo) {
-        // TODO(crbug.com/1454271): Implement local save card (isForUpload = true).
-        setLogoIconId(uiInfo.getLogoIcon());
+        if (uiInfo.isForUpload()) {
+            setLogoIconId(uiInfo.getLogoIcon());
+        } else {
+            setLogoIconId(0);
+        }
         mView.<ImageView>findViewById(R.id.autofill_save_card_credit_card_icon)
                 .setImageResource(uiInfo.getCardDetail().issuerIconDrawableId);
         setTextViewText(R.id.autofill_save_card_credit_card_label, uiInfo.getCardDetail().label);
@@ -114,6 +117,11 @@ import java.util.function.Consumer;
     private void setTextViewText(@IdRes int resourceId, CharSequence text) {
         TextView textView = mView.findViewById(resourceId);
         textView.setText(text);
+        if (text == null || text.length() == 0) {
+            textView.setVisibility(View.GONE);
+        } else {
+            textView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setLegalMessage(List<LegalMessageLine> legalMessageLines) {

@@ -240,6 +240,32 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
       ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
       base::DoNothing()));
 }
+
+TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+       ConfirmSaveCreditCardLocally_RequestsBottomSheet) {
+  TestChromeAutofillClient* autofill_client = client();
+  auto* bottom_sheet_bridge =
+      autofill_client->InjectMockAutofillSaveCardBottomSheetBridge();
+
+  EXPECT_CALL(*bottom_sheet_bridge,
+              RequestShowContent(testing::An<const AutofillSaveCardUiInfo&>(),
+                                 testing::NotNull()));
+
+  autofill_client->ConfirmSaveCreditCardLocally(
+      CreditCard(),
+      ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+      base::DoNothing());
+}
+
+TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+       ConfirmSaveCreditCardLocally_DoesNotFailWithoutAWindow) {
+  TestChromeAutofillClient* autofill_client = client();
+
+  EXPECT_NO_FATAL_FAILURE(autofill_client->ConfirmSaveCreditCardLocally(
+      CreditCard(),
+      ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+      base::DoNothing()));
+}
 #endif
 
 }  // namespace

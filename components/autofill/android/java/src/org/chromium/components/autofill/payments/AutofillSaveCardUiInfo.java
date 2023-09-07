@@ -80,14 +80,18 @@ public class AutofillSaveCardUiInfo {
 
     // LINT.IfChange
     @CalledByNative
+    @VisibleForTesting
     /** Construct the delegate given all the members. */
-    private AutofillSaveCardUiInfo(boolean isForUpload, @DrawableRes int logoIcon,
+    /*package*/ AutofillSaveCardUiInfo(boolean isForUpload, @DrawableRes int logoIcon,
             @DrawableRes int issuerIcon, List<LegalMessageLine> legalMessageLines, String cardLabel,
             String cardSubLabel, String cardDescription, String titleText, String confirmText,
             String cancelText, boolean isGooglePayBrandingEnabled, String descriptionText) {
         mIsForUpload = isForUpload;
         mLogoIcon = logoIcon;
         mIssuerIcon = issuerIcon;
+        if (legalMessageLines == null) {
+            legalMessageLines = ImmutableList.of();
+        }
         mLegalMessageLines = ImmutableList.copyOf(legalMessageLines);
         mCardLabel = cardLabel;
         mCardSubLabel = cardSubLabel;
