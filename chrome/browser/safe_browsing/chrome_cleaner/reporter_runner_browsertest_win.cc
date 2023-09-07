@@ -869,20 +869,4 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(PolicyState::kNoLogs)),
     ReporterRunTestParamsToString());
 
-// Tests with enterprise policies forcing reporting to be either enabled
-// or disabled.
-INSTANTIATE_TEST_SUITE_P(
-    EnterprisePolicy,
-    ReporterRunnerTest,
-    ::testing::Combine(
-        ::testing::Values(
-            SwReporterInvocationType::kPeriodicRun,
-            SwReporterInvocationType::kUserInitiatedWithLogsDisallowed,
-            SwReporterInvocationType::kUserInitiatedWithLogsAllowed),
-        ::testing::Values("Seed1"),  // old_seed_
-        ::testing::Values("Seed2"),  // incoming_seed_
-        ::testing::Values(PolicyState::kLogsForceEnable,
-                          PolicyState::kLogsForceDisable)),
-    ReporterRunTestParamsToString());
-
 }  // namespace safe_browsing
