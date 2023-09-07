@@ -10,6 +10,7 @@ import {getTemplate} from './realbox_icon.html.js';
 
 const DOCUMENT_MATCH_TYPE: string = 'document';
 const HISTORY_CLUSTER_MATCH_TYPE: string = 'history-cluster';
+const PEDAL: string = 'pedal';
 
 export interface RealboxIconElement {
   $: {
@@ -127,14 +128,16 @@ export class RealboxIconElement extends PolymerElement {
   private computeBackgroundImage_(): string {
     if (this.match && !this.match.isSearchType) {
       if (this.match.type !== DOCUMENT_MATCH_TYPE &&
-          this.match.type !== HISTORY_CLUSTER_MATCH_TYPE) {
+          this.match.type !== HISTORY_CLUSTER_MATCH_TYPE &&
+          this.match.type !== PEDAL) {
         return getFaviconForPageURL(
             this.match.destinationUrl.url, /* isSyncedUrlForHistoryUi= */ false,
             /* remoteIconUrlForUma= */ '', /* size= */ 32,
             /* forceLightMode= */ true);
       }
 
-      if (this.match.type === DOCUMENT_MATCH_TYPE) {
+      if (this.match.type === DOCUMENT_MATCH_TYPE ||
+          this.match.type === PEDAL) {
         return `url(${this.match.iconUrl})`;
       }
     }
