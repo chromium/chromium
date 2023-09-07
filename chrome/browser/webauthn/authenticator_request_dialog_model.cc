@@ -890,9 +890,10 @@ bool AuthenticatorRequestDialogModel::OnWinUserCancelled() {
                  absl::holds_alternative<Mechanism::AddPhone>(m.type);
         });
     bool windows_was_priority =
-        ephemeral_state_.priority_mechanism_index_ &&
-        absl::holds_alternative<Mechanism::WindowsAPI>(
-            mechanisms_[*ephemeral_state_.priority_mechanism_index_].type);
+        ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ ||
+        (ephemeral_state_.priority_mechanism_index_ &&
+         absl::holds_alternative<Mechanism::WindowsAPI>(
+             mechanisms_[*ephemeral_state_.priority_mechanism_index_].type));
     if (have_other_option && windows_was_priority) {
       StartOver();
       return true;

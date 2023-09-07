@@ -1389,6 +1389,53 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
   }
 }
 
+// Simulate the user cancelling the Windows native UI after it was automatically
+// dispatched to because a matching credential for Windows Hello was found for
+// an allow-list request.
+// Regression test for crbug.com/1479142.
+TEST_F(AuthenticatorRequestDialogModelTest, WinCancel_AfterMatchingLocalCred) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthnNewPasskeyUI};
+
+  device::FakeWinWebAuthnApi fake_win_webauthn_api;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
+      &fake_win_webauthn_api);
+
+  fake_win_webauthn_api.set_version(4);
+
+  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  tai.request_type = device::FidoRequestType::kGetAssertion;
+  tai.has_win_native_api_authenticator = true;
+  tai.has_empty_allow_list = false;
+  tai.available_transports.insert(device::FidoTransportProtocol::kHybrid);
+  tai.is_ble_powered = true;
+  tai.recognized_credentials = {kWinCred1};
+  tai.has_platform_authenticator_credential = device::FidoRequestHandlerBase::
+      RecognizedCredential::kHasRecognizedCredential;
+
+  AuthenticatorRequestDialogModel model(main_rfh());
+  model.saved_authenticators().AddAuthenticator(
+      AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
+                             device::AuthenticatorType::kWinNative));
+  model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
+                                 "fido:/1234");
+  model.StartFlow(std::move(tai),
+                  /*is_conditional_mediation=*/false);
+
+  // The Windows native UI should have been triggered.
+  EXPECT_EQ(model.current_step(), Step::kNotStarted);
+
+  // Canceling the Windows native UI should be handled.
+  EXPECT_TRUE(model.OnWinUserCancelled());
+
+  // The mechanism selection sheet should now be showing.
+  EXPECT_EQ(model.current_step(), Step::kMechanismSelection);
+
+  // Canceling the Windows UI ends the request because the user must have
+  // selected the Windows option first.
+  EXPECT_FALSE(model.OnWinUserCancelled());
+}
+
 TEST_F(AuthenticatorRequestDialogModelTest, WinNoPlatformAuthenticator) {
   AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
   tai.request_type = device::FidoRequestType::kMakeCredential;
