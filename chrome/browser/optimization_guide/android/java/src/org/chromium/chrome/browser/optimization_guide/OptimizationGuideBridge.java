@@ -132,10 +132,7 @@ public class OptimizationGuideBridge implements Destroyable {
             OnDemandOptimizationGuideCallback callback) {
         ThreadUtils.assertOnUiThread();
 
-        // TODO(b/279643150): Reconfigure this assertion once we have an actual client here.
-        //
-        // Currently, this is just for testing purposes to allow new tab page.
-        assert requestContext == RequestContext.CONTEXT_NEW_TAB_PAGE;
+        assert isRequestContextAllowedForOnDemandOptimizations(requestContext);
 
         if (mNativeOptimizationGuideBridge == 0) {
             for (GURL url : urls) {
@@ -180,6 +177,15 @@ public class OptimizationGuideBridge implements Destroyable {
             return;
         }
         OptimizationGuideBridgeJni.get().onDeferredStartup(mNativeOptimizationGuideBridge);
+    }
+
+    private boolean isRequestContextAllowedForOnDemandOptimizations(RequestContext requestContext) {
+        switch (requestContext) {
+            case CONTEXT_PAGE_INSIGHTS_HUB:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @CalledByNative

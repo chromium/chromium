@@ -133,6 +133,9 @@ chromium-metrics-reviews@google.com.
       summary="Validates metadata fetch on navigation"/>
   <variant name="PageEntities"
       summary="Provides the entities that are present on the page"/>
+  <variant name="PageInsights"
+      summary="This optimization provides helpful context and insights about
+               a page."/>
   <variant name="PerformanceHints"
       summary="Provides aggregated performance information about the page"/>
   <variant name="PriceInsights"
