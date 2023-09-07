@@ -234,8 +234,8 @@ TEST_F(UnifiedBrightnessViewTest, MoreButton) {
   EXPECT_TRUE(more_button()->GetEnabled());
 }
 
-// Tests that the night light button is disabled in the sign-in and lock screen.
-// TODO(b/294868714): remove the test for the lock screen.
+// Tests that the night light button is disabled in the sign-in screen, and is
+// enabled in the locked screen.
 TEST_F(UnifiedBrightnessViewTest, NightLightButtonState) {
   // Close the bubble so the brightness view can be recreated.
   GetPrimaryUnifiedSystemTray()->CloseBubble();
@@ -247,11 +247,11 @@ TEST_F(UnifiedBrightnessViewTest, NightLightButtonState) {
   EXPECT_FALSE(night_light_button()->GetEnabled());
 
   GetPrimaryUnifiedSystemTray()->CloseBubble();
-  // In the lock screen, the `night_light_button_` is disabled.
+  // In the locked screen, the `night_light_button_` is enabled.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   GetPrimaryUnifiedSystemTray()->ShowBubble();
-  EXPECT_FALSE(night_light_button()->GetEnabled());
+  EXPECT_TRUE(night_light_button()->GetEnabled());
 
   GetPrimaryUnifiedSystemTray()->CloseBubble();
   // In the active user session, the `night_light_button_` is enabled.

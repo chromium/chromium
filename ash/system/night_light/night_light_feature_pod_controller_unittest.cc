@@ -100,10 +100,14 @@ TEST_P(NightLightFeaturePodControllerTest, ButtonVisibility) {
   CreateButton();
   EXPECT_TRUE(IsButtonVisible());
 
-  // The button is not visible at the lock screen.
   GetSessionControllerClient()->LockScreen();
   CreateButton();
-  EXPECT_FALSE(IsButtonVisible());
+  // For QsRevamp: the feature tile is visible in the locked screen.
+  if (IsQsRevampEnabled()) {
+    EXPECT_TRUE(IsButtonVisible());
+  } else {
+    EXPECT_FALSE(IsButtonVisible());
+  }
 }
 
 // Tests that toggling night light from the system tray switches the color

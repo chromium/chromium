@@ -65,8 +65,7 @@ std::unique_ptr<FeatureTile> NightLightFeaturePodController::CreateTile(
                           weak_factory_.GetWeakPtr()),
       /*is_togglable=*/true);
   tile_ = tile.get();
-  const bool visible =
-      Shell::Get()->session_controller()->ShouldEnableSettings();
+  const bool visible = TrayPopupUtils::CanShowNightLightFeatureTile();
   tile_->SetVisible(visible);
   if (visible) {
     TrackVisibilityUMA();

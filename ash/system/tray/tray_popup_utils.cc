@@ -296,6 +296,13 @@ bool TrayPopupUtils::CanOpenWebUISettings() {
   return Shell::Get()->session_controller()->ShouldEnableSettings();
 }
 
+bool TrayPopupUtils::CanShowNightLightFeatureTile() {
+  CHECK(features::IsQsRevampEnabled());
+  return Shell::Get()->session_controller()->ShouldEnableSettings() ||
+         (Shell::Get()->session_controller()->GetSessionState() ==
+          session_manager::SessionState::LOCKED);
+}
+
 void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
                                               bool checked,
                                               bool enterprise_managed) {
