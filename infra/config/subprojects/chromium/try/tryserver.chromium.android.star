@@ -235,7 +235,7 @@ try_.builder(
             "compile_targets": [
                 "monochrome_public_minimal_apks",
                 "monochrome_static_initializers",
-                "trichrome_minimal_apks",
+                "trichrome_32_minimal_apks",
                 "validate_expectations",
             ],
         },
