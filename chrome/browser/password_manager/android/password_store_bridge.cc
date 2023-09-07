@@ -33,6 +33,15 @@ PasswordForm ConvertJavaObjectToPasswordForm(
   return form;
 }
 
+// IN-TEST
+PasswordForm Blocklist(JNIEnv* env, std::string url) {
+  PasswordForm form;
+  form.url = GURL(url);
+  form.signon_realm = password_manager::GetSignonRealm(form.url);
+  form.blocked_by_user = true;
+  return form;
+}
+
 }  // namespace
 
 // static
@@ -55,6 +64,13 @@ void PasswordStoreBridge::InsertPasswordCredentialForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& credential) {
   profile_store_->AddLogin(ConvertJavaObjectToPasswordForm(env, credential));
+}
+
+void PasswordStoreBridge::BlocklistForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jurl) {
+  profile_store_->AddLogin(
+      Blocklist(env, base::android::ConvertJavaStringToUTF8(env, jurl)));
 }
 
 bool PasswordStoreBridge::EditPassword(

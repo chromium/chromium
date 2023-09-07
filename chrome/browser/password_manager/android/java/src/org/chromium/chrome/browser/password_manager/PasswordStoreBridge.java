@@ -83,6 +83,10 @@ public class PasswordStoreBridge {
                 mNativePasswordStoreBridge, credential);
     }
 
+    public void blocklistForTesting(String url) {
+        PasswordStoreBridgeJni.get().blocklistForTesting(mNativePasswordStoreBridge, url);
+    }
+
     /**
      * Updates an existing credential with a new password.
      *
@@ -157,6 +161,7 @@ public class PasswordStoreBridge {
         long init(PasswordStoreBridge passwordStoreBridge);
         void insertPasswordCredentialForTesting(
                 long nativePasswordStoreBridge, PasswordStoreCredential credential);
+        void blocklistForTesting(long nativePasswordStoreBridge, String url);
         boolean editPassword(long nativePasswordStoreBridge, PasswordStoreCredential credential,
                 String newPassword);
         int getPasswordStoreCredentialsCount(long nativePasswordStoreBridge);

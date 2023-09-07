@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
@@ -178,14 +177,15 @@ public class PasswordAccessoryIntegrationTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID)
-    @DisabledTest(message = "https://crbug.com/1465414")
     public void testEnablesUndenylistingToggle() throws TimeoutException, InterruptedException {
-        mHelper.loadTestPage(false);
-        mHelper.cacheCredentials(new String[0], new String[0], true);
-
-        // Focus the field to bring up the accessory.
-        mHelper.focusPasswordField();
+        preparePasswordBridge();
+        String url = mTestServer.getURL("/chrome/test/data/password/password_form.html");
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mPasswordStoreBridge.blocklistForTesting(url); });
+        mActivityTestRule.loadUrl(url);
+        mHelper.focusPasswordField(false);
         mHelper.waitForKeyboardAccessoryToBeShown();
+        mHelper.waitForKeyboardToShow();
         whenDisplayed(isKeyboardAccessoryTabLayout()).perform(selectTabAtPosition(0));
 
         whenDisplayed(withId(R.id.option_toggle_switch)).check(matches(isNotChecked()));

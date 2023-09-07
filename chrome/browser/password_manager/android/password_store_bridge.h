@@ -33,6 +33,9 @@ class PasswordStoreBridge
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& credential);
 
+  void BlocklistForTesting(JNIEnv* env,
+                           const base::android::JavaParamRef<jstring>& jurl);
+
   // Called by Java to edit a credential.
   bool EditPassword(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& credential,
