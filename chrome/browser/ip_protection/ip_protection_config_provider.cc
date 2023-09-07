@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
+
+#include <memory>
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
@@ -15,6 +15,7 @@
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
@@ -24,7 +25,8 @@ IpProtectionConfigProvider::IpProtectionConfigProvider(
       ip_protection_config_http_(
           std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get())),
       blind_sign_auth_(std::make_unique<quiche::BlindSignAuth>(
-          ip_protection_config_http_.get())),
+          ip_protection_config_http_.get(),
+          privacy::ppn::BlindSignAuthOptions())),
       bsa_(blind_sign_auth_.get()) {
   CHECK(identity_manager);
 }
@@ -321,8 +323,8 @@ void IpProtectionConfigProvider::SetIpProtectionConfigHttpForTesting(
   // and `bsa_` is a raw pointer to `blind_sign_auth_`, so carefully update
   // those without leaving dangling pointers.
   bsa_ = nullptr;
-  blind_sign_auth_ =
-      std::make_unique<quiche::BlindSignAuth>(ip_protection_config_http.get());
+  blind_sign_auth_ = std::make_unique<quiche::BlindSignAuth>(
+      ip_protection_config_http.get(), privacy::ppn::BlindSignAuthOptions());
   bsa_ = blind_sign_auth_.get();
   ip_protection_config_http_ = std::move(ip_protection_config_http);
 }
