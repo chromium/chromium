@@ -30,6 +30,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -195,6 +196,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
+    @DisabledTest(message = "https://crbug.com/1480116")
     public void testZoomInfoPreference() {
         mSettingsActivityTestRule.startSettingsActivity();
         AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();
