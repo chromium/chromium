@@ -502,7 +502,11 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.relaunch_policy = NoForceRelaunchAndResetState;
+
+  // See (crbug.com/1479593). Enforcing relaunch between tests is necessary to
+  // prevent flakiness, due to a spinner that appears in some tests and blocks
+  // later ones from interacting with the UI.
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordUISplit);
