@@ -8,11 +8,6 @@
 
 namespace blink {
 
-bool IsResourceTypeFrame(blink::mojom::ResourceType type) {
-  return type == blink::mojom::ResourceType::kMainFrame ||
-         type == blink::mojom::ResourceType::kSubFrame;
-}
-
 bool IsRequestDestinationFrame(network::mojom::RequestDestination destination) {
   // kObject and kEmbed can also be destinations for a frame navigation.
   return destination == network::mojom::RequestDestination::kDocument ||
