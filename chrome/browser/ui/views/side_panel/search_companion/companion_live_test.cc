@@ -404,10 +404,10 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationLoggedOut) {
   WaitForHistogram("SidePanel.OpenDuration");
 }
 
-IN_PROC_BROWSER_TEST_F(CompanionLiveTest, SearchBox) {
+IN_PROC_BROWSER_TEST_F(CompanionLiveTest, RegionSearch) {
 // Navigate to a website, open the side panel, and ensure that the multi-modal
-// search box functions as intended. Note that sync and signin utilities are
-// only supported on Windows.
+// search box functions for region search as intended. Note that sync and signin
+// utilities are only supported on Windows.
 #if BUILDFLAG(IS_WIN)
   TestAccount ta;
   // Sign in to opted in test account.
@@ -422,24 +422,14 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, SearchBox) {
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
   WaitForCompanionToBeLoaded();
 
-  // Ensure multimodal search box is present.
-  std::string search("Search");
-  ASSERT_EQ(EvalJs("document.querySelectorAll('input')[0].placeholder"),
-            search);
-
-  // Conduct a side search.
-  ExecJs("document.querySelectorAll('input')[0].value = 'test search';");
-  ClickButtonByAriaLabel("Search");
-  ConfirmFeaturesClicked({"SearchBox"}, 1);
+  // Click the region search button.
+  ClickButtonByAriaLabel("Search by image");
+  ConfirmFeaturesClicked({"RegionSearch"}, 1);
 
   // Return to zero state.
   ClickButtonByAriaLabel("Back");
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
-
-  // Click the region search button.
-  ClickButtonByAriaLabel("Search by image");
-  ConfirmFeaturesClicked({"RegionSearch"}, 1);
 #endif  // BUILDFLAG(IS_WIN)
 }
 
