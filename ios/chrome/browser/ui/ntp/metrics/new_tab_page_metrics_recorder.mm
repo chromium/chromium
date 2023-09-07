@@ -33,6 +33,14 @@
     UMA_HISTOGRAM_ENUMERATION(kNTPImpressionHistogram, impressionType,
                               IOSNTPImpressionType::kMaxValue);
   }
+
+  // TODO(crbug.com/1475674) Remove old deprecated Tile Ablation keys. To be
+  // removed after a few milestones.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults removeObjectForKey:@"DoneWithTileAblation"];
+  [defaults removeObjectForKey:@"kFirstImpressionRecordedTileAblationKey"];
+  [defaults removeObjectForKey:@"NumberOfNTPImpressionsRecorded"];
+  [defaults removeObjectForKey:@"LastNTPImpressionRecorded"];
 }
 
 - (void)recordOverscrollActionForType:(OverscrollActionType)type {
