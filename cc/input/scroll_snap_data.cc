@@ -133,6 +133,15 @@ absl::optional<SnapSearchResult> SearchResultForDodgingRange(
   return result;
 }
 
+bool CanCoverSnapportOnAxis(SearchAxis axis,
+                            const gfx::RectF& container_rect,
+                            const gfx::RectF& area_rect) {
+  return (axis == SearchAxis::kY &&
+          area_rect.height() >= container_rect.height()) ||
+         (axis == SearchAxis::kX &&
+          area_rect.width() >= container_rect.width());
+}
+
 }  // namespace
 
 SnapSearchResult::SnapSearchResult(float offset, const gfx::RangeF& range)
@@ -504,11 +513,10 @@ SnapContainerData::FindClosestValidAreaInternal(
 
     SnapSearchResult candidate = GetSnapSearchResult(axis, area);
     evaluate(candidate);
-
     if (should_consider_covering &&
-        IsSnapportCoveredOnAxis(axis, intended_position, area.rect)) {
-      // Since snap area will cover the snapport, we consider the intended
-      // position as a valid snap position.
+        (base::FeatureList::IsEnabled(features::kScrollSnapPreferCloserCovering)
+             ? CanCoverSnapportOnAxis(axis, rect_, area.rect)
+             : IsSnapportCoveredOnAxis(axis, intended_position, area.rect))) {
       if (absl::optional<SnapSearchResult> covering =
               FindCoveringCandidate(area, axis, candidate, intended_position)) {
         if (covering->snap_offset() == intended_position) {

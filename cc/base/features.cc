@@ -53,6 +53,10 @@ BASE_FEATURE(kScrollSnapCoveringUseNativeFling,
              "ScrollSnapCoveringUseNativeFling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kScrollSnapPreferCloserCovering,
+             "ScrollSnapPreferCloserCovering",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHudDisplayForPerformanceMetrics,
              "HudDisplayForPerformanceMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
