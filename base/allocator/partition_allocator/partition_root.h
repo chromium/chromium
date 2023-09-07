@@ -1259,7 +1259,7 @@ PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
 
   if (PartitionAllocHooks::AreHooksEnabled()) {
     // A valid |root| might not be available if this function is called from
-    // |FreeWithFlagsInUnknownRoot| and not deducible if object originates from
+    // |FreeInUnknownRoot| and not deducible if object originates from
     // an override hook.
     // TODO(crbug.com/1137393): See if we can make the root available more
     // reliably or even make this function non-static.
