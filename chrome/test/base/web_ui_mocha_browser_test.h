@@ -24,26 +24,26 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   // - file: The module file holding the Mocha test.
   // - trigger: A JS string used to trigger the tests, defaults to
   //            "mocha.run()".
-  // - requires_focus: Whether to focus the web contents before running the
-  //                   test, used for tests running as interactive_ui_tests.
-  //                   Defaults to false.
   // - skip_test_loader: Whether to skip loading the test from
   //                     chrome://<test_loader_host_>/test_loader.html and load
   //                     it directly from chrome://<test_loader_host>. Defaults
   //                     to false.
   virtual void RunTest(const std::string& file,
                        const std::string& trigger,
-                       const bool& requires_focus,
                        const bool& skip_test_loader);
 
   // Convenience overloaded version of the RunTest above, which uses the default
-  // values for `requires_focus` and `skip_test_loader` (both false).
+  // value for `skip_test_loader`.
   virtual void RunTest(const std::string& file, const std::string& trigger);
 
-  // Convenience overloaded version of the RunTest above, which uses the default
-  // value for `requires_focus` and `skip_test_loader=true`.
+  // Convenience overloaded version of the RunTest above, which uses
+  // `skip_test_loader=true`.
   virtual void RunTestWithoutTestLoader(const std::string& file,
                                         const std::string& trigger);
+
+  // Hook for subclasses that need to perform additional setup steps that
+  // involve the WebContents, before the Mocha test runs.
+  virtual void OnWebContentsAvailable(content::WebContents* web_contents);
 
   // InProcessBrowserTest overrides.
   void SetUpOnMainThread() override;
@@ -68,7 +68,7 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
 // interactive_ui_tests, and not as part of browser_tests.
 class WebUIMochaFocusTest : public WebUIMochaBrowserTest {
  protected:
-  void RunTest(const std::string& file, const std::string& trigger) override;
+  void OnWebContentsAvailable(content::WebContents* web_contents) override;
 };
 
 #endif  // CHROME_TEST_BASE_WEB_UI_MOCHA_BROWSER_TEST_H_

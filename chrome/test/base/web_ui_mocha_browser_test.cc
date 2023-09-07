@@ -75,12 +75,17 @@ void WebUIMochaBrowserTest::SetUpOnMainThread() {
 
 void WebUIMochaBrowserTest::RunTest(const std::string& file,
                                     const std::string& trigger) {
-  RunTest(file, trigger, /*requires_focus=*/false, /*skip_test_loader=*/false);
+  RunTest(file, trigger, /*skip_test_loader=*/false);
+}
+
+void WebUIMochaBrowserTest::OnWebContentsAvailable(
+    content::WebContents* web_contents) {
+  // Nothing to do here. Should be overridden by any subclasses if additional
+  // setup steps are needed.
 }
 
 void WebUIMochaBrowserTest::RunTest(const std::string& file,
                                     const std::string& trigger,
-                                    const bool& requires_focus,
                                     const bool& skip_test_loader) {
   // Construct URL to load the test module file.
   GURL url(
@@ -96,10 +101,6 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
       chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(web_contents);
 
-  if (requires_focus) {
-    web_contents->Focus();
-  }
-
   // Check that the navigation does not point to an error page like
   // chrome-error://chromewebdata/.
   bool is_error_page =
@@ -108,6 +109,10 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
   if (is_error_page) {
     FAIL() << "Navigation to '" << url.spec() << "' failed.";
   }
+
+  // Hook for subclasses that need access to the WebContents before the Mocha
+  // test runs.
+  OnWebContentsAvailable(web_contents);
 
   if (skip_test_loader) {
     // Perform setup steps normally done by test_loader.html.
@@ -158,11 +163,12 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
 void WebUIMochaBrowserTest::RunTestWithoutTestLoader(
     const std::string& file,
     const std::string& trigger) {
-  RunTest(file, trigger, /*requires_focus=*/false, /*skip_test_loader=*/true);
+  RunTest(file, trigger, /*skip_test_loader=*/true);
 }
 
-void WebUIMochaFocusTest::RunTest(const std::string& file,
-                                  const std::string& trigger) {
-  WebUIMochaBrowserTest::RunTest(file, trigger, /*requires_focus=*/true,
-                                 /*skip_test_loader=*/false);
+void WebUIMochaFocusTest::OnWebContentsAvailable(
+    content::WebContents* web_contents) {
+  // Focus the web contents before running the test, used for tests running as
+  // interactive_ui_tests.
+  web_contents->Focus();
 }
