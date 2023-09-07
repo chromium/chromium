@@ -255,8 +255,11 @@ export class BrowsingContextImpl {
     await this.#deferreds.Page.lifecycleEvent.load;
   }
 
-  targetUnblocked(): Promise<Result<void>> {
-    return this.#cdpTarget.targetUnblocked;
+  async targetUnblockedOrThrow(): Promise<void> {
+    const result = await this.#cdpTarget.targetUnblocked;
+    if (result.kind === 'error') {
+      throw result.error;
+    }
   }
 
   async getOrCreateSandbox(sandbox: string | undefined): Promise<Realm> {
@@ -600,7 +603,7 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
-    await this.targetUnblocked();
+    await this.targetUnblockedOrThrow();
 
     // TODO: handle loading errors.
     const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
@@ -649,7 +652,7 @@ export class BrowsingContextImpl {
     ignoreCache: boolean,
     wait: BrowsingContext.ReadinessState
   ): Promise<EmptyResult> {
-    await this.targetUnblocked();
+    await this.targetUnblockedOrThrow();
 
     await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
       ignoreCache,

@@ -244,7 +244,7 @@ export class Realm {
   ): Promise<Script.EvaluateResult> {
     await this.#browsingContextStorage
       .getContext(this.browsingContextId)
-      .targetUnblocked();
+      .targetUnblockedOrThrow();
 
     const cdpEvaluateResult = await this.cdpClient.sendCommand(
       'Runtime.evaluate',
@@ -406,7 +406,7 @@ export class Realm {
   ): Promise<Script.EvaluateResult> {
     await this.#browsingContextStorage
       .getContext(this.browsingContextId)
-      .targetUnblocked();
+      .targetUnblockedOrThrow();
 
     const callFunctionAndSerializeScript = `(...args) => {
       function callFunction(f, args) {

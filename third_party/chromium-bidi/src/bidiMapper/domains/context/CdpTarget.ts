@@ -162,7 +162,11 @@ export class CdpTarget {
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
       if (!this.#cdpClient.isCloseError(error)) {
-        throw error;
+        this.#targetUnblocked.resolve({
+          kind: 'error',
+          error,
+        });
+        return;
       }
     }
 
