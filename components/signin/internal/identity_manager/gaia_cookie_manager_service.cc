@@ -152,14 +152,16 @@ void GaiaCookieManagerService::GaiaCookieRequest::SetSourceSuffix(
 void GaiaCookieManagerService::GaiaCookieRequest::
     RunSetAccountsInCookieCompletedCallback(
         signin::SetAccountsInCookieResult result) {
-  if (set_accounts_in_cookie_completed_callback_)
+  if (set_accounts_in_cookie_completed_callback_) {
     std::move(set_accounts_in_cookie_completed_callback_).Run(result);
+  }
 }
 
 void GaiaCookieManagerService::GaiaCookieRequest::
     RunLogOutFromCookieCompletedCallback(const GoogleServiceAuthError& error) {
-  if (log_out_from_cookie_completed_callback_)
+  if (log_out_from_cookie_completed_callback_) {
     std::move(log_out_from_cookie_completed_callback_).Run(error);
+  }
 }
 
 // static
@@ -260,8 +262,9 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::
 
   // Start a fetcher for each connection URL that needs to be checked.
   for (const base::Value& elem : value->GetList()) {
-    if (!elem.is_dict())
+    if (!elem.is_dict()) {
       continue;
+    }
 
     const base::Value::Dict& elem_dict = elem.GetDict();
     const std::string* token = elem_dict.FindString("carryBackToken");
@@ -353,18 +356,21 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::OnURLLoadComplete(
   }
 
   auto it = loaders_.find(source);
-  if (it == loaders_.end())
+  if (it == loaders_.end()) {
     return;
+  }
 
   std::string data;
-  if (body)
+  if (body) {
     data = std::move(*body);
+  }
 
   // Only up to the first 16 characters of the response are important to GAIA.
   // Truncate if needed to keep amount data sent back to GAIA down.
   constexpr int kTruncatedLength = 16;
-  if (data.size() > kTruncatedLength)
+  if (data.size() > kTruncatedLength) {
     data.resize(kTruncatedLength);
+  }
 
   // Encode the response to avoid cases where a proxy could pass a
   // comma-separated string which would break the server-side parsing
@@ -493,8 +499,9 @@ void GaiaCookieManagerService::SetAccountsInCookie(
     SetAccountsInCookieCompletedCallback
         set_accounts_in_cookies_completed_callback) {
   std::vector<std::string> account_ids;
-  for (const auto& id : accounts)
+  for (const auto& id : accounts) {
     account_ids.push_back(id.first.ToString());
+  }
   VLOG(1) << "GaiaCookieManagerService::SetAccountsInCookie: "
           << base::JoinString(account_ids, " ");
   requests_.push_back(GaiaCookieRequest::CreateSetAccountsRequest(
@@ -513,8 +520,9 @@ void GaiaCookieManagerService::SetAccountsInCookie(
 bool GaiaCookieManagerService::ListAccounts(
     std::vector<gaia::ListedAccount>* accounts,
     std::vector<gaia::ListedAccount>* signed_out_accounts) {
-  if (accounts)
+  if (accounts) {
     accounts->assign(listed_accounts_.begin(), listed_accounts_.end());
+  }
 
   if (signed_out_accounts) {
     signed_out_accounts->assign(signed_out_accounts_.begin(),
@@ -563,47 +571,21 @@ void GaiaCookieManagerService::LogOutAllAccounts(
   VLOG(1) << "GaiaCookieManagerService::LogOutAllAccounts";
   DCHECK(completion_callback);
 
-  bool log_out_queued = false;
-  if (!requests_.empty()) {
-    // Track requests to keep; all other unstarted requests will be removed.
-    std::vector<GaiaCookieRequest> requests_to_keep;
-
-    // Check all pending, non-executing requests.
-    for (auto it = requests_.begin() + 1; it != requests_.end(); ++it) {
-      requests_to_keep.push_back(std::move(*it));
-
-      // Verify a LOG_OUT isn't already queued.
-      if (it->request_type() == GaiaCookieRequestType::LOG_OUT) {
-        log_out_queued = true;
-      }
-    }
-
-    // Verify a LOG_OUT isn't currently being processed.
-    if (requests_.front().request_type() == GaiaCookieRequestType::LOG_OUT) {
-      log_out_queued = true;
-    }
-
-    // Remove all but the executing request. Re-add all requests being kept.
-    if (requests_.size() > 1) {
-      requests_.erase(requests_.begin() + 1, requests_.end());
-      requests_.insert(requests_.end(),
-                       std::make_move_iterator(requests_to_keep.begin()),
-                       std::make_move_iterator(requests_to_keep.end()));
-    }
-  }
-
-  if (!log_out_queued) {
-    requests_.push_back(GaiaCookieRequest::CreateLogOutRequest(
-        source, std::move(completion_callback)));
-    if (requests_.size() == 1) {
-      fetcher_retries_ = 0;
-      signin_client_->DelayNetworkCall(
-          base::BindOnce(&GaiaCookieManagerService::StartGaiaLogOut,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-  } else {
+  // Verify a LOG_OUT isn't already queued.
+  if (base::Contains(requests_, GaiaCookieRequestType::LOG_OUT,
+                     &GaiaCookieRequest::request_type)) {
     std::move(completion_callback)
         .Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+    return;
+  }
+
+  requests_.push_back(GaiaCookieRequest::CreateLogOutRequest(
+      source, std::move(completion_callback)));
+  if (requests_.size() == 1) {
+    fetcher_retries_ = 0;
+    signin_client_->DelayNetworkCall(
+        base::BindOnce(&GaiaCookieManagerService::StartGaiaLogOut,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
