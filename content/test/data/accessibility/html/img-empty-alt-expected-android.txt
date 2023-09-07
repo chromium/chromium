@@ -1,5 +1,10 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
+++++android.widget.TextView name=' '
 ++++android.widget.Image role_description='graphic'
+++++android.widget.TextView name=' '
+++++android.widget.TextView name=' '
+++++android.widget.TextView name=' '
 ++++android.widget.Image role_description='graphic' name='read'
+++++android.widget.TextView name=' '
 ++++android.widget.Image role_description='graphic' name='full'

@@ -16,8 +16,10 @@ async_test_after_layout_and_paint((t) => {
   const axRootElement = accessibilityController.rootElement;
   axRootElement.setNotificationListener(t.step_func((notification, intents) => {
     // Focus notification will come asynchronously.
-    if (notification == 'Focus' || notification == 'LoadComplete' || notification == 'MarkDirty')
+    if (notification == 'Focus' || notification == 'LoadStart' ||
+        notification == 'LoadComplete' || notification == 'MarkDirty') {
       return;
+    }
 
     if (notification == 'DocumentSelectionChanged') {
       assert_array_equals(intents,

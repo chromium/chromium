@@ -377,6 +377,7 @@ void AXInlineTextBox::SerializeMarkerAttributes(
 }
 
 void AXInlineTextBox::Init(AXObject* parent) {
+  CHECK(!AXObjectCache().IsFrozen());
   role_ = ax::mojom::blink::Role::kInlineTextBox;
   DCHECK(parent);
   DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))

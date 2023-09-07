@@ -38,6 +38,9 @@ async_test_after_layout_and_paint((testCase) => {
     window.accessibleThree = accessibleMenulist.childAtIndex(0).childAtIndex(2);
 
     function listListener(notification) {
+        if (notification == 'MarkDirty') {
+            return;
+        }
         assert_less_than(notificationReceivedIndex, expectedNotifications.length);
         assert_equals(notification, expectedNotifications[notificationReceivedIndex],
                       `Notification ${notificationReceivedIndex}`);

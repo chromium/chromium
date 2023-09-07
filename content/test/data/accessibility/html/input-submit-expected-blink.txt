@@ -17,6 +17,7 @@ rootWebArea
 ++++++++++image
 ++++++++++staticText name='First image button in a form is a valid default button'
 ++++++++++++inlineTextBox name='First image button in a form is a valid default button'
+++++++++staticText name=' '
 ++++++++button inputType='image' name='Second image button in a form not a valid default button'
 ++++++++++image
 ++++++++++staticText name='Second image button in a form not a valid default button'

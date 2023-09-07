@@ -1,6 +1,7 @@
 [document web] name='done' focusable
 ++[image map] name='star0'
 ++++[link] name='Area' focusable
+++[static] name=' '
 ++[image map] name='star2'
 ++++[link] name='Area' focusable
 ++++[link] name='Area2' focusable focused

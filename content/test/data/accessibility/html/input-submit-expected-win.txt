@@ -8,6 +8,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_PUSHBUTTON name='First image button in a form is a valid default button' DEFAULT FOCUSABLE
 ++++++ROLE_SYSTEM_GRAPHIC READONLY
 ++++++ROLE_SYSTEM_STATICTEXT name='First image button in a form is a valid default button'
+++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++ROLE_SYSTEM_PUSHBUTTON name='Second image button in a form not a valid default button' FOCUSABLE
 ++++++ROLE_SYSTEM_GRAPHIC READONLY
 ++++++ROLE_SYSTEM_STATICTEXT name='Second image button in a form not a valid default button'

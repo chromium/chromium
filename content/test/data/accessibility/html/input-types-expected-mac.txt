@@ -21,6 +21,7 @@ AXWebArea
 ++++++AXButton AXTitle='Image:'
 ++++++++AXImage
 ++++++++AXStaticText AXValue='Submit'
+++++AXStaticText AXValue=' '
 ++++AXGroup
 ++++++AXStaticText AXValue='Number: '
 ++++++AXIncrementor AXTitle='Number:'

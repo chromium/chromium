@@ -6,5 +6,6 @@ WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chr
 ++View actions:[AX_FOCUS] bundle:[chromeRole="section", hasImage="true"]
 ++++EditText clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
 ++++Button text:"First image button in a form is a valid default button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", hasImage="true", roleDescription="button"]
+++++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++Button text:"Second image button in a form not a valid default button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", hasImage="true", roleDescription="button"]
 ++Button text:"Submit outside of form not a valid default button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]

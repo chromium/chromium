@@ -3580,8 +3580,10 @@ void AXPlatformNodeAuraLinux::OnScrolledToAnchor() {
   AtkObject* atk_object = GetOrCreateAtkObject();
   if (!atk_object)
     return;
-  DCHECK(ATK_IS_TEXT(atk_object));
-  g_signal_emit_by_name(atk_object, "text-caret-moved", 0);
+  // The text-caret-moved event is used to signal a scroll to anchor event.
+  if (ATK_IS_TEXT(atk_object)) {
+    g_signal_emit_by_name(atk_object, "text-caret-moved", 0);
+  }
 }
 
 void AXPlatformNodeAuraLinux::SetActiveViewsDialog() {

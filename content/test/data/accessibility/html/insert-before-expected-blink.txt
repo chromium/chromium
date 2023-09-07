@@ -3,5 +3,8 @@ rootWebArea name='done'
 ++++genericContainer
 ++++++image name='a0'
 ++++++image name='a1'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
 ++++++image name='a2'
+++++++staticText name=' '
 ++++++group
