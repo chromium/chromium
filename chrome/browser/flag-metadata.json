@@ -224,7 +224,7 @@
   {
     "name": "app-deduplication-service-fondue",
     "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 125
   },
   {
     "name": "app-launch-automation",
@@ -238,8 +238,8 @@
   },
   {
     "name": "app-management-app-details",
-    "owners": [ "tsergeant",  "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 118
+    "owners": [ "sharminzaman@google.com", "tsergeant", "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 122
   },
   {
     "name": "app-menu-mobile-site-option",
