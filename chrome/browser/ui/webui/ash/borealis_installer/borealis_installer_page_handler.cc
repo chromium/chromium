@@ -84,6 +84,10 @@ void BorealisInstallerPageHandler::ShutDown() {
           }));
 }
 
+void BorealisInstallerPageHandler::CancelInstall() {
+  borealis::BorealisService::GetForProfile(profile_)->Installer().Cancel();
+}
+
 void BorealisInstallerPageHandler::Launch() {
   // Installation starts the borealis VM, so the splash screen would normally
   // not show, therefore we need to show it manually here. Since this is
@@ -137,6 +141,10 @@ void BorealisInstallerPageHandler::OnErrorDialogDismissed(
       OnPageClosed();
       return;
   }
+}
+
+void BorealisInstallerPageHandler::RequestClosePage() {
+  page_->RequestClose();
 }
 
 }  // namespace ash

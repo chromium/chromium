@@ -20,6 +20,8 @@ interface PageHandler {
   ShutDown();
   // Launch Borealis.
   Launch();
+  // Cancel installation.
+  CancelInstall();
   // This is called when the web page is "closed", and the dialog (or whatever)
   // hosting it should also be closed. This can happen as a result of
   // Page::RequestClose() being called, or it can happen spontaneously (e.g.
@@ -37,4 +39,7 @@ interface Page {
   // Restarts the installation if an error occurs. Triggered from an error
   // dialog.
   RestartInstallation();
+  // Informs the page that it should be closed. The page should respond with
+  // PageHandler::OnPageClosed() to indicate it is ready to be closed.
+  RequestClose();
 };

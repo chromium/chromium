@@ -33,6 +33,7 @@ class BorealisInstallerPageHandler
   void Install() override;
   void ShutDown() override;
   void Launch() override;
+  void CancelInstall() override;
   void OnPageClosed() override;
 
   // borealis::BorealisInstaller::Observer implementation.
@@ -42,6 +43,9 @@ class BorealisInstallerPageHandler
   void OnInstallationEnded(borealis::BorealisInstallResult result,
                            const std::string& error_description) override;
   void OnCancelInitiated() override {}
+
+  // Send a close request to the web page.
+  void RequestClosePage();
 
  private:
   void OnErrorDialogDismissed(views::borealis::ErrorDialogChoice choice);

@@ -2807,6 +2807,8 @@ static_library("ui") {
       "webui/ash/bluetooth_pairing_dialog.h",
       "webui/ash/bluetooth_shared_load_time_data_provider.cc",
       "webui/ash/bluetooth_shared_load_time_data_provider.h",
+      "webui/ash/borealis_installer/borealis_installer_dialog.cc",
+      "webui/ash/borealis_installer/borealis_installer_dialog.h",
       "webui/ash/borealis_installer/borealis_installer_page_handler.cc",
       "webui/ash/borealis_installer/borealis_installer_page_handler.h",
       "webui/ash/borealis_installer/borealis_installer_ui.cc",

@@ -94,6 +94,15 @@ void BorealisInstallerUI::OnPageClosed() {
   ui::MojoWebDialogUI::CloseDialog(base::Value::List());
 }
 
+bool BorealisInstallerUI::RequestClosePage() {
+  if (page_closed_ || !page_handler_) {
+    return true;
+  }
+
+  page_handler_->RequestClosePage();
+  return false;
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(BorealisInstallerUI);
 
 }  // namespace ash
