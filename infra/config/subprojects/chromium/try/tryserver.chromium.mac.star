@@ -494,6 +494,7 @@ ios_builder(
 ios_builder(
     name = "ios-simulator-inverse-fieldtrials-fyi",
     mirrors = builder_config.copy_from("try/ios-simulator"),
+    cpu = cpu.ARM64,
 )
 
 ios_builder(
