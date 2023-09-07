@@ -169,6 +169,9 @@ FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
 absl::optional<net::GlobalFirstPartySets> FirstPartySetsHandlerImpl::GetSets(
     SetsReadyOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsEnabled()) {
+    return net::GlobalFirstPartySets();
+  }
   CHECK(IsEnabled());
   if (global_sets_.has_value())
     return global_sets_->Clone();
@@ -212,9 +215,9 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(
     const base::Version& version,
     base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(enabled_);
-  CHECK(embedder_will_provide_public_sets_);
-  CHECK(sets_loader_);
+  if (!enabled_ || !embedder_will_provide_public_sets_ || !sets_loader_) {
+    return;
+  }
 
   // TODO(crbug.com/1219656): Use the version to compute sets diff.
   sets_loader_->SetComponentSets(version, std::move(sets_file));

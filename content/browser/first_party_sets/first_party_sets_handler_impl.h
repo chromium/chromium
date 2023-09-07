@@ -90,7 +90,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // If `callback` is null, it will not be invoked, even if the First-Party Sets
   // data is not ready yet.
   //
-  // Must not be called if First-Party Sets is disabled.
+  // If First-Party Sets is disabled, this returns a populated optional with an
+  // empty GlobalFirstPartySets instance.
   [[nodiscard]] virtual absl::optional<net::GlobalFirstPartySets> GetSets(
       SetsReadyOnceCallback callback);
 

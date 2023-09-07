@@ -137,11 +137,13 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   //
   // Embedder should call this method as early as possible during browser
   // startup if First-Party Sets are enabled, since no First-Party Sets queries
-  // are answered until initialization is complete. Must not be called if
-  // `ContentBrowserClient::WillProvidePublicFirstPartySets` returns false or
-  // `ContentBrowserClient::IsFrstpartySetsEnabled` returns false.
+  // are answered until initialization is complete.
   //
-  // Must be called at most once.
+  // If this is called when First-Party Sets are enabled, or the embedder has
+  // not indicated it will provide the public First-Party Sets, the call is
+  // ignored.
+  //
+  // If this is called more than once, all but the first call are ignored.
   virtual void SetPublicFirstPartySets(const base::Version& version,
                                        base::File sets_file) = 0;
 
