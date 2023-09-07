@@ -48,6 +48,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/constants.h"
@@ -2184,6 +2185,27 @@ TEST_F(TabletWindowFloatSplitviewTest, FloatToSnapped) {
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_FALSE(split_view_controller->InSplitViewMode());
+
+  // Tests that when we partial-snap `other_window` now, activating `window`
+  // will results in `window` snapped on the opposite side while keeping the
+  // partial snap ratio.
+  const WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                                 chromeos::kTwoThirdSnapRatio);
+  WindowState::Get(other_window.get())->OnWMEvent(&snap_primary_two_third);
+  ASSERT_TRUE(WindowState::Get(other_window.get())->IsSnapped());
+
+  wm::ActivateWindow(window.get());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+  EXPECT_EQ(split_view_controller->state(),
+            SplitViewController::State::kBothSnapped);
+  EXPECT_EQ(split_view_controller->primary_window(), other_window.get());
+  EXPECT_EQ(split_view_controller->secondary_window(), window.get());
+  EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
+              WindowState::Get(window.get())->snap_ratio().value(),
+              /*abs_error=*/0.1);
+  EXPECT_NEAR(chromeos::kTwoThirdSnapRatio,
+              WindowState::Get(other_window.get())->snap_ratio().value(),
+              /*abs_error=*/0.1);
 }
 
 // When reset a floated window that's previously snapped, maximize instead of

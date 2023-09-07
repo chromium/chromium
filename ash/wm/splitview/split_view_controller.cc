@@ -2535,12 +2535,12 @@ void SplitViewController::OnWindowSnapped(
     wm::ActivateWindow(window);
   }
 
-  // In tablet mode, if the window was previously floated, and there is another
-  // non-minimized window, do not enter overview but instead snap that window to
-  // the opposite side.
+  // In tablet mode, if the window was previously floated, the other side is
+  // available, and there is another non-minimized window, do not enter overview
+  // but instead snap that window to the opposite side.
   if (previous_state &&
       *previous_state == chromeos::WindowStateType::kFloated &&
-      IsInTabletMode()) {
+      IsInTabletMode() && !BothSnapped()) {
     auto mru_windows =
         Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(
             kActiveDesk);
