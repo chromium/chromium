@@ -191,6 +191,7 @@ void UnifiedConsentService::RegisterPrefs(
       prefs::kUnifiedConsentMigrationState,
       static_cast<int>(MigrationState::kNotInitialized));
 #endif
+  registry->RegisterBooleanPref(prefs::kPageContentCollectionEnabled, false);
 }
 
 void UnifiedConsentService::SetUrlKeyedAnonymizedDataCollectionEnabled(

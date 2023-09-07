@@ -13,5 +13,7 @@ const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
 const char kUrlKeyedAnonymizedDataCollectionEnabled[] =
     "url_keyed_anonymized_data_collection.enabled";
 
+const char kPageContentCollectionEnabled[] = "page_content_collection.enabled";
+
 }  // namespace prefs
 }  // namespace unified_consent

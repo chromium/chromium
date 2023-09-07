@@ -371,6 +371,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [::unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled] =
           settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[unified_consent::prefs::kPageContentCollectionEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::omnibox::kDocumentSuggestEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::commerce::kPriceEmailNotificationsEnabled] =
