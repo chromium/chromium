@@ -106,8 +106,7 @@ source_set("unit_tests_support") {
   ]
 }
 
-# TODO(crbug.com / 1475062, crbug.com / 1353965): Re - enable after scorer correction with flatbuffer model.
-if (false && use_fuzzing_engine_with_lpm) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("client_side_phishing_fuzzer") {
     sources = [ "client_side_phishing_fuzzer.cc" ]
     deps = [

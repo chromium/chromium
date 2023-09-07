@@ -461,8 +461,11 @@ double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
 
 double Scorer::ComputeScore(const FeatureMap& features) const {
   double logodds = 0.0;
-  for (const flat::ClientSideModel_::Rule* rule : *flatbuffer_model_->rule()) {
-    logodds += ComputeRuleScore(rule, features);
+  if (flatbuffer_model_ && flatbuffer_model_->rule()) {
+    for (const flat::ClientSideModel_::Rule* rule :
+         *flatbuffer_model_->rule()) {
+      logodds += ComputeRuleScore(rule, features);
+    }
   }
   return LogOdds2Prob(logodds);
 }

@@ -11,7 +11,7 @@ package safe_browsing;
 import "components/safe_browsing/core/common/proto/client_model.proto";
 
 message ClientSidePhishingFuzzerCase {
-  optional ClientSideModel model = 1;
+  optional bytes memory_region = 1;
 
   message RealFeature {
     optional bytes name = 1;
