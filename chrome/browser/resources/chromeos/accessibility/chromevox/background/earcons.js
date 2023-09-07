@@ -21,6 +21,10 @@ import {LogStore} from './logging/log_store.js';
 
 const DeviceType = chrome.audio.DeviceType;
 
+/**
+ * High-level class that manages when each earcon should start (and when
+ * relevant, stop) playing.
+ */
 export class Earcons extends AbstractEarcons {
   constructor() {
     super();

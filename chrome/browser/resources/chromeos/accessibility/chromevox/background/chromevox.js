@@ -17,6 +17,7 @@ import {BrailleInterface} from './braille/braille_interface.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {TtsInterface} from './tts_interface.js';
 
+/** A central access point for the different modes of output. */
 export const ChromeVox = {
   /** @type {BrailleInterface} */
   braille: null,

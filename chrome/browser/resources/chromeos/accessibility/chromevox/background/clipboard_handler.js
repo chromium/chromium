@@ -11,6 +11,8 @@ import {QueueMode} from '../common/tts_types.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState} from './chromevox_state.js';
 
+
+/** Handles accessing and tracking access to the clipboard. */
 export class ClipboardHandler {
   constructor() {
     /** @private {string|undefined} */

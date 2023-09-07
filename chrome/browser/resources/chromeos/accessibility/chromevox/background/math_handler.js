@@ -13,7 +13,8 @@ import {QueueMode} from '../common/tts_types.js';
 import {ChromeVox} from './chromevox.js';
 
 /**
- * Initializes math for output and exploration.
+ * Handles specialized code to navigate, announce, and interact with math
+ * content (encoded in MathML).
  */
 export class MathHandler {
   /**

@@ -65,6 +65,14 @@ const SetNativeChromeVoxResponse =
  */
 let NewRangeData;
 
+/**
+ * Maps a Command to the method that will perform that action.
+ *
+ * To streamline this class, the goal is to move the logic for each command out
+ * of this file.
+ *
+ * When adding new commands, please put the logic in a more relevant spot.
+ */
 export class CommandHandler extends CommandHandlerInterface {
   /** @private */
   constructor() {

@@ -45,6 +45,7 @@ let DownloadDelta;
 const DownloadItem = chrome.downloads.DownloadItem;
 const DownloadState = chrome.downloads.State;
 
+/** Handles all download events and notifications for ChromeVox. */
 export class DownloadHandler {
   /** @private */
   constructor() {

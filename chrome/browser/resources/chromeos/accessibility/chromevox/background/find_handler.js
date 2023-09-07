@@ -14,6 +14,10 @@ import {OutputCustomEvent} from './output/output_types.js';
 const MarkerType = chrome.automation.MarkerType;
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 
+/**
+ * Handles navigation among the results when using the built-in find behavior
+ * (i.e. Ctrl-F).
+ */
 export class FindHandler {
   /** @private */
   constructor() {
