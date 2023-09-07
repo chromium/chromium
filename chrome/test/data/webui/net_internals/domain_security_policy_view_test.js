@@ -227,36 +227,6 @@ suite(domain_security_policy_view_test.suiteName, function() {
   }
 
   /**
-   * A Task to retrieve a test report-uri.
-   */
-  class GetTestReportURITask extends Task {
-    /**
-     * Sets |NetInternals.callback|, and sends the request to the browser
-     * process.
-     */
-    start() {
-      NetInternalsTest.setCallback(this.onReportURIReceived_.bind(this));
-      chrome.send('setUpTestReportURI');
-    }
-
-    /**
-     * Saves the received report-uri and completes the task.
-     * @param {string} reportURI Report URI received from the browser process.
-     */
-    onReportURIReceived_(reportURI) {
-      this.reportURI_ = reportURI;
-      this.onTaskDone();
-    }
-
-    /**
-     * Returns the saved report-uri received from the browser process.
-     */
-    reportURI() {
-      return this.reportURI_;
-    }
-  }
-
-  /**
    * Checks that querying a domain that was never added fails.
    */
   test(domain_security_policy_view_test.TestNames.QueryNotFound, function() {

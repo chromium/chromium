@@ -272,16 +272,10 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
   void HandleMessage(const content::WebUI::MessageCallback& handler,
                      const base::Value::List& data);
 
-  // Runs NetInternalsTest.callback with the given value.
-  void RunJavascriptCallback(base::Value* value);
-
-  // Takes a string and provides the corresponding URL from the test server,
-  // which must already have been started.
-  void GetTestServerURL(const base::Value::List& list);
-
-  // Performs a DNS lookup. Calls the Javascript callback with the host's IP
+  // Performs a DNS lookup. Resolves a Javascript Promise with the host's IP
   // address or an error string.
   void DnsLookup(const base::Value::List& list);
+  void DnsLookupFinished(std::string callback_id, base::Value* result);
 
   // Sets/resets a mock network context for testing.
   void SetNetworkContextForTesting(const base::Value::List& list);
@@ -309,10 +303,6 @@ NetInternalsTest::MessageHandler::MessageHandler(
     : net_internals_test_(net_internals_test) {}
 
 void NetInternalsTest::MessageHandler::RegisterMessages() {
-  RegisterMessage(
-      "getTestServerURL",
-      base::BindRepeating(&NetInternalsTest::MessageHandler::GetTestServerURL,
-                          weak_factory_.GetWeakPtr()));
   RegisterMessage("dnsLookup", base::BindRepeating(
                                    &NetInternalsTest::MessageHandler::DnsLookup,
                                    weak_factory_.GetWeakPtr()));
@@ -348,27 +338,22 @@ void NetInternalsTest::MessageHandler::HandleMessage(
   handler.Run(data);
 }
 
-void NetInternalsTest::MessageHandler::RunJavascriptCallback(
-    base::Value* value) {
-  web_ui()->CallJavascriptFunctionUnsafe("NetInternalsTest.callback", *value);
-}
-
-void NetInternalsTest::MessageHandler::GetTestServerURL(
-    const base::Value::List& list) {
-  ASSERT_TRUE(net_internals_test_->StartTestServer());
-  const std::string& path = list[0].GetString();
-  GURL url = net_internals_test_->embedded_test_server()->GetURL(path);
-  base::Value url_value(url.spec());
-  RunJavascriptCallback(&url_value);
+void NetInternalsTest::MessageHandler::DnsLookupFinished(
+    std::string callback_id,
+    base::Value* result) {
+  ResolveJavascriptCallback(callback_id, *result);
 }
 
 void NetInternalsTest::MessageHandler::DnsLookup(
     const base::Value::List& list) {
-  ASSERT_GE(2u, list.size());
+  AllowJavascript();
+  ASSERT_GE(3u, list.size());
   ASSERT_TRUE(list[0].is_string());
-  ASSERT_TRUE(list[1].is_bool());
-  const std::string hostname = list[0].GetString();
-  const bool local = list[1].GetBool();
+  ASSERT_TRUE(list[1].is_string());
+  ASSERT_TRUE(list[2].is_bool());
+  const std::string& callback_id = list[0].GetString();
+  const std::string hostname = list[1].GetString();
+  const bool local = list[2].GetBool();
   ASSERT_TRUE(browser());
 
   auto resolve_host_parameters = network::mojom::ResolveHostParameters::New();
@@ -376,9 +361,10 @@ void NetInternalsTest::MessageHandler::DnsLookup(
     resolve_host_parameters->source = net::HostResolverSource::LOCAL_ONLY;
   mojo::PendingRemote<network::mojom::ResolveHostClient> client;
   // DnsLookupClient owns itself.
-  new DnsLookupClient(client.InitWithNewPipeAndPassReceiver(),
-                      base::BindOnce(&MessageHandler::RunJavascriptCallback,
-                                     weak_factory_.GetWeakPtr()));
+  new DnsLookupClient(
+      client.InitWithNewPipeAndPassReceiver(),
+      base::BindOnce(&NetInternalsTest::MessageHandler::DnsLookupFinished,
+                     weak_factory_.GetWeakPtr(), callback_id));
   browser()
       ->profile()
       ->GetDefaultStoragePartition()
