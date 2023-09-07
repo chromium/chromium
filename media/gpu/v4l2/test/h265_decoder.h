@@ -8,6 +8,8 @@
 
 #include "media/gpu/v4l2/test/video_decoder.h"
 
+#include <queue>
+
 #include "base/memory/raw_ref.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/v4l2/test/h265_dpb.h"
@@ -71,6 +73,7 @@ class H265Decoder : public VideoDecoder {
                           // properly (e.g. allocate buffers with the new
                           // resolution).
     kRanOutOfStreamData,  // Need more stream data to proceed.
+    kOk,
   };
 
   // Output all pictures in DPB that have not been outputted yet.
@@ -152,6 +155,8 @@ class H265Decoder : public VideoDecoder {
   // Picture currently being processed/decoded.
   scoped_refptr<H265Picture> curr_pic_;
 
+  int global_pic_count_ = 0;
+
   // Used to identify first picture in decoding order
   // or first picture that follows an EOS NALU.
   bool first_picture_ = true;
@@ -209,6 +214,9 @@ class H265Decoder : public VideoDecoder {
 
   // Checks whether |OUTPUT_queue_| is newly created at the current frame.
   bool is_OUTPUT_queue_new_ = true;
+
+  // Stores decoded frames ready to be outputted in a queue.
+  std::queue<scoped_refptr<H265Picture>> frames_ready_to_be_outputted_;
 };
 }  // namespace v4l2_test
 }  // namespace media

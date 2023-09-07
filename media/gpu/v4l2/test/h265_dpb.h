@@ -83,6 +83,12 @@ class H265Picture : public base::RefCountedThreadSafe<H265Picture> {
 
   bool outputted_{false};
 
+  // Reference timestamp in nanoseconds.
+  uint64_t ref_ts_nsec_ = 0;
+
+  // Buffer ID (index) in CAPTURE queue this frame is queued in.
+  int capture_queue_buffer_id_ = -1;
+
  protected:
   friend class base::RefCountedThreadSafe<H265Picture>;
   virtual ~H265Picture();

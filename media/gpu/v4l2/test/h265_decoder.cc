@@ -17,6 +17,11 @@ namespace v4l2_test {
 namespace {
 constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_HEVC_SLICE;
 
+// TODO(b/261127809): Find number of buffers in CAPTURE queue dynamically for
+// H.265. |18| is the minimum number of buffers in the CAPTURE queue required to
+// successfully decode all ITU-T H.264 baseline and main bitstreams.
+constexpr uint32_t kNumberOfBuffersInCaptureQueue = 18;
+
 struct POCAscCompare {
   bool operator()(const scoped_refptr<media::v4l2_test::H265Picture>& a,
                   const scoped_refptr<media::v4l2_test::H265Picture>& b) const {
@@ -344,9 +349,11 @@ struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
 
     // TODO(b/261127809): Handle |!pic->IsUnused()| case
 
+    constexpr size_t kTimestampToNanoSecs = 1000;
+
     struct v4l2_hevc_dpb_entry& entry = v4l2_decode_params.dpb[i++];
     entry = {
-        // TODO(b/261127809): Setup |timestamp|.
+        .timestamp = pic->ref_ts_nsec_ * kTimestampToNanoSecs,
         .flags = static_cast<__u8>(
             pic->IsLongTermRef() ? V4L2_HEVC_DPB_ENTRY_LONG_TERM_REFERENCE : 0),
         .field_pic = V4L2_HEVC_SEI_PIC_STRUCT_FRAME,  // No interlaced support
@@ -608,9 +615,28 @@ bool H265Decoder::ProcessCurrentSlice() {
   const H265PPS* pps = parser_->GetPPS(curr_pps_id_);
   CHECK(pps);
 
-  // TODO(b/261127809): Implement to process the current slice
-  NOTIMPLEMENTED();
-  return false;
+  // Adds a start code prefix, a unique sequence of 3 bytes equal to 0x000001
+  // embedded in the byte stream as a prefix to each NAL unit. All hardwares
+  // supported in ChromeOS require the start code prefix.
+  std::vector<uint8_t> slice_data = {0x00, 0x00, 0x01};
+
+  slice_data.insert(slice_data.end(), curr_slice_hdr_->nalu_data,
+                    curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size);
+
+  // TODO(b/298224157): Assumes 1 frame consists of 1 slice here.
+  // Multiple slices per frame support needs to be implemented.
+  scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
+  OUTPUT_buffer->mmapped_planes()[0].CopyIn(&slice_data[0], slice_data.size());
+  OUTPUT_buffer->set_frame_number(global_pic_count_);
+
+  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0)) {
+    VLOG(4) << "VIDIOC_QBUF failed for OUTPUT queue.";
+    return VideoDecoder::kError;
+  }
+
+  global_pic_count_++;
+
+  return true;
 }
 
 void H265Decoder::CalcPicOutputFlags(const H265SliceHeader* slice_hdr) {
@@ -942,9 +968,9 @@ bool H265Decoder::OutputPic(scoped_refptr<H265Picture> pic) {
   pic->outputted_ = true;
   VLOGF(4) << "Posting output task for POC: " << pic->pic_order_cnt_val_;
 
-  // TODO(b/261127809): Add this |pic|, ready to be outputted, to a queue.
-  NOTIMPLEMENTED();
-  return false;
+  frames_ready_to_be_outputted_.push(std::move(pic));
+
+  return true;
 }
 
 bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
@@ -1030,6 +1056,8 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
     curr_pic_->nal_unit_type_ = curr_nalu_->nal_unit_type;
     curr_pic_->irap_pic_ = slice_hdr->irap_pic;
 
+    curr_pic_->ref_ts_nsec_ = global_pic_count_;
+
     // TODO(b/261127809): Set the color space for the picture.
 
     CalcPicOutputFlags(slice_hdr);
@@ -1076,18 +1104,31 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
 
   v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls, is_OUTPUT_queue_new_);
 
-  // TODO(b/261127809): Implement submit frame meta data
-  NOTIMPLEMENTED();
-
-  return false;
+  return true;
 }
 
 bool H265Decoder::DecodePicture() {
   CHECK(curr_pic_.get());
 
-  // TODO(b/261127809): Implement to submit a task to decode current picture
-  NOTIMPLEMENTED();
-  return false;
+  v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
+
+  if (!CAPTURE_queue_) {
+    CreateCAPTUREQueue(kNumberOfBuffersInCaptureQueue);
+  }
+
+  uint32_t CAPTURE_id;
+  v4l2_ioctl_->DQBuf(CAPTURE_queue_, &CAPTURE_id);
+
+  CAPTURE_queue_->DequeueBufferId(CAPTURE_id);
+  curr_pic_->capture_queue_buffer_id_ = CAPTURE_id;
+
+  // TODO(b/261127809): Check CAPTURE buffers which can be reused.
+
+  uint32_t OUTPUT_queue_buffer_id;
+  v4l2_ioctl_->DQBuf(OUTPUT_queue_, &OUTPUT_queue_buffer_id);
+  v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_);
+
+  return true;
 }
 
 void H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic) {
@@ -1119,7 +1160,7 @@ void H265Decoder::FinishPrevFrameIfPresent() {
 H265Decoder::DecodeResult H265Decoder::Decode() {
   DCHECK(state_ != kError) << "Decoder in error state";
 
-  while (true) {
+  while (frames_ready_to_be_outputted_.empty()) {
     if (!curr_nalu_) {
       curr_nalu_ = std::make_unique<H265NALU>();
 
@@ -1297,10 +1338,12 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         break;
     }
 
-    VLOGF(4) << "Finished with current NALU: "
+    VLOGF(4) << "Finished with current NALU type: "
              << static_cast<int>(curr_nalu_->nal_unit_type);
     curr_nalu_.reset();
   }
+
+  return kOk;
 }
 
 VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
@@ -1318,12 +1361,33 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
     CreateOUTPUTQueue(kDriverCodecFourcc);
   }
 
-  // TODO(b/261127809): add a condition to check frames are ready for processing
-  while (!is_stream_over_) {
+  while (!is_stream_over_ && frames_ready_to_be_outputted_.empty()) {
     Decode();
   }
 
-  NOTIMPLEMENTED();
+  if (is_stream_over_) {
+    OutputAllRemainingPics();
+  }
+
+  if (is_stream_over_ && frames_ready_to_be_outputted_.empty()) {
+    return VideoDecoder::kEOStream;
+  }
+
+  if (frames_ready_to_be_outputted_.empty()) {
+    NOTREACHED() << "Stream ended with |frames_ready_to_be_outputted_| empty";
+  }
+
+  scoped_refptr<H265Picture> picture = frames_ready_to_be_outputted_.front();
+  last_decoded_frame_visible_ = picture->outputted_;
+  scoped_refptr<MmappedBuffer> buffer =
+      CAPTURE_queue_->GetBuffer(picture->capture_queue_buffer_id_);
+
+  ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+               buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
+               CAPTURE_queue_->fourcc());
+
+  frames_ready_to_be_outputted_.pop();
+
   return VideoDecoder::kOk;
 }
 }  // namespace v4l2_test
