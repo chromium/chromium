@@ -41,6 +41,17 @@ bool IsUsingIDNA2008NonTransitional() {
   return base::FeatureList::IsEnabled(kUseIDNA2008NonTransitional);
 }
 
+bool IsUsingDontDecodeAsciiPercentEncodedURLPath() {
+  // If the FeatureList isn't available yet, fall back to the feature's default
+  // state. This may happen during early startup, see https://crbug.com/1478960.
+  if (!base::FeatureList::GetInstance()) {
+    return kDontDecodeAsciiPercentEncodedURLPath.default_state ==
+           base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+
+  return base::FeatureList::IsEnabled(kDontDecodeAsciiPercentEncodedURLPath);
+}
+
 bool IsRecordingIDNA2008Metrics() {
   return base::FeatureList::IsEnabled(kRecordIDNA2008Metrics);
 }
