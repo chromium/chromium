@@ -156,7 +156,7 @@ TEST_F(BatterySaverControllerTest, AutoEnableDisable) {
 
   // Battery discharging but just above the activation %, still no battery
   // saver.
-  UpdatePowerStatus(GetActivationPercent() + 0.1, eight_hours_, false);
+  UpdatePowerStatus(GetActivationPercent() + 1, eight_hours_, false);
   EXPECT_FALSE(IsBatterySaverActive());
 
   // Battery discharging and at activation %, battery saver turns on.

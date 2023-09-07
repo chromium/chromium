@@ -1096,7 +1096,7 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY" desc="The label used in the tray menu to show the accessibility option menu. [CHAR_LIMIT=14]">
         Accessibility
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_ENABLED_FEATURES_SEPARATOR" desc="The characters used to separate the first feature's 
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_ENABLED_FEATURES_SEPARATOR" desc="The characters used to separate the first feature's
       name from the counter in the label displayed when accessibility features are enabled in the quicksettings menu. Example: Select to Speak, +2">
         , +
       </message>
@@ -2654,11 +2654,15 @@ Connect your device to power.
         Battery Saver has been turned off
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_TITLE" translateable="false" desc="The title for the notification displayed when device battery level is low, and battery saver mode is enabled.">
-        Low Battery - turning on battery saver
+        Low battery. Battery Saver turned on.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE" translateable="false" desc="The label in the tray dialog to show the remaining battery power as a percent, with additional text stating battery saver mode has been enabled.">
         About <ph name="time_left">$1<ex>40 minutes</ex></ph> left (<ph name="percentage">$2<ex>56%</ex></ph>%).
 Turning on battery saver to increase your battery life.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE_WITHOUT_TIME" translateable="false" desc="The notification body text stating features are limited because of battery saver, alongside the remaining battery percentage.">
+        About <ph name="percentage">$1<ex>56%</ex></ph>% left.
+Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_BUTTON_OPT_OUT" translateable="false" desc="The button text on the low power notification to disable battery saver.">
         Turn off Battery Saver
