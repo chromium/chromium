@@ -48,6 +48,7 @@ class WaylandScreen : public PlatformScreen {
   void OnOutputRemoved(uint32_t output_id);
 
   WaylandOutput::Id GetOutputIdForDisplayId(int64_t display_id);
+  WaylandOutput* GetWaylandOutputForDisplayId(int64_t display_id);
 
   // Returns id of the output that matches the bounds in screen coordinates.
   WaylandOutput::Id GetOutputIdMatching(const gfx::Rect& match_rect);

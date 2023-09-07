@@ -199,7 +199,15 @@ class WaylandToplevelWindow : public WaylandWindow,
   void UpdateSystemModal();
 
   void TriggerStateChanges();
-  void SetWindowState(PlatformWindowState state);
+
+  // Sets the new window `state` to the window. `target_display_id` gets ignored
+  // unless the state is `PlatformWindowState::kFullscreen`.
+  void SetWindowState(PlatformWindowState state, int64_t target_display_id);
+
+  bool ShouldTriggerStateChange(PlatformWindowState state,
+                                int64_t target_display_id) const;
+
+  WaylandOutput* GetWaylandOutputForDisplayId(int64_t display_id);
 
   // Creates a surface window, which is visible as a main window.
   bool CreateShellToplevel();
@@ -232,7 +240,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   // all desks state.
   void OnDeskChanged(int state);
 
-  // Sets |workspace_| to |aura_surface_|.
+  // Sets `workspace_` to `aura_surface_`.
   // This must be called in SetUpShellIntegration().
   void SetInitialWorkspace();
 
@@ -243,6 +251,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   PlatformWindowState state_ = PlatformWindowState::kUnknown;
   // Contains the previous state of the window.
   PlatformWindowState previous_state_ = PlatformWindowState::kUnknown;
+  // The display ID to switch to in case the state is `kFullscreen`.
+  int64_t fullscreen_display_id_ = display::kInvalidDisplayId;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Contains the current state of the tiled edges.
@@ -253,6 +263,10 @@ class WaylandToplevelWindow : public WaylandWindow,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool is_immersive_fullscreen_ = false;
+
+  // This is used to detect fullscreen state changes from the Aura side
+  // to inform Lacros clients from the asynchronous task completion.
+  bool is_fullscreen_ = false;
 
   // Unique ID for this window. May be shared over non-Wayland IPC transports
   // (e.g. mojo) to identify the window.

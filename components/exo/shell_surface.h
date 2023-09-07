@@ -93,8 +93,11 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Restore the shell surface.
   void Restore();
 
-  // Set fullscreen state for shell surface.
-  void SetFullscreen(bool fullscreen);
+  // Set fullscreen state for shell surface. When `fullscreen` is true,
+  // `display_id` indicates the id of the display where the surface should be
+  // shown on, otherwise it gets ignored. When `display::kInvalidDisplayId` is
+  // specified the current display will be used.
+  void SetFullscreen(bool fullscreen, int64_t display_id);
 
   // Make the shell surface popup type.
   void SetPopup();

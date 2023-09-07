@@ -236,6 +236,12 @@ void BrowserDesktopWindowTreeHostLacros::OnImmersiveModeChanged(bool enabled) {
   browser_view_->browser()->FullscreenTopUIStateChanged();
 }
 
+void BrowserDesktopWindowTreeHostLacros::OnFullscreenModeChanged() {
+  // Finalizing full screen mode transition after Ash has also asynchronously
+  // entered the full screen mode state for this window.
+  browser_view_->FullscreenStateChanged();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostLacros,
 //     DesktopWindowTreeHostPlatform implementation:

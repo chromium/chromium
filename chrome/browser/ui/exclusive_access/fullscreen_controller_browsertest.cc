@@ -36,6 +36,28 @@ using content::WebContents;
 using ui::PAGE_TRANSITION_TYPED;
 using FullscreenControllerTest = ExclusiveAccessTest;
 
+namespace {
+
+// In some environments (Lacros, Linux, Mac) the operation is finished
+// asynchronously and we have to wait until the state change has occurred.
+void WaitForDisplayed(Browser* browser) {
+  base::RunLoop outer_loop;
+  auto wait_for_state = base::BindRepeating(
+      [](base::RunLoop* outer_loop, Browser* browser) {
+        ExclusiveAccessManager* manager = browser->exclusive_access_manager();
+        if (manager->context()->IsExclusiveAccessBubbleDisplayed()) {
+          outer_loop->Quit();
+        }
+      },
+      &outer_loop, browser);
+
+  base::RepeatingTimer timer;
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_state));
+  outer_loop.Run();
+}
+
+}  // namespace
+
 //
 // Fullscreen tests.
 //
@@ -51,6 +73,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FullscreenOnFileURL) {
           ->tab_strip_model()
           ->GetActiveWebContents()
           ->GetPrimaryMainFrame());
+
+  WaitForDisplayed(browser());
+
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 }
 

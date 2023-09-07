@@ -140,6 +140,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Notifies delegate that the pending fullscreen operation has been completed.
+  virtual void OnFullscreenModeChanged();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(ffred): We should just add kImmersiveFullscreen as a state. However,
   // that will require more refactoring in other places to understand that
   // kImmersiveFullscreen is a fullscreen status.

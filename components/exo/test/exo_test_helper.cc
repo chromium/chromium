@@ -53,7 +53,7 @@ void ClientControlledShellSurfaceDelegate::OnStateChanged(
       shell_surface_->SetMaximized();
       break;
     case chromeos::WindowStateType::kFullscreen:
-      shell_surface_->SetFullscreen(true);
+      shell_surface_->SetFullscreen(true, display::kInvalidDisplayId);
       break;
     case chromeos::WindowStateType::kPinned:
       shell_surface_->SetPinned(chromeos::WindowPinType::kPinned);

@@ -53,6 +53,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -161,7 +162,7 @@ TEST_F(ShellSurfaceTest, AcknowledgeConfigure) {
   const uint32_t kSerial = 1;
   shell_surface->set_configure_callback(
       base::BindRepeating(&ConfigureFullscreen, kSerial));
-  shell_surface->SetFullscreen(true);
+  shell_surface->SetFullscreen(true, display::kInvalidDisplayId);
 
   // Surface origin should not change until configure request is acknowledged.
   EXPECT_EQ(origin.ToString(),
@@ -293,7 +294,7 @@ TEST_F(ShellSurfaceTest, MaximizeFromFullscreen) {
           .BuildShellSurface();
   // Act: Maximize after fullscreen
   shell_surface->root_surface()->Commit();
-  shell_surface->SetFullscreen(true);
+  shell_surface->SetFullscreen(true, display::kInvalidDisplayId);
   shell_surface->root_surface()->Commit();
   shell_surface->Maximize();
   shell_surface->root_surface()->Commit();
@@ -313,7 +314,7 @@ TEST_F(ShellSurfaceTest, MaximizeExitsFullscreen) {
   shell_surface->root_surface()->Commit();
   shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
       kRestoreOrMaximizeExitsFullscreen, true);
-  shell_surface->SetFullscreen(true);
+  shell_surface->SetFullscreen(true, display::kInvalidDisplayId);
   shell_surface->root_surface()->Commit();
   shell_surface->Maximize();
   shell_surface->root_surface()->Commit();
@@ -376,7 +377,7 @@ TEST_F(ShellSurfaceTest, RestoreFromFullscreen) {
           .BuildShellSurface();
 
   // Act: Restore after fullscreen
-  shell_surface->SetFullscreen(true);
+  shell_surface->SetFullscreen(true, display::kInvalidDisplayId);
   shell_surface->root_surface()->Commit();
   shell_surface->Restore();
   shell_surface->root_surface()->Commit();
@@ -394,7 +395,7 @@ TEST_F(ShellSurfaceTest, RestoreExitsFullscreen) {
   shell_surface->root_surface()->Commit();
   shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
       kRestoreOrMaximizeExitsFullscreen, true);
-  shell_surface->SetFullscreen(true);
+  shell_surface->SetFullscreen(true, display::kInvalidDisplayId);
   shell_surface->Restore();
   shell_surface->root_surface()->Commit();
 
@@ -540,12 +541,12 @@ TEST_F(ShellSurfaceTest, SetFullscreen) {
       test::ShellSurfaceBuilder({256, 256}).SetNoCommit().BuildShellSurface();
   auto* surface = shell_surface->root_surface();
 
-  shell_surface->SetFullscreen(true);
+  shell_surface->SetFullscreen(true, display::kInvalidDisplayId);
   surface->Commit();
   EXPECT_FALSE(HasBackdrop());
   EXPECT_EQ(GetContext()->bounds().ToString(),
             shell_surface->GetWidget()->GetWindowBoundsInScreen().ToString());
-  shell_surface->SetFullscreen(false);
+  shell_surface->SetFullscreen(false, display::kInvalidDisplayId);
   surface->Commit();
   EXPECT_FALSE(HasBackdrop());
   EXPECT_NE(GetContext()->bounds().ToString(),
@@ -556,7 +557,7 @@ TEST_F(ShellSurfaceTest, PreWidgetUnfullscreen) {
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256}).SetNoCommit().BuildShellSurface();
   shell_surface->Maximize();
-  shell_surface->SetFullscreen(false);
+  shell_surface->SetFullscreen(false, display::kInvalidDisplayId);
   EXPECT_EQ(shell_surface->GetWidget(), nullptr);
   shell_surface->root_surface()->Commit();
   EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
@@ -569,7 +570,7 @@ TEST_F(ShellSurfaceTest, PreWidgetMaximizeFromFullscreen) {
           .SetMaximumSize(gfx::Size(10, 10))
           .BuildShellSurface();
   // Fullscreen -> Maximize for non Lacros surfaces should stay fullscreen
-  shell_surface->SetFullscreen(true);
+  shell_surface->SetFullscreen(true, display::kInvalidDisplayId);
   shell_surface->Maximize();
   EXPECT_EQ(shell_surface->GetWidget(), nullptr);
   shell_surface->root_surface()->Commit();
@@ -1147,11 +1148,11 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   // It should be restored to the original geometry size.
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
 
-  shell_surface->SetFullscreen(true);
+  shell_surface->SetFullscreen(true, display::kInvalidDisplayId);
   shell_surface->AcknowledgeConfigure(0);
   EXPECT_EQ(GetContext()->bounds().size(), config_data.suggested_bounds.size());
   EXPECT_EQ(chromeos::WindowStateType::kFullscreen, config_data.state_type);
-  shell_surface->SetFullscreen(false);
+  shell_surface->SetFullscreen(false, display::kInvalidDisplayId);
   shell_surface->AcknowledgeConfigure(0);
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
 

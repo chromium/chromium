@@ -76,7 +76,7 @@ void ArcGhostWindowDelegate::OnStateChanged(
       break;
     case chromeos::WindowStateType::kFullscreen:
       // TODO(sstan): Adjust bounds like maximized state.
-      shell_surface_->SetFullscreen(true);
+      shell_surface_->SetFullscreen(true, display::kInvalidDisplayId);
       break;
     default:
       NOTIMPLEMENTED();

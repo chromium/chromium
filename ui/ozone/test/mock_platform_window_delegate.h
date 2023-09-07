@@ -35,6 +35,7 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   MOCK_METHOD1(OnWindowTiledStateChanged,
                void(WindowTiledEdges new_tiled_edges));
+  MOCK_METHOD0(OnFullscreenModeChanged, void());
 #endif
   MOCK_METHOD0(OnLostCapture, void());
   MOCK_METHOD1(OnAcceleratedWidgetAvailable,

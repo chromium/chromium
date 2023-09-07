@@ -421,11 +421,13 @@ void ClientControlledShellSurface::SetRestored() {
   pending_window_state_ = chromeos::WindowStateType::kNormal;
 }
 
-void ClientControlledShellSurface::SetFullscreen(bool fullscreen) {
+void ClientControlledShellSurface::SetFullscreen(bool fullscreen,
+                                                 int64_t display_id) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetFullscreen",
                "fullscreen", fullscreen);
   pending_window_state_ = fullscreen ? chromeos::WindowStateType::kFullscreen
                                      : chromeos::WindowStateType::kNormal;
+  // TODO(crbug/1478300): `display_id` might need to be used here somewhere.
 }
 
 void ClientControlledShellSurface::SetPinned(chromeos::WindowPinType type) {

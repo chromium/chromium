@@ -28,6 +28,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
@@ -203,24 +205,27 @@ void WaylandToplevelWindow::SetFullscreen(bool fullscreen,
   // if xdg_toplevel_set_fullscreen() is not provided with wl_output, it's up
   // to the compositor to choose which display will be used to map this surface.
 
-  // TODO(crbug.com/1034783) Support `target_display_id` on this platform.
-  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
+  // The `target_display_id` must be invalid if not going into fullscreen.
+  DCHECK(fullscreen || target_display_id == display::kInvalidDisplayId);
 
   // We must track the previous state to correctly say our state as long as it
   // can be the maximized instead of normal one.
   PlatformWindowState new_state = PlatformWindowState::kUnknown;
+  int64_t display_id = display::kInvalidDisplayId;
+
   if (fullscreen) {
     new_state = PlatformWindowState::kFullScreen;
+    display_id = target_display_id;
   } else if (previous_state_ == PlatformWindowState::kMaximized)
     new_state = previous_state_;
   else
     new_state = PlatformWindowState::kNormal;
 
-  SetWindowState(new_state);
+  SetWindowState(new_state, display_id);
 }
 
 void WaylandToplevelWindow::Maximize() {
-  SetWindowState(PlatformWindowState::kMaximized);
+  SetWindowState(PlatformWindowState::kMaximized, display::kInvalidDisplayId);
 }
 
 void WaylandToplevelWindow::Minimize() {
@@ -235,9 +240,9 @@ void WaylandToplevelWindow::Minimize() {
   //
   // TODO(crbug.com/1293740): find a solution to this workaround.
   if (IsSurfaceConfigured()) {
-    SetWindowState(PlatformWindowState::kMinimized);
+    SetWindowState(PlatformWindowState::kMinimized, display::kInvalidDisplayId);
   } else {
-    SetWindowState(PlatformWindowState::kNormal);
+    SetWindowState(PlatformWindowState::kNormal, display::kInvalidDisplayId);
   }
 }
 
@@ -254,7 +259,7 @@ void WaylandToplevelWindow::Restore() {
     return;
   }
 
-  SetWindowState(PlatformWindowState::kNormal);
+  SetWindowState(PlatformWindowState::kNormal, display::kInvalidDisplayId);
 }
 
 PlatformWindowState WaylandToplevelWindow::GetPlatformWindowState() const {
@@ -522,6 +527,21 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   } else {
     state_ = PlatformWindowState::kNormal;
   }
+
+  // No matter what mode we have, the display id doesn't matter at this time
+  // anymore.
+  fullscreen_display_id_ = display::kInvalidDisplayId;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (is_fullscreen_ != window_states.is_fullscreen &&
+      !!requested_window_show_state_count_) {
+    // The fullscreen state change has finished and we we need to inform the
+    // browser/app that the transition is done.
+    delegate()->OnFullscreenModeChanged();
+    is_fullscreen_ = window_states.is_fullscreen;
+  }
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (shell_toplevel_ && shell_toplevel()->SupportsTopLevelImmersiveStatus() &&
       is_immersive_fullscreen_ != window_states.is_immersive_fullscreen) {
@@ -788,6 +808,13 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
     // TODO(https://crbug.com/1113900): Implement AuraShell support for
     // non-browser windows and replace this if-else clause by a DCHECK.
     NOTIMPLEMENTED_LOG_ONCE();
+    // TODO(https://crbug.com/1113900): With Lacros, the state change gets
+    // completed asynchronously (see removal of notification call in
+    // `BrowserView::ProcessFullscreen`). As such we need to release any waiting
+    // application now. This needs also be properly addressed with the
+    // immersive mode change inside the immersive mode handling by calling
+    // this delegate - or `BrowserView::FullscreenStateChanged()` directly.
+    delegate()->OnFullscreenModeChanged();
   }
 }
 
@@ -991,7 +1018,8 @@ void WaylandToplevelWindow::TriggerStateChanges() {
   if (state_ == PlatformWindowState::kMinimized) {
     shell_toplevel_->SetMinimized();
   } else if (state_ == PlatformWindowState::kFullScreen) {
-    shell_toplevel_->SetFullscreen();
+    shell_toplevel_->SetFullscreen(
+        GetWaylandOutputForDisplayId(fullscreen_display_id_));
   } else if (previous_state_ == PlatformWindowState::kFullScreen) {
     shell_toplevel_->UnSetFullscreen();
   } else if (state_ == PlatformWindowState::kMaximized) {
@@ -1004,16 +1032,54 @@ void WaylandToplevelWindow::TriggerStateChanges() {
   connection()->Flush();
 }
 
-void WaylandToplevelWindow::SetWindowState(PlatformWindowState state) {
-  if (state_ != state) {
-    previous_state_ = state_;
-    state_ = state;
-
+void WaylandToplevelWindow::SetWindowState(PlatformWindowState state,
+                                           int64_t target_display_id) {
+  if (ShouldTriggerStateChange(state, target_display_id)) {
+    // We don't want to update the previous state, for cases like fullscreening
+    // to a different output while already in fullscreen, so we can still
+    // restore back to the previous non-fullscreen state.
+    if (state_ != state) {
+      previous_state_ = state_;
+      state_ = state;
+    }
+    // Remember the display id if we are going to fullscreen - otherwise reset.
+    fullscreen_display_id_ = (state_ == PlatformWindowState::kFullScreen)
+                                 ? target_display_id
+                                 : display::kInvalidDisplayId;
     // Tracks this window show state change request, coming from the Browser.
     requested_window_show_state_count_++;
 
     TriggerStateChanges();
   }
+}
+
+bool WaylandToplevelWindow::ShouldTriggerStateChange(
+    PlatformWindowState state,
+    int64_t target_display_id) const {
+  // Allow the state transition if the state is different.
+  if (state_ != state) {
+    return true;
+  }
+
+  // Allow the state transition if the state is fullscreen and the screen has
+  // changed to something explicit - or different.
+  if (state == PlatformWindowState::kFullScreen &&
+      target_display_id != display::kInvalidDisplayId &&
+      target_display_id != fullscreen_display_id_) {
+    return true;
+  }
+
+  // Otherwise do not allow the transition.
+  return false;
+}
+
+WaylandOutput* WaylandToplevelWindow::GetWaylandOutputForDisplayId(
+    int64_t display_id) {
+  auto* output_manager = connection()->wayland_output_manager();
+  if (auto* screen = output_manager->wayland_screen()) {
+    return screen->GetWaylandOutputForDisplayId(display_id);
+  }
+  return nullptr;
 }
 
 WmMoveResizeHandler* WaylandToplevelWindow::AsWmMoveResizeHandler() {

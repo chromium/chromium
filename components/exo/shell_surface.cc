@@ -241,9 +241,9 @@ void ShellSurface::Restore() {
   }
 }
 
-void ShellSurface::SetFullscreen(bool fullscreen) {
-  TRACE_EVENT1("exo", "ShellSurface::SetFullscreen", "fullscreen", fullscreen);
-
+void ShellSurface::SetFullscreen(bool fullscreen, int64_t display_id) {
+  TRACE_EVENT2("exo", "ShellSurface::SetFullscreen", "fullscreen", fullscreen,
+               "display_id", display_id);
   if (!widget_) {
     if (fullscreen) {
       initial_show_state_ = ui::SHOW_STATE_FULLSCREEN;
@@ -256,7 +256,7 @@ void ShellSurface::SetFullscreen(bool fullscreen) {
   // Note: This will ask client to configure its surface even if fullscreen
   // state doesn't change.
   ScopedConfigure scoped_configure(this, true);
-  widget_->SetFullscreen(fullscreen);
+  widget_->SetFullscreen(fullscreen, display_id);
 }
 
 void ShellSurface::SetPopup() {

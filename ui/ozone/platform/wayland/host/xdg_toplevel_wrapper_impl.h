@@ -34,7 +34,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetMaximized() override;
   void UnSetMaximized() override;
   void SetCanFullscreen(bool can_fullscreen) override;
-  void SetFullscreen() override;
+  void SetFullscreen(WaylandOutput* wayland_output) override;
   void UnSetFullscreen() override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetUseImmersiveMode(bool immersive) override;

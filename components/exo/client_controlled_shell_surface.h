@@ -99,8 +99,11 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Called when the client was restored.
   void SetRestored();
 
-  // Called when the client changed the fullscreen state.
-  void SetFullscreen(bool fullscreen);
+  // Called when the client changed the fullscreen state. When `fullscreen` is
+  // true, `display_id` indicates the id of the display where the surface should
+  // be shown, otherwise it is ignored. When `display::kInvalidDisplayId` is
+  // specified, the current display may be used.
+  void SetFullscreen(bool fullscreen, int64_t display_id);
 
   // Returns true if this shell surface is currently being dragged.
   bool IsDragging();

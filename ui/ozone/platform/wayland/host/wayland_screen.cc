@@ -307,6 +307,15 @@ WaylandOutput::Id WaylandScreen::GetOutputIdForDisplayId(int64_t display_id) {
   return 0;
 }
 
+WaylandOutput* WaylandScreen::GetWaylandOutputForDisplayId(int64_t display_id) {
+  if (display_id == display::kInvalidDisplayId) {
+    return nullptr;
+  }
+
+  auto* output_manager = connection_->wayland_output_manager();
+  return output_manager->GetOutput(GetOutputIdForDisplayId(display_id));
+}
+
 WaylandOutput::Id WaylandScreen::GetOutputIdMatching(const gfx::Rect& bounds) {
   int64_t display_id = GetDisplayMatching(bounds).id();
   return GetOutputIdForDisplayId(display_id);

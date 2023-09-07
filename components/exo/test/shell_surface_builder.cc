@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
+#include "ui/display/types/display_constants.h"
 
 namespace {
 
@@ -358,7 +359,8 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
         shell_surface->Minimize();
         break;
       case chromeos::WindowStateType::kFullscreen:
-        shell_surface->SetFullscreen(/*fullscreen=*/true);
+        shell_surface->SetFullscreen(/*fullscreen=*/true,
+                                     /*display_id=*/display::kInvalidDisplayId);
         break;
       default:
         // Other states are not supported as initial state in ShellSurface.
@@ -413,7 +415,8 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
         shell_surface->SetMinimized();
         break;
       case chromeos::WindowStateType::kFullscreen:
-        shell_surface->SetFullscreen(/*fullscreen=*/true);
+        shell_surface->SetFullscreen(/*fullscreen=*/true,
+                                     /*display_id=*/display::kInvalidDisplayId);
         break;
       case chromeos::WindowStateType::kPrimarySnapped:
         shell_surface->SetSnapPrimary(chromeos::kDefaultSnapRatio);
