@@ -163,6 +163,6 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
 
         return icon == 0 ? super.getFallbackIcon(suggestion)
-                         : OmniboxDrawableState.forDefaultIcon(mContext, icon, /*allowTint=*/false);
+                         : OmniboxDrawableState.forLargeIcon(mContext, icon, /*allowTint=*/false);
     }
 }

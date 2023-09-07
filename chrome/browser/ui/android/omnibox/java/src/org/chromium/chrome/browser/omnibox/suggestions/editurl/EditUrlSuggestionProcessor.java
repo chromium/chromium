@@ -107,17 +107,17 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                 new SuggestionSpannable(suggestion.getDisplayText()));
 
         setActionButtons(model,
-                Arrays.asList(new Action(OmniboxDrawableState.forDefaultIcon(
+                Arrays.asList(new Action(OmniboxDrawableState.forSmallIcon(
                                                  mContext, R.drawable.ic_share_white_24dp, true),
                                       OmniboxResourceProvider.getString(
                                               mContext, R.string.menu_share_page),
                                       null, this::onShareLink),
-                        new Action(OmniboxDrawableState.forDefaultIcon(
+                        new Action(OmniboxDrawableState.forSmallIcon(
                                            mContext, R.drawable.ic_content_copy_black, true),
                                 OmniboxResourceProvider.getString(mContext, R.string.copy_link),
                                 () -> onCopyLink(suggestion)),
                         // TODO(https://crbug.com/1090187): do not re-use bookmark_item_edit here.
-                        new Action(OmniboxDrawableState.forDefaultIcon(
+                        new Action(OmniboxDrawableState.forSmallIcon(
                                            mContext, R.drawable.bookmark_edit_active, true),
                                 OmniboxResourceProvider.getString(
                                         mContext, R.string.bookmark_item_edit),

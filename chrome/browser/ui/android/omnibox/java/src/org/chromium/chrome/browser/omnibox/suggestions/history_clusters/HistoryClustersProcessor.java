@@ -72,7 +72,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     @Override
     protected OmniboxDrawableState getFallbackIcon(AutocompleteMatch match) {
         var action = getHistoryClustersAction(match);
-        return OmniboxDrawableState.forDefaultIcon(mContext, action.icon.iconRes, false);
+        return OmniboxDrawableState.forSmallIcon(mContext, action.icon.iconRes, false);
     }
 
     @Override

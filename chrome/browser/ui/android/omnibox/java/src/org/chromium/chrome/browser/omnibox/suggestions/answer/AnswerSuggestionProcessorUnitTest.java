@@ -139,6 +139,7 @@ public class AnswerSuggestionProcessorUnitTest {
         /** Get Drawable associated with the suggestion. */
         Drawable getIcon() {
             final OmniboxDrawableState state = mModel.get(BaseSuggestionViewProperties.ICON);
+            Assert.assertTrue(state.isLarge);
             return state == null ? null : state.drawable;
         }
 
@@ -309,7 +310,9 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void answerImage_fallbackIconServedForUnsupportedAnswerType() {
         var suggHelper = createAnswerSuggestion(AnswerType.TOTAL_COUNT, "", 1, "", 1, null);
-        Assert.assertEquals(R.drawable.ic_suggestion_magnifier, suggHelper.getIconRes());
+        var drawable = suggHelper.mModel.get(BaseSuggestionViewProperties.ICON).drawable;
+        Assert.assertEquals(
+                R.drawable.ic_suggestion_magnifier, shadowOf(drawable).getCreatedFromResId());
     }
 
     @Test

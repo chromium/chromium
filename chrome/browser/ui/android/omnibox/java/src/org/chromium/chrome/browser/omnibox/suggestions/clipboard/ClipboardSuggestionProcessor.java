@@ -152,7 +152,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                 -> concealButtonClickHandler(suggestion, model)
                 : () -> revealButtonClickHandler(suggestion, model);
         setActionButtons(model,
-                Arrays.asList(new Action(OmniboxDrawableState.forDefaultIcon(mContext, icon, true),
+                Arrays.asList(new Action(OmniboxDrawableState.forSmallIcon(mContext, icon, true),
                         iconString, announcementString, action)));
     }
 

@@ -100,7 +100,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     protected @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch match) {
         int icon = match.isSearchSuggestion() ? R.drawable.ic_suggestion_magnifier
                                               : R.drawable.ic_globe_24dp;
-        return OmniboxDrawableState.forDefaultIcon(mContext, icon, true);
+        return OmniboxDrawableState.forSmallIcon(mContext, icon, true);
     }
 
     /**
@@ -149,7 +149,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             action = () -> mSuggestionHost.onRefineSuggestion(suggestion);
         }
         setActionButtons(model,
-                Arrays.asList(new Action(OmniboxDrawableState.forDefaultIcon(mContext, icon, true),
+                Arrays.asList(new Action(OmniboxDrawableState.forSmallIcon(mContext, icon, true),
                         iconString, action)));
     }
 
