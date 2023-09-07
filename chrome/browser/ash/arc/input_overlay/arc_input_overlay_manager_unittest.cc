@@ -43,8 +43,9 @@ constexpr const float kTolerance = 0.999f;
 class TestArcInputOverlayManager : public ArcInputOverlayManager {
  public:
   TestArcInputOverlayManager()
-      : ArcInputOverlayManager(/*BrowserContext=*/nullptr,
-                               /*ArcBridgeService=*/nullptr) {}
+      : ArcInputOverlayManager(
+            /*BrowserContext=*/TestingProfile::Builder().Build().get(),
+            /*ArcBridgeService=*/nullptr) {}
   ~TestArcInputOverlayManager() override = default;
 
  private:
@@ -468,7 +469,51 @@ TEST_P(VersionArcInputOverlayManagerTest, TestDisplayRotationChanged) {
                      expect_touch_b, kTolerance);
 }
 
-TEST_P(VersionArcInputOverlayManagerTest, TestFeatureAvailability) {
+TEST_P(VersionArcInputOverlayManagerTest, TestNonGameApp) {
+  // Test a random non-game app.
+  auto window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kRandomPackageName);
+  task_environment()->FastForwardBy(kIORead);
+  auto* injector = GetTouchInjector(window->GetNativeWindow());
+  EXPECT_FALSE(injector);
+  window.reset();
+}
+
+TEST_P(VersionArcInputOverlayManagerTest, TestGameWithDefaultMapping) {
+  // Test with a game with default mapping.
+  auto window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kEnabledPackageName);
+  task_environment()->FastForwardBy(kIORead);
+  auto* injector = GetTouchInjector(window->GetNativeWindow());
+  EXPECT_TRUE(injector);
+  size_t actions_size = injector->actions().size();
+
+  if (IsBetaVersion()) {
+    // Add two new actions.
+    injector->AddNewAction(ActionType::TAP);
+    injector->AddNewAction(ActionType::TAP);
+    EXPECT_EQ(actions_size + 2, injector->actions().size());
+  }
+
+  // Relaunch the game to check whether previous customized data is loaded.
+  window.reset();
+  window = CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                           gfx::Rect(10, 10, 100, 100), kEnabledPackageName);
+  task_environment()->FastForwardBy(kIORead);
+  injector = GetTouchInjector(window->GetNativeWindow());
+  EXPECT_TRUE(injector);
+  if (IsBetaVersion()) {
+    EXPECT_EQ(actions_size + 2, injector->actions().size());
+  } else {
+    EXPECT_EQ(actions_size, injector->actions().size());
+  }
+
+  window.reset();
+}
+
+TEST_P(VersionArcInputOverlayManagerTest, TestGameWithoutDefaultMapping) {
   std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
   ArcAppTest arc_app_test;
   arc_app_test.set_wait_compatibility_mode(true);
@@ -485,29 +530,32 @@ TEST_P(VersionArcInputOverlayManagerTest, TestFeatureAvailability) {
   auto* injector = GetTouchInjector(game_window->GetNativeWindow());
   if (IsBetaVersion()) {
     EXPECT_TRUE(injector);
+    EXPECT_EQ(0u, injector->actions().size());
+    // Add two new actions.
+    injector->AddNewAction(ActionType::TAP);
+    injector->AddNewAction(ActionType::TAP);
+    injector->OnBindingSave();
   } else {
     EXPECT_FALSE(injector);
   }
+
+  // Relaunch the game to check whether previous customized_data is loaded.
+  game_window.reset();
+  task_environment()->RunUntilIdle();
+  game_window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kRandomGamePackageName);
+  task_environment()->FastForwardBy(kIORead);
+  injector = GetTouchInjector(game_window->GetNativeWindow());
+  if (IsBetaVersion()) {
+    EXPECT_TRUE(injector);
+    EXPECT_EQ(2u, injector->actions().size());
+  } else {
+    EXPECT_FALSE(injector);
+  }
+
   game_window.reset();
   arc_app_test.TearDown();
-
-  // Test with a game with default mapping.
-  auto mapped_window =
-      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
-                      gfx::Rect(10, 10, 100, 100), kEnabledPackageName);
-  task_environment()->FastForwardBy(kIORead);
-  injector = GetTouchInjector(mapped_window->GetNativeWindow());
-  EXPECT_TRUE(injector);
-  mapped_window.reset();
-
-  // Test a random non-game app.
-  auto app_window =
-      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
-                      gfx::Rect(10, 10, 100, 100), kRandomPackageName);
-  task_environment()->FastForwardBy(kIORead);
-  injector = GetTouchInjector(app_window->GetNativeWindow());
-  EXPECT_FALSE(injector);
-  app_window.reset();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
