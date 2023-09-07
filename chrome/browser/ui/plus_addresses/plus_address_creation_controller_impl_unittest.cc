@@ -68,22 +68,12 @@ class PlusAddressCreationControllerImplDisabledTest
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    identity_test_env_.MakeAccountAvailable("plus@plus.plus",
-                                            {signin::ConsentLevel::kSignin});
     PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
         browser_context(),
         base::BindRepeating(
             [](content::BrowserContext* profile)
                 -> std::unique_ptr<KeyedService> { return nullptr; }));
   }
-
- protected:
-  std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
-      content::BrowserContext* context) {
-    return std::make_unique<PlusAddressService>(
-        identity_test_env_.identity_manager());
-  }
-  signin::IdentityTestEnvironment identity_test_env_;
 };
 
 TEST_F(PlusAddressCreationControllerImplDisabledTest, NullService) {
