@@ -173,8 +173,9 @@ the corresponding generate_jni().
 To bypass this check, you can add stubs to Java with add_stubs_for_missing_jni.
 Excess Java files below:
 '''
-    warning_message += ', '.join(dict_by_path)
     sys.stderr.write(warning_message)
+    sys.stderr.write(', '.join(dict_by_path))
+    sys.stderr.write('\n')
   if not options.remove_uncalled_methods and native_only:
     failed = True
     warning_message = '''Failed JNI assertion!
@@ -183,8 +184,9 @@ do not include in our final dex.
 To bypass this check, delete these extra JNI methods with remove_uncalled_jni.
 Unneeded Java files below:
 '''
-    warning_message += str(native_only)
     sys.stderr.write(warning_message)
+    sys.stderr.write(str(native_only))
+    sys.stderr.write('\n')
   if failed:
     sys.exit(1)
   return list(dict_by_path.values())
