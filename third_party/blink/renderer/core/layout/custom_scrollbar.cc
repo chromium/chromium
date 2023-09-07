@@ -417,9 +417,7 @@ void CustomScrollbar::PositionScrollbarParts() {
     // when we support subpixel layout of overflow controls.
     part.value->GetMutableForPainting().FirstFragment().SetPaintOffset(
         PhysicalOffset(part_rect.origin()));
-    // The part's frame_rect is relative to the scrollbar.
-    part_rect.Offset(-Location().OffsetFromOrigin());
-    part.value->SetOverriddenFrameRect(LayoutRect(part_rect));
+    part.value->SetOverriddenSize(PhysicalSize(part_rect.size()));
   }
 }
 

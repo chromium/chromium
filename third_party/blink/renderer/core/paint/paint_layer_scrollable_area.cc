@@ -2031,21 +2031,21 @@ void PaintLayerScrollableArea::PositionOverflowControls() {
   }
 
   if (scroll_corner_) {
-    LayoutRect rect(ScrollCornerRect());
-    scroll_corner_->SetOverriddenFrameRect(rect);
+    PhysicalRect rect(ScrollCornerRect());
+    scroll_corner_->SetOverriddenSize(rect.size);
     // TODO(crbug.com/1020913): This should be part of PaintPropertyTreeBuilder
     // when we support subpixel layout of overflow controls.
     scroll_corner_->GetMutableForPainting().FirstFragment().SetPaintOffset(
-        PhysicalOffset(rect.Location()));
+        rect.offset);
   }
 
   if (resizer_) {
-    LayoutRect rect(ResizerCornerRect(kResizerForPointer));
-    resizer_->SetOverriddenFrameRect(rect);
+    PhysicalRect rect(ResizerCornerRect(kResizerForPointer));
+    resizer_->SetOverriddenSize(rect.size);
     // TODO(crbug.com/1020913): This should be part of PaintPropertyTreeBuilder
     // when we support subpixel layout of overflow controls.
     resizer_->GetMutableForPainting().FirstFragment().SetPaintOffset(
-        PhysicalOffset(rect.Location()));
+        rect.offset);
   }
 }
 

@@ -70,11 +70,11 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   // available.
   int ComputeLength() const;
 
-  // Update the overridden location and size.
-  void SetOverriddenFrameRect(const LayoutRect& rect);
-  // Rerturn the overridden location set by SetOverriddenFrameRect();
+  // Update the overridden size.
+  void SetOverriddenSize(const PhysicalSize& size);
+  // This should not be called.
   LayoutPoint LocationInternal() const override;
-  // Rerturn the overridden size set by SetOverriddenFrameRect();
+  // Rerturn the overridden size set by SetOverriddenSize();
   PhysicalSize Size() const override;
 
   LayoutUnit MarginTop() const override;
@@ -150,7 +150,7 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
 
   Member<ScrollableArea> scrollable_area_;
   Member<CustomScrollbar> scrollbar_;
-  LayoutRect overridden_rect_;
+  PhysicalSize overridden_size_;
   ScrollbarPart part_;
   bool suppress_use_counters_ = false;
 };
