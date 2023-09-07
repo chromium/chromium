@@ -56,9 +56,11 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
 
   void ClearThemeCursors();
 
-  std::unique_ptr<XCursorLoader> cursor_loader_;
-
   std::map<mojom::CursorType, scoped_refptr<X11Cursor>> default_cursors_;
+
+  // `cursor_loader_` must be declared after `default_cursors_` since
+  // initializing `cursor_loader_` will modify `default_cursors_`.
+  std::unique_ptr<XCursorLoader> cursor_loader_;
 
 #if BUILDFLAG(IS_LINUX)
   base::ScopedObservation<LinuxUi, CursorThemeManagerObserver>

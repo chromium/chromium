@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,6 +18,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/x/x11_cursor.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/x/property_cache.h"
 #include "ui/gfx/x/render.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -31,7 +33,8 @@ class COMPONENT_EXPORT(UI_BASE_X) XCursorLoader {
     base::TimeDelta frame_delay;
   };
 
-  explicit XCursorLoader(x11::Connection* connection);
+  XCursorLoader(x11::Connection* connection,
+                base::RepeatingClosure on_cursor_config_changed);
 
   ~XCursorLoader();
 
@@ -64,12 +67,18 @@ class COMPONENT_EXPORT(UI_BASE_X) XCursorLoader {
   bool SupportsCreateCursor() const;
   bool SupportsCreateAnimCursor() const;
 
+  void OnPropertyChanged(x11::Atom property,
+                         const x11::GetPropertyResponse& value);
+
   raw_ptr<x11::Connection> connection_ = nullptr;
+
+  base::RepeatingClosure on_cursor_config_changed_;
 
   x11::Font cursor_font_ = x11::Font::None;
 
   x11::Render::PictFormat pict_format_{};
 
+  x11::PropertyCache rm_cache_;
   // Values obtained from the RESOURCE_MANAGER property on the root window.
   std::string rm_xcursor_theme_;
   unsigned int rm_xcursor_size_ = 0;

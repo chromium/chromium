@@ -14,18 +14,22 @@ namespace x11 {
 
 PropertyCache::PropertyCache(Connection* connection,
                              Window window,
-                             const std::vector<Atom>& properties)
+                             const std::vector<Atom>& properties,
+                             OnChangeCallback on_change)
     : connection_(connection),
       window_(window),
-      event_selector_(window_, EventMask::PropertyChange) {
+      event_selector_(window_, EventMask::PropertyChange),
+      on_change_(std::move(on_change)) {
   connection_->AddEventObserver(this);
 
   std::vector<std::pair<Atom, PropertyValue>> mem(properties.size());
   for (size_t i = 0; i < properties.size(); i++) {
     mem[i].first = properties[i];
-    FetchProperty(properties[i], &mem[i].second);
   }
   properties_ = base::flat_map<Atom, PropertyValue>(std::move(mem));
+  for (auto it = properties_.begin(); it != properties_.end(); ++it) {
+    FetchProperty(it);
+  }
 }
 
 PropertyCache::~PropertyCache() {
@@ -36,8 +40,9 @@ const GetPropertyResponse& PropertyCache::Get(Atom atom) {
   auto it = properties_.find(atom);
   DCHECK(it != properties_.end());
 
-  if (!it->second.response.has_value())
+  if (!it->second.response.has_value()) {
     it->second.future.DispatchNow();
+  }
   DCHECK(it->second.response.has_value());
 
   return it->second.response.value();
@@ -45,38 +50,44 @@ const GetPropertyResponse& PropertyCache::Get(Atom atom) {
 
 void PropertyCache::OnEvent(const Event& xev) {
   auto* prop = xev.As<PropertyNotifyEvent>();
-  if (!prop)
+  if (!prop) {
     return;
-  if (prop->window != window_)
+  }
+  if (prop->window != window_) {
     return;
+  }
   auto it = properties_.find(prop->atom);
-  if (it == properties_.end())
+  if (it == properties_.end()) {
     return;
+  }
   if (prop->state == Property::NewValue) {
-    FetchProperty(it->first, &it->second);
+    FetchProperty(it);
   } else {
     DCHECK_EQ(prop->state, Property::Delete);
     // When the property is deleted, a GetPropertyRequest will result in a
     // zeroed GetPropertyReply, so set the reply state now to avoid making an
     // unnecessary request.
-    it->second.response =
-        GetPropertyResponse{std::make_unique<GetPropertyReply>(), nullptr};
+    OnGetPropertyResponse(
+        it, GetPropertyResponse{std::make_unique<GetPropertyReply>(), nullptr});
   }
 }
 
-void PropertyCache::FetchProperty(Atom property, PropertyValue* value) {
-  value->future = connection_->GetProperty({
+void PropertyCache::FetchProperty(PropertiesIterator it) {
+  it->second.future = connection_->GetProperty({
       .window = window_,
-      .property = property,
+      .property = it->first,
       .long_length = std::numeric_limits<uint32_t>::max(),
   });
-  value->future.OnResponse(base::BindOnce(&PropertyCache::OnGetPropertyResponse,
-                                          weak_factory_.GetWeakPtr(), value));
+  it->second.future.OnResponse(base::BindOnce(
+      &PropertyCache::OnGetPropertyResponse, weak_factory_.GetWeakPtr(), it));
 }
 
-void PropertyCache::OnGetPropertyResponse(PropertyValue* value,
+void PropertyCache::OnGetPropertyResponse(PropertiesIterator it,
                                           GetPropertyResponse response) {
-  value->response = std::move(response);
+  it->second.response = std::move(response);
+  if (on_change_) {
+    on_change_.Run(it->first, it->second.response.value());
+  }
 }
 
 PropertyCache::PropertyValue::PropertyValue() = default;
