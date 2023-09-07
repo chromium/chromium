@@ -190,7 +190,44 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                       UninstallSource uninstall_source,
                       gfx::NativeWindow parent_window);
 
+  // Loads the icon for app service shortcut represented by `shortcut_id`, this
+  // icon will include a host app icon as it's badge. `callback` may be
+  // dispatched synchronously if it's possible to quickly return a result.
+  std::unique_ptr<IconLoader::Releaser> LoadShortcutIcon(
+      const apps::ShortcutId& shortcut_id,
+      const IconType& icon_type,
+      int32_t size_hint_in_dip,
+      bool allow_placeholder_icon,
+      apps::LoadIconCallback callback);
+
+  apps::IconLoader* OverrideShortcutInnerIconLoaderForTesting(
+      apps::IconLoader* icon_loader);
+
  private:
+  // ShortcutInnerIconLoader is used to load icons for shortcuts, it follows the
+  // same logic as the AppInnerIconLoader defined in AppServiceProxyBase, which
+  // is used to load icons for apps.
+  class ShortcutInnerIconLoader : public apps::IconLoader {
+   public:
+    explicit ShortcutInnerIconLoader(AppServiceProxyAsh* host);
+
+    // apps::IconLoader overrides.
+    absl::optional<IconKey> GetIconKey(const std::string& id) override;
+    std::unique_ptr<Releaser> LoadIconFromIconKey(
+        const std::string& id,
+        const IconKey& icon_key,
+        IconType icon_type,
+        int32_t size_hint_in_dip,
+        bool allow_placeholder_icon,
+        apps::LoadIconCallback callback) override;
+
+    // |host_| owns |this|, as the ShortcutInnerIconLoader is an
+    // AppServiceProxyAsh field.
+    raw_ptr<AppServiceProxyAsh> host_;
+
+    raw_ptr<apps::IconLoader> overriding_icon_loader_for_testing_;
+  };
+
   // For access to Initialize.
   friend class AppServiceProxyFactory;
   FRIEND_TEST_ALL_PREFIXES(AppServiceProxyTest, LaunchCallback);
@@ -339,6 +376,15 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const apps::AppUpdate& update) override;
 
   ShortcutPublisher* GetShortcutPublisher(AppType app_type);
+
+  // The LoadIconFromIconKey implementation sends a chained series of requests
+  // through each icon loader, starting from the outer and working back to the
+  // inner. Fields are listed from inner to outer, the opposite of call order,
+  // as each one depends on the previous one, and in the constructor,
+  // initialization happens in field order.
+  ShortcutInnerIconLoader shortcut_inner_icon_loader_;
+  IconCoalescer shortcut_icon_coalescer_;
+  IconCache shortcut_outer_icon_loader_;
 
   raw_ptr<SubscriberCrosapi, ExperimentalAsh> crosapi_subscriber_ = nullptr;
 

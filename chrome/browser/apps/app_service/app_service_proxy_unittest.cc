@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -297,6 +298,132 @@ TEST_F(AppServiceProxyIconTest, IconCoalescer) {
   EXPECT_EQ(3, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(6, NumOuterFinishedCallbacks());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class AppServiceProxyShortcutIconTest : public AppServiceProxyTest {
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kCrosWebAppShortcutUiUpdate);
+  }
+
+ protected:
+  UniqueReleaser LoadShortcutIcon(AppServiceProxy* proxy,
+                                  const std::string& shortcut_id) {
+    return proxy->LoadShortcutIcon(
+        ShortcutId(shortcut_id), IconType::kUncompressed,
+        /*size_hint_in_dip=*/1,
+        /*allow_placeholder_icon=*/false,
+        base::BindOnce([](int* num_callbacks,
+                          apps::IconValuePtr icon) { ++(*num_callbacks); },
+                       &num_outer_finished_callbacks_));
+  }
+  void OverrideAppServiceProxyShortcutInnerIconLoader(
+      AppServiceProxy* proxy,
+      apps::IconLoader* icon_loader) {
+    proxy->OverrideShortcutInnerIconLoaderForTesting(icon_loader);
+  }
+};
+
+TEST_F(AppServiceProxyShortcutIconTest, IconCache) {
+  // This is mostly a sanity check. For an isolated, comprehensive unit test of
+  // the IconCache code, see icon_cache_unittest.cc.
+  //
+  // This tests an AppServiceProxy as a 'black box', which uses an
+  // IconCache but also other IconLoader filters, such as an IconCoalescer.
+
+  AppServiceProxy proxy(nullptr);
+  FakeIconLoader fake;
+  OverrideAppServiceProxyShortcutInnerIconLoader(&proxy, &fake);
+
+  // The next LoadShortcutIcon call should be a cache miss.
+  UniqueReleaser c0 = LoadShortcutIcon(&proxy, "cromulent");
+  EXPECT_EQ(1, fake.NumPendingCallbacks());
+  EXPECT_EQ(0, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(0, NumOuterFinishedCallbacks());
+
+  // After a cache miss, manually trigger the inner callback.
+  fake.FlushPendingCallbacks();
+  EXPECT_EQ(0, fake.NumPendingCallbacks());
+  EXPECT_EQ(1, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(1, NumOuterFinishedCallbacks());
+
+  // The next LoadShortcutIcon call should be a cache hit.
+  UniqueReleaser c1 = LoadShortcutIcon(&proxy, "cromulent");
+  EXPECT_EQ(0, fake.NumPendingCallbacks());
+  EXPECT_EQ(1, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(2, NumOuterFinishedCallbacks());
+
+  // Destroy the IconLoader::Releaser's, clearing the cache.
+  c0.reset();
+  c1.reset();
+
+  // The next LoadShortcutIcon call should be a cache miss.
+  UniqueReleaser c2 = LoadShortcutIcon(&proxy, "cromulent");
+  EXPECT_EQ(1, fake.NumPendingCallbacks());
+  EXPECT_EQ(1, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(2, NumOuterFinishedCallbacks());
+
+  // After a cache miss, manually trigger the inner callback.
+  fake.FlushPendingCallbacks();
+  EXPECT_EQ(0, fake.NumPendingCallbacks());
+  EXPECT_EQ(2, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(3, NumOuterFinishedCallbacks());
+}
+
+TEST_F(AppServiceProxyShortcutIconTest, IconCoalescer) {
+  // This is mostly a sanity check. For an isolated, comprehensive unit test of
+  // the IconCoalescer code, see icon_coalescer_unittest.cc.
+  //
+  // This tests an AppServiceProxy as a 'black box', which uses an
+  // IconCoalescer but also other IconLoader filters, such as an IconCache.
+
+  AppServiceProxy proxy(nullptr);
+
+  FakeIconLoader fake;
+  OverrideAppServiceProxyShortcutInnerIconLoader(&proxy, &fake);
+
+  // Issue 4 LoadShortcutIcon requests, 2 after de-duplication.
+  UniqueReleaser a0 = LoadShortcutIcon(&proxy, "avocet");
+  UniqueReleaser a1 = LoadShortcutIcon(&proxy, "avocet");
+  UniqueReleaser b2 = LoadShortcutIcon(&proxy, "brolga");
+  UniqueReleaser a3 = LoadShortcutIcon(&proxy, "avocet");
+  EXPECT_EQ(2, fake.NumPendingCallbacks());
+  EXPECT_EQ(0, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(0, NumOuterFinishedCallbacks());
+
+  // Resolve their responses.
+  fake.FlushPendingCallbacks();
+  EXPECT_EQ(0, fake.NumPendingCallbacks());
+  EXPECT_EQ(2, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(4, NumOuterFinishedCallbacks());
+
+  // Issue another request, that triggers neither IconCache nor IconCoalescer.
+  UniqueReleaser c4 = LoadShortcutIcon(&proxy, "curlew");
+  EXPECT_EQ(1, fake.NumPendingCallbacks());
+  EXPECT_EQ(2, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(4, NumOuterFinishedCallbacks());
+
+  // Destroying the IconLoader::Releaser shouldn't affect the fact that there's
+  // an in-flight "curlew" request to the FakeIconLoader.
+  c4.reset();
+  EXPECT_EQ(1, fake.NumPendingCallbacks());
+  EXPECT_EQ(2, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(4, NumOuterFinishedCallbacks());
+
+  // Issuing another "curlew" request should coalesce with the in-flight one.
+  UniqueReleaser c5 = LoadShortcutIcon(&proxy, "curlew");
+  EXPECT_EQ(1, fake.NumPendingCallbacks());
+  EXPECT_EQ(2, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(4, NumOuterFinishedCallbacks());
+
+  // Resolving the in-flight request to the inner IconLoader, |fake|, should
+  // resolve the two coalesced requests to the outer IconLoader, |proxy|.
+  fake.FlushPendingCallbacks();
+  EXPECT_EQ(0, fake.NumPendingCallbacks());
+  EXPECT_EQ(3, fake.NumInnerFinishedCallbacks());
+  EXPECT_EQ(6, NumOuterFinishedCallbacks());
+}
+#endif
 
 TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
   TestingProfile::Builder profile_builder;

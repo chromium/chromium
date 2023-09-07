@@ -59,6 +59,10 @@
 namespace apps {
 AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
     : AppServiceProxyBase(profile),
+      shortcut_inner_icon_loader_(this),
+      shortcut_icon_coalescer_(&shortcut_inner_icon_loader_),
+      shortcut_outer_icon_loader_(&shortcut_icon_coalescer_,
+                                  IconCache::GarbageCollectionPolicy::kEager),
       icon_reader_(profile),
       icon_writer_(profile) {
   if (web_app::IsWebAppsCrosapiEnabled()) {
@@ -472,6 +476,74 @@ void AppServiceProxyAsh::RemoveShortcut(const ShortcutId& id,
   }
   shortcut_publisher->RemoveShortcut(host_app_id, local_id, uninstall_source);
   // TODO(crbug.com/1412708): Add remove confirmation dialog.
+}
+
+std::unique_ptr<IconLoader::Releaser> AppServiceProxyAsh::LoadShortcutIcon(
+    const apps::ShortcutId& shortcut_id,
+    const IconType& icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  if (!base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return nullptr;
+  }
+  auto icon_key = shortcut_outer_icon_loader_.GetIconKey(shortcut_id.value());
+  return shortcut_outer_icon_loader_.LoadIconFromIconKey(
+      shortcut_id.value(), icon_key.value(), icon_type, size_hint_in_dip,
+      allow_placeholder_icon, std::move(callback));
+  // TODO(crbug.com/1412708): Add callback to load the parent app icon and add
+  // it as badge.
+}
+
+apps::IconLoader* AppServiceProxyAsh::OverrideShortcutInnerIconLoaderForTesting(
+    apps::IconLoader* icon_loader) {
+  apps::IconLoader* old =
+      shortcut_inner_icon_loader_.overriding_icon_loader_for_testing_;
+  shortcut_inner_icon_loader_.overriding_icon_loader_for_testing_ = icon_loader;
+  return old;
+}
+
+AppServiceProxyAsh::ShortcutInnerIconLoader::ShortcutInnerIconLoader(
+    AppServiceProxyAsh* host)
+    : host_(host), overriding_icon_loader_for_testing_(nullptr) {}
+
+absl::optional<IconKey> AppServiceProxyAsh::ShortcutInnerIconLoader::GetIconKey(
+    const std::string& id) {
+  if (overriding_icon_loader_for_testing_) {
+    return overriding_icon_loader_for_testing_->GetIconKey(id);
+  }
+  // TODO(crbug.com/1412708): Get icon key from shortcut struct.
+  return absl::make_optional<IconKey>(0, 0, 0);
+}
+
+std::unique_ptr<IconLoader::Releaser>
+AppServiceProxyAsh::ShortcutInnerIconLoader::LoadIconFromIconKey(
+    const std::string& id,
+    const IconKey& icon_key,
+    IconType icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  if (overriding_icon_loader_for_testing_) {
+    return overriding_icon_loader_for_testing_->LoadIconFromIconKey(
+        id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+        std::move(callback));
+  }
+
+  // Temporarily use the existing web app icons for shortcuts using the app icon
+  // loader. This still work for now because the web app entries for shortcuts
+  // have not been filtered out in web app publisher yet. This will need to be
+  // updated before we filter out the shortcuts from web app publisher.
+  // TODO(crbug.com/1412708): Use icon reader to get the icon from shortcut
+  // publisher instead of the web app publisher.
+  std::string equvelent_web_app_id =
+      host_->ShortcutRegistryCache()->GetShortcutLocalId(ShortcutId(id));
+  host_->LoadIconFromIconKey(equvelent_web_app_id, icon_key, icon_type,
+                             size_hint_in_dip, allow_placeholder_icon,
+                             std::move(callback));
+
+  return nullptr;
 }
 
 void AppServiceProxyAsh::Shutdown() {
