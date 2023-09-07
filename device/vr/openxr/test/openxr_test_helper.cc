@@ -19,7 +19,7 @@
 
 namespace {
 bool PathContainsString(const std::string& path, const std::string& s) {
-  return path.find(s) != std::string::npos;
+  return base::Contains(path, s);
 }
 
 device::XrEye GetEyeForIndex(uint32_t index, uint32_t num_views) {
@@ -504,8 +504,7 @@ XrResult OpenXrTestHelper::BeginSession(
 
   // xrBeginSession in the fake OpenXR runtime should have added the primary
   // view configuration first.
-  if (primary_configs_supported_.find(view_configs[0]) ==
-      primary_configs_supported_.end()) {
+  if (!base::Contains(primary_configs_supported_, view_configs[0])) {
     return XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED;
   }
 
@@ -515,14 +514,12 @@ XrResult OpenXrTestHelper::BeginSession(
 
   // Process the rest of the view configurations, which should all be secondary.
   for (uint32_t i = 1; i < view_configs.size(); i++) {
-    if (secondary_configs_supported_.find(view_configs[i]) ==
-        secondary_configs_supported_.end()) {
+    if (!base::Contains(secondary_configs_supported_, view_configs[i])) {
       return XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED;
     }
 
     // Check for additional primary view configuration.
-    if (primary_configs_supported_.find(view_configs[i]) !=
-        primary_configs_supported_.end()) {
+    if (base::Contains(primary_configs_supported_, view_configs[i])) {
       return XR_ERROR_VALIDATION_FAILURE;
     }
 
@@ -1337,10 +1334,8 @@ XrResult OpenXrTestHelper::ValidateViews(uint32_t view_capacity_input,
 
 XrResult OpenXrTestHelper::ValidateViewConfigType(
     XrViewConfigurationType view_config) const {
-  RETURN_IF(primary_configs_supported_.find(view_config) ==
-                    primary_configs_supported_.end() &&
-                secondary_configs_supported_.find(view_config) ==
-                    secondary_configs_supported_.end(),
+  RETURN_IF(!base::Contains(primary_configs_supported_, view_config) &&
+                !base::Contains(secondary_configs_supported_, view_config),
             XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED,
             "XrViewConfigurationType unsupported");
 

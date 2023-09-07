@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
 
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
@@ -41,7 +42,7 @@ void FakeFlossGattManagerClient::AddService(ResponseCallback<Void> callback,
   }
 
   int32_t instance_id = added_service.instance_id;
-  if (services_.find(instance_id) != services_.end()) {
+  if (base::Contains(services_, instance_id)) {
     GattServerServiceAdded(GattStatus::kError, added_service);
     return;
   }
@@ -55,7 +56,7 @@ void FakeFlossGattManagerClient::RemoveService(ResponseCallback<Void> callback,
                                                int32_t handle) {
   std::move(callback).Run(DBusResult<Void>({}));
 
-  if (services_.find(handle) == services_.end()) {
+  if (!base::Contains(services_, handle)) {
     GattServerServiceRemoved(GattStatus::kError, handle);
     return;
   }

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -170,8 +171,7 @@ void FakeBluetoothGattCharacteristicClient::ReadValue(
     return;
   }
 
-  if (action_extra_requests_.find("ReadValue") !=
-      action_extra_requests_.end()) {
+  if (base::Contains(action_extra_requests_, "ReadValue")) {
     DelayedCallback* delayed = action_extra_requests_["ReadValue"];
     delayed->delay_--;
     std::move(error_callback)
@@ -244,8 +244,7 @@ void FakeBluetoothGattCharacteristicClient::WriteValue(
   }
 
   DCHECK(heart_rate_control_point_properties_.get());
-  if (action_extra_requests_.find("WriteValue") !=
-      action_extra_requests_.end()) {
+  if (base::Contains(action_extra_requests_, "WriteValue")) {
     DelayedCallback* delayed = action_extra_requests_["WriteValue"];
     delayed->delay_--;
     std::move(error_callback)

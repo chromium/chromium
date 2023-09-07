@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -212,8 +213,7 @@ void FakeFlossSocketManager::Close(const SocketId id,
 void FakeFlossSocketManager::SendSocketReady(const SocketId id,
                                              const device::BluetoothUUID& uuid,
                                              const BtifStatus status) {
-  if (listening_sockets_to_callbacks_.find(id) !=
-      listening_sockets_to_callbacks_.end()) {
+  if (base::Contains(listening_sockets_to_callbacks_, id)) {
     FlossListeningSocket socket;
     socket.id = id;
     socket.type = SocketType::kRfcomm;
@@ -226,8 +226,7 @@ void FakeFlossSocketManager::SendSocketReady(const SocketId id,
 
 void FakeFlossSocketManager::SendSocketClosed(const SocketId id,
                                               const BtifStatus status) {
-  if (listening_sockets_to_callbacks_.find(id) !=
-      listening_sockets_to_callbacks_.end()) {
+  if (base::Contains(listening_sockets_to_callbacks_, id)) {
     FlossListeningSocket socket;
     socket.id = id;
     socket.type = SocketType::kRfcomm;
@@ -242,8 +241,7 @@ void FakeFlossSocketManager::SendIncomingConnection(
     const SocketId listener_id,
     const FlossDeviceId& remote_device,
     const device::BluetoothUUID& uuid) {
-  if (listening_sockets_to_callbacks_.find(listener_id) !=
-      listening_sockets_to_callbacks_.end()) {
+  if (base::Contains(listening_sockets_to_callbacks_, listener_id)) {
     // Create a fake socket and send a new connection callback.
     FlossSocket socket;
     socket.id = listener_id;

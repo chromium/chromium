@@ -5,6 +5,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "dbus/property.h"
@@ -146,7 +147,7 @@ void BluetoothRemoteGattServiceBlueZ::GattServicePropertyChanged(
 
 void BluetoothRemoteGattServiceBlueZ::GattCharacteristicAdded(
     const dbus::ObjectPath& object_path) {
-  if (characteristics_.find(object_path.value()) != characteristics_.end()) {
+  if (base::Contains(characteristics_, object_path.value())) {
     DVLOG(1) << "Remote GATT characteristic already exists: "
              << object_path.value();
     return;

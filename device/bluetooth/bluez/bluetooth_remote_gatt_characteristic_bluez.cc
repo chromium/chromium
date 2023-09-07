@@ -8,6 +8,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -281,7 +282,7 @@ void BluetoothRemoteGattCharacteristicBlueZ::UnsubscribeFromNotifications(
 
 void BluetoothRemoteGattCharacteristicBlueZ::GattDescriptorAdded(
     const dbus::ObjectPath& object_path) {
-  if (descriptors_.find(object_path.value()) != descriptors_.end()) {
+  if (base::Contains(descriptors_, object_path.value())) {
     DVLOG(1) << "Remote GATT characteristic descriptor already exists: "
              << object_path.value();
     return;

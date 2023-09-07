@@ -847,8 +847,8 @@ XrResult OpenXrApiWrapper::UpdateSecondaryViewConfigStates(
 
   bool state_changed = false;
   for (const XrSecondaryViewConfigurationStateMSFT& state : states) {
-    DCHECK(secondary_view_configs_.find(state.viewConfigurationType) !=
-           secondary_view_configs_.end());
+    DCHECK(
+        base::Contains(secondary_view_configs_, state.viewConfigurationType));
     OpenXrViewConfiguration& view_config =
         secondary_view_configs_.at(state.viewConfigurationType);
 

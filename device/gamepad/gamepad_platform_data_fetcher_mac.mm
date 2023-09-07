@@ -9,6 +9,7 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -171,8 +172,9 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   DCHECK_EQ(kXInputTypeNone,
             gamepad_id_list.GetXInputType(vendor_int, product_int));
 
-  if (devices_.find(location_int) != devices_.end())
+  if (base::Contains(devices_, location_int)) {
     return;
+  }
 
   const GamepadId gamepad_id =
       gamepad_id_list.GetGamepadId(product_name, vendor_int, product_int);

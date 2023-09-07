@@ -7,6 +7,7 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -375,8 +376,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
       // please have macOS show its own error dialog.
       CtapDeviceResponseCode response;
       if (error.code == 1001 &&
-          description.find("No credentials available for login") !=
-              std::string::npos) {
+          base::Contains(description, "No credentials available for login")) {
         response = CtapDeviceResponseCode::kCtap2ErrNoCredentials;
       } else {
         // All other errors are currently mapped to `kCtap2ErrOperationDenied`

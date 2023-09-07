@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/v2_handshake.h"
 
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
@@ -27,16 +28,17 @@ TEST(CableV2Encoding, TunnelServerURLs) {
   // Tunnel ID zero should map to Google's tunnel server.
   const tunnelserver::KnownDomainID kGoogleDomain(0);
   const GURL url = tunnelserver::GetNewTunnelURL(kGoogleDomain, tunnel_id);
-  EXPECT_TRUE(url.spec().find("//cable.ua5v.com/") != std::string::npos) << url;
+
+  EXPECT_TRUE(base::Contains(url.spec(), "//cable.ua5v.com/")) << url;
 
   // The hash function shouldn't change across releases, so test a hashed
   // domain.
   const tunnelserver::KnownDomainID kHashedDomain(266);
   const GURL hashed_url =
       tunnelserver::GetNewTunnelURL(kHashedDomain, tunnel_id);
-  EXPECT_TRUE(hashed_url.spec().find("//cable.wufkweyy3uaxb.com/") !=
-              std::string::npos)
-      << url;
+
+  EXPECT_TRUE(base::Contains(hashed_url.spec(), "//cable.wufkweyy3uaxb.com/"))
+      << hashed_url;
 }
 
 TEST(CableV2Encoding, EIDToFromComponents) {

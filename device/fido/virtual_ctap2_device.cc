@@ -1599,7 +1599,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   // technically permissible to send an empty allow_list when asking for
   // discoverable credentials, but some authenticators in practice don't take it
   // that way. Thus this code mirrors that to better reflect reality.
-  if (request_map.find(cbor::Value(3)) == request_map.end()) {
+  if (!base::Contains(request_map, cbor::Value(3))) {
     DCHECK(config_.resident_key_support);
     for (auto& registration : mutable_state()->registrations) {
       if (registration.second.is_resident &&
@@ -2112,10 +2112,11 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       PinUvAuthTokenPermissions permissions;
       if (subcommand ==
           static_cast<int>(device::pin::Subcommand::kGetPINToken)) {
-        if (request_map.find(cbor::Value(static_cast<int>(
-                pin::RequestKey::kPermissions))) != request_map.end() ||
-            request_map.find(cbor::Value(static_cast<int>(
-                pin::RequestKey::kPermissionsRPID))) != request_map.end()) {
+        if (base::Contains(request_map, cbor::Value(static_cast<int>(
+                                            pin::RequestKey::kPermissions))) ||
+            base::Contains(request_map,
+                           cbor::Value(static_cast<int>(
+                               pin::RequestKey::kPermissionsRPID)))) {
           return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
         }
         // Set default PinUvAuthToken permissions.

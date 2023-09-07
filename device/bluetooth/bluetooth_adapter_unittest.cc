@@ -31,6 +31,7 @@
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "device/bluetooth/test/test_bluetooth_advertisement_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -674,15 +675,11 @@ TEST_F(BluetoothAdapterTest, GetMergedDiscoveryFilterAllFields) {
   EXPECT_TRUE(resulting_filter->GetTransport());
   EXPECT_EQ(BLUETOOTH_TRANSPORT_DUAL, resulting_filter->GetTransport());
   EXPECT_EQ(-85, resulting_rssi);
-  EXPECT_EQ(4UL, resulting_uuids.size());
-  EXPECT_TRUE(resulting_uuids.find(device::BluetoothUUID("1000")) !=
-              resulting_uuids.end());
-  EXPECT_TRUE(resulting_uuids.find(device::BluetoothUUID("1001")) !=
-              resulting_uuids.end());
-  EXPECT_TRUE(resulting_uuids.find(device::BluetoothUUID("1003")) !=
-              resulting_uuids.end());
-  EXPECT_TRUE(resulting_uuids.find(device::BluetoothUUID("1020")) !=
-              resulting_uuids.end());
+  EXPECT_THAT(resulting_uuids,
+              testing::UnorderedElementsAre(device::BluetoothUUID("1000"),
+                                            device::BluetoothUUID("1001"),
+                                            device::BluetoothUUID("1003"),
+                                            device::BluetoothUUID("1020")));
 
   adapter_->CleanupSessions();
 }

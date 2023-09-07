@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -72,8 +73,9 @@ FakeBluetoothInputClient::Properties* FakeBluetoothInputClient::GetProperties(
 
 void FakeBluetoothInputClient::AddInputDevice(
     const dbus::ObjectPath& object_path) {
-  if (properties_map_.find(object_path) != properties_map_.end())
+  if (base::Contains(properties_map_, object_path)) {
     return;
+  }
 
   std::unique_ptr<Properties> properties = std::make_unique<Properties>(
       base::BindRepeating(&FakeBluetoothInputClient::OnPropertyChanged,
