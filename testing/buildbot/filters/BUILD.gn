@@ -49,6 +49,14 @@ source_set("blink_web_tests_filter") {
   data = [ "//testing/buildbot/filters/cft.blink_web_tests.filter" ]
 }
 
+source_set("cr23_pixel_browser_tests_filters") {
+  testonly = true
+
+  data = [
+    "//testing/buildbot/filters/win.win-rel-cft.cr23_pixel_browser_tests.filter",
+  ]
+}
+
 source_set("browser_tests_filters") {
   testonly = true
 

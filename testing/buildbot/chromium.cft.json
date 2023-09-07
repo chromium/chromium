@@ -5404,7 +5404,7 @@
         "args": [
           "--browser-ui-tests-verify-pixels",
           "--enable-pixel-output-in-tests",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter;../../testing/buildbot/filters/win.win-rel-cft.cr23_pixel_browser_tests.filter",
           "--test-launcher-jobs=1",
           "--git-revision=${got_revision}",
           "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape,IPH_DesktopCustomizeChromeRefresh"
