@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::TimeDelta;
@@ -47,7 +48,8 @@ TEST(OpenerHeuristicsMetricsTest, BucketizeHoursSinceLastInteraction) {
   ASSERT_EQ(seen_values.size(), 50u);
 }
 
-TEST(OpenerHeuristicsMetricsTest, BucketizeSecondsSinceCommitted) {
+// TODO(crbug.com/1480057): The test is flaky across platforms.
+TEST(OpenerHeuristicsMetricsTest, DISABLED_BucketizeSecondsSinceCommitted) {
   base::TimeDelta maximum = base::Minutes(3);
   auto cast_time_delta = base::BindRepeating(&base::TimeDelta::InSeconds);
 
