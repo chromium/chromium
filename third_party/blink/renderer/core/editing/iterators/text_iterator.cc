@@ -506,8 +506,10 @@ void TextIteratorAlgorithm<Strategy>::HandleTextNode() {
     TextControlElement* control = EnclosingTextControl(node_);
     // For security reason, we don't expose suggested value if it is
     // auto-filled.
-    if (control && control->IsAutofilled())
+    // TODO(crbug.com/1472209): Only hide suggested value of previews.
+    if (control && (control->IsAutofilled() || control->IsPreviewed())) {
       return;
+    }
   }
 
   DCHECK_NE(last_text_node_, node_)

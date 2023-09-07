@@ -2005,7 +2005,8 @@ bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
   switch (pseudo_type) {
     case CSSSelector::kPseudoAutofill:
     case CSSSelector::kPseudoWebKitAutofill:
-      return html_form_element->IsAutofilled();
+      return html_form_element->IsAutofilled() ||
+             html_form_element->IsPreviewed();
     case CSSSelector::kPseudoAutofillPreviewed:
       return html_form_element->GetAutofillState() ==
              WebAutofillState::kPreviewed;

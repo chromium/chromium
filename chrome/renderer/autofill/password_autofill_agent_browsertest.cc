@@ -627,6 +627,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
+  // TODO(crbug.com/1472209): Only expect one of IsPreviewed()/IsAutofilled().
   void CheckTextFieldsStateForElements(const WebInputElement& username_element,
                                        const std::string& username,
                                        bool username_autofilled,
@@ -640,7 +641,8 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
                               ? username_element.SuggestedValue().Utf8()
                               : username_element.Value().Utf8())
           << "check_suggested_username == " << check_suggested_username;
-      EXPECT_EQ(username_autofilled, username_element.IsAutofilled());
+      EXPECT_EQ(username_autofilled, username_element.IsPreviewed() ||
+                                         username_element.IsAutofilled());
     }
 
     if (!password_element.IsNull()) {
@@ -648,7 +650,8 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
                               ? password_element.SuggestedValue().Utf8()
                               : password_element.Value().Utf8())
           << "check_suggested_password == " << check_suggested_password;
-      EXPECT_EQ(password_autofilled, password_element.IsAutofilled());
+      EXPECT_EQ(password_autofilled, password_element.IsAutofilled() ||
+                                         password_element.IsPreviewed());
     }
   }
 

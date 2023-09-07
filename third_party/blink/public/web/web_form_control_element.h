@@ -66,6 +66,7 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
 
   enum WebAutofillState GetAutofillState() const;
   bool IsAutofilled() const;
+  bool IsPreviewed() const;
   void SetAutofillState(enum WebAutofillState);
   void SetPreventHighlightingOfAutofilledFields(bool prevent_highlighting);
   bool PreventHighlightingOfAutofilledFields() const;

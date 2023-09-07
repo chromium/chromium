@@ -96,6 +96,10 @@ bool WebFormControlElement::IsAutofilled() const {
   return ConstUnwrap<HTMLFormControlElement>()->IsAutofilled();
 }
 
+bool WebFormControlElement::IsPreviewed() const {
+  return ConstUnwrap<HTMLFormControlElement>()->IsPreviewed();
+}
+
 bool WebFormControlElement::UserHasEditedTheField() const {
   if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
     return input->UserHasEditedTheField();

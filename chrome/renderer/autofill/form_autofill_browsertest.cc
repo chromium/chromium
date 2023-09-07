@@ -475,13 +475,16 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     // Validate Autofill or Preview results.
     for (size_t i = 0; i < number_of_field_cases; ++i) {
-      ValidateFilledField(field_cases[i], get_value_function);
+      ValidateFilledField(field_cases[i], get_value_function,
+                          action_persistence);
     }
   }
 
   // Validate an Autofilled field.
-  void ValidateFilledField(const AutofillFieldCase& field_case,
-                           GetValueFunction get_value_function) {
+  void ValidateFilledField(
+      const AutofillFieldCase& field_case,
+      GetValueFunction get_value_function,
+      mojom::AutofillActionPersistence action_persistence) {
     SCOPED_TRACE(base::StringPrintf("Verify autofilled value for field %s",
                                     field_case.id_attribute));
     WebString value;
@@ -503,7 +506,10 @@ class FormAutofillTest : public ChromeRenderViewTest {
     else
       EXPECT_EQ(expected_value.Utf8(), value.Utf8());
 
-    EXPECT_EQ(field_case.should_be_autofilled, element.IsAutofilled());
+    EXPECT_EQ(field_case.should_be_autofilled,
+              action_persistence == mojom::AutofillActionPersistence::kFill
+                  ? element.IsAutofilled()
+                  : element.IsPreviewed());
   }
 
   WebFormControlElement GetFormControlElementById(const WebString& id) {

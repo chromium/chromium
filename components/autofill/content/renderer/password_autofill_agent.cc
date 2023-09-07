@@ -141,7 +141,7 @@ bool IsUsernameAmendable(const WebInputElement& username_element,
                          bool is_password_field_selected) {
   return !username_element.IsNull() && IsElementEditable(username_element) &&
          (!is_password_field_selected || username_element.IsAutofilled() ||
-          username_element.Value().IsEmpty());
+          username_element.IsPreviewed() || username_element.Value().IsEmpty());
 }
 
 // Log `message` if `logger` is not null.
