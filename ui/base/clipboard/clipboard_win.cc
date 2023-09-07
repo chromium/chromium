@@ -320,6 +320,12 @@ void ClipboardWin::ReadAvailableTypes(
   types->clear();
   *types = GetStandardFormats(buffer, data_dst);
 
+  // Read the custom type only if it's present on the clipboard.
+  // See crbug.com/1477344 for details.
+  if (!IsFormatAvailable(ClipboardFormatType::WebCustomDataType(), buffer,
+                         data_dst)) {
+    return;
+  }
   // Acquire the clipboard to read WebCustomDataType types.
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow()))
