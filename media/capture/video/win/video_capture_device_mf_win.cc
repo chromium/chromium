@@ -453,9 +453,16 @@ HRESULT ConvertToVideoSinkMediaType(IMFMediaType* source_media_type,
   if (FAILED(hr) || passthrough)
     return hr;
 
-  // Both NV12 and I420 usually use 16..235 nominal range.
-  hr = sink_media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE,
-                                  MFNominalRange_16_235);
+  // Since we have the option to send video color space at RTP layer, copy the
+  // nominal range attribute from source to sink instead of rewriting it to
+  // limited range. See https://crbug.com/1449570 for more details.
+  if (base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
+    hr = CopyAttribute(source_media_type, sink_media_type,
+                       MF_MT_VIDEO_NOMINAL_RANGE);
+  } else {
+    hr = sink_media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE,
+                                    MFNominalRange_16_235);
+  }
   if (FAILED(hr))
     return hr;
 
@@ -1460,10 +1467,12 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
     return;
   }
 
-  // Nominal range is rewritten to be 16..235 in non-passthrough mode.
-  // So update it before extracting the color space information.
-  if (best_match_video_capability.source_pixel_format !=
-      best_match_video_capability.supported_format.pixel_format) {
+  // If "kWebRTCColorAccuracy" is not enabled,  then nominal range is rewritten
+  // to be 16..235 in non-passthrough mode. So update it before extracting the
+  // color space information.
+  if (!base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy) &&
+      (best_match_video_capability.source_pixel_format !=
+       best_match_video_capability.supported_format.pixel_format)) {
     source_video_media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE,
                                        MFNominalRange_16_235);
   }
