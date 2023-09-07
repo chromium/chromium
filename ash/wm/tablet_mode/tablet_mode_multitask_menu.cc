@@ -309,15 +309,18 @@ void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
     return;
   }
 
-  ui::Layer* view_layer = menu_view_->layer();
-  if (view_layer->GetAnimator()->is_animating()) {
-    // Do nothing if we're already animating, since calling `SetTransform()`
-    // with the same target can end an ongoing animation and destroy `this`.
-    return;
+  ui::Layer* menu_layer = menu_view_->layer();
+  ui::LayerAnimator* animator = menu_layer->GetAnimator();
+  if (animator->IsAnimatingOnePropertyOf(
+          ui::LayerAnimationElement::TRANSFORM)) {
+    // Calling `SetTransform()` with the same target transform can end an
+    // ongoing animation and destroy `this`. Abort the animation (not stop
+    // which will call `AnimationBuilder::OnEnded()`).
+    animator->AbortAllAnimations();
   }
 
   const float translation_y = current_y - initial_y_;
-  view_layer->SetTransform(gfx::Transform::MakeTranslation(0, translation_y));
+  menu_layer->SetTransform(gfx::Transform::MakeTranslation(0, translation_y));
 
   if (auto* cue_layer = controller_->multitask_cue_controller()->cue_layer()) {
     cue_layer->SetTransform(gfx::Transform::MakeTranslation(

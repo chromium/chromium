@@ -793,14 +793,34 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashDuringUpdateDrag) {
   GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
                  /*end_y=*/50);
   auto* multitask_menu = GetMultitaskMenu();
-  ASSERT_TRUE(multitask_menu);
   auto* menu_layer = multitask_menu->widget()->GetContentsView()->layer();
-  EXPECT_EQ(1.f, menu_layer->GetTargetOpacity());
+  ASSERT_TRUE(multitask_menu && menu_layer);
+  ui::LayerAnimator* animator = menu_layer->GetAnimator();
+  EXPECT_TRUE(animator->is_animating());
+  // When animating to hide, the menu will be translated up by `translation_y`,
+  // equal to the y translation in `initial_transform` in the constructor.
+  const int translation_y =
+      multitask_menu->widget()->GetContentsView()->height() + kVerticalPosition;
+  auto transform = gfx::Transform::MakeTranslation(0, -translation_y);
+  EXPECT_EQ(transform, menu_layer->GetTargetTransform());
 
   // Start another drag to abort the current animation.
-  multitask_menu->UpdateDrag(10, /*down=*/false);
-  ASSERT_TRUE(multitask_menu);
-  EXPECT_EQ(1.f, menu_layer->GetTargetOpacity());
+  const int current_y = 10;
+  multitask_menu->UpdateDrag(current_y, /*down=*/false);
+  ASSERT_TRUE(multitask_menu && menu_layer);
+  EXPECT_FALSE(animator->is_animating());
+  const int initial_y =
+      multitask_menu->widget()->GetContentsView()->bounds().bottom();
+  transform = gfx::Transform::MakeTranslation(0, current_y - initial_y);
+  EXPECT_EQ(transform, menu_layer->transform());
+
+  // If we start a drag in a different direction, ensure we continue to set
+  // transform.
+  multitask_menu->UpdateDrag(current_y, /*down=*/true);
+  ASSERT_TRUE(multitask_menu && menu_layer);
+  EXPECT_FALSE(animator->is_animating());
+  // transform = gfx::Transform::MakeTranslation(0, y - initial_y);
+  EXPECT_EQ(transform, menu_layer->transform());
 }
 
 // Test that the window is created on the target window. This can crash if
