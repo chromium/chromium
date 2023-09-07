@@ -18,3 +18,9 @@ This is only a partial inclusion of the OCMock tree. This only includes
 The License.txt and Changes.txt file are also present from /Source.
 
 Chromium adds gtest_support.h/.mm and ocmock_extensions.h/.mm.
+
+Chromium patches in a fix for iOS15 ptrauth failures in OCMArg to cache all
+OCMPassByRefSetters rather than checking with object_getClass. See pending
+PRs here:
+ - https://github.com/erikdoe/ocmock/pull/503
+ - https://github.com/erikdoe/ocmock/pull/529
