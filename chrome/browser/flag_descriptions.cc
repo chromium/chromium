@@ -648,6 +648,12 @@ const char kAutofillTouchToFillForCreditCardsAndroidDescription[] =
     "When enabled, Autofill credit card suggestions are shown on the "
     "Touch To Fill bottomsheet";
 
+const char kAutofillUpdateChromeSettingsLinkToGPayWebName[] =
+    "Update Chrome Settings Link to GPay Web";
+const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[] =
+    "When enabled, Chrome Settings link directs to GPay Web rather than "
+    "Payments Center for payment methods management.";
+
 const char kAutofillUpstreamAllowAdditionalEmailDomainsName[] =
     "Allow Autofill credit card upload save for select non-Google-based "
     "accounts";

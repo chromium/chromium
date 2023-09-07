@@ -121,6 +121,11 @@ extern const char kAutofillPruneSuggestionsDescription[];
 extern const char kAutofillSuggestServerCardInsteadOfLocalCardName[];
 extern const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[];
 
+// Title and description for the flag to update GPay-related links in chrome
+// settings to GPay web instead of the legacy Payments Center.
+extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
+extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
+
 // Title and description for the flag to control allowing credit card upload
 // save for accounts from common email providers.
 extern const char kAutofillUpstreamAllowAdditionalEmailDomainsName[];

@@ -61206,6 +61206,8 @@ from previous Chrome versions.
   <int value="-1691602043" label="DisableOfficeEditingComponentApp:enabled"/>
   <int value="-1691281364" label="enable-notification-action-icons"/>
   <int value="-1690359116" label="ShortcutCustomizationJelly:enabled"/>
+  <int value="-1689444567"
+      label="AutofillUpdateChromeSettingsLinkToGPayWeb:disabled"/>
   <int value="-1688631209"
       label="AutofillEnableRankingFormulaAddressProfiles:enabled"/>
   <int value="-1687407363" label="KaleidoscopeModule:disabled"/>
@@ -66027,6 +66029,8 @@ from previous Chrome versions.
   <int value="705946076"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:disabled"/>
   <int value="706280254" label="StoragePressureEvent:enabled"/>
+  <int value="708015891"
+      label="AutofillUpdateChromeSettingsLinkToGPayWeb:enabled"/>
   <int value="708185835" label="WebViewThrottleBackgroundBeginFrame:enabled"/>
   <int value="709138900" label="InstantStart:enabled"/>
   <int value="709850261" label="disable-touch-editing"/>

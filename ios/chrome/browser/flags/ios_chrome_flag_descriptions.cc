@@ -143,6 +143,12 @@ const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[] =
     "version of the same card will attempt to fill the server card upon "
     "selection instead of the local card.";
 
+const char kAutofillUpdateChromeSettingsLinkToGPayWebName[] =
+    "Update Chrome Settings Link to GPay Web";
+const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[] =
+    "When enabled, Chrome Settings link directs to GPay Web rather than "
+    "Payments Center for payment methods management.";
+
 const char kAutofillUpstreamAllowAdditionalEmailDomainsName[] =
     "Allow Autofill credit card upload save for select non-Google-based "
     "accounts";

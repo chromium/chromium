@@ -355,6 +355,9 @@ extern const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[];
 extern const char kAutofillTouchToFillForCreditCardsAndroidName[];
 extern const char kAutofillTouchToFillForCreditCardsAndroidDescription[];
 
+extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
+extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
+
 extern const char kAutofillUpstreamAllowAdditionalEmailDomainsName[];
 extern const char kAutofillUpstreamAllowAdditionalEmailDomainsDescription[];
 

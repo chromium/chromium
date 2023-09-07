@@ -1710,6 +1710,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableMerchantDomainInUnmaskCardRequest)},
+    {"autofill-update-chrome-settings-link-to-gpay-web",
+     flag_descriptions::kAutofillUpdateChromeSettingsLinkToGPayWebName,
+     flag_descriptions::kAutofillUpdateChromeSettingsLinkToGPayWebDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

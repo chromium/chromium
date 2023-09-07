@@ -10935,6 +10935,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableMerchantDomainInUnmaskCardRequest)},
 
+    {"autofill-update-chrome-settings-link-to-gpay-web",
+     flag_descriptions::kAutofillUpdateChromeSettingsLinkToGPayWebName,
+     flag_descriptions::kAutofillUpdateChromeSettingsLinkToGPayWebDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
