@@ -41,14 +41,17 @@ void ShortcutRegistryCache::UpdateShortcut(ShortcutPtr delta) {
   Shortcut* state =
       HasShortcut(shortcut_id) ? states_[shortcut_id].get() : nullptr;
 
-  for (auto& obs : observers_) {
-    obs.OnShortcutUpdated(ShortcutUpdate(state, delta.get()));
-  }
+  ShortcutPtr state_before_update = state ? state->Clone() : nullptr;
 
   if (state) {
     ShortcutUpdate::Merge(state, delta.get());
   } else {
     states_.emplace(shortcut_id, delta->Clone());
+  }
+
+  for (auto& obs : observers_) {
+    obs.OnShortcutUpdated(
+        ShortcutUpdate(state_before_update.get(), delta.get()));
   }
 
   is_updating_ = false;

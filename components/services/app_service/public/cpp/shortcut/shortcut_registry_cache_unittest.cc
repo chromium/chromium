@@ -41,11 +41,21 @@ class ShortcutRegistryCacheTest : public testing::Test,
   void OnShortcutUpdated(const ShortcutUpdate& update) override {
     on_shortcut_updated_called_ = true;
     EXPECT_EQ(update, *expected_update_);
+
+    // Verified the data in shortcut registry cache is already updated.
+    ASSERT_TRUE(cache().HasShortcut(update.ShortcutId()));
+    ShortcutView shortcut_in_cache = cache().GetShortcut(update.ShortcutId());
+    EXPECT_EQ(shortcut_in_cache->shortcut_id, update.ShortcutId());
+    EXPECT_EQ(shortcut_in_cache->name, update.Name());
+    EXPECT_EQ(shortcut_in_cache->shortcut_source, update.ShortcutSource());
   }
 
   void OnShortcutRemoved(const ShortcutId& shortcut_id) override {
     on_shortcut_removed_called_ = true;
     EXPECT_EQ(shortcut_id, expected_shortcut_id_);
+
+    // Verified the data in shortcut registry cache is already updated.
+    ASSERT_FALSE(cache().HasShortcut(shortcut_id));
   }
 
   void OnShortcutRegistryCacheWillBeDestroyed(
@@ -145,7 +155,7 @@ TEST_F(ShortcutRegistryCacheTest, Observer) {
   shortcut->shortcut_source = ShortcutSource::kUser;
   ExpectShortcutUpdate(
       std::make_unique<ShortcutUpdate>(nullptr, shortcut.get()));
-  cache().UpdateShortcut(std::move(shortcut));
+  ASSERT_NO_FATAL_FAILURE(cache().UpdateShortcut(std::move(shortcut)));
   EXPECT_TRUE(OnShortcutUpdatedCalled());
 
   auto shortcut_delta = std::make_unique<Shortcut>(host_app_id, local_id);
@@ -155,18 +165,18 @@ TEST_F(ShortcutRegistryCacheTest, Observer) {
       cache().GetShortcut(shortcut_id)->Clone();
   ExpectShortcutUpdate(std::make_unique<ShortcutUpdate>(current_state.get(),
                                                         shortcut_delta.get()));
-  cache().UpdateShortcut(std::move(shortcut_delta));
+  ASSERT_NO_FATAL_FAILURE(cache().UpdateShortcut(std::move(shortcut_delta)));
   EXPECT_TRUE(OnShortcutUpdatedCalled());
 
   auto shortcut_nochange = std::make_unique<Shortcut>(host_app_id, local_id);
   current_state = cache().GetShortcut(shortcut_id)->Clone();
   ExpectShortcutUpdate(std::make_unique<ShortcutUpdate>(
       current_state.get(), shortcut_nochange.get()));
-  cache().UpdateShortcut(std::move(shortcut_nochange));
+  ASSERT_NO_FATAL_FAILURE(cache().UpdateShortcut(std::move(shortcut_nochange)));
   EXPECT_TRUE(OnShortcutUpdatedCalled());
 
   ExpectShortcutRemoved(shortcut_id);
-  cache().RemoveShortcut(shortcut_id);
+  ASSERT_NO_FATAL_FAILURE(cache().RemoveShortcut(shortcut_id));
   EXPECT_TRUE(OnShortcutRemovedCalled());
 }
 
