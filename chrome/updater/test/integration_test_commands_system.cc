@@ -48,6 +48,10 @@ std::string StringFromValue(const base::Value& value) {
   return value_string;
 }
 
+std::string BoolToString(const bool value) {
+  return value ? "true" : "false";
+}
+
 }  // namespace
 
 class IntegrationTestCommandsSystem : public IntegrationTestCommands {
@@ -74,8 +78,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void Install() const override { RunCommand("install"); }
 
-  void InstallUpdaterAndApp(const std::string& app_id) const override {
-    RunCommand("install_updater_and_app", {Param("app_id", app_id)});
+  void InstallUpdaterAndApp(const std::string& app_id,
+                            const bool is_silent_install) const override {
+    RunCommand("install_updater_and_app",
+               {Param("app_id", app_id),
+                Param("is_silent_install", BoolToString(is_silent_install))});
   }
 
   void ExpectInstalled() const override { RunCommand("expect_installed"); }
@@ -112,7 +119,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void SetMachineManaged(bool is_managed_device) const override {
     RunCommand("set_machine_managed",
-               {Param("managed", is_managed_device ? "true" : "false")});
+               {Param("managed", BoolToString(is_managed_device))});
   }
 
   void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
@@ -249,7 +256,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void RunServer(int expected_exit_code, bool internal) const override {
     RunCommand("run_server",
-               {Param("internal", internal ? "true" : "false"),
+               {Param("internal", BoolToString(internal)),
                 Param("exit_code", base::NumberToString(expected_exit_code))});
   }
 
@@ -379,10 +386,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("app_id", app_id),
                 Param("install_data_index", install_data_index),
                 Param("same_version_update_allowed",
-                      policy_same_version_update ==
-                              UpdateService::PolicySameVersionUpdate::kAllowed
-                          ? "true"
-                          : "false")});
+                      BoolToString(
+                          policy_same_version_update ==
+                          UpdateService::PolicySameVersionUpdate::kAllowed))});
   }
 
   void SetupFakeLegacyUpdater() const override {
@@ -417,15 +423,15 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void RunOfflineInstall(bool is_legacy_install,
                          bool is_silent_install) override {
     RunCommand("run_offline_install",
-               {Param("legacy_install", is_legacy_install ? "true" : "false"),
-                Param("silent", is_silent_install ? "true" : "false")});
+               {Param("legacy_install", BoolToString(is_legacy_install)),
+                Param("silent", BoolToString(is_silent_install))});
   }
 
   void RunOfflineInstallOsNotSupported(bool is_legacy_install,
                                        bool is_silent_install) override {
     RunCommand("run_offline_install_os_not_supported",
-               {Param("legacy_install", is_legacy_install ? "true" : "false"),
-                Param("silent", is_silent_install ? "true" : "false")});
+               {Param("legacy_install", BoolToString(is_legacy_install)),
+                Param("silent", BoolToString(is_silent_install))});
   }
 
   void DMDeregisterDevice() override { RunCommand("dm_deregister_device"); }

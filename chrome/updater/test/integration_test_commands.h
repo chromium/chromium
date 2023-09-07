@@ -42,7 +42,8 @@ class IntegrationTestCommands
   virtual void ExpectInstalled() const = 0;
   virtual void ExpectCandidateUninstalled() const = 0;
   virtual void Install() const = 0;
-  virtual void InstallUpdaterAndApp(const std::string& app_id) const = 0;
+  virtual void InstallUpdaterAndApp(const std::string& app_id,
+                                    const bool is_silent_install) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;

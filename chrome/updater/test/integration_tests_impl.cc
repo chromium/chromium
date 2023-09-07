@@ -413,14 +413,18 @@ void Install(UpdaterScope scope) {
   ASSERT_EQ(exit_code, 0);
 }
 
-void InstallUpdaterAndApp(UpdaterScope scope, const std::string& app_id) {
+void InstallUpdaterAndApp(UpdaterScope scope,
+                          const std::string& app_id,
+                          const bool is_silent_install) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch(kInstallSwitch);
   command_line.AppendSwitchASCII(kTagSwitch, "usagestats=1");
   command_line.AppendSwitchASCII(kAppIdSwitch, app_id);
-  command_line.AppendSwitch(kSilentSwitch);
+  if (is_silent_install) {
+    command_line.AppendSwitch(kSilentSwitch);
+  }
 
   int exit_code = -1;
   Run(scope, command_line, &exit_code);

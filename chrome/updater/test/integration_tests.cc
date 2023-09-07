@@ -175,8 +175,9 @@ class IntegrationTest : public ::testing::Test {
 
   void Install() { test_commands_->Install(); }
 
-  void InstallUpdaterAndApp(const std::string& app_id) {
-    test_commands_->InstallUpdaterAndApp(app_id);
+  void InstallUpdaterAndApp(const std::string& app_id,
+                            const bool is_silent_install) {
+    test_commands_->InstallUpdaterAndApp(app_id, is_silent_install);
   }
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
@@ -889,7 +890,8 @@ TEST_F(IntegrationTest, InstallUpdaterAndApp) {
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
 
-  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(kAppId));
+  ASSERT_NO_FATAL_FAILURE(
+      InstallUpdaterAndApp(kAppId, /*is_silent_install=*/true));
   ASSERT_TRUE(WaitForUpdaterExit());
 
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
@@ -2055,7 +2057,8 @@ TEST_F(IntegrationTestMsi, InstallViaCommandLine) {
                                /*should_update=*/true, false, "", crx_path),
       });
 
-  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(kMsiAppId));
+  ASSERT_NO_FATAL_FAILURE(
+      InstallUpdaterAndApp(kMsiAppId, /*is_silent_install=*/true));
   ASSERT_TRUE(WaitForUpdaterExit());
 
   ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
@@ -2086,6 +2089,7 @@ TEST_F(IntegrationTestMsi, Upgrade) {
 }
 
 struct IntegrationInstallerResultsTestCase {
+  const bool interactive_install;
   const std::string command_line_args;
   const int error_code;
   const std::string installer_text;
@@ -2101,46 +2105,55 @@ INSTANTIATE_TEST_SUITE_P(
     IntegrationInstallerResultsTest,
     ::testing::ValuesIn(std::vector<IntegrationInstallerResultsTestCase>{
         // InstallerResult::kMsiError, explicit error code.
-        {"INSTALLER_RESULT=2 INSTALLER_ERROR=1603",
+        {false,
+         "INSTALLER_RESULT=2 INSTALLER_ERROR=1603",
          1603,
          "Fatal error during installation. ",
          {}},
 
         // `InstallerResult::kCustomError`, implicit error code
         // `kErrorApplicationInstallerFailed`.
-        {"INSTALLER_RESULT=1 INSTALLER_RESULT_UI_STRING=TestUIString",
+        {false,
+         "INSTALLER_RESULT=1 INSTALLER_RESULT_UI_STRING=TestUIString",
          kErrorApplicationInstallerFailed,
          "TestUIString",
          {}},
 
         // InstallerResult::kSystemError, explicit error code.
-        {"INSTALLER_RESULT=3 INSTALLER_ERROR=99", 99, {}, {}},
+        {false, "INSTALLER_RESULT=3 INSTALLER_ERROR=99", 99, {}, {}},
 
         // InstallerResult::kSuccess.
-        {"INSTALLER_RESULT=0", 0, {}, {}},
+        {false, "INSTALLER_RESULT=0", 0, {}, {}},
 
-        // InstallerResult::kSuccess.
-        {"INSTALLER_RESULT=0 "
-         "REGISTER_LAUNCH_COMMAND=MORE",
+        // Silent install with a launch command, InstallerResult::kSuccess, will
+        // not run `more.com` since silent install.
+        {false,
+         "INSTALLER_RESULT=0 "
+         "REGISTER_LAUNCH_COMMAND=more.com",
          0,
          {},
-         "MORE"},
+         "more.com"},
+
+        // Interactive install via the command line with a launch command,
+        // InstallerResult::kSuccess, will run `more.com` since interactive
+        // install.
+        {true,
+         "INSTALLER_RESULT=0 "
+         "REGISTER_LAUNCH_COMMAND=more.com",
+         0,
+         {},
+         "more.com"},
     }));
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {
-  ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
-  int64_t crx_file_size = 0;
-  {
-    base::FilePath exe_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-    const base::FilePath crx_path = exe_path.Append(crx_relative_path);
-    EXPECT_TRUE(base::GetFileSize(crx_path, &crx_file_size));
+  const bool should_install_successfully = !GetParam().error_code;
+
+  if (!GetParam().interactive_install) {
+    ASSERT_NO_FATAL_FAILURE(Install());
+    ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   }
 
-  const bool should_install_successfully = !GetParam().error_code;
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       {
@@ -2152,38 +2165,57 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
               /*always_serve_crx=*/true, UpdateService::ErrorCategory::kInstall,
               GetParam().error_code, /*EVENT_INSTALL_COMPLETE=*/2),
       });
-
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
-  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(
-      kMsiAppId,
-      base::Value::Dict()
-          .Set("expected_update_state",
-               base::Value::Dict()
-                   .Set("app_id", kMsiAppId)
-                   .Set("state",
-                        static_cast<int>(
-                            should_install_successfully
-                                ? UpdateService::UpdateState::State::kUpdated
-                                : UpdateService::UpdateState::State::
-                                      kUpdateError))
-                   .Set("next_version", kMsiUpdatedVersion.GetString())
-                   .Set("downloaded_bytes", static_cast<int>(crx_file_size))
-                   .Set("total_bytes", static_cast<int>(crx_file_size))
-                   .Set("install_progress", -1)
-                   .Set("error_category",
-                        should_install_successfully
-                            ? 0
-                            : static_cast<int>(
-                                  UpdateService::ErrorCategory::kInstall))
-                   .Set("error_code", GetParam().error_code)
-                   .Set("extra_code1", 0)
-                   .Set("installer_text", GetParam().installer_text)
-                   .Set("installer_cmd_line", GetParam().installer_cmd_line))
-          .Set("expected_result", 0)));
+  if (GetParam().interactive_install) {
+    ASSERT_NO_FATAL_FAILURE(
+        InstallUpdaterAndApp(kMsiAppId, /*is_silent_install=*/false));
+    ASSERT_TRUE(WaitForUpdaterExit());
+  } else {
+    int64_t crx_file_size = 0;
+    {
+      base::FilePath exe_path;
+      ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+      const base::FilePath crx_path = exe_path.Append(crx_relative_path);
+      EXPECT_TRUE(base::GetFileSize(crx_path, &crx_file_size));
+    }
+    ASSERT_NO_FATAL_FAILURE(InstallAppViaService(
+        kMsiAppId,
+        base::Value::Dict()
+            .Set("expected_update_state",
+                 base::Value::Dict()
+                     .Set("app_id", kMsiAppId)
+                     .Set("state",
+                          static_cast<int>(
+                              should_install_successfully
+                                  ? UpdateService::UpdateState::State::kUpdated
+                                  : UpdateService::UpdateState::State::
+                                        kUpdateError))
+                     .Set("next_version", kMsiUpdatedVersion.GetString())
+                     .Set("downloaded_bytes", static_cast<int>(crx_file_size))
+                     .Set("total_bytes", static_cast<int>(crx_file_size))
+                     .Set("install_progress", -1)
+                     .Set("error_category",
+                          should_install_successfully
+                              ? 0
+                              : static_cast<int>(
+                                    UpdateService::ErrorCategory::kInstall))
+                     .Set("error_code", GetParam().error_code)
+                     .Set("extra_code1", 0)
+                     .Set("installer_text", GetParam().installer_text)
+                     .Set("installer_cmd_line", GetParam().installer_cmd_line))
+            .Set("expected_result", 0)));
+  }
 
   if (should_install_successfully) {
     ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
+    if (!GetParam().installer_cmd_line.empty()) {
+      const std::wstring post_install_launch_command_line =
+          base::ASCIIToWide(GetParam().installer_cmd_line);
+      EXPECT_EQ(test::IsProcessRunning(post_install_launch_command_line),
+                GetParam().interactive_install);
+      EXPECT_TRUE(test::KillProcesses(post_install_launch_command_line, 0));
+    }
     ASSERT_NO_FATAL_FAILURE(Uninstall());
   } else {
     ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kMsiAppId));

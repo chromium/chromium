@@ -801,14 +801,19 @@ ObserverCompletionInfo AppInstallControllerImpl::HandleInstallResult(
             << "], post_install_launch_command_line["
             << app_info.post_install_launch_command_line << "]";
 
-    // TODO(crbug.com/1352307): Figure out how to populate members like
-    // `completion_code` and `post_install_url`. For now, set the completion
-    // for the basic cases and ignore the post install URL.
+    // If the installer provides a launch command,
+    // `COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND` will cause the UI
+    // client to run the launch command and exit in the interactive install
+    // case.
+    // TODO(crbug.com/1352307): Is there more to be done to populate members
+    // like `completion_code` and `post_install_url`? For now, set the
+    // completion for the basic cases and ignore the post install URL.
     if (app_info.error_code == 0) {
       app_info.completion_code =
           app_info.post_install_launch_command_line.empty()
               ? CompletionCodes::COMPLETION_CODE_SUCCESS
-              : CompletionCodes::COMPLETION_CODE_LAUNCH_COMMAND;
+              : CompletionCodes::
+                    COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND;
     } else {
       app_info.completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
     }

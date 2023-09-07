@@ -136,8 +136,10 @@ void ExpectInstalled(UpdaterScope scope);
 // Installs the updater.
 void Install(UpdaterScope scope);
 
-// Installs the updater and an app.
-void InstallUpdaterAndApp(UpdaterScope scope, const std::string& app_id);
+// Installs the updater and an app via the command line.
+void InstallUpdaterAndApp(UpdaterScope scope,
+                          const std::string& app_id,
+                          const bool is_silent_install);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
