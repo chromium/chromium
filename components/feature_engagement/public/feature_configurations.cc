@@ -163,6 +163,28 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPH3pcdUserBypassFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // Show promo up to 3 times if user has not interacted with UB: initial
+    // show, then again at >3 days later, and again at >30 days later.
+    config->trigger = EventConfig("iph_3pcd_user_bypass_triggered",
+                                  Comparator(EQUAL, 0), 3, 3);
+    config->used =
+        EventConfig(feature_engagement::events::kCookieControlsBubbleShown,
+                    Comparator(EQUAL, 0), 720, 720);
+    // Use 2 years as we only want to show this IPH up to 3 times total and
+    // anticipate the IPH will be retired by that time.
+    config->event_configs.insert(EventConfig(
+        "iph_3pcd_user_bypass_triggered", Comparator(LESS_THAN, 3), 720, 720));
+    config->event_configs.insert(EventConfig("iph_3pcd_user_bypass_triggered",
+                                             Comparator(LESS_THAN, 2), 30, 30));
+    return config;
+  }
+
   if (kIPHBatterySaverModeFeature.name == feature->name) {
     // Show promo once a year when the battery saver toolbar icon is visible.
     absl::optional<FeatureConfig> config = FeatureConfig();
