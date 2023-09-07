@@ -53,46 +53,43 @@ enum class TopRowActionKey {
   kMaxValue = kPrivacyScreenToggle,
 };
 
-inline constexpr auto kLayout1TopRowActionKeys =
-    base::MakeFixedFlatSet<TopRowActionKey>({
-        TopRowActionKey::kBack,
-        TopRowActionKey::kForward,
-        TopRowActionKey::kRefresh,
-        TopRowActionKey::kFullscreen,
-        TopRowActionKey::kOverview,
-        TopRowActionKey::kScreenBrightnessDown,
-        TopRowActionKey::kScreenBrightnessUp,
-        TopRowActionKey::kVolumeMute,
-        TopRowActionKey::kVolumeDown,
-        TopRowActionKey::kVolumeUp,
-    });
+static const TopRowActionKey kLayout1TopRowActionKeys[] = {
+    TopRowActionKey::kBack,
+    TopRowActionKey::kForward,
+    TopRowActionKey::kRefresh,
+    TopRowActionKey::kFullscreen,
+    TopRowActionKey::kOverview,
+    TopRowActionKey::kScreenBrightnessDown,
+    TopRowActionKey::kScreenBrightnessUp,
+    TopRowActionKey::kVolumeMute,
+    TopRowActionKey::kVolumeDown,
+    TopRowActionKey::kVolumeUp,
+};
 
-inline constexpr auto kLayout2TopRowActionKeys =
-    base::MakeFixedFlatSet<TopRowActionKey>({
-        TopRowActionKey::kBack,
-        TopRowActionKey::kRefresh,
-        TopRowActionKey::kFullscreen,
-        TopRowActionKey::kOverview,
-        TopRowActionKey::kScreenBrightnessDown,
-        TopRowActionKey::kScreenBrightnessUp,
-        TopRowActionKey::kPlayPause,
-        TopRowActionKey::kVolumeMute,
-        TopRowActionKey::kVolumeDown,
-        TopRowActionKey::kVolumeUp,
-    });
+static const TopRowActionKey kLayout2TopRowActionKeys[] = {
+    TopRowActionKey::kBack,
+    TopRowActionKey::kRefresh,
+    TopRowActionKey::kFullscreen,
+    TopRowActionKey::kOverview,
+    TopRowActionKey::kScreenBrightnessDown,
+    TopRowActionKey::kScreenBrightnessUp,
+    TopRowActionKey::kPlayPause,
+    TopRowActionKey::kVolumeMute,
+    TopRowActionKey::kVolumeDown,
+    TopRowActionKey::kVolumeUp,
+};
 
-inline constexpr auto kLayoutWilcoDrallionTopRowActionKeys =
-    base::MakeFixedFlatSet<TopRowActionKey>({
-        TopRowActionKey::kBack,
-        TopRowActionKey::kRefresh,
-        TopRowActionKey::kFullscreen,
-        TopRowActionKey::kOverview,
-        TopRowActionKey::kScreenBrightnessDown,
-        TopRowActionKey::kScreenBrightnessUp,
-        TopRowActionKey::kVolumeMute,
-        TopRowActionKey::kVolumeDown,
-        TopRowActionKey::kVolumeUp,
-    });
+static const TopRowActionKey kLayoutWilcoDrallionTopRowActionKeys[] = {
+    TopRowActionKey::kBack,
+    TopRowActionKey::kRefresh,
+    TopRowActionKey::kFullscreen,
+    TopRowActionKey::kOverview,
+    TopRowActionKey::kScreenBrightnessDown,
+    TopRowActionKey::kScreenBrightnessUp,
+    TopRowActionKey::kVolumeMute,
+    TopRowActionKey::kVolumeDown,
+    TopRowActionKey::kVolumeUp,
+};
 
 // Keyboard layout1 map between top row keys to function keys.
 inline constexpr auto kLayout1TopRowKeyToFKeyMap =

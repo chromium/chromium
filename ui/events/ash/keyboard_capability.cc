@@ -434,13 +434,16 @@ std::vector<TopRowActionKey> IdentifyTopRowActionKeys(
     const std::vector<uint32_t>& top_row_scan_codes) {
   switch (layout) {
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1:
-      return {kLayout1TopRowActionKeys.begin(), kLayout1TopRowActionKeys.end()};
+      return std::vector<TopRowActionKey>(std::begin(kLayout1TopRowActionKeys),
+                                          std::end(kLayout1TopRowActionKeys));
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2:
-      return {kLayout2TopRowActionKeys.begin(), kLayout2TopRowActionKeys.end()};
+      return std::vector<TopRowActionKey>(std::begin(kLayout2TopRowActionKeys),
+                                          std::end(kLayout2TopRowActionKeys));
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
-      return {kLayoutWilcoDrallionTopRowActionKeys.begin(),
-              kLayoutWilcoDrallionTopRowActionKeys.end()};
+      return std::vector<TopRowActionKey>(
+          std::begin(kLayoutWilcoDrallionTopRowActionKeys),
+          std::end(kLayoutWilcoDrallionTopRowActionKeys));
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
       return IdentifyCustomTopRowActionKeys(scan_code_to_evdev_key_converter,
                                             keyboard, top_row_scan_codes);
@@ -990,7 +993,7 @@ bool KeyboardCapability::HasTopRowActionKey(const KeyboardDevice& keyboard,
                                             TopRowActionKey action_key) const {
   const auto* keyboard_info = GetKeyboardInfo(keyboard);
   if (!keyboard_info) {
-    return kLayout1TopRowActionKeys.contains(action_key);
+    return base::Contains(kLayout1TopRowActionKeys, action_key);
   }
 
   return base::Contains(keyboard_info->top_row_action_keys, action_key);

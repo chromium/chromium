@@ -895,7 +895,7 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout1) {
        action_key =
            static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
     EXPECT_EQ(
-        ui::kLayout1TopRowActionKeys.contains(action_key),
+        base::Contains(ui::kLayout1TopRowActionKeys, action_key),
         keyboard_capability_->HasTopRowActionKey(input_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
   }
@@ -923,7 +923,7 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout2) {
        action_key =
            static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
     EXPECT_EQ(
-        ui::kLayout2TopRowActionKeys.contains(action_key),
+        base::Contains(ui::kLayout2TopRowActionKeys, action_key),
         keyboard_capability_->HasTopRowActionKey(input_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
   }
@@ -957,11 +957,11 @@ TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
        action_key =
            static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
     EXPECT_EQ(
-        ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
+        base::Contains(ui::kLayoutWilcoDrallionTopRowActionKeys, action_key),
         keyboard_capability_->HasTopRowActionKey(wilco_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
     EXPECT_EQ(
-        ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
+        base::Contains(ui::kLayoutWilcoDrallionTopRowActionKeys, action_key),
         keyboard_capability_->HasTopRowActionKey(drallion_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
   }
