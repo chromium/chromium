@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/test/browser_test.h"
@@ -49,8 +50,8 @@ void ShowInActiveTab(Browser* browser) {
 }  // namespace
 
 // Test whether the zoom bubble is anchored and whether it is visible when in
-// non-immersive fullscreen.
-IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
+// content fullscreen.
+IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ContentFullscreen) {
 #if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
@@ -74,7 +75,10 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
         ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame(), {});
     waiter.Wait();
   }
+#if !BUILDFLAG(IS_MAC)
+  // The immersive mode controller is enabled in content fullscreen on Mac.
   ASSERT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+#endif
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 
   // The bubble should not be anchored when it is shown in non-immersive
@@ -92,22 +96,40 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
   }
 }
 
+// Immersive fullscreen is either/or on Mac. Base class for tests that only
+// apply to non-immersive.
+#if BUILDFLAG(IS_MAC)
+class ZoomBubbleImmersiveDisabledBrowserTest : public ZoomBubbleBrowserTest {
+ public:
+  ZoomBubbleImmersiveDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kImmersiveFullscreen);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+#else
+using ZoomBubbleImmersiveDisabledBrowserTest = ZoomBubbleBrowserTest;
+#endif
+
 // Test whether the zoom bubble is anchored to the same location if the toolbar
 // shows in fullscreen. And when the toolbar hides in fullscreen, the zoom
 // bubble should close and re-show in a new un-anchored position.
 //
 // TODO(crbug.com/1142682): Fails on Lacros bots.
+// TODO(lgrey): Disable this test for Mac or delete it when immersive is the
+// only code path. This was originally added for a Mac bug that is impossible
+// to trigger in immersive mode, and is very implementation-coupled.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AnchorPositionsInFullscreen DISABLED_AnchorPositionsInFullscreen
 #else
 #define MAYBE_AnchorPositionsInFullscreen AnchorPositionsInFullscreen
 #endif
-IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_F(ZoomBubbleImmersiveDisabledBrowserTest,
                        MAYBE_AnchorPositionsInFullscreen) {
 #if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
-
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
 

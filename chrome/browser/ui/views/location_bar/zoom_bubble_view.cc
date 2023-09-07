@@ -56,6 +56,10 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/fullscreen_util_mac.h"
+#endif
+
 namespace {
 
 // The default time that the bubble should stay on the screen if it will close
@@ -141,6 +145,11 @@ bool IsBrowserFullscreen(Browser* browser) {
 
 views::View* GetAnchorViewForBrowser(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+#if BUILDFLAG(IS_MAC)
+  if (fullscreen_utils::IsInContentFullscreen(browser)) {
+    return nullptr;
+  }
+#endif
   if (!IsBrowserFullscreen(browser) || browser_view->IsToolbarVisible() ||
       browser_view->immersive_mode_controller()->IsRevealed()) {
     return browser_view->toolbar_button_provider()->GetAnchorView(
