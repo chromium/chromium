@@ -169,7 +169,7 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
     String html_string =
         String::FromUTF8(reinterpret_cast<const LChar*>(html_data->Data()),
                          html_data->ByteLength());
-    KURL url;
+    const KURL& url = local_frame->GetDocument()->Url();
     if (RuntimeEnabledFeatures::ClipboardUnsanitizedContentEnabled()) {
       Write(html_string, url);
       return;
