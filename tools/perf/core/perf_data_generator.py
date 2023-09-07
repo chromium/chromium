@@ -816,12 +816,11 @@ BUILDERS = {
             # that we can be informed if this
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
-            # Temporarily using shorter OS and GPU driver versions while we
-            # are in the middle of some bot updates.
-            'os': 'Windows-10',
-            'gpu': '8086:1616',
-            'synthetic_product_name':
-                'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)',
+            'os': 'Windows-10-18363.476',
+            'gpu': '8086:1616-20.19.15.5070',
+            # TODO(crbug.com/998161): Add synthetic product name for these.
+            # They don't have this dimension yet as I am writing this CL since
+            # they are since in pool 'unassigned'.
         },
     },
     'win-10_laptop_low_end-perf-pgo': {
