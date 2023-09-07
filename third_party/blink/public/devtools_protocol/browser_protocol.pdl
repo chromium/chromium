@@ -11308,9 +11308,6 @@ experimental domain Preload
       MixedContent
       TriggerBackgrounded
       MemoryLimitExceeded
-      # Prerenders can be cancelled when Chrome uses excessive memory. This is
-      # recorded when it fails to get the memory usage.
-      FailToGetMemoryUsage
       DataSaverEnabled
       HasEffectiveUrl
       ActivatedBeforeStarted

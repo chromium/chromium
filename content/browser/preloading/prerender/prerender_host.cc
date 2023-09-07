@@ -1007,7 +1007,6 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kMixedContent:
     case PrerenderFinalStatus::kTriggerBackgrounded:
     case PrerenderFinalStatus::kMemoryLimitExceeded:
-    case PrerenderFinalStatus::kFailToGetMemoryUsage:
     case PrerenderFinalStatus::kDataSaverEnabled:
     case PrerenderFinalStatus::kHasEffectiveUrl:
     case PrerenderFinalStatus::kInactivePageRestriction:

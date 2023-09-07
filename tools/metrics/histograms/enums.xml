@@ -88170,7 +88170,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="kEmbedderTriggeredAndCrossOriginRedirected (obsoleted)"/>
   <int value="35" label="kEmbedderTriggeredAndDestroyed (obsoleted)"/>
   <int value="36" label="kMemoryLimitExceeded"/>
-  <int value="37" label="kFailToGetMemoryUsage"/>
+  <int value="37" label="kFailToGetMemoryUsage (obsoleted)"/>
   <int value="38" label="kDataSaverEnabled"/>
   <int value="39" label="kHasEffectiveUrl"/>
   <int value="40" label="kActivatedBeforeStarted"/>

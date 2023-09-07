@@ -71,7 +71,10 @@ enum class PrerenderFinalStatus {
   // metric's name includes trigger type.
   // kEmbedderTriggeredAndDestroyed = 35,
   kMemoryLimitExceeded = 36,
-  kFailToGetMemoryUsage = 37,
+
+  // Deprecated. Failure on query of current memory consumption is ignored.
+  // kFailToGetMemoryUsage = 37,
+
   kDataSaverEnabled = 38,
   kHasEffectiveUrl = 39,
   kActivatedBeforeStarted = 40,

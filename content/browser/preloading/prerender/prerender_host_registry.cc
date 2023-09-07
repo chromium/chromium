@@ -239,7 +239,6 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kTriggerBackgrounded:
       return PreloadingEligibility::kHidden;
     case PrerenderFinalStatus::kMemoryLimitExceeded:
-    case PrerenderFinalStatus::kFailToGetMemoryUsage:
       NOTREACHED_NORETURN();
     case PrerenderFinalStatus::kDataSaverEnabled:
       return PreloadingEligibility::kDataSaverEnabled;
@@ -442,16 +441,6 @@ void PrerenderHostBuilder::RejectAsFailure(
 }
 
 }  // namespace
-
-// Kill-switch controlled by the field trial. When this feature is enabled,
-// PrerenderHostRegistry doesn't cancel prerendering even if query about the
-// current memory footprint fails. Now this is enabled by default as the query
-// frequently fails. Without the memory footprint check, the limit on the number
-// of ongoing prerendering requests and memory pressure events should prevent
-// excessive memory usage. See https://crbug.com/1444521 for details.
-BASE_FEATURE(kPrerender2IgnoreFailureOnMemoryFootprintQuery,
-             "Prerender2IgnoreFailureOnMemoryFootprintQuery",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill-switch controlled by the field trial. When this feature is enabled,
 // PrerenderHostRegistry doesn't query about the current memory footprint and
@@ -1776,14 +1765,12 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
     return;
   }
 
-  // Stop a prerendering or give up checking the memory consumption depending on
-  // the feature flag when we can't get the current memory usage.
   if (!success) {
-    if (base::FeatureList::IsEnabled(
-            kPrerender2IgnoreFailureOnMemoryFootprintQuery)) {
-      return;
-    }
-    CancelHost(frame_tree_node_id, PrerenderFinalStatus::kFailToGetMemoryUsage);
+    // Give up checking the memory consumption and continue prerendering. This
+    // case commonly happens due to lifecycle changes of renderer processes
+    // during the query. Skipping the check should be safe for other safety
+    // measures: the limit on the number of ongoing prerendering requests and
+    // memory pressure events should prevent excessive memory usage.
     return;
   }
 
