@@ -6695,3 +6695,6 @@ crbug.com/1479476 [ Mac ] external/wpt/workers/constructors/SharedWorker/same-or
 crbug.com/1479476 [ Mac ] external/wpt/workers/constructors/Worker/same-origin.html [ Failure Pass ]
 crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failure Pass ]
 crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-event-fired.html [ Failure Pass ]
+
+# Gardener 2023-09-07
+crbug.com/1479983 [ Mac ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout Failure Pass ]
