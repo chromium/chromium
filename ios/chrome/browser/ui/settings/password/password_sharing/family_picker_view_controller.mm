@@ -93,7 +93,7 @@ const CGFloat kAccessorySymbolSize = 22;
   if (_recipients[indexPath.row].isEligible) {
     [tableView cellForRowAtIndexPath:indexPath].accessoryView =
         [[UIImageView alloc] initWithImage:[self checkmarkCircleIcon]];
-    self.navigationItem.rightBarButtonItem.enabled = YES;
+    [self setShareButtonStatus];
   }
 }
 
@@ -102,9 +102,7 @@ const CGFloat kAccessorySymbolSize = 22;
   if (_recipients[indexPath.row].isEligible) {
     [tableView cellForRowAtIndexPath:indexPath].accessoryView =
         [[UIImageView alloc] initWithImage:[self circleIcon]];
-    if (tableView.indexPathsForSelectedRows.count == 0) {
-      self.navigationItem.rightBarButtonItem.enabled = NO;
-    }
+    [self setShareButtonStatus];
   }
 }
 
@@ -241,6 +239,12 @@ const CGFloat kAccessorySymbolSize = 22;
 
 - (void)shareButtonTapped {
   // TODO(crbug.com/1463882): Handle share tap.
+}
+
+// Enables share button if any row is selected or disables it otherwise.
+- (void)setShareButtonStatus {
+  self.navigationItem.rightBarButtonItem.enabled =
+      self.tableView.indexPathsForSelectedRows.count > 0;
 }
 
 @end
