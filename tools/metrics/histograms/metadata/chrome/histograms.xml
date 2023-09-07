@@ -32,6 +32,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.Frame.MouseDownCaptionHitTestInReservedGrabHandleSpace"
+    enum="Boolean" expires_after="2023-12-04">
+  <owner>robliao@chromium.org</owner>
+  <owner>pkasting@chromium.org</owner>
+  <summary>
+    Recorded only for Windows on every primary button mouse down determined to
+    be in the caption area of Chrome. True if the primary button mouse down was
+    in the reserved grab handle space, false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.Headless.Action" enum="HeadlessChromeAction"
     expires_after="2023-12-31">
   <owner>kvitekp@chromium.org</owner>
