@@ -71,7 +71,8 @@ def _update_dep_file(in_folder, args, out_file_path, manifest):
 
   deps = map(os.path.normpath, request_list)
 
-  with open(os.path.join(_CWD, args.depfile), 'w') as f:
+  with open(
+      os.path.join(_CWD, args.depfile), 'w', newline='', encoding='utf-8') as f:
     f.write(out_file_path + ': ' + ' '.join(deps))
 
 
@@ -108,7 +109,7 @@ def _generate_rollup_config(out_dir, in_path, bundle_path, host_url, excludes,
       host_url=host_url,
       exclude_list=json.dumps(excludes),
       external_path_list=json.dumps(external_paths))
-  with open(rollup_config_file, 'w') as f:
+  with open(rollup_config_file, 'w', newline='', encoding='utf-8') as f:
     f.write(config_content)
   return rollup_config_file
 
@@ -121,7 +122,7 @@ def _generate_manifest_file(out_dir, in_path, bundle_path, manifest_out_path):
   manifest = {}
   output_filenames = []
   for sourcemap_file in generated_sourcemaps:
-    with open(sourcemap_file, 'r') as f:
+    with open(sourcemap_file, 'r', encoding='utf-8') as f:
       sourcemap = json.loads(f.read())
       if not 'sources' in sourcemap:
         raise Exception('rollup could not construct source map')
@@ -142,7 +143,7 @@ def _generate_manifest_file(out_dir, in_path, bundle_path, manifest_out_path):
       manifest[filepath] = replaced_sources
       output_filenames.append(filename)
 
-  with open(manifest_out_path, 'w') as f:
+  with open(manifest_out_path, 'w', newline='', encoding='utf-8') as f:
     f.write(json.dumps(manifest))
 
   return output_filenames
@@ -273,7 +274,7 @@ def main(argv):
 
   # Prior call to _optimize() generated an output manifest file, containing
   # information about all files that were bundled. Grab it from there.
-  with open(optimize_output['manifest_out_path'], 'r') as f:
+  with open(optimize_output['manifest_out_path'], 'r', encoding='utf-8') as f:
     manifest = json.loads(f.read())
 
     # Output a manifest file that will be used to auto-generate a grd file
@@ -283,8 +284,11 @@ def main(argv):
           'base_dir': args.out_folder.replace('\\', '/'),
           'files': list(manifest.keys()),
       }
-      with open(os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w') \
-          as manifest_file:
+      with open(
+          os.path.normpath(os.path.join(_CWD, args.out_manifest)),
+          'w',
+          newline='',
+          encoding='utf-8') as manifest_file:
         json.dump(manifest_data, manifest_file)
 
     dep_file_header = os.path.join(args.out_folder,

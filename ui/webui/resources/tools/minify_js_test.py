@@ -22,7 +22,7 @@ class MinifyJsTest(unittest.TestCase):
     shutil.rmtree(self._out_dir)
 
   def _read_file(self, path):
-    with open(path, 'r') as file:
+    with open(path, 'r', encoding='utf-8') as file:
       return file.read()
 
   def _run_test(self, in_files, expected_files):
