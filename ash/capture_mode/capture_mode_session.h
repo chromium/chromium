@@ -370,6 +370,10 @@ class ASH_EXPORT CaptureModeSession
   // according to the current state.
   void MaybeUpdateRecordingTypeMenu();
 
+  // Returns true if there is a selected window and it is the topmost
+  // capturable window at `screen_point`. Returns false otherwise.
+  bool IsPointOverSelectedWindow(const gfx::Point& screen_point) const;
+
   // BaseCaptureModeSession:
   void InitInternal() override;
   void ShutdownInternal() override;

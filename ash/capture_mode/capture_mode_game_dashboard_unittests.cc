@@ -33,7 +33,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "extensions/common/constants.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/wm/core/window_util.h"
 
 namespace message_center {
 
@@ -45,6 +47,12 @@ bool operator==(const ButtonInfo& lhs, const ButtonInfo& rhs) {
 }  // namespace message_center
 
 namespace ash {
+
+namespace {
+
+using ::ui::mojom::CursorType;
+
+}  // namespace
 
 using ButtonInfo = message_center::ButtonInfo;
 
@@ -737,6 +745,45 @@ TEST_F(GameDashboardCaptureModeTest, NoDimmingOfGameDashboardWidgets) {
   ASSERT_TRUE(game_dashboard_toolbar_widget);
   EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(
       game_dashboard_toolbar_widget->GetNativeWindow()));
+}
+
+TEST_F(GameDashboardCaptureModeTest, CursorAndClickBehaviorWhenAnchored) {
+  // Create second window on screen that underlaps `game_window_` slightly.
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(gfx::Rect(50, 150, 100, 100)));
+
+  // The game window should be the top most active window.
+  wm::ActivateWindow(game_window());
+  auto* controller = StartGameCaptureModeSession();
+
+  // Hover over empty space where there is no window.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
+  // Clicking should not start a recording.
+  event_generator->ClickLeftButton();
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_FALSE(controller->is_recording_in_progress());
+
+  // Hover over the non-game window.
+  event_generator->MoveMouseTo(gfx::Point(125, 225));
+  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
+  event_generator->ClickLeftButton();
+  // Clicking should not start a recording.
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_FALSE(controller->is_recording_in_progress());
+
+  // Hover over the anchored window where it overlaps with the non-game window.
+  event_generator->MoveMouseTo(gfx::Point(75, 175));
+  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
+  EXPECT_TRUE(
+      CaptureModeSessionTestApi().IsUsingCustomCursor(CaptureModeType::kVideo));
+  // Start recording by clicking on the anchored window.
+  event_generator->ClickLeftButton();
+  WaitForRecordingToStart();
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_TRUE(controller->is_recording_in_progress());
 }
 
 // -----------------------------------------------------------------------------
