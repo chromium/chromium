@@ -117,6 +117,19 @@ chromium-metrics-reviews@google.com.
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
+<histogram name="Search.ChoiceScreenEvents"
+    enum="SearchEngineChoiceScreenEvents" expires_after="2024-02-04">
+  <owner>samarchehade@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records that the search engine choice screen was displayed, and whether this
+    happened as part of the FRE. Also records when the user clicks/taps the 'Set
+    as Default' button and if this selection was in the FRE or not. On Desktop,
+    if the choice screen is shown simultaneously in multiple browsers that all
+    have the same profile, the display event is only recorded once.
+  </summary>
+</histogram>
+
 <histogram name="Search.ContextualSearch.All.ResultsSeen" enum="Boolean"
     expires_after="never">
 <!-- expires-never: dashboard metric (internal: go/cs-metrics-dashboard) -->

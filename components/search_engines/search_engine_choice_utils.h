@@ -15,6 +15,24 @@ class PrefService;
 
 namespace search_engines {
 
+extern const char kSearchEngineChoiceScreenEventsHistogram[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SearchEngineChoiceScreenEvents {
+  kUnknown = 0,
+  // The non-FRE version of the choice screen was displayed.
+  kChoiceScreenWasDisplayed = 1,
+  // The FRE-specific flavor of the screen was displayed.
+  kFreChoiceScreenWasDisplayed = 2,
+  // The user clicked/tapped `Set as default` on the non-FRE screen.
+  kDefaultWasSet = 3,
+  // The user clicked/tapped `Set as default` on the
+  // FRE-specific screen.
+  kFreDefaultWasSet = 4,
+  kMaxValue = kFreDefaultWasSet,
+};
+
 // Profile properties that need to be passed to
 // `ShouldShowChoiceScreen`. This is due to the fact that
 // the 'Profile' class is different between platforms.
@@ -38,6 +56,8 @@ int GetSearchEngineChoiceCountryId(PrefService& profile_prefs);
 // See `//components/country_codes` for the Country ID format.
 bool IsEeaChoiceCountry(int country_id);
 
+// Records the specified choice screen event.
+void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
 }  // namespace search_engines
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_

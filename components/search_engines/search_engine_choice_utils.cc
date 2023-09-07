@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
@@ -103,6 +104,9 @@ const base::flat_set<int> GetEeaChoiceCountries() {
 
 }  // namespace
 
+const char kSearchEngineChoiceScreenEventsHistogram[] =
+    "Search.ChoiceScreenEvents";
+
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties) {
   if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
@@ -140,4 +144,10 @@ int GetSearchEngineChoiceCountryId(PrefService& profile_prefs) {
 bool IsEeaChoiceCountry(int country_id) {
   return GetEeaChoiceCountries().contains(country_id);
 }
+
+void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
+  base::UmaHistogramEnumeration(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram, event);
+}
+
 }  // namespace search_engines

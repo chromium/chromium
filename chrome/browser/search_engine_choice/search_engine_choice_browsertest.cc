@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -30,6 +31,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -175,12 +177,27 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
     }
   }
 
+  void CheckChoiceScreenWasDisplayedRecordedOnce() {
+    histogram_tester_.ExpectBucketCount(
+        search_engines::kSearchEngineChoiceScreenEventsHistogram,
+        search_engines::SearchEngineChoiceScreenEvents::
+            kChoiceScreenWasDisplayed,
+        1);
+  }
+
+  void CheckDefaultWasSetRecorded() {
+    histogram_tester_.ExpectBucketCount(
+        search_engines::kSearchEngineChoiceScreenEventsHistogram,
+        search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet, 1);
+  }
+
  private:
   base::AutoReset<bool> scoped_chrome_build_override_ =
       SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
           /*force_chrome_build=*/true);
   base::test::ScopedFeatureList feature_list_{switches::kSearchEngineChoice};
   base::CallbackListSubscription create_services_subscription_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
@@ -198,8 +215,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       SearchEngineChoiceServiceFactory::GetForProfile(browser()->profile()));
   ASSERT_TRUE(service);
 
-  // Make sure that the dialog gets opened only once.
+  // Make sure that the dialog gets opened only once and the display is
+  // recorded.
   EXPECT_CALL(*service, NotifyDialogOpened(_, _)).Times(1);
+  CheckChoiceScreenWasDisplayedRecordedOnce();
+
   QuitAndRestoreBrowser(browser());
   ASSERT_TRUE(browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
@@ -218,6 +238,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Make sure that we have 2 dialogs open, one for each browser.
   EXPECT_CALL(*service, NotifyDialogOpened(_, _)).Times(2);
+  // Make sure that the display was recorded only once.
+  CheckChoiceScreenWasDisplayedRecordedOnce();
 
   // Simulate an exit by shutting down the session service. If we don't do this
   // the first window close is treated as though the user closed the window
@@ -310,6 +332,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Make sure that there are 2 dialogs open for that profile
   EXPECT_EQ(first_profile_service->GetNumberOfBrowsersWithDialogsOpen(), 2u);
+  CheckChoiceScreenWasDisplayedRecordedOnce();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Create another profile and open a browser with it.
@@ -323,6 +346,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   // Simulate a dialog closing event for the first profile and test that the
   // dialogs for that profile are closed.
   first_profile_service->NotifyChoiceMade(/*prepopulate_id=*/1);
+  CheckDefaultWasSetRecorded();
   EXPECT_FALSE(
       first_profile_service->IsShowingDialog(first_browser_with_first_profile));
   EXPECT_FALSE(first_profile_service->IsShowingDialog(

@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -76,6 +77,9 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
     std::move(browsers_with_open_dialog.second).Run();
   }
   browsers_with_open_dialogs_.clear();
+
+  search_engines::RecordChoiceScreenEvent(
+      search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet);
 }
 
 void SearchEngineChoiceService::NotifyDialogOpened(
@@ -83,6 +87,12 @@ void SearchEngineChoiceService::NotifyDialogOpened(
     base::OnceClosure close_dialog_callback) {
   CHECK(close_dialog_callback);
   CHECK(!browsers_with_open_dialogs_.count(browser));
+  if (browsers_with_open_dialogs_.empty()) {
+    // We only need to record that the choice screen was shown once.
+    search_engines::RecordChoiceScreenEvent(
+        search_engines::SearchEngineChoiceScreenEvents::
+            kChoiceScreenWasDisplayed);
+  }
   browsers_with_open_dialogs_.emplace(browser,
                                       std::move(close_dialog_callback));
 }

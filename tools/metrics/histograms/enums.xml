@@ -96207,6 +96207,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="33" label="NONE"/>
 </enum>
 
+<enum name="SearchEngineChoiceScreenEvents">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Choice Screen Was Displayed"/>
+  <int value="2" label="FRE Choice Screen Was Displayed"/>
+  <int value="3" label="Default Was Set"/>
+  <int value="4" label="FRE Default Was Set"/>
+</enum>
+
 <enum name="SearchEntryPoint">
   <int value="0" label="From search widget"/>
   <int value="1" label="From omnibox"/>
