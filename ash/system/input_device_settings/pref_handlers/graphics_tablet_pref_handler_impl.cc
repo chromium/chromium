@@ -83,19 +83,11 @@ void GraphicsTabletPrefHandlerImpl::InitializeLoginScreenGraphicsTabletSettings(
     PrefService* local_state,
     const AccountId& account_id,
     mojom::GraphicsTablet* graphics_tablet) {
-  CHECK(local_state);
-  // If the flag is disabled, clear the button remapping lists.
+  // Verify if the flag is enabled.
   if (!features::IsPeripheralCustomizationEnabled()) {
-    user_manager::KnownUser known_user(local_state);
-    known_user.SetPath(
-        account_id,
-        prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
-        absl::nullopt);
-    known_user.SetPath(
-        account_id, prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
-        absl::nullopt);
     return;
   }
+  CHECK(local_state);
 
   mojom::GraphicsTabletSettingsPtr settings =
       mojom::GraphicsTabletSettings::New();

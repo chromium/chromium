@@ -34,6 +34,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/known_user.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
@@ -270,6 +271,62 @@ void UpdateDuplicateDeviceSettings(
 
 }  // namespace
 
+void DeleteLoginScreenSettingsPrefWhenInputDeviceSettingsSplitDisabled(
+    PrefService* local_state) {
+  // local_state could be null in tests.
+  if (!local_state) {
+    return;
+  }
+  user_manager::KnownUser known_user(local_state);
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+
+  known_user.SetPath(account_id, prefs::kMouseLoginScreenInternalSettingsPref,
+                     absl::nullopt);
+  known_user.SetPath(account_id, prefs::kMouseLoginScreenExternalSettingsPref,
+                     absl::nullopt);
+  known_user.SetPath(account_id,
+                     prefs::kKeyboardLoginScreenInternalSettingsPref,
+                     absl::nullopt);
+  known_user.SetPath(account_id,
+                     prefs::kKeyboardLoginScreenExternalSettingsPref,
+                     absl::nullopt);
+  known_user.SetPath(account_id,
+                     prefs::kPointingStickLoginScreenInternalSettingsPref,
+                     absl::nullopt);
+  known_user.SetPath(account_id,
+                     prefs::kPointingStickLoginScreenExternalSettingsPref,
+                     absl::nullopt);
+  known_user.SetPath(account_id,
+                     prefs::kTouchpadLoginScreenInternalSettingsPref,
+                     absl::nullopt);
+  known_user.SetPath(account_id,
+                     prefs::kTouchpadLoginScreenExternalSettingsPref,
+                     absl::nullopt);
+}
+
+void DeleteLoginScreenButtonRemappingListPrefWhenPeripheralCustomizationDisabled(
+    PrefService* local_state) {
+  // local_state could be null in tests.
+  if (!local_state) {
+    return;
+  }
+  user_manager::KnownUser known_user(local_state);
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+
+  known_user.SetPath(
+      account_id,
+      prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
+      absl::nullopt);
+  known_user.SetPath(
+      account_id, prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
+      absl::nullopt);
+  known_user.SetPath(account_id,
+                     prefs::kMouseLoginScreenButtonRemappingListPref,
+                     absl::nullopt);
+}
+
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
     PrefService* local_state)
     : local_state_(local_state),
@@ -384,6 +441,8 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
         prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
     pref_service->ClearPref(prefs::kGraphicsTabletPenButtonRemappingsDictPref);
     pref_service->ClearPref(prefs::kMouseButtonRemappingsDictPref);
+    DeleteLoginScreenButtonRemappingListPrefWhenPeripheralCustomizationDisabled(
+        local_state_);
   }
 
   // If the flag is disabled, clear all the settings dictionaries.
@@ -394,6 +453,8 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kPointingStickDeviceSettingsDictPref, {});
     pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
     pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
+    DeleteLoginScreenSettingsPrefWhenInputDeviceSettingsSplitDisabled(
+        local_state_);
     return;
   }
 

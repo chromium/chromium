@@ -320,23 +320,11 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
     const AccountId& account_id,
     const mojom::MousePolicies& mouse_policies,
     mojom::Mouse* mouse) {
-  CHECK(local_state);
-  // If the flag is disabled, clear the button remapping list.
-  if (!features::IsPeripheralCustomizationEnabled()) {
-    user_manager::KnownUser known_user(local_state);
-    known_user.SetPath(account_id,
-                       prefs::kMouseLoginScreenButtonRemappingListPref,
-                       absl::nullopt);
-  }
-  // If the flag is disabled, clear all the settings dictionaries.
+  // Verify if the flag is enabled.
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    user_manager::KnownUser known_user(local_state);
-    known_user.SetPath(account_id, prefs::kMouseLoginScreenInternalSettingsPref,
-                       absl::nullopt);
-    known_user.SetPath(account_id, prefs::kMouseLoginScreenExternalSettingsPref,
-                       absl::nullopt);
     return;
   }
+  CHECK(local_state);
 
   const auto* settings_dict = GetLoginScreenSettingsDict(
       local_state, account_id,

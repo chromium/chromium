@@ -399,18 +399,11 @@ void TouchpadPrefHandlerImpl::InitializeLoginScreenTouchpadSettings(
     PrefService* local_state,
     const AccountId& account_id,
     mojom::Touchpad* touchpad) {
-  CHECK(local_state);
-  // If the flag is disabled, clear all the settings dictionaries.
+  // Verify if the flag is enabled.
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    user_manager::KnownUser known_user(local_state);
-    known_user.SetPath(account_id,
-                       prefs::kTouchpadLoginScreenInternalSettingsPref,
-                       absl::nullopt);
-    known_user.SetPath(account_id,
-                       prefs::kTouchpadLoginScreenExternalSettingsPref,
-                       absl::nullopt);
     return;
   }
+  CHECK(local_state);
 
   const auto* settings_dict = GetLoginScreenSettingsDict(
       local_state, account_id,

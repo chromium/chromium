@@ -479,18 +479,11 @@ void KeyboardPrefHandlerImpl::InitializeLoginScreenKeyboardSettings(
     const AccountId& account_id,
     const mojom::KeyboardPolicies& keyboard_policies,
     mojom::Keyboard* keyboard) {
-  CHECK(local_state);
-  // If the flag is disabled, clear all the settings dictionaries.
+  // Verify if the flag is enabled.
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    user_manager::KnownUser known_user(local_state);
-    known_user.SetPath(account_id,
-                       prefs::kKeyboardLoginScreenInternalSettingsPref,
-                       absl::nullopt);
-    known_user.SetPath(account_id,
-                       prefs::kKeyboardLoginScreenExternalSettingsPref,
-                       absl::nullopt);
     return;
   }
+  CHECK(local_state);
 
   const auto* settings_dict = GetLoginScreenSettingsDict(
       local_state, account_id,
