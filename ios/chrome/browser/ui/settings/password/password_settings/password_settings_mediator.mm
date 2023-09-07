@@ -107,17 +107,14 @@ bool isCredentialNotInAccountStore(
 - (instancetype)
        initWithReauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
               savedPasswordsPresenter:
-                  (raw_ptr<password_manager::SavedPasswordsPresenter>)
-                      passwordPresenter
+                  (password_manager::SavedPasswordsPresenter*)passwordPresenter
     bulkMovePasswordsToAccountHandler:
         (id<BulkMoveLocalPasswordsToAccountHandler>)
             bulkMovePasswordsToAccountHandler
                         exportHandler:(id<PasswordExportHandler>)exportHandler
-                          prefService:(raw_ptr<PrefService>)prefService
-                      identityManager:
-                          (raw_ptr<signin::IdentityManager>)identityManager
-                          syncService:
-                              (raw_ptr<syncer::SyncService>)syncService {
+                          prefService:(PrefService*)prefService
+                      identityManager:(signin::IdentityManager*)identityManager
+                          syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _passwordExporter =
