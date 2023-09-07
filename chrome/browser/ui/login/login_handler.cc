@@ -33,6 +33,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -232,11 +233,19 @@ void LoginHandler::Observe(int type,
   if (!auth_info().MatchesExceptPath(login_details->handler()->auth_info()))
     return;
 
-  // Ignore login notification events from other profiles.
-  NavigationController* controller =
-      content::Source<NavigationController>(source).ptr();
-  if (!controller ||
-      controller->GetBrowserContext() != web_contents_->GetBrowserContext()) {
+  // Ignore login notification events from other StoragePartitions.
+  // TODO(crbug.com/1261928): Getting the StoragePartition from the WebContents
+  // is fine for now, but we'll need to plumb frame information to LoginHandler
+  // as part of removing the multi-WebContents architecture.
+  content::StoragePartition* source_partition =
+      login_details->handler()->web_contents() ? login_details->handler()
+                                                     ->web_contents()
+                                                     ->GetPrimaryMainFrame()
+                                                     ->GetStoragePartition()
+                                               : nullptr;
+  content::StoragePartition* partition =
+      web_contents()->GetPrimaryMainFrame()->GetStoragePartition();
+  if (!source_partition || source_partition != partition) {
     return;
   }
 
