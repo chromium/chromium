@@ -3202,16 +3202,16 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Strings for a missing device lock. -->
-      <message name="IDS_MISSING_DEVICE_LOCK_TITLE" translateable="false" desc="">
+      <message name="IDS_MISSING_DEVICE_LOCK_TITLE" desc="Title shown on the missing profile lock page if a user has removed a profile lock that used to be present on the device.">
         Continue without a car profile lock?
       </message>
-      <message name="IDS_MISSING_DEVICE_LOCK_DESCRIPTION" translateable="false" desc="">
-        Opening Chrome without a profile lock will remove your your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.
+      <message name="IDS_MISSING_DEVICE_LOCK_DESCRIPTION" desc="Text description explaining that a profile lock is required on automotive devices, and that sensitive personal data will be deleted from the profile if the user continues to Chrome without re-creating a profile lock.">
+        Opening Chrome without a profile lock will remove your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.
       </message>
-      <message name="IDS_MISSING_DEVICE_LOCK_REMOVE_LOCAL_DATA" translateable="false" desc="">
+      <message name="IDS_MISSING_DEVICE_LOCK_REMOVE_LOCAL_DATA" desc="Option given to the user to delete all Chrome profile data, particularly mentioning bookmarks and history.">
         Also clear bookmarks, history, and more from this car
       </message>
-      <message name="IDS_DELETE_AND_CONTINUE" translateable="false" desc="">
+      <message name="IDS_DELETE_AND_CONTINUE" desc="Text for the button that will delete any sensitive data and then navigate the user back to Chrome.">
         Delete &amp; continue
       </message>
 
