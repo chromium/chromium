@@ -95,6 +95,21 @@ source_set("tracking_protection_onboarding") {
   public_deps = [ "//base" ]
 }
 
+source_set("tracking_protection_settings") {
+  sources = [
+    "tracking_protection_settings.cc",
+    "tracking_protection_settings.h",
+  ]
+
+  deps = [
+    ":tracking_protection_prefs",
+    "//components/keyed_service/core:core",
+    "//components/prefs",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -102,6 +117,7 @@ source_set("unit_tests") {
     "privacy_sandbox_settings_impl_unittest.cc",
     "privacy_sandbox_test_util_unittest.cc",
     "tracking_protection_onboarding_unittest.cc",
+    "tracking_protection_settings_unittest.cc",
   ]
 
   deps = [
@@ -110,6 +126,7 @@ source_set("unit_tests") {
     ":test_support",
     ":tracking_protection_onboarding",
     ":tracking_protection_prefs",
+    ":tracking_protection_settings",
     "//components/browsing_topics:test_support",
     "//components/content_settings/core/browser:browser",
     "//components/content_settings/core/test:test_support",

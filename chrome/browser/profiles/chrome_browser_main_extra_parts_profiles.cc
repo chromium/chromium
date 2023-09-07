@@ -131,6 +131,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
 #include "chrome/browser/profiles/renderer_updater_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
@@ -943,7 +944,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   PrivacyMetricsServiceFactory::GetInstance();
   PrivacySandboxServiceFactory::GetInstance();
   PrivacySandboxSettingsFactory::GetInstance();
-  TrackingProtectionOnboardingFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   ProfileAccountManagerFactory::GetInstance();
 #endif
@@ -1098,6 +1098,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   ToolbarActionsModelFactory::GetInstance();
 #endif
   TopSitesFactory::GetInstance();
+  TrackingProtectionOnboardingFactory::GetInstance();
+  TrackingProtectionSettingsFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
   TranslateModelServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
