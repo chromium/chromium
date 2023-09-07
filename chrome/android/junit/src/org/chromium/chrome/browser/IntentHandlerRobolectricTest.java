@@ -602,4 +602,75 @@ public class IntentHandlerRobolectricTest {
         intent.setData(Uri.parse(GOOGLE_URL));
         Assert.assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
     }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testChromeInternalUrlsAllowedFromSelf() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent trustedIntent = new Intent(Intent.ACTION_VIEW);
+        trustedIntent.setData(Uri.parse("http://www.google.com"));
+        trustedIntent.setPackage(context.getPackageName());
+        IntentUtils.addTrustedIntentExtras(trustedIntent);
+
+        Assert.assertTrue(IntentHandler.wasIntentSenderChrome(trustedIntent));
+
+        trustedIntent.setData(Uri.parse("chrome://credits"));
+        Assert.assertFalse(
+                mIntentHandler.shouldIgnoreIntent(trustedIntent, /*startedActivity=*/false));
+
+        trustedIntent.setData(Uri.parse("chrome-native://newtab"));
+        Assert.assertFalse(
+                mIntentHandler.shouldIgnoreIntent(trustedIntent, /*startedActivity=*/false));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testChromeInternalUrlsBlockedForUntrustedSources() {
+        Intent untrustedIntent = new Intent(Intent.ACTION_VIEW);
+        Assert.assertFalse(IntentHandler.wasIntentSenderChrome(untrustedIntent));
+
+        untrustedIntent.setData(Uri.parse("chrome://credits"));
+        Assert.assertTrue(
+                mIntentHandler.shouldIgnoreIntent(untrustedIntent, /*startedActivity=*/false));
+
+        untrustedIntent.setData(Uri.parse("chrome-native://newtab"));
+        Assert.assertTrue(
+                mIntentHandler.shouldIgnoreIntent(untrustedIntent, /*startedActivity=*/false));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testChromeInternalUrlsAllowedForWhitelistedUrls() {
+        Intent untrustedIntent = new Intent(Intent.ACTION_VIEW);
+        Assert.assertFalse(IntentHandler.wasIntentSenderChrome(untrustedIntent));
+
+        untrustedIntent.setData(Uri.parse("about:blank"));
+        Assert.assertFalse(
+                mIntentHandler.shouldIgnoreIntent(untrustedIntent, /*startedActivity=*/false));
+
+        untrustedIntent.setData(Uri.parse("about://blank"));
+        Assert.assertFalse(
+                mIntentHandler.shouldIgnoreIntent(untrustedIntent, /*startedActivity=*/false));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testRefererUrl_signedExtraReferrer() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent trustedIntent = new Intent(Intent.ACTION_VIEW);
+        trustedIntent.setData(Uri.parse(GOOGLE_URL));
+        trustedIntent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(GOOGLE_URL));
+        trustedIntent.setPackage(context.getPackageName());
+        IntentUtils.addTrustedIntentExtras(trustedIntent);
+
+        Assert.assertTrue(IntentHandler.wasIntentSenderChrome(trustedIntent));
+
+        Assert.assertEquals(
+                GOOGLE_URL, IntentHandler.getReferrerUrlIncludingExtraHeaders(trustedIntent));
+        Assert.assertNull(IntentHandler.getExtraHeadersFromIntent(trustedIntent));
+    }
 }
