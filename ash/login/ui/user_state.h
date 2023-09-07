@@ -36,6 +36,7 @@ class UserState {
   bool auth_factor_is_hiding_password = false;
   // When present, indicates that the TPM is locked.
   absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
+  bool is_recovery_configured = false;
 };
 
 }  // namespace ash

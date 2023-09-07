@@ -291,6 +291,9 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
 
   // True if this user chooses to use 24 hour clock in preference.
   bool use_24hour_clock = false;
+
+  // True if recovery is enabled as a login factor.
+  bool is_recovery_configured = false;
 };
 
 enum class AuthDisabledReason {

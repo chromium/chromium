@@ -4544,6 +4544,9 @@ Turning on battery saver to increase your battery life.
       <message name="IDS_ASH_LOGIN_RECOVER_USER_BUTTON" desc="Label of the button to recover your password">
         Recover user
       </message>
+      <message name="IDS_ASH_LOGIN_FORGOT_PASSWORD_BUTTON" desc="Label of the button to recover your user data when recovery is not configured">
+        Forgot password
+      </message>
       <message name="IDS_ASH_LOGIN_ERROR_CAPS_LOCK_HINT" desc="A hint text for the login and lock screens that Caps Lock is on">
         Caps Lock is on.
       </message>

@@ -536,10 +536,22 @@ void FakeUserDataAuthClient::TestApi::AddKey(
     const cryptohome::Key& key) {
   UserCryptohomeState& user_state = GetUserState(account_id);
 
+  auto [label, fake_auth_factor] = KeyToFakeAuthFactor(
+      key, FakeUserDataAuthClient::Get()->enable_auth_check_);
+
   const auto [factor_it, was_inserted] =
-      user_state.auth_factors.insert(KeyToFakeAuthFactor(
-          key, FakeUserDataAuthClient::Get()->enable_auth_check_));
-  CHECK(was_inserted) << "Factor already exists";
+      user_state.auth_factors.emplace(label, fake_auth_factor);
+
+  // In some tests, we might add a gaia password to a user which already
+  // has one, because we automatically give users a password during
+  // `FakeUserDataAuthClient::StartAuthSession`, which might have been
+  // called prior. In that case, we override the value of the password factor.
+  if (factor_it->first != kCryptohomeGaiaKeyLabel) {
+    CHECK(was_inserted) << "Factor already exists";
+  } else {
+    // Override value of password factor.
+    factor_it->second = fake_auth_factor;
+  }
 }
 
 void FakeUserDataAuthClient::TestApi::AddRecoveryFactor(
