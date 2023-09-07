@@ -6,6 +6,7 @@ Revision: 58a00cf85c39ad5ec4dc43a769624e420c06179a
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 OpenXR is a royalty-free, open standard that provides high-performance access to
@@ -18,7 +19,7 @@ needed to build the OpenXR loader in Chromium, along with its dependencies. The
 readme was expanded with information about transitive dependencies that are
 copied directly into the OpenXR SDK repository.
 
-
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: JNIPP
 Short Name: JNIPP
@@ -28,6 +29,7 @@ Revision: unknown
 License: MIT
 License File: src/src/external/jnipp/LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 JNIPP is just a C++ wrapper for the standard Java Native Interface (JNI).It
@@ -40,7 +42,7 @@ needed to build the library in Chromium. Since it is a transitive dependency
 that was directly included in OpenXR SDK repository, the exact revision is
 unknown. The library also does not have any versioned releases.
 
-
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: android-jni-wrappers
 Short Name: android-jni-wrappers
