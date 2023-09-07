@@ -254,6 +254,7 @@ source_set("unit_tests") {
     "session_restoration_web_state_observer_unittest.mm",
     "session_service_ios_unittest.mm",
     "session_window_ios_unittest.mm",
+    "web_state_list_serialization_unittest.mm",
   ]
   deps = [
     ":fake",

@@ -80,8 +80,6 @@ source_set("unit_tests") {
     "web_state_dependency_installation_observer_unittest.mm",
     "web_state_dependency_installer_bridge_unittest.mm",
     "web_state_list_favicon_driver_observer_unittest.mm",
-    "web_state_list_removing_indexes_unittest.mm",
-    "web_state_list_serialization_unittest.mm",
   ]
   deps = [
     ":agents",
@@ -100,6 +98,9 @@ source_set("unit_tests") {
     "//ios/web/public/navigation:referrer",
     "//ios/web/public/session",
     "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//ui/gfx",
+    "//url",
   ]
 }

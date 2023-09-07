@@ -39,6 +39,7 @@ source_set("unit_tests") {
     "active_web_state_observation_forwarder_unittest.mm",
     "all_web_state_observation_forwarder_unittest.mm",
     "web_state_list_order_controller_unittest.mm",
+    "web_state_list_removing_indexes_unittest.mm",
     "web_state_list_unittest.mm",
     "web_state_opener_unittest.mm",
   ]
