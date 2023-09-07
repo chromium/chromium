@@ -94,14 +94,10 @@ TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
   EXPECT_EQ(gaia_urls()->LogOutURLWithSource("").spec(),
             "https://accounts.google.com/Logout?continue=https://"
             "accounts.google.com/chrome/blank.html");
-  EXPECT_EQ(gaia_urls()->merge_session_url().spec(),
-            "https://accounts.google.com/MergeSession");
   EXPECT_EQ(gaia_urls()->oauth_multilogin_url().spec(),
             "https://accounts.google.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://www.googleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->oauth1_login_url().spec(),
-            "https://accounts.google.com/OAuthLogin");
   EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
             "https://accounts.google.com/ListAccounts?json=standard");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
@@ -167,14 +163,10 @@ TEST_F(GaiaUrlsTest, InitializeDefault_URLSwitches) {
   EXPECT_EQ(gaia_urls()->LogOutURLWithSource("").spec(),
             "https://test-gaia.com/Logout?continue=https://"
             "test-gaia.com/chrome/blank.html");
-  EXPECT_EQ(gaia_urls()->merge_session_url().spec(),
-            "https://test-gaia.com/MergeSession");
   EXPECT_EQ(gaia_urls()->oauth_multilogin_url().spec(),
             "https://test-gaia.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://test-googleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->oauth1_login_url().spec(),
-            "https://test-gaia.com/OAuthLogin");
   EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
             "https://test-gaia.com/ListAccounts?json=standard");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
@@ -278,14 +270,10 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllUrls) {
   EXPECT_EQ(gaia_urls()->LogOutURLWithSource("").spec(),
             "https://accounts.example.com/Logout?continue=https://"
             "accounts.example.com/chrome/blank.html");
-  EXPECT_EQ(gaia_urls()->merge_session_url().spec(),
-            "https://accounts.example.com/MergeSession");
   EXPECT_EQ(gaia_urls()->oauth_multilogin_url().spec(),
             "https://accounts.example.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://www.exampleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->oauth1_login_url().spec(),
-            "https://accounts.example.com/OAuthLogin");
   EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
             "https://accounts.example.com/ListAccounts?json=standard");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
@@ -343,14 +331,10 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
   EXPECT_EQ(gaia_urls()->LogOutURLWithSource("").spec(),
             "https://accounts.example.com/Logout?continue=https://"
             "accounts.example.com/chrome/blank.html");
-  EXPECT_EQ(gaia_urls()->merge_session_url().spec(),
-            "https://accounts.example.com/MergeSession");
   EXPECT_EQ(gaia_urls()->oauth_multilogin_url().spec(),
             "https://accounts.example.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://www.exampleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->oauth1_login_url().spec(),
-            "https://accounts.example.com/OAuthLogin");
   EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
             "https://accounts.example.com/ListAccounts?json=standard");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),

@@ -8383,28 +8383,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OAuth2Login.MergeSessionFailure" enum="GoogleServiceAuthError"
-    expires_after="2023-09-10">
-  <owner>droger@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Failure reason of MergeSession call during Chrome OS login, Chrome Signin or
-    account addition. On all OSes as of M44 (previously CrOS only).
-  </summary>
-</histogram>
-
-<histogram name="OAuth2Login.MergeSessionRetry" enum="GoogleServiceAuthError"
-    expires_after="2023-10-01">
-  <owner>droger@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Retry reason of failed MergeSession call during Chrome OS login, Chrome
-    Signin or account addition. On all OSes as of M44 (previously CrOS only).
-  </summary>
-</histogram>
-
 <histogram name="OAuth2Login.SessionRestore" enum="GaiaSessionRestoreOutcome"
     expires_after="2023-10-31">
   <owner>anastasiian@chromium.org</owner>

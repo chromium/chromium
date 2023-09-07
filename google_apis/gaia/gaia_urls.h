@@ -44,10 +44,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const GURL& signin_chrome_sync_keys_retrieval_url() const;
   const GURL& signin_chrome_sync_keys_recoverability_degraded_url() const;
   const GURL& service_logout_url() const;
-  const GURL& merge_session_url() const;
   const GURL& oauth_multilogin_url() const;
   const GURL& oauth_user_info_url() const;
-  const GURL& oauth1_login_url() const;
   const GURL& embedded_signin_url() const;
   const GURL& add_account_url() const;
   const GURL& reauth_url() const;
@@ -101,10 +99,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL signin_chrome_sync_keys_recoverability_degraded_url_;
   GURL service_logout_url_;
   GURL blank_page_url_;
-  GURL merge_session_url_;
   GURL oauth_multilogin_url_;
   GURL oauth_user_info_url_;
-  GURL oauth1_login_url_;
   GURL list_accounts_url_;
   GURL embedded_signin_url_;
   GURL add_account_url_;

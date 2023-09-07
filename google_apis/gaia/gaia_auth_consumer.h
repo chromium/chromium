@@ -97,12 +97,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthConsumer {
 
   virtual void OnOAuth2RevokeTokenCompleted(TokenRevocationStatus status) {}
 
-  virtual void OnUberAuthTokenSuccess(const std::string& token) {}
-  virtual void OnUberAuthTokenFailure(const GoogleServiceAuthError& error) {}
-
-  virtual void OnMergeSessionSuccess(const std::string& data) {}
-  virtual void OnMergeSessionFailure(const GoogleServiceAuthError& error) {}
-
   virtual void OnListAccountsSuccess(const std::string& data) {}
   virtual void OnListAccountsFailure(const GoogleServiceAuthError& error) {}
 

@@ -85,7 +85,6 @@ const char kTestRawEmail[] = "User.Name@gmail.com";
 const char kTestAccountPassword[] = "fake-password";
 const char kTestAccountServices[] = "[]";
 const char kTestAuthCode[] = "fake-auth-code";
-const char kTestGaiaUberToken[] = "fake-uber-token";
 const char kTestAuthLoginAccessToken[] = "fake-access-token";
 const char kTestRefreshToken[] = "fake-refresh-token";
 const char kTestAuthSIDCookie[] = "fake-auth-SID-cookie";
@@ -286,7 +285,6 @@ class OAuth2Test : public OobeBaseTest {
     params.auth_code = kTestAuthCode;
     params.refresh_token = kTestRefreshToken;
     params.access_token = kTestAuthLoginAccessToken;
-    params.gaia_uber_token = kTestGaiaUberToken;
     params.session_sid_cookie = kTestSessionSIDCookie;
     params.session_lsid_cookie = kTestSessionLSIDCookie;
     params.id_token = is_under_advanced_protection
@@ -316,7 +314,6 @@ class OAuth2Test : public OobeBaseTest {
 
   void SetupGaiaServerForExpiredAccount() {
     FakeGaia::MergeSessionParams params;
-    params.gaia_uber_token = kTestGaiaUberToken;
     params.session_sid_cookie = kTestSession2SIDCookie;
     params.session_lsid_cookie = kTestSession2LSIDCookie;
     fake_gaia_.fake_gaia()->SetMergeSessionParams(params);

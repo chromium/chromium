@@ -202,15 +202,6 @@ const char
         "bound_token_registration_jwt=%s";
 // static
 const char GaiaAuthFetcher::kOAuth2RevokeTokenBodyFormat[] = "token=%s";
-// static
-const char GaiaAuthFetcher::kMergeSessionFormat[] =
-    "?uberauth=%s&"
-    "continue=%s&"
-    "source=%s";
-// static
-const char GaiaAuthFetcher::kUberAuthTokenURLFormat[] =
-    "?source=%s&"
-    "issueuberauth=1";
 
 // static
 const char GaiaAuthFetcher::kErrorParam[] = "Error";
@@ -232,9 +223,6 @@ GaiaAuthFetcher::GaiaAuthFetcher(
       source_(source.ToString()),
       oauth2_token_gurl_(GaiaUrls::GetInstance()->oauth2_token_url()),
       oauth2_revoke_gurl_(GaiaUrls::GetInstance()->oauth2_revoke_url()),
-      merge_session_gurl_(GaiaUrls::GetInstance()->merge_session_url()),
-      uberauth_token_gurl_(GaiaUrls::GetInstance()->oauth1_login_url().Resolve(
-          base::StringPrintf(kUberAuthTokenURLFormat, source_.c_str()))),
       oauth_multilogin_gurl_(GaiaUrls::GetInstance()->oauth_multilogin_url()),
       list_accounts_gurl_(
           GaiaUrls::GetInstance()->ListAccountsURLWithSource(source_)),
@@ -363,28 +351,6 @@ std::string GaiaAuthFetcher::MakeRevokeTokenBody(
 }
 
 // static
-std::string GaiaAuthFetcher::MakeMergeSessionQuery(
-    const std::string& auth_token,
-    const std::string& external_cc_result,
-    const std::string& continue_url,
-    const std::string& source) {
-  std::string encoded_auth_token = base::EscapeUrlEncodedData(auth_token, true);
-  std::string encoded_continue_url =
-      base::EscapeUrlEncodedData(continue_url, true);
-  std::string encoded_source = base::EscapeUrlEncodedData(source, true);
-  std::string result =
-      base::StringPrintf(kMergeSessionFormat, encoded_auth_token.c_str(),
-                         encoded_continue_url.c_str(), encoded_source.c_str());
-  if (!external_cc_result.empty()) {
-    base::StringAppendF(
-        &result, "&externalCcResult=%s",
-        base::EscapeUrlEncodedData(external_cc_result, true).c_str());
-  }
-
-  return result;
-}
-
-// static
 void GaiaAuthFetcher::ParseFailureResponse(const std::string& data,
                                            std::string* error,
                                            std::string* error_url) {
@@ -481,97 +447,6 @@ void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
         })");
   CreateAndStartGaiaFetcher(
       request_body_, kFormEncodedContentType, std::string(), oauth2_token_gurl_,
-      google_apis::GetOmitCredentialsModeForGaiaRequests(), traffic_annotation);
-}
-
-void GaiaAuthFetcher::StartMergeSession(const std::string& uber_token,
-                                        const std::string& external_cc_result) {
-  DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
-
-  VLOG(1) << "Starting MergeSession with uber_token=" << uber_token;
-
-  // The continue URL is a required parameter of the MergeSession API, but in
-  // this case we don't actually need or want to navigate to it.  Setting it to
-  // an arbitrary Google URL.
-  //
-  // In order for the new session to be merged correctly, the server needs to
-  // know what sessions already exist in the browser.  The fetcher needs to be
-  // created such that it sends the cookies with the request, which is
-  // different from all other requests the fetcher can make.
-  std::string continue_url("http://www.google.com");
-  std::string query = MakeMergeSessionQuery(uber_token, external_cc_result,
-                                            continue_url, source_);
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("gaia_auth_merge_sessions", R"(
-        semantics {
-          sender: "Chrome - Google authentication API"
-          description:
-            "This request adds an account to the Google authentication cookies."
-          trigger:
-            "This request is part of Gaia Auth API, and is triggered whenever "
-            "a new Google account is added to the browser."
-          data:
-            "This request includes the user-auth token and sometimes a string "
-            "containing the result of connection checks for various Google web "
-            "properties."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-            "This feature cannot be disabled in settings, but if the user "
-            "signs out of Chrome, this request would not be made."
-          chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
-            }
-          }
-        })");
-  CreateAndStartGaiaFetcher(std::string(), std::string(), std::string(),
-                            merge_session_gurl_.Resolve(query),
-                            network::mojom::CredentialsMode::kInclude,
-                            traffic_annotation);
-}
-
-void GaiaAuthFetcher::StartTokenFetchForUberAuthExchange(
-    const std::string& access_token) {
-  DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
-
-  VLOG(1) << "Starting StartTokenFetchForUberAuthExchange with access_token="
-          << access_token;
-  std::string authentication_header =
-      base::StringPrintf(kOAuthHeaderFormat, access_token.c_str());
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("gaia_auth_fetch_for_uber", R"(
-        semantics {
-          sender: "Chrome - Google authentication API"
-          description:
-            "This request exchanges an Oauth2 access token for an uber-auth "
-            "token. This token may be used to add an account to the Google "
-            "authentication cookies."
-          trigger:
-            "This request is part of Gaia Auth API, and is triggered whenever "
-            "a new Google account is added to the browser."
-          data: "This request contains an OAuth 2.0 access token. "
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-            "This feature cannot be disabled in settings, but if the user "
-            "signs out of Chrome, this request would not be made."
-          chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
-            }
-          }
-        })");
-  CreateAndStartGaiaFetcher(
-      std::string(), std::string(), authentication_header, uberauth_token_gurl_,
       google_apis::GetOmitCredentialsModeForGaiaRequests(), traffic_annotation);
 }
 
@@ -943,26 +818,6 @@ void GaiaAuthFetcher::OnReAuthApiInfoFetched(const std::string& data,
   }
 }
 
-void GaiaAuthFetcher::OnMergeSessionFetched(const std::string& data,
-                                            net::Error net_error,
-                                            int response_code) {
-  if (net_error == net::OK && response_code == net::HTTP_OK) {
-    consumer_->OnMergeSessionSuccess(data);
-  } else {
-    consumer_->OnMergeSessionFailure(GenerateAuthError(data, net_error));
-  }
-}
-
-void GaiaAuthFetcher::OnUberAuthTokenFetch(const std::string& data,
-                                           net::Error net_error,
-                                           int response_code) {
-  if (net_error == net::OK && response_code == net::HTTP_OK) {
-    consumer_->OnUberAuthTokenSuccess(data);
-  } else {
-    consumer_->OnUberAuthTokenFailure(GenerateAuthError(data, net_error));
-  }
-}
-
 void GaiaAuthFetcher::OnGetCheckConnectionInfoFetched(const std::string& data,
                                                       net::Error net_error,
                                                       int response_code) {
@@ -1016,11 +871,6 @@ void GaiaAuthFetcher::DispatchFetchedRequest(const GURL& url,
                                              int response_code) {
   if (url == oauth2_token_gurl_) {
     OnOAuth2TokenPairFetched(data, net_error, response_code);
-  } else if (base::StartsWith(url.spec(), merge_session_gurl_.spec(),
-                              base::CompareCase::SENSITIVE)) {
-    OnMergeSessionFetched(data, net_error, response_code);
-  } else if (url == uberauth_token_gurl_) {
-    OnUberAuthTokenFetch(data, net_error, response_code);
   } else if (IsMultiloginUrl(url)) {
     OnOAuthMultiloginFetched(data, net_error, response_code);
   } else if (url == oauth2_revoke_gurl_) {

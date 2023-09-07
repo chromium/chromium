@@ -51,14 +51,10 @@ using net::test_server::HttpRequest;
 namespace {
 
 const char kTestAuthCode[] = "fake-auth-code";
-const char kTestGaiaUberToken[] = "fake-uber-token";
 const char kTestAuthLoginAccessToken[] = "fake-access-token";
 const char kTestRefreshToken[] = "fake-refresh-token";
 const char kTestSessionSIDCookie[] = "fake-session-SID-cookie";
 const char kTestSessionLSIDCookie[] = "fake-session-LSID-cookie";
-const char kTestOAuthLoginSID[] = "fake-oauth-SID-cookie";
-const char kTestOAuthLoginLSID[] = "fake-oauth-LSID-cookie";
-const char kTestOAuthLoginAuthCode[] = "fake-oauth-auth-code";
 const char kTestReauthProofToken[] = "fake-reauth-proof-token";
 // Add SameSite=None and Secure because these cookies are needed in a
 // cross-site context.
@@ -192,7 +188,6 @@ void FakeGaia::MergeSessionParams::Update(const MergeSessionParams& update) {
   maybe_update_field(&MergeSessionParams::refresh_token);
   maybe_update_field(&MergeSessionParams::access_token);
   maybe_update_field(&MergeSessionParams::id_token);
-  maybe_update_field(&MergeSessionParams::gaia_uber_token);
   maybe_update_field(&MergeSessionParams::session_sid_cookie);
   maybe_update_field(&MergeSessionParams::session_lsid_cookie);
   maybe_update_field(&MergeSessionParams::email);
@@ -224,7 +219,6 @@ void FakeGaia::SetFakeMergeSessionParams(const std::string& email,
   params.auth_code = kTestAuthCode;
   params.refresh_token = kTestRefreshToken;
   params.access_token = kTestAuthLoginAccessToken;
-  params.gaia_uber_token = kTestGaiaUberToken;
   params.session_sid_cookie = kTestSessionSIDCookie;
   params.session_lsid_cookie = kTestSessionLSIDCookie;
   params.email = email;
@@ -297,9 +291,6 @@ void FakeGaia::AddSyncTrustedKeysHeader(BasicHttpResponse* http_response,
 
 void FakeGaia::Initialize() {
   GaiaUrls* gaia_urls = GaiaUrls::GetInstance();
-  // Handles /MergeSession GAIA call.
-  REGISTER_RESPONSE_HANDLER(gaia_urls->merge_session_url(), HandleMergeSession);
-
   // Handles /oauth/multilogin GAIA call.
   REGISTER_RESPONSE_HANDLER(gaia_urls->oauth_multilogin_url(),
                             HandleMultilogin);
@@ -319,9 +310,6 @@ void FakeGaia::Initialize() {
   // Handles /embedded/reauth/chromeos GAIA call.
   REGISTER_RESPONSE_HANDLER(gaia_urls->embedded_reauth_chromeos_url(),
                             HandleEmbeddedReauthChromeos);
-
-  // Handles /OAuthLogin GAIA call.
-  REGISTER_RESPONSE_HANDLER(gaia_urls->oauth1_login_url(), HandleOAuthLogin);
 
   // Handles /_/embedded/lookup/accountlookup for /embedded/setup/chromeos
   // authentication request.
@@ -485,44 +473,6 @@ void FakeGaia::SetRefreshTokenToDeviceIdMap(
   refresh_token_to_device_id_map_ = refresh_token_to_device_id_map;
 }
 
-void FakeGaia::HandleMergeSession(const HttpRequest& request,
-                                  BasicHttpResponse* http_response) {
-  http_response->set_code(net::HTTP_UNAUTHORIZED);
-  if (merge_session_params_.session_sid_cookie.empty() ||
-      merge_session_params_.session_lsid_cookie.empty()) {
-    http_response->set_code(net::HTTP_BAD_REQUEST);
-    return;
-  }
-
-  GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  std::string request_query = request_url.query();
-
-  std::string uber_token;
-  if (!GetQueryParameter(request_query, "uberauth", &uber_token) ||
-      uber_token != merge_session_params_.gaia_uber_token) {
-    LOG(ERROR) << "Missing or invalid 'uberauth' param in /MergeSession call";
-    return;
-  }
-
-  std::string continue_url;
-  if (!GetQueryParameter(request_query, "continue", &continue_url)) {
-    LOG(ERROR) << "Missing or invalid 'continue' param in /MergeSession call";
-    return;
-  }
-
-  std::string source;
-  if (!GetQueryParameter(request_query, "source", &source)) {
-    LOG(ERROR) << "Missing or invalid 'source' param in /MergeSession call";
-    return;
-  }
-
-  SetCookies(http_response, merge_session_params_.session_sid_cookie,
-             merge_session_params_.session_lsid_cookie);
-  // TODO(zelidrag): Not used now.
-  http_response->set_content("OK");
-  http_response->set_code(net::HTTP_OK);
-}
-
 void FakeGaia::FormatOkJSONResponse(const base::ValueView& value,
                                     BasicHttpResponse* http_response) {
   FormatJSONResponse(value, net::HTTP_OK, http_response);
@@ -611,46 +561,6 @@ void FakeGaia::HandleEmbeddedReauthChromeos(const HttpRequest& request,
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
   http_response->set_content_type("text/html");
-}
-
-void FakeGaia::HandleOAuthLogin(const HttpRequest& request,
-                                BasicHttpResponse* http_response) {
-  http_response->set_code(net::HTTP_UNAUTHORIZED);
-  if (merge_session_params_.gaia_uber_token.empty()) {
-    http_response->set_code(net::HTTP_FORBIDDEN);
-    http_response->set_content("Error=BadAuthentication");
-    return;
-  }
-
-  std::string access_token;
-  if (!GetAccessToken(request, kAuthHeaderBearer, &access_token) &&
-      !GetAccessToken(request, kAuthHeaderOAuth, &access_token)) {
-    LOG(ERROR) << "/OAuthLogin missing access token in the header";
-    return;
-  }
-
-  GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  std::string request_query = request_url.query();
-
-  std::string source;
-  if (!GetQueryParameter(request_query, "source", &source) &&
-      !GetQueryParameter(request.content, "source", &source)) {
-    LOG(ERROR) << "Missing 'source' param in /OAuthLogin call";
-    return;
-  }
-
-  std::string issue_uberauth;
-  if (GetQueryParameter(request_query, "issueuberauth", &issue_uberauth) &&
-      issue_uberauth == "1") {
-    http_response->set_content(merge_session_params_.gaia_uber_token);
-    http_response->set_code(net::HTTP_OK);
-    // Issue GAIA uber token.
-  } else {
-    http_response->set_content(
-        base::StringPrintf("SID=%s\nLSID=%s\nAuth=%s", kTestOAuthLoginSID,
-                           kTestOAuthLoginLSID, kTestOAuthLoginAuthCode));
-    http_response->set_code(net::HTTP_OK);
-  }
 }
 
 void FakeGaia::HandleEmbeddedLookupAccountLookup(

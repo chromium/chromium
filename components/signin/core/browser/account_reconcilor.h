@@ -302,8 +302,6 @@ class AccountReconcilor
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTestForceDiceMigration,
                            TableRowTest);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTestActiveDirectory,
-                           TableRowTestMergeSession);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTestActiveDirectory,
                            TableRowTestMultilogin);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest, ReconcileAfterShutdown);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest, UnlockAfterShutdown);

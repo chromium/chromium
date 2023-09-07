@@ -54,17 +54,11 @@
     "continue_url_for_logout": {
       "url": "https://accounts.example.com/chrome/blank.html"
     },
-    "merge_session_url": {
-      "url": "https://accounts.example.com/MergeSession"
-    },
     "oauth_multilogin_url": {
       "url": "https://accounts.example.com/oauth/multilogin"
     },
     "oauth_user_info_url": {
       "url": "https://www.exampleapis.com/oauth2/v1/userinfo"
-    },
-    "oauth1_login_url": {
-      "url": "https://accounts.example.com/OAuthLogin"
     },
     "list_accounts_url": {
       "url": "https://accounts.example.com/ListAccounts?json=standard"

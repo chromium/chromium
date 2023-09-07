@@ -46,8 +46,6 @@ source_set("identity_manager") {
     "set_accounts_in_cookie_result.h",
     "tribool.cc",
     "tribool.h",
-    "ubertoken_fetcher.cc",
-    "ubertoken_fetcher.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

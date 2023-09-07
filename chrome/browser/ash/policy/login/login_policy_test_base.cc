@@ -25,7 +25,6 @@ namespace policy {
 namespace {
 
 constexpr char kTestAuthCode[] = "fake-auth-code";
-constexpr char kTestGaiaUberToken[] = "fake-uber-token";
 constexpr char kTestAuthLoginAccessToken[] = "fake-access-token";
 constexpr char kTestRefreshToken[] = "fake-refresh-token";
 constexpr char kTestAuthSIDCookie[] = "fake-auth-SID-cookie";
@@ -98,7 +97,6 @@ void LoginPolicyTestBase::SetMergeSessionParams() {
   params.refresh_token = kTestRefreshToken;
   params.access_token = kTestAuthLoginAccessToken;
   params.id_token = GetIdToken();
-  params.gaia_uber_token = kTestGaiaUberToken;
   params.session_sid_cookie = kTestSessionSIDCookie;
   params.session_lsid_cookie = kTestSessionLSIDCookie;
   params.email = account_id().GetUserEmail();

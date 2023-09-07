@@ -988,9 +988,6 @@ void SyncTest::SetupMockGaiaResponses() {
       GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
       "{ \"id\": \"12345\" }");
   test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth1_login_url().spec(),
-      "SID=sid\nLSID=lsid\nAuth=auth_token");
-  test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth2_revoke_url().spec(), "");
 }
 

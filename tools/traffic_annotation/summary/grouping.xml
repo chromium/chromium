@@ -393,10 +393,8 @@ after discussions on the right group.
       <annotation id="fedcm_account_profile_image_fetcher"/>
       <annotation id="gaia_auth_check_connection_info"/>
       <annotation id="gaia_auth_exchange_device_id"/>
-      <annotation id="gaia_auth_fetch_for_uber"/>
       <annotation id="gaia_auth_list_accounts"/>
       <annotation id="gaia_auth_log_out"/>
-      <annotation id="gaia_auth_merge_sessions"/>
       <annotation id="gaia_auth_revoke_token"/>
       <annotation id="gaia_auth_rotate_bound_cookies"/>
       <annotation id="gaia_auth_multilogin"/>

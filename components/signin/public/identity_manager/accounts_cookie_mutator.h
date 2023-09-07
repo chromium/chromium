@@ -10,14 +10,11 @@
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
-struct CoreAccountId;
 class GoogleServiceAuthError;
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class CookieManager;
 }
-}  // namespace network
 
 namespace signin {
 
@@ -55,27 +52,8 @@ class AccountsCookieMutator {
 
   virtual ~AccountsCookieMutator() = default;
 
-  typedef base::OnceCallback<void(const CoreAccountId& account_id,
-                                  const GoogleServiceAuthError& error)>
-      AddAccountToCookieCompletedCallback;
   typedef base::OnceCallback<void(const GoogleServiceAuthError& error)>
       LogOutFromCookieCompletedCallback;
-
-  // Adds an account identified by |account_id| to the cookie responsible for
-  // tracking the list of logged-in Google sessions across the web.
-  virtual void AddAccountToCookie(
-      const CoreAccountId& account_id,
-      gaia::GaiaSource source,
-      AddAccountToCookieCompletedCallback completion_callback) = 0;
-
-  // Adds an account identified by |account_id| and with |access_token| to the
-  // cookie responsible for tracking the list of logged-in Google sessions
-  // across the web.
-  virtual void AddAccountToCookieWithToken(
-      const CoreAccountId& account_id,
-      const std::string& access_token,
-      gaia::GaiaSource source,
-      AddAccountToCookieCompletedCallback completion_callback) = 0;
 
   // Updates the state of the Gaia cookie to contain the accounts in
   // |parameters|.

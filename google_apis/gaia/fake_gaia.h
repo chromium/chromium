@@ -74,10 +74,7 @@ class FakeGaia {
     std::string access_token;
     std::string id_token;
 
-    // Uber token response from /OAuthLogin call.
-    std::string gaia_uber_token;
-
-    // Values of SID and LSID cookie generated from /MergeSession call.
+    // Values of SID and LSID cookie generated from multilogin call.
     std::string session_sid_cookie;
     std::string session_lsid_cookie;
 
@@ -223,12 +220,6 @@ class FakeGaia {
     fake_saml_continue_response_ = fake_saml_continue_response;
   }
 
- protected:
-  // HTTP handler for /MergeSession.
-  virtual void HandleMergeSession(
-      const net::test_server::HttpRequest& request,
-      net::test_server::BasicHttpResponse* http_response);
-
  private:
   using AccessTokenInfoMap = std::multimap<std::string, AccessTokenInfo>;
   using EmailToGaiaIdMap = std::map<std::string, std::string>;
@@ -289,8 +280,6 @@ class FakeGaia {
   void HandleEmbeddedReauthChromeos(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
-  void HandleOAuthLogin(const net::test_server::HttpRequest& request,
-                        net::test_server::BasicHttpResponse* http_response);
   void HandleEmbeddedLookupAccountLookup(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);

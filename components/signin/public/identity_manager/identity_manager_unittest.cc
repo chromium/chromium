@@ -483,17 +483,6 @@ class IdentityManagerTest : public testing::Test {
     signin::WaitForRefreshTokensLoaded(identity_manager());
   }
 
-  void SimulateAdditionOfAccountToCookieSuccess(GaiaAuthConsumer* consumer,
-                                                const std::string& data) {
-    consumer->OnMergeSessionSuccess(data);
-  }
-
-  void SimulateAdditionOfAccountToCookieSuccessFailure(
-      GaiaAuthConsumer* consumer,
-      const GoogleServiceAuthError& error) {
-    consumer->OnMergeSessionFailure(error);
-  }
-
   void SimulateCookieDeletedByUser(
       network::mojom::CookieChangeListener* listener,
       const net::CanonicalCookie& cookie) {
@@ -2026,54 +2015,6 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithTwoAccounts) {
       listed_account2.id);
   EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id);
   EXPECT_EQ(kTestEmail2, listed_account2.email);
-}
-
-TEST_F(IdentityManagerTest, CallbackSentOnSuccessfulAdditionOfAccountToCookie) {
-  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId("account_id");
-
-  CoreAccountId account_from_add_account_to_cookie_completed_callback;
-  GoogleServiceAuthError error_from_add_account_to_cookie_completed_callback;
-  auto completion_callback =
-      base::BindLambdaForTesting([&](const CoreAccountId& account_id,
-                                     const GoogleServiceAuthError& error) {
-        account_from_add_account_to_cookie_completed_callback = account_id;
-        error_from_add_account_to_cookie_completed_callback = error;
-      });
-
-  identity_manager()->GetGaiaCookieManagerService()->AddAccountToCookie(
-      kTestAccountId, gaia::GaiaSource::kChrome,
-      std::move(completion_callback));
-  SimulateAdditionOfAccountToCookieSuccess(
-      identity_manager()->GetGaiaCookieManagerService(), "token");
-  EXPECT_EQ(account_from_add_account_to_cookie_completed_callback,
-            kTestAccountId);
-  EXPECT_EQ(error_from_add_account_to_cookie_completed_callback,
-            GoogleServiceAuthError::AuthErrorNone());
-}
-
-TEST_F(IdentityManagerTest, CallbackSentOnFailureAdditionOfAccountToCookie) {
-  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId("account_id");
-
-  CoreAccountId account_from_add_account_to_cookie_completed_callback;
-  GoogleServiceAuthError error_from_add_account_to_cookie_completed_callback;
-  auto completion_callback =
-      base::BindLambdaForTesting([&](const CoreAccountId& account_id,
-                                     const GoogleServiceAuthError& error) {
-        account_from_add_account_to_cookie_completed_callback = account_id;
-        error_from_add_account_to_cookie_completed_callback = error;
-      });
-
-  identity_manager()->GetGaiaCookieManagerService()->AddAccountToCookie(
-      kTestAccountId, gaia::GaiaSource::kChrome,
-      std::move(completion_callback));
-
-  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
-  SimulateAdditionOfAccountToCookieSuccessFailure(
-      identity_manager()->GetGaiaCookieManagerService(), error);
-
-  EXPECT_EQ(account_from_add_account_to_cookie_completed_callback,
-            kTestAccountId);
-  EXPECT_EQ(error_from_add_account_to_cookie_completed_callback, error);
 }
 
 TEST_F(IdentityManagerTest,

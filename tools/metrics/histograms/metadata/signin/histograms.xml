@@ -1593,34 +1593,6 @@ name="TransactionalReauthEntryPoint" -->
   </summary>
 </histogram>
 
-<histogram name="Signin.UberTokenFailure" enum="GoogleServiceAuthError"
-    expires_after="never">
-<!-- expires-never: Uber tokens are required to add accounts to the Gaia
-cookies so we need to log failures for these operations for as long as Chrome
-adds accounts to the Gaia cookies. -->
-
-  <owner>msarda@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Reason of failure to acquiring an ubertoken based on an already-minted
-    access token. Available on all OSes.
-  </summary>
-</histogram>
-
-<histogram name="Signin.UberTokenRetry" enum="GoogleServiceAuthError"
-    expires_after="never">
-<!-- expires-never: Uber tokens are required to add accounts to the Gaia
-cookies so we need to log retry resutls for these operations for as long as
-Chrome adds accounts to the Gaia cookies. -->
-
-  <owner>msarda@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Retry reason of failure to acquire an ubertoken based on an already-minted
-    access token. Available on all OSes.
-  </summary>
-</histogram>
-
 <histogram name="Signin.UserRequestedWipeDataOnSignout" enum="BooleanRequested"
     expires_after="2024-02-25">
   <owner>triploblastic@google.com</owner>

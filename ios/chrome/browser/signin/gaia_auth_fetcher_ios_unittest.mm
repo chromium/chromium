@@ -75,7 +75,6 @@ class MockGaiaConsumer : public GaiaAuthConsumer {
   MockGaiaConsumer() {}
   ~MockGaiaConsumer() override {}
 
-  MOCK_METHOD1(OnMergeSessionSuccess, void(const std::string& data));
   MOCK_METHOD1(OnLogOutFailure, void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnGetCheckConnectionInfoSuccess, void(const std::string& data));
 };
@@ -109,17 +108,6 @@ class GaiaAuthFetcherIOSTest : public PlatformTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<GaiaAuthFetcherIOS> gaia_auth_fetcher_;
 };
-
-// Tests that the successful case works properly by starting a MergeSession
-// request, making it succeed and controlling that the consumer is properly
-// called.
-TEST_F(GaiaAuthFetcherIOSTest, StartMergeSession) {
-  gaia_auth_fetcher_->StartMergeSession("uber_token", "");
-  EXPECT_TRUE(GetBridge()->fetch_called());
-
-  EXPECT_CALL(consumer_, OnMergeSessionSuccess("data"));
-  GetBridge()->NotifyDelegateFetchSuccess("data");
-}
 
 // Tests that the failure case works properly by starting a LogOut request,
 // making it fail, and controlling that the consumer is properly called.
