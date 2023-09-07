@@ -629,7 +629,10 @@ class BrowserWindow : public ui::BaseWindow {
   // Closes the in-product help promo for `iph_feature` if it is showing or
   // cancels a pending startup promo; returns true if a promo bubble was
   // actually closed.
-  virtual bool CloseFeaturePromo(const base::Feature& iph_feature) = 0;
+  virtual bool CloseFeaturePromo(
+      const base::Feature& iph_feature,
+      user_education::FeaturePromoCloseReason close_reason =
+          user_education::FeaturePromoCloseReason::kFeatureEngaged) = 0;
 
   // Closes the bubble for a feature promo but continues the promo; returns a
   // handle that can be used to end the promo when it is destructed. The handle

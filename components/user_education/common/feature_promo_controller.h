@@ -49,6 +49,23 @@ enum class FeaturePromoStatus {
   kContinued          // The bubble was closed but the promo is still active.
 };
 
+// Public enum to indicate the reason a FeaturePromo was ended. This
+// is a subset of the FeaturePromoCloseReasonInternal enum. There are no
+// values in this enum because this value only maps to the internal enum
+// which is then used to record metrics.
+enum class FeaturePromoCloseReason {
+  // Used to indicate that the user left the flow of the FeaturePromo.
+  // For example, this may mean the user ignored a page-specific FeaturePromo
+  // by navigating to another page.
+  kAbortPromo,
+
+  // Used to indicate that the user interacted with the promoted feature
+  // in some meaningful way. For example, if an IPH is anchored to
+  // a page action then clicking the page action might indicate that the
+  // user engaged with the feature.
+  kFeatureEngaged,
+};
+
 // Mostly virtual base class for feature promos; used to mock the interface in
 // tests.
 class FeaturePromoController {
@@ -151,7 +168,9 @@ class FeaturePromoController {
   //
   // Has no effect for promos closed with CloseBubbleAndContinuePromo(); discard
   // or release the FeaturePromoHandle to end those promos.
-  virtual bool EndPromo(const base::Feature& iph_feature) = 0;
+  virtual bool EndPromo(const base::Feature& iph_feature,
+                        FeaturePromoCloseReason close_reason =
+                            FeaturePromoCloseReason::kFeatureEngaged) = 0;
 
   // Closes the promo for `iph_feature` - which must be showing - but continues
   // the promo via the return value. Dispose or release the resulting handle to
@@ -238,7 +257,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
           FeaturePromoSpecification::NoSubstitution(),
       FeaturePromoSpecification::FormatParameters title_params =
           FeaturePromoSpecification::NoSubstitution()) override;
-  bool EndPromo(const base::Feature& iph_feature) override;
+  bool EndPromo(const base::Feature& iph_feature,
+                FeaturePromoCloseReason close_reason =
+                    FeaturePromoCloseReason::kFeatureEngaged) override;
   FeaturePromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) override;
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
@@ -328,6 +349,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
  private:
+  bool EndPromo(const base::Feature& iph_feature,
+                /* FeaturePromoCloseReasonInternal */ int close_reason);
+
   // FeaturePromoController:
   void FinishContinuedPromo(const base::Feature& iph_feature) override;
 

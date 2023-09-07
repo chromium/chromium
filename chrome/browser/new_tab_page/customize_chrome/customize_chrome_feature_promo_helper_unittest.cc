@@ -126,9 +126,11 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
 
 TEST_F(CustomizeChromeFeaturePromoHelperTest,
        CloseCustomizeChromeFeaturePromoHelper) {
-  EXPECT_CALL(*mock_promo_controller(),
-              EndPromo(testing::Ref(
-                  feature_engagement::kIPHDesktopCustomizeChromeFeature)))
+  EXPECT_CALL(
+      *mock_promo_controller(),
+      EndPromo(
+          testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
+          testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
   helper()->CloseCustomizeChromeFeaturePromo(tab());
@@ -164,8 +166,10 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
   SetChromeRefresh2023();
   EXPECT_CALL(
       *mock_promo_controller(),
-      EndPromo(testing::Ref(
-          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature)))
+      EndPromo(
+          testing::Ref(
+              feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature),
+          testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
   helper()->CloseCustomizeChromeFeaturePromo(tab());

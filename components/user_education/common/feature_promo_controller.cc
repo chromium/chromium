@@ -31,6 +31,34 @@
 
 namespace user_education {
 
+namespace internal {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Most of these values are internal to the FeaturePromoController. Only
+// a few are made public to users (through FeaturePromoCloseReason) that
+// might call EndPromo in order to provide context for emitting metrics.
+enum class FeaturePromoCloseReasonInternal {
+  // Actions within the FeaturePromo.
+  kDismiss = 0,  // Promo dismissed by user.
+  kSnooze = 1,   // Promo snoozed by user.
+  kAction = 2,   // Custom action taken by user.
+
+  // Actions outside the FeaturePromo.
+  kTimeout = 3,         // Promo timed out.
+  kAbortPromo = 4,      // Promo aborted by indirect user action.
+  kFeatureEngaged = 5,  // Promo closed by indirect user engagement.
+
+  // Controller system actions.
+  kOverrideForUIRegionConflict = 6,  // Promo aborted to avoid overlap.
+  kOverrideForDemo = 7,              // Promo aborted by the demo system.
+  kOverrideForTesting = 8,           // Promo aborted for tests.
+  kOverrideForPrecedence = 9,        // Promo aborted for higher priority Promo.
+
+  kMaxValue = kOverrideForPrecedence,
+};
+}  // namespace internal
+
 FeaturePromoController::FeaturePromoController() = default;
 FeaturePromoController::~FeaturePromoController() = default;
 
@@ -119,7 +147,9 @@ bool FeaturePromoControllerCommon::MaybeShowPromoForDemoPage(
     FeaturePromoSpecification::FormatParameters body_params,
     FeaturePromoSpecification::FormatParameters title_params) {
   if (current_iph_feature_ && promo_bubble_) {
-    EndPromo(*current_iph_feature_);
+    EndPromo(*current_iph_feature_,
+             static_cast<int>(
+                 internal::FeaturePromoCloseReasonInternal::kOverrideForDemo));
   }
   iph_feature_bypassing_tracker_ = iph_feature;
 
@@ -235,7 +265,10 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
   // If a normal bubble is showing, close it. Won't affect a promo continued
   // after its bubble has closed.
   if (current_iph_feature_)
-    EndPromo(*current_iph_feature_);
+    EndPromo(
+        *current_iph_feature_,
+        static_cast<int>(
+            internal::FeaturePromoCloseReasonInternal::kOverrideForPrecedence));
 
   // Snooze and tutorial are not supported for critical promos.
   DCHECK_NE(FeaturePromoSpecification::PromoType::kSnooze, spec.promo_type());
@@ -260,7 +293,20 @@ FeaturePromoStatus FeaturePromoControllerCommon::GetPromoStatus(
              : FeaturePromoStatus::kContinued;
 }
 
-bool FeaturePromoControllerCommon::EndPromo(const base::Feature& iph_feature) {
+bool FeaturePromoControllerCommon::EndPromo(
+    const base::Feature& iph_feature,
+    FeaturePromoCloseReason close_reason) {
+  // Translate public enum FeaturePromoCloseReason to private
+  // FeaturePromoCloseReasonInternal and call private method.
+  auto close_reason_internal =
+      close_reason == FeaturePromoCloseReason::kFeatureEngaged
+          ? internal::FeaturePromoCloseReasonInternal::kFeatureEngaged
+          : internal::FeaturePromoCloseReasonInternal::kAbortPromo;
+  return EndPromo(iph_feature, static_cast<int>(close_reason_internal));
+}
+
+bool FeaturePromoControllerCommon::EndPromo(const base::Feature& iph_feature,
+                                            int close_reason) {
   const auto it = startup_promos_.find(&iph_feature);
   if (it != startup_promos_.end()) {
     std::move(it->second).Run(iph_feature, false);
@@ -285,7 +331,10 @@ bool FeaturePromoControllerCommon::DismissNonCriticalBubbleInRegion(
     const gfx::Rect& screen_bounds) {
   if (promo_bubble_ && promo_bubble_->is_open() &&
       promo_bubble_->GetBoundsInScreen().Intersects(screen_bounds)) {
-    const bool result = EndPromo(*current_iph_feature_);
+    const bool result =
+        EndPromo(*current_iph_feature_,
+                 static_cast<int>(internal::FeaturePromoCloseReasonInternal::
+                                      kOverrideForUIRegionConflict));
     DCHECK(result);
     return result;
   }
@@ -296,7 +345,9 @@ FeaturePromoHandle FeaturePromoControllerCommon::CloseBubbleAndContinuePromo(
     const base::Feature& iph_feature) {
   DCHECK_EQ(current_iph_feature_, &iph_feature);
   continuing_after_bubble_closed_ = true;
-  const bool result = EndPromo(iph_feature);
+  const bool result = EndPromo(
+      iph_feature,
+      static_cast<int>(internal::FeaturePromoCloseReasonInternal::kAction));
   DCHECK(result);
   return FeaturePromoHandle(GetAsWeakPtr(), &iph_feature);
 }
@@ -309,7 +360,10 @@ FeaturePromoControllerCommon::GetAsWeakPtr() {
 FeaturePromoControllerCommon::TestLock
 FeaturePromoControllerCommon::BlockPromosForTesting() {
   if (current_iph_feature_)
-    EndPromo(*current_iph_feature_);
+    EndPromo(
+        *current_iph_feature_,
+        static_cast<int>(
+            internal::FeaturePromoCloseReasonInternal::kOverrideForTesting));
   return std::make_unique<base::AutoReset<bool>>(&promos_blocked_for_testing_,
                                                  true);
 }

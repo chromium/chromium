@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/common/buildflags.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -257,7 +258,10 @@ class TestBrowserWindow : public BrowserWindow {
           user_education::FeaturePromoSpecification::NoSubstitution(),
       user_education::FeaturePromoSpecification::FormatParameters title_params =
           user_education::FeaturePromoSpecification::NoSubstitution()) override;
-  bool CloseFeaturePromo(const base::Feature& iph_feature) override;
+  bool CloseFeaturePromo(
+      const base::Feature& iph_feature,
+      user_education::FeaturePromoCloseReason close_reason =
+          user_education::FeaturePromoCloseReason::kFeatureEngaged) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) override;
   void NotifyFeatureEngagementEvent(const char* event_name) override;
