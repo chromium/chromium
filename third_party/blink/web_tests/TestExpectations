@@ -5709,6 +5709,9 @@ crbug.com/1426680 [ Mac13-arm64 ] fast/canvas/OffscreenCanvas-copyImage.html [ T
 crbug.com/1426680 [ Mac12-arm64 ] fast/canvas/OffscreenCanvas-copyImage.html [ Timeout ]
 crbug.com/1472813 [ Mac ] virtual/close-watcher/external/wpt/close-watcher/user-activation-shared.html?CloseWatcher [ Timeout ]
 crbug.com/1472813 [ Mac10.15 ] virtual/close-watcher/external/wpt/close-watcher/user-activation-shared.html?dialog [ Timeout ]
+crbug.com/1479108 [ Mac11-arm64 ] virtual/threaded-no-composited-antialiasing/animations/composited-animations-rotate-zero-degrees.html [ Failure ]
+crbug.com/1479108 [ Mac12-arm64 ] virtual/threaded-no-composited-antialiasing/animations/composited-animations-rotate-zero-degrees.html [ Failure ]
+crbug.com/1479108 [ Mac13-arm64 ] virtual/threaded-no-composited-antialiasing/animations/composited-animations-rotate-zero-degrees.html [ Failure ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1395412 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
