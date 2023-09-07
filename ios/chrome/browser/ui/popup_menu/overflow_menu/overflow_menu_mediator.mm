@@ -1231,10 +1231,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 
   [helpActions addObject:self.helpAction];
-
-  if (IsNewOverflowMenuShareChromeActionEnabled()) {
-    [helpActions addObject:self.shareChromeAction];
-  }
+  [helpActions addObject:self.shareChromeAction];
 
   self.helpActionsGroup.actions = helpActions;
 
