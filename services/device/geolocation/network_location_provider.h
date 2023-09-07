@@ -37,13 +37,20 @@ class NetworkLocationProvider : public LocationProvider
 #endif
 {
  public:
+  using NetworkRequestCallback =
+      base::RepeatingCallback<void(std::vector<mojom::AccessPointDataPtr>)>;
+  using NetworkResponseCallback =
+      base::RepeatingCallback<void(mojom::NetworkLocationResponsePtr)>;
+
   NetworkLocationProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       GeolocationManager* geolocation_manager,
       const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       const std::string& api_key,
       PositionCache* position_cache,
-      base::RepeatingClosure internals_updated_closure);
+      base::RepeatingClosure internals_updated_closure,
+      NetworkRequestCallback network_request_callback,
+      NetworkResponseCallback network_response_callback);
 
   NetworkLocationProvider(const NetworkLocationProvider&) = delete;
   NetworkLocationProvider& operator=(const NetworkLocationProvider&) = delete;
@@ -76,7 +83,8 @@ class NetworkLocationProvider : public LocationProvider
 
   void OnLocationResponse(mojom::GeopositionResultPtr result,
                           bool server_error,
-                          const WifiData& wifi_data);
+                          const WifiData& wifi_data,
+                          mojom::NetworkLocationResponsePtr response_data);
 
   // The wifi data provider, acquired via global factories. Valid between
   // StartProvider() and StopProvider(), and checked via IsStarted().
@@ -128,6 +136,14 @@ class NetworkLocationProvider : public LocationProvider
 #endif
 
   base::RepeatingClosure internals_updated_closure_;
+
+  // Called when a network request is sent to provide the request data to
+  // diagnostics observers.
+  NetworkRequestCallback network_request_callback_;
+
+  // Called when a network response is received to provide the response data to
+  // diagnostics observers.
+  NetworkResponseCallback network_response_callback_;
 
   base::WeakPtrFactory<NetworkLocationProvider> weak_factory_{this};
 };

@@ -123,11 +123,31 @@ struct GeolocationDiagnostics {
   WifiPollingPolicyDiagnostics? wifi_polling_policy_diagnostics;
 };
 
+// A position estimate parsed from a location service response.
+struct NetworkLocationResponse {
+  // The estimated latitude in degrees.
+  double latitude;
+  // The estimated longitude in degrees.
+  double longitude;
+  // The estimated accuracy in meters, or null if accuracy was not included in
+  // the response.
+  double? accuracy;
+};
+
 // Interface for chrome://location-internals to be notified when the debug data
 // is updated.
 interface GeolocationInternalsObserver {
   // Called after handling an event that may have changed the debug data.
   OnDiagnosticsChanged(GeolocationDiagnostics diagnostics);
+
+  // Called when a request is sent to the location service. `request` contains
+  // the information about nearby access points sent to the service.
+  OnNetworkLocationRequested(array<AccessPointData> access_point_data);
+
+  // Called when a response is received for a request to the location service.
+  // `response` is the position estimate parsed from the response, or null if a
+  // position estimate was not included in the response.
+  OnNetworkLocationReceived(NetworkLocationResponse? response);
 };
 
 // Interface for chrome://location-internals to access geolocation debug data.
