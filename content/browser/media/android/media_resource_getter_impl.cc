@@ -61,7 +61,7 @@ GetRestrictedCookieManagerForContext(
          site_for_cookies.IsFirstParty(top_frame_origin.GetURL()));
   net::IsolationInfo isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, top_frame_origin,
-      top_frame_origin, site_for_cookies, absl::nullopt);
+      top_frame_origin, site_for_cookies, /*is_internal=*/true);
 
   mojo::PendingRemote<network::mojom::RestrictedCookieManager> pipe;
   static_cast<StoragePartitionImpl*>(storage_partition)

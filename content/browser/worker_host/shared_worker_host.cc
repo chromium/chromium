@@ -433,7 +433,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
               // should pass the top_level_site from
               // `GetStorageKey()` instead.
               origin, origin, net::SiteForCookies::FromOrigin(origin),
-              /*party_context=*/absl::nullopt, GetStorageKey().nonce()),
+              /*is_internal=*/true, GetStorageKey().nonce()),
           std::move(coep_reporter),
           /*url_loader_network_observer=*/mojo::NullRemote(),
           /*devtools_observer=*/mojo::NullRemote(),

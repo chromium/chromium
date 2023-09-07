@@ -482,7 +482,7 @@ TEST_F(NavigatorTest, BeginNavigation) {
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kSubFrame,
           url::Origin::Create(kUrl1), url::Origin::Create(kUrl2),
-          net::SiteForCookies::FromUrl(kUrl1), std::set<net::SchemefulSite>())
+          net::SiteForCookies::FromUrl(kUrl1), /*is_internal=*/false)
           .IsEqualForTesting(subframe_loader->request_info()->isolation_info));
 
   EXPECT_FALSE(subframe_loader->request_info()->is_main_frame);
@@ -524,7 +524,7 @@ TEST_F(NavigatorTest, BeginNavigation) {
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kMainFrame,
           url::Origin::Create(kUrl3), url::Origin::Create(kUrl3),
-          net::SiteForCookies::FromUrl(kUrl3), std::set<net::SchemefulSite>())
+          net::SiteForCookies::FromUrl(kUrl3), /*is_internal=*/false)
           .IsEqualForTesting(main_loader->request_info()->isolation_info));
   EXPECT_TRUE(main_loader->request_info()->is_main_frame);
   EXPECT_TRUE(main_request->browser_initiated());

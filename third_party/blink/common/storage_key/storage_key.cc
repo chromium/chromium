@@ -789,7 +789,7 @@ const net::IsolationInfo StorageKey::ToPartialNetIsolationInfo() const {
   return net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                     top_frame_origin, origin_,
                                     ToNetSiteForCookies(),
-                                    /*party_context=*/absl::nullopt, nonce_);
+                                    /*is_internal=*/true, nonce_);
 }
 
 // static

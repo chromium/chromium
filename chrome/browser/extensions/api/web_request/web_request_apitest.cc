@@ -5003,7 +5003,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
               net::IsolationInfo::RequestType::kMainFrame, redirected_origin,
               redirected_origin,
               net::SiteForCookies::FromOrigin(redirected_origin),
-              std::set<net::SchemefulSite>())));
+              /*is_internal=*/false)));
 }
 
 // Test that a sub frame request redirected by an extension has the correct
@@ -5054,7 +5054,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
               net::IsolationInfo::RequestType::kSubFrame, top_level_origin,
               redirected_origin,
               net::SiteForCookies::FromOrigin(top_level_origin),
-              std::set<net::SchemefulSite>())));
+              /*is_internal=*/false)));
 }
 
 class ExtensionWebRequestApiIdentifiabilityTest

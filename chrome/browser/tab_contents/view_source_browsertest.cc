@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
                                  origin, origin,
                                  net::SiteForCookies::FromOrigin(origin),
-                                 std::set<net::SchemefulSite>())));
+                                 /*is_internal=*/false)));
 }
 
 class ViewSourceWithSplitCacheTest

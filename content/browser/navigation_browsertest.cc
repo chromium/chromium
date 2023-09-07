@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
   EXPECT_TRUE(net::IsolationInfo::Create(
                   net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                   net::SiteForCookies::FromOrigin(origin),
-                  std::set<net::SchemefulSite>())
+                  /*is_internal=*/false)
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
@@ -905,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
   EXPECT_TRUE(net::IsolationInfo::Create(
                   net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                   net::SiteForCookies::FromOrigin(origin),
-                  std::set<net::SchemefulSite>())
+                  /*is_internal=*/false)
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
   EXPECT_TRUE(net::IsolationInfo::Create(
                   net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                   net::SiteForCookies::FromOrigin(origin),
-                  std::set<net::SchemefulSite>())
+                  /*is_internal=*/false)
                   .IsEqualForTesting(
                       main_frame_request->trusted_params->isolation_info));
 
@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
                                  origin, iframe_origin,
                                  net::SiteForCookies::FromOrigin(origin),
-                                 std::set<net::SchemefulSite>())
+                                 /*is_internal=*/false)
           .IsEqualForTesting(iframe_request->trusted_params->isolation_info));
 }
 

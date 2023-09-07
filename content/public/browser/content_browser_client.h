@@ -1829,8 +1829,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // |site_for_cookies| is empty, no domains are first-party).
   // |top_frame_origin| held by |isolation_info| represents the domain for
   // top-level frame, and can be used to look up preferences that are dependent
-  // on that. |party_context| hold by |isolation_info| is for the purposes of
-  // SameParty cookies inclusion calculation.
+  // on that.
   //
   // |*receiver| is always valid upon entry.
   //

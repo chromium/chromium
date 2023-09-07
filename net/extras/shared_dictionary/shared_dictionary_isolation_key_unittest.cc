@@ -47,7 +47,7 @@ TEST(SharedDictionaryIsolationKeyTest, MaybeCreateWithNonce) {
       SharedDictionaryIsolationKey::MaybeCreate(net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, url::Origin::Create(kUrl1),
           url::Origin(), net::SiteForCookies(),
-          /*party_context=*/absl::nullopt,
+          /*is_internal=*/true,
           /*nonce=*/base::UnguessableToken::Create()));
   EXPECT_FALSE(isolation_key);
 }

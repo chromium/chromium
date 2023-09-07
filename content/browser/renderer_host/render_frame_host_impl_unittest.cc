@@ -205,12 +205,9 @@ TEST_F(RenderFrameHostImplTest, CrossSiteAncestorInFrameTree) {
   blink::StorageKey expected_final_storage_key = blink::StorageKey::Create(
       expected_final_origin, net::SchemefulSite(expected_final_origin),
       blink::mojom::AncestorChainBit::kCrossSite);
-  // Set should contain the set of sites between the current and top frame.
-  std::set<net::SchemefulSite> party_context = {
-      net::SchemefulSite(child_url_1)};
   net::IsolationInfo expected_final_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, expected_final_origin,
-      expected_final_origin, net::SiteForCookies(), party_context);
+      expected_final_origin, net::SiteForCookies(), /*is_internal=*/false);
 
   EXPECT_EQ(expected_final_origin, child_rfh_2->GetLastCommittedOrigin());
   EXPECT_EQ(expected_final_storage_key, child_rfh_2->GetStorageKey());
@@ -237,7 +234,7 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
           net::IsolationInfo::RequestType::kOther, expected_initial_origin,
           expected_initial_origin,
           net::SiteForCookies::FromOrigin(expected_initial_origin),
-          std::set<net::SchemefulSite>());
+          /*is_internal=*/false);
 
   GURL final_url = GURL("https://final.example.test/");
   url::Origin expected_final_origin = url::Origin::Create(final_url);
@@ -247,7 +244,7 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
       net::IsolationInfo::RequestType::kOther, expected_final_origin,
       expected_final_origin,
       net::SiteForCookies::FromOrigin(expected_final_origin),
-      std::set<net::SchemefulSite>());
+      /*is_internal=*/false);
 
   // Start the test with a simple navigation.
   {

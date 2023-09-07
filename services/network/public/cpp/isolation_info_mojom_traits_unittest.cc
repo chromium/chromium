@@ -24,53 +24,48 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
 
   const base::UnguessableToken nonce = base::UnguessableToken::Create();
 
-  const absl::optional<std::set<net::SchemefulSite>> kPartyContext1 =
-      absl::nullopt;
-  const absl::optional<std::set<net::SchemefulSite>> kPartyContext2 =
-      std::set<net::SchemefulSite>();
-  const absl::optional<std::set<net::SchemefulSite>> kPartyContext3 =
-      std::set<net::SchemefulSite>{
-          net::SchemefulSite(url::Origin::Create(GURL("https://c.test/")))};
-
   std::vector<net::IsolationInfo> keys = {
       net::IsolationInfo(),
       net::IsolationInfo::CreateTransient(),
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
-          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext2),
+          net::SiteForCookies::FromOrigin(kOrigin1), /*is_internal=*/false),
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kSubFrame, kOrigin1, kOrigin2,
-          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext2),
+          net::SiteForCookies::FromOrigin(kOrigin1), /*is_internal=*/false),
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
                                  kOrigin1, kOrigin2, net::SiteForCookies(),
-                                 kPartyContext3),
+                                 /*is_internal=*/false),
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, kOrigin1, kOrigin1,
-          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext1),
+          net::SiteForCookies::FromOrigin(kOrigin1), /*is_internal=*/true),
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                  url::Origin(), url::Origin(),
-                                 net::SiteForCookies(), kPartyContext1),
+                                 net::SiteForCookies(), /*is_internal=*/true),
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                  url::Origin(), url::Origin(),
                                  net::SiteForCookies()),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
-          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext2, nonce),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kSubFrame, kOrigin1, kOrigin2,
-          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext2, nonce),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
+                                 kOrigin1, kOrigin1,
+                                 net::SiteForCookies::FromOrigin(kOrigin1),
+                                 /*is_internal=*/false, nonce),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
+                                 kOrigin1, kOrigin2,
+                                 net::SiteForCookies::FromOrigin(kOrigin1),
+                                 /*is_internal=*/false, nonce),
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
                                  kOrigin1, kOrigin2, net::SiteForCookies(),
-                                 kPartyContext3, nonce),
+                                 /*is_internal=*/false, nonce),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 kOrigin1, kOrigin1,
+                                 net::SiteForCookies::FromOrigin(kOrigin1),
+                                 /*is_internal=*/true, nonce),
       net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kOther, kOrigin1, kOrigin1,
-          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext1, nonce),
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                 url::Origin(), url::Origin(),
-                                 net::SiteForCookies(), kPartyContext1, nonce),
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                 url::Origin(), url::Origin(),
-                                 net::SiteForCookies(), absl::nullopt, nonce),
+          net::IsolationInfo::RequestType::kOther, url::Origin(), url::Origin(),
+          net::SiteForCookies(), /*is_internal=*/true, nonce),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther, url::Origin(), url::Origin(),
+          net::SiteForCookies(), /*is_internal=*/true, nonce),
   };
 
   for (auto original : keys) {

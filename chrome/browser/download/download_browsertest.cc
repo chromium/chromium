@@ -2210,7 +2210,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
       net::IsolationInfo::RequestType::kMainFrame,
       url::Origin::Create(https_test_server()->GetURL("a.test", "/")),
       url::Origin::Create(https_test_server()->GetURL("a.test", "/")),
-      expected_site_for_cookies, std::set<net::SchemefulSite>());
+      expected_site_for_cookies, /*is_internal=*/false);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2293,7 +2293,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
       net::IsolationInfo::RequestType::kSubFrame,
       url::Origin::Create(https_test_server()->GetURL("a.test", "/")),
       url::Origin::Create(https_test_server()->GetURL("b.test", "/")),
-      expected_site_for_cookies, std::set<net::SchemefulSite>());
+      expected_site_for_cookies, /*is_internal=*/false);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2381,7 +2381,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
       net::IsolationInfo::RequestType::kSubFrame,
       url::Origin::Create(https_test_server()->GetURL("a.test", "/")),
       url::Origin::Create(https_test_server()->GetURL("b.test", "/")),
-      expected_site_for_cookies, std::set<net::SchemefulSite>());
+      expected_site_for_cookies, /*is_internal=*/false);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2458,7 +2458,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
       net::IsolationInfo::RequestType::kSubFrame,
       url::Origin::Create(https_test_server()->GetURL("a.test", "/")),
       url::Origin::Create(https_test_server()->GetURL("b.test", "/")),
-      expected_site_for_cookies, std::set<net::SchemefulSite>());
+      expected_site_for_cookies, /*is_internal=*/false);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
