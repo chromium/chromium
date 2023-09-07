@@ -87,6 +87,7 @@ class PictureInPictureBrowserFrameView
   // ChromeLocationBarModelDelegate:
   content::WebContents* GetActiveWebContents() const override;
   bool GetURL(GURL* url) const override;
+  bool ShouldPreventElision() override;
   bool ShouldTrimDisplayUrlAfterHostName() const override;
   bool ShouldDisplayURL() const override;
 
