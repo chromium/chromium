@@ -211,7 +211,7 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
           : absl::make_optional(data.max_event_level_reports());
   out->priority = data.priority();
   out->debug_reporting = data.debug_reporting();
-  return true;
+  return out->IsValid();
 }
 
 // static

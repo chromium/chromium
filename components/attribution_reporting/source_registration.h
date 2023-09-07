@@ -50,14 +50,17 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
 
   base::Value::Dict ToJson() const;
 
+  bool IsValid() const;
+
   uint64_t source_event_id = 0;
   DestinationSet destination_set;
-  // These `base::TimeDelta`s should be non-negative, but this is only enforced
-  // by the `Parse()` methods.
+  // These `base::TimeDelta`s must be non-negative if set. This is verified by
+  // the `Parse()` and `IsValid()` methods.
   absl::optional<base::TimeDelta> expiry;
   absl::optional<EventReportWindows> event_report_windows;
   absl::optional<base::TimeDelta> aggregatable_report_window;
-  // Non-null value should be non-negative
+  // Must be non-negative and <= `kMaxSettableEventLevelAttributions` if set.
+  // This is verified by the `Parse()` and `IsValid()` methods.
   absl::optional<int> max_event_level_reports;
   int64_t priority = 0;
   FilterData filter_data;

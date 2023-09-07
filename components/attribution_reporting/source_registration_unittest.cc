@@ -411,5 +411,44 @@ TEST(SourceRegistrationTest, ToJson) {
   }
 }
 
+TEST(SourceRegistrationTest, IsValid) {
+  const DestinationSet destination = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://d.example")});
+
+  EXPECT_TRUE(SourceRegistration(destination).IsValid());
+
+  EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                 r.expiry = base::Microseconds(-1);
+               }).IsValid());
+
+  EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                r.expiry = base::Microseconds(0);
+              }).IsValid());
+
+  EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                 r.aggregatable_report_window = base::Microseconds(-1);
+               }).IsValid());
+
+  EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                r.aggregatable_report_window = base::Microseconds(0);
+              }).IsValid());
+
+  EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                 r.max_event_level_reports = -1;
+               }).IsValid());
+
+  EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                 r.max_event_level_reports = 21;
+               }).IsValid());
+
+  EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                r.max_event_level_reports = 0;
+              }).IsValid());
+
+  EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                r.max_event_level_reports = 20;
+              }).IsValid());
+}
+
 }  // namespace
 }  // namespace attribution_reporting

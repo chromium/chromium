@@ -42,10 +42,14 @@ constexpr char kFilterData[] = "filter_data";
 constexpr char kMaxEventLevelReports[] = "max_event_level_reports";
 constexpr char kSourceEventId[] = "source_event_id";
 
+bool IsMaxEventLevelReportsValid(int i) {
+  return i >= 0 && i <= kMaxSettableEventLevelAttributions;
+}
+
 base::expected<int, SourceRegistrationError> ParseMaxEventLevelReports(
     const base::Value& value) {
   absl::optional<int> i = value.GetIfInt();
-  if (!i.has_value() || *i < 0 || *i > kMaxSettableEventLevelAttributions) {
+  if (!i.has_value() || !IsMaxEventLevelReportsValid(*i)) {
     return base::unexpected(
         SourceRegistrationError::kMaxEventLevelReportsValueInvalid);
   }
@@ -130,6 +134,7 @@ SourceRegistration::Parse(base::Value::Dict registration) {
 
   result.debug_reporting = ParseDebugReporting(registration);
 
+  CHECK(result.IsValid());
   return result;
 }
 
@@ -190,6 +195,24 @@ base::Value::Dict SourceRegistration::ToJson() const {
   }
 
   return dict;
+}
+
+bool SourceRegistration::IsValid() const {
+  if (expiry.has_value() && expiry->is_negative()) {
+    return false;
+  }
+
+  if (aggregatable_report_window.has_value() &&
+      aggregatable_report_window->is_negative()) {
+    return false;
+  }
+
+  if (max_event_level_reports.has_value() &&
+      !IsMaxEventLevelReportsValid(*max_event_level_reports)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace attribution_reporting
