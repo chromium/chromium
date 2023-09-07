@@ -70,11 +70,11 @@ enum class NakedValueDisposition { kTreatAsIdeal, kTreatAsExact };
 struct NameValueStringConstraint {
   NameValueStringConstraint() = default;
 
-  NameValueStringConstraint(WebString name, WebString value)
+  NameValueStringConstraint(String name, String value)
       : name_(name), value_(value) {}
 
-  WebString name_;
-  WebString value_;
+  String name_;
+  String value_;
 };
 
 // Legal constraint names.
@@ -130,16 +130,16 @@ static bool ParseOptionalConstraintsVectorElement(
   DummyExceptionStateForTesting exception_state;
   const Vector<String>& local_names =
       constraint.GetPropertyNames(exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException() || local_names.size() != 1) {
     return false;
-  if (local_names.size() != 1)
-    return false;
+  }
   const String& key = local_names[0];
-  String value;
-  bool ok = DictionaryHelper::Get(constraint, key, value);
-  if (!ok)
+  absl::optional<String> value =
+      constraint.Get<IDLString>(key, exception_state);
+  if (exception_state.HadException() || !value) {
     return false;
-  optional_constraints_vector.push_back(NameValueStringConstraint(key, value));
+  }
+  optional_constraints_vector.push_back(NameValueStringConstraint(key, *value));
   return true;
 }
 
@@ -165,8 +165,8 @@ static bool Parse(const MediaTrackConstraints* constraints_in,
   return true;
 }
 
-static bool ToBoolean(const WebString& as_web_string) {
-  return as_web_string.Equals("true");
+static bool ToBoolean(const String& as_string) {
+  return as_string == "true";
   // TODO(hta): Check against "false" and return error if it's neither.
   // https://crbug.com/576582
 }
@@ -179,60 +179,60 @@ static void ParseOldStyleNames(
     UseCounter::Count(context, WebFeature::kOldConstraintsParsed);
   }
   for (const NameValueStringConstraint& constraint : old_names) {
-    if (constraint.name_.Equals(kMinAspectRatio)) {
+    if (constraint.name_ == kMinAspectRatio) {
       result.aspect_ratio.SetMin(atof(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kMaxAspectRatio)) {
+    } else if (constraint.name_ == kMaxAspectRatio) {
       result.aspect_ratio.SetMax(atof(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kMaxWidth)) {
+    } else if (constraint.name_ == kMaxWidth) {
       result.width.SetMax(atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kMinWidth)) {
+    } else if (constraint.name_ == kMinWidth) {
       result.width.SetMin(atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kMaxHeight)) {
+    } else if (constraint.name_ == kMaxHeight) {
       result.height.SetMax(atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kMinHeight)) {
+    } else if (constraint.name_ == kMinHeight) {
       result.height.SetMin(atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kMinFrameRate)) {
+    } else if (constraint.name_ == kMinFrameRate) {
       result.frame_rate.SetMin(atof(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kMaxFrameRate)) {
+    } else if (constraint.name_ == kMaxFrameRate) {
       result.frame_rate.SetMax(atof(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kEchoCancellation)) {
+    } else if (constraint.name_ == kEchoCancellation) {
       result.echo_cancellation.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kMediaStreamSource)) {
+    } else if (constraint.name_ == kMediaStreamSource) {
       // TODO(hta): This has only a few legal values. Should be
       // represented as an enum, and cause type errors.
       // https://crbug.com/576582
       result.media_stream_source.SetExact(constraint.value_);
-    } else if (constraint.name_.Equals(kDisableLocalEcho) &&
+    } else if (constraint.name_ == kDisableLocalEcho &&
                RuntimeEnabledFeatures::
                    DesktopCaptureDisableLocalEchoControlEnabled()) {
       result.disable_local_echo.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kMediaStreamSourceId) ||
-               constraint.name_.Equals(kMediaStreamSourceInfoId)) {
+    } else if (constraint.name_ == kMediaStreamSourceId ||
+               constraint.name_ == kMediaStreamSourceInfoId) {
       result.device_id.SetExact(constraint.value_);
-    } else if (constraint.name_.Equals(kMediaStreamRenderToAssociatedSink)) {
+    } else if (constraint.name_ == kMediaStreamRenderToAssociatedSink) {
       // TODO(hta): This is a boolean represented as string.
       // Should give TypeError when it's not parseable.
       // https://crbug.com/576582
       result.render_to_associated_sink.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kGoogEchoCancellation)) {
+    } else if (constraint.name_ == kGoogEchoCancellation) {
       result.goog_echo_cancellation.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kGoogExperimentalEchoCancellation)) {
+    } else if (constraint.name_ == kGoogExperimentalEchoCancellation) {
       result.goog_experimental_echo_cancellation.SetExact(
           ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kGoogAutoGainControl)) {
+    } else if (constraint.name_ == kGoogAutoGainControl) {
       result.goog_auto_gain_control.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kGoogNoiseSuppression)) {
+    } else if (constraint.name_ == kGoogNoiseSuppression) {
       result.goog_noise_suppression.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kGoogExperimentalNoiseSuppression)) {
+    } else if (constraint.name_ == kGoogExperimentalNoiseSuppression) {
       result.goog_experimental_noise_suppression.SetExact(
           ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kGoogHighpassFilter)) {
+    } else if (constraint.name_ == kGoogHighpassFilter) {
       result.goog_highpass_filter.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kGoogAudioMirroring)) {
+    } else if (constraint.name_ == kGoogAudioMirroring) {
       result.goog_audio_mirroring.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kDAEchoCancellation)) {
+    } else if (constraint.name_ == kDAEchoCancellation) {
       result.goog_da_echo_cancellation.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kNoiseReduction)) {
+    } else if (constraint.name_ == kNoiseReduction) {
       result.goog_noise_reduction.SetExact(ToBoolean(constraint.value_));
     }
     // else: Nothing. Unrecognized constraints are simply ignored.
@@ -684,7 +684,7 @@ MediaConstraints Create() {
 }
 
 template <class T>
-bool UseNakedNumeric(T input, NakedValueDisposition which) {
+bool UseNakedNumeric(const T& input, NakedValueDisposition which) {
   switch (which) {
     case NakedValueDisposition::kTreatAsIdeal:
       return input.HasIdeal() &&
@@ -700,7 +700,7 @@ bool UseNakedNumeric(T input, NakedValueDisposition which) {
 }
 
 template <class T>
-bool UseNakedNonNumeric(T input, NakedValueDisposition which) {
+bool UseNakedNonNumeric(const T& input, NakedValueDisposition which) {
   switch (which) {
     case NakedValueDisposition::kTreatAsIdeal:
       return input.HasIdeal() && !input.HasExact();
@@ -714,7 +714,7 @@ bool UseNakedNonNumeric(T input, NakedValueDisposition which) {
 }
 
 template <typename U, class T>
-U GetNakedValue(T input, NakedValueDisposition which) {
+U GetNakedValue(const T& input, NakedValueDisposition which) {
   switch (which) {
     case NakedValueDisposition::kTreatAsIdeal:
       return input.Ideal();
@@ -789,13 +789,9 @@ V8UnionBooleanOrConstrainDouble* ConvertBooleanOrDouble(
 }
 
 V8UnionStringOrStringSequence* ConvertStringSequence(
-    const WebVector<WebString>& input) {
+    const Vector<String>& input) {
   if (input.size() > 1) {
-    Vector<String> buffer;
-    for (const auto& scanner : input)
-      buffer.push_back(scanner);
-    return MakeGarbageCollected<V8UnionStringOrStringSequence>(
-        std::move(buffer));
+    return MakeGarbageCollected<V8UnionStringOrStringSequence>(input);
   } else if (!input.empty()) {
     return MakeGarbageCollected<V8UnionStringOrStringSequence>(input[0]);
   }
@@ -805,13 +801,10 @@ V8UnionStringOrStringSequence* ConvertStringSequence(
 V8ConstrainDOMString* ConvertString(const StringConstraint& input,
                                     NakedValueDisposition naked_treatment) {
   if (UseNakedNonNumeric(input, naked_treatment)) {
-    WebVector<WebString> input_buffer(
-        GetNakedValue<WebVector<WebString>>(input, naked_treatment));
+    const Vector<String>& input_buffer(
+        GetNakedValue<const Vector<String>&>(input, naked_treatment));
     if (input_buffer.size() > 1) {
-      Vector<String> buffer;
-      for (const auto& scanner : input_buffer)
-        buffer.push_back(scanner);
-      return MakeGarbageCollected<V8ConstrainDOMString>(std::move(buffer));
+      return MakeGarbageCollected<V8ConstrainDOMString>(input_buffer);
     } else if (!input_buffer.empty()) {
       return MakeGarbageCollected<V8ConstrainDOMString>(input_buffer[0]);
     }
