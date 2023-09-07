@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -247,10 +248,22 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
     return;
   }
 
-  // Use |keep_alive_loader_factory_| to send the requests to the
+  // A FetchLater request must also be a keepalive request.
+  const bool request_is_fetch_later = request.is_fetch_later_api;
+  // TODO(crbug.com/1465781): CHECK kFetchLaterAPI for FetchLater requests.
+  CHECK(!request_is_fetch_later || request.keepalive);
+  // Use |keep_alive_loader_factory_| to send the keepalive requests to the
   // KeepAliveURLLoaderService in the browser process and trigger the special
   // keepalive request handling.
-  if (request.keepalive && keep_alive_loader_factory_) {
+  // |keep_alive_loader_factory_| only presents when either
+  // features::kKeepAliveInBrowserMigration or features::kFetchLaterAPI is true.
+  // But they are different features, and we don't want to pass every keepalive
+  // request to the factory (the new path) when only one of them is enabled.
+  if (request.keepalive && keep_alive_loader_factory_ &&
+      ((!request_is_fetch_later &&
+        base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration)) ||
+       (request_is_fetch_later &&
+        base::FeatureList::IsEnabled(features::kFetchLaterAPI)))) {
     keep_alive_loader_factory_->CreateLoaderAndStart(
         std::move(loader), request_id, options, request, std::move(client),
         traffic_annotation);

@@ -1553,8 +1553,10 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       unfreezable_task_runner_;
-  if (!blink::features::IsKeepAliveInBrowserMigrationEnabled() &&
-      request.GetKeepalive()) {
+  const bool request_is_fetch_later = request.IsFetchLaterAPI();
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kKeepAliveInBrowserMigration) &&
+      request.GetKeepalive() && !request_is_fetch_later) {
     base::UmaHistogramBoolean("Blink.Fetch.KeepAlive.Total", true);
     // Set the `task_runner` to the `AgentGroupScheduler`'s task-runner for
     // keepalive fetches because we want it to keep running even after the
@@ -2108,7 +2110,9 @@ void ResourceFetcher::ClearContext() {
   StopFetching();
 
   if ((!loaders_.empty() || !non_blocking_loaders_.empty()) &&
-      !blink::features::IsKeepAliveInBrowserMigrationEnabled()) {
+      // This branch is not relevant to FetchLater.
+      !base::FeatureList::IsEnabled(
+          blink::features::kKeepAliveInBrowserMigration)) {
     // There are some keepalive requests.
 
     // Records the current time to estimate how long the remaining requests will
@@ -2509,7 +2513,8 @@ void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
 }
 
 void ResourceFetcher::StopFetching() {
-  if (blink::features::IsKeepAliveInBrowserMigrationEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kKeepAliveInBrowserMigration)) {
     StopFetchingInternal(StopFetchingTarget::kIncludingKeepaliveLoaders);
   } else {
     StopFetchingInternal(StopFetchingTarget::kExcludingKeepaliveLoaders);

@@ -1322,9 +1322,11 @@ IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
 
 BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 
-// Checks both of kKeepAliveInBrowserMigration and kFetchLaterAPI, and returns
-// true if any of them is true.
-BLINK_COMMON_EXPORT bool IsKeepAliveInBrowserMigrationEnabled();
+// Returns true if the in-browser KeepAliveURLLoaderService should be enabled by
+// verifying either kKeepAliveInBrowserMigration or kFetchLaterAPI is true.
+// Note that as the service is shared by two different features, code path
+// specific to one of them should not rely on this function.
+BLINK_COMMON_EXPORT bool IsKeepAliveURLLoaderServiceEnabled();
 
 // Kill-switch for removing Authorization header upon cross origin redirects.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
