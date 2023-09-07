@@ -543,6 +543,14 @@ void IndexedDBFactory::NotifyIndexedDBContentChanged(
                                           object_store_name);
 }
 
+void IndexedDBFactory::ForEachBucketContext(
+    IndexedDBBucketContext::InstanceClosure callback) {
+  for_each_bucket_context_ = callback;
+  for (auto& [bucket_id, bucket_context] : bucket_contexts_) {
+    bucket_context->RunInstanceClosure(for_each_bucket_context_);
+  }
+}
+
 int64_t IndexedDBFactory::GetInMemoryDBSize(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -740,13 +748,15 @@ IndexedDBFactory::GetOrCreateBucketContext(
   bucket_delegate.on_content_changed =
       base::BindRepeating(&IndexedDBFactory::NotifyIndexedDBContentChanged,
                           weak_factory_.GetWeakPtr(), bucket_locator);
+  bucket_delegate.for_each_bucket_context = base::BindRepeating(
+      &IndexedDBFactory::ForEachBucketContext, weak_factory_.GetWeakPtr());
 
   auto bucket_context = std::make_unique<IndexedDBBucketContext>(
       bucket_locator,
       /*persist_for_incognito=*/is_incognito_and_in_memory, clock_,
-      &class_factory_->transactional_leveldb_factory(), &earliest_sweep_,
-      &earliest_compaction_, std::move(lock_manager),
-      std::move(bucket_delegate), std::move(backing_store));
+      &class_factory_->transactional_leveldb_factory(), std::move(lock_manager),
+      std::move(bucket_delegate), std::move(backing_store),
+      for_each_bucket_context_);
 
   it = bucket_contexts_.emplace(bucket_locator.id, std::move(bucket_context))
            .first;

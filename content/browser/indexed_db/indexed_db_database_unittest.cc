@@ -72,17 +72,15 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault());
 
     IndexedDBBucketContext::Delegate delegate;
-    delegate.on_fatal_error = base::DoNothing();
     delegate.on_tasks_available =
         base::BindRepeating(&IndexedDBDatabaseTest::RunTasksForDatabase,
-                            weak_factory_.GetWeakPtr(), true),
-    delegate.on_content_changed = base::DoNothing();
+                            weak_factory_.GetWeakPtr(), true);
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
         storage::BucketLocator(), false, base::DefaultClock::GetInstance(),
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
-        &unused_, &unused_, std::make_unique<PartitionedLockManager>(),
-        std::move(delegate), std::make_unique<IndexedDBFakeBackingStore>());
+        std::make_unique<PartitionedLockManager>(), std::move(delegate),
+        std::make_unique<IndexedDBFakeBackingStore>(), base::DoNothing());
 
     db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", *bucket_context_, IndexedDBDatabase::Identifier());
@@ -121,7 +119,6 @@ class IndexedDBDatabaseTest : public ::testing::Test {
   }
 
  protected:
-  base::Time unused_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBBucketContext> bucket_context_;
@@ -482,17 +479,15 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault());
 
     IndexedDBBucketContext::Delegate delegate;
-    delegate.on_fatal_error = base::DoNothing();
     delegate.on_tasks_available = base::BindRepeating(
         &IndexedDBDatabaseOperationTest::RunTasksForDatabase,
-        base::Unretained(this), true),
-    delegate.on_content_changed = base::DoNothing();
+        base::Unretained(this), true);
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
         storage::BucketLocator(), false, base::DefaultClock::GetInstance(),
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
-        &unused_, &unused_, std::make_unique<PartitionedLockManager>(),
-        std::move(delegate), std::make_unique<IndexedDBFakeBackingStore>());
+        std::make_unique<PartitionedLockManager>(), std::move(delegate),
+        std::make_unique<IndexedDBFakeBackingStore>(), base::DoNothing());
 
     db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", *bucket_context_, IndexedDBDatabase::Identifier());
@@ -558,7 +553,6 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
  protected:
-  base::Time unused_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;

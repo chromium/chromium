@@ -81,15 +81,13 @@ class IndexedDBTransactionTest : public testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault());
 
     IndexedDBBucketContext::Delegate delegate;
-    delegate.on_fatal_error = base::DoNothing();
     delegate.on_tasks_available = CreateRunTasksCallback();
-    delegate.on_content_changed = base::DoNothing();
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
         storage::BucketLocator(), false, base::DefaultClock::GetInstance(),
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
-        &unused_, &unused_, std::make_unique<PartitionedLockManager>(),
-        std::move(delegate), std::make_unique<IndexedDBFakeBackingStore>());
+        std::make_unique<PartitionedLockManager>(), std::move(delegate),
+        std::make_unique<IndexedDBFakeBackingStore>(), base::DoNothing());
 
     // DB is created here instead of the constructor to workaround a
     // "peculiarity of C++". More info at
@@ -163,8 +161,6 @@ class IndexedDBTransactionTest : public testing::Test {
   std::unique_ptr<IndexedDBDatabase> db_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
-
-  base::Time unused_;
 
   bool error_called_ = false;
 };

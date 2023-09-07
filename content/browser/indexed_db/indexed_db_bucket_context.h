@@ -58,6 +58,12 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   using DBMap =
       base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
 
+  // Represents a method of `IndexedDBBucketContext` which is not yet bound to a
+  // particular instance of `IndexedDBBucketContext`. This is used for the
+  // `for_each_bucket_context` delegate callback.
+  using InstanceClosure =
+      base::RepeatingCallback<void(IndexedDBBucketContext&)>;
+
   // Maximum time interval between runs of the IndexedDBSweeper. Sweeping only
   // occurs after backing store close.
   // Visible for testing.
@@ -117,20 +123,29 @@ class CONTENT_EXPORT IndexedDBBucketContext {
     base::RepeatingCallback<void(const std::u16string& /*database_name*/,
                                  const std::u16string& /*object_store_name*/)>
         on_content_changed;
+
+    // Called to run a given callback on every bucket context (including the one
+    // in the current sequence and those in other sequences/associated with
+    // other buckets). This method will also be called on every subsequently
+    // created bucket context (see `initialization_closure` in constructor),
+    // until it is replaced by another initialization closure.
+    base::RepeatingCallback<void(InstanceClosure)> for_each_bucket_context;
   };
 
-  // `earliest_global_sweep_time` and `earliest_global_compaction_time` are
-  // expected to outlive this object.
+  // If non-null, `initialization_closure` is immediately run on `this`. If it
+  // is null, `this` will generate a new initialization closure and return it to
+  // the delegate via `for_each_bucket_context`. The delegate, i.e.
+  // `IDBFactory`, will pass a null `InstanceClosure` to the first
+  // `IndexedDBBucketContext` it creates.
   IndexedDBBucketContext(
       storage::BucketLocator bucket_locator,
       bool persist_for_incognito,
       base::Clock* clock,
       TransactionalLevelDBFactory* transactional_leveldb_factory,
-      base::Time* earliest_global_sweep_time,
-      base::Time* earliest_global_compaction_time,
       std::unique_ptr<PartitionedLockManager> lock_manager,
       Delegate&& delegate,
-      std::unique_ptr<IndexedDBBackingStore> backing_store);
+      std::unique_ptr<IndexedDBBackingStore> backing_store,
+      InstanceClosure initialization_closure);
 
   IndexedDBBucketContext(const IndexedDBBucketContext&) = delete;
   IndexedDBBucketContext& operator=(const IndexedDBBucketContext&) = delete;
@@ -152,6 +167,10 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   void ReportOutstandingBlobs(bool blobs_outstanding);
 
   void StopPersistingForIncognito();
+
+  // Runs `method` on `this`. This exists to facilitate running the setter on
+  // the correct sequence.
+  void RunInstanceClosure(InstanceClosure method);
 
   const storage::BucketLocator& bucket_locator() { return bucket_locator_; }
   IndexedDBBackingStore* backing_store() {
@@ -208,6 +227,12 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // Test needs access to CompactionKillSwitchWorks.
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionKillSwitchWorks);
 
+  // Used to synchronize the global throttling of LevelDB cleanup operations.
+  // See `for_each_bucket_context`.
+  static void SetInternalState(base::Time earliest_global_sweep_time,
+                               base::Time earliest_global_compaction_time,
+                               IndexedDBBucketContext& context);
+
   IndexedDBDatabase* AddDatabase(const std::u16string& name,
                                  std::unique_ptr<IndexedDBDatabase> database);
 
@@ -252,10 +277,8 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   bool running_tasks_ = false;
   bool task_run_scheduled_ = false;
 
-  // This is safe because it is owned by IndexedDBFactory, which owns this
-  // object.
-  raw_ptr<base::Time> earliest_global_sweep_time_;
-  raw_ptr<base::Time> earliest_global_compaction_time_;
+  base::Time earliest_global_sweep_time_;
+  base::Time earliest_global_compaction_time_;
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   base::OneShotTimer close_timer_;
   const std::unique_ptr<PartitionedLockManager> lock_manager_;

@@ -29,6 +29,7 @@
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
@@ -45,7 +46,6 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace content {
-class IndexedDBBucketContext;
 class IndexedDBBucketContextHandle;
 class IndexedDBClassFactory;
 class IndexedDBContextImpl;
@@ -192,6 +192,8 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
       const std::u16string& database_name,
       const std::u16string& object_store_name);
 
+  void ForEachBucketContext(IndexedDBBucketContext::InstanceClosure callback);
+
   // Called when the database has been deleted on disk.
   void OnDatabaseDeleted(const storage::BucketLocator& bucket_locator);
 
@@ -211,8 +213,8 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
   raw_ptr<IndexedDBContextImpl> context_;
   const raw_ptr<IndexedDBClassFactory> class_factory_;
   const raw_ptr<base::Clock> clock_;
-  base::Time earliest_sweep_;
-  base::Time earliest_compaction_;
+
+  IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;
 
   // TODO(crbug.com/1474996): these bucket contexts need to be `SequenceBound`.
   base::flat_map<storage::BucketId, std::unique_ptr<IndexedDBBucketContext>>

@@ -114,7 +114,12 @@ constexpr const base::TimeDelta
 constexpr const base::TimeDelta
     IndexedDBBucketContext::kMaxEarliestBucketCompactionFromNow;
 
-IndexedDBBucketContext::Delegate::Delegate() = default;
+IndexedDBBucketContext::Delegate::Delegate()
+    : on_tasks_available(base::DoNothing()),
+      on_fatal_error(base::DoNothing()),
+      on_content_changed(base::DoNothing()),
+      for_each_bucket_context(base::DoNothing()) {}
+
 IndexedDBBucketContext::Delegate::Delegate(Delegate&& other) = default;
 IndexedDBBucketContext::Delegate::~Delegate() = default;
 
@@ -123,30 +128,28 @@ IndexedDBBucketContext::IndexedDBBucketContext(
     bool persist_for_incognito,
     base::Clock* clock,
     TransactionalLevelDBFactory* transactional_leveldb_factory,
-    base::Time* earliest_global_sweep_time,
-    base::Time* earliest_global_compaction_time,
     std::unique_ptr<PartitionedLockManager> lock_manager,
     Delegate&& delegate,
-    std::unique_ptr<IndexedDBBackingStore> backing_store)
+    std::unique_ptr<IndexedDBBackingStore> backing_store,
+    InstanceClosure initialize_closure)
     : bucket_locator_(std::move(bucket_locator)),
       persist_for_incognito_(persist_for_incognito),
       clock_(clock),
       transactional_leveldb_factory_(transactional_leveldb_factory),
-      earliest_global_sweep_time_(earliest_global_sweep_time),
-      earliest_global_compaction_time_(earliest_global_compaction_time),
       lock_manager_(std::move(lock_manager)),
       backing_store_(std::move(backing_store)),
       delegate_(std::move(delegate)) {
   DCHECK(clock_);
-  DCHECK(earliest_global_sweep_time_);
-  if (*earliest_global_sweep_time_ == base::Time()) {
-    *earliest_global_sweep_time_ = GenerateNextGlobalSweepTime(clock_->Now());
+
+  if (!initialize_closure) {
+    base::Time now = clock_->Now();
+    initialize_closure =
+        base::BindRepeating(&IndexedDBBucketContext::SetInternalState,
+                            GenerateNextGlobalSweepTime(now),
+                            GenerateNextGlobalCompactionTime(now));
+    delegate_.for_each_bucket_context.Run(initialize_closure);
   }
-  DCHECK(earliest_global_compaction_time_);
-  if (*earliest_global_compaction_time_ == base::Time()) {
-    *earliest_global_compaction_time_ =
-        GenerateNextGlobalCompactionTime(clock_->Now());
-  }
+  initialize_closure.Run(*this);
 }
 
 IndexedDBBucketContext::~IndexedDBBucketContext() {
@@ -202,6 +205,10 @@ void IndexedDBBucketContext::StopPersistingForIncognito() {
   MaybeStartClosing();
 }
 
+void IndexedDBBucketContext::RunInstanceClosure(InstanceClosure method) {
+  method.Run(*this);
+}
+
 std::tuple<IndexedDBBucketContext::RunTasksResult, leveldb::Status>
 IndexedDBBucketContext::RunTasks() {
   task_run_scheduled_ = false;
@@ -229,6 +236,19 @@ IndexedDBBucketContext::RunTasks() {
     return {RunTasksResult::kCanBeDestroyed, leveldb::Status::OK()};
   }
   return {RunTasksResult::kDone, leveldb::Status::OK()};
+}
+
+// static
+void IndexedDBBucketContext::SetInternalState(
+    base::Time earliest_global_sweep_time,
+    base::Time earliest_global_compaction_time,
+    IndexedDBBucketContext& context) {
+  if (!earliest_global_sweep_time.is_null()) {
+    context.earliest_global_sweep_time_ = earliest_global_sweep_time;
+  }
+  if (!earliest_global_compaction_time.is_null()) {
+    context.earliest_global_compaction_time_ = earliest_global_compaction_time;
+  }
 }
 
 IndexedDBDatabase* IndexedDBBucketContext::AddDatabase(
@@ -354,7 +374,7 @@ bool IndexedDBBucketContext::ShouldRunTombstoneSweeper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Time now = clock_->Now();
   // Check that the last sweep hasn't run too recently.
-  if (*earliest_global_sweep_time_ > now) {
+  if (earliest_global_sweep_time_ > now) {
     return false;
   }
 
@@ -371,7 +391,10 @@ bool IndexedDBBucketContext::ShouldRunTombstoneSweeper() {
   }
 
   // A sweep will happen now, so reset the sweep timers.
-  *earliest_global_sweep_time_ = GenerateNextGlobalSweepTime(now);
+  earliest_global_sweep_time_ = GenerateNextGlobalSweepTime(now);
+  delegate().for_each_bucket_context.Run(base::BindRepeating(
+      &IndexedDBBucketContext::SetInternalState, earliest_global_sweep_time_,
+      earliest_global_compaction_time_));
   std::unique_ptr<LevelDBDirectTransaction> txn =
       transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
           backing_store_->db());
@@ -395,7 +418,7 @@ bool IndexedDBBucketContext::ShouldRunCompaction() {
 
   base::Time now = clock_->Now();
   // Check that the last compaction hasn't run too recently.
-  if (*earliest_global_compaction_time_ > now) {
+  if (earliest_global_compaction_time_ > now) {
     return false;
   }
 
@@ -412,7 +435,10 @@ bool IndexedDBBucketContext::ShouldRunCompaction() {
   }
 
   // A compaction will happen now, so reset the compaction timers.
-  *earliest_global_compaction_time_ = GenerateNextGlobalCompactionTime(now);
+  earliest_global_compaction_time_ = GenerateNextGlobalCompactionTime(now);
+  delegate().for_each_bucket_context.Run(base::BindRepeating(
+      &IndexedDBBucketContext::SetInternalState, earliest_global_sweep_time_,
+      earliest_global_compaction_time_));
   std::unique_ptr<LevelDBDirectTransaction> txn =
       transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
           backing_store_->db());
