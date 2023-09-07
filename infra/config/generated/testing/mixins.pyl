@@ -131,6 +131,14 @@
       ],
     },
   },
+  'android': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Android',
+        'cpu': None,
+      },
+    },
+  },
   'android_r': {
     'swarming': {
       'dimensions': {
@@ -176,6 +184,13 @@
     'swarming': {
       'dimensions': {
         'pool': 'chrome.tests.finch',
+      },
+    },
+  },
+  'chrome-intelligence-swarming-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chrome.tests.intelligence',
       },
     },
   },

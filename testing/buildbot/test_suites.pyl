@@ -4635,6 +4635,32 @@
       }
     },
 
+    'live_companion_tests': {
+      'live_companion_tests': {
+        'args': [
+          '--gtest_filter=CompanionLiveTest.*',
+          '--run-live-tests',
+          '--run-manual',
+          '--sync-status-change-checker-timeout=600',
+          # Timeout values below are in milliseconds.
+          '--test-tiny-timeout=85000',
+          '--ui-test-action-timeout=90000',
+          '--ui-test-action-max-timeout=95000',
+          '--test-launcher-timeout=100000',
+          '--isolated-script-test-launcher-retry-limit=5',
+        ],
+        'isolate_name': 'browser_tests',
+        'override_compile_targets': [
+          'browser_tests',
+        ],
+        'swarming': {
+          'expiration': 3600,
+          'hard_timeout': 3600,
+        },
+        'test': 'browser_tests',
+      },
+    },
+
     # TODO(crbug.com/1320449): Remove this set of test suites when LSan can be
     # enabled Mac ASan bots. This list will be gradually filled with more tests
     # until the bot has parity with ASan bots, and the ASan bot can then enable
@@ -4674,6 +4700,16 @@
     'minidump_uploader_tests': {
       'minidump_uploader_test': {
         'experiment_percentage': 100,
+      },
+    },
+
+    'model_validation_tests': {
+      'model_validation_tests': {
+        'isolate_name': 'model_validation_tests',
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
       },
     },
 
@@ -4866,6 +4902,32 @@
         },
         'test': 'content_browsertests',
       },
+    },
+
+    'optimization_guide_android_gtests': {
+      'optimization_guide_components_unittests': {
+        'args': [
+            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
+        ],
+        'test': 'components_unittests',
+      },
+      # TODO(mgeorgaklis): Add optimization_guide_unittests when they become Android compatible.
+    },
+
+    'optimization_guide_gtests': {
+      'optimization_guide_browser_tests': {
+        'args': [
+            '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
+        ],
+        'test': 'browser_tests',
+      },
+      'optimization_guide_components_unittests': {
+        'args': [
+            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
+        ],
+        'test': 'components_unittests',
+      },
+      'optimization_guide_unittests': {},
     },
 
     'perfetto_gtests': {
@@ -8087,6 +8149,36 @@
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
+    },
+
+    'model_validation_tests_linux': {
+      'model_validation_tests': {
+        'variants': [
+          'MODEL_VALIDATION_TRUNK',
+          'MODEL_VALIDATION_STABLE',
+          'MODEL_VALIDATION_BETA',
+          'MODEL_VALIDATION_DEV',
+        ],
+      },
+    },
+    'model_validation_tests_mac': {
+      'model_validation_tests': {
+        'variants': [
+          # TODO(mgeorgaklis): Add versioned variants when supported on mac x86.
+          'MODEL_VALIDATION_TRUNK',
+        ],
+      },
+    },
+    'model_validation_tests_win': {
+      'model_validation_tests': {
+        'variants': [
+          'MODEL_VALIDATION_TRUNK',
+          'MODEL_VALIDATION_STABLE',
+          'MODEL_VALIDATION_BETA',
+          'MODEL_VALIDATION_DEV',
+          'MODEL_VALIDATION_CANARY',
         ],
       },
     },
