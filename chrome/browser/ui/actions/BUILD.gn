@@ -13,6 +13,18 @@ source_set("actions_headers") {
   ]
 }
 
+source_set("actions") {
+  sources = [
+    "chrome_actions.cc",
+    "chrome_actions.h",
+  ]
+
+  deps = [
+    ":actions_headers",
+    "//ui/actions",
+  ]
+}
+
 if (!is_ios && !is_android) {
   executable("dump_actions") {
     testonly = true
