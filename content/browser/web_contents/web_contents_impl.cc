@@ -9893,6 +9893,11 @@ void WebContentsImpl::UpdateBrowserControlsState(
   GetPrimaryPage().UpdateBrowserControlsState(constraints, current, animate);
 }
 
+void WebContentsImpl::SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) {
+  GetPrimaryMainFrame()->GetAssociatedLocalMainFrame()->SetV8CompileHints(
+      std::move(data));
+}
+
 void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
                                             bool destination_is_loaded) {
   GetVisibleTimeRequestTrigger().UpdateRequest(

@@ -1381,6 +1381,11 @@ class WebContents : public PageNavigator,
                                           cc::BrowserControlsState current,
                                           bool animate) = 0;
 
+  // Transmits data to V8CrowdsourcedCompileHintsConsumer in the renderer. The
+  // data is a model describing which JavaScript functions on the page should be
+  // eagerly parsed & compiled by the JS engine.
+  virtual void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) = 0;
+
   // Sets the last time a tab switch made this WebContents visible.
   // `start_time` is the timestamp of the input event that triggered the tab
   // switch. `destination_is_loaded` is true when

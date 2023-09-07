@@ -8,6 +8,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -60,22 +61,6 @@ class MockLoadingDataCollector : public LoadingDataCollector {
 MockLoadingDataCollector::MockLoadingDataCollector(
     const LoadingPredictorConfig& config)
     : LoadingDataCollector(nullptr, nullptr, config) {}
-
-class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
- public:
-  explicit MockOptimizationGuideKeyedService(
-      content::BrowserContext* browser_context)
-      : OptimizationGuideKeyedService(browser_context) {}
-  ~MockOptimizationGuideKeyedService() override = default;
-
-  MOCK_METHOD1(
-      RegisterOptimizationTypes,
-      void(const std::vector<optimization_guide::proto::OptimizationType>&));
-  MOCK_METHOD3(CanApplyOptimization,
-               void(const GURL&,
-                    optimization_guide::proto::OptimizationType,
-                    optimization_guide::OptimizationGuideDecisionCallback));
-};
 
 class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:

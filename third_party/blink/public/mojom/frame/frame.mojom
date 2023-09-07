@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "cc/mojom/browser_controls_state.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/text_direction.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -1206,6 +1207,11 @@ interface LocalMainFrame {
   UpdateBrowserControlsState(cc.mojom.BrowserControlsState constraints,
                              cc.mojom.BrowserControlsState current,
                              bool animate);
+
+  // Transmits data to V8CrowdsourcedCompileHintsConsumer in the renderer. The
+  // data is a Bloom filter describing which JavaScript functions on the page
+  // should be eagerly parsed & compiled by the JS engine.
+  SetV8CompileHints(mojo_base.mojom.ReadOnlySharedMemoryRegion data);
 };
 
 // Implemented in Browser, this interface defines local-main-frame-specific

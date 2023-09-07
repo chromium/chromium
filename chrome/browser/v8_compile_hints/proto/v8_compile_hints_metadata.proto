@@ -1,0 +1,29 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.v8_compile_hints.proto";
+option java_outer_classname = "V8CompileHints";
+
+package v8_compile_hints.proto;
+
+import "components/optimization_guide/proto/common_types.proto";
+
+// Next id: 7
+message Model {
+  optional int64 version = 1;
+  optional int64 sample_count = 2;
+  // Number of bits for which we're relatively sure that their true value is
+  // zero or one, respectively.
+  optional int32 clear_zeros = 4;
+  optional int32 clear_ones = 5;
+  // The int64s are the raw data for the Bloom filter in
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/wtf/bloom_filter.h
+  // .
+  repeated int64 bloom_filter = 3 [packed = true];
+
+  optional optimization_guide.proto.Timestamp timestamp = 6;
+}

@@ -252,6 +252,8 @@ class LocalFrameMojoHandler
                                   cc::BrowserControlsState current,
                                   bool animate) override;
 
+  void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
+
   // mojom::blink::HighPriorityLocalFrame implementation:
   void DispatchBeforeUnload(
       bool is_reload,

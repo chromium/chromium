@@ -1320,6 +1320,12 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
                                                               current, animate);
 }
 
+void LocalFrameMojoHandler::SetV8CompileHints(
+    base::ReadOnlySharedMemoryRegion data) {
+  // TODO(chromium:1406506): Verify the memory region size.
+  // TODO(chromium:1406506): Transmit the compile hints further.
+}
+
 void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
     SnapshotDocumentForViewTransitionCallback callback) {
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
