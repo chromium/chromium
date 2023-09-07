@@ -961,7 +961,11 @@ void RenderFrameHostManager::PrepareForCollectingPage(
     if (group->IsRelatedSiteInstanceGroup(it.second->site_instance_group())) {
       DCHECK(base::Contains(*render_view_hosts,
                             it.second->GetRenderViewHost()->GetSafeRef()));
-      (*proxy_hosts)[it.first] = std::move(it.second);
+      auto pair = proxy_hosts->insert({it.first, std::move(it.second)});
+      bool insertion_took_place = pair.second;
+      // There should be only one proxy for any given SiteInstanceGroup, so this
+      // should never replace an existing element.
+      CHECK(insertion_took_place);
     }
   }
 

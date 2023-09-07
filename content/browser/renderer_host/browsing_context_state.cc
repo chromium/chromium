@@ -50,6 +50,17 @@ BrowsingContextState::BrowsingContextState(
 
 BrowsingContextState::~BrowsingContextState() {
   TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  // TODO(crbug.com/1470312): if there are any RFPHs remaining at this point,
+  // that's an error. Dump information about them to help debug. Remove this
+  // once the issue is resolved.
+  std::string siteinfo_crashkey_str;
+  for (auto& it : proxy_hosts_) {
+    siteinfo_crashkey_str +=
+        it.second->GetSiteInstanceDeprecated()->GetSiteInfo().GetDebugString() +
+        ";";
+  }
+  SCOPED_CRASH_KEY_STRING256("Bug1470312", "bcs_rfph_siteinfo",
+                             siteinfo_crashkey_str);
   CHECK(proxy_hosts_.empty());
 }
 
