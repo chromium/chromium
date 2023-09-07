@@ -538,14 +538,14 @@ protocol::Response InspectorAccessibilityAgent::getPartialAXTree(
     return response;
 
   Document& document = dom_node->GetDocument();
-  document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
-  DocumentLifecycle::DisallowTransitionScope disallow_transition(
-      document.Lifecycle());
   LocalFrame* local_frame = document.GetFrame();
   if (!local_frame)
     return protocol::Response::ServerError("Frame is detached.");
 
   auto& cache = AttachToAXObjectCache(&document);
+  cache.UpdateAXForAllDocuments();
+  DocumentLifecycle::DisallowTransitionScope disallow_transition(
+      document.Lifecycle());
 
   AXObject* inspected_ax_object = cache.GetOrCreate(dom_node);
   *nodes = std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
@@ -798,6 +798,7 @@ InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
 
   auto& cache = AttachToAXObjectCache(document);
+  cache.UpdateAXForAllDocuments();
 
   Deque<std::pair<AXID, int>> id_depths;
   id_depths.emplace_back(cache.Root()->AXObjectID(), 1);
@@ -839,10 +840,9 @@ protocol::Response InspectorAccessibilityAgent::getRootAXNode(
   Document* document = frame->GetDocument();
   if (!document)
     return protocol::Response::InternalError();
-  if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
-    document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
 
   auto& cache = AttachToAXObjectCache(document);
+  cache.UpdateAXForAllDocuments();
 
   auto& root = *cache.Root();
   *node = BuildProtocolAXNodeForAXObject(root);
@@ -869,14 +869,14 @@ protocol::Response InspectorAccessibilityAgent::getAXNodeAndAncestors(
     return response;
 
   Document& document = dom_node->GetDocument();
-  document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
-  DocumentLifecycle::DisallowTransitionScope disallow_transition(
-      document.Lifecycle());
   LocalFrame* local_frame = document.GetFrame();
   if (!local_frame)
     return protocol::Response::ServerError("Frame is detached.");
 
   auto& cache = AttachToAXObjectCache(&document);
+  cache.UpdateAXForAllDocuments();
+  DocumentLifecycle::DisallowTransitionScope disallow_transition(
+      document.Lifecycle());
 
   AXObject* ax_object = cache.GetOrCreate(dom_node);
 
@@ -921,10 +921,8 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
   if (!document)
     return protocol::Response::InternalError();
 
-  if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
-    document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
-
   auto& cache = AttachToAXObjectCache(document);
+  cache.UpdateAXForAllDocuments();
 
   AXID ax_id = in_id.ToInt();
   AXObject* ax_object = cache.ObjectFromAXID(ax_id);
@@ -1027,6 +1025,7 @@ void InspectorAccessibilityAgent::queryAXTree(
 
   Document& document = root_dom_node->GetDocument();
   auto& cache = AttachToAXObjectCache(&document);
+  cache.UpdateAXForAllDocuments();
 
   AXQuery query = {std::move(dom_node_id), std::move(backend_node_id),
                    std::move(object_id),   std::move(accessible_name),
@@ -1070,7 +1069,6 @@ void InspectorAccessibilityAgent::CompleteQuery(AXQuery& query) {
   document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
-
   auto& cache = AttachToAXObjectCache(&document);
 
   std::unique_ptr<protocol::Array<AXNode>> nodes =

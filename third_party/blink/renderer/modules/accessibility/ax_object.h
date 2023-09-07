@@ -1007,18 +1007,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // return nodes that are accessibility ignored.
   AXObject* DeepestLastChildIncludingIgnored() const;
 
-  // Returns true if this node is strictly an ancestor of the given node, i.e.
-  // doesn't include the current node in the list of its ancestors. Works for
-  // all nodes that are included in the accessibility tree, including nodes that
-  // are accessibility ignored.
-  bool IsAncestorOf(const AXObject&) const;
-
-  // Returns true if this node is strictly a descendant of the given node, i.e.
-  // doesn't include the current node in the list of its descendants. Works for
-  // all nodes that are included in the accessibility tree, including nodes that
-  // are accessibility ignored.
-  bool IsDescendantOf(const AXObject&) const;
-
   // Next sibling for this object, where the sibling may be
   // an accessibility ignored object.
   // Works for all nodes that are included in the accessibility tree,

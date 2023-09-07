@@ -480,7 +480,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     active_event_from_action_ = event_from_action;
   }
 
-  AXObject* GetActiveAriaModalDialog() const;
+  Element* GetActiveAriaModalDialog() const;
 
   static bool UseAXMenuList() { return use_ax_menu_list_; }
   static bool ShouldCreateAXMenuListFor(LayoutObject* layout_object);
@@ -842,7 +842,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // The currently active aria-modal dialog element, if one has been computed,
   // null if otherwise. This is only ever computed on platforms that have the
   // AriaModalPrunesAXTree setting enabled, such as Mac.
-  WeakMember<AXObject> active_aria_modal_dialog_;
+  WeakMember<Element> active_aria_modal_dialog_;
 
   // If non-null, this is the node that the current aria-activedescendant caused
   // to have the selected state.
@@ -967,7 +967,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // This will return null on platforms without the AriaModalPrunesAXTree
   // setting enabled, or where there is no active ancestral aria-modal dialog.
-  AXObject* AncestorAriaModalDialog(Node* node);
+  Element* AncestorAriaModalDialog(Node* node);
 
   // Ensure the update has not been destroyed (node or axid) and
   // that the document being processed is the one this update is associated
