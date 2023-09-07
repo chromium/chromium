@@ -1099,7 +1099,14 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EXPECT_FALSE(proto.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ReloadWillRefreshCompanion) {
+// TODO(crbug.com/1479808): Flaky on linux-chromeos-chrome.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ReloadWillRefreshCompanion DISABLED_ReloadWillRefreshCompanion
+#else
+#define MAYBE_ReloadWillRefreshCompanion ReloadWillRefreshCompanion
+#endif
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       MAYBE_ReloadWillRefreshCompanion) {
   EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
 
   // Load a page on the active tab and open companion side panel
