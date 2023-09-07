@@ -46,13 +46,16 @@ class EastAsianSpacing {
 
  private:
   enum class CharType {
-    Other,
-    Open,
-    Close,
-    Middle,
+    kOther,
+    kOpen,
+    kClose,
+    kMiddle,
   };
 
   static CharType GetCharType(UChar ch);
+
+  static bool ShouldKern(CharType type, CharType last_type);
+  static bool ShouldKernLast(CharType type, CharType last_type);
 
   static void ComputeKerning(const String& text,
                              wtf_size_t start,

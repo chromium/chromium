@@ -32,6 +32,8 @@ class PLATFORM_EXPORT FontFeatures {
 
   absl::optional<unsigned> FindValueForTesting(hb_tag_t tag) const;
 
+  void Reserve(wtf_size_t new_capacity) { features_.reserve(new_capacity); }
+
   void Append(const hb_feature_t& feature) { features_.push_back(feature); }
   void Insert(const hb_feature_t& feature) { features_.push_front(feature); }
 

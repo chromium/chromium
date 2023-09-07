@@ -1,5 +1,12 @@
 This is a testharness.js-based test.
+FAIL "国（（国" assert_equals: expected "FFHF" but got "FFFF"
+FAIL "国・（国" assert_equals: expected "FFHF" but got "FFFF"
+FAIL "国）（国" assert_equals: expected "FFHF" but got "FFFF"
+FAIL "国　（国" assert_equals: expected "FFHF" but got "FFFF"
 FAIL "国））国" assert_equals: expected "FHFF" but got "FFFF"
+FAIL "国）・国" assert_equals: expected "FHFF" but got "FFFF"
+FAIL "国）　国" assert_equals: expected "FHFF" but got "FFFF"
+FAIL "国（（（国" assert_equals: expected "FFHHF" but got "FFFFF"
 FAIL "国）））国" assert_equals: expected "FHHFF" but got "FFFFF"
 Harness: the test ran to completion.
 
