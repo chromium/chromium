@@ -16008,7 +16008,7 @@ be describing additional metrics about the same event.
   <metric name="HoursSincePopupOpened" enum="PopupProvider">
     <summary>
       The number of hours before the cookie access that the initial
-      OpenerHeuristic.TopLevel event was recorded. Bucketized evenly with 120
+      OpenerHeuristic.TopLevel event was recorded. Bucketized evenly with 50
       buckets up to 60 days.
     </summary>
   </metric>
@@ -21564,19 +21564,26 @@ be describing additional metrics about the same event.
       with a RedirectHeuristic.CookieAccessThirdParty event.
     </summary>
   </metric>
+  <metric name="DoesFirstPartyPrecedeThirdParty" enum="Boolean">
+    <summary>
+      Whether this top-level site appeared in the tab history (or current
+      navigation) directly before the third party. Used to check for an A-B-A
+      site flow that may narrow the heuristic.
+    </summary>
+  </metric>
   <metric name="HoursSinceLastInteraction">
     <summary>
       The number of hours before the cookie access that the user last interacted
-      with the tracking site. Bucketized evenly with 120 buckets up to 60 days.
-      Set to -1 if there has never been a user interaction from the tracking
-      site.
+      with the tracking site. Clamped to 60 days at most, and rounded down to
+      the nearest exponential bucket (out of 50 buckets). Set to -1 if there has
+      never been a user interaction from the tracking site.
     </summary>
   </metric>
   <metric name="MillisecondsSinceRedirect">
     <summary>
       The number of milliseconds between the redirect to the cookie access.
-      Clamped to three minutes at most, and rounded down to the nearest
-      exponential bucket (out of 50 buckets).
+      Clamped to 15 minutes at most, and rounded down to the nearest exponential
+      bucket (out of 50 buckets).
     </summary>
   </metric>
   <metric name="OpenerHasSameSiteIframe" enum="HasSameSiteIframe">

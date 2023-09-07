@@ -171,6 +171,12 @@ std::string GetSiteForDIPS(const GURL& url);
 // belongs to the same site as `url`.
 bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url);
 
+// Returns true iff `first_party_url` directly precedes the last occurrence of
+// `third_party_url` in the entire tab history of `web_contents`.
+bool DoesFirstPartyPrecedeThirdParty(content::WebContents* web_contents,
+                                     const GURL& first_party_url,
+                                     const GURL& third_party_url);
+
 // Returns `True` iff the `navigation_handle` represents a navigation happening
 // in an iframe of the primary frame tree.
 inline bool IsInPrimaryPageIFrame(

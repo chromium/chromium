@@ -214,9 +214,10 @@ void DIPSRedirectContext::ReportIssue(const GURL& final_url) {
 
 absl::optional<std::pair<size_t, DIPSRedirectInfo*>>
 DIPSRedirectContext::GetRedirectInfoFromChain(const std::string& site) const {
-  for (size_t ind = 0; ind < redirects_.size(); ind++) {
+  // Iterate in reverse order to obtain the most recent occurrence of the site.
+  for (int ind = redirects_.size() - 1; ind >= 0; ind--) {
     if (GetSiteForDIPS(redirects_.at(ind)->url) == site) {
-      return std::make_pair(ind, redirects_.at(ind).get());
+      return std::make_pair(static_cast<size_t>(ind), redirects_.at(ind).get());
     }
   }
   return absl::nullopt;
@@ -697,18 +698,6 @@ void DIPSWebContentsObserver::MaybeRecordRedirectHeuristic(
     return;
   }
 
-  auto first_party_site_info =
-      detector_.CommittedRedirectContext().GetRedirectInfoFromChain(
-          first_party_site);
-  size_t first_party_site_index;
-  if (first_party_site_info.has_value()) {
-    first_party_site_index = first_party_site_info->first;
-  } else {
-    // If the first-party site is not in the list of committed redirects, that
-    // must mean it's in an ongoing navigation.
-    first_party_site_index = detector_.CommittedRedirectContext().size();
-  }
-
   auto third_party_site_info =
       detector_.CommittedRedirectContext().GetRedirectInfoFromChain(
           third_party_site);
@@ -721,10 +710,18 @@ void DIPSWebContentsObserver::MaybeRecordRedirectHeuristic(
   ukm::SourceId third_party_source_id =
       third_party_site_info->second->source_id;
 
-  if (first_party_site_index < third_party_site_index) {
-    // The redirect heuristic doesn't apply if the third party appears after the
-    // first party in the current redirect chain.
-    return;
+  auto first_party_site_info =
+      detector_.CommittedRedirectContext().GetRedirectInfoFromChain(
+          first_party_site);
+  size_t first_party_site_index;
+  if (!first_party_site_info.has_value() ||
+      first_party_site_info->first < third_party_site_index) {
+    // If the first-party site does not appear in the list of committed
+    // redirects after the third-party site, that must mean it's in an ongoing
+    // navigation.
+    first_party_site_index = detector_.CommittedRedirectContext().size();
+  } else {
+    first_party_site_index = first_party_site_info->first;
   }
   const size_t sites_passed_count =
       first_party_site_index - third_party_site_index;
@@ -748,7 +745,7 @@ void DIPSWebContentsObserver::RecordRedirectHeuristic(
   DCHECK(last_commit_timestamp_.has_value());
   int milliseconds_since_redirect = Bucketize3PCDHeuristicTimeDelta(
       detector_.GetClock()->Now() - last_commit_timestamp_.value(),
-      base::Days(30), base::BindRepeating(&base::TimeDelta::InMilliseconds));
+      base::Minutes(15), base::BindRepeating(&base::TimeDelta::InMilliseconds));
 
   int hours_since_last_interaction = -1;
   if (last_user_interaction_time.has_value()) {
@@ -762,6 +759,10 @@ void DIPSWebContentsObserver::RecordRedirectHeuristic(
   OptionalBool has_same_site_iframe = ToOptionalBool(
       HasSameSiteIframe(WebContentsObserver::web_contents(), details.url));
 
+  const bool first_party_precedes_third_party =
+      DoesFirstPartyPrecedeThirdParty(WebContentsObserver::web_contents(),
+                                      details.first_party_url, details.url);
+
   int32_t access_id = base::RandUint64();
 
   ukm::builders::RedirectHeuristic_CookieAccess(first_party_source_id)
@@ -771,6 +772,7 @@ void DIPSWebContentsObserver::RecordRedirectHeuristic(
       .SetMillisecondsSinceRedirect(milliseconds_since_redirect)
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_same_site_iframe))
       .SetSitesPassedCount(sites_passed_count)
+      .SetDoesFirstPartyPrecedeThirdParty(first_party_precedes_third_party)
       .Record(ukm::UkmRecorder::Get());
 
   ukm::builders::RedirectHeuristic_CookieAccessThirdParty(third_party_source_id)

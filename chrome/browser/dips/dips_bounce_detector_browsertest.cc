@@ -1689,6 +1689,9 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Visit initial page.
   ASSERT_TRUE(content::NavigateToURL(web_contents, initial_final_url));
+  // Redirect to one of the target URLs, to set DoesFirstPartyPrecedeThirdParty.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, target_url_3pc_blocked));
   // Redirect to all tracking URLs.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, tracker_url_in_iframe));
@@ -1722,7 +1725,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
           "RedirectHeuristic.CookieAccess",
           {"AccessId", "AccessAllowed", "HoursSinceLastInteraction",
            "MillisecondsSinceRedirect", "OpenerHasSameSiteIframe",
-           "SitesPassedCount"});
+           "SitesPassedCount", "DoesFirstPartyPrecedeThirdParty"});
 
   // Expect UKM entries from both of the cookie accesses, as well as the iframe
   // navigation.
@@ -1747,6 +1750,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   EXPECT_EQ(ukm_entries[0].metrics.at("OpenerHasSameSiteIframe"),
             static_cast<int32_t>(OptionalBool::kFalse));
   EXPECT_EQ(ukm_entries[0].metrics.at("SitesPassedCount"), 1);
+  EXPECT_EQ(ukm_entries[0].metrics.at("DoesFirstPartyPrecedeThirdParty"),
+            false);
 
   // The second cookie access was due to the iframe navigation from
   // target_url_3pc_blocked to tracker_url_in_iframe.
@@ -1770,6 +1775,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   EXPECT_EQ(ukm_entries[2].metrics.at("OpenerHasSameSiteIframe"),
             static_cast<int32_t>(OptionalBool::kTrue));
   EXPECT_EQ(ukm_entries[2].metrics.at("SitesPassedCount"), 3);
+  EXPECT_EQ(ukm_entries[2].metrics.at("DoesFirstPartyPrecedeThirdParty"), true);
 
   // Verify there are three corresponding CookieAccessThirdParty entries with
   // matching access IDs.

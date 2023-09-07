@@ -8,6 +8,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/browser_with_test_window_test.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 using ::testing::Eq;
 using ::testing::Pair;
 
@@ -115,3 +119,75 @@ TEST(BucketizeBounceDelayTest, BucketizeBounceDelay) {
   EXPECT_EQ(10, BucketizeBounceDelay(base::Milliseconds(10001)));
   EXPECT_EQ(10, BucketizeBounceDelay(base::Days(1)));
 }
+
+// BrowserWithTestWindowTest is not available on Android.
+#if !BUILDFLAG(IS_ANDROID)
+class DoesFirstPartyPrecedeThirdPartyTest : public BrowserWithTestWindowTest {
+ public:
+  DoesFirstPartyPrecedeThirdPartyTest()
+      : first_party_url_("http://first_party.com"),
+        third_party_url_("http://third_party.com"),
+        other_url_("http://other.com") {}
+
+ protected:
+  GURL first_party_url_;
+  GURL third_party_url_;
+  GURL other_url_;
+};
+
+TEST_F(DoesFirstPartyPrecedeThirdPartyTest,
+       FirstPartyBeforeThirdParty_ReturnsTrue) {
+  AddTab(browser(), first_party_url_);
+  NavigateAndCommitActiveTab(third_party_url_);
+
+  EXPECT_TRUE(DoesFirstPartyPrecedeThirdParty(
+      browser()->tab_strip_model()->GetWebContentsAt(0), first_party_url_,
+      third_party_url_));
+}
+
+TEST_F(DoesFirstPartyPrecedeThirdPartyTest, MultipleThirdParties_ReturnsTrue) {
+  AddTab(browser(), third_party_url_);
+  NavigateAndCommitActiveTab(other_url_);
+  NavigateAndCommitActiveTab(first_party_url_);
+  NavigateAndCommitActiveTab(third_party_url_);
+  NavigateAndCommitActiveTab(third_party_url_);
+
+  EXPECT_TRUE(DoesFirstPartyPrecedeThirdParty(
+      browser()->tab_strip_model()->GetWebContentsAt(0), first_party_url_,
+      third_party_url_));
+}
+
+TEST_F(DoesFirstPartyPrecedeThirdPartyTest, NoThirdParty_ReturnsFalse) {
+  AddTab(browser(), first_party_url_);
+  NavigateAndCommitActiveTab(other_url_);
+
+  EXPECT_FALSE(DoesFirstPartyPrecedeThirdParty(
+      browser()->tab_strip_model()->GetWebContentsAt(0), first_party_url_,
+      third_party_url_));
+}
+
+TEST_F(DoesFirstPartyPrecedeThirdPartyTest,
+       NothingBeforeThirdParty_ReturnsFalse) {
+  AddTab(browser(), third_party_url_);
+
+  EXPECT_FALSE(DoesFirstPartyPrecedeThirdParty(
+      browser()->tab_strip_model()->GetWebContentsAt(0), first_party_url_,
+      third_party_url_));
+}
+
+TEST_F(DoesFirstPartyPrecedeThirdPartyTest,
+       DifferentSiteBeforeThirdParty_ReturnsFalse) {
+  AddTab(browser(), first_party_url_);
+  NavigateAndCommitActiveTab(other_url_);
+  NavigateAndCommitActiveTab(third_party_url_);
+
+  EXPECT_FALSE(DoesFirstPartyPrecedeThirdParty(
+      browser()->tab_strip_model()->GetWebContentsAt(0), first_party_url_,
+      third_party_url_));
+}
+
+TEST_F(DoesFirstPartyPrecedeThirdPartyTest, EmptyWebContents_ReturnsFalse) {
+  EXPECT_FALSE(DoesFirstPartyPrecedeThirdParty(nullptr, first_party_url_,
+                                               third_party_url_));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
