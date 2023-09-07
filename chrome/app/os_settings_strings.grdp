@@ -1129,7 +1129,7 @@
   <message name="IDS_SETTINGS_ONE_DRIVE_SIGNED_IN_AS" desc="Label indicating, in the Files Settings subpage, the email address with which the user is currently signed in in OneDrive">
     Signed in as <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECTED" desc="Label indicating, in the Files Settings subpage, that the user is currently not signed in in OneDrive">
+  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECTED" desc="Label prompting, in the Files Settings subpage, the user to add a new account for OneDrive">
     Add your Microsoft account
   </message>
   <message name="IDS_SETTINGS_ONE_DRIVE_CONNECT" desc="Action to connect OneDrive in Settings: Files: OneDrive.">
@@ -1150,10 +1150,10 @@
   <message name="IDS_SETTINGS_OFFICE_SUBPAGE_TITLE" desc="Title of the Microsoft 365 subpage.">
     Microsoft 365 files
   </message>
-  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL" desc="Label for the preference that allows users to always move files to Drive without asking for confirmation.">
+  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL" desc="Label for the preference that allows users to always copy/move files to Drive without asking for confirmation.">
     Ask before copying or moving Microsoft files to Google Drive
   </message>
-  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL" desc="Label for the preference that allows users to always move files to OneDrive without asking for confirmation.">
+  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL" desc="Label for the preference that allows users to always copy/move files to OneDrive without asking for confirmation.">
     Ask before copying or moving Microsoft files to Microsoft OneDrive
   </message>
 
