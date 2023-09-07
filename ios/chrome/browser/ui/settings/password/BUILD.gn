@@ -225,6 +225,25 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("eg_test_support") {
+  testonly = true
+  sources = [
+    "password_manager_egtest_utils.h",
+    "password_manager_egtest_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/settings:settings_root_constants",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+}
+
 source_set("eg_app_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -273,16 +292,13 @@ source_set("eg_test_support+eg2") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [
-    "password_manager_egtest.mm",
-    "password_manager_egtest_utils.h",
-    "password_manager_egtest_utils.mm",
-  ]
+  sources = [ "password_manager_egtest.mm" ]
   deps = [
+    ":eg_test_support",
     ":eg_test_support+eg2",
     ":features",
     ":password_constants",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
