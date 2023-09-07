@@ -3159,7 +3159,9 @@ chromium-metrics-reviews@google.com.
   <owner>mamir@chromium.org</owner>
   <summary>
     Why was the save password UI (bubble or infobar) closed? Recorded for
-    {UserSyncingType}
+    {UserSyncingType}. Note that on Automotive, closing the save password UI
+    might not result in the password being saved in some cases (e.g. when the
+    activity is destroyed or the device lock can't be set).
   </summary>
   <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
@@ -3188,7 +3190,9 @@ chromium-metrics-reviews@google.com.
     to save/update the password in the edit dialog (which can be navigated from
     the message), to cancel in the dialog, tell to never save password for the
     site. Records the user action when the message is dismissed as well as when
-    the dialog opened from the message is dismissed.
+    the dialog opened from the message is dismissed. Note that on Automotive,
+    clicking save/update might not result in the password being saved in some
+    cases (e.g. when the activity is destroyed or the device lock can't be set).
   </summary>
   <token key="Dialog">
     <variant name="" summary="Aggregated across all breakdowns"/>

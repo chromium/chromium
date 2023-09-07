@@ -35,6 +35,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/web_contents_tester.h"
+#include "device_lock_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -80,6 +81,49 @@ constexpr char kConfirmUsernameMessageDismissalReason[] =
 
 }  // namespace
 
+namespace {
+class TestDeviceLockBridge : public DeviceLockBridge {
+ public:
+  TestDeviceLockBridge() = default;
+
+  TestDeviceLockBridge(const TestDeviceLockBridge&) = delete;
+  TestDeviceLockBridge& operator=(const TestDeviceLockBridge&) = delete;
+
+  bool ShowDeviceLockUiBeforeSavingPassword() override {
+    return show_device_lock_ui_before_saving_password_;
+  }
+
+  bool RequiresDeviceLock() override { return requires_device_lock_; }
+
+  void LaunchDeviceLockUiBeforeSavingPassword(
+      ui::WindowAndroid* window_android,
+      DeviceLockConfirmedCallback callback) override {
+    callback_ = std::move(callback);
+    device_lock_ui_shown_count_++;
+  }
+
+  void SimulateDeviceLockComplete(bool is_device_lock_set) {
+    std::move(callback_).Run(is_device_lock_set);
+  }
+
+  void SetShowDeviceLockUiBeforeSavingPassword(
+      bool show_device_lock_ui_before_saving_password) {
+    requires_device_lock_ = show_device_lock_ui_before_saving_password;
+    show_device_lock_ui_before_saving_password_ =
+        show_device_lock_ui_before_saving_password;
+  }
+
+  int device_lock_ui_shown_count() { return device_lock_ui_shown_count_; }
+
+ private:
+  bool requires_device_lock_ = false;
+  bool show_device_lock_ui_before_saving_password_ = false;
+  int device_lock_ui_shown_count_ = 0;
+  DeviceLockConfirmedCallback callback_;
+};
+
+}  // namespace
+
 class MockPasswordEditDialog : public PasswordEditDialog {
  public:
   MOCK_METHOD(void,
@@ -110,6 +154,7 @@ class SaveUpdatePasswordMessageDelegateTest
   std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManager(
       const GURL& password_form_url,
       const std::vector<const PasswordForm*>* best_matches);
+  void RecordPasswordSaved();
   void SetPendingCredentials(std::u16string username, std::u16string password);
   static PasswordForm CreatePasswordForm(std::u16string username,
                                          std::u16string password);
@@ -119,12 +164,16 @@ class SaveUpdatePasswordMessageDelegateTest
                       bool update_password,
                       absl::optional<AccountInfo> account_info = {});
   void TriggerActionClick();
+  void TriggerActionClick(messages::DismissReason dismiss_reason);
   void TriggerPasswordEditDialog(bool update_password);
   void TriggerNeverSaveMenuItem();
 
   void ExpectDismissMessageCall();
   void DismissMessage(messages::DismissReason dismiss_reason);
   void DestroyDelegate();
+
+  TestDeviceLockBridge* test_bridge();
+  bool is_password_saved();
 
   messages::MessageWrapper* GetMessageWrapper();
 
@@ -185,7 +234,6 @@ class SaveUpdatePasswordMessageDelegateTest
       &kPasswordForm1, &kPasswordForm2};
 
   PasswordForm pending_credentials_;
-  std::unique_ptr<SaveUpdatePasswordMessageDelegate> delegate_;
   GURL password_form_url_;
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
   ukm::SourceId ukm_source_id_;
@@ -200,6 +248,9 @@ class SaveUpdatePasswordMessageDelegateTest
       Profile*,
       password_manager::metrics_util::PasswordMigrationWarningTriggers)>>
       mock_password_migration_warning_callback_;
+  raw_ptr<TestDeviceLockBridge> test_bridge_;
+  std::unique_ptr<SaveUpdatePasswordMessageDelegate> delegate_;
+  bool is_password_saved_ = false;
 };
 
 SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest() =
@@ -214,12 +265,14 @@ void SaveUpdatePasswordMessageDelegateTest::SetUp() {
       true /*is_main_frame_secure*/, ukm_source_id_, nullptr /*pref_service*/);
   NavigateAndCommit(GURL(kDefaultUrl));
 
-  // Using `new` and `WrapUnique` to access a non-public constructor.
-  delegate_ = base::WrapUnique(new SaveUpdatePasswordMessageDelegate(
+  auto bridge = std::make_unique<TestDeviceLockBridge>();
+  test_bridge_ = bridge.get();
+  delegate_ = std::make_unique<SaveUpdatePasswordMessageDelegate>(
+      base::PassKey<class SaveUpdatePasswordMessageDelegateTest>(),
       base::BindRepeating(
           &SaveUpdatePasswordMessageDelegateTest::CreatePasswordEditDialog,
           base::Unretained(this)),
-      mock_password_migration_warning_callback_.Get()));
+      mock_password_migration_warning_callback_.Get(), std::move(bridge));
 
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
@@ -247,10 +300,16 @@ SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
       .WillByDefault(ReturnRef(*best_matches));
   ON_CALL(*form_manager, GetFederatedMatches())
       .WillByDefault(Return(std::vector<const PasswordForm*>{}));
-
   ON_CALL(*form_manager, GetMetricsRecorder())
       .WillByDefault(Return(metrics_recorder_.get()));
+  ON_CALL(*form_manager, Save())
+      .WillByDefault(testing::Invoke(
+          this, &SaveUpdatePasswordMessageDelegateTest::RecordPasswordSaved));
   return form_manager;
+}
+
+void SaveUpdatePasswordMessageDelegateTest::RecordPasswordSaved() {
+  is_password_saved_ = true;
 }
 
 void SaveUpdatePasswordMessageDelegateTest::SetPendingCredentials(
@@ -286,9 +345,14 @@ void SaveUpdatePasswordMessageDelegateTest::EnqueueMessage(
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerActionClick() {
+  TriggerActionClick(messages::DismissReason::PRIMARY_ACTION);
+}
+
+void SaveUpdatePasswordMessageDelegateTest::TriggerActionClick(
+    messages::DismissReason dismiss_reason) {
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
   // Simulate call from Java to dismiss message on primary button click.
-  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
+  DismissMessage(dismiss_reason);
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerPasswordEditDialog(
@@ -333,6 +397,14 @@ void SaveUpdatePasswordMessageDelegateTest::DismissMessage(
 
 void SaveUpdatePasswordMessageDelegateTest::DestroyDelegate() {
   delegate_.reset();
+}
+
+TestDeviceLockBridge* SaveUpdatePasswordMessageDelegateTest::test_bridge() {
+  return test_bridge_;
+}
+
+bool SaveUpdatePasswordMessageDelegateTest::is_password_saved() {
+  return is_password_saved_;
 }
 
 messages::MessageWrapper*
@@ -1168,6 +1240,116 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       SaveUpdatePasswordMessageDelegate::
           SaveUpdatePasswordMessageDismissReason::kCancelInDialog,
       1);
+}
+
+// Tests that password is saved if device lock UI is shown and device lock is
+// set during a save password flow.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SavePassword_DeviceLockUiShown_DeviceLockSet) {
+  // Create a scoped window so that WebContents::GetNativeView::GetWindowAndroid
+  // does not return null.
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window.get()->get()->AddChild(web_contents()->GetNativeView());
+
+  test_bridge()->SetShowDeviceLockUiBeforeSavingPassword(true);
+
+  // Launch save password UI and click the save button.
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  TriggerActionClick();
+
+  // Verify that device lock UI is shown but password is not saved yet.
+  EXPECT_EQ(1, test_bridge()->device_lock_ui_shown_count());
+  EXPECT_EQ(false, is_password_saved());
+
+  // Verify that password is saved after receiving the callback that device lock
+  // was set.
+  test_bridge()->SimulateDeviceLockComplete(true);
+  EXPECT_EQ(true, is_password_saved());
+}
+
+// Tests that password is updated if device lock UI is shown and device lock is
+// set during an update password flow.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       UpdatePassword_DeviceLockUiShown_DeviceLockSet) {
+  // Create a scoped window so that WebContents::GetNativeView::GetWindowAndroid
+  // does not return null.
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window.get()->get()->AddChild(web_contents()->GetNativeView());
+
+  test_bridge()->SetShowDeviceLockUiBeforeSavingPassword(true);
+
+  // Launch save password UI and click the save button.
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/true);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  TriggerActionClick();
+
+  // Verify that device lock UI is shown but password is not saved yet.
+  EXPECT_EQ(1, test_bridge()->device_lock_ui_shown_count());
+  EXPECT_EQ(false, is_password_saved());
+
+  // Verify that password is updated after receiving the callback that device
+  // lock was set.
+  test_bridge()->SimulateDeviceLockComplete(true);
+  EXPECT_EQ(true, is_password_saved());
+}
+
+// Tests that password is not saved if device lock UI is shown but device lock
+// is not set during a save password flow.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SavePassword_DeviceLockUiShown_DeviceLockNotSet) {
+  // Create a scoped window so that WebContents::GetNativeView::GetWindowAndroid
+  // does not return null.
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window.get()->get()->AddChild(web_contents()->GetNativeView());
+
+  test_bridge()->SetShowDeviceLockUiBeforeSavingPassword(true);
+
+  // Launch save password UI and click the save button.
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save()).Times(0);
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  TriggerActionClick();
+
+  // Verify that device lock UI is shown.
+  EXPECT_EQ(1, test_bridge()->device_lock_ui_shown_count());
+
+  // Verify that password is not saved after device lock was not set.
+  test_bridge()->SimulateDeviceLockComplete(false);
+}
+
+// Tests that password is not saved if device lock UI needs to be shown but is
+// not.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SavePassword_DeviceLockUiNotShown) {
+  test_bridge()->SetShowDeviceLockUiBeforeSavingPassword(true);
+
+  // Launch save password UI and click the save button.
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save()).Times(0);
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  TriggerActionClick(messages::DismissReason::UNKNOWN);
+
+  // Verify that device lock UI is not shown if window android is null, and
+  // password is not saved.
+  EXPECT_EQ(0, test_bridge()->device_lock_ui_shown_count());
 }
 
 // Tests parameterized with different feature states

@@ -542,6 +542,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/device_dialog/UsbChooserDialog.java",
   "java/src/org/chromium/chrome/browser/device_lock/DeviceLockActivity.java",
   "java/src/org/chromium/chrome/browser/device_lock/DeviceLockActivityLauncherImpl.java",
+  "java/src/org/chromium/chrome/browser/device_lock/DeviceLockBridge.java",
   "java/src/org/chromium/chrome/browser/directactions/ChromeDirectActionIds.java",
   "java/src/org/chromium/chrome/browser/directactions/CloseTabDirectActionHandler.java",
   "java/src/org/chromium/chrome/browser/directactions/DirectActionCoordinator.java",

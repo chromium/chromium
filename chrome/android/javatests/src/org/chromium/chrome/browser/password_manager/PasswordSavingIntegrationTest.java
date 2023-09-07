@@ -25,6 +25,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -43,6 +44,7 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
 
@@ -118,6 +120,8 @@ public class PasswordSavingIntegrationTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    // TODO(crbug/1475346): Add integration tests for automotive save password flow.
     public void testSavingNewPassword() throws InterruptedException, TimeoutException {
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(SIGNIN_FORM_URL));
 
@@ -143,6 +147,8 @@ public class PasswordSavingIntegrationTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    // TODO(crbug/1475346): Add integration tests for automotive update password flow.
     @DisabledTest(message = "https://crbug.com/1468903")
     public void testUpdatingPassword() throws InterruptedException, TimeoutException {
         // Store the test credential.

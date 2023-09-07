@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 #include <utility>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -28,6 +29,8 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "save_update_password_message_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -114,7 +117,22 @@ SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
         create_migration_warning_callback)
     : password_edit_dialog_factory_(std::move(password_edit_dialog_factory)),
       create_migration_warning_callback_(
-          std::move(create_migration_warning_callback)) {}
+          std::move(create_migration_warning_callback)),
+      device_lock_bridge_(std::make_unique<DeviceLockBridge>()) {}
+
+SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
+    base::PassKey<class SaveUpdatePasswordMessageDelegateTest>,
+    PasswordEditDialogFactory password_edit_dialog_factory,
+    base::RepeatingCallback<
+        void(gfx::NativeWindow,
+             Profile*,
+             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
+        create_migration_warning_callback,
+    std::unique_ptr<DeviceLockBridge> device_lock_bridge)
+    : SaveUpdatePasswordMessageDelegate(password_edit_dialog_factory,
+                                        create_migration_warning_callback) {
+  device_lock_bridge_ = std::move(device_lock_bridge);
+}
 
 SaveUpdatePasswordMessageDelegate::~SaveUpdatePasswordMessageDelegate() {
   DCHECK(web_contents_ == nullptr);
@@ -353,7 +371,32 @@ unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
-  passwords_state_.form_manager()->Save();
+  SavePassword();
+}
+
+void SaveUpdatePasswordMessageDelegate::SavePassword() {
+  if (!device_lock_bridge_->ShowDeviceLockUiBeforeSavingPassword()) {
+    passwords_state_.form_manager()->Save();
+    return;
+  }
+  if (auto* window = web_contents_->GetNativeView()->GetWindowAndroid()) {
+    device_lock_bridge_->LaunchDeviceLockUiBeforeSavingPassword(
+        window,
+        base::BindOnce(
+            &SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
+    bool is_device_lock_set) {
+  CHECK(device_lock_bridge_->RequiresDeviceLock());
+  if (is_device_lock_set) {
+    passwords_state_.form_manager()->Save();
+    TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
+                                      web_contents_);
+  }
+  ClearState();
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked() {
@@ -366,7 +409,7 @@ void SaveUpdatePasswordMessageDelegate::HandleUpdateButtonClicked() {
   if (HasMultipleCredentialsStored()) {
     DisplayEditDialog(/*update_password=*/true);
   } else {
-    passwords_state_.form_manager()->Save();
+    SavePassword();
   }
 }
 
@@ -413,11 +456,17 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
         GetSaveUpdatePasswordMessageDismissReason(dismiss_reason));
   }
 
-  if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION) {
-    TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
-                                      web_contents_);
+  // If Device Lock UI needs to be shown and can be (i.e. WindowAndroid is
+  // available), these lines are handled in the SavePasswordAfterDeviceLockUi()
+  // callback.
+  if (!(device_lock_bridge_->ShowDeviceLockUiBeforeSavingPassword() &&
+        web_contents_->GetNativeView()->GetWindowAndroid())) {
+    if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION) {
+      TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
+                                        web_contents_);
+    }
+    ClearState();
   }
-  ClearState();
 }
 
 bool SaveUpdatePasswordMessageDelegate::HasMultipleCredentialsStored() {
@@ -456,11 +505,17 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
         GetPasswordEditDialogDismissReason(dialog_accepted));
   }
 
-  TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
-                                    web_contents_);
-
   password_edit_dialog_.reset();
-  ClearState();
+
+  // If Device Lock UI needs to be shown and can be (i.e. WindowAndroid is
+  // available), these lines are handled in the SavePasswordAfterDeviceLockUi()
+  // callback.
+  if (!(device_lock_bridge_->ShowDeviceLockUiBeforeSavingPassword() &&
+        web_contents_->GetNativeView()->GetWindowAndroid())) {
+    TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
+                                      web_contents_);
+    ClearState();
+  }
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
@@ -468,7 +523,7 @@ void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
     const std::u16string& password) {
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_state_.form_manager());
-  passwords_state_.form_manager()->Save();
+  SavePassword();
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromLegacyDialog(
@@ -477,7 +532,7 @@ void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromLegacyDialog(
       passwords_state_.GetCurrentForms()[username_index]->username_value,
       passwords_state_.form_manager()->GetPendingCredentials().password_value,
       passwords_state_.form_manager());
-  passwords_state_.form_manager()->Save();
+  SavePassword();
 }
 
 void SaveUpdatePasswordMessageDelegate::ClearState() {
