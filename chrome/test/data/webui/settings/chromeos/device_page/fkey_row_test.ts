@@ -6,8 +6,10 @@ import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {fakeKeyboards, Fkey, FkeyRowElement, Keyboard, Router, routes, SettingsDropdownMenuElement, TopRowActionKey} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+const builtInKeyboard = fakeKeyboards[1];
 
 suite('<fkey-row>', () => {
   let fkeyRow: FkeyRowElement;
@@ -37,18 +39,14 @@ suite('<fkey-row>', () => {
     return flushTasks();
   }
 
-  async function initializeFkeyRow() {
+  async function initializeFkeyRow(keyboard = builtInKeyboard) {
     fkeyRow = document.createElement(FkeyRowElement.is);
     fkeyRow.key = Fkey.F11;
-    // Use fakeKeyboards[1] since it represents a Built-in keyboard.
-    fkeyRow.keyboard = fakeKeyboards[1] as Keyboard;
+    fkeyRow.keyboard = keyboard as Keyboard;
     // Set the current route with keyboardId as search param and notify
     // the observer to update keyboard settings.
-    const url = new URLSearchParams(
-        'keyboardId=' + encodeURIComponent(fakeKeyboards[1]!.id));
-    await Router.getInstance().setCurrentRoute(
-        routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
-        /* dynamicParams= */ url, /* removeSearch= */ true);
+    Router.getInstance().setCurrentRoute(
+        routes.PER_DEVICE_KEYBOARD_REMAP_KEYS, new URLSearchParams(), false);
     document.body.appendChild(fkeyRow);
     return flushTasks();
   }
@@ -57,6 +55,16 @@ suite('<fkey-row>', () => {
     const dropdown = fkeyRow.shadowRoot!.querySelector('#keyDropdown');
     assert(dropdown);
     return dropdown as SettingsDropdownMenuElement;
+  }
+
+  function getShortcutNames(): string[] {
+    // menuOptions.splice(1) is used to remove the "Disabled"
+    // dropdown option.
+    return getDropdownMenuElement().menuOptions.splice(1).map(m => m.name);
+  }
+
+  function shortcutIncludesSearchKey(name: string): boolean {
+    return name.includes('search') || name.includes('launcher');
   }
 
   test('top row keys mapped to correct label', async () => {
@@ -93,11 +101,22 @@ suite('<fkey-row>', () => {
       async () => {
         await initializeFkeyRow();
         const keyLabel = fkeyRow.getTopRowKeyLabel();
-        // menuOptions.splice(1) is used to remove the "Disabled"
-        // dropdown option.
-        const shortcutNames: string[] =
-            getDropdownMenuElement().menuOptions.splice(1).map(m => m.name);
-        assertTrue(
-            shortcutNames.every((name: string) => name.includes(keyLabel)));
+        assertTrue(getShortcutNames().every(
+            (name: string) => name.includes(keyLabel)));
       });
+
+  test('fkey shortcut options respect topRowAreFkeys setting', async () => {
+    await initializeFkeyRow();
+    assertFalse(getShortcutNames().every(shortcutIncludesSearchKey));
+    const keyboard = fkeyRow.get('keyboard');
+    const kb = {
+      ...keyboard,
+      settings: {
+        ...keyboard.settings,
+        topRowAreFkeys: false,
+      },
+    };
+    await initializeFkeyRow(kb);
+    assertTrue(getShortcutNames().every(shortcutIncludesSearchKey));
+  });
 });

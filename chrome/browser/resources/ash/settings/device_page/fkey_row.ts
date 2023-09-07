@@ -146,18 +146,21 @@ export class FkeyRowElement extends FkeyRowElementBase {
 
   private getFkeyShortcutOptions(): DropdownMenuOptionList {
     const topRowKeyLabel = this.getTopRowKeyLabel();
+    const messageIdSuffix =
+        this.keyboard.settings.topRowAreFkeys ? '' : 'Search';
     return [
       {
         value: ExtendedFkeysModifier.SHIFT,
-        name: this.i18n('fKeyShiftOptionSearch', topRowKeyLabel),
+        name: this.i18n(`fKeyShiftOption${messageIdSuffix}`, topRowKeyLabel),
       },
       {
         value: ExtendedFkeysModifier.CTRL_SHIFT,
-        name: this.i18n('fKeyCtrlShiftOptionSearch', topRowKeyLabel),
+        name:
+            this.i18n(`fKeyCtrlShiftOption${messageIdSuffix}`, topRowKeyLabel),
       },
       {
         value: ExtendedFkeysModifier.ALT,
-        name: this.i18n('fKeyAltOptionSearch', topRowKeyLabel),
+        name: this.i18n(`fKeyAltOption${messageIdSuffix}`, topRowKeyLabel),
       },
     ];
   }

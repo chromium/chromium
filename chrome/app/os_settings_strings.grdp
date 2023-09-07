@@ -3333,6 +3333,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_LAUNCHER" translateable="false" desc="">
     launcher + ctrl + shift + <ph name="TOP_ROW_KEY">$1<ex>refresh</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION" translateable="false" desc="">
+    shift + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION" translateable="false" desc="">
+    alt + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION" translateable="false" desc="">
+    ctrl + shift + <ph name="TOP_ROW_KEY">$1<ex>refresh</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_BACK" translateable="false" desc="Describes the Back key on the top row of a ChromeOS keyboard.">
     back
   </message>
