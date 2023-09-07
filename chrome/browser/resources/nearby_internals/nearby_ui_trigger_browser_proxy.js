@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NearbyShareStates, StatusCode} from './types.js';
 
 /**
@@ -168,6 +167,12 @@ export class NearbyUiTriggerBrowserProxy {
   notifyFastPairAssociateAccount() {
     chrome.send('notifyFastPairAssociateAccount');
   }
+
+  /** @return {!NearbyUiTriggerBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new NearbyUiTriggerBrowserProxy());
+  }
 }
 
-addSingletonGetter(NearbyUiTriggerBrowserProxy);
+/** @type {?NearbyUiTriggerBrowserProxy} */
+let instance = null;

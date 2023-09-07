@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {LogMessage} from './types.js';
 
@@ -25,6 +24,12 @@ export class NearbyLogsBrowserProxy {
   getQuickPairLogMessages() {
     return sendWithPromise('getQuickPairLogMessages');
   }
+
+  /** @return {!NearbyLogsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new NearbyLogsBrowserProxy());
+  }
 }
 
-addSingletonGetter(NearbyLogsBrowserProxy);
+/** @type {?NearbyLogsBrowserProxy} */
+let instance = null;

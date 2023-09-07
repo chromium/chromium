@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
-
-import {NearbyShareStates, StatusCode} from './types.js';
-
 export class NearbyPresenceBrowserProxy {
   /**
    * Initializes web contents in the WebUI handler.
@@ -48,6 +43,12 @@ export class NearbyPresenceBrowserProxy {
   ConnectToPresenceDevice(endpointId) {
     chrome.send('ConnectToPresenceDevice', [endpointId]);
   }
+
+  /** @return {!NearbyPresenceBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new NearbyPresenceBrowserProxy());
+  }
 }
 
-addSingletonGetter(NearbyPresenceBrowserProxy);
+/** @type {?NearbyPresenceBrowserProxy} */
+let instance = null;

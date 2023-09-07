@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
-import {HttpMessage} from './types.js';
-
 /**
  * JavaScript hooks into the native WebUI handler to pass HttpMessages to the
  * Http Messages tab.
@@ -38,6 +34,12 @@ export class NearbyHttpBrowserProxy {
   listPublicCertificates() {
     chrome.send('listPublicCertificates');
   }
+
+  /** @return {!NearbyHttpBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new NearbyHttpBrowserProxy());
+  }
 }
 
-addSingletonGetter(NearbyHttpBrowserProxy);
+/** @type {?NearbyHttpBrowserProxy} */
+let instance = null;
