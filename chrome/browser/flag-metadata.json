@@ -7334,7 +7334,7 @@
   {
     "name": "search-suggestion-for-prerender2",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name" : "search-web-in-side-panel",
