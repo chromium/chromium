@@ -466,7 +466,7 @@
 <translation id="3036649622769666520">باز کردن فایل‌ها</translation>
 <translation id="3038571455154067151">‏برای ورود به سیستم، کد دسترسی ولی Family Link خود را وارد کنید</translation>
 <translation id="3039939407102840004">شارژ باتری قلم <ph name="PERCENTAGE" /> درصد است.</translation>
-<translation id="304097922505898963">باز کردن برنامه «میان‌برهای کلیدی»</translation>
+<translation id="304097922505898963">باز کردن برنامه «میان‌برهای مهم»</translation>
 <translation id="3045488863354895414">بعدازظهر به‌خیر،</translation>
 <translation id="3047761520276763270">بگویید:</translation>
 <translation id="3055162170959710888">امروز از این دستگاه به‌مدت <ph name="USED_TIME" /> استفاده کردید</translation>
@@ -1183,7 +1183,7 @@
 <translation id="6012623610530968780">صفحه <ph name="SELECTED_PAGE" /> از <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">برجسته کردن مورد بعدی در قفسه</translation>
 <translation id="6018164090099858612">خروج از حالت آینه</translation>
-<translation id="6019566113895157499">میان‌برهای کلیدی</translation>
+<translation id="6019566113895157499">میان‌برهای مهم</translation>
 <translation id="602001110135236999">پیمایش به چپ</translation>
 <translation id="6022924867608035986">پاک کردن نوشتار چارگوش جستجو</translation>
 <translation id="602472752137106327">نمایش پنجره‌ها از همه میزکارها، دکمه رادیو انتخاب شد</translation>
@@ -1297,7 +1297,7 @@
 <translation id="6497418457565568043">«مزاحم نشوید» روشن است</translation>
 <translation id="6500896621837555595">به‌روزرسانی</translation>
 <translation id="6501401484702599040">ارسال محتوای صفحه به <ph name="RECEIVER_NAME" /></translation>
-<translation id="6507042703812908515">برنامه «میان‌برهای کلیدی» را با «<ph name="NEW_SHORTCUT" />» باز کنید.</translation>
+<translation id="6507042703812908515">برنامه «میان‌برهای مهم» را با «<ph name="NEW_SHORTCUT" />» باز کنید.</translation>
 <translation id="6507618042428827377">رفتن به روش ورودی بعدی دردسترس</translation>
 <translation id="6508923215158854599">‏مطمئن شوید Chromebook روشن و به همان شبکه Wi-Fi متصل باشد که دستگاه Chromecast شما متصل است.</translation>
 <translation id="6515727200518652613">دوربین قطع شد، درحال اتصال مجدد.</translation>

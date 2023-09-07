@@ -495,7 +495,7 @@
 <translation id="4855250849489639581">ปัดลงเพื่อดูตัวเลือกเลย์เอาต์เพิ่มเติม</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}other{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}}</translation>
 <translation id="4873827928179867585">อัลกอริทึมการตรวจสอบสิทธิ์</translation>
-<translation id="4880328057631981605">ชื่อจุดเข้าใช้งาน</translation>
+<translation id="4880328057631981605">จุดเข้าใช้งาน</translation>
 <translation id="488307179443832524">มีการใช้แป้นพิมพ์ลัดนี้สำหรับ "<ph name="CONFLICT_ACCEL_NAME" />" แล้ว โปรดกดแป้นพิมพ์ลัดใหม่</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">อย่ารอช้า รีบเลือกรหัสผ่านใหม่</translation>

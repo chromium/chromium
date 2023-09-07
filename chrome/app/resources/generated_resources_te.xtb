@@ -388,7 +388,7 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> కింది ఫైళ్లను సవరించగలదు</translation>
 <translation id="1302227299132585524">Apple ఈవెంట్‌ల నుండి JavaScriptని అనుమతించండి</translation>
 <translation id="1302654693270046655"><ph name="GROUP_NAME" /> గ్రూప్ - <ph name="OPENED_STATE" /></translation>
-<translation id="1303101771013849280">HTML ఫైల్‌ని బుక్‌మార్క్ చేస్తుంది</translation>
+<translation id="1303101771013849280">బుక్‌మార్క్‌ల HTML ఫైల్</translation>
 <translation id="1303671224831497365">బ్లూటూత్ పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="130491383855577612">Linux యాప్‌లు, ఫైళ్లు విజయంతంగా భర్తీ చేయబడ్డాయి</translation>
 <translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" />‌ను తెరవండి</translation>
@@ -1239,7 +1239,7 @@
 <translation id="1956390763342388273">ఇది "<ph name="FOLDER_PATH" />" నుండి అన్ని ఫైళ్లను అప్‌లోడ్ చేస్తుంది. మీరు సైట్‌ను విశ్వసిస్తే మాత్రమే దీనిని చేయండి.</translation>
 <translation id="1959421829481337178">దయచేసి మీ క్యారియర్ అందించిన యాక్టివేషన్ కోడ్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="1962233722219655970">ఈ పేజీ మీ కంప్యూటర్‌లో పని చేయని స్థానిక క్లయింట్ యాప్‌ను ఉపయోగిస్తుంది.</translation>
-<translation id="1963976881984600709">ప్రామాణిక రక్షణ</translation>
+<translation id="1963976881984600709">స్టాండర్డ్ రక్షణ</translation>
 <translation id="1966649499058910679">ప్రతి పదాన్ని చదివినప్పుడు దానిని హైలైట్ చేయి</translation>
 <translation id="1967970931040389207">హాట్‌స్పాట్‌ను ఆన్ చేయండి</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -2755,7 +2755,7 @@
 <translation id="3160928651883997588">VPN ప్రాధాన్యతలు</translation>
 <translation id="3161522574479303604">అన్ని భాషలు</translation>
 <translation id="3162853326462195145">పాఠశాల ఖాతా</translation>
-<translation id="3162899666601560689">సైట్‌లు మీ బ్రౌజింగ్ అనుభవాన్ని మెరుగుపరచడానికి కుక్కీలను ఉపయోగిస్తాయి, ఉదాహరణకు, మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడం లేదా మీ షాపింగ్ కార్ట్‌లోని ఐటెమ్‌లను గుర్తు చేయడం లాంటివి</translation>
+<translation id="3162899666601560689">మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడం లేదా మీ షాపింగ్ కార్ట్‌లోని ఐటెమ్‌లను సేవ్ చేయడం మొదలైన చర్యల ద్వారా మీ బ్రౌజింగ్ ఎక్స్‌పీరియన్స్‌ను మెరుగుపరచడానికి, వెబ్‌సైట్‌లు కుక్కీలను ఉపయోగించవచ్చు</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> నుండి <ph name="PRODUCT_ID" /> తెలియని ఉత్పత్తి</translation>
 <translation id="3163511056918491211">ఏ సమయంలో అయినా మీ డేటాను సులభంగా రీస్టోర్ చేయండి లేదా పరికరాలను మార్చండి. మీ బ్యాకప్‌లు Googleకు అప్‌లోడ్ చేయబడతాయి, మీ Google ఖాతా పాస్‌వర్డ్‌ను ఉపయోగించి ఎన్‌క్రిప్ట్ చేయబడతాయి.</translation>
 <translation id="3164329792803560526">ఈ ట్యాబ్‌ను <ph name="APP_NAME" />తో షేర్ చేస్తోంది</translation>
@@ -3161,7 +3161,7 @@
 <translation id="3500417806337761827">షేర్‌ను మౌంట్ చేయడంలో ఎర్రర్ ఏర్పడింది. చాలా SMB షేర్‌లు ఇప్పటికే మౌంట్ చేయబడ్డాయి.</translation>
 <translation id="3503995387997205657">మీరు మీ మునుపటి యాప్‌లను రీస్టోర్ చేసుకోవచ్చు</translation>
 <translation id="3505100368357440862">షాపింగ్ సూచనలు</translation>
-<translation id="3507132249039706973">ప్రామాణిక రక్షణ ఆన్‌లో ఉంది</translation>
+<translation id="3507132249039706973">స్టాండర్డ్ రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="3507888235492474624">బ్లూటూత్ పరికరాలను మళ్లీ స్కాన్ చేయండి</translation>
 <translation id="3508492320654304609">మీ సైన్-ఇన్ డేటా తొలగించడం సాధ్యం కాలేదు</translation>
 <translation id="3508920295779105875">మరొక ఫోల్డర్‌ను ఎంచుకోండి...</translation>
@@ -3441,7 +3441,7 @@
 <translation id="3732857534841813090">Google Assistant సంబంధిత సమాచారం</translation>
 <translation id="3733296813637058299">మేము మీ కోసం ఆ యాప్‌లు ఇన్‌స్టాల్ చేస్తాము. మీరు Play Storeలో మీ <ph name="DEVICE_TYPE" /> కోసం మరిన్ని యాప్‌లను కనుగొనవచ్చు.</translation>
 <translation id="3735039640698208086">ఆడియో ప్లే చేస్తున్నప్పుడు...</translation>
-<translation id="3735740477244556633">దీని ద్వారా క్రమీకరించు</translation>
+<translation id="3735740477244556633">క్రమపద్ధతి</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> డేటా 24 గంటలలో తొలగించబడుతుంది</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" />ని తెరవాలా?</translation>
@@ -3746,7 +3746,7 @@
 <translation id="3959747296451923142">సబ్‌స్క్రిప్షన్‌ను తీసివేస్తున్నట్లు నిర్ధారించండి</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> కోసం మరిన్ని చర్యలు</translation>
-<translation id="3962119236270174787">ప్రమాదకరమైనవిగా గుర్తించబడిన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి ప్రామాణిక రక్షణ</translation>
+<translation id="3962119236270174787">ప్రమాదకరమైనవిగా గుర్తించబడిన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి స్టాండర్డ్ రక్షణ</translation>
 <translation id="3964480518399667971">సెల్యూలార్ నెట్‌వర్క్‌ను ఆఫ్ చేయడం</translation>
 <translation id="3965811923470826124">దీనితో</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> నుండి నిష్క్రమించండి</translation>
@@ -4280,7 +4280,7 @@
 <translation id="4412547955014928315"><ph name="SITE_NAME" />‌కు సంబంధించిన సైట్ డేటాను, అనుమతులను, దాని కింద ఉండే సైట్‌లన్నింటినీ తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="4412632005703201014">Chrome యాప్‌లు, ప్రోగ్రెసివ్ వెబ్ యాప్‌లకు తరలించబడుతున్నాయి. ఈ Chrome యాప్‌ను బ్రౌజర్‌లో మీ సంస్థ ఇన్‌స్టాల్ చేసింది. యాప్‌ల లిస్ట్ నుండి ప్రోగ్రెసివ్ వెబ్ యాప్‌ను తెరవడానికి, ముందుగా మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించి, Chrome యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయమని వారిని అడగండి. ఈ లోపు, మీరు <ph name="EXTENSION_LAUNCH_URL" />‌కు వెళ్లి, వెబ్‌లో <ph name="EXTENSION_NAME" />‌ను తెరవవచ్చు.</translation>
 <translation id="4412698727486357573">సహాయ కేంద్రం</translation>
-<translation id="4412992751769744546">మూడవ పక్షం కుక్కీలను అనుమతించండి</translation>
+<translation id="4412992751769744546">థర్డ్ పార్టీ కుక్కీలను అనుమతించండి</translation>
 <translation id="4413087696295876280">ChromeOS Flex పరికర సమాచారం అలాగే డేటాను చదవండి</translation>
 <translation id="44141919652824029">మీ జోడించబడిన USB పరికరాల లిస్ట్‌ను పొందడానికి "<ph name="APP_NAME" />"ని అనుమతించాలా?</translation>
 <translation id="4414232939543644979">కొత్త &amp;అజ్ఞాత విండో</translation>
@@ -8102,7 +8102,7 @@
 <translation id="7622903810087708234">పాస్‌వర్డ్ వివరాలు</translation>
 <translation id="7622966771025050155">క్యాప్చర్ చేసిన ట్యాబ్‌కు మారండి</translation>
 <translation id="7624337243375417909">caps lock ఆఫ్‌లో ఉంది</translation>
-<translation id="7625568159987162309">వేర్వేరు సైట్‌లకు సంబంధించిన అనుమతులను, అవి స్టోరేజ్‌ చేసిన డేటాను చూడండి</translation>
+<translation id="7625568159987162309">వేర్వేరు సైట్‌లకు ఇచ్చిన అనుమతులను, అవి స్టోర్ చేసిన డేటాను చూడండి</translation>
 <translation id="7625823789272218216">ఎడమ వైపున కొత్త ట్యాబ్</translation>
 <translation id="7628201176665550262">రిఫ్రెష్ రేటు</translation>
 <translation id="7628392600831846024">గుర్తు స్టయిల్</translation>
@@ -8537,7 +8537,7 @@
 <translation id="7947964080535614577">సైట్‌లు సాధారణంగా యాడ్‌లను చూపిస్తాయి, తద్వారా అవి కంటెంట్ లేదా సర్వీస్‌లను ఎటువంటి ఛార్జీ లేకుండా అందించగలవు. కానీ, కొన్ని సైట్‌లు అనుచితమైన లేదా తప్పుదారి పట్టించే యాడ్‌లను చూపిస్తాయి.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />లోని అన్ని పేజీలు</translation>
 <translation id="7950629216186736592">కారణం: LBS http://, https://, file:// URLలను మాత్రమే సపోర్ట్ చేస్తాయి.</translation>
-<translation id="7951265006188088697">Google Payలో వాడే పేమెంట్ ఆప్షన్‌లను జోడించడానికి లేదా మేనేజ్ చేయడానికి, మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />ను సందర్శించండి</translation>
+<translation id="7951265006188088697">Google Payలో వాడే పేమెంట్ ఆప్షన్‌లను జోడించడానికి లేదా మేనేజ్ చేయడానికి, మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />కు వెళ్లండి</translation>
 <translation id="795130320946928025">వర్చువల్ కార్డ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="795240231873601803">వర్క్, స్కూల్ ఖాతాల కోసం ఎంటర్‌ప్రైజ్ ఎన్‌రోల్‌మెంట్‌ను ఉపయోగించండి</translation>
 <translation id="7952708427581814389">మీ క్లిప్‌బోర్డ్‌లోని టెక్స్ట్, ఇమేజ్‌లను చూడటానికి సైట్‌లు అడగగలవు</translation>
@@ -9475,7 +9475,7 @@
 <translation id="8724409975248965964">వేలిముద్ర జోడించబడింది</translation>
 <translation id="8724859055372736596">ఫోల్డర్‌లో &amp;చూపించు</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
-<translation id="8725178340343806893">ఇష్టమైనవి/బుక్‌మార్క్‌లు</translation>
+<translation id="8725178340343806893">ఫేవరెట్స్/బుక్‌మార్క్‌లు</translation>
 <translation id="87254326763805752">పాస్-కీని నిర్ధారించండి</translation>
 <translation id="8726206820263995930">విధాన సెట్టింగ్‌లను సర్వర్ నుండి పొందుతున్నప్పుడు ఎర్రర్: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />ఆటోఫిల్ మెటాడేటా<ph name="END_LINK1" />ను పంపండి

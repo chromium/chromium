@@ -6898,7 +6898,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6628328486509726751">Nahráno <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Silnější zabezpečení</translation>
 <translation id="6630752851777525409">Rozšíření <ph name="EXTENSION_NAME" /> požaduje trvalý přístup k certifikátu, aby se vaším jménem mohlo ověřit.</translation>
-<translation id="6635362468090274700">Nikdo s vámi nemůže sdílet obsah, dokud se nenastavíte jako viditelní.<ph name="BR" /><ph name="BR" />Chcete-li být viditelní dočasně, otevřete stavovou oblast a pak zapněte Viditelnost nablízko.</translation>
+<translation id="6635362468090274700">Dokud máte v zařízení vypnutou viditelnost, nikdo s vámi nemůže sdílet obsah.<ph name="BR" /><ph name="BR" />Pokud chcete zapnout viditelnost dočasně, otevřete stavovou oblast a pak zapněte Viditelnost nablízko.</translation>
 <translation id="6635674640674343739">Nelze navázat síťové připojení. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="663569763553406962">Podívejte se, která rozšíření mohou číst nebo měnit web</translation>
 <translation id="6635944431854494329">Vlastník tuto funkci může ovládat v sekci Nastavení &gt; Rozšířená nastavení &gt; Automaticky do Googlu odesílat diagnostické údaje a údaje o využití.</translation>

@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Nombre total de fichiers</translation>
 <translation id="1755345808328621801">Ce fichier est destiné à un ordinateur utilisant un logiciel Windows. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez chercher une application de remplacement appropriée dans la boutique en ligne Chrome Web Store.</translation>
 <translation id="1757915090001272240">Latin pleine chasse</translation>
+<translation id="1761091787730831947">Partager avec <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certificat d'authentification rejeté localement.</translation>
 <translation id="1775381402323441512">Renseignements sur le fichier vidéo</translation>
 <translation id="180035236176489073">Pour accéder à ces fichiers, vous devez être connecté à Internet.</translation>
@@ -212,6 +213,7 @@
 <translation id="2718540689505416944">Installer l'application avec Linux</translation>
 <translation id="2719020180254996569">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, détails</translation>
 <translation id="2724954091494693138">Turc avec clavier F</translation>
+<translation id="2732288874651063549">Gérer le partage avec <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamien (VNI)</translation>
 <translation id="2735623501230989521">Autoriser Parallels Desktop à accéder aux fichiers dans le dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Vous avez utilisé tout votre espace de stockage individuel Google Workspace.</translation>
@@ -306,6 +308,7 @@
 <translation id="3509680540198371098">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="3511705761158917664">Préparation de la synchronisation de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
 <translation id="3522708245912499433">Portugais</translation>
+<translation id="3523225005467146490">1 dossier partagé avec <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Attention : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3548125359243647069">Un NIP incorrect a été entré un trop grand nombre de fois.</translation>
@@ -667,6 +670,7 @@
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6177854567773392726">Vérification de l'espace de stockage en cours… <ph name="ITEMS_FOUND" /> éléments trouvés</translation>
+<translation id="6181912134988520389">Autoriser <ph name="VM_NAME" /> à accéder à vos fichiers sur Google Disque. Les modifications seront synchronisées sur vos autres appareils.</translation>
 <translation id="6187719147498869044">Hongrois</translation>
 <translation id="6198252989419008588">Modifier le NIP</translation>
 <translation id="6199801702437275229">En attente d'information sur l'espace disponible…</translation>
@@ -770,6 +774,7 @@
 <translation id="6989942356279143254">Suédois</translation>
 <translation id="6990081529015358884">Vous avez utilisé tout l'espace de stockage.</translation>
 <translation id="6993826899923627728">Ces éléments se trouvent dans la corbeille</translation>
+<translation id="6996593023542748157">Partager le dossier avec <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Votre organisation a besoin de plus d'espace de stockage pour terminer le téléversement.</translation>
 <translation id="7009985720488544166">La politique de l'administrateur bloque le transfert de <ph name="COUNT" /> fichiers</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -955,6 +960,7 @@
 <translation id="8335837413233998004">Biélorusse</translation>
 <translation id="8336153091935557858">Hier à <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Un fichier ou un répertoire du même nom existe déjà.</translation>
+<translation id="83651606385705612">Autoriser <ph name="VM_NAME" /> à accéder aux fichiers du dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Clé WEP incorrecte</translation>
 <translation id="8372852072747894550">Grec</translation>
 <translation id="8386903983509584791">Recherche terminée</translation>
@@ -964,6 +970,7 @@
 <translation id="8408068190360279472">Réseau <ph name="NETWORK_TYPE" />; connexion en cours…</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Modifier le NIP de la carte SIM</translation>
 <translation id="8437209419043462667">Américain</translation>
 <translation id="8452135315243592079">Carte SIM manquante</translation>

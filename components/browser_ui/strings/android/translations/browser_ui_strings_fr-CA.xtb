@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Ouvrir en ligne</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
+<translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les témoins tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">Cette action effacera <ph name="DATASIZE" /> de données et de témoins qu'ont stockés des sites ou des applications sur votre écran d'accueil.</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">Autorisés, sauf témoins tiers</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="1994173015038366702">URL du site</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{Expire dans 1 jour}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="2004697686368036666">Des fonctionnalités de certains sites pourraient ne pas fonctionner</translation>
 <translation id="2025115093177348061">Réalité augmentée</translation>
 <translation id="2030769033451695672">Touchez pour revenir à <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">Demander avant d'autoriser des sites à connaître votre emplacement (recommandé)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Témoins tiers bloqués</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Chrome bloquera à nouveau les témoins demain}one{# jour jusqu'à ce que Chrome bloque à nouveau les témoins}other{# jours jusqu'à ce que Chrome bloque à nouveau les témoins}}</translation>
 <translation id="3521663503435878242">Sites associés à <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Empêcher les sites de créer une carte 3D de votre environnement et de faire le suivi de la position de l'appareil photo</translation>
 <translation id="3544058026430919413">Une entreprise peut définir un groupe de sites qui peuvent utiliser des témoins pour partager votre activité dans le groupe. Ce paramètre est désactivé en mode de navigation privée.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">Numéros de téléphone</translation>
 <translation id="3826050100957962900">Connexion tierce</translation>
 <translation id="3835233591525155343">Votre utilisation de l'appareil</translation>
+<translation id="3843916486309149084">Chrome bloquera à nouveau les témoins aujourd'hui</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3859306556332390985">Rechercher vers l'avant</translation>
 <translation id="3895926599014793903">Forcer l'activation du zoom</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">Bloquez la connexion de tiers pour un site particulier.</translation>
 <translation id="6388207532828177975">Effacer et réinitialiser</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
+<translation id="640163077447496506">Expire aujourd'hui</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Empêcher les sites d'utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="6447842834002726250">Témoins</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8154912474061769055">Des fonctionnalités de nombreux sites pourraient ne pas fonctionner</translation>
 <translation id="8168435359814927499">Contenu</translation>
+<translation id="8186479265534291036">Le site ne fonctionne pas? Témoins tiers bloqués</translation>
 <translation id="8197286292360124385">Autorisation <ph name="PERMISSION_1" /> accordée</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8206354486702514201">Votre administrateur impose la valeur associée à ce paramètre.</translation>

@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Nous aider à améliorer les fonctionnalités et les performances de Chromium</translation>
 <translation id="1531155317299575425">Affiche les invites de connexion dans Chromium.</translation>
 <translation id="1617663976202781617">Données de la synchronisation de Chromium</translation>
+<translation id="1647558790457890304">Paramètres de Chromium</translation>
 <translation id="1722370509450468186">Votre mot de passe sera enregistré dans votre compte (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Données Chromium effacées</translation>
 <translation id="1758508597843173586">Verrouillez la navigation privée lorsque vous quittez Chromium ou passez à une autre application.</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">Vous avertit des sites dangereux, même ceux que Google ne connaissait pas auparavant, en analysant plus de données provenant des sites que la protection standard. Vous pouvez choisir d'ignorer les avertissements de Chromium.</translation>
 <translation id="3805899903892079518">Chromium n'a pas accès à vos photos ou vidéos. Activez l'accès dans Réglages iOS &gt; Confidentialité &gt; Photos.</translation>
 <translation id="3827545470516145620">Vous bénéficiez d'une protection de sécurité standard sur cet appareil</translation>
+<translation id="3886689467633467988">Connectez-vous à ce site et à Chromium pour obtenir vos favoris et plus encore sur tous vos appareils.</translation>
+<translation id="394413318816989199">Le chiffrement de la phrase de passe n'inclut pas les modes de paiement et les adresses.
+
+Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Ouvrez Chromium depuis n'importe quelle application</translation>
 <translation id="4043291146360695975">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe sur cet appareil uniquement.</translation>
 <translation id="4099085513035183040">Fonctionnalité non prise en charge par Chromium Beta</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">Aux fins d'amélioration de l'application, Chromium envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activer le lecteur de Chromium</translation>
 <translation id="4736424910885271643">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chromium seront effacées de cet appareil</translation>
+<translation id="4790638144988730920">Continuez à utiliser les données Chromium dans votre compte Google.</translation>
 <translation id="4828317641996116749">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="4985291216379576555">Hors ligne, Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="4996471330284142407">Faites-en plus avec le navigateur Chromium : simple, sécuritaire et plus rapide que jamais.</translation>
 <translation id="4999538639245140991">Puisque vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil. Toutefois, vos données resteront dans votre compte Google.</translation>
 <translation id="5042011327527167688">Touchez « Afficher avec Google Maps dans Chromium ».</translation>
 <translation id="5048795749726991615">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applications, utilisez Chromium pour le remplissage automatique</translation>
+<translation id="5131565040785979529">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chromium est utilisé.</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
+<translation id="5242782538551259282">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google.
+
+        Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="5308226104666789935">Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="5396916991083608703">Définir Chromium comme navigateur par défaut?</translation>
 <translation id="5453478652154926037">Chromium ne peut pas vérifier vos mots de passe.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">Cette carte vous montre des suggestions sur la façon de tirer le meilleur parti de Chromium.</translation>
 <translation id="5700709190537129682">Chromium ne peut pas vérifier vos mots de passe</translation>
 <translation id="5777187867430702742">Page Chromium</translation>
+<translation id="5889847953983052353">Lorsque activé :
+<ph name="BEGIN_INDENT" />  • Vous contribuez à améliorer Chromium pour les personnes qui l'utilisent de la même façon que vous.<ph name="END_INDENT" />
+
+Éléments à prendre en compte :
+<ph name="BEGIN_INDENT" />  • Les données relatives à votre utilisation de Chromium sont envoyées à Google, mais elles ne vous identifient pas.
+
+  • En cas de plantage de Chromium, les détails de l'événement peuvent inclure des renseignements personnels.
+
+  • Si vous synchronisez votre historique avec votre compte Google, les mesures peuvent également inclure des renseignements sur les URL que vous visitez.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, et son administrateur pourra contrôler vos données Chromium. Celles-ci seront définitivement liées à votre compte. En vous déconnectant de Chromium, vous supprimerez vos données sur cet appareil, mais celles-ci resteront stockées dans votre compte Google.</translation>
+<translation id="5951593919357934226">Tirez le meilleur parti de Chromium.</translation>
 <translation id="5983312940147103417">Contribuez à améliorer Chromium</translation>
 <translation id="6062449165341879460">Votre organisation <ph name="DOMAIN" /> aura accès à vos données, favoris, historique, mots de passe et autres paramètres Chromium que vous stockez dans ce compte. Lorsque vous vous déconnectez, vos données sont effacées de cet appareil.  Cependant, vos données restent stockées dans votre compte Google géré et sont disponibles pour votre organisation. Votre organisation peut également définir des politiques relatives aux utilisateurs propres à ce compte, lesquelles peuvent modifier le comportement de Chromium.</translation>
 <translation id="61109258320235597">Pour utiliser et enregistrer les données Chromium dans votre compte Google, saisissez votre phrase de passe.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="632825460376924298">Autoriser la connexion dans Chromium</translation>
 <translation id="6337530241089703714">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>
+<translation id="6407399265324739055">Les modes de paiement et les adresses ne seront pas chiffrés. L'historique de navigation de Chromium ne se synchronisera pas.
+
+Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google ni stockée par Google. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Une nouvelle version améliorée de Chromium est maintenant offerte.</translation>
 <translation id="6563921047760808519">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chromium préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium prend désormais en charge les politiques relatives aux utilisateurs pour votre compte géré</translation>

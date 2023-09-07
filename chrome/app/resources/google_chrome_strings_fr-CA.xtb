@@ -39,6 +39,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> afin de protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt ayant plus de quatre semaines. Au fur et à mesure que vous naviguez, un centre d'intérêt peut réapparaître sur la liste. Vous pouvez également retirer des centres d'intérêt si vous ne voulez pas que Chrome les prenne en compte.</translation>
 <translation id="1628000112320670027">Obtenir de l'aide pour Chrome</translation>
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
+<translation id="1642309806724967937">Selon vos paramètres, Chrome peut également envoyer des témoins et votre URL actuelle</translation>
 <translation id="1662146548738125461">À propos de Chrome OS Flex</translation>
 <translation id="1674870198290878346">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="1682634494516646069">Google Chrome ne peut pas lire et écrire dans son répertoire de données :
@@ -96,6 +97,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2597976513418770460">Profitez de vos données du navigateur Chrome associées au compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome ne peut pas vérifier la présence de mises à jour. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome vérifie régulièrement que votre navigateur dispose des paramètres les plus sûrs. Nous vous informerons si nous avons besoin de votre avis pour quelque chose.</translation>
 <translation id="2652691236519827073">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
 <translation id="2665296953892887393">Aidez-nous à améliorer Google Chrome en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
 <translation id="2689103672227170538">Cette extension a modifié la page qui s'affiche au démarrage de Chrome.</translation>
@@ -235,6 +237,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 
 Certaines fonctionnalités peuvent être inaccessibles. Veuillez spécifier un répertoire de profil différent ou utiliser une version plus récente de Google Chrome.</translation>
 <translation id="521447420733633466">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Google Chrome comme bon leur semble et naviguer sur le Web de façon autonome.</translation>
+<translation id="5239627039202700673">Utilisez Chrome chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applications</translation>
 <translation id="5251420635869119124">Les invités peuvent utiliser Google Chrome sans rien laisser derrière eux.</translation>
 <translation id="5334309298019785904">Chrome OS n'a pas pu synchroniser vos données parce que cette fonctionnalité n'est pas offerte pour votre domaine.</translation>
 <translation id="5334487786912937552">Chrome requiert l'autorisation d'accéder à l'espace de stockage pour télécharger des fichiers</translation>
@@ -251,6 +254,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Chrome a bloqué le fichier <ph name="FILE_NAME" />, car il peut être dangereux.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour}=1{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
+<translation id="5682679001737420487">Chrome bloque certains téléchargements</translation>
 <translation id="5686916850681061684">Personnaliser et gérer Google Chrome. Votre attention est requise – cliquez pour plus de détails.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Lorsque ce mode est activé, Chrome libère de la mémoire à partir des onglets inactifs. Cela donne aux onglets actifs et aux autres applications plus de ressources informatiques et assure la rapidité de Chrome. Vos onglets inactifs redeviennent automatiquement actifs lorsque vous y revenez.</translation>
@@ -308,6 +312,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6739177684496155661">Continuer avec un nouveau profil Chrome?</translation>
 <translation id="6750954913813541382">Pour corriger les erreurs d'orthographe, Chrome envoie à Google le texte que vous tapez dans le navigateur</translation>
 <translation id="677276454032249905">Quitter Chrome quand même?</translation>
+<translation id="6794858689789885890">Supprimez toujours les données relatives aux sites sur votre appareil lorsque vous fermez Chrome</translation>
 <translation id="683440813066116847">Règle de trafic entrant pour Google Chrome Canary autorisant le trafic mDNS.</translation>
 <translation id="6881299373831449287">Mise à jour de Chrome</translation>
 <translation id="6885412569789873916">Applications Chrome bêta</translation>
@@ -392,6 +397,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> Chrome peut estimer vos centres d'intérêt. Ultérieurement, un site que vous visitez peut demander à Chrome de voir vos centres d'intérêt afin de personnaliser les annonces que vous voyez.</translation>
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>
 <translation id="8394720698884623075">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome</translation>
+<translation id="8403038600646341038">Logo de Chrome à l'intérieur d'un écran d'ordinateur.</translation>
 <translation id="8416347857511542594">En savoir plus sur la personnalisation des annonces dans Chrome</translation>
 <translation id="8418845734693287262">Chrome OS n'a pas pu synchroniser vos données parce que les détails de connexion de votre compte ne sont plus à jour.</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur vos deux appareils.</translation>

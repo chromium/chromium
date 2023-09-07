@@ -36,12 +36,15 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1148499908455722006">Ouvrir la boîte de dialogue d'information pour <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
+<translation id="1155734730463845512">Niveau actuel de charge de la pile à <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1160215328209699296">allumé et en cours d'utilisation</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Votre câble USB-C peut ne pas se connecter correctement aux écrans</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
+<translation id="1175944128323889279">Niveau actuel de charge de la pile à <ph name="BATTERY_PERCENTAGE" /> %, il reste <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
+<translation id="1181431373490845924">Ignorer la configuration de l'affichage des photos et du contenu multimédia récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1182225749592316782">Cela autorise l'accès à toutes les applications et à tous les sites Web disposant des autorisations de caméra et de microphone</translation>
 <translation id="1183863904939664422">Cette suggestion ne m'intéresse pas</translation>
 <translation id="1184126796192815024">Ce réseau ne prend pas en charge les applications de diffusion en continu à partir de votre téléphone. Essayez d'utiliser le point d'accès sans fil de votre téléphone. <ph name="LEARN_MORE" /></translation>
@@ -124,6 +127,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1479909375538722835">Menu d'accessibilité flottant</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Appuyez sur Entrée pour ouvrir la vue d'Agenda</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1486307154719069822">Grâce à la Dictée, vous pouvez entrer du texte en utilisant votre voix. Appuyez sur la touche de la Dictée ou sélectionnez l'icône du microphone en bas de l'écran lorsque vous êtes sur un champ de texte. Langue de la Dictée présentement définie à : <ph name="LANGUAGE" />. Le texte est envoyé à Google à des fins de traitement. Vous pouvez changer la langue de la Dictée en tout temps dans Paramètres &gt; Accessibilité.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> a changé de place avec <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Afficher toutes les suggestions</translation>
 <translation id="1510238584712386396">Lanceur</translation>
@@ -206,6 +210,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activer l'accès aux données de localisation</translation>
 <translation id="1830308660060964064">L'épinglage de <ph name="ITEM_TITLE" /> été annulé</translation>
+<translation id="1831565490995294689">Sélectionnez pour ouvrir <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838895407229022812">Le mode Éclairage nocturne est désactivé.</translation>
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
 <translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
@@ -267,6 +272,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2135456203358955318">Loupe en mode ancré</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2149229036084364364">Revenir à la chanson précédente</translation>
+<translation id="2152895518047545149">On dirait qu'il ne manque rien. Bravo!</translation>
 <translation id="2161132820593978283">Essayez le cadrage de l'appareil photo afin d'être au centre de l'écran lors des appels vidéo. Activez-le dans les paramètres rapides.</translation>
 <translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter le mode Aperçu</translation>
 <translation id="2185166372312820725">Accéder à l'onglet précédent</translation>
@@ -337,6 +343,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2450205753526923158">Mode de capture d'écran</translation>
 <translation id="2455994958736234930">Ajouter www. et .com dans la barre d'adresse, puis ouvrir le site Web</translation>
 <translation id="2456008742792828469">Agenda, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="2465145153332031561">État de santé de la pile <ph name="BATTERY_HEALTH_PERCENTAGE" /> %, nombre de cycles <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Confirmer la résolution</translation>
 <translation id="2475982808118771221">Une erreur s'est produite</translation>
 <translation id="2482878487686419369">Notifications</translation>
@@ -397,6 +404,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2750932254614666392">« Supprimer »</translation>
 <translation id="2750941250130734256">Fenêtre active désancrée.</translation>
 <translation id="2761723519669354964">Ouvrir l'élément en évidence dans l'étagère</translation>
+<translation id="2774327524281966309">Ignorer la configuration des notifications et des applications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> à <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+recherche+s</translation>
 <translation id="2778650143428714839">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" /></translation>
@@ -428,10 +436,12 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2891209721153296020">« Désélectionner »</translation>
 <translation id="2894949423239620203">Le câble peut avoir une incidence sur la performance</translation>
 <translation id="2914580577416829331">Captures d'écran</translation>
+<translation id="2931572158271115754">Rien sur cette liste de tâches.</translation>
 <translation id="2941112035454246133">Faible</translation>
 <translation id="2942350706960889382">Loupe en mode ancré</translation>
 <translation id="2942516765047364088">Position de l'étagère</translation>
 <translation id="2946119680249604491">Ajouter une connexion</translation>
+<translation id="2947835478872237115">Niveau actuel de charge de la pile à <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> jusqu'à une charge complète</translation>
 <translation id="2949420361496057765">Appuyez sur <ph name="MODIFIER" />, puis cliquez sur un lien</translation>
 <translation id="295852781144570696">Audio de l'appareil</translation>
 <translation id="2960314608273155470">Mode de capture, la valeur par défaut est <ph name="TYPE" /> <ph name="SOURCE" />. Appuyez sur la touche Tabulation pour utiliser la navigation au clavier.</translation>
@@ -471,6 +481,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3095995014811312755">Version</translation>
 <translation id="309749186376891736">Déplacer le curseur</translation>
 <translation id="3100274880412651815">Fermer le mode de capture</translation>
+<translation id="3103732015595029598">Configurer les notifications et les applications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Mettre en évidence l'article précédent sur l'étagère</translation>
@@ -534,6 +545,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3378438761594387761">Vous trouverez vos téléchargements et vos captures d'écran récents ici</translation>
 <translation id="3386978599540877378">la loupe plein écran</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
+<translation id="3389599499324569679">Activer la Dictée?</translation>
 <translation id="3400357268283240774">Autres paramètres</translation>
 <translation id="3405101454990027959">Activer l'accès au microphone</translation>
 <translation id="3408735331120433841">Vous diffusez actuellement votre écran.</translation>
@@ -636,6 +648,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3735740477244556633">Trier par</translation>
 <translation id="3738664582935948253">Vous pouvez désormais afficher les clics et les raccourcis-clavier pendant les enregistrements d'écran.</translation>
 <translation id="3742055079367172538">Saisie d'écran enregistrée</translation>
+<translation id="375335662788363456">Ignorer la configuration des photos, des notifications, des applications et du contenu multimédia récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3756485814916578707">Diffusion de l'écran en cours…</translation>
 <translation id="3765841986579723851">Modifié aujourd'hui</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
@@ -679,6 +692,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3945867833895287237">Connexion au point d'accès en cours…</translation>
 <translation id="3950272133184491871">Se déconnecter maintenant?</translation>
 <translation id="3950820424414687140">Connexion</translation>
+<translation id="3953130726459169782">Aucun devoir n'est terminé pour le moment.</translation>
 <translation id="3962859241508114581">Chanson précédente</translation>
 <translation id="3969043077941541451">Désactivé</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
@@ -718,6 +732,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4125970834901680537">Impossible de diffuser le contenu des applications en mode tablette. Réessayez en mode ordinateur portable.</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4131973331381812765">Température : <ph name="TEMPERATURE" /> °C – Vitesse actuelle : <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
+<translation id="4132502210362661715">Votre Chromebook est doté d'applications intégrées pour vous aider à accomplir vos tâches. Trouvez vos applications dans le lanceur.</translation>
 <translation id="4136724716305260864">Activée jusqu'à l'aube</translation>
 <translation id="4146671046252289537">Aller à la fin du mot suivant</translation>
 <translation id="4146833061457621061">Faire jouer de la musique</translation>
@@ -728,8 +743,10 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4185671786623711291">Déplacer la fenêtre active vers le bureau à droite</translation>
 <translation id="4189826113259617332">Enregistrer toutes les pages ouvertes dans votre fenêtre actuelle comme favoris dans un nouveau dossier</translation>
+<translation id="4190143678693626113">Gagnez du temps en répondant rapidement aux messages texte de votre téléphone à partir de votre Chromebook</translation>
 <translation id="4192112279662688596">ou</translation>
 <translation id="4193857202545160520">Afficher les clics et les clés</translation>
+<translation id="4195579532193195633">Version actuelle : <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Reprendre vos activités en ligne là où vous vous étiez arrêté</translation>
 <translation id="4195877955194704651">Bouton de clics automatiques</translation>
 <translation id="4197790712631116042">Désactivé</translation>
@@ -760,6 +777,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="428715201724021596">Connexion au profil en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Effacer les <ph name="COUNT" /> notifications</translation>
+<translation id="4300367807227655672">Configurer l'affichage des notifications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="430191667033048642">L'application <ph name="MOVED_APP_NAME" /> a été déplacée dans le dossier <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Non accessible</translation>
 <translation id="4303223480529385476">Développer la zone de notifications</translation>
@@ -785,6 +803,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4405151984121254935">Le périphérique connecté n'est pas pris en charge</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
+<translation id="4414595745967164324">Configurer les photos, les notifications, les applications et le contenu multimédia récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4424159417645388645">Bureau 5</translation>
 <translation id="4427695046139341014">Tableau de bord de jeu</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -878,6 +897,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4798888871844665150">Élément copié déjà dans le presse-papiers. Utilisez <ph name="SHORTCUT_KEY_NAME" /> + V pour afficher.</translation>
 <translation id="479989351350248267">chercher</translation>
 <translation id="4804818685124855865">Déconnecter</translation>
+<translation id="4810227386592387399">Configurer l'affichage des applications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4813311884204119883">Faites glisser le lien vers la zone vide de la bande d'onglets</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
 <translation id="481455355267255546">À venir</translation>
@@ -911,6 +931,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4925542575807923399">L'administrateur pour ce compte l'a configuré de sorte qu'il doit être le premier compte à connecter lors de sessions de connexion multicompte.</translation>
 <translation id="493076006037866439">Zoom arrière de l'écran</translation>
 <translation id="4936329710968938986">Tous les utilisateurs, désactiver</translation>
+<translation id="4937170330762390348">Grâce à la Dictée, vous pouvez entrer du texte en utilisant votre voix. Appuyez sur la touche de la Dictée ou sélectionnez l'icône du microphone en bas de l'écran lorsque vous êtes sur un champ de texte. Langue de la Dictée présentement définie à : <ph name="LANGUAGE" />. Les fichiers vocaux seront téléchargés afin que vous puissiez utiliser la Dictée hors ligne. Vous pouvez changer la langue de la Dictée en tout temps dans Paramètres &gt; Accessibilité.</translation>
 <translation id="4938176435186993759">Masquer toutes les suggestions</translation>
 <translation id="4943007472417128747">Le point d'accès sans fil a été désactivé pour utiliser le WiFi. Pour utiliser le point d'accès sans fil, désactivez le Wi-Fi.</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
@@ -1013,6 +1034,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="536019650977002321">Votre administrateur n'autorise pas la capture audio. Pour en savoir plus, communiquez avec votre administrateur.</translation>
 <translation id="5361524080961918551">Fichiers vocaux en <ph name="LANGUAGE" /> partiellement téléchargés</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accéder à cet onglet</translation>
+<translation id="5364693579536176785">espace de stockage</translation>
 <translation id="5369717264580061086">Consulter l'aperçu du fichier dans l'application Fichiers</translation>
 <translation id="5377367976106153749">Activer l'accès à l'appareil photo?</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
@@ -1021,6 +1043,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> par-dessus <ph name="IN_PLACE_APP" />, puis relâchez-la pour créer un dossier.</translation>
 <translation id="5397578532367286026">Le gestionnaire (<ph name="MANAGER_EMAIL" />) peut examiner les actions effectuées par cet utilisateur, ainsi que son historique, sur chrome.com.</translation>
 <translation id="5400461572260843123">Paramètres rapides, appuyez sur la touche de recherche et la flèche de gauche pour accéder au centre de notifications.</translation>
+<translation id="5413656666631274079">Page des paramètres</translation>
 <translation id="5414198321558177633">Actualisation de la liste de profils en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="5426063383988017631">Menu Paramètres fermé</translation>
 <translation id="5428899915242071344">Commencer la sélection</translation>
@@ -1086,10 +1109,12 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5678564054339031017">Afficher les données de la semaine suivante</translation>
 <translation id="5679050765726761783">Un adaptateur d'alimentation à faible consommation est branché</translation>
 <translation id="5682642926269496722">L'Assistant Google n'est pas accessible pour le compte d'utilisateur actuel.</translation>
+<translation id="5682844616152977671"><ph name="RELATIVE_DATE" /> <ph name="TIME" /></translation>
 <translation id="5689633613396158040">Le mode Éclairage nocturne permet de regarder l'écran plus facilement lorsque l'éclairage est faible. Touchez l'écran pour modifier l'heure à laquelle le mode Éclairage nocturne s'active ou se désactive complètement.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5693255400847650006">Le microphone est en cours d'utilisation</translation>
 <translation id="5699366815052349604">Attribuez la fenêtre active à tous les bureaux</translation>
+<translation id="5701785125601597013">Envoyez rapidement des messages sur votre téléphone ou répondez aux messages à l'aide de Phone Hub</translation>
 <translation id="570390244361237317">Toutes les applications, naviguer avec les touches fléchées pour accéder à toutes les applications</translation>
 <translation id="5707775774148071965">Votre appareil prend en charge un débit de données supérieur à celui de votre câble. La performance de l'appareil peut être limitée.</translation>
 <translation id="5710450975648804523">Mode Ne pas déranger activé</translation>
@@ -1201,6 +1226,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="615957422585914272">Afficher le clavier à l'écran</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6166852626429024716">Rechercher sur votre appareil, dans vos applications, dans vos paramètres, sur le Web…</translation>
+<translation id="6167922743323004256">Ignorer la configuration de l'affichage des photos et du contenu multimédia récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6168318496333165060">Ouvrir l'application Diagnostics</translation>
 <translation id="6173151025443907148">Il est impossible pour un deuxième utilisateur de se connecter si Lacros est activé. Veuillez utiliser un deuxième profil de navigateur dans Lacros ou fermer ce dernier, puis réessayer.</translation>
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Ouvrez l'application Fichiers pour commencer.</translation>
@@ -1220,6 +1246,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6231419273573514727">Les performances du périphérique peuvent être limitées</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre appareil photo et votre microphone</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6243908713912479677">Ignorer la configuration de l'affichage des notifications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6244986124527896815">Ouvrez l'application Gestionnaire de tâches avec « <ph name="NEW_SHORTCUT" /> ».</translation>
 <translation id="6247728804802644171">Ouvrir les notifications</translation>
 <translation id="6254629735336163724">Verrouillée à l'horizontale</translation>
@@ -1250,6 +1277,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="642644398083277086">Effacer toutes les notifications</translation>
 <translation id="643147933154517414">Tout est terminé</translation>
 <translation id="6431865393913628856">Enregistrement d'écran</translation>
+<translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> d'espace de stockage utilisé sur un total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6442259747294754014">L'accès au microphone de l'appareil est désactivé</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">processeur</translation>
@@ -1381,6 +1409,7 @@ Nouvelle installation</translation>
 <translation id="6981291220124935078">Activer l'accès</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">Tous les fichiers et toutes les données locales associés à l'utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
+<translation id="6985306450422696113"><ph name="USED_MEMORY" /> de mémoire disponible sur un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7004910047186208204">Se connecter à un réseau de données cellulaires</translation>
 <translation id="7005239792648594238">Ouvrez une application pour commencer</translation>
 <translation id="7007983414944123363">Votre NIP ou votre mot de passe n'a pas pu être vérifié. Réessayez.</translation>
@@ -1409,6 +1438,7 @@ Nouvelle installation</translation>
 <translation id="7098053464892629930">Téléchargez l'application pour <ph name="NAME" /> sur Google Play pour voir toutes les fonctionnalités offertes</translation>
 <translation id="7098389117866926363">Appareil USB-C (port arrière-gauche)</translation>
 <translation id="7100906357717321275">Afficher les fichiers cachés dans l'application Fichiers</translation>
+<translation id="7108254681523785542">Sélectionnez un élément pour le coller. Vous pouvez afficher le presse-papiers en appuyant sur <ph name="SHORTCUT_KEY_NAME" />+v.</translation>
 <translation id="7116969082764510092">Bureau 11</translation>
 <translation id="7118268675952955085">Capture d'écran</translation>
 <translation id="7119327711295338600">Sélectionner le mot ou la lettre suivante</translation>
@@ -1503,6 +1533,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7573585051776738856">Fenêtre active ancrée à droite.</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>
 <translation id="7593891976182323525">Recherche ou Majuscule</translation>
+<translation id="7598054670902114203">Aperçu d'utilisation du processeur, <ph name="CPU_USEAGE" /> %. Température <ph name="TEMPERATURE" /> degrés Celsius, vitesse actuelle : <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7600875258240007829">Afficher toutes les notifications</translation>
 <translation id="7601417191446344542">Activer le Rappel de son désactivé?</translation>
 <translation id="7607002721634913082">Interrompu</translation>
@@ -1555,6 +1586,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal fort</translation>
 <translation id="7837740436429729974">Temps écoulé</translation>
+<translation id="7838712802972544930">Ignorer la configuration de l'affichage des applications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="7842569679327885685">Attention : Fonctionnalité expérimentale</translation>
 <translation id="7846634333498149051">Clavier</translation>
 <translation id="7848989271541991537">Déplacée à la page <ph name="PAGE_NUMBER" />, ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
@@ -1618,6 +1650,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8051716679295756675">Le modèle intitulé <ph name="DESK_TEMPLATE_NAME" /> existe déjà</translation>
 <translation id="8052898407431791827">Copiée dans le presse-papiers</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
+<translation id="8077971003886736669">Configurez l'affichage des photos et du contenu multimédia récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8079538659226626406">Partage d'écran</translation>
 <translation id="8083540854303889870">Enregistré pour plus tard</translation>
 <translation id="8091153018031979607">Commence à <ph name="START_TIME" /> le <ph name="DAYS_ELAPSED" /></translation>
@@ -1744,6 +1777,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> géré par votre administrateur</translation>
 <translation id="8638637208069328956">Activer ou désactiver le microphone</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restant</translation>
+<translation id="8641510901370802679">Affichage des informations concernant : <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Minuterie de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Pour ajouter une personne, entrez votre code d'accès parental Family Link</translation>
 <translation id="8649597172973390955">L'étagère est toujours affichée</translation>
@@ -1770,6 +1804,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="875593634123171288">Afficher les paramètres RPV</translation>
 <translation id="8759408218731716181">Impossible de configurer la connexion multicompte.</translation>
 <translation id="8763883995157866248">Mettre l'appareil en mode Veille</translation>
+<translation id="8773962395093246071">Configurer l'affichage des photos, des notifications et du contenu multimédia récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, application installée, bloquée</translation>
 <translation id="8785070478575117577">Se connecter à <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
