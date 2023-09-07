@@ -49,9 +49,6 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 + (void)openRemoveAccountConfirmationDialogWithFakeIdentity:
     (FakeSystemIdentity*)fakeIdentity;
 
-// Opens MyGoogle UI from the account list settings.
-+ (void)openMyGoogleDialogWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
-
 // Taps "Remove from this device" button and follow-up confirmation.
 // Assumes the user is on the Settings screen.
 + (void)tapRemoveAccountFromDeviceWithFakeIdentity:

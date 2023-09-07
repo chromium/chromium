@@ -321,17 +321,6 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
       performAction:grey_tap()];
 }
 
-+ (void)openMyGoogleDialogWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                          fakeIdentity.userEmail)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE))]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-}
-
 + (void)tapRemoveAccountFromDeviceWithFakeIdentity:
     (FakeSystemIdentity*)fakeIdentity {
   [self openRemoveAccountConfirmationDialogWithFakeIdentity:fakeIdentity];

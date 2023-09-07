@@ -205,7 +205,16 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [self openAccountSettings];
 
   // Open MyGoogleUI.
-  [SigninEarlGreyUI openMyGoogleDialogWithFakeIdentity:fakeIdentity];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                   fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ButtonWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE))]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Forget Identity.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
