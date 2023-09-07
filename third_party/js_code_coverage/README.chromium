@@ -12,6 +12,8 @@ V8 To Istanbul converts raw v8 coverage into istanbul compliant coverage report.
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
+
 Name: Source map
 Short Name: source-map
 URL: https://www.npmjs.com/package/source-map
@@ -29,6 +31,8 @@ originated from.
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
+
 Name: IstanbulJS CLI
 Short Name: nyc
 URL: https://www.npmjs.com/package/nyc
@@ -45,6 +49,8 @@ v8-to-istanbul package to convert v8 coverage -> istanbul -> {html,lcov}
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
+
 Name: argparse
 Short Name: argparse
 URL: https://www.npmjs.com/package/argparse
@@ -56,6 +62,8 @@ Shipped: no
 Description:
 Argparse is used to take, validate and parse CLI arguments for JavaScript scripts
 which are run as CLI scripts.
+
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: istanbul-lib-coverage
 Short Name: istanbul-lib-coverage
