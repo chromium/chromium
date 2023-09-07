@@ -28,6 +28,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/test_personalization_app_webui_provider.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
@@ -224,8 +225,9 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
   EXPECT_EQ(original_info.collection_id, new_info.collection_id);
 }
 
+// TODO(crbug.com/1480066): Test is flaky.
 IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
-                       DailyDarkLightWallpaperIsRefreshed) {
+                       DISABLED_DailyDarkLightWallpaperIsRefreshed) {
   Browser* browser;
   auto* web_contents = LaunchAppAtWallpaperSubpage(&browser);
   ASSERT_EQ(ScheduleType::kCustom, scheduler()->GetScheduleType());
