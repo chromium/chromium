@@ -2719,19 +2719,6 @@ bool LocalFrame::SwapIn() {
   // Swap in `this`, which is a provisional frame to an existing frame.
   Frame* provisional_owner_frame = GetProvisionalOwnerFrame();
 
-  if (!IsLocalRoot()) {
-    if (auto* local_provisional_owner =
-            DynamicTo<LocalFrame>(provisional_owner_frame)) {
-      // For local roots, the initial probe sink should not be changed. For
-      // others, we use a provisional sink that needs to be swapped with that of
-      // the previous frame. The probes dispatched to provisional sink are lost,
-      // so no events are sent before swap in or after swap out.
-      std::swap(probe_sink_, local_provisional_owner->probe_sink_);
-    } else {
-      probe_sink_ = LocalFrameRoot().probe_sink_;
-    }
-    probe::FrameAttachedToParent(this, ad_script_from_frame_creation_stack_);
-  }
 
   // First, check if there's a previous main frame to be used for a main frame
   // LocalFrame <-> LocalFrame swap.
@@ -2766,6 +2753,38 @@ bool LocalFrame::SwapIn() {
   // frame can be a RemoteFrame or a LocalFrame (for non-main frame
   // LocalFrame <-> LocalFrame swap cases).
   CHECK_EQ(provisional_owner_frame->GetPage(), GetPage());
+
+  // When creating a provisional LocalFrame, a new provisional probe sink is
+  // created. Whether that probe sink is going to be used differs depending
+  // on the situation:
+  // - For local roots, that provisional probe sink should be used, as
+  //   local roots needs new probe sinks. So nothing needs to be done here.
+  // - For non-local-root LocalFrame <-> LocalFrame swap, reuse the previous
+  //   LocalFrame's probe sink.
+  // - For other cases, reuse the local root's probe sink.
+  // Note that the probes dispatched to provisional sink are lost, so no
+  // events are sent before swap in or after swap out.
+  if (!IsLocalRoot()) {
+    if (auto* local_provisional_owner =
+            DynamicTo<LocalFrame>(provisional_owner_frame)) {
+      // This is doing a LocalFrame <-> LocalFrame swap, so reuse the previous
+      // LocalFrame's probe sink through swapping below. The detaching/unloading
+      // of the previous document is done before we swap the probe sinks. This
+      // is to ensure that resources from the old document won't stay around and
+      // thus won't be be captured in the newly committed document's probe sink.
+      bool swap_result =
+          client->SwapIn(WebFrame::FromCoreFrame(provisional_owner_frame));
+      std::swap(probe_sink_, local_provisional_owner->probe_sink_);
+      return swap_result;
+    }
+
+    // This is a remote -> local swap, so just use the local root's probe sink.
+    probe_sink_ = LocalFrameRoot().probe_sink_;
+    // For remote -> local swap, Send a frameAttached event to keep the legacy
+    // behavior where we fire the frameAttached event on cross-site navigations.
+    probe::FrameAttachedToParent(this, ad_script_from_frame_creation_stack_);
+  }
+
   return client->SwapIn(WebFrame::FromCoreFrame(provisional_owner_frame));
 }
 
