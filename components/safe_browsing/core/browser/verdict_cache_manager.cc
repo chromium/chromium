@@ -468,7 +468,7 @@ VerdictCacheManager::VerdictCacheManager(
   }
   // sync_observer_ can be null in some embedders that don't support sync.
   if (sync_observer_) {
-    sync_observer_->ObserveSyncStateChanged(base::BindRepeating(
+    sync_observer_->ObserveHistorySyncStateChanged(base::BindRepeating(
         &VerdictCacheManager::CleanUpAllPageLoadTokens,
         weak_factory_.GetWeakPtr(), ClearReason::kSyncStateChanged));
   }

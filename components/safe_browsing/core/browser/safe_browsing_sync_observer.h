@@ -16,9 +16,10 @@ class SafeBrowsingSyncObserver {
 
   virtual ~SafeBrowsingSyncObserver() = default;
 
-  // Starts to observe sync state changed events. `callback` will be invoked
-  // if sync state has changed. `callback` can be invoked multiple times.
-  virtual void ObserveSyncStateChanged(Callback callback) = 0;
+  // Starts to observe history sync state changed events. `callback` will be
+  // invoked if the history sync state has changed. `callback` can be invoked
+  // multiple times.
+  virtual void ObserveHistorySyncStateChanged(Callback callback) = 0;
 };
 
 }  // namespace safe_browsing

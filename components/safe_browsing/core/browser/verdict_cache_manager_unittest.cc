@@ -36,7 +36,7 @@ class MockSafeBrowsingSyncObserver : public SafeBrowsingSyncObserver {
 
   ~MockSafeBrowsingSyncObserver() override = default;
 
-  void ObserveSyncStateChanged(
+  void ObserveHistorySyncStateChanged(
       SafeBrowsingSyncObserver::Callback callback) override {
     callback_ = std::move(callback);
   }
