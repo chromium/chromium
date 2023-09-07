@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_bulk_move_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_export_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_delegate.h"
@@ -34,18 +35,24 @@ class SyncService;
 // `exportHandler` forwards certain events from the PasswordExporter so that
 // alerts can be displayed.
 - (instancetype)
-    initWithReauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
-           savedPasswordsPresenter:
-               (raw_ptr<password_manager::SavedPasswordsPresenter>)
-                   passwordPresenter
-                     exportHandler:(id<PasswordExportHandler>)exportHandler
-                       prefService:(raw_ptr<PrefService>)prefService
-                   identityManager:
-                       (raw_ptr<signin::IdentityManager>)identityManager
-                       syncService:(raw_ptr<syncer::SyncService>)syncService
+       initWithReauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
+              savedPasswordsPresenter:
+                  (raw_ptr<password_manager::SavedPasswordsPresenter>)
+                      passwordPresenter
+    bulkMovePasswordsToAccountHandler:
+        (id<BulkMoveLocalPasswordsToAccountHandler>)
+            bulkMovePasswordsToAccountHandler
+                        exportHandler:(id<PasswordExportHandler>)exportHandler
+                          prefService:(raw_ptr<PrefService>)prefService
+                      identityManager:
+                          (raw_ptr<signin::IdentityManager>)identityManager
+                          syncService:(raw_ptr<syncer::SyncService>)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// TODO(crbug.com/1479178): Move passwords to account store.
+- (void)userDidStartBulkMoveLocalPasswordsToAccountFlow;
 
 // Indicates that the user triggered the export flow.
 - (void)userDidStartExportFlow;

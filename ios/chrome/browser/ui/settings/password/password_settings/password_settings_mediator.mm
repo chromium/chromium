@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_mediator.h"
 
 #import "base/containers/cxx20_erase_vector.h"
+#import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/features/password_features.h"
+#import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -24,8 +27,22 @@
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using password_manager::prefs::kCredentialsEnableService;
+
+namespace {
+
+// Returns true if the credential passed is not stored in the account store.
+bool isCredentialNotInAccountStore(
+    const password_manager::CredentialUIEntry& credential) {
+  return !credential.stored_in.contains(
+      password_manager::PasswordForm::Store::kAccountStore);
+}
+
+}  // namespace
 
 @interface PasswordSettingsMediator () <BooleanObserver,
                                         IdentityManagerObserverBridgeDelegate,
@@ -71,6 +88,9 @@ using password_manager::prefs::kCredentialsEnableService;
 // handles the actual serialization of the passwords.
 @property(nonatomic, strong) PasswordExporter* passwordExporter;
 
+@property(nonatomic, strong) id<BulkMoveLocalPasswordsToAccountHandler>
+    bulkMovePasswordsToAccountHandler;
+
 // Delegate capable of showing alerts needed in the password export flow.
 @property(nonatomic, weak) id<PasswordExportHandler> exportHandler;
 
@@ -85,15 +105,19 @@ using password_manager::prefs::kCredentialsEnableService;
 @implementation PasswordSettingsMediator
 
 - (instancetype)
-    initWithReauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
-           savedPasswordsPresenter:
-               (raw_ptr<password_manager::SavedPasswordsPresenter>)
-                   passwordPresenter
-                     exportHandler:(id<PasswordExportHandler>)exportHandler
-                       prefService:(raw_ptr<PrefService>)prefService
-                   identityManager:
-                       (raw_ptr<signin::IdentityManager>)identityManager
-                       syncService:(raw_ptr<syncer::SyncService>)syncService {
+       initWithReauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
+              savedPasswordsPresenter:
+                  (raw_ptr<password_manager::SavedPasswordsPresenter>)
+                      passwordPresenter
+    bulkMovePasswordsToAccountHandler:
+        (id<BulkMoveLocalPasswordsToAccountHandler>)
+            bulkMovePasswordsToAccountHandler
+                        exportHandler:(id<PasswordExportHandler>)exportHandler
+                          prefService:(raw_ptr<PrefService>)prefService
+                      identityManager:
+                          (raw_ptr<signin::IdentityManager>)identityManager
+                          syncService:
+                              (raw_ptr<syncer::SyncService>)syncService {
   self = [super init];
   if (self) {
     _passwordExporter =
@@ -104,6 +128,7 @@ using password_manager::prefs::kCredentialsEnableService;
         std::make_unique<SavedPasswordsPresenterObserverBridge>(
             self, _savedPasswordsPresenter);
     _savedPasswordsPresenter->Init();
+    _bulkMovePasswordsToAccountHandler = bulkMovePasswordsToAccountHandler;
     _exportHandler = exportHandler;
     _prefService = prefService;
     _passwordManagerEnabled = [[PrefBackedBoolean alloc]
@@ -154,6 +179,12 @@ using password_manager::prefs::kCredentialsEnableService;
   [self passwordAutoFillStatusDidChange];
 
   [self.consumer setOnDeviceEncryptionState:[self onDeviceEncryptionState]];
+
+  [self updateShowBulkMovePasswordsToAccount];
+}
+
+- (void)userDidStartBulkMoveLocalPasswordsToAccountFlow {
+  // TODO(crbug.com/1479178): Move passwords to account store.
 }
 
 - (void)userDidStartExportFlow {
@@ -219,6 +250,38 @@ using password_manager::prefs::kCredentialsEnableService;
 
 #pragma mark - PasswordSettingsDelegate
 
+- (void)bulkMovePasswordsToAccountButtonClicked {
+  // Create the confirmation dialog title.
+  NSString* alertTitle = l10n_util::GetPluralNSStringF(
+      IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_TITLE,
+      [self computeLocalPasswordsCount]);
+
+  // Create the confirmation dialog description.
+  NSMutableArray<NSString*>* distinctDomains =
+      [self computeDistinctDomainsFromLocalPasswords];
+
+  std::u16string pattern = l10n_util::GetStringUTF16(
+      IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_DESCRIPTION);
+  std::u16string result = base::i18n::MessageFormatter::FormatWithNamedArgs(
+      pattern, "COUNT", (int)[distinctDomains count], "DOMAIN_ONE",
+      [distinctDomains count] >= 1
+          ? base::SysNSStringToUTF16(distinctDomains[0])
+          : base::SysNSStringToUTF16(@""),
+      "DOMAIN_TWO",
+      [distinctDomains count] >= 2
+          ? base::SysNSStringToUTF16(distinctDomains[1])
+          : base::SysNSStringToUTF16(@""),
+      "OTHER_DOMAINS_COUNT", (int)([distinctDomains count] - 2), "EMAIL",
+      _syncService->GetAccountInfo().email);
+
+  NSString* alertDescription = base::SysUTF16ToNSString(result);
+
+  // Create and show the confirmation dialog.
+  [self.bulkMovePasswordsToAccountHandler
+      showConfirmationDialogWithAlertTitle:alertTitle
+                          alertDescription:alertDescription];
+}
+
 - (void)savedPasswordSwitchDidChange:(BOOL)enabled {
   _passwordManagerEnabled.value = enabled;
 }
@@ -252,6 +315,7 @@ using password_manager::prefs::kCredentialsEnableService;
   self.hasSavedPasswords =
       !_savedPasswordsPresenter->GetSavedPasswords().empty();
   [self pushExportStateToConsumerAndUpdate];
+  [self updateShowBulkMovePasswordsToAccount];
 }
 
 #pragma mark - BooleanObserver
@@ -285,6 +349,7 @@ using password_manager::prefs::kCredentialsEnableService;
                                         _syncService->GetAccountInfo().email)];
   [self.consumer
       setAccountStorageSwitchState:[self computeAccountStorageSwitchState]];
+  [self updateShowBulkMovePasswordsToAccount];
 }
 
 #pragma mark - Private
@@ -335,6 +400,61 @@ using password_manager::prefs::kCredentialsEnableService;
              syncer::UserSelectableType::kPasswords)
              ? AccountStorageSwitchState::kOn
              : AccountStorageSwitchState::kOff;
+}
+
+// Computes the amount of local passwords and passes that on to the consumer.
+- (void)updateShowBulkMovePasswordsToAccount {
+  if (!password_manager::features::IsBulkUploadLocalPasswordsEnabled()) {
+    return;
+  }
+
+  [self.consumer setLocalPasswordsCount:[self computeLocalPasswordsCount]
+                    withUserEligibility:password_manager::features_util::
+                                            IsOptedInForAccountStorage(
+                                                _prefService, _syncService)];
+}
+
+// Returns the amount of local passwords.
+- (int)computeLocalPasswordsCount {
+  std::vector<password_manager::AffiliatedGroup> affiliatedGroups =
+      _savedPasswordsPresenter->GetAffiliatedGroups();
+
+  // Count passwords that don't appear in the account store.
+  int passwordsCount = 0;
+  for (password_manager::AffiliatedGroup group : affiliatedGroups) {
+    passwordsCount += base::ranges::count_if(group.GetCredentials().begin(),
+                                             group.GetCredentials().end(),
+                                             isCredentialNotInAccountStore);
+  }
+
+  return passwordsCount;
+}
+
+// Returns the list of distinct domains present in the local passwords. If they
+// are in different affiliated groups, they are presumed to be distinct.
+- (NSMutableArray<NSString*>*)computeDistinctDomainsFromLocalPasswords {
+  std::vector<password_manager::AffiliatedGroup> affiliatedGroups =
+      _savedPasswordsPresenter->GetAffiliatedGroups();
+
+  // Add distinct domains for which there exists a password that doesn't appear
+  // in the account store.
+  NSMutableArray<NSString*>* distinctDomains = [NSMutableArray array];
+
+  for (const password_manager::AffiliatedGroup& group : affiliatedGroups) {
+    auto credential = base::ranges::find_if(group.GetCredentials().begin(),
+                                            group.GetCredentials().end(),
+                                            isCredentialNotInAccountStore);
+
+    // If a credential exists in this group that is in the profile store, append
+    // the group's display name to the distinct domains.
+    if (credential != group.GetCredentials().end()) {
+      [distinctDomains
+          addObject:[NSString
+                        stringWithUTF8String:group.GetDisplayName().c_str()]];
+    }
+  }
+
+  return distinctDomains;
 }
 
 @end
