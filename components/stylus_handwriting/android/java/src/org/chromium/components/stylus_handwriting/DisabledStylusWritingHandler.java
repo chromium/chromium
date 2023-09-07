@@ -4,6 +4,8 @@
 
 package org.chromium.components.stylus_handwriting;
 
+import static android.view.PointerIcon.TYPE_NULL;
+
 import android.content.Context;
 
 import org.chromium.content_public.browser.StylusWritingHandler;
@@ -21,4 +23,9 @@ public class DisabledStylusWritingHandler implements StylusApiOption {
 
     @Override
     public void onWindowFocusChanged(Context context, boolean hasFocus) {}
+
+    @Override
+    public int getStylusPointerIcon() {
+        return TYPE_NULL;
+    }
 }

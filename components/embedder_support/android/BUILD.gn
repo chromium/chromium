@@ -303,12 +303,18 @@ robolectric_library("junit_test_support") {
 robolectric_library("components_embedder_support_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",
+    "junit/src/org/chromium/components/embedder_support/view/ContentViewTest.java",
   ]
   deps = [
+    ":content_view_java",
     ":util_java",
     "//base:base_junit_test_support",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:org_mockito_mockito_core_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
+    "//ui/android:ui_java",
   ]
 }
 
