@@ -1624,7 +1624,13 @@ test("content_browsertests") {
   }
 
   if (is_android) {
-    sources += [ "../browser/gpu/gpu_background_kill_android_browsertest.cc" ]
+    sources += [
+      "../browser/gpu/gpu_background_kill_android_browsertest.cc",
+
+      # TODO(https://crbug.com/1442929): move out of Android once we can capture
+      # for other platforms.
+      "../browser/renderer_host/navigation_transitions/navigation_entry_screenshot_browsertest.cc",
+    ]
   }
 
   if (enable_reporting) {

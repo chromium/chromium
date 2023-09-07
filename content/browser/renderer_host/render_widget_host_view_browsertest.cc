@@ -1809,26 +1809,6 @@ void AssertSnapshotIsPureWhite(base::RepeatingClosure resume_test,
   std::move(resume_test).Run();
 }
 
-void WaitForSurfaceAvailableForCopy(WebContents* web_contents) {
-  {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
-    obs.Wait();
-  }
-  // `InsertVisualStateCallback` replies when a CompositorFrame is submitted.
-  // However, we want to wait until the Viz process has received the new
-  // `CompositorFrame` so that the new frame is available for copy. Waiting for
-  // a second frame to be submitted guarantees this, since the second frame
-  // cannot be sent until the first frame was ACKed by Viz.
-  {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
-    obs.Wait();
-  }
-  ASSERT_TRUE(
-      web_contents->GetRenderWidgetHostView()->IsSurfaceAvailableForCopy());
-}
-
 class ScopedSnapshotWaiter : public WebContentsObserver {
  public:
   ScopedSnapshotWaiter(WebContents* wc, const GURL& destination)
@@ -1885,7 +1865,7 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
       NavigateToURL(shell()->web_contents(),
                     embedded_test_server()->GetURL("a.com", "/empty.html")));
   // Makes sure "empty.html" is in a steady state and ready to be copied.
-  WaitForSurfaceAvailableForCopy(shell()->web_contents());
+  WaitForCopyableViewInWebContents(shell()->web_contents());
 
   const auto cross_renderer_url =
       embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -1893,7 +1873,7 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell()->web_contents(), cross_renderer_url));
   // Force the new renderer for "title1.html" to submit a new compositor frame
   // and ack by viz, such that our `CopyOutputRequest` is fulfilled.
-  WaitForSurfaceAvailableForCopy(shell()->web_contents());
+  WaitForCopyableViewInWebContents(shell()->web_contents());
   // Blocks until we get the desired snapshot of "empty.html".
   waiter.Wait();
 }

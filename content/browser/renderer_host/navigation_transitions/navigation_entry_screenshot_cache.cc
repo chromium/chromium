@@ -66,6 +66,10 @@ void NavigationEntryScreenshotCache::SetScreenshot(
                      std::move(screenshot));
   cached_screenshots_.insert(entry->GetUniqueID());
   manager_->OnScreenshotCached(this, size);
+
+  if (new_screenshot_cached_callback_) {
+    std::move(new_screenshot_cached_callback_).Run(entry->GetUniqueID());
+  }
 }
 
 std::unique_ptr<NavigationEntryScreenshot>
@@ -177,6 +181,12 @@ void NavigationEntryScreenshotCache::Purge() {
 
 bool NavigationEntryScreenshotCache::IsEmpty() const {
   return cached_screenshots_.empty();
+}
+
+void NavigationEntryScreenshotCache::SetNewScreenshotCachedCallbackForTesting(
+    NewScreenshotCachedCallbackForTesting callback) {
+  CHECK(!new_screenshot_cached_callback_);
+  new_screenshot_cached_callback_ = std::move(callback);
 }
 
 }  // namespace content

@@ -480,6 +480,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void DidChangeReferrerPolicy(FrameTreeNode* node,
                                network::mojom::ReferrerPolicy referrer_policy);
 
+  base::WeakPtr<NavigationControllerImpl> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   friend class RestoreHelper;
 

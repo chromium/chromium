@@ -1873,6 +1873,8 @@ source_set("browser") {
     "renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h",
     "renderer_host/navigation_transitions/navigation_entry_screenshot_manager.cc",
     "renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h",
+    "renderer_host/navigation_transitions/navigation_transition_utils.cc",
+    "renderer_host/navigation_transitions/navigation_transition_utils.h",
     "renderer_host/navigation_type.h",
     "renderer_host/navigator.cc",
     "renderer_host/navigator.h",

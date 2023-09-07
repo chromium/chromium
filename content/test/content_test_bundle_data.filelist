@@ -5303,6 +5303,7 @@ data/battery_monitor/battery_status_promise_resolution_test.html
 data/blank.jpg
 data/blob_storage/blob_creation_and_slicing.html
 data/blob_storage/common.js
+data/blue.html
 data/body_overflow_hidden.html
 data/browsing_data/embedded_site_data.html
 data/browsing_data/embeds_storage_accessor.html
@@ -5976,6 +5977,7 @@ data/gpu/webgpu-stress-request-device-and-remove-loop.html
 data/gpu/webgpu-unittest-utils.js
 data/gpu/webgpu-unittest-worker.js
 data/gpu/worker-webgl-raf-after-gpu-crash.html
+data/green.html
 data/gtk_key_bindings_test_gtkrc
 data/gzip-content.svgz
 data/gzip-content.svgz.mock-http-headers
@@ -6565,6 +6567,7 @@ data/private_aggregation/aggregatable_report_goldens/latest/report_7_cleartext_p
 data/private_aggregation/aggregatable_report_goldens/version_/private_key.txt
 data/private_aggregation/aggregatable_report_goldens/version_/public_key.json
 data/push_state.html
+data/red.html
 data/redirect301-csp-to-frame-ancestors-none
 data/redirect301-csp-to-frame-ancestors-none.mock-http-headers
 data/redirect301-csp-to-http

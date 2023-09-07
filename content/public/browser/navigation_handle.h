@@ -236,11 +236,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual const std::string& GetSearchableFormEncoding() = 0;
 
   // Returns the reload type for this navigation.
-  virtual ReloadType GetReloadType() = 0;
+  virtual ReloadType GetReloadType() const = 0;
 
   // Returns the restore type for this navigation. RestoreType::NONE is returned
   // if the navigation is not a restore.
-  virtual RestoreType GetRestoreType() = 0;
+  virtual RestoreType GetRestoreType() const = 0;
 
   // Used for specifying a base URL for pages loaded via data URLs.
   virtual const GURL& GetBaseURLForDataURL() = 0;
@@ -518,7 +518,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual bool IsSameProcess() = 0;
 
   // Returns the NavigationEntry associated with this, which may be null.
-  virtual NavigationEntry* GetNavigationEntry() = 0;
+  virtual NavigationEntry* GetNavigationEntry() const = 0;
 
   // Returns the offset between the indices of the previous last committed and
   // the newly committed navigation entries.

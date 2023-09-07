@@ -390,8 +390,8 @@ class CONTENT_EXPORT NavigationRequest
   bool WasStartedFromContextMenu() override;
   const GURL& GetSearchableFormURL() override;
   const std::string& GetSearchableFormEncoding() override;
-  ReloadType GetReloadType() override;
-  RestoreType GetRestoreType() override;
+  ReloadType GetReloadType() const override;
+  RestoreType GetRestoreType() const override;
   const GURL& GetBaseURLForDataURL() override;
   const GlobalRequestID& GetGlobalRequestID() override;
   bool IsDownload() override;
@@ -410,7 +410,7 @@ class CONTENT_EXPORT NavigationRequest
   const absl::optional<GURL>& GetInitiatorBaseUrl() override;
   const std::vector<std::string>& GetDnsAliases() override;
   bool IsSameProcess() override;
-  NavigationEntry* GetNavigationEntry() override;
+  NavigationEntry* GetNavigationEntry() const override;
   int GetNavigationEntryOffset() override;
   void RegisterSubresourceOverride(
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader) override;
@@ -1791,7 +1791,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Convenience function to return the NavigationControllerImpl this
   // NavigationRequest is in.
-  NavigationControllerImpl* GetNavigationController();
+  NavigationControllerImpl* GetNavigationController() const;
 
   // Convenience function to return the PrerenderHostRegistry this
   // NavigationRequest can be associated with.

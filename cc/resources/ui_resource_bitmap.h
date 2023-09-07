@@ -53,6 +53,8 @@ class CC_EXPORT UIResourceBitmap {
 
   bool IsUniquelyOwned() const { return pixel_ref_->unique(); }
 
+  SkBitmap GetBitmapForTesting() const;
+
  private:
   friend class AutoLockUIResourceBitmap;
 

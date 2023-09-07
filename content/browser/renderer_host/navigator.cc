@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -494,6 +495,18 @@ void Navigator::DidNavigate(
   if (was_within_same_document && render_frame_host != old_frame_host.get()) {
     was_within_same_document = false;
   }
+
+  // This is the last point where the browser still embeds the `viz::Surface` of
+  // the old page. The next `WebContentsImpl::DidNavigateMainFramePreCommit()`
+  // will hide the old View, and the
+  // `RenderFrameHostManager::DidNavigateFrame()` will subsequently unload the
+  // old page and show the new View.
+  //
+  // TODO(https://crbug.com/1473327): Move this into
+  // `RenderFrameHostManager::CommitPending` to accommodate both regular
+  // navigations and early-commit.
+  NavigationTransitionUtils::CaptureNavigationEntryScreenshot(
+      *navigation_request);
 
   if (ui::PageTransitionIsMainFrame(params.transition)) {
     // Run tasks that must execute just before the commit.

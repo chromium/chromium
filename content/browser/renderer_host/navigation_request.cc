@@ -8110,11 +8110,11 @@ const std::string& NavigationRequest::GetSearchableFormEncoding() {
   return begin_params().searchable_form_encoding;
 }
 
-ReloadType NavigationRequest::GetReloadType() {
+ReloadType NavigationRequest::GetReloadType() const {
   return reload_type_;
 }
 
-RestoreType NavigationRequest::GetRestoreType() {
+RestoreType NavigationRequest::GetRestoreType() const {
   return restore_type_;
 }
 
@@ -8173,7 +8173,7 @@ bool NavigationRequest::IsSameProcess() {
   return is_same_process_;
 }
 
-NavigationEntry* NavigationRequest::GetNavigationEntry() {
+NavigationEntry* NavigationRequest::GetNavigationEntry() const {
   if (nav_entry_id_ == 0)
     return nullptr;
 
@@ -8701,7 +8701,7 @@ std::string NavigationRequest::GetUserAgentOverride() {
                                     : std::string();
 }
 
-NavigationControllerImpl* NavigationRequest::GetNavigationController() {
+NavigationControllerImpl* NavigationRequest::GetNavigationController() const {
   return &frame_tree_node_->navigator().controller();
 }
 

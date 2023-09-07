@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_ENTRY_SCREENSHOT_CACHE_H_
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/safe_ref.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
@@ -88,6 +89,11 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   void Purge() override;
   bool IsEmpty() const override;
 
+  // Allows the browsertests to be notified when a screenshot is cached.
+  using NewScreenshotCachedCallbackForTesting = base::OnceCallback<void(int)>;
+  void SetNewScreenshotCachedCallbackForTesting(
+      NewScreenshotCachedCallbackForTesting callback);
+
  private:
   // Tracks the unique IDs of the navigation entries, for which we have captured
   // screenshots.
@@ -101,6 +107,8 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   // We need the controller for cache eviction to query all the
   // `NavigationEntry`. See the impl for `EvictScreenshotsUntilInBudgetOrEmpty`.
   const raw_ptr<NavigationControllerImpl> nav_controller_;
+
+  NewScreenshotCachedCallbackForTesting new_screenshot_cached_callback_;
 };
 
 }  // namespace content

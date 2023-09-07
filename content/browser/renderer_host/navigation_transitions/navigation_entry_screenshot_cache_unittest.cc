@@ -22,16 +22,6 @@ namespace content {
 
 namespace {
 
-static SkColor ConvertToSkia(SkColor c) {
-#if BUILDFLAG(IS_ANDROID)
-  // Skia uses ABGR on Android.
-  return (SkColorGetA(c) << SK_A32_SHIFT) | (SkColorGetB(c) << SK_B32_SHIFT) |
-         (SkColorGetG(c) << SK_G32_SHIFT) | (SkColorGetR(c) << SK_R32_SHIFT);
-#else
-  return c;
-#endif
-}
-
 static NavigationEntryScreenshotCache* GetCacheForTab(WebContents* tab) {
   return static_cast<NavigationControllerImpl*>(&(tab->GetController()))
       ->GetNavigationEntryScreenshotCache();
@@ -106,13 +96,23 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
       SkColor color) {
     auto ui_resource = screenshot->GetBitmap(0, false);
     ASSERT_EQ(ui_resource.GetSize(), size_);
-    // Flattern the `UIResourceBitmap` and compare the color of each pixel.
-    const auto* pixels =
-        reinterpret_cast<const SkColor*>(ui_resource.GetPixels());
+    auto bitmap = ui_resource.GetBitmapForTesting();
+    int num_pixel_mismatch = 0;
+    gfx::Rect err_bounding_box;
     for (int r = 0; r < size_.height(); ++r) {
       for (int c = 0; c < size_.width(); ++c) {
-        ASSERT_EQ(ConvertToSkia(pixels[c + r * c]), color);
+        if (bitmap.getColor(c, r) != color) {
+          ++num_pixel_mismatch;
+          err_bounding_box.Union(gfx::Rect(c, r, 1, 1));
+        }
       }
+    }
+    if (num_pixel_mismatch != 0) {
+      ASSERT_TRUE(false)
+          << "Number of pixel mismatches: " << num_pixel_mismatch
+          << "; error bounding box: " << err_bounding_box.ToString()
+          << "; bitmap size: "
+          << gfx::Size(bitmap.width(), bitmap.height()).ToString();
     }
   }
 
