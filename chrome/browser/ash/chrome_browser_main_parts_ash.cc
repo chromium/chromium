@@ -204,6 +204,7 @@
 #include "chromeos/ash/components/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -1299,6 +1300,11 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
           NET_LOG(ERROR) << "Fail to set EnableRFC8925 shill property, error:"
                          << error_name << ", message: " << error_message;
         }));
+
+    // Notify patchpanel about QoS feature enabled flag.
+    ash::PatchPanelClient::Get()->SetFeatureFlag(
+        patchpanel::SetFeatureFlagRequest::WIFI_QOS,
+        base::FeatureList::IsEnabled(features::kEnableWifiQos));
   }
 
   ChromeBrowserMainPartsLinux::PostProfileInit(profile, is_initial_profile);

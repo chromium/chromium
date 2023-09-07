@@ -28,6 +28,8 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
   void RemoveObserver(Observer* observer) override;
   void NotifyAndroidInteractiveState(bool interactive) override;
   void NotifyAndroidWifiMulticastLockChange(bool is_held) override;
+  void SetFeatureFlag(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
+                      bool enabled) override;
 
   // Record of count of calling NotifyAndroidInteractiveState for testing
   // purpose.

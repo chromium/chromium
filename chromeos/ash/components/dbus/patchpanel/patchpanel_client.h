@@ -56,6 +56,11 @@ class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient
   // to not held or vice versa.
   virtual void NotifyAndroidWifiMulticastLockChange(bool is_held) = 0;
 
+  // Called when sending feature enabled flag to patchpanel.
+  virtual void SetFeatureFlag(
+      patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
+      bool enabled) = 0;
+
   // Adds an observer.
   virtual void AddObserver(Observer* observer) = 0;
 

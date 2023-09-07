@@ -65,4 +65,8 @@ void FakePatchPanelClient::NotifyNetworkConfigurationChanged() {
     observer.NetworkConfigurationChanged();
 }
 
+void FakePatchPanelClient::SetFeatureFlag(
+    patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
+    bool enabled) {}
+
 }  // namespace ash
