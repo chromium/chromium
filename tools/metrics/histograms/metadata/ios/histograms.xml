@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CaptivePortal.SecureConnectionFailed"
-    enum="CaptivePortalStatus" expires_after="2023-10-16">
+    enum="CaptivePortalStatus" expires_after="2023-09-07">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
-    expires_after="2023-09-24">
+    expires_after="2024-09-07">
   <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CommittedURLMatchesCurrentItem" enum="Boolean"
-    expires_after="2023-09-24">
+    expires_after="2024-09-07">
   <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
