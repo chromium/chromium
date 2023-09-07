@@ -20,7 +20,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
-#include "services/network/network_service_proxy_allow_list.h"
+#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

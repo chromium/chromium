@@ -262,7 +262,7 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
         network_context_.get(), std::move(factory_params),
         /*resource_scheduler_client=*/nullptr,
         cors_url_loader_factory_remote_.BindNewPipeAndPassReceiver(),
-        &origin_access_list_);
+        &origin_access_list_, /*resource_block_list=*/nullptr);
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }

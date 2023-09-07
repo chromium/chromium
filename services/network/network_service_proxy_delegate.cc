@@ -12,7 +12,7 @@
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
-#include "services/network/network_service_proxy_allow_list.h"
+#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
 

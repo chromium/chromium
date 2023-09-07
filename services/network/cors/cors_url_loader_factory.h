@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/masked_domain_list/network_service_resource_block_list.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -54,13 +55,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       const net::HttpRequestHeaders& headers);
 
   // `origin_access_list` should always outlive this factory instance.
+  // `resource_block_list` should always outlive this factory instance because
+  // it is owned by the Network Service.
   // Used by network::NetworkContext.
   CorsURLLoaderFactory(
       NetworkContext* context,
       mojom::URLLoaderFactoryParamsPtr params,
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
       mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
-      const OriginAccessList* origin_access_list);
+      const OriginAccessList* origin_access_list,
+      NetworkServiceResourceBlockList* resource_block_list);
 
   CorsURLLoaderFactory(const CorsURLLoaderFactory&) = delete;
   CorsURLLoaderFactory& operator=(const CorsURLLoaderFactory&) = delete;
@@ -109,6 +113,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   void DeleteIfNeeded();
 
   bool IsValidRequest(const ResourceRequest& request, uint32_t options);
+
+  // If enabled, checks request destination and IsolationInfo against the
+  // NetworkServiceResourceBlockList.
+  // TODO(crbug.com/1478868): This is an interim method only for AFP block list
+  // experiment. This method should not be used for other use cases. This will
+  // be removed when AFP block list logic is migrated to subresource filter.
+  bool ShouldBlockRequestForAfpExperiment(const ResourceRequest& request);
 
   bool GetAllowAnyCorsExemptHeaderForBrowser() const;
 
@@ -177,6 +188,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // Accessed by instances in `loaders_` too. Since the factory outlives them,
   // it's safe.
   const raw_ptr<const OriginAccessList> origin_access_list_;
+
+  const raw_ptr<NetworkServiceResourceBlockList> resource_block_list_;
 
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
 

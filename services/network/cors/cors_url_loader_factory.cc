@@ -34,6 +34,7 @@
 #include "services/network/url_loader.h"
 #include "services/network/url_loader_factory.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace network::cors {
@@ -52,8 +53,9 @@ bool VerifyTrustTokenParamsIntegrityIfPresent(
     const NetworkContext* context,
     mojom::TrustTokenOperationPolicyVerdict trust_token_issuance_policy,
     mojom::TrustTokenOperationPolicyVerdict trust_token_redemption_policy) {
-  if (!resource_request.trust_token_params)
+  if (!resource_request.trust_token_params) {
     return true;
+  }
 
   if (!context->trust_token_store()) {
     // Got a request with Trust Tokens parameters with Trust tokens
@@ -202,7 +204,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
     mojom::URLLoaderFactoryParamsPtr params,
     scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
-    const OriginAccessList* origin_access_list)
+    const OriginAccessList* origin_access_list,
+    NetworkServiceResourceBlockList* resource_block_list)
     : context_(context),
       is_trusted_(params->is_trusted),
       disable_web_security_(params->disable_web_security),
@@ -225,7 +228,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
           std::move(params->url_loader_network_observer)),
       shared_dictionary_observer_(
           std::move(params->shared_dictionary_observer)),
-      origin_access_list_(origin_access_list) {
+      origin_access_list_(origin_access_list),
+      resource_block_list_(resource_block_list) {
   DCHECK(context_);
   DCHECK(origin_access_list_);
   DCHECK_NE(mojom::kInvalidProcessId, process_id_);
@@ -311,6 +315,17 @@ void CorsURLLoaderFactory::DestroyCorsURLLoader(CorsURLLoader* loader) {
   DestroyLoader(loader, cors_url_loaders_);
 }
 
+bool CorsURLLoaderFactory::ShouldBlockRequestForAfpExperiment(
+    const ResourceRequest& resource_request) {
+  if (resource_block_list_ && resource_block_list_->IsEnabled()) {
+    return resource_block_list_->Matches(
+        resource_request.url,
+        URLLoader::GetIsolationInfo(isolation_info_, false, resource_request));
+  }
+
+  return false;
+}
+
 void CorsURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     int32_t request_id,
@@ -337,6 +352,15 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
+  if (ShouldBlockRequestForAfpExperiment(resource_request)) {
+    VLOG(1)
+        << "CorsURLLoaderFactory: blocking request for resource_request.url: "
+        << resource_request.url;
+    mojo::Remote<mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT));
+    return;
+  }
+
   if (resource_request.destination ==
       network::mojom::RequestDestination::kWebBundle) {
     DCHECK(resource_request.web_bundle_token_params.has_value());
@@ -354,8 +378,9 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
             coep_reporter());
     client = web_bundle_url_loader_factory->MaybeWrapURLLoaderClient(
         std::move(client));
-    if (!client)
+    if (!client) {
       return;
+    }
   }
 
   mojom::URLLoaderFactory* const inner_url_loader_factory =
@@ -370,8 +395,9 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     auto isolation_info = URLLoader::GetIsolationInfo(
         isolation_info_, automatically_assign_isolation_info_,
         resource_request);
-    if (isolation_info)
+    if (isolation_info) {
       isolation_info_ptr = &isolation_info.value();
+    }
 
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage =
         shared_dictionary_storage_;
@@ -431,8 +457,9 @@ void CorsURLLoaderFactory::ClearBindings() {
 }
 
 void CorsURLLoaderFactory::DeleteIfNeeded() {
-  if (receivers_.empty() && url_loaders_.empty() && cors_url_loaders_.empty())
+  if (receivers_.empty() && url_loaders_.empty() && cors_url_loaders_.empty()) {
     context_->DestroyURLLoaderFactory(this);
+  }
 }
 
 // static
@@ -757,8 +784,9 @@ CorsURLLoaderFactory::GetDevToolsObserver(
     mojom::DevToolsObserver* observer =
         factory_override_ ? factory_override_->GetDevToolsObserver()
                           : network_loader_factory_->GetDevToolsObserver();
-    if (observer)
+    if (observer) {
       observer->Clone(devtools_observer.InitWithNewPipeAndPassReceiver());
+    }
   }
   return devtools_observer;
 }

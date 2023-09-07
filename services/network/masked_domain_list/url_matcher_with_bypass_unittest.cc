@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/network_service_proxy_allow_list.h"
+#include "services/network/masked_domain_list/url_matcher_with_bypass.h"
 
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -25,69 +23,10 @@ struct MatchTest {
 
 }  // namespace
 
-class NetworkServiceProxyAllowListTest : public ::testing::Test {};
+class UrlMatcherWithBypassTest : public ::testing::Test {};
 
-TEST_F(NetworkServiceProxyAllowListTest, NotEnabled) {
-  NetworkServiceProxyAllowList allowList;
-  EXPECT_FALSE(allowList.IsEnabled());
-}
-
-TEST_F(NetworkServiceProxyAllowListTest, IsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({net::features::kEnableIpProtectionProxy,
-                                        network::features::kMaskedDomainList},
-                                       {});
-
-  NetworkServiceProxyAllowList allowList;
-
-  EXPECT_TRUE(allowList.IsEnabled());
-  EXPECT_TRUE(allowList.MakeIpProtectionCustomProxyConfig()
-                  ->rules.restrict_to_network_service_proxy_allow_list);
-}
-
-TEST_F(NetworkServiceProxyAllowListTest, IsPopulated) {
-  NetworkServiceProxyAllowList allowList;
-  MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("foo");
-  resourceOwner->add_owned_resources()->set_domain("example.com");
-  allowList.UseMaskedDomainList(mdl);
-
-  EXPECT_TRUE(allowList.IsPopulated());
-}
-
-TEST_F(NetworkServiceProxyAllowListTest, IsPopulated_Empty) {
-  NetworkServiceProxyAllowList allowList;
-  EXPECT_FALSE(allowList.IsPopulated());
-}
-
-TEST_F(NetworkServiceProxyAllowListTest, Matches_AllowListNotPopulated) {
-  NetworkServiceProxyAllowList allowList;
-
-  EXPECT_FALSE(allowList.IsPopulated());
-  EXPECT_FALSE(allowList.Matches(GURL("http://example.com"),
-                                 GURL("http://example2.com")));
-}
-
-// Match returns false for an empty top frame URL. This is believed to be
-// impossible, so this represents a "fail open" policy if this circumstance can,
-// in fact, occur.
-TEST_F(NetworkServiceProxyAllowListTest, Matches_TopFrameUrlIsEmpty) {
-  NetworkServiceProxyAllowList allowList;
-
-  MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("foo");
-  resourceOwner->add_owned_resources()->set_domain("example.com");
-  resourceOwner->add_owned_properties("example2.com");
-
-  allowList.UseMaskedDomainList(mdl);
-
-  EXPECT_FALSE(allowList.Matches(GURL("http://example.com"), GURL()));
-}
-
-TEST_F(NetworkServiceProxyAllowListTest, PartitionMapKey) {
-  auto PartitionMapKey = &NetworkServiceProxyAllowList::PartitionMapKey;
+TEST_F(UrlMatcherWithBypassTest, PartitionMapKey) {
+  auto PartitionMapKey = &UrlMatcherWithBypass::PartitionMapKey;
   EXPECT_EQ(PartitionMapKey("com"), "com");
   EXPECT_EQ(PartitionMapKey("foo.com"), "foo.com");
   EXPECT_EQ(PartitionMapKey("sub.foo.com"), "foo.com");
@@ -96,11 +35,11 @@ TEST_F(NetworkServiceProxyAllowListTest, PartitionMapKey) {
   EXPECT_EQ(PartitionMapKey("foo.co.uk"), "co.uk");
 }
 
-class NetworkServiceProxyAllowListMatchTest
-    : public testing::TestWithParam<MatchTest> {};
+class UrlMatcherWithBypassMatchTest : public testing::TestWithParam<MatchTest> {
+};
 
-TEST_P(NetworkServiceProxyAllowListMatchTest, Match) {
-  NetworkServiceProxyAllowList allowList;
+TEST_P(UrlMatcherWithBypassMatchTest, Match) {
+  UrlMatcherWithBypass matcher;
   MaskedDomainList mdl;
 
   auto* resourceOwner = mdl.add_resource_owners();
@@ -117,12 +56,16 @@ TEST_P(NetworkServiceProxyAllowListMatchTest, Match) {
   resourceOwner->add_owned_properties("bbco-pa.com");
   resourceOwner->add_owned_properties("bbco-pb.co.uk");
 
-  allowList.UseMaskedDomainList(mdl);
+  for (auto owner : mdl.resource_owners()) {
+    for (auto resource : owner.owned_resources()) {
+      matcher.AddMaskedDomainListRules(resource.domain(), owner);
+    }
+  }
 
   const MatchTest& p = GetParam();
   EXPECT_EQ(p.matches,
-            allowList.Matches(GURL(base::StrCat({"https://", p.req})),
-                              GURL(base::StrCat({"https://", p.top}))));
+            matcher.Matches(GURL(base::StrCat({"https://", p.req})),
+                            GURL(base::StrCat({"https://", p.top}))));
 }
 
 const std::vector<MatchTest> kMatchTests = {
@@ -178,7 +121,7 @@ const std::vector<MatchTest> kMatchTests = {
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         NetworkServiceProxyAllowListMatchTest,
+                         UrlMatcherWithBypassMatchTest,
                          testing::ValuesIn(kMatchTests),
                          [](const testing::TestParamInfo<MatchTest>& info) {
                            return info.param.name;

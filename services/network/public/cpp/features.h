@@ -38,6 +38,8 @@ extern const base::FeatureParam<std::string>
     kMaskedDomainListExperimentalVersion;
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kMdnsResponderGeneratedNameListing);
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kEnableNetworkServiceResourceBlockList);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kOpaqueResponseBlockingV02);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kOpaqueResponseBlockingErrorsForAllFetches);

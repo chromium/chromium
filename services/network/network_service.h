@@ -41,9 +41,10 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/keepalive_statistics_recorder.h"
+#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
+#include "services/network/masked_domain_list/network_service_resource_block_list.h"
 #include "services/network/network_change_manager.h"
 #include "services/network/network_quality_estimator_manager.h"
-#include "services/network/network_service_proxy_allow_list.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
@@ -303,6 +304,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     return network_service_proxy_allow_list_.get();
   }
 
+  NetworkServiceResourceBlockList* network_service_resource_block_list() const {
+    return network_service_resource_block_list_.get();
+  }
+
   void set_host_resolver_factory_for_testing(
       std::unique_ptr<net::HostResolver::Factory> host_resolver_factory) {
     host_resolver_factory_ = std::move(host_resolver_factory);
@@ -449,6 +454,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   std::unique_ptr<NetworkServiceProxyAllowList>
       network_service_proxy_allow_list_;
+
+  std::unique_ptr<NetworkServiceResourceBlockList>
+      network_service_resource_block_list_;
 
   // A per-process_id map of origins that are white-listed to allow
   // them to request raw headers for resources they request.

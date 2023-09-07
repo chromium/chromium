@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
-#define SERVICES_NETWORK_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
+#ifndef SERVICES_NETWORK_MASKED_DOMAIN_LIST_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
+#define SERVICES_NETWORK_MASKED_DOMAIN_LIST_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
 
-#include <memory>
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
-#include "net/base/scheme_host_port_matcher_rule.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "services/network/masked_domain_list/url_matcher_with_bypass.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
@@ -47,23 +45,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   // rules.
   void UseMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl);
 
-  // Determine the partition of the `allow_list_with_bypass_map_` that contains
-  // the given domain.
-  static std::string PartitionMapKey(std::string domain);
-
  private:
-  void AddDomainRules(const std::string& domain,
-                      const net::ProxyBypassRules& bypass_rules);
+  void AddDomainWithBypass(const std::string& domain,
+                           net::SchemeHostPortMatcher bypass_matcher);
 
-  // Matching will require evaluating every `SchemeHostPortMatcherRule`
-  // sequentially. To save time, these are partitioned by a suffix of the
-  // hostname, determined by `MapPartitionKey()`.
-  std::map<std::string,
-           std::map<std::unique_ptr<net::SchemeHostPortMatcherRule>,
-                    net::ProxyBypassRules>>
-      allow_list_with_bypass_map_;
+  // Contains match rules from the Masked Domain List.
+  UrlMatcherWithBypass url_matcher_with_bypass_;
 };
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
+#endif  // SERVICES_NETWORK_MASKED_DOMAIN_LIST_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
