@@ -1071,8 +1071,7 @@ bool ShouldSkipFillField(const FormFieldData& field,
 
   // Skip filling previously autofilled fields unless autofill is instructed to
   // override it.
-  if (element.GetAutofillState() == WebAutofillState::kAutofilled &&
-      !field.force_override) {
+  if (element.IsAutofilled() && !field.force_override) {
     return true;
   }
 
@@ -2104,8 +2103,7 @@ void WebFormControlElementToFormField(
   if (IsAutofillableInputElement(input_element) || IsTextAreaElement(element) ||
       IsSelectOrSelectListElement(element)) {
     // The browser doesn't need to differentiate between preview and autofill.
-    field->is_autofilled =
-        element.GetAutofillState() == WebAutofillState::kAutofilled;
+    field->is_autofilled = element.IsAutofilled();
     field->is_focusable = IsWebElementFocusableForAutofill(element);
     field->is_visible = IsWebElementVisible(element);
     field->should_autocomplete =
@@ -2416,7 +2414,7 @@ std::vector<WebFormControlElement> ApplyAutofillAction(
     if ((action_type == mojom::AutofillActionType::kFill &&
          ShouldSkipFillField(field, element, initiating_element)) ||
         (action_type == mojom::AutofillActionType::kUndo &&
-         element.GetAutofillState() != WebAutofillState::kAutofilled)) {
+         !element.IsAutofilled())) {
       continue;
     }
 

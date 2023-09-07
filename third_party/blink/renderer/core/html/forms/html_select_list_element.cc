@@ -527,7 +527,7 @@ String HTMLSelectListElement::value() const {
 }
 
 void HTMLSelectListElement::setValueForBinding(const String& value) {
-  if (GetAutofillState() != WebAutofillState::kAutofilled) {
+  if (!IsAutofilled()) {
     setValue(value);
   } else {
     String old_value = this->value();

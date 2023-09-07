@@ -1549,8 +1549,9 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
       continue;
     // Don't clear the actual value of fields that the user has edited manually
     // (which changes the autofill state back to kNotFilled).
-    if (element.GetAutofillState() == WebAutofillState::kAutofilled)
+    if (element.IsAutofilled()) {
       element.SetValue(blink::WebString());
+    }
     element.SetSuggestedValue(blink::WebString());
   }
   all_autofilled_elements_.clear();
