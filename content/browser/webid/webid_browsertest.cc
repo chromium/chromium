@@ -9,10 +9,13 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/identity_registry.h"
@@ -43,6 +46,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using ::base::test::IsJson;
 using net::EmbeddedTestServer;
 using net::HttpStatusCode;
 using net::test_server::BasicHttpResponse;
@@ -52,6 +56,7 @@ using net::test_server::HttpResponse;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::WithArg;
+using ::testing::WithArgs;
 
 namespace content {
 
@@ -624,7 +629,30 @@ IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, RequestMDoc) {
   MockMDocProvider* mdoc_provider = static_cast<MockMDocProvider*>(
       test_browser_client_->GetMDocProviderForTests());
 
-  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, _, _))
+  const char request[] = R"(
+  {
+   "providers": [ {
+      "params": {
+         "extraParamAsNeededByWallets": "true",
+         "nonce": "1234",
+         "readerPublicKey": "test_reader_public_key"
+      },
+      "responseFormat": [ "mdoc" ],
+      "selector": {
+         "fields": [ {
+            "equals": "org.iso.18013.5.1.mDL",
+            "name": "doctype"
+         }, {
+            "name": "org.iso.18013.5.1.family_name"
+         }, {
+            "name": "org.iso.18013.5.1.portrait"
+         } ]
+      }
+   } ]
+  }
+  )";
+
+  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, IsJson(request), _))
       .WillOnce(WithArg<3>([](MDocProvider::MDocCallback callback) {
         std::move(callback).Run("test-mdoc");
       }));

@@ -558,7 +558,7 @@ void FederatedAuthRequestImpl::CompleteMDocRequest(std::string mdoc) {
   }
 }
 
-std::string BuildMDocRequest(blink::mojom::MDocProviderPtr provider) {
+base::Value::Dict BuildMDocRequest(blink::mojom::MDocProviderPtr provider) {
   auto formats = Value::List();
   for (auto& format : provider->selector->format) {
     formats.Append(format);
@@ -587,15 +587,13 @@ std::string BuildMDocRequest(blink::mojom::MDocProviderPtr provider) {
     fields.Append(std::move(field));
   }
 
-  auto dict = Value::Dict().Set(
+  return Value::Dict().Set(
       "providers", Value::List().Append(
                        Value::Dict()
                            .Set("responseFormat", std::move(formats))
-                           .Set("request", std::move(params))
+                           .Set("params", std::move(params))
                            .Set("selector", Value::Dict().Set(
                                                 "fields", std::move(fields)))));
-
-  return WriteJson(dict).value();
 }
 
 void FederatedAuthRequestImpl::RequestToken(
@@ -669,7 +667,7 @@ void FederatedAuthRequestImpl::RequestToken(
 
     auto mdoc = std::move(idp_get_params_ptrs[0]->providers[0]->get_mdoc());
 
-    std::string request = BuildMDocRequest(std::move(mdoc));
+    auto request = BuildMDocRequest(std::move(mdoc));
 
     mdoc_provider_->RequestMDoc(
         WebContents::FromRenderFrameHost(&render_frame_host()), origin(),

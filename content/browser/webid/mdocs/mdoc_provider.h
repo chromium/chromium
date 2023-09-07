@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -35,7 +36,7 @@ class CONTENT_EXPORT MDocProvider {
   using MDocCallback = base::OnceCallback<void(std::string)>;
   virtual void RequestMDoc(WebContents* web_contents,
                            const url::Origin& origin,
-                           const std::string& request,
+                           const base::Value::Dict& request,
                            MDocCallback callback) = 0;
 
  protected:
