@@ -56,7 +56,8 @@
     </cr-icon-button>
   </div>
   <div id="dropdownContainer" class="text-field-container">
-    <select id="remappingActionDropdown" class="md-select">
+    <select id="remappingActionDropdown" class="md-select"
+        on-change="onSelectChange_">
       <option id="noRemappingOption" value="[[noRemappingOptionValue_]]">
         $i18n{noRemappingOptionLabel}
       </option>

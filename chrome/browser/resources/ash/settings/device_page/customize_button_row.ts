@@ -110,7 +110,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
           return {
             key: 'fakeCustomizeKeyPref',
             type: chrome.settingsPrivate.PrefType.STRING,
-            value: 0,
+            value: NO_REMAPPING_OPTION_LABEL,
           };
         },
       },
@@ -176,6 +176,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   private keyCombinationOptionValue_: string;
   private keyCombinationLabel_: string;
   private buttonRemappingName_: string;
+  private isInitialized_: boolean;
 
   /**
    * Populate dropdown menu choices.
@@ -207,8 +208,6 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     this.keyCombinationLabel_ = this.i18n('keyCombinationOptionLabel');
 
     // For accelerator actions, the remappingAction.action value is number.
-    // TODO(yyhyyh@): Add the case when remappingAction is none or Keyboard
-    // events.
     const action = this.buttonRemapping_.remappingAction?.action;
     const keyEvent = this.buttonRemapping_.remappingAction?.keyEvent;
     if (action !== undefined && !isNaN(action)) {
@@ -236,6 +235,11 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
       microTask.run(() => {
         dropdown.value = KEY_COMBINATION_OPTION_LABEL;
       });
+    } else {
+      this.set('fakePref_.value', NO_REMAPPING_OPTION_LABEL);
+      microTask.run(() => {
+        dropdown.value = NO_REMAPPING_OPTION_LABEL;
+      });
     }
   }
 
@@ -247,16 +251,65 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         !this.buttonRemappingList[this.remappingIndex]) {
       return;
     }
+    this.isInitialized_ = false;
     this.buttonRemapping_ = this.buttonRemappingList[this.remappingIndex];
     this.setUpButtonMapTargets_();
     this.setUpRemappingActions_();
+    this.isInitialized_ = true;
+  }
+
+
+  /**
+   * This method is called when fakePref_.value is changed to
+   * NO_REMAPPING_OPTION_LABEL or enums of remappingAction.
+   *
+   * @returns Updated button remapping with selected remapping action or
+   * no remapping action.
+   */
+  private getUpdatedRemapping(): ButtonRemapping {
+    if (this.fakePref_.value === NO_REMAPPING_OPTION_LABEL) {
+      const updatedRemapping: ButtonRemapping = {
+        name: this.buttonRemapping_.name,
+        button: this.buttonRemapping_.button,
+      };
+      return updatedRemapping;
+    }
+    // Otherwise the button is remapped to a remappingAction.
+    const updatedRemapping: ButtonRemapping = {
+      ...this.buttonRemapping_,
+      remappingAction: {
+        action: Number(this.fakePref_.value),
+      },
+    };
+    return updatedRemapping;
   }
 
   /**
    * Update device settings whenever the pref changes.
    */
   private onSettingsChanged(): void {
-    // TODO(yyhyyh@): Update remapping settings.
+    if (!this.isInitialized_) {
+      return;
+    }
+
+    this.set(
+        `buttonRemappingList.${this.remappingIndex}`,
+        this.getUpdatedRemapping());
+    this.dispatchEvent(new CustomEvent('button-remapping-changed', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private onSelectChange_(): void {
+    const select = cast(
+        this.shadowRoot!.querySelector('#remappingActionDropdown'),
+        HTMLSelectElement);
+    if (select.value === KEY_COMBINATION_OPTION_LABEL) {
+      // TODO(yyhyyh@): Pops up key combination dialog.
+    } else if (select!.value !== this.fakePref_.value) {
+      this.set('fakePref_.value', select!.value);
+    }
   }
 
   /**

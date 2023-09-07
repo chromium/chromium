@@ -13,7 +13,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<customize-button-row>', () => {
   let customizeButtonRow: CustomizeButtonRowElement;
-
+  let buttonRemappingChangedEventCount: number = 0;
   setup(() => {
     assert(window.trustedTypes);
     document.body.innerHTML = window.trustedTypes.emptyHTML;
@@ -24,12 +24,16 @@ suite('<customize-button-row>', () => {
       return;
     }
     customizeButtonRow.remove();
+    buttonRemappingChangedEventCount = 0;
     await flushTasks();
   });
 
   function initializeCustomizeButtonRow() {
     customizeButtonRow = document.createElement(CustomizeButtonRowElement.is);
     customizeButtonRow.set('actionList', fakeGraphicsTabletButtonActions);
+    customizeButtonRow.addEventListener('button-remapping-changed', function() {
+      buttonRemappingChangedEventCount++;
+    });
     document.body.appendChild(customizeButtonRow);
     return flushTasks();
   }
@@ -98,5 +102,55 @@ suite('<customize-button-row>', () => {
 
     assertEquals(getSelectedValue(), 'key combination');
     assertEquals(customizeButtonRow.get('keyCombinationLabel_'), 'ctrl + v');
+  });
+
+  test('update dropdown will sent events', async () => {
+    await initializeCustomizeButtonRow();
+    customizeButtonRow.set(
+        'buttonRemappingList',
+        fakeGraphicsTablets[0]!.settings!.tabletButtonRemappings);
+    customizeButtonRow.set('remappingIndex', 0);
+    await flushTasks();
+    assertEquals(getSelectedValue(), '2');
+    assertEquals(buttonRemappingChangedEventCount, 0);
+    // Update select to another remapping action.
+    const select: HTMLSelectElement|null =
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown');
+    assertTrue(!!select);
+    select.value = '1';
+    select.dispatchEvent(new Event('change'));
+    await flushTasks();
+
+    // Verify that event is fired and button remapping is updated.
+    assertEquals(buttonRemappingChangedEventCount, 1);
+    assertDeepEquals(
+        customizeButtonRow.get('buttonRemapping_')?.remappingAction, {
+          action: 1,
+        });
+
+    // Update select to no remapping action choice.
+    select.value = 'none';
+    select.dispatchEvent(new Event('change'));
+    await flushTasks();
+    assertEquals(buttonRemappingChangedEventCount, 2);
+    assertEquals(
+        customizeButtonRow.get('buttonRemapping_')?.remappingAction, undefined);
+
+    // Update select from no remapping back to normal remapping action.
+    select.value = '2';
+    select.dispatchEvent(new Event('change'));
+    await flushTasks();
+    assertEquals(buttonRemappingChangedEventCount, 3);
+    assertDeepEquals(
+        customizeButtonRow.get('buttonRemapping_')?.remappingAction, {
+          action: 2,
+        });
+
+    // Update select to the same action, no events will be fired.
+    select.value = '2';
+    select.dispatchEvent(new Event('change'));
+    await flushTasks();
+    assertEquals(buttonRemappingChangedEventCount, 3);
   });
 });
