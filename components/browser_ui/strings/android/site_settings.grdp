@@ -333,23 +333,23 @@
   <message name="IDS_STORAGE_CLEAR_DIALOG_TEXT" desc="Text of the clear storage dialog which give the user a choice to reset the app or delete site storage data.">
     This will clear all <ph name="SIZE_IN_KB">%1$s<ex>101kb</ex></ph> of website storage.
   </message>
-  <message name="IDS_WEBSITE_RESET" desc="The label for the button allowing users to clear all data and reset the permissions for a website.">
-    Clear &amp; reset
+  <message name="IDS_WEBSITE_RESET" desc="The label for the button allowing users to delete all data and reset the permissions for a website.">
+    Delete &amp; reset
   </message>
-  <message name="IDS_WEBSITE_RESET_FULL" desc="The label for the button allowing users to clear all data and reset the permissions for a website.">
-    Clear data &amp; reset permissions
+  <message name="IDS_WEBSITE_RESET_FULL" desc="The label for the button allowing users to delete all data and reset the permissions for a website.">
+    Delete data &amp; reset permissions
   </message>
-  <message name="IDS_WEBSITE_RESET_CONFIRMATION_TITLE" desc="The title of the confirmation dialog for clearing all site data and resetting the permissions.">
-    Clear &amp; reset?
+  <message name="IDS_WEBSITE_RESET_CONFIRMATION_TITLE" desc="The title of the confirmation dialog for deleting all site data and resetting the permissions.">
+    Delete &amp; reset?
   </message>
-  <message name="IDS_WEBSITE_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about clearing all data and reset the permissions for a site.">
-    Are you sure you want to clear all local data, including cookies, and reset all permissions for this website?
+  <message name="IDS_WEBSITE_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about deleting all data and resetting the permissions for a site.">
+    Are you sure you want to delete all local data, including cookies, and reset all permissions for this website?
   </message>
-  <message name="IDS_WEBSITE_SINGLE_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about clearing all data and reset the permissions for a single origin.">
-    This action will clear all local data, including cookies, and reset all permissions for <ph name="ORIGIN">%1$s<ex>mail.google.com</ex></ph>
+  <message name="IDS_WEBSITE_SINGLE_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about deleting all data and resetting the permissions for a single origin.">
+    This action will delete all local data, including cookies, and reset all permissions for <ph name="ORIGIN">%1$s<ex>mail.google.com</ex></ph>
   </message>
-  <message name="IDS_WEBSITE_GROUP_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about clearing all data and reset the permissions for a group of sites.">
-    This action will clear all local data, including cookies, and reset all permissions for <ph name="DOMAIN">%1$s<ex>google.com</ex></ph> and all sites under it
+  <message name="IDS_WEBSITE_GROUP_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about deleting all data and resetting the permissions for a group of sites.">
+    This action will delete all local data, including cookies, and reset all permissions for <ph name="DOMAIN">%1$s<ex>google.com</ex></ph> and all sites under it
   </message>
   <message name="IDS_CHOSEN_OBJECT_WEBSITE_RESET_CONFIRMATION_FOR" desc="The confirmation asking if the user is sure about clearing all site permissions for the chosen object">
     Are you sure you want to reset all site permissions for <ph name="CHOSEN_OBJECT_NAME">%1$s<ex>Weblight</ex></ph>?
