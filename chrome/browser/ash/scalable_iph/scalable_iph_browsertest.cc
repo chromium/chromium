@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -632,6 +633,14 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, AppListShown) {
   ash::AppListController* app_list_controller = ash::AppListController::Get();
   CHECK(app_list_controller);
   app_list_controller->ShowAppList(ash::AppListShowSource::kSearchKey);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OpenPersonalizationApp) {
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameOpenPersonalizationApp));
+
+  ash::LaunchSystemWebAppAsync(browser()->profile(),
+                               ash::SystemWebAppType::PERSONALIZATION);
 }
 
 // Logging feature is on by default in `ScalableIphBrowserTest`.

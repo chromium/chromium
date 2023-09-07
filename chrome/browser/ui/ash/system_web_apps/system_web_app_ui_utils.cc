@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
@@ -187,6 +189,16 @@ void LaunchSystemWebAppAsync(Profile* profile,
 
     // Early return if we can't find a profile to launch.
     return;
+  }
+
+  if (type == SystemWebAppType::PERSONALIZATION &&
+      profile_for_launch == profile) {
+    scalable_iph::ScalableIph* scalable_iph =
+        ScalableIphFactory::GetForBrowserContext(profile_for_launch);
+    if (scalable_iph) {
+      scalable_iph->RecordEvent(
+          scalable_iph::ScalableIph::Event::kOpenPersonalizationApp);
+    }
   }
 
   SystemWebAppManager* manager = SystemWebAppManager::Get(profile_for_launch);

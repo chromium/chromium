@@ -86,6 +86,10 @@ constexpr char kEventNameAppListItemActivationYouTube[] =
 constexpr char kEventNameAppListItemActivationGoogleDocs[] =
     "ScalableIphAppListItemActivationGoogleDocs";
 
+// Recorded when the personalization hub app is opened.
+constexpr char kEventNameOpenPersonalizationApp[] =
+    "ScalableIphOpenPersonalizationApp";
+
 // `FiveMinTick` event is recorded every five minutes after OOBE completion.
 constexpr char kEventNameFiveMinTick[] = "ScalableIphFiveMinTick";
 

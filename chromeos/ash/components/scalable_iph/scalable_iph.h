@@ -85,7 +85,8 @@ class ScalableIph : public KeyedService,
     kUnlocked,
     kAppListShown,
     kAppListItemActivationYouTube,
-    kAppListItemActivationGoogleDocs
+    kAppListItemActivationGoogleDocs,
+    kOpenPersonalizationApp,
   };
 
   ScalableIph(feature_engagement::Tracker* tracker,
