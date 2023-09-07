@@ -41,10 +41,7 @@ base::WeakPtr<WvrGraphicsDelegate> WvrGraphicsDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void WvrGraphicsDelegate::InitializeGl(const gfx::Size& frame_size,
-                                       base::OnceClosure callback) {
-  screen_size_ = frame_size;
-
+void WvrGraphicsDelegate::InitializeGl(base::OnceClosure callback) {
   gl::init::DisableANGLE();
 
   gl::GLDisplay* display = nullptr;
