@@ -368,48 +368,41 @@ class PartitionAllocTest
                        },
                        PartitionTestOptions{.use_memory_reclaimer = true});
 
+    ThreadIsolationOption thread_isolation_opt;
     if (UseThreadIsolatedPool() && pkey_ != kInvalidPkey) {
-      InitializeTestRoot(
-          allocator.root(),
-          PartitionOptions{
-              .aligned_alloc = PartitionOptions::kAllowed,
-              .ref_count_size = GetParam().ref_count_size,
-              .thread_isolation = ThreadIsolationOption(pkey_),
-          },
-          PartitionTestOptions{.use_memory_reclaimer = true,
-                               .uncap_empty_slot_span_memory = true,
-                               .set_bucket_distribution = true});
-    } else
+      thread_isolation_opt = ThreadIsolationOption(pkey_);
+    }
 #endif  // BUILDFLAG(ENABLE_PKEYS)
-    {
-      InitializeTestRoot(
-          allocator.root(),
-          PartitionOptions {
+    InitializeTestRoot(
+        allocator.root(),
+        PartitionOptions {
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-            // AlignedAlloc() can't be called when BRP is in the
-            // "before allocation" mode, because this mode adds extras before
-            // the allocation. Extras after the allocation are ok.
-            .aligned_alloc = PartitionOptions::kAllowed,
+          // AlignedAlloc() can't be called when BRP is in the
+          // "before allocation" mode, because this mode adds extras before
+          // the allocation. Extras after the allocation are ok.
+          .aligned_alloc = PartitionOptions::kAllowed,
 #endif
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-            .backup_ref_ptr = PartitionOptions::kEnabled,
+          .backup_ref_ptr = PartitionOptions::kEnabled,
 #endif
-            .ref_count_size = GetParam().ref_count_size,
+          .ref_count_size = GetParam().ref_count_size,
+#if BUILDFLAG(ENABLE_PKEYS)
+          .thread_isolation = thread_isolation_opt,
+#endif
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-            .memory_tagging =
-            {.enabled =
-                 partition_alloc::internal::base::CPU::GetInstanceNoAllocation()
-                         .has_mte()
-                     ? PartitionOptions::kEnabled
-                     : PartitionOptions::kDisabled,
-            }
-#endif
-          },
-          PartitionTestOptions{.use_memory_reclaimer = true,
-                               .uncap_empty_slot_span_memory = true,
-                               .set_bucket_distribution = true});
-    }
+          .memory_tagging = {
+            .enabled =
+                partition_alloc::internal::base::CPU::GetInstanceNoAllocation()
+                        .has_mte()
+                    ? PartitionOptions::kEnabled
+                    : PartitionOptions::kDisabled,
+          }
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+        },
+        PartitionTestOptions{.use_memory_reclaimer = true,
+                             .uncap_empty_slot_span_memory = true,
+                             .set_bucket_distribution = true});
 
     InitializeTestRoot(
         aligned_allocator.root(),
@@ -5188,7 +5181,6 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
 TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(
       PartitionOptions{
-          .use_configurable_pool = PartitionOptions::kAllowed,
           .ref_count_size = GetParam().ref_count_size,
       },
       PartitionTestOptions{.uncap_empty_slot_span_memory = true,
