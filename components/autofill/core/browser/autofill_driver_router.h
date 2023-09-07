@@ -98,7 +98,7 @@ namespace autofill {
 //   }
 //
 // Let AutofillAgent-N, AutofillDriver-N, and AutofillManager-N correspond to
-// the Frame-N. ContentAutofillRouter would route an event concerning any of the
+// the Frame-N. AutofillDriverRouter would route an event concerning any of the
 // forms in Frame-3 from AutofillDriver-3 to AutofillDriver-0:
 //
 //   +---Tab---+            +---Tab----+            +----Tab----+

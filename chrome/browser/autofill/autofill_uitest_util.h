@@ -34,7 +34,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile);
 // Unlike `autofill::test::GenerateTestAutofillPopup()`, this function triggers
 // the popup through `driver->AskForValuesToFill()`, instead of
 // AutofillExternalDelegate::OnQuery(). This initializes the form's meta data
-// and prepares ContentAutofillDriver's and ContentAutofillRouter's state to
+// and prepares ContentAutofillDriver's and AutofillDriverRouter's state to
 // process events such as `AutofillDriver::PopupHidden()` triggered by the
 // popup.
 void GenerateTestAutofillPopup(ContentAutofillDriver& driver,

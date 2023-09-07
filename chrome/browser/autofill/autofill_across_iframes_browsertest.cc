@@ -202,9 +202,9 @@ auto HasValue(base::StringPiece value) {
 
 }  // namespace
 
-// Test fixture for all tests of AutofillAcrossIframes. A particular goal is is
-// to test that ContentAutofillRouter and FormForest handle the race conditions
-// that arise during page load correctly; see
+// Test fixture for all tests of AutofillAcrossIframes. A particular goal is to
+// test that AutofillDriverRouter and FormForest handle the race conditions that
+// arise during page load correctly; see
 // go/autofill-iframes-race-condition-explainer for some explanation.
 class AutofillAcrossIframesTest : public InProcessBrowserTest {
  public:
