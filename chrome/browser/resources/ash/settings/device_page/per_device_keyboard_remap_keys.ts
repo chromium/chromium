@@ -13,6 +13,7 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
 import './input_device_settings_shared.css.js';
+import './fkey_row.js';
 import './keyboard_remap_modifier_key_row.js';
 import './keyboard_six_pack_key_row.js';
 
@@ -26,7 +27,7 @@ import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
+import {ExtendedFkeysModifier, InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_remap_keys.html.js';
 
 const SettingsPerDeviceKeyboardRemapKeysElementBase =
@@ -189,6 +190,28 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         },
       },
 
+      f11KeyPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'f11KeyPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: ExtendedFkeysModifier.DISABLED,
+          };
+        },
+      },
+
+      f12KeyPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'f12KeyPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: ExtendedFkeysModifier.DISABLED,
+          };
+        },
+      },
+
       hasAssistantKey: {
         type: Boolean,
         value: false,
@@ -242,6 +265,14 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         },
         readOnly: true,
       },
+
+      areF11andF12KeyShortcutsEnabled: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableF11AndF12KeyShortcuts');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -259,6 +290,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           'endPref.value,' +
           'deletePref.value,' +
           'homePref.value,' +
+          'f11KeyPref.value,' +
+          'f12KeyPref.value,' +
           'fakeCapsLockPref.value)',
       'onKeyboardListUpdated(keyboards.*)',
     ];
@@ -270,6 +303,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
   keyboard: Keyboard;
   isAltClickAndSixPackCustomizationEnabled: boolean;
+  areF11andF12KeyShortcutsEnabled: boolean;
   private keyboards: Keyboard[];
   protected keyboardId: number;
   protected defaultRemappings: {[key: number]: ModifierKey} = {
@@ -296,6 +330,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private endPref: chrome.settingsPrivate.PrefObject;
   private deletePref: chrome.settingsPrivate.PrefObject;
   private homePref: chrome.settingsPrivate.PrefObject;
+  private f11KeyPref: chrome.settingsPrivate.PrefObject;
+  private f12KeyPref: chrome.settingsPrivate.PrefObject;
   private hasAssistantKey: boolean;
   private hasCapsLockKey: boolean;
   private metaKeyLabel: string;
@@ -561,6 +597,12 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
       insert: this.insertPref.value,
       end: this.endPref.value,
     };
+  }
+
+  protected shouldShowFkeys(): boolean {
+    return this.areF11andF12KeyShortcutsEnabled &&
+        (this.keyboard.settings?.f11 != null &&
+         this.keyboard.settings?.f12 != null);
   }
 }
 

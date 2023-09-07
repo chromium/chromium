@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorAction, ActionChoice, CustomizableButton, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, Touchpad, Vkey} from './input_device_settings_types.js';
+import {AcceleratorAction, ActionChoice, CustomizableButton, ExtendedFkeysModifier, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, Touchpad, Vkey} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -57,6 +57,8 @@ export const fakeKeyboards: Keyboard[] = [
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: true,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: ExtendedFkeysModifier.ALT,
+      f12: ExtendedFkeysModifier.SHIFT,
     },
   },
   {

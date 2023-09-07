@@ -795,6 +795,8 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
 
   webui::LocalizedString keyboard_strings[] = {
       {"builtInKeyboardName", IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME},
+      {"f11KeyLabel", IDS_SETTINGS_F11_KEY_LABEL},
+      {"f12KeyLabel", IDS_SETTINGS_F12_KEY_LABEL},
       {"keyboardEnableAutoRepeat", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE},
       {"keyboardEnableAutoRepeatSubLabel",
        IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE_SUB_LABEL},
@@ -1245,6 +1247,10 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("enableAltClickAndSixPackCustomization",
                           base::FeatureList::IsEnabled(
                               ash::features::kAltClickAndSixPackCustomization));
+
+  html_source->AddBoolean(
+      "enableF11AndF12KeyShortcuts",
+      base::FeatureList::IsEnabled(::features::kSupportF11AndF12KeyShortcuts));
 
   AddDevicePointersStrings(html_source);
   AddDeviceGraphicsTabletStrings(html_source);

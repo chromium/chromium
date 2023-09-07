@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {FkeyRowElement} from 'chrome://os-settings/os_settings.js';
+import {FkeyRowElement, SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -30,8 +30,15 @@ suite('<fkey-row>', () => {
     return flushTasks();
   }
 
+  function getDropdownMenuElement(): SettingsDropdownMenuElement {
+    const dropdown = fkeyRow.shadowRoot!.querySelector('#keyDropdown');
+    assert(dropdown);
+    return dropdown as SettingsDropdownMenuElement;
+  }
+
   test('Initialize fkey row', async () => {
     await initializeFkeyRow();
     assertTrue(!!fkeyRow.shadowRoot!.querySelector('#fkeyRow'));
+    assertTrue(getDropdownMenuElement().disabled);
   });
 });

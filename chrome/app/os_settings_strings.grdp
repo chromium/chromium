@@ -3308,6 +3308,13 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_SIX_PACK_KEY_OPTION_DISABLED" desc="In the keyboard settings subpage, the dropdown list item for the disabled option.">
     Disabled
   </message>
+    <!-- TODO(b/298073742): Finalize and translate these strings -->
+  <message name="IDS_SETTINGS_F11_KEY_LABEL" translateable="false" desc="In the keyboard settings subpage, the label for the F11 row.">
+    F11
+  </message>
+  <message name="IDS_SETTINGS_F12_KEY_LABEL" translateable="false" desc="In the keyboard settings subpage, the label for the F12 row.">
+    F12
+  </message>
 
   <!-- Printing Page (OS Settings)-->
   <message name="IDS_SETTINGS_PRINT_AND_SCAN" desc="Title of the printing and scanning page and navigation item to get there.">

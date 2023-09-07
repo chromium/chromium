@@ -41,10 +41,27 @@ export enum SixPackKey {
   END = 'end',
 }
 
+export enum Fkey {
+  F11 = 'f11',
+  F12 = 'f12',
+}
+
+export enum ExtendedFkeysModifier {
+  DISABLED,
+  ALT,
+  SHIFT,
+  CTRL_SHIFT,
+}
+
 export type PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 export const PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 
-export type Keyboard = InputDeviceSettingsTypes.Keyboard;
+export type KeyboardSettings = InputDeviceSettingsTypes.KeyboardSettings;
+export type Keyboard = Omit<InputDeviceSettingsTypes.Keyboard, 'settings'>&{
+  settings: KeyboardSettings &
+      Partial<{f11: ExtendedFkeysModifier, f12: ExtendedFkeysModifier}>,
+};
+
 export type Touchpad = InputDeviceSettingsTypes.Touchpad;
 export type Mouse = Omit<InputDeviceSettingsTypes.Mouse, 'settings'>&{
   settings: MouseSettings,
@@ -75,7 +92,6 @@ export interface GraphicsTabletSettings {
   penButtonRemappings: ButtonRemapping[];
 }
 
-export type KeyboardSettings = InputDeviceSettingsTypes.KeyboardSettings;
 export type TouchpadSettings = InputDeviceSettingsTypes.TouchpadSettings;
 export type MouseSettings =
     Omit<InputDeviceSettingsTypes.MouseSettings, 'buttonRemappings'>&{
