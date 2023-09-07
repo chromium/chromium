@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_NTP_AS_HOME_SURFACE_ENABLED;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_SURFACE_POLISH_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
 
@@ -71,6 +72,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private TemplateUrlService mTemplateUrlService;
 
     private int mTileCarouselLayoutLateralMarginSumForPolish;
+    private final int mTileViewEdgePaddingForTabletPolish;
+    private int mTileViewIntervalPaddingForTabletPolish;
 
     public MostVisitedTilesMediator(Resources resources, UiConfig uiConfig, ViewGroup mvTilesLayout,
             ViewStub noMvPlaceholderStub, TileRenderer renderer, PropertyModel propertyModel,
@@ -96,12 +99,20 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         mTileCarouselLayoutLateralMarginSumForPolish =
                 mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin_polish) * 2;
 
+        mTileViewEdgePaddingForTabletPolish =
+                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet_polish);
+        mTileViewIntervalPaddingForTabletPolish =
+                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet_polish);
+
         maybeSetPortraitIntervalPaddingsForCarousel();
 
         if (shouldShowSkeletonUIPreNative) maybeShowMvTilesPreNative();
 
         mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
         mModel.set(IS_NTP_AS_HOME_SURFACE_ENABLED, mIsNtpAsHomeSurfaceEnabled);
+        if (mIsScrollableMVTEnabled) {
+            mModel.set(IS_SURFACE_POLISH_ENABLED, mIsSurfacePolishEnabled);
+        }
     }
 
     /**
@@ -261,11 +272,17 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         // {@link MostVisitedTilesGridLayout}
         if (!mIsScrollableMVTEnabled || mMvTilesLayout.getChildCount() < 1) return;
 
-        if (mIsNtpAsHomeSurfaceEnabled) {
+        if (mIsNtpAsHomeSurfaceEnabled && !mIsSurfacePolishEnabled) {
             mModel.set(HORIZONTAL_EDGE_PADDINGS, 0);
             mModel.set(UPDATE_INTERVAL_PADDINGS_TABLET,
                     mResources.getConfiguration().orientation
                             == Configuration.ORIENTATION_LANDSCAPE);
+            return;
+        }
+
+        if (mIsNtpAsHomeSurfaceEnabled && mIsSurfacePolishEnabled) {
+            mModel.set(HORIZONTAL_EDGE_PADDINGS, mTileViewEdgePaddingForTabletPolish);
+            mModel.set(HORIZONTAL_INTERVAL_PADDINGS, mTileViewIntervalPaddingForTabletPolish);
             return;
         }
 

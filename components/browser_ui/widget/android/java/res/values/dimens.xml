@@ -147,6 +147,8 @@ found in the LICENSE file.
     <dimen name="tile_view_padding_edge_portrait">12dp</dimen>
     <dimen name="tile_view_padding_landscape">16dp</dimen>
     <dimen name="tile_view_title_margin_top_modern">61dp</dimen>
+    <dimen name="tile_view_padding_edge_tablet_polish">20dp</dimen>
+    <dimen name="tile_view_padding_interval_tablet_polish">16dp</dimen>
 
     <!-- Chips default measures -->
     <item name="chip_outline_alpha" format="float" type="dimen">0.8</item>

@@ -29,6 +29,9 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
     private Integer mIntervalPaddingsLandscapeTablet;
     private Integer mIntervalPaddingsPortraitTablet;
     private boolean mIsNtpAsHomeSurfaceEnabled;
+    private boolean mIsSurfacePolishEnabled;
+    private Integer mIntervalPaddingsTabletForPolish;
+    private Integer mEdgePaddingsTabletForPolish;
 
     /**
      * Constructor for inflating from XML.
@@ -42,6 +45,10 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
                 org.chromium.chrome.R.dimen.tile_carousel_layout_min_interval_margin_tablet);
         mTileViewMaxIntervalPaddingTablet = getResources().getDimensionPixelOffset(
                 org.chromium.chrome.R.dimen.tile_carousel_layout_max_interval_margin_tablet);
+        mIntervalPaddingsTabletForPolish = getResources().getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet_polish);
+        mEdgePaddingsTabletForPolish = getResources().getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet_polish);
     }
 
     void setIntervalPaddings(int padding) {
@@ -110,6 +117,27 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
     }
 
     /**
+     * Adjusts the edge margin of the tile elements when they are displayed in the center of the NTP
+     * on the tablet.
+     * @param totalWidth The width of the mv tiles container.
+     */
+    void updateEdgeMarginTablet(int totalWidth) {
+        boolean isFullFilled = totalWidth - mTileViewWidth * mInitialTileNum
+                        - mIntervalPaddingsTabletForPolish * (mInitialTileNum - 1)
+                        - 2 * mEdgePaddingsTabletForPolish
+                >= 0;
+        if (!isFullFilled) {
+            return;
+        }
+
+        int currentNum = getChildCount();
+        int edgeMargin = (totalWidth - mTileViewWidth * currentNum
+                                 - mIntervalPaddingsTabletForPolish * (currentNum - 1))
+                / 2;
+        setEdgePaddings(edgeMargin);
+    }
+
+    /**
      * Computes the distance between each MV tiles element based on certain parameters.
      * @param totalWidth The total width of the MV tiles.
      * @param isHalfMvt Whether there should be half MV tiles element at the end.
@@ -131,11 +159,10 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (mIsNtpAsHomeSurfaceEnabled) {
-            if (mInitialTileNum == null) {
-                mInitialTileNum = getChildCount();
-            }
-
+        if (mInitialTileNum == null) {
+            mInitialTileNum = getChildCount();
+        }
+        if (mIsNtpAsHomeSurfaceEnabled && !mIsSurfacePolishEnabled) {
             int currentOrientation = getResources().getConfiguration().orientation;
             if ((currentOrientation == Configuration.ORIENTATION_LANDSCAPE
                         && mIntervalPaddingsLandscapeTablet == null)
@@ -153,12 +180,20 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
                 setIntervalPaddings(tileViewIntervalPadding);
             }
         }
+
+        if (mIsNtpAsHomeSurfaceEnabled && mIsSurfacePolishEnabled) {
+            updateEdgeMarginTablet(widthMeasureSpec);
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
     public void setIsNtpAsHomeSurfaceEnabled(boolean isNtpAsHomeSurfaceEnabled) {
         mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
+    }
+
+    public void setIsSurfacePolishEnabled(boolean isSurfacePolishEnabled) {
+        mIsSurfacePolishEnabled = isSurfacePolishEnabled;
     }
 
     boolean getIsNtpAsHomeSurfaceEnabledForTesting() {

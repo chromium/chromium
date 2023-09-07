@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_NTP_AS_HOME_SURFACE_ENABLED;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_SURFACE_POLISH_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
 
@@ -54,6 +55,10 @@ final class MostVisitedTilesViewBinder {
         } else if (IS_NTP_AS_HOME_SURFACE_ENABLED == propertyKey) {
             ((MostVisitedTilesLayout) viewHolder.mvTilesLayout)
                     .setIsNtpAsHomeSurfaceEnabled(model.get(IS_NTP_AS_HOME_SURFACE_ENABLED));
+        } else if (IS_SURFACE_POLISH_ENABLED == propertyKey) {
+            assert viewHolder.mvTilesLayout instanceof MostVisitedTilesCarouselLayout;
+            ((MostVisitedTilesCarouselLayout) viewHolder.mvTilesLayout)
+                    .setIsSurfacePolishEnabled(model.get(IS_SURFACE_POLISH_ENABLED));
         } else if (UPDATE_INTERVAL_PADDINGS_TABLET == propertyKey) {
             assert viewHolder.mvTilesLayout instanceof MostVisitedTilesCarouselLayout;
             ((MostVisitedTilesCarouselLayout) viewHolder.mvTilesLayout)

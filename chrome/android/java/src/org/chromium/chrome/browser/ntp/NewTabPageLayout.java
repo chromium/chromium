@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -148,6 +149,10 @@ public class NewTabPageLayout extends LinearLayout {
     private Boolean mIsHalfMvtPortrait;
     private boolean mIsSurfacePolishEnabled;
     private boolean mIsSurfacePolishOmniboxColorEnabled;
+    private Boolean mIsMvtAllFilledLandscape;
+    private Boolean mIsMvtAllFilledPortrait;
+    private final int mTileViewIntervalPaddingTabletForPolish;
+    private final int mTileViewEdgePaddingTabletForPolish;
 
     /**
      * Constructor for inflating from XML.
@@ -165,6 +170,10 @@ public class NewTabPageLayout extends LinearLayout {
                 getResources().getDimensionPixelOffset(org.chromium.chrome.R.dimen.tile_view_width);
         mTileViewMinIntervalPaddingTablet = getResources().getDimensionPixelOffset(
                 org.chromium.chrome.R.dimen.tile_carousel_layout_min_interval_margin_tablet);
+        mTileViewIntervalPaddingTabletForPolish = getResources().getDimensionPixelOffset(
+                org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet_polish);
+        mTileViewEdgePaddingTabletForPolish = getResources().getDimensionPixelOffset(
+                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet_polish);
     }
 
     @Override
@@ -215,27 +224,29 @@ public class NewTabPageLayout extends LinearLayout {
 
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(lifecycleDispatcher, mIsIncognito, mWindowAndroid);
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
-            if (isSurfacePolishEnabled) {
-                int searchBoxHeightPolish =
-                        getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_polish);
-                mSearchBoxCoordinator.getView().getLayoutParams().height = searchBoxHeightPolish;
-                mSearchBoxBoundsVerticalInset = (searchBoxHeightPolish
-                                                        - getResources().getDimensionPixelSize(
-                                                                R.dimen.toolbar_height_no_shadow))
-                        / 2;
-            } else {
-                mSearchBoxBoundsVerticalInset = getResources().getDimensionPixelSize(
-                        R.dimen.ntp_search_box_bounds_vertical_inset_modern);
-            }
+        if (isSurfacePolishEnabled) {
+            int searchBoxHeightPolish =
+                    getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_polish);
+            mSearchBoxCoordinator.getView().getLayoutParams().height = searchBoxHeightPolish;
+            mSearchBoxBoundsVerticalInset = (searchBoxHeightPolish
+                                                    - getResources().getDimensionPixelSize(
+                                                            R.dimen.toolbar_height_no_shadow))
+                    / 2;
+        } else if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
+            mSearchBoxBoundsVerticalInset = getResources().getDimensionPixelSize(
+                    R.dimen.ntp_search_box_bounds_vertical_inset_modern);
         }
 
-        if (mIsNtpAsHomeSurfaceEnabled) {
+        if (mIsNtpAsHomeSurfaceEnabled && !mIsSurfacePolishEnabled) {
             // We add extra side margins to the fake search box when multiple column Feeds are
             // shown. There is only one exception that we don't shorten the width of the fake search
             // box: one row of MV tiles in portrait mode.
             mSearchBoxTwoSideMargin =
                     getResources().getDimensionPixelSize(R.dimen.ntp_search_box_start_margin) * 2;
+        } else if (mIsNtpAsHomeSurfaceEnabled && mIsSurfacePolishEnabled) {
+            mSearchBoxTwoSideMargin = getResources().getDimensionPixelSize(
+                                              R.dimen.ntp_search_box_lateral_margin_tablet_polish)
+                    * 2;
         } else if (mIsSurfacePolishEnabled) {
             mSearchBoxTwoSideMargin = getResources().getDimensionPixelSize(
                                               R.dimen.mvt_container_lateral_margin_polish)
@@ -505,10 +516,43 @@ public class NewTabPageLayout extends LinearLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mIsNtpAsHomeSurfaceEnabled && isScrollableMvtEnabled()) {
-            calculateTabletMvtMargin(MeasureSpec.getSize(widthMeasureSpec));
+            if (mIsSurfacePolishEnabled) {
+                calculateTabletMvtWidth(MeasureSpec.getSize(widthMeasureSpec));
+            } else {
+                calculateTabletMvtMargin(MeasureSpec.getSize(widthMeasureSpec));
+            }
         }
+
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         unifyElementWidths();
+    }
+
+    /**
+     * Updates the width of the MV tiles container when used in NTP on the tablet.
+     */
+    private void calculateTabletMvtWidth(int widthMeasureSpec) {
+        if (mMvTilesContainerLayout.getVisibility() == GONE) return;
+
+        if (mInitialTileNum == null) {
+            mInitialTileNum = ((ViewGroup) findViewById(R.id.mv_tiles_layout)).getChildCount();
+        }
+
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if ((currentOrientation == Configuration.ORIENTATION_LANDSCAPE
+                    && mIsMvtAllFilledLandscape == null)
+                || (currentOrientation == Configuration.ORIENTATION_PORTRAIT
+                        && mIsMvtAllFilledPortrait == null)) {
+            boolean isAllFilled = mInitialTileNum * mTileViewWidth
+                            + (mInitialTileNum - 1) * mTileViewIntervalPaddingTabletForPolish
+                            + 2 * mTileViewEdgePaddingTabletForPolish
+                    <= widthMeasureSpec;
+            if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                mIsMvtAllFilledLandscape = isAllFilled;
+            } else {
+                mIsMvtAllFilledPortrait = isAllFilled;
+            }
+            updateMvtWidthOnTabletForPolish();
+        }
     }
 
     /**
@@ -1041,9 +1085,14 @@ public class NewTabPageLayout extends LinearLayout {
         if (!mIsNtpAsHomeSurfaceEnabled || !isScrollableMvtEnabled()) {
             return;
         }
-        MarginLayoutParams marginLayoutParams =
-                (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
-        updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
+
+        if (mIsSurfacePolishEnabled) {
+            updateMvtWidthOnTabletForPolish();
+        } else {
+            MarginLayoutParams marginLayoutParams =
+                    (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
+            updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
+        }
     }
 
     /**
@@ -1068,5 +1117,21 @@ public class NewTabPageLayout extends LinearLayout {
         }
         marginLayoutParams.leftMargin = leftMarginForNtp;
         marginLayoutParams.rightMargin = rightMarginForNtp;
+    }
+
+    /**
+     * Updates whether the MV tiles layout stays in the center of the container when used in NTP on
+     * the tablet by changing the width of its container.
+     */
+    private void updateMvtWidthOnTabletForPolish() {
+        LayoutParams layoutParams = (LayoutParams) mMvTilesContainerLayout.getLayoutParams();
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (mIsMvtAllFilledLandscape != null && mIsMvtAllFilledLandscape) {
+                layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
+        } else if (mIsMvtAllFilledPortrait != null && mIsMvtAllFilledPortrait) {
+            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
     }
 }

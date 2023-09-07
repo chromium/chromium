@@ -602,6 +602,65 @@ public class StartSurfaceOnTabletTest {
                 ntp.getSnapshotSingleTabCardChangedForTesting());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
+            ChromeFeatureList.START_SURFACE_ON_TABLET, ChromeFeatureList.SURFACE_POLISH})
+    // clang-format off
+    public void testFakeSearchBoxWidthWith1RowMvTitlesForSurfacePolish() {
+        // clang-format on
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        ViewGroup mvTilesLayout =
+                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
+        Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
+
+        Resources res = cta.getResources();
+        int expectedTwoSideMargin = 2
+                * res.getDimensionPixelSize(
+                        org.chromium.chrome.R.dimen.ntp_search_box_lateral_margin_tablet_polish);
+
+        // Verifies there is additional margin added for the fake search box.
+        verifyFakeSearchBoxWidth(expectedTwoSideMargin, expectedTwoSideMargin, ntp);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
+            ChromeFeatureList.START_SURFACE_ON_TABLET, ChromeFeatureList.SURFACE_POLISH})
+    // clang-format off
+    public void test1RowMvtMarginOnNtpHomePageForSurfacePolish(){
+        // clang-format on
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        ViewGroup mvTilesLayout =
+                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
+        Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
+
+        Resources res = cta.getResources();
+        int expectedContainerTwoSideMargin = 0;
+        int expectedMvtLayoutEdgeMargin = res.getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet_polish);
+        int expectedMvtLayoutIntervalMargin = res.getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet_polish);
+
+        verifyMostVisitedTileMarginForSurfacePolish(expectedContainerTwoSideMargin,
+                expectedMvtLayoutEdgeMargin, expectedMvtLayoutIntervalMargin, ntp);
+    }
+
     /**
      * Verifies the margins of the module most visited tiles and its inner view are correct when it
      * appears on a tablet.
@@ -820,6 +879,40 @@ public class StartSurfaceOnTabletTest {
         // Verifies there is additional margins added for the fake search box.
         Assert.assertEquals(
                 expectedPortraitWidth, ntpLayout.getWidth() - searchBoxLayout.getWidth());
+    }
+
+    private void verifyMostVisitedTileMarginForSurfacePolish(int expectedContainerWidth,
+            int expectedEdgeMargin, int expectedIntervalMargin, NewTabPage ntp) {
+        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+        View mvtContainer =
+                ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_container);
+        View mvTilesLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        int mvt1LeftMargin =
+                ((MarginLayoutParams) ((ViewGroup) mvTilesLayout).getChildAt(0).getLayoutParams())
+                        .leftMargin;
+        int mvt2LeftMargin =
+                ((MarginLayoutParams) ((ViewGroup) mvTilesLayout).getChildAt(1).getLayoutParams())
+                        .leftMargin;
+
+        // Start off in landscape screen orientation.
+        mActivityTestRule.getActivity().setRequestedOrientation(
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        waitForScreenOrientation("\"landscape\"");
+        // Verifies there is no additional margins added for the mv tiles container.
+        Assert.assertEquals(expectedContainerWidth, ntpLayout.getWidth() - mvtContainer.getWidth());
+        // Verifies the inner margins of the mv tiles module.
+        assertTrue(mvt1LeftMargin >= expectedEdgeMargin);
+        Assert.assertEquals(expectedIntervalMargin, mvt2LeftMargin);
+
+        // Start off in portrait screen orientation.
+        mActivityTestRule.getActivity().setRequestedOrientation(
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        waitForScreenOrientation("\"portrait\"");
+        // Verifies there is no additional margins added for the mv tiles container.
+        Assert.assertEquals(expectedContainerWidth, ntpLayout.getWidth() - mvtContainer.getWidth());
+        // Verifies the inner margins of the mv tiles module.
+        assertTrue(mvt1LeftMargin >= expectedEdgeMargin);
+        Assert.assertEquals(expectedIntervalMargin, mvt2LeftMargin);
     }
 
     private void waitForScreenOrientation(String orientationValue) {
