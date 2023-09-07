@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -169,6 +170,22 @@ void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
   }
   login_mode_ = lock_->registrar().GetAppRunOnOsLoginMode(app_id_).value;
 
+  if (AreSubManagersExecuteEnabled()) {
+    // This is temporary solution for preinstalled apps getting fully installed.
+    // Do not run the below 'synchronize' code at all if the expected state ==
+    // the desired state.
+    // TODO(dmurph): Remove this after 'locally installed without os
+    // integration' is implemented for preinstalled apps.
+    // https://crbug.com/1480068
+    absl::optional<RunOnOsLoginMode> os_integration_state =
+        lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
+    if (os_integration_state && login_mode_.value() == *os_integration_state) {
+      RecordCompletionState(
+          RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
+      OnOsHooksSet(OsHooksErrors());
+      return;
+    }
+  }
   auto synchronize_barrier =
       OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
           &RunOnOsLoginCommand::OnOsHooksSet, weak_factory_.GetWeakPtr()));
@@ -216,6 +233,20 @@ void RunOnOsLoginCommand::OnOsHooksSet(OsHooksErrors errors) {
   if (!completion_state_set_) {
     RecordCompletionState(
         RunOnOsLoginCommandCompletionState::kSuccessfulCompletion);
+
+    // This is needed for the temporary fix so that the sub-manager version will
+    // also save to the old expected state storage.
+    // TODO(dmurph): Remove this after 'locally installed without os
+    // integration' is implemented for preinstalled apps.
+    // https://crbug.com/1480068.
+    // Note: minimized isn't supported yet, and gets turned into kWindowed.
+    ScopedRegistryUpdate save_state_to_old_expected_value =
+        lock_->sync_bridge().BeginUpdate();
+    save_state_to_old_expected_value->UpdateApp(app_id_)
+        ->SetRunOnOsLoginOsIntegrationState(login_mode_.value() !=
+                                                    RunOnOsLoginMode::kNotRun
+                                                ? RunOnOsLoginMode::kWindowed
+                                                : RunOnOsLoginMode::kNotRun);
   }
 
   SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
