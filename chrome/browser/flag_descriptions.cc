@@ -2205,18 +2205,6 @@ const char kSystemProxyForSystemServicesDescription[] =
     "network connectivity to use the system-proxy daemon for authentication to "
     "remote HTTP web proxies.";
 
-const char kDestroyProfileOnBrowserCloseName[] =
-    "Destroy Profile on browser close";
-const char kDestroyProfileOnBrowserCloseDescription[] =
-    "Release memory and other resources when a Profile's last browser window "
-    "is closed, rather than when Chrome closes completely.";
-
-const char kDestroySystemProfilesName[] = "Destroy System Profile";
-const char kDestroySystemProfilesDescription[] =
-    "After you close the Profile Picker, release memory and other resources "
-    "owned by the System Profile. This requires "
-    "#destroy-profile-on-browser-close.";
-
 const char kNotificationInteractionHistoryName[] =
     "Notification Interaction History";
 const char kNotificationInteractionHistoryDescription[] =
