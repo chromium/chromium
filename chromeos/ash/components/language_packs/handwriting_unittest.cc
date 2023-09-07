@@ -42,6 +42,17 @@ absl::optional<std::string> GetSecondUnderscorePart(
   }
 }
 
+// Populates proto message DlcsWithContent with the given list of dlc_ids.
+// All fields other than `id` are left as default.
+dlcservice::DlcsWithContent CreateDlcsWithContent(
+    const std::vector<std::string>& dlc_ids) {
+  dlcservice::DlcsWithContent output;
+  for (const auto& dlc_id : dlc_ids) {
+    output.add_dlc_infos()->set_id(dlc_id);
+  }
+  return output;
+}
+
 TEST_F(HandwritingTest, MapIdsToHandwritingLocalesNoInput) {
   EXPECT_THAT(
       MapIdsToHandwritingLocales(
@@ -337,6 +348,34 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<IsHandwritingDlcTest::ParamType>& info) {
       return info.param.test_name;
     });
+
+TEST_F(HandwritingTest, FilterHandwritingDlcsDefault) {
+  const base::flat_set<std::string> output =
+      FilterHandwritingDlcsWithContent(dlcservice::DlcsWithContent());
+
+  EXPECT_TRUE(output.empty());
+}
+
+TEST_F(HandwritingTest, FilterHandwritingDlcsNotHandwriting) {
+  const auto dlcs_with_content =
+      CreateDlcsWithContent({"tts-en-us", "grammar-it"});
+  const base::flat_set<std::string> output =
+      FilterHandwritingDlcsWithContent(dlcs_with_content);
+
+  EXPECT_TRUE(output.empty());
+}
+
+TEST_F(HandwritingTest, FilterHandwritingDlcsVariousEntries) {
+  // "handwriting-cy" refer to Welsh language, which is not a language that is
+  // supported in Handwriting.
+  const auto dlcs_with_content =
+      CreateDlcsWithContent({"handwriting-fr", "tts-en-us", "handwriting-it",
+                             "grammar-it", "handwriting-cy"});
+  const base::flat_set<std::string> output =
+      FilterHandwritingDlcsWithContent(dlcs_with_content);
+
+  EXPECT_THAT(output, UnorderedElementsAre("handwriting-fr", "handwriting-it"));
+}
 
 }  // namespace
 

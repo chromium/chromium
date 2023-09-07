@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
@@ -62,6 +63,13 @@ absl::optional<std::string> HandwritingLocaleToDlc(std::string_view locale);
 // Intended to be used to filter a list of DLCs that a user has installed to
 // only the relevant handwriting recognition ones.
 bool IsHandwritingDlc(std::string_view dlc_id);
+
+// Given a DlcsWithContent proto message, filters out all DLCs that are not
+// Handwriting and returns a list with the dlc IDs.
+// DlcsWithContent is returned by DLC Service in the callback to get all the
+// existing DLCs on device.
+base::flat_set<std::string> FilterHandwritingDlcsWithContent(
+    const dlcservice::DlcsWithContent& dlcs_with_content);
 
 }  // namespace ash::language_packs
 

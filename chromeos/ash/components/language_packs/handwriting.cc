@@ -89,4 +89,17 @@ bool IsHandwritingDlc(std::string_view dlc_id) {
   return handwriting_dlcs->contains(dlc_id);
 }
 
+base::flat_set<std::string> FilterHandwritingDlcsWithContent(
+    const dlcservice::DlcsWithContent& dlcs_with_content) {
+  std::vector<std::string> dlc_ids;
+
+  for (const auto& dlc_info : dlcs_with_content.dlc_infos()) {
+    if (IsHandwritingDlc(dlc_info.id())) {
+      dlc_ids.push_back(dlc_info.id());
+    }
+  }
+
+  return dlc_ids;
+}
+
 }  // namespace ash::language_packs
