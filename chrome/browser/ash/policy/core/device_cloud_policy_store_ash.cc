@@ -15,6 +15,8 @@
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
@@ -282,15 +284,19 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
       debug_info << ", policy_type: " << policy_data->policy_type();
     }
   }
-  base::FilePath key_path;
-  bool path_found =
-      base::PathService::Get(chromeos::dbus_paths::FILE_OWNER_KEY, &key_path);
-  debug_info << ", has_key: " << (path_found && base::PathExists(key_path));
   debug_info << ", attrs mode: " << install_attributes_->GetMode()
              << ", is_locked: " << install_attributes_->IsDeviceLocked();
   LOG(ERROR) << "Device policy read on enrolled device yields "
              << "no DM token! Status: " << service_status
              << ", debug_info: " << debug_info.str() << ".";
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce([]() {
+        base::FilePath key_path;
+        bool path_found = base::PathService::Get(
+            chromeos::dbus_paths::FILE_OWNER_KEY, &key_path);
+        LOG(ERROR) << "Device policy has_key: "
+                   << (path_found && base::PathExists(key_path)) << ".";
+      }));
 
   // At the time LoginDisplayHostWebUI decides whether enrollment flow is to
   // be started, policy hasn't been read yet.  To work around this, once the
