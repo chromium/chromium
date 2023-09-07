@@ -43,8 +43,18 @@ function ScrollCounter(test, eventTarget) {
   });
 }
 
+async function initializeScrollPosition(scroller, x, y) {
+  return new Promise(async (resolve) => {
+    if (scroller.scrollLeft != x || scroller.scrollTop != y) {
+      scroller.scrollTo(x, y);
+      await waitForScrollEnd(scroller);
+    }
+    resolve();
+  });
+}
+
 promise_test(async t => {
-  scroller.scrollTo(0, 0);
+  await initializeScrollPosition(scroller, 0, 0);
   assert_equals(scroller.scrollTop, 0, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
   await keyPress(scroller, "ArrowDown");
@@ -55,7 +65,7 @@ promise_test(async t => {
 }, "Snaps to bottom-left after pressing ArrowDown");
 
 promise_test(async t => {
-  scroller.scrollTo(0, 400);
+  await initializeScrollPosition(scroller, 0, 400);
   assert_equals(scroller.scrollTop, 400, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
   await keyPress(scroller, "ArrowUp");
@@ -66,7 +76,7 @@ promise_test(async t => {
 }, "Snaps to top-left after pressing ArrowUp");
 
 promise_test(async t => {
-  scroller.scrollTo(0, 0);
+  await initializeScrollPosition(scroller, 0, 0);
   assert_equals(scroller.scrollTop, 0, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
   await keyPress(scroller, "ArrowRight");
@@ -77,7 +87,7 @@ promise_test(async t => {
 }, "Snaps to top-right after pressing ArrowRight");
 
 promise_test(async t => {
-  scroller.scrollTo(400, 0);
+  await initializeScrollPosition(scroller, 400, 0);
   assert_equals(scroller.scrollLeft, 400, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
   await keyPress(scroller, "ArrowLeft");
@@ -98,7 +108,7 @@ promise_test(async t => {
   // Make the distance between the previous and the next snap position larger
   // than snapport.
   topRight.style.left = "500px";
-  scroller.scrollTo(0, 0);
+  await initializeScrollPosition(scroller, 0, 0);
   assert_equals(scroller.scrollLeft, 0, "verify test pre-condition");
   await keyPress(scroller, "ArrowRight");
   await waitForScrollEnd(scroller);
@@ -119,7 +129,7 @@ promise_test(async t => {
   // Make the next snap offset closer than the original intended offset.
   topRight.style.left = "20px";
   topRight.style.scrollSnapStop = "always";
-  scroller.scrollTo(0, 0);
+  await initializeScrollPosition(scroller, 0, 0);
   assert_equals(scroller.scrollLeft, 0, "verify test pre-condition");
   await keyPress(scroller, "ArrowRight");
   await waitForScrollEnd(scroller);
@@ -129,7 +139,7 @@ promise_test(async t => {
 + " offset.");
 
 promise_test(async t => {
-  scroller.scrollTo(400, 0);
+  await initializeScrollPosition(scroller, 400, 0);
   await keyPress(scroller, "ArrowRight");
   await waitForScrollEnd(scroller);
   assert_equals(scroller.scrollLeft, 400);
@@ -152,7 +162,7 @@ promise_test(async t => {
   scroller.style.width = "100px";
   topLeft.style.width = "80px";
 
-  scroller.scrollTo(400, 0);
+  await initializeScrollPosition(scroller, 400, 0);
   assert_equals(scroller.scrollLeft, 400, "verify test pre-condition");
   await keyPress(scroller, "ArrowRight");
   await waitForScrollEnd(scroller);
