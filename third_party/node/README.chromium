@@ -17,6 +17,7 @@ update NPM dependencies.
 Local Modifications:
 See chromium_polymer_bundler.patch
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: SVG Optimizer
 Short Name: svgo
@@ -35,6 +36,7 @@ SVG Optimizer is a Nodejs-based tool for optimizing SVG vector graphics files.
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Typescript Compiler
 Short Name: typescript
@@ -54,6 +56,7 @@ Local Modifications:
 See typescript.patch to work-around
 https://github.com/microsoft/TypeScript/issues/30024
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for D3 library
 Short Name: @types/d3
@@ -70,6 +73,8 @@ Local Modifications:
 See chromium_d3_types_index.patch, which is used to reduce the types to only
 the necessary parts of the library.
 
+-------------------- DEPENDENCY DIVIDER --------------------
+
 Name: Type Definition for W3C MediaStream Recording
 Short Name: @types/dom-mediacapture-record
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-record
@@ -85,6 +90,7 @@ This package contains type definitions for w3c MediaStream Recording
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for CSS Typed OM Level 1
 Short Name: @types/w3c-css-typed-object-model-level-1
@@ -101,6 +107,7 @@ This package contains type definitions for css-typed-object-model-level-1
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for W3C Image Capture
 Short Name: @types/w3c-image-capture
@@ -117,6 +124,7 @@ This package contains type definitions for W3C Image Capture
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for webrtc
 Short Name: @types/webrtc
@@ -132,6 +140,7 @@ This package contains type definitions for webrtc (https://webrtc.org/).
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for Google Analytics
 Short Name: @types/google.analytics
@@ -149,6 +158,7 @@ Universal)
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for OffscreenCanvas
 Short Name: @types/offscreencanvas
@@ -165,6 +175,7 @@ This package contains type definitions for offscreencanvas-browser
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: ESLint JSDoc Plugin
 Short Name: eslint-plugin-jsdoc
@@ -180,6 +191,7 @@ JSDoc linting rules for ESLint.
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: ESLint Plugin TypeScript
 Short Name: @typescript-eslint/eslint-plugin
@@ -195,6 +207,7 @@ An ESLint plugin which provides lint rules for TypeScript codebases.
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: TypeScript ESLint Parser
 Short Name: @typescript-eslint/parser
@@ -211,6 +224,7 @@ TypeScript source code.
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for Trusted Types
 Short Name: @types/trusted-types
@@ -228,6 +242,7 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Polic
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for FileSystem API
 Short Name: @types/filesystem
@@ -245,6 +260,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/FileSystem
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for FileWriter API
 Short Name: @types/filewriter
@@ -263,6 +279,8 @@ https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/createWrite
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
+
 Name: HTML Minifier
 Short Name: html-minifier
 URL: https://www.npmjs.com/package/html-minifier
@@ -280,6 +298,8 @@ Local Modifications:
 Removed uglify-js dependency since we don't plan to use the --minify-js flag in
 Chromium.
 
+-------------------- DEPENDENCY DIVIDER --------------------
+
 Name: Type Definition for WebCodecs
 Short Name: @types/dom-webcodecs
 URL: https://www.npmjs.com/package/@types/dom-webcodecs
@@ -295,6 +315,8 @@ This package contains type definitions for WebCodecs
 Local Modifications:
 (none)
 
+-------------------- DEPENDENCY DIVIDER --------------------
+
 Name: Type Definition for MediaStreamTrack Processing
 Short Name: @types/dom-mediacapture-transform
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-transform
@@ -309,6 +331,8 @@ Processing using Streams (https://w3c.github.io/mediacapture-transform/).
 
 Local Modifications:
 (none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
 
 Name: Type Definition for Emscripten
 Short Name: @types/emscripten
