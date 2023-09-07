@@ -187,7 +187,7 @@ void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
   // header when there is no title.
   const ui::ColorProvider* const cp = GetColorProvider();
   SkColor text_and_outline_color =
-      cp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
+      cp->GetColor(GetSavedTabGroupForegroundColorId(tab_group_color_id_));
 
   // Draw squircle (rounded rect).
   cc::PaintFlags flags;
@@ -224,12 +224,11 @@ void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
 
 void SavedTabGroupButton::UpdateButtonLayout() {
   // Relies on logic in theme_helper.cc to determine dark/light palette.
-  ui::ColorId text_and_outline_color =
-      GetTabGroupDialogColorId(tab_group_color_id_);
   ui::ColorId background_color =
       GetTabGroupBookmarkColorId(tab_group_color_id_);
 
-  SetEnabledTextColorIds(GetTabGroupDialogColorId(tab_group_color_id_));
+  SetEnabledTextColorIds(
+      GetSavedTabGroupForegroundColorId(tab_group_color_id_));
   SetBackground(views::CreateThemedRoundedRectBackground(background_color,
                                                          kButtonRadius));
 
@@ -241,8 +240,9 @@ void SavedTabGroupButton::UpdateButtonLayout() {
     SetBorder(views::CreateEmptyBorder(insets));
   } else {
     std::unique_ptr<views::Border> border =
-        views::CreateThemedRoundedRectBorder(kBorderThickness, kButtonRadius,
-                                             text_and_outline_color);
+        views::CreateThemedRoundedRectBorder(
+            kBorderThickness, kButtonRadius,
+            GetSavedTabGroupOutlineColorId(tab_group_color_id_));
     SetBorder(views::CreatePaddedBorder(std::move(border), insets));
   }
 

@@ -526,6 +526,24 @@
   E_CPONLY(kColorTabGroupContextMenuRed) \
   E_CPONLY(kColorTabGroupContextMenuYellow) \
   /* The colors used for saved tab group chips on the bookmark bar. */ \
+  E_CPONLY(kColorSavedTabGroupForegroundGrey) \
+  E_CPONLY(kColorSavedTabGroupForegroundBlue) \
+  E_CPONLY(kColorSavedTabGroupForegroundRed) \
+  E_CPONLY(kColorSavedTabGroupForegroundYellow) \
+  E_CPONLY(kColorSavedTabGroupForegroundGreen) \
+  E_CPONLY(kColorSavedTabGroupForegroundPink) \
+  E_CPONLY(kColorSavedTabGroupForegroundPurple) \
+  E_CPONLY(kColorSavedTabGroupForegroundCyan) \
+  E_CPONLY(kColorSavedTabGroupForegroundOrange) \
+  E_CPONLY(kColorSavedTabGroupOutlineGrey) \
+  E_CPONLY(kColorSavedTabGroupOutlineBlue) \
+  E_CPONLY(kColorSavedTabGroupOutlineRed) \
+  E_CPONLY(kColorSavedTabGroupOutlineYellow) \
+  E_CPONLY(kColorSavedTabGroupOutlineGreen) \
+  E_CPONLY(kColorSavedTabGroupOutlinePink) \
+  E_CPONLY(kColorSavedTabGroupOutlinePurple) \
+  E_CPONLY(kColorSavedTabGroupOutlineCyan) \
+  E_CPONLY(kColorSavedTabGroupOutlineOrange) \
   E_CPONLY(kColorTabGroupBookmarkBarGrey) \
   E_CPONLY(kColorTabGroupBookmarkBarBlue) \
   E_CPONLY(kColorTabGroupBookmarkBarRed) \
