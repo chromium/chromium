@@ -2574,6 +2574,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Network.Shill.PortalDetector.{AttemptResult}Duration.{Technology}"
+    units="ms" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Total duration of a full ChromeOS portal detection attempt on a {Technology}
+    network when this attempt either validates Internet connectivity or when
+    detects a portal with a redirected probe.
+  </summary>
+  <token key="AttemptResult">
+    <variant name="InternetValidation"/>
+    <variant name="PortalDiscovery"/>
+  </token>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.{ProbeType}Duration.{Technology}"
+    units="ms" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Duration of a single HTTP or HTTPS probe sent on a {Technology} network as
+    part of ChromeOS platform portal detection.
+  </summary>
+  <token key="ProbeType">
+    <variant name="HTTPProbe"/>
+    <variant name="HTTPSProbe"/>
+  </token>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
 <histogram name="Network.Shill.PPPMTUValue" units="bytes"
     expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
