@@ -305,6 +305,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testAlignmentProvider_paddingChange() {
         assertEquals(0, mDropdown.getMeasuredWidth());
 

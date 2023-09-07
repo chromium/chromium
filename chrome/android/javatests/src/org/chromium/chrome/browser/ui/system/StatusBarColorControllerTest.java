@@ -252,7 +252,8 @@ public class StatusBarColorControllerTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredWhenOmniboxIsFocused() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
+        final int expectedFocusedColor = ChromeColors.getSurfaceColor(
+                activity, org.chromium.chrome.R.dimen.omnibox_suggestion_dropdown_bg_elevation);
 
         String pageWithBrandColorUrl = sActivityTestRule.getTestServer().getURL(
                 "/chrome/test/data/android/theme_color_test.html");
@@ -261,7 +262,7 @@ public class StatusBarColorControllerTest {
         waitForStatusBarColor(activity, Color.RED);
 
         mOmniboxUtils.requestFocus();
-        waitForStatusBarColor(activity, expectedDefaultStandardColor);
+        waitForStatusBarColor(activity, expectedFocusedColor);
         mOmniboxUtils.clearFocus();
         waitForStatusBarColor(activity, Color.RED);
     }
@@ -278,7 +279,8 @@ public class StatusBarColorControllerTest {
     public void testBrandColorIgnoredWhenOmniboxIsFocused_FeatureMatchToolbarColorEnabled()
             throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
+        final int expectedFocusedColor = ChromeColors.getSurfaceColor(
+                activity, org.chromium.chrome.R.dimen.omnibox_suggestion_dropdown_bg_elevation);
 
         String pageWithBrandColorUrl = sActivityTestRule.getTestServer().getURL(
                 "/chrome/test/data/android/theme_color_test.html");
@@ -290,7 +292,7 @@ public class StatusBarColorControllerTest {
 
         mOmniboxUtils.requestFocus();
         mOmniboxUtils.waitAnimationsComplete();
-        waitForStatusBarColor(activity, expectedDefaultStandardColor);
+        waitForStatusBarColor(activity, expectedFocusedColor);
         waitForStatusBarColorToMatchToolbarColor(activity);
         mOmniboxUtils.clearFocus();
         mOmniboxUtils.waitAnimationsComplete();

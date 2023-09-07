@@ -42,6 +42,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
@@ -259,8 +260,7 @@ public class BaseSuggestionViewBinderUnitTest {
         mModel.set(DropdownCommonProperties.TOP_MARGIN, 13);
 
         verify(mBaseView, times(2)).setLayoutParams(any());
-        int sideSpacing = mBaseView.getContext().getResources().getDimensionPixelOffset(
-                R.dimen.omnibox_suggestion_side_spacing);
+        int sideSpacing = OmniboxResourceProvider.getSideSpacing(mBaseView.getContext());
         MarginLayoutParams layoutParams = (MarginLayoutParams) mBaseView.getLayoutParams();
         Assert.assertNotNull(layoutParams);
         Assert.assertEquals(sideSpacing, layoutParams.leftMargin);

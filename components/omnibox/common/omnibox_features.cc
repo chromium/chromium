@@ -475,7 +475,7 @@ BASE_FEATURE(kDiscardTemporaryInputOnTabSwitch,
 // Enable new Omnibox & Suggestions visual style.
 BASE_FEATURE(kOmniboxModernizeVisualUpdate,
              "OmniboxModernizeVisualUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Android only flag that controls whether the new security indicator should be
 // used, on non-Android platforms this is controlled through the

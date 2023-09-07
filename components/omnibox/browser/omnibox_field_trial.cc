@@ -1168,7 +1168,7 @@ const base::FeatureParam<bool> kRealboxSecondaryZeroSuggestCounterfactual(
 const base::FeatureParam<bool> kOmniboxModernizeVisualUpdateMergeClipboardOnNTP(
     &omnibox::kOmniboxModernizeVisualUpdate,
     "modernize_visual_update_merge_clipboard_on_ntp",
-    false);
+    true);
 // <- Android UI Revamp
 // ---------------------------------------------------------
 // Touch Down Trigger For Prefetch ->

@@ -103,34 +103,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
-    public void padding_smallBottomPadding() {
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
-        createMVCForTest();
-        Assert.assertEquals(mResources.getDimensionPixelSize(
-                                    R.dimen.omnibox_carousel_suggestion_padding_smaller),
-                mView.getPaddingTop());
-        Assert.assertEquals(mResources.getDimensionPixelSize(
-                                    R.dimen.omnibox_carousel_suggestion_small_bottom_padding),
-                mView.getPaddingBottom());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
-    public void padding_smallerMargins() {
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
-        createMVCForTest();
-        Assert.assertEquals(mResources.getDimensionPixelSize(
-                                    R.dimen.omnibox_carousel_suggestion_padding_smallest),
-                mView.getPaddingTop());
-        Assert.assertEquals(mResources.getDimensionPixelSize(
-                                    R.dimen.omnibox_carousel_suggestion_small_bottom_padding),
-                mView.getPaddingBottom());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     public void padding_smallestMargins() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
@@ -233,6 +205,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp-land")
     public void customVisualAlignment_classicUi() {
         createMVCForTest();
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
