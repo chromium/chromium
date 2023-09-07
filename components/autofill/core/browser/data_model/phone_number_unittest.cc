@@ -499,7 +499,13 @@ TEST(PhoneNumberTest, CountryCodeNotInMatchingTypes) {
   }
 }
 
-TEST(PhoneNumberTest, DerivedTypesNotSetDirectly) {
+// TODO(crbug.com/1479741): Fix a flaky timeout for Windows debug builds.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_DerivedTypesNotSetDirectly DISABLED_DerivedTypesNotSetDirectly
+#else
+#define MAYBE_DerivedTypesNotSetDirectly DerivedTypesNotSetDirectly
+#endif
+TEST(PhoneNumberTest, MAYBE_DerivedTypesNotSetDirectly) {
   AutofillProfile profile;
   PhoneNumber phone_number(&profile);
 
