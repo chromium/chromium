@@ -496,17 +496,15 @@ public class QuicOptions {
     /**
      * An annotation for APIs which are not considered stable yet.
      *
-     * <p>Applications using experimental APIs must acknowledge that they're aware of using APIs
-     * that are not considered stable. The APIs might change functionality, break or cease to exist
-     * without notice.
+     * <p>Experimental APIs are subject to change, breakage, or removal at any time and may not be
+     * production ready.
      *
-     * <p>It's highly recommended to reach out to Cronet maintainers ({@code net-dev@chromium.org})
-     * before using one of the APIs annotated as experimental outside of debugging
-     * and proof-of-concept code. Be ready to help to help polishing the API, or for a "sorry,
-     * really not production ready yet".
+     * <p>It's highly recommended to reach out to Cronet maintainers
+     * (<code>net-dev@chromium.org</code>) before using one of the APIs annotated as experimental
+     * outside of debugging and proof-of-concept code.
      *
-     * <p>If you still want to use an experimental API in production, you're doing so at your
-     * own risk. You have been warned.
+     * <p>By using an Experimental API, applications acknowledge that they are doing so at their own
+     * risk.
      */
     @RequiresOptIn
     public @interface Experimental {}
