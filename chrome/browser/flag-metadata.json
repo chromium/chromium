@@ -7924,12 +7924,12 @@
   {
     "name": "thumbnail-cache-refactor",
     "owners": [ "ckitagawa", "fredmello" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 123
   },
   {
     "name": "thumbnail-placeholder",
     "owners": [ "ckitagawa", "fredmello" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 123
   },
   {
     "name": "time-of-day-dlc",
