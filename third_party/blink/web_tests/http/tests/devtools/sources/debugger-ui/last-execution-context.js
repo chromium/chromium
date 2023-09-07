@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {SDKTestRunner} from 'sdk_test_runner';
 
+import * as Main from 'devtools/entrypoints/main/main.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
@@ -15,7 +16,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   var context = new UI.Context();
   context.addFlavorChangeListener(SDK.RuntimeModel.ExecutionContext, executionContextChanged, this);
   context.addFlavorChangeListener(SDK.Target.Target, targetChanged, this);
-  new Main.ExecutionContextSelector(SDK.TargetManager.TargetManager.instance(), context);
+  new Main.ExecutionContextSelector.ExecutionContextSelector(SDK.TargetManager.TargetManager.instance(), context);
 
   function executionContextChanged(event) {
     var executionContext = event.data;
