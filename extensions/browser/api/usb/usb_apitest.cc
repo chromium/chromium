@@ -149,9 +149,11 @@ class UsbApiTest : public ShellApiTest {
         ->UpdateActiveConfig(fake_device_->guid(), config_value);
   }
 
-  device::FakeUsbDeviceManager fake_usb_manager_;
-  scoped_refptr<device::FakeUsbDeviceInfo> fake_device_;
+  // `mock_device_`, `fake_device_`, and `fake_usb_manager_` must be declared in
+  // this order to avoid dangling pointers.
   device::MockUsbMojoDevice mock_device_;
+  scoped_refptr<device::FakeUsbDeviceInfo> fake_device_;
+  device::FakeUsbDeviceManager fake_usb_manager_;
 };
 
 }  // namespace
