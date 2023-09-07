@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -55,7 +56,7 @@ class FakeClient : public PlatformSensor::Client {
   bool IsSuspended() override { return false; }
 
  private:
-  PlatformSensor* platform_sensor_;
+  raw_ptr<PlatformSensor> platform_sensor_;
 };
 
 }  // namespace
