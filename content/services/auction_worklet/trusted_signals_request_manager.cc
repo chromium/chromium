@@ -214,9 +214,11 @@ void TrustedSignalsRequestManager::OnRequestDestroyed(RequestImpl* request) {
 
   // Cancel and delete the corresponding BatchedTrustedSignalsRequest if it's
   // no longer associated with any live requests.
-  if (request->batched_request_->requests.empty())
-    batched_requests_.erase(
-        batched_requests_.find(request->batched_request_.get()));
+  if (request->batched_request_->requests.empty()) {
+    BatchedTrustedSignalsRequest* batched_request = request->batched_request_;
+    request->batched_request_ = nullptr;
+    batched_requests_.erase(batched_requests_.find(batched_request));
+  }
 }
 
 void TrustedSignalsRequestManager::QueueRequest(RequestImpl* request) {

@@ -65,7 +65,7 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   bool has_top_level_seller_origin_ = false;
   mojom::RejectReason reject_reason_ = mojom::RejectReason::kNotAvailable;
 
-  raw_ptr<const mojom::BidderWorkletNonSharedParams, DanglingUntriaged>
+  raw_ptr<const mojom::BidderWorkletNonSharedParams>
       bidder_worklet_non_shared_params_ = nullptr;
 
   absl::optional<blink::AdCurrency> per_buyer_currency_;

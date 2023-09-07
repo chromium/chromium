@@ -307,13 +307,16 @@ void DirectFromSellerSignalsRequester::OnSignalsDownloaded(
   auto it = coalesced_downloads_.find(signals_url);
   DCHECK(it != coalesced_downloads_.end());
   DCHECK_EQ(signals_url, it->second.downloader->source_url());
-  std::list<raw_ptr<Request, DanglingUntriaged>> requests;
+  std::list<raw_ptr<Request>> requests;
   std::swap(requests, it->second.requests);
   coalesced_downloads_.erase(it);
 
-  for (Request* request : requests) {
+  while (!requests.empty()) {
+    // `*request` may be destroyed by the callback, so we also don't want to
+    // keep a dangling pointer to it in `requests`.
+    Request* request = requests.front();
+    requests.pop_front();
     request->RunCallbackSync(result);
-    // `*request` might have been destroyed by the callback.
   }
 }
 

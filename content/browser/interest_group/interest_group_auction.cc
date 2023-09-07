@@ -2424,7 +2424,7 @@ InterestGroupAuction::CreateReporter(
       break;
   }
 
-  return std::make_unique<InterestGroupAuctionReporter>(
+  auto result = std::make_unique<InterestGroupAuctionReporter>(
       interest_group_manager_, auction_worklet_manager_, browser_context,
       private_aggregation_manager,
       maybe_log_private_aggregation_web_features_callback_,
@@ -2437,6 +2437,12 @@ InterestGroupAuction::CreateReporter(
       std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),
       TakeReservedPrivateAggregationRequests(),
       TakeNonReservedPrivateAggregationRequests());
+
+  // Avoid dangling pointers for things transferred to the reporter.
+  winner->bid->interest_group = nullptr;
+  winner->bid->bid_ad = nullptr;
+
+  return result;
 }
 
 void InterestGroupAuction::NotifyConfigPromisesResolved() {

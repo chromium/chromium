@@ -379,12 +379,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // InterestGroup that made the bid. Owned by the BidState of that
     // InterestGroup.
-    const raw_ptr<const blink::InterestGroup, AcrossTasksDanglingUntriaged>
-        interest_group;
+    raw_ptr<const blink::InterestGroup> interest_group;
 
     // Points to the InterestGroupAd within `interest_group`.
-    const raw_ptr<const blink::InterestGroup::Ad, AcrossTasksDanglingUntriaged>
-        bid_ad;
+    raw_ptr<const blink::InterestGroup::Ad> bid_ad;
 
     // `bid_state` of the InterestGroup that made the bid. This should not be
     // written to, except for adding seller debug reporting URLs.

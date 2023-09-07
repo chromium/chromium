@@ -168,8 +168,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
     // If this request is currently assigned to a batched request, points to
     // that request. nullptr otherwise.
-    raw_ptr<BatchedTrustedSignalsRequest, DanglingUntriaged> batched_request_ =
-        nullptr;
+    raw_ptr<BatchedTrustedSignalsRequest> batched_request_ = nullptr;
   };
 
   // Manages a single TrustedSignals object, which is associated with one or

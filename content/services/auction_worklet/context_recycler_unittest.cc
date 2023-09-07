@@ -318,9 +318,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
       base::BindRepeating([](const GURL& ignored) { return false; });
 
   {
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/ad1"),
                                      absl::nullopt);
@@ -354,9 +354,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
   {
     // Different ad objects get taken into account.
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/notad1"),
                                      absl::nullopt);
@@ -389,10 +389,10 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
   }
 
   {
-    // Some components, and in a nested auction, w/o permission.
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    // Some components, and in a nested auction, w/o permission.
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/ad3"),
                                      absl::nullopt);
@@ -429,9 +429,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
   {
     // Some components, and in a nested auction, w/permission.
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/ad5"),
                                      absl::nullopt);
@@ -483,9 +483,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
   {
     // Wrong components.
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/ad5"),
                                      absl::nullopt);
@@ -532,9 +532,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
   {
     // use ad filter function - ads excluded.
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/ad1"),
                                      absl::nullopt);
@@ -565,9 +565,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
   {
     // use ad filter function - ads permitted.
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/ad2"),
                                      absl::nullopt);
@@ -600,9 +600,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
   {
     // Bid currency --- expect USD.
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/ad2"),
                                      absl::nullopt);
@@ -637,9 +637,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
   {
     // Bid currency --- expect CAD.
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/ad2"),
                                      absl::nullopt);
@@ -672,9 +672,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
   {
     // Make sure the reject reason doesn't latch.
-    ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
     params->ads.value().emplace_back(GURL("https://example.com/ad2"),
                                      absl::nullopt);
