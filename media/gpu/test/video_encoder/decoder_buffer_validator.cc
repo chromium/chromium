@@ -49,7 +49,8 @@ std::unique_ptr<DecoderBufferValidator> DecoderBufferValidator::Create(
     VideoCodecProfile profile,
     const gfx::Rect& visible_rect,
     size_t num_spatial_layers,
-    size_t num_temporal_layers) {
+    size_t num_temporal_layers,
+    SVCInterLayerPredMode inter_layer_pred) {
   CHECK_LE(num_spatial_layers, kMaxSpatialLayers);
   CHECK_LE(num_temporal_layers, kMaxSpatialLayers);
   switch (VideoCodecProfileToVideoCodec(profile)) {
@@ -59,8 +60,12 @@ std::unique_ptr<DecoderBufferValidator> DecoderBufferValidator::Create(
     case VideoCodec::kVP8:
       return std::make_unique<VP8Validator>(visible_rect, num_temporal_layers);
     case VideoCodec::kVP9:
+      // Only SVCInterLayerPredMode::kOnKeyPic (for VP9 k-SVC) and
+      // SVCInterLayerPredMode::kOff (for VP9 S-mode) are supported.
+      CHECK_NE(inter_layer_pred, SVCInterLayerPredMode::kOn);
       return std::make_unique<VP9Validator>(
-          profile, visible_rect, num_spatial_layers, num_temporal_layers);
+          profile, visible_rect, num_spatial_layers, num_temporal_layers,
+          inter_layer_pred);
     case VideoCodec::kAV1:
       return std::make_unique<AV1Validator>(visible_rect);
     default:
@@ -401,13 +406,22 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
 VP9Validator::VP9Validator(VideoCodecProfile profile,
                            const gfx::Rect& visible_rect,
                            size_t max_num_spatial_layers,
-                           size_t num_temporal_layers)
+                           size_t num_temporal_layers,
+                           SVCInterLayerPredMode inter_layer_pred)
     : DecoderBufferValidator(visible_rect, num_temporal_layers),
-      parser_(/*parsing_compressed_header=*/false),
       profile_(VideoCodecProfileToVP9Profile(profile)),
       max_num_spatial_layers_(max_num_spatial_layers),
+      s_mode_(max_num_spatial_layers > 1 &&
+              inter_layer_pred == SVCInterLayerPredMode::kOff),
       cur_num_spatial_layers_(max_num_spatial_layers_),
-      next_picture_id_(0) {}
+      next_picture_id_(0) {
+  const size_t num_parsed_streams = s_mode_ ? max_num_spatial_layers_ : 1u;
+  for (size_t i = 0; i < num_parsed_streams; ++i) {
+    parsers_.push_back(
+        std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false));
+  }
+  reference_buffers_.resize(num_parsed_streams);
+}
 
 VP9Validator::~VP9Validator() = default;
 
@@ -422,10 +436,23 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
+  const bool svc_encoding =
+      max_num_spatial_layers_ > 1 || num_temporal_layers_ > 1;
+  if (metadata.vp9.has_value() != svc_encoding) {
+    LOG(ERROR) << "VP9 specific metadata must exist only for SVC encodings";
+    return false;
+  }
+
+  const size_t parser_index =
+      s_mode_ ? begin_active_spatial_layer_index_ + metadata.vp9->spatial_idx
+              : 0;
+
+  CHECK_LT(parser_index, parsers_.size());
+  auto& parser = *parsers_[parser_index];
   Vp9FrameHeader header;
   gfx::Size allocate_size;
-  parser_.SetStream(decoder_buffer.data(), decoder_buffer.data_size(), nullptr);
-  if (parser_.ParseNextFrame(&header, &allocate_size, nullptr) ==
+  parser.SetStream(decoder_buffer.data(), decoder_buffer.data_size(), nullptr);
+  if (parser.ParseNextFrame(&header, &allocate_size, nullptr) ==
       Vp9Parser::kInvalidStream) {
     LOG(ERROR) << "Failed parsing";
     return false;
@@ -443,15 +470,15 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
-  const bool svc_encoding =
-      max_num_spatial_layers_ > 1 || num_temporal_layers_ > 1;
   if (metadata.vp9.has_value() != svc_encoding) {
     LOG(ERROR) << "VP9 specific metadata must exist if and only if the stream "
                << "is temporal or spatial layer stream";
     return false;
   }
 
-  if (svc_encoding) {
+  if (s_mode_) {
+    return ValidateSmodeStream(decoder_buffer, metadata, header);
+  } else if (svc_encoding) {
     return ValidateSVCStream(decoder_buffer, metadata, header);
   }
   return ValidateVanillaStream(decoder_buffer, metadata, header);
@@ -462,7 +489,7 @@ bool VP9Validator::ValidateVanillaStream(
     const BitstreamBufferMetadata& metadata,
     const Vp9FrameHeader& header) {
   if (next_picture_id_ == 0 && !metadata.key_frame) {
-    LOG(ERROR) << "First frame must be a key-frame.";
+    LOG(ERROR) << "First frame must be a keyframe.";
     return false;
   }
   if (header.error_resilient_mode) {
@@ -490,7 +517,7 @@ bool VP9Validator::ValidateVanillaStream(
   new_buffer_state.picture_id = next_picture_id_++;
 
   if (header.show_existing_frame &&
-      !reference_buffers_[header.frame_to_show_map_idx]) {
+      !reference_buffers_[0][header.frame_to_show_map_idx]) {
     LOG(ERROR) << "Attempting to show an existing frame, but the selected "
                   "reference buffer is invalid.";
     return false;
@@ -512,7 +539,7 @@ bool VP9Validator::ValidateVanillaStream(
                    << static_cast<int>(ref_frame_index);
         return false;
       }
-      if (!reference_buffers_[ref_frame_index]) {
+      if (!reference_buffers_[0][ref_frame_index]) {
         LOG(ERROR) << "Frame is trying to reference buffer with invalid state.";
         return false;
       }
@@ -522,9 +549,10 @@ bool VP9Validator::ValidateVanillaStream(
   // Update current state with the new buffer.
   for (size_t i = 0; i < kVp9NumRefFrames; ++i) {
     if (header.RefreshFlag(i)) {
-      reference_buffers_[i] = new_buffer_state;
+      reference_buffers_[0][i] = new_buffer_state;
     }
   }
+
   const int qp = base::strict_cast<int>(header.quant_params.base_q_idx);
   DVLOGF(4) << "qp=" << qp;
   qp_values_[0][0].push_back(qp);
@@ -536,7 +564,7 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
                                      const Vp9FrameHeader& header) {
   const Vp9Metadata& vp9 = *metadata.vp9;
   if (next_picture_id_ == 0 && vp9.spatial_idx == 0 && !metadata.key_frame) {
-    LOG(ERROR) << "First frame must be a key-frame.";
+    LOG(ERROR) << "First frame must be a keyframe.";
     return false;
   }
 
@@ -559,15 +587,14 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
                << ", temporal_idx=" << base::strict_cast<int>(vp9.temporal_idx);
     return false;
   }
-  if (vp9.inter_pic_predicted != !vp9.p_diffs.empty()) {
+  if (vp9.inter_pic_predicted != (vp9.p_diffs.size() > 0)) {
     LOG(ERROR) << "Inconsistent metadata, inter_pic_predicted implies p_diffs "
                   "is non-empty.";
     return false;
   }
-
   if (metadata.key_frame) {
     if (vp9.spatial_idx != 0 || vp9.temporal_idx != 0) {
-      LOG(ERROR) << "Spatial and temporal id must be 0 for key-frames.";
+      LOG(ERROR) << "Spatial and temporal id must be 0 for keyframes.";
       return false;
     }
     if (vp9.spatial_layer_resolutions.empty()) {
@@ -579,14 +606,14 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
     spatial_layer_resolutions_ = vp9.spatial_layer_resolutions;
     next_picture_id_ = 0;
   } else if (header.show_existing_frame) {
-    if (!reference_buffers_[header.frame_to_show_map_idx]) {
+    if (!reference_buffers_[0][header.frame_to_show_map_idx]) {
       LOG(ERROR) << "Attempting to show an existing frame, but the selected "
                     "reference buffer is invalid.";
       return false;
     }
     int expected_diff =
         next_picture_id_ -
-        reference_buffers_[header.frame_to_show_map_idx]->picture_id;
+        reference_buffers_[0][header.frame_to_show_map_idx]->picture_id;
     if (vp9.p_diffs.size() != 1 || vp9.p_diffs[0] != expected_diff) {
       LOG(ERROR) << "Inconsistency between p_diff and existing frame to show.";
       return false;
@@ -636,11 +663,11 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
         continue;
       }
       used_indices.insert(ref_frame_index);
-      if (!reference_buffers_[ref_frame_index]) {
+      if (!reference_buffers_[0][ref_frame_index]) {
         LOG(ERROR) << "Frame is trying to reference buffer with invalid state.";
         return false;
       }
-      const BufferState& ref = *reference_buffers_[ref_frame_index];
+      const BufferState& ref = *reference_buffers_[0][ref_frame_index];
       if (ref.spatial_id > new_buffer_state.spatial_id) {
         LOG(ERROR)
             << "Frame is trying to reference buffer from higher spatial layer.";
@@ -652,7 +679,7 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
         return false;
       }
       // For key picture (|new_buffer_state.picture_id| == 0), we don't fill
-      // |p_diffs| even though it reference lower spatial layer frame. Skip
+      // |p_diffs| even though it references lower spatial layer frame. Skip
       // inserting |expected_pdiffs|.
       if (new_buffer_state.picture_id != 0) {
         expected_pdiffs.push_back(new_buffer_state.picture_id - ref.picture_id);
@@ -675,7 +702,168 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
   if (vp9.temporal_up_switch) {
     // Temporal up-switch, invalidate any buffers containing frames with higher
     // temporal id.
-    for (auto& buffer : reference_buffers_) {
+    for (auto& buffer : reference_buffers_[0]) {
+      if (buffer && buffer->temporal_id > new_buffer_state.temporal_id) {
+        buffer.reset();
+      }
+    }
+  }
+
+  // Update current state with the new buffer.
+  for (size_t i = 0; i < kVp9NumRefFrames; ++i) {
+    if (header.RefreshFlag(i)) {
+      reference_buffers_[0][i] = new_buffer_state;
+    }
+  }
+
+  const int qp = base::strict_cast<int>(header.quant_params.base_q_idx);
+  DVLOGF(4) << "qp=" << qp;
+  qp_values_[vp9.spatial_idx][vp9.temporal_idx].push_back(qp);
+  return true;
+}
+
+bool VP9Validator::ValidateSmodeStream(const DecoderBuffer& decoder_buffer,
+                                       const BitstreamBufferMetadata& metadata,
+                                       const Vp9FrameHeader& header) {
+  const Vp9Metadata& vp9 = *metadata.vp9;
+  if (next_picture_id_ == 0 && !metadata.key_frame) {
+    LOG(ERROR) << "First frame on each layer must be a keyframe.";
+    return false;
+  }
+  if (!header.error_resilient_mode) {
+    LOG(ERROR) << "Error resilient mode must be used in s-mode encoding";
+    return false;
+  }
+  if (header.refresh_frame_context) {
+    LOG(ERROR) << "Frame context must not be refreshed in s-mode encoding";
+    return false;
+  }
+  if (vp9.spatial_idx >= cur_num_spatial_layers_ ||
+      vp9.temporal_idx >= num_temporal_layers_) {
+    LOG(ERROR) << "Invalid spatial_idx="
+               << base::strict_cast<int>(vp9.spatial_idx)
+               << ", temporal_idx=" << base::strict_cast<int>(vp9.temporal_idx);
+    return false;
+  }
+  if (vp9.referenced_by_upper_spatial_layers) {
+    LOG(ERROR) << "referenced_by_upper_spatial_layers must be always false in "
+               << "s-mode encoding";
+    return false;
+  }
+  if (vp9.inter_pic_predicted != (vp9.p_diffs.size() > 0)) {
+    LOG(ERROR) << "Inconsistent metadata, inter_pic_predicted implies p_diffs "
+                  "is non-empty.";
+    return false;
+  }
+
+  if (metadata.key_frame) {
+    if (vp9.temporal_idx != 0) {
+      LOG(ERROR) << "Temporal id must be 0 for keyframes.";
+      return false;
+    }
+    if (vp9.spatial_layer_resolutions.empty()) {
+      LOG(ERROR) << "spatial_layer_resolution must not be empty on keyframe";
+      return false;
+    }
+    cur_num_spatial_layers_ = vp9.spatial_layer_resolutions.size();
+    spatial_layer_resolutions_ = vp9.spatial_layer_resolutions;
+    next_picture_id_ = 0;
+    begin_active_spatial_layer_index_ = vp9.begin_active_spatial_layer_index;
+  } else if (header.show_existing_frame) {
+    const size_t stream_index =
+        vp9.spatial_idx + begin_active_spatial_layer_index_;
+    if (!reference_buffers_[stream_index][header.frame_to_show_map_idx]) {
+      LOG(ERROR) << "Attempting to show an existing frame, but the selected "
+                    "reference buffer is invalid.";
+      return false;
+    }
+    int expected_diff =
+        next_picture_id_ -
+        reference_buffers_[stream_index][header.frame_to_show_map_idx]
+            ->picture_id;
+    if (vp9.p_diffs.size() != 1 || vp9.p_diffs[0] != expected_diff) {
+      LOG(ERROR) << "Inconsistency between p_diff and existing frame to show.";
+      return false;
+    }
+    return true;
+  }
+
+  BufferState new_buffer_state{
+      .picture_id = next_picture_id_,
+      .temporal_id = vp9.temporal_idx,
+  };
+
+  if (vp9.spatial_idx == cur_num_spatial_layers_ - 1) {
+    next_picture_id_++;
+  }
+  // Check the resolution is expected.
+
+  const gfx::Rect visible_rect(header.render_width, header.render_height);
+  if (visible_rect.size() != spatial_layer_resolutions_[vp9.spatial_idx]) {
+    LOG(ERROR) << "Resolution mismatched. Actual resolution: "
+               << visible_rect.size().ToString() << ", expected resolution: "
+               << spatial_layer_resolutions_[vp9.spatial_idx].ToString();
+    return false;
+  }
+  // Check that referenced frames are OK.
+  if (header.IsIntra()) {
+    if (!vp9.p_diffs.empty()) {
+      // TODO(crbug.com/1186051): Consider if this is truly an error-state.
+      LOG(ERROR) << "|p_diffs| should be empty in intra-frames.";
+      return false;
+    }
+  } else {
+    std::vector<int> expected_pdiffs;
+    std::set<uint8_t> used_indices;
+    for (uint8_t ref_frame_index : header.ref_frame_idx) {
+      if (ref_frame_index >= static_cast<uint8_t>(kVp9NumRefFrames)) {
+        LOG(ERROR) << "Invalid reference frame index: "
+                   << static_cast<int>(ref_frame_index);
+        return false;
+      }
+      if (base::Contains(used_indices, ref_frame_index)) {
+        // |header.ref_frame_index| might have the same indices because an
+        // encoder fills the same index if the actually used ref frames is less
+        // than |kVp9NumRefsPerFrame|.
+        continue;
+      }
+      used_indices.insert(ref_frame_index);
+      if (!reference_buffers_[vp9.spatial_idx][ref_frame_index]) {
+        LOG(ERROR) << "Frame is trying to reference buffer with invalid state.";
+        return false;
+      }
+      const BufferState& ref =
+          *reference_buffers_[vp9.spatial_idx][ref_frame_index];
+      if (ref.spatial_id > new_buffer_state.spatial_id) {
+        LOG(ERROR)
+            << "Frame is trying to reference buffer from higher spatial layer.";
+        return false;
+      }
+      if (ref.temporal_id > new_buffer_state.temporal_id) {
+        LOG(ERROR) << "Frame is trying to reference buffer from higher "
+                      "temporal layer.";
+        return false;
+      }
+      expected_pdiffs.push_back(new_buffer_state.picture_id - ref.picture_id);
+    }
+    for (uint8_t p_diff : vp9.p_diffs) {
+      if (!base::Erase(expected_pdiffs, p_diff)) {
+        LOG(ERROR)
+            << "Frame is referencing buffer not contained in the p_diff.";
+        return false;
+      }
+    }
+    if (!expected_pdiffs.empty()) {
+      // TODO(crbug.com/1186051): Consider if this is truly an error-state.
+      LOG(ERROR) << "|p_diff| contains frame that is not actually referenced.";
+      return false;
+    }
+  }
+
+  if (vp9.temporal_up_switch) {
+    // Temporal up-switch, invalidate any buffers containing frames with higher
+    // temporal id.
+    for (auto& buffer : reference_buffers_[vp9.spatial_idx]) {
       if (buffer && buffer->temporal_id > new_buffer_state.temporal_id) {
         buffer.reset();
       }
@@ -685,7 +873,7 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
   // Update current state with the new buffer.
   for (size_t i = 0; i < kVp9NumRefFrames; ++i) {
     if (header.RefreshFlag(i))
-      reference_buffers_[i] = new_buffer_state;
+      reference_buffers_[vp9.spatial_idx][i] = new_buffer_state;
   }
 
   const int qp = base::strict_cast<int>(header.quant_params.base_q_idx);

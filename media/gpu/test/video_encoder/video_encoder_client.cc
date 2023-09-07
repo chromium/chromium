@@ -77,8 +77,8 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
       framerate(video->FrameRate()),
       num_frames_to_encode(video->NumFrames()),
       reverse(reverse) {
-  CHECK_EQ(spatial_layers.size() <= 1u,
-           inter_layer_pred_mode == SVCInterLayerPredMode::kOff);
+  CHECK(inter_layer_pred_mode == SVCInterLayerPredMode::kOff ||
+        inter_layer_pred_mode == SVCInterLayerPredMode::kOnKeyPic);
 }
 
 VideoEncoderClientConfig::VideoEncoderClientConfig(

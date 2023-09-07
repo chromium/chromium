@@ -28,7 +28,8 @@ class DecoderBufferValidator : public BitstreamProcessor {
       VideoCodecProfile profile,
       const gfx::Rect& visible_rect,
       size_t num_spatial_layers,
-      size_t num_temporal_layers);
+      size_t num_temporal_layers,
+      SVCInterLayerPredMode inter_layer_pred);
   ~DecoderBufferValidator() override;
 
   // BitstreamProcessor implementation.
@@ -122,7 +123,8 @@ class VP9Validator : public DecoderBufferValidator {
   VP9Validator(VideoCodecProfile profile,
                const gfx::Rect& visible_rect,
                size_t max_num_spatial_layers,
-               size_t num_temporal_layers);
+               size_t num_temporal_layers,
+               SVCInterLayerPredMode inter_layer_pred);
   ~VP9Validator() override;
 
  private:
@@ -144,20 +146,29 @@ class VP9Validator : public DecoderBufferValidator {
   bool ValidateSVCStream(const DecoderBuffer& decoder_buffer,
                          const BitstreamBufferMetadata& metadata,
                          const Vp9FrameHeader& header);
-
-  Vp9Parser parser_;
+  // Validate DecoderBuffer for S-mode stream.
+  bool ValidateSmodeStream(const DecoderBuffer& decoder_buffer,
+                           const BitstreamBufferMetadata& metadata,
+                           const Vp9FrameHeader& header);
 
   // The expected VP9 profile of |decoder_buffer|.
   const int profile_;
   const size_t max_num_spatial_layers_;
+  const bool s_mode_;
+
+  std::vector<std::unique_ptr<Vp9Parser>> parsers_;
+
   size_t cur_num_spatial_layers_;
   std::vector<gfx::Size> spatial_layer_resolutions_;
   int next_picture_id_;
 
+  uint8_t begin_active_spatial_layer_index_ = 0;
+
   // An optional state for each specified VP9 reference buffer.
   // A nullopt indicates either keyframe not yet seen, or that a
   // buffer has been invalidated (e.g. due to sync points).
-  std::array<absl::optional<BufferState>, kVp9NumRefFrames> reference_buffers_;
+  std::vector<std::array<absl::optional<BufferState>, kVp9NumRefFrames>>
+      reference_buffers_;
 };
 
 class AV1Validator : public DecoderBufferValidator {
