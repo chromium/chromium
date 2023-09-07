@@ -5,7 +5,9 @@
 #include "chrome/browser/bookmarks/chrome_bookmark_client.h"
 
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,17 +16,54 @@
 #include "components/bookmarks/browser/bookmark_storage.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/managed/managed_bookmark_util.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/power_bookmarks/core/suggested_save_location_provider.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_bookmark_observer.h"
 #endif
+
+namespace {
+
+class ShoppingCollectionProvider
+    : public power_bookmarks::SuggestedSaveLocationProvider {
+ public:
+  ShoppingCollectionProvider(bookmarks::BookmarkModel* model, Profile* profile)
+      : model_(model), profile_(profile) {}
+  ShoppingCollectionProvider(const ShoppingCollectionProvider&) = delete;
+  ShoppingCollectionProvider& operator=(const ShoppingCollectionProvider&) =
+      delete;
+  ~ShoppingCollectionProvider() override = default;
+
+  const bookmarks::BookmarkNode* GetSuggestion(const GURL& url) override {
+    commerce::ShoppingService* service =
+        commerce::ShoppingServiceFactory::GetForBrowserContext(profile_);
+    if (!service || !service->GetAvailableProductInfoForUrl(url).has_value()) {
+      return nullptr;
+    }
+    return commerce::GetShoppingCollectionBookmarkFolder(model_.get(), true);
+  }
+
+  const base::TimeDelta GetBackoffTime() override {
+    // TODO(b:291326480): Make this configurable.
+    return base::Hours(2);
+  }
+
+ private:
+  raw_ptr<bookmarks::BookmarkModel> model_;
+  raw_ptr<Profile> profile_;
+};
+
+}  // namespace
 
 ChromeBookmarkClient::ChromeBookmarkClient(
     Profile* profile,
@@ -36,12 +75,24 @@ ChromeBookmarkClient::ChromeBookmarkClient(
       bookmark_sync_service_(bookmark_sync_service),
       bookmark_undo_service_(bookmark_undo_service) {}
 
-ChromeBookmarkClient::~ChromeBookmarkClient() = default;
+ChromeBookmarkClient::~ChromeBookmarkClient() {
+  if (shopping_save_location_provider_) {
+    RemoveSuggestedSaveLocationProvider(shopping_save_location_provider_.get());
+  }
+}
 
 void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
+  BookmarkClientBase::Init(model);
   if (managed_bookmark_service_)
     managed_bookmark_service_->BookmarkModelCreated(model);
   model_ = model;
+
+  if (base::FeatureList::IsEnabled(commerce::kShoppingCollection)) {
+    shopping_save_location_provider_ =
+        std::make_unique<ShoppingCollectionProvider>(model, profile_);
+
+    AddSuggestedSaveLocationProvider(shopping_save_location_provider_.get());
+  }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   offline_page_observer_ =

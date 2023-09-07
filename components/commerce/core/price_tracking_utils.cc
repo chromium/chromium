@@ -473,10 +473,12 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
     return nullptr;
   }
 
-  collection_node = model->AddFolder(
-      model->other_node(), model->other_node()->children().size(),
-      l10n_util::GetStringUTF16(IDS_SHOPPING_COLLECTION_FOLDER_NAME), nullptr,
-      absl::nullopt, collection_uuid);
+  if (!collection_node) {
+    collection_node = model->AddFolder(
+        model->other_node(), model->other_node()->children().size(),
+        l10n_util::GetStringUTF16(IDS_SHOPPING_COLLECTION_FOLDER_NAME), nullptr,
+        absl::nullopt, collection_uuid);
+  }
 
   return collection_node;
 }
