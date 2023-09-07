@@ -568,7 +568,7 @@ void HTMLImageElement::RemovedFrom(ContainerNode& insertion_point) {
   if (InActiveDocument() && !last_reported_ad_rect_.IsEmpty()) {
     gfx::Rect empty_rect;
     GetDocument().GetFrame()->Client()->OnMainFrameImageAdRectangleChanged(
-        DOMNodeIds::IdForNode(this), empty_rect);
+        this->GetDomNodeId(), empty_rect);
     last_reported_ad_rect_ = empty_rect;
   }
 
@@ -751,8 +751,8 @@ void HTMLImageElement::DidFinishLifecycleUpdate(
   }
 
   if (last_reported_ad_rect_ != rect_to_report) {
-    frame->Client()->OnMainFrameImageAdRectangleChanged(
-        DOMNodeIds::IdForNode(this), rect_to_report);
+    frame->Client()->OnMainFrameImageAdRectangleChanged(this->GetDomNodeId(),
+                                                        rect_to_report);
     last_reported_ad_rect_ = rect_to_report;
   }
 }

@@ -429,8 +429,8 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
   snap_area_data.must_snap =
       (area_style->ScrollSnapStop() == EScrollSnapStop::kAlways);
 
-  snap_area_data.element_id = CompositorElementIdFromDOMNodeId(
-      DOMNodeIds::IdForNode(snap_area.GetNode()));
+  snap_area_data.element_id =
+      CompositorElementIdFromDOMNodeId(snap_area.GetNode()->GetDomNodeId());
 
   return snap_area_data;
 }

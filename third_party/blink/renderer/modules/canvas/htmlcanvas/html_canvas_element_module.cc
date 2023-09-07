@@ -75,7 +75,7 @@ OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
       OffscreenCanvas::Create(script_state, canvas.width(), canvas.height());
   offscreen_canvas->SetFilterQuality(canvas.FilterQuality());
 
-  DOMNodeId canvas_id = DOMNodeIds::IdForNode(&canvas);
+  DOMNodeId canvas_id = canvas.GetDomNodeId();
   canvas.RegisterPlaceholderCanvas(static_cast<int>(canvas_id));
   offscreen_canvas->SetPlaceholderCanvasId(canvas_id);
 

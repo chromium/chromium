@@ -838,8 +838,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   }
 
   if (discarded_events_.mouse_down_target != kInvalidDOMNodeId &&
-      discarded_events_.mouse_down_target ==
-          DOMNodeIds::IdForNode(mev.InnerNode()) &&
+      discarded_events_.mouse_down_target == mev.InnerNode()->GetDomNodeId() &&
       mouse_event.TimeStamp() - discarded_events_.mouse_down_time <
           event_handling_util::kDiscardedEventMistakeInterval) {
     mev.InnerNode()->GetDocument().CountUse(
@@ -847,8 +846,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   }
   if (event_handling_util::ShouldDiscardEventTargetingFrame(mev.Event(),
                                                             *frame_)) {
-    discarded_events_.mouse_down_target =
-        DOMNodeIds::IdForNode(mev.InnerNode());
+    discarded_events_.mouse_down_target = mev.InnerNode()->GetDomNodeId();
     discarded_events_.mouse_down_time = mouse_event.TimeStamp();
     return WebInputEventResult::kHandledSuppressed;
   } else {
@@ -1635,7 +1633,7 @@ WebInputEventResult EventHandler::HandleGestureEventInFrame(
       targeted_event.Event().GetType() == WebInputEvent::Type::kGestureTap;
   if (is_tap && discarded_events_.tap_target != kInvalidDOMNodeId &&
       discarded_events_.tap_target ==
-          DOMNodeIds::IdForNode(targeted_event.InnerNode()) &&
+          targeted_event.InnerNode()->GetDomNodeId() &&
       targeted_event.Event().TimeStamp() - discarded_events_.tap_time <
           event_handling_util::kDiscardedEventMistakeInterval) {
     targeted_event.InnerNode()->GetDocument().CountUse(
@@ -1644,8 +1642,7 @@ WebInputEventResult EventHandler::HandleGestureEventInFrame(
   if (event_handling_util::ShouldDiscardEventTargetingFrame(
           targeted_event.Event(), *frame_)) {
     if (is_tap) {
-      discarded_events_.tap_target =
-          DOMNodeIds::IdForNode(targeted_event.InnerNode());
+      discarded_events_.tap_target = targeted_event.InnerNode()->GetDomNodeId();
       discarded_events_.tap_time = targeted_event.Event().TimeStamp();
     }
     return WebInputEventResult::kHandledSuppressed;

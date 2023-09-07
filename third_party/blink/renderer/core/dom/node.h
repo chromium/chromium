@@ -196,6 +196,10 @@ class CORE_EXPORT Node : public EventTarget {
 
   ~Node() override;
 
+  // Returns the existing DOMNodeID for the node if it has already been
+  // assigned, otherwise, assigns a new DOMNodeID and return that.
+  int GetDomNodeId();
+
   // DOM methods & attributes for Node
 
   bool HasTagName(const HTMLQualifiedName&) const;

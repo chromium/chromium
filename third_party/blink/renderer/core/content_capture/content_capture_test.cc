@@ -284,7 +284,7 @@ class ContentCaptureTest : public PageTestBase,
       nodes.push_back(node);
       GetOrResetContentCaptureManager()->ScheduleTaskIfNeeded(*node);
       node_ids.push_back(
-          cc::NodeInfo(DOMNodeIds::IdForNode(node), GetRect(layout_object)));
+          cc::NodeInfo(node->GetDomNodeId(), GetRect(layout_object)));
     }
   }
 

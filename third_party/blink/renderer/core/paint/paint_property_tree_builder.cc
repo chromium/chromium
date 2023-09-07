@@ -680,7 +680,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
       state.visible_frame_element_id =
           object_.GetFrame()->GetVisibleToHitTesting()
               ? CompositorElementIdFromUniqueObjectId(
-                    DOMNodeIds::IdForNode(&object_.GetDocument()),
+                    object_.GetDocument().GetDomNodeId(),
                     CompositorElementIdNamespace::kDOMNodeId)
               : cc::ElementId();
     }

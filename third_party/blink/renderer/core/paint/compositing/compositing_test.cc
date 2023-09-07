@@ -809,7 +809,7 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
   }
 
   const cc::Layer* CcLayerByOwnerNodeId(Node* node) {
-    DOMNodeId id = DOMNodeIds::IdForNode(node);
+    DOMNodeId id = node->GetDomNodeId();
     for (auto& layer : RootCcLayer()->children()) {
       if (layer->debug_info() && layer->debug_info()->owner_node_id == id)
         return layer.get();
@@ -2313,7 +2313,7 @@ TEST_P(CompositingSimTest, FrameAttribution) {
 
   EXPECT_EQ(visible_frame_element_id,
             CompositorElementIdFromUniqueObjectId(
-                DOMNodeIds::IdForNode(&GetDocument()),
+                GetDocument().GetDomNodeId(),
                 CompositorElementIdNamespace::kDOMNodeId));
 
   // Test that a layerized subframe's frame element ID is that of its
@@ -2328,7 +2328,7 @@ TEST_P(CompositingSimTest, FrameAttribution) {
 
   EXPECT_EQ(iframe_transform_node->visible_frame_element_id,
             CompositorElementIdFromUniqueObjectId(
-                DOMNodeIds::IdForNode(iframe_doc),
+                iframe_doc->GetDomNodeId(),
                 CompositorElementIdNamespace::kDOMNodeId));
 }
 

@@ -97,7 +97,7 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
   if (!element)
     return;
 
-  DOMNodeId element_id = DOMNodeIds::IdForNode(element);
+  DOMNodeId element_id = element->GetDomNodeId();
 
   if (element_id == candidate_id_) {
     // If the main frame scrolling position has changed by a distance greater

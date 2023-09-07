@@ -131,7 +131,7 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
         MakeReferrerWarning(action, url, referrer));
     if (using_link_referrer_policy) {
       console_message->SetNodes(link->GetDocument().GetFrame(),
-                                {DOMNodeIds::IdForNode(link)});
+                                {link->GetDomNodeId()});
     }
     execution_context->AddConsoleMessage(console_message);
     return absl::nullopt;

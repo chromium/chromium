@@ -142,7 +142,7 @@ BuildProtocolPreloadingAttemptSource(
     }
     if (HTMLAnchorElement* anchor = candidate->anchor();
         anchor && unique_anchors.insert(anchor).is_new_entry) {
-      node_ids->push_back(DOMNodeIds::IdForNode(anchor));
+      node_ids->push_back(anchor->GetDomNodeId());
     }
   }
   return protocol::Preload::PreloadingAttemptSource::create()

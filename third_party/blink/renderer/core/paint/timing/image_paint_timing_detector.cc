@@ -607,7 +607,7 @@ std::unique_ptr<ImageRecord> ImageRecordsManager::CreateImageRecord(
     bool is_loaded_after_mouseover) {
   DCHECK_GT(visual_size, 0u);
   Node* node = object.GetNode();
-  DOMNodeId node_id = DOMNodeIds::IdForNode(node);
+  DOMNodeId node_id = node->GetDomNodeId();
   std::unique_ptr<ImageRecord> record = std::make_unique<ImageRecord>(
       node_id, media_timing, visual_size, frame_visual_rect, root_visual_rect,
       is_loaded_after_mouseover);

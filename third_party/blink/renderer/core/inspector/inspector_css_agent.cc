@@ -3161,7 +3161,7 @@ void InspectorCSSAgent::SetCoverageEnabled(bool enabled) {
 }
 
 void InspectorCSSAgent::WillChangeStyleElement(Element* element) {
-  resource_container_->EraseStyleElementContent(DOMNodeIds::IdForNode(element));
+  resource_container_->EraseStyleElementContent(element->GetDomNodeId());
 }
 
 protocol::Response InspectorCSSAgent::startRuleUsageTracking() {

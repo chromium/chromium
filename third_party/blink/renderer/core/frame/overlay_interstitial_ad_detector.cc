@@ -126,7 +126,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
   if (!element)
     return;
 
-  DOMNodeId element_id = DOMNodeIds::IdForNode(element);
+  DOMNodeId element_id = element->GetDomNodeId();
 
   // Skip considering the overlay for a pop-up candidate if we haven't seen or
   // have just seen the first meaningful paint, or if the viewport size has just

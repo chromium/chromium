@@ -249,7 +249,7 @@ void AuditsIssue::ReportAttributionIssue(ExecutionContext* execution_context,
                      .build();
 
   if (element) {
-    details->setViolatingNodeId(DOMNodeIds::IdForNode(element));
+    details->setViolatingNodeId(element->GetDomNodeId());
   }
   if (!request_id.IsNull()) {
     details->setRequest(protocol::Audits::AffectedRequest::create()
@@ -754,7 +754,7 @@ AuditsIssue AuditsIssue::CreateContentSecurityPolicyIssue(
   }
 
   if (element) {
-    cspDetails->setViolatingNodeId(DOMNodeIds::IdForNode(element));
+    cspDetails->setViolatingNodeId(element->GetDomNodeId());
   }
 
   std::unique_ptr<protocol::Audits::InspectorIssueDetails> details =

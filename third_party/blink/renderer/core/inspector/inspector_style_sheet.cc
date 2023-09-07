@@ -1859,14 +1859,15 @@ void InspectorStyleSheet::InnerSetText(const String& text,
 
   if (mark_as_locally_modified) {
     Element* element = OwnerStyleElement();
-    if (element)
+    if (element) {
+      resource_container_->StoreStyleElementContent(element->GetDomNodeId(),
+                                                    text);
+    } else if (origin_ == protocol::CSS::StyleSheetOriginEnum::Inspector) {
       resource_container_->StoreStyleElementContent(
-          DOMNodeIds::IdForNode(element), text);
-    else if (origin_ == protocol::CSS::StyleSheetOriginEnum::Inspector)
-      resource_container_->StoreStyleElementContent(
-          DOMNodeIds::IdForNode(page_style_sheet_->OwnerDocument()), text);
-    else
+          page_style_sheet_->OwnerDocument()->GetDomNodeId(), text);
+    } else {
       resource_container_->StoreStyleSheetContent(FinalURL(), text);
+    }
   }
 }
 
@@ -2499,7 +2500,7 @@ bool InspectorStyleSheet::InlineStyleSheetText(String* out) {
     return result;
 
   result = resource_container_->LoadStyleElementContent(
-      DOMNodeIds::IdForNode(owner_element), out);
+      owner_element->GetDomNodeId(), out);
 
   if (!result) {
     *out = owner_element->textContent();
@@ -2520,8 +2521,9 @@ bool InspectorStyleSheet::InspectorStyleSheetText(String* result) {
   if (!page_style_sheet_->OwnerDocument())
     return false;
   if (resource_container_->LoadStyleElementContent(
-          DOMNodeIds::IdForNode(page_style_sheet_->OwnerDocument()), result))
+          page_style_sheet_->OwnerDocument()->GetDomNodeId(), result)) {
     return true;
+  }
   *result = "";
   return true;
 }

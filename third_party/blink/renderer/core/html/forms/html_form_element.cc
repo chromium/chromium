@@ -277,9 +277,8 @@ bool HTMLFormElement::ValidateInteractively() {
       ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kError, message);
-      console_message->SetNodes(
-          GetDocument().GetFrame(),
-          {DOMNodeIds::IdForNode(&unhandled->ToHTMLElement())});
+      console_message->SetNodes(GetDocument().GetFrame(),
+                                {unhandled->ToHTMLElement().GetDomNodeId()});
       GetDocument().AddConsoleMessage(console_message);
     }
   }

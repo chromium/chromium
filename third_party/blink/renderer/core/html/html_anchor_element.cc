@@ -614,7 +614,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
                          "Max: %d, given: %d",
                          kMaxDownloadAttrLength, download_attr.length()));
       console_message->SetNodes(GetDocument().GetFrame(),
-                                {DOMNodeIds::IdForNode(this)});
+                                {this->GetDomNodeId()});
       GetDocument().AddConsoleMessage(console_message);
       return;
     }

@@ -6341,7 +6341,7 @@ const AXObject* AXObject::TableParent() const {
 int AXObject::GetDOMNodeId() const {
   Node* node = GetNode();
   if (node)
-    return DOMNodeIds::IdForNode(node);
+    return node->GetDomNodeId();
   return 0;
 }
 

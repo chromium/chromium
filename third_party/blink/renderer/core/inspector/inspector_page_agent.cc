@@ -1863,7 +1863,7 @@ void InspectorPageAgent::FileChooserOpened(LocalFrame* frame,
       IdentifiersFactory::FrameId(frame),
       multiple ? protocol::Page::FileChooserOpened::ModeEnum::SelectMultiple
                : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle,
-      element ? Maybe<int>(DOMNodeIds::IdForNode(element)) : Maybe<int>());
+      element ? Maybe<int>(element->GetDomNodeId()) : Maybe<int>());
 }
 
 protocol::Response InspectorPageAgent::produceCompilationCache(

@@ -323,7 +323,7 @@ V8HTMLOrSVGScriptElement* HTMLScriptElement::AsV8HTMLOrSVGScriptElement() {
 }
 
 DOMNodeId HTMLScriptElement::GetDOMNodeId() {
-  return DOMNodeIds::IdForNode(this);
+  return this->GetDomNodeId();
 }
 
 void HTMLScriptElement::DispatchLoadEvent() {

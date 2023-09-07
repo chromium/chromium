@@ -2534,8 +2534,7 @@ protocol::Response InspectorDOMAgent::pushNodesByBackendIdsToFrontend(
 class InspectableNode final
     : public v8_inspector::V8InspectorSession::Inspectable {
  public:
-  explicit InspectableNode(Node* node)
-      : node_id_(DOMNodeIds::IdForNode(node)) {}
+  explicit InspectableNode(Node* node) : node_id_(node->GetDomNodeId()) {}
 
   v8::Local<v8::Value> get(v8::Local<v8::Context> context) override {
     return NodeV8Value(context, DOMNodeIds::NodeForId(node_id_));

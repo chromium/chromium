@@ -204,7 +204,7 @@ V8HTMLOrSVGScriptElement* SVGScriptElement::AsV8HTMLOrSVGScriptElement() {
 }
 
 DOMNodeId SVGScriptElement::GetDOMNodeId() {
-  return DOMNodeIds::IdForNode(this);
+  return this->GetDomNodeId();
 }
 
 SVGAnimatedPropertyBase* SVGScriptElement::PropertyFromAttribute(

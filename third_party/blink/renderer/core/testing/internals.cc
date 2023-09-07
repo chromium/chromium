@@ -3616,7 +3616,7 @@ void Internals::setScrollChain(ScrollState* scroll_state,
                                ExceptionState&) {
   Deque<DOMNodeId> scroll_chain;
   for (wtf_size_t i = 0; i < elements.size(); ++i)
-    scroll_chain.push_back(DOMNodeIds::IdForNode(elements[i].Get()));
+    scroll_chain.push_back(elements[i].Get()->GetDomNodeId());
   scroll_state->SetScrollChain(scroll_chain);
 }
 

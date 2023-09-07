@@ -236,7 +236,7 @@ void LayoutTextFragment::UpdateHitTestResult(
 DOMNodeId LayoutTextFragment::OwnerNodeId() const {
   NOT_DESTROYED();
   Node* node = AssociatedTextNode();
-  return node ? DOMNodeIds::IdForNode(node) : kInvalidDOMNodeId;
+  return node ? node->GetDomNodeId() : kInvalidDOMNodeId;
 }
 
 Position LayoutTextFragment::PositionForCaretOffset(unsigned offset) const {

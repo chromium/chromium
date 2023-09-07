@@ -382,7 +382,7 @@ void LayoutShiftTracker::ObjectShifted(
 
   if (Node* node = object.GetNode()) {
     MaybeRecordAttribution(
-        {DOMNodeIds::IdForNode(node), visible_old_rect, visible_new_rect});
+        {node->GetDomNodeId(), visible_old_rect, visible_new_rect});
   }
 }
 

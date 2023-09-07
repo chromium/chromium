@@ -139,7 +139,7 @@ void InspectorDOMDebuggerAgent::CollectEventListeners(
         continue;
       DOMNodeId backend_node_id = 0;
       if (target_node) {
-        backend_node_id = DOMNodeIds::IdForNode(target_node);
+        backend_node_id = target_node->GetDomNodeId();
         target_wrapper = NodeV8Value(
             report_for_all_contexts ? context : isolate->GetCurrentContext(),
             target_node);

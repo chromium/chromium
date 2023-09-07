@@ -172,8 +172,8 @@ LargestContentfulPaintCalculator::TextCandidateTraceData(
     const TextRecord& largest_text) {
   auto value = std::make_unique<TracedValue>();
   value->SetString("type", "text");
-  value->SetInteger(
-      "nodeId", static_cast<int>(DOMNodeIds::IdForNode(largest_text.node_)));
+  value->SetInteger("nodeId",
+                    static_cast<int>(largest_text.node_->GetDomNodeId()));
   value->SetInteger("size", static_cast<int>(largest_text.recorded_size));
   value->SetInteger("candidateIndex", ++count_candidates_);
   auto* window = window_performance_->DomWindow();

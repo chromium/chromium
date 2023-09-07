@@ -61,7 +61,7 @@ void InspectorIssueReporter::DomContentLoadedEventFired(LocalFrame* frame) {
 
   AuditsIssue::ReportQuirksModeIssue(
       document->GetExecutionContext(), document->InLimitedQuirksMode(),
-      DOMNodeIds::IdForNode(document), url.GetString(),
+      document->GetDomNodeId(), url.GetString(),
       IdentifiersFactory::FrameId(frame),
       IdentifiersFactory::LoaderId(document->Loader()));
 }

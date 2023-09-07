@@ -2091,7 +2091,7 @@ String LayoutObject::DebugName() const {
 
 DOMNodeId LayoutObject::OwnerNodeId() const {
   NOT_DESTROYED();
-  return GetNode() ? DOMNodeIds::IdForNode(GetNode()) : kInvalidDOMNodeId;
+  return GetNode() ? GetNode()->GetDomNodeId() : kInvalidDOMNodeId;
 }
 
 void LayoutObject::InvalidateDisplayItemClients(

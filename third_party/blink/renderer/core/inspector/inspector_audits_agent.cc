@@ -100,7 +100,7 @@ std::unique_ptr<protocol::Audits::InspectorIssue> CreateLowTextContrastIssue(
           .setFontWeight(info.font_weight)
           .setContrastRatio(info.contrast_ratio)
           .setViolatingNodeSelector(sb.ToString())
-          .setViolatingNodeId(DOMNodeIds::IdForNode(element))
+          .setViolatingNodeId(element->GetDomNodeId())
           .build();
   issue_details.setLowTextContrastIssueDetails(std::move(low_contrast_details));
 

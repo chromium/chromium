@@ -93,7 +93,7 @@ TEST_F(HTMLCanvasElementModuleTest, TransferControlToOffscreen) {
   const OffscreenCanvas* offscreen_canvas =
       TransferControlToOffscreen(exception_state);
   const DOMNodeId canvas_id = offscreen_canvas->PlaceholderCanvasId();
-  EXPECT_EQ(canvas_id, DOMNodeIds::IdForNode(&(canvas_element())));
+  EXPECT_EQ(canvas_id, canvas_element().GetDomNodeId());
 }
 
 // Verifies that a desynchronized canvas has the appropriate opacity/blending

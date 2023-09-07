@@ -56,7 +56,7 @@ ConsoleMessage::ConsoleMessage(const WebConsoleMessage& message,
   if (local_frame) {
     Vector<DOMNodeId> nodes;
     for (const WebNode& web_node : message.nodes)
-      nodes.push_back(DOMNodeIds::IdForNode(&(*web_node)));
+      nodes.push_back(web_node.GetDomNodeId());
     SetNodes(local_frame, std::move(nodes));
   }
 }

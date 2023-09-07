@@ -342,6 +342,10 @@ Node::~Node() {
   InstanceCounters::DecrementCounter(InstanceCounters::kNodeCounter);
 }
 
+int Node::GetDomNodeId() {
+  return DOMNodeIds::IdForNode(this);
+}
+
 NodeRareData& Node::CreateRareData() {
   if (IsElementNode()) {
     data_ = MakeGarbageCollected<ElementRareDataVector>(data_);

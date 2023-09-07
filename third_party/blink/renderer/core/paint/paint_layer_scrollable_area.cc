@@ -1958,7 +1958,7 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
   CompositorElementId active_element_id = CompositorElementId();
   if (auto* active_element = GetDocument()->ActiveElement()) {
     active_element_id =
-        CompositorElementIdFromDOMNodeId(DOMNodeIds::IdForNode(active_element));
+        CompositorElementIdFromDOMNodeId(active_element->GetDomNodeId());
   }
 
   absl::optional<gfx::PointF> snap_point;

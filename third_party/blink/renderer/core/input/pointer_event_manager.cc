@@ -682,7 +682,7 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
   bool is_pointer_down = event.GetType() == WebInputEvent::Type::kPointerDown;
   if (is_pointer_down && discarded_event_.target != kInvalidDOMNodeId &&
       discarded_event_.target ==
-          DOMNodeIds::IdForNode(pointer_event_target.target_element) &&
+          pointer_event_target.target_element->GetDomNodeId() &&
       pointer_event.TimeStamp() - discarded_event_.time <
           event_handling_util::kDiscardedEventMistakeInterval) {
     pointer_event_target.target_element->GetDocument().CountUse(
@@ -694,7 +694,7 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
   if (discard) {
     if (is_pointer_down) {
       discarded_event_.target =
-          DOMNodeIds::IdForNode(pointer_event_target.target_element);
+          pointer_event_target.target_element->GetDomNodeId();
       discarded_event_.time = pointer_event.TimeStamp();
     }
     PointerEvent* core_pointer_event = pointer_event_factory_.Create(

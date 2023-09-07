@@ -1390,7 +1390,7 @@ DOMNodeId LayoutText::EnsureNodeId() {
     if (auto* content_capture_manager = GetOrResetContentCaptureManager()) {
       if (auto* node = GetNode()) {
         content_capture_manager->ScheduleTaskIfNeeded(*node);
-        node_id_ = DOMNodeIds::IdForNode(node);
+        node_id_ = node->GetDomNodeId();
       }
     }
   }

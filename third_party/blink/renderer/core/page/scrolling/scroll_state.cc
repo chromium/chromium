@@ -99,7 +99,7 @@ Node* ScrollState::CurrentNativeScrollingNode() {
 void ScrollState::SetCurrentNativeScrollingNode(Node* node) {
   node_ = node;
   data_->set_current_native_scrolling_element(
-      CompositorElementIdFromDOMNodeId(DOMNodeIds::IdForNode(node)));
+      CompositorElementIdFromDOMNodeId(node->GetDomNodeId()));
 }
 
 }  // namespace blink

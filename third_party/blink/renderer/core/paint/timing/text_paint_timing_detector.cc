@@ -36,9 +36,8 @@ TextPaintTimingDetector::TextPaintTimingDetector(
 void LargestTextPaintManager::PopulateTraceValue(
     TracedValue& value,
     const TextRecord& first_text_paint) {
-  value.SetInteger(
-      "DOMNodeId",
-      static_cast<int>(DOMNodeIds::IdForNode(first_text_paint.node_)));
+  value.SetInteger("DOMNodeId",
+                   static_cast<int>(first_text_paint.node_->GetDomNodeId()));
   value.SetInteger("size", static_cast<int>(first_text_paint.recorded_size));
   value.SetInteger("candidateIndex", ++count_candidates_);
   value.SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());

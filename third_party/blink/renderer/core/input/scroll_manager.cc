@@ -218,7 +218,7 @@ void ScrollManager::RecomputeScrollChain(const Node& start_node,
         if (new_autoscrollable)
           cur_node = new_autoscrollable->GetNode();
       }
-      scroll_chain.push_front(DOMNodeIds::IdForNode(cur_node));
+      scroll_chain.push_front(cur_node->GetDomNodeId());
     }
   } else {
     LayoutBox* cur_box = start_node.GetLayoutObject()->EnclosingBox();
@@ -232,7 +232,7 @@ void ScrollManager::RecomputeScrollChain(const Node& start_node,
 
       if (cur_node) {
         if (CanScroll(scroll_state, *cur_node, /* for_autoscroll */ false))
-          scroll_chain.push_front(DOMNodeIds::IdForNode(cur_node));
+          scroll_chain.push_front(cur_node->GetDomNodeId());
 
         if (cur_node->IsEffectiveRootScroller())
           break;
@@ -244,8 +244,8 @@ void ScrollManager::RecomputeScrollChain(const Node& start_node,
           // the scroll chain regardlessly, as it's the only node we can latch
           // to.
           if (scroll_chain.empty() ||
-              scroll_chain.front() != DOMNodeIds::IdForNode(cur_node)) {
-            scroll_chain.push_front(DOMNodeIds::IdForNode(cur_node));
+              scroll_chain.front() != cur_node->GetDomNodeId()) {
+            scroll_chain.push_front(cur_node->GetDomNodeId());
           }
           break;
         }
