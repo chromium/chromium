@@ -84,6 +84,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
+#include "chrome/browser/tpcd/support/tpcd_support_manager.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -354,6 +355,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   CoreTabHelper::CreateForWebContents(web_contents);
   DIPSWebContentsObserver::MaybeCreateForWebContents(web_contents);
   ExternalProtocolObserver::CreateForWebContents(web_contents);
+  TpcdSupportManager::MaybeCreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
   FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);
   FileSystemAccessTabHelper::CreateForWebContents(web_contents);

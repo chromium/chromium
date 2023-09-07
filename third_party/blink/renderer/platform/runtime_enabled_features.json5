@@ -3776,6 +3776,14 @@
       name: "TouchTextEditingRedesign",
       base_feature: "none",
     },
+    {
+      name: "Tpcd",
+      origin_trial_feature_name: "Tpcd",
+      origin_trial_allows_third_party: true,
+      origin_trial_type: "deprecation",
+      status: "experimental",
+      base_feature: "none",
+    },
     // This is conditionally set if the platform supports translation.
     {
       name: "TranslateService",

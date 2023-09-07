@@ -1805,6 +1805,8 @@ static_library("browser") {
     "tpcd/heuristics/opener_heuristic_tab_helper.h",
     "tpcd/heuristics/opener_heuristic_utils.cc",
     "tpcd/heuristics/opener_heuristic_utils.h",
+    "tpcd/support/tpcd_support_manager.cc",
+    "tpcd/support/tpcd_support_manager.h",
     "tracing/background_tracing_field_trial.cc",
     "tracing/background_tracing_field_trial.h",
     "tracing/chrome_background_tracing_metrics_provider.cc",
