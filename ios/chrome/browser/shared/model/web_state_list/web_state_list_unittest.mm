@@ -1115,8 +1115,8 @@ TEST_F(WebStateListTest, SetWebStatePinned_InRandomOrder) {
   EXPECT_EQ(web_state_list_.GetWebStateAt(3)->GetVisibleURL().spec(), kURL3);
 }
 
-// Tests GetIndexOfFirstNonPinnedWebState returns correct index.
-TEST_F(WebStateListTest, GetIndexOfFirstNonPinnedWebState) {
+// Tests pinned_tabs_count returns correct index.
+TEST_F(WebStateListTest, pinned_tabs_count) {
   EXPECT_TRUE(web_state_list_.empty());
 
   AppendNewWebState(kURL0);
@@ -1124,25 +1124,25 @@ TEST_F(WebStateListTest, GetIndexOfFirstNonPinnedWebState) {
   AppendNewWebState(kURL2);
   AppendNewWebState(kURL3);
 
-  EXPECT_EQ(web_state_list_.GetIndexOfFirstNonPinnedWebState(), 0);
+  EXPECT_EQ(web_state_list_.pinned_tabs_count(), 0);
 
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, true), 0);
-  EXPECT_EQ(web_state_list_.GetIndexOfFirstNonPinnedWebState(), 1);
+  EXPECT_EQ(web_state_list_.pinned_tabs_count(), 1);
 
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(3, true), 1);
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(3, true), 2);
-  EXPECT_EQ(web_state_list_.GetIndexOfFirstNonPinnedWebState(), 3);
+  EXPECT_EQ(web_state_list_.pinned_tabs_count(), 3);
 
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(3, true), 3);
-  EXPECT_EQ(web_state_list_.GetIndexOfFirstNonPinnedWebState(), 4);
+  EXPECT_EQ(web_state_list_.pinned_tabs_count(), 4);
 
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 3);
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 3);
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 3);
-  EXPECT_EQ(web_state_list_.GetIndexOfFirstNonPinnedWebState(), 1);
+  EXPECT_EQ(web_state_list_.pinned_tabs_count(), 1);
 
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 3);
-  EXPECT_EQ(web_state_list_.GetIndexOfFirstNonPinnedWebState(), 0);
+  EXPECT_EQ(web_state_list_.pinned_tabs_count(), 0);
 }
 
 // Tests InsertWebState method correctly updates insertion index if it is in the

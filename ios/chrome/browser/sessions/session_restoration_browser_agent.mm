@@ -89,8 +89,7 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
   }
 
   const int old_count = web_state_list_->count();
-  const int old_first_non_pinned =
-      web_state_list_->GetIndexOfFirstNonPinnedWebState();
+  const int old_first_non_pinned = web_state_list_->pinned_tabs_count();
   DCHECK_GE(old_count, 0);
 
   web_state_list_->PerformBatchOperation(
@@ -105,8 +104,7 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
   DCHECK_GE(web_state_list_->count(), old_count);
   int restored_count = web_state_list_->count() - old_count;
   int restored_pinned_count =
-      web_state_list_->GetIndexOfFirstNonPinnedWebState() -
-      old_first_non_pinned;
+      web_state_list_->pinned_tabs_count() - old_first_non_pinned;
 
   NSArray<CRWSessionStorage*>* restored_session_storages =
       GetRestoredSessionStoragesForScope(scope, window.sessions,
@@ -122,7 +120,7 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
 
   // Find restored pinned WebStates.
   for (int index = old_first_non_pinned;
-       index < web_state_list_->GetIndexOfFirstNonPinnedWebState(); ++index) {
+       index < web_state_list_->pinned_tabs_count(); ++index) {
     web::WebState* web_state = web_state_list_->GetWebStateAt(index);
 
     const int session_index = index - old_first_non_pinned;

@@ -52,8 +52,7 @@
 
   if (IsPinnedTabsEnabled()) {
     BOOL hasPinnedWebStatesOnly =
-        self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
-        self.webStateList->count();
+        self.webStateList->pinned_tabs_count() == self.webStateList->count();
 
     if (hasPinnedWebStatesOnly) {
       return;
@@ -199,8 +198,8 @@
 // YES if there are tabs in regular grid only (not pinned, not in inactive tabs,
 // etc.).
 - (BOOL)isTabsInGrid {
-  BOOL onlyPinnedTabs = self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
-                        self.webStateList->count();
+  BOOL onlyPinnedTabs =
+      self.webStateList->pinned_tabs_count() == self.webStateList->count();
   return !self.webStateList->empty() && !onlyPinnedTabs;
 }
 

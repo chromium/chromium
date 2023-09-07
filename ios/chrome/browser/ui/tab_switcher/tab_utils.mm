@@ -29,11 +29,11 @@ int GetWebStateIndex(WebStateList* web_state_list,
   int end = web_state_list->count();
   switch (criteria.pinned_state) {
     case PinnedState::kNonPinned:
-      start = web_state_list->GetIndexOfFirstNonPinnedWebState();
+      start = web_state_list->pinned_tabs_count();
       break;
     case PinnedState::kPinned:
       CHECK(IsPinnedTabsEnabled());
-      end = web_state_list->GetIndexOfFirstNonPinnedWebState();
+      end = web_state_list->pinned_tabs_count();
       break;
     case PinnedState::kAny:
       break;

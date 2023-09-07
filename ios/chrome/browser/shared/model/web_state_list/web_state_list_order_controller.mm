@@ -156,8 +156,7 @@ int WebStateListOrderController::DetermineNewActiveIndex(
 
   const bool is_pinned = web_state_list_.IsWebStatePinnedAt(active_index);
 
-  const int first_non_pinned_tab =
-      web_state_list_.GetIndexOfFirstNonPinnedWebState();
+  const int first_non_pinned_tab = web_state_list_.pinned_tabs_count();
 
   const int start = is_pinned ? 0 : first_non_pinned_tab;
   const int end = is_pinned ? first_non_pinned_tab : count;
@@ -202,9 +201,9 @@ int WebStateListOrderController::DetermineNewActiveIndex(
 
 int WebStateListOrderController::ConstrainInsertionIndex(int index,
                                                          bool pinned) const {
-  int min = pinned ? 0 : web_state_list_.GetIndexOfFirstNonPinnedWebState();
-  int max = pinned ? web_state_list_.GetIndexOfFirstNonPinnedWebState()
-                   : web_state_list_.count();
+  int min = pinned ? 0 : web_state_list_.pinned_tabs_count();
+  int max =
+      pinned ? web_state_list_.pinned_tabs_count() : web_state_list_.count();
 
   if (index < min || index > max) {
     return max;

@@ -40,7 +40,7 @@ namespace {
 NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     WebStateList* web_state_list) {
   NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
-  int pinnedWebStatesCount = web_state_list->GetIndexOfFirstNonPinnedWebState();
+  int pinnedWebStatesCount = web_state_list->pinned_tabs_count();
 
   for (int i = 0; i < pinnedWebStatesCount; i++) {
     DCHECK(web_state_list->IsWebStatePinnedAt(i));
@@ -492,7 +492,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 #pragma mark - Private
 
 - (void)addWebStateObservations {
-  int pinnedWebStatesCount = _webStateList->GetIndexOfFirstNonPinnedWebState();
+  int pinnedWebStatesCount = _webStateList->pinned_tabs_count();
 
   for (int i = 0; i < pinnedWebStatesCount; i++) {
     DCHECK(_webStateList->IsWebStatePinnedAt(i));
@@ -569,8 +569,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   }
 
   int webStateListIndex = index;
-  int webStateListLastIndex =
-      self.webStateList->GetIndexOfFirstNonPinnedWebState() - 1;
+  int webStateListLastIndex = self.webStateList->pinned_tabs_count() - 1;
 
   if (webStateListIndex > webStateListLastIndex) {
     return WebStateList::kInvalidIndex;

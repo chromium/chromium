@@ -69,8 +69,7 @@ void MoveTabsFromActiveToInactive(Browser* active_browser,
         const base::TimeDelta inactivity_threshold =
             InactiveTabsTimeThreshold();
         int removed_web_state_number = 0;
-        for (int index =
-                 active_web_state_list->GetIndexOfFirstNonPinnedWebState();
+        for (int index = active_web_state_list->pinned_tabs_count();
              index < active_web_state_list->count() &&
              !IsInactiveTabsMoveNumberExceeded(removed_web_state_number);) {
           web::WebState* current_web_state =
@@ -103,9 +102,8 @@ void MoveTabsFromInactiveToActive(Browser* inactive_browser,
              !IsInactiveTabsMoveNumberExceeded(removed_web_state_number);) {
           if (!IsInactive(inactivity_threshold,
                           inactive_web_state_list->GetWebStateAt(index))) {
-            int insertion_index =
-                active_web_state_list->GetIndexOfFirstNonPinnedWebState() +
-                removed_web_state_number++;
+            int insertion_index = active_web_state_list->pinned_tabs_count() +
+                                  removed_web_state_number++;
             MoveTabFromBrowserToBrowser(inactive_browser, index, active_browser,
                                         insertion_index);
           } else {
@@ -132,7 +130,7 @@ void RestoreAllInactiveTabs(Browser* inactive_browser,
              index--) {
           MoveTabFromBrowserToBrowser(
               inactive_browser, index, active_browser,
-              active_web_state_list->GetIndexOfFirstNonPinnedWebState());
+              active_web_state_list->pinned_tabs_count());
         }
       }));
 }

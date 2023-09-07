@@ -804,10 +804,6 @@ int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
   return new_index;
 }
 
-int WebStateList::GetIndexOfFirstNonPinnedWebState() const {
-  return pinned_tabs_count_;
-}
-
 int WebStateList::ConstrainMoveIndex(int index, bool pinned) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pinned ? std::clamp(index, 0, pinned_tabs_count_ - 1)

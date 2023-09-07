@@ -458,7 +458,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     const int inactiveWebStateListCount = inactiveWebStateList->count();
 
     tabCount += webStateListCount + inactiveWebStateListCount;
-    pinnedTabCount += webStateList->GetIndexOfFirstNonPinnedWebState();
+    pinnedTabCount += webStateList->pinned_tabs_count();
     activeTabCount += webStateListCount;
     inactiveTabCount += inactiveWebStateListCount;
     // All inactive tabs are inactive since minimum 7 days or more.
