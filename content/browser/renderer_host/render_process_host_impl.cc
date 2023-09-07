@@ -3238,13 +3238,11 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
     command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                     "--jitless");
 
-#if BUILDFLAG(IS_CHROMEOS)
   if (features::IsTouchTextEditingRedesignEnabled()) {
     command_line->AppendSwitchASCII(
         blink::switches::kTouchTextSelectionStrategy,
         blink::switches::kTouchTextSelectionStrategy_Direction);
   }
-#endif
 
 #if BUILDFLAG(IS_WIN)
   command_line->AppendSwitchASCII(

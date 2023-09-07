@@ -2433,7 +2433,7 @@
   {
     "name": "enable-cros-touch-text-editing-redesign",
     "owners": [ "michellegc", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-cros-virtual-keyboard-api",
