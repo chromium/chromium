@@ -232,6 +232,9 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
+  void SetForceUnregisterCalledForTesting(
+      base::RepeatingCallback<void(const AppId&)> on_force_unregister);
+
  protected:
   WebAppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
   WebAppProtocolHandlerManager* protocol_handler_manager() {
@@ -372,6 +375,9 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
   bool set_provider_called_ = false;
   bool first_synchronize_called_ = false;
+
+  base::RepeatingCallback<void(const AppId&)>
+      force_unregister_callback_for_testing_ = base::DoNothing();
 
   base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
       registrar_observation_{this};

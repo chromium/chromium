@@ -217,8 +217,10 @@ void OsIntegrationManager::Synchronize(
   // This is usually called whenever the app is missing in the web app registry,
   // to clean up left over OS integration states.
   if (options.has_value() && options.value().force_unregister_on_app_missing) {
-    ForceUnregisterOsIntegrationOnSubManager(app_id, /*index=*/0,
-                                             std::move(callback));
+    ForceUnregisterOsIntegrationOnSubManager(
+        app_id, /*index=*/0,
+        std::move(callback).Then(
+            base::BindOnce(force_unregister_callback_for_testing_, app_id)));
     return;
   }
 
@@ -914,11 +916,24 @@ void OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers(
 }
 
 void OsIntegrationManager::OnWebAppProfileWillBeDeleted(const AppId& app_id) {
-  UninstallAllOsHooks(app_id, base::DoNothing());
+  if (AreSubManagersExecuteEnabled()) {
+    ForceUnregisterOsIntegrationOnSubManager(
+        app_id, 0,
+        base::BindOnce(force_unregister_callback_for_testing_, app_id));
+  } else {
+    UninstallAllOsHooks(app_id,
+                        base::IgnoreArgs<OsHooksErrors>(base::BindOnce(
+                            force_unregister_callback_for_testing_, app_id)));
+  }
 }
 
 void OsIntegrationManager::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
+}
+
+void OsIntegrationManager::SetForceUnregisterCalledForTesting(
+    base::RepeatingCallback<void(const AppId&)> on_force_unregister) {
+  force_unregister_callback_for_testing_ = on_force_unregister;
 }
 
 std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
