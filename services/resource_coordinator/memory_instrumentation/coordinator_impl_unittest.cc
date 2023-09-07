@@ -828,15 +828,8 @@ TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
   }
 }
 
-// crbug.com: 1238428: flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DumpsAreAddedToTraceWhenRequested \
-  DISABLED_DumpsAreAddedToTraceWhenRequested
-#else
-#define MAYBE_DumpsAreAddedToTraceWhenRequested \
-  DumpsAreAddedToTraceWhenRequested
-#endif
-TEST_F(CoordinatorImplTest, MAYBE_DumpsAreAddedToTraceWhenRequested) {
+// TODO(crbug.com/1479976): Test is flaky across platforms.
+TEST_F(CoordinatorImplTest, DISABLED_DumpsAreAddedToTraceWhenRequested) {
   tracing::DataSourceTester data_source_tester(
       TracingObserverProto::GetInstance());
 
