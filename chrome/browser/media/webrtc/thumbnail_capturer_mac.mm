@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/timer/timer.h"
@@ -136,23 +137,37 @@ BASE_FEATURE(kScreenCaptureKitStreamPickerVentura,
              "ScreenCaptureKitStreamPickerVentura",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// The enable/disable property of this feature has no impact. The feature is
+// used solely to pass on the parameters below.
+BASE_FEATURE(kThumbnailCapturerMac,
+             "ThumbnailCapturerMac",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Default max frame rate that is used when capturing thumbnails. This is per
 // source so the combined frame rate can be higher if there are multiple
 // sources.
-constexpr int kDefaultMaxFrameRate = 1;
-// Refresh interval that is used to query for the list of shareable content.
-constexpr base::TimeDelta kSourceListRefreshTimerInterval =
-    base::Milliseconds(250);
+const base::FeatureParam<int> kThumbnailCapturerMacMaxFrameRate{
+    &kThumbnailCapturerMac, "max_frame_rate", 1};
 
-bool API_AVAILABLE(macos(13.2)) IncludeWindowInSourceList(SCWindow* window) {
-  // On macOS 14, each window that is captured has an indicator that the window
-  // is being captured. This indicator is a window itself. Filter out these
-  // windows based on their very small height.
-  // The condition on window layer is used to filter out other components that
-  // are treated as windows but should not be captured.
-  constexpr int kMinimumWindowHeight = 26;
-  return window.windowLayer == 0 &&
-         window.frame.size.height >= kMinimumWindowHeight;
+// Refresh interval that is used to query for the list of shareable content.
+const base::FeatureParam<base::TimeDelta>
+    kThumbnailCapturerMacRefreshTimerInterval{&kThumbnailCapturerMac,
+                                              "refresh_timer_interval",
+                                              base::Milliseconds(250)};
+
+// The minimum window size that is still considered to be a shareable window.
+// Windows with smaller height or widht are filtered out.
+const base::FeatureParam<int> kThumbnailCapturerMacMinWindowSize{
+    &kThumbnailCapturerMac, "min_window_size", 40};
+
+bool API_AVAILABLE(macos(12.3))
+    IsWindowFullscreen(SCWindow* window, NSArray<SCDisplay*>* displays) {
+  for (SCDisplay* display : displays) {
+    if (CGRectEqualToRect(window.frame, display.frame)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
@@ -183,28 +198,40 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
   };
 
   void UpdateWindowsList();
-  void OnShareableContentCreated(SCShareableContent* content);
+  void OnRecurrentShareableContent(SCShareableContent* content);
+  bool ExcludeWindowFromSourceList(SCWindow* window) const;
   void OnCapturedFrame(CGImageRef image, SourceId source_id);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const gfx::Size thumbnail_size_;
-  int max_frame_rate_ = kDefaultMaxFrameRate;
+  int max_frame_rate_;
+  const int minimum_window_size_;
   raw_ptr<Consumer> consumer_;
+
+  // A cache of the shareable windows and shareable displays. sharable_windows_
+  // is used to produce the source list. shareable_displays_ is used to
+  // determine if a window is fullscreen or not. Both are updated continuously
+  // by the refresh_timer_.
   NSArray<SCWindow*>* __strong shareable_windows_;
+  NSArray<SCDisplay*>* __strong shareable_displays_;
+
   std::unordered_map<SourceId, StreamAndDelegate> streams_;
   base::RepeatingTimer refresh_timer_;
   base::WeakPtrFactory<ThumbnailCapturerMac> weak_factory_{this};
 };
 
 ThumbnailCapturerMac::ThumbnailCapturerMac(const gfx::Size& thumbnail_size)
-    : thumbnail_size_(thumbnail_size) {}
+    : thumbnail_size_(thumbnail_size),
+      max_frame_rate_(kThumbnailCapturerMacMaxFrameRate.Get()),
+      minimum_window_size_(kThumbnailCapturerMacMinWindowSize.Get()) {}
 
 void ThumbnailCapturerMac::Start(Consumer* consumer) {
   consumer_ = consumer;
   task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   UpdateWindowsList();
   // Start a timer that periodically update the list of sharable windows.
-  refresh_timer_.Start(FROM_HERE, kSourceListRefreshTimerInterval, this,
+  refresh_timer_.Start(FROM_HERE,
+                       kThumbnailCapturerMacRefreshTimerInterval.Get(), this,
                        &ThumbnailCapturerMac::UpdateWindowsList);
 }
 
@@ -219,18 +246,45 @@ bool ThumbnailCapturerMac::GetSourceList(SourceList* sources) {
     return false;
   }
 
-  // TODO(https://crbug.com/1478176): Filter out windows with empty titles.
-  // Let W be the set of all windows for which IncludeWindowInSourceList(w)
-  // returns true for all w in W. Let X be the subset of W so that all windows x
-  // in X belong to application Y. Only allow f(X) windows with empty titles,
-  // where f(X) = 0 if there exists one window in X whose title is not empty.
-  // f(X) = 1 if all windows in X have empty titles.
+  // Discover how many windows are associated with each application,
+  // so as to use this as part of the set of conditions for which
+  // windows are valid sources.
+  std::unordered_map<pid_t, size_t> application_to_window_count;
   for (SCWindow* window in shareable_windows_) {
-    if (IncludeWindowInSourceList(window)) {
-      sources->push_back(ThumbnailCapturer::Source{
-          window.windowID, base::SysNSStringToUTF8(window.title)});
+    if (ExcludeWindowFromSourceList(window)) {
+      continue;
+    }
+
+    const pid_t pid = window.owningApplication.processID;
+    if (!base::Contains(application_to_window_count, pid)) {
+      application_to_window_count[pid] = 1;
+    } else {
+      ++application_to_window_count[pid];
     }
   }
+
+  // Add relevant sources.
+  for (SCWindow* window in shareable_windows_) {
+    if (ExcludeWindowFromSourceList(window)) {
+      continue;
+    }
+
+    // Skip windows with empty titles, unless they are their app's only window
+    // or fullscreen.
+    const pid_t pid = window.owningApplication.processID;
+    bool is_title_empty = [window.title length] <= 0;
+    if (is_title_empty && application_to_window_count.at(pid) > 1 &&
+        !IsWindowFullscreen(window, shareable_displays_)) {
+      continue;
+    }
+
+    sources->push_back(ThumbnailCapturer::Source{
+        window.windowID,
+        base::SysNSStringToUTF8(is_title_empty
+                                    ? window.owningApplication.applicationName
+                                    : window.title)});
+  }
+
   return true;
 }
 
@@ -238,7 +292,7 @@ void ThumbnailCapturerMac::UpdateWindowsList() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   auto content_callback = base::BindPostTask(
       task_runner_,
-      base::BindRepeating(&ThumbnailCapturerMac::OnShareableContentCreated,
+      base::BindRepeating(&ThumbnailCapturerMac::OnRecurrentShareableContent,
                           weak_factory_.GetWeakPtr()));
 
   auto handler = ^(SCShareableContent* content, NSError* error) {
@@ -253,7 +307,7 @@ void ThumbnailCapturerMac::UpdateWindowsList() {
                                                completionHandler:handler];
 }
 
-void ThumbnailCapturerMac::OnShareableContentCreated(
+void ThumbnailCapturerMac::OnRecurrentShareableContent(
     SCShareableContent* content) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -262,11 +316,12 @@ void ThumbnailCapturerMac::OnShareableContentCreated(
   }
 
   shareable_windows_ = [content windows];
+  shareable_displays_ = [content displays];
 
   // Filter out windows that should not be shareable.
   std::unordered_set<SourceId> source_list_windows;
   for (SCWindow* window in shareable_windows_) {
-    if (IncludeWindowInSourceList(window)) {
+    if (!ExcludeWindowFromSourceList(window)) {
       source_list_windows.insert(window.windowID);
     }
   }
@@ -284,6 +339,20 @@ void ThumbnailCapturerMac::OnShareableContentCreated(
   // TODO(https://crbug.com/1471931): Only call update if the list is changed:
   // windows opened/closed, order of the list, and title.
   consumer_->OnSourceListUpdated();
+}
+
+bool ThumbnailCapturerMac::ExcludeWindowFromSourceList(SCWindow* window) const {
+  // Always exclude windows from the source list based on the following
+  // conditions:
+  // 1. Exclude windows with layer!=0 (menu, dock).
+  // 2. Exclude small windows with either height or width less than 40 pixels.
+  // These windows are generally to no interest of the user and clutters the
+  // thumbnail picker. For example, on macOS 14, each window that is captured
+  // has an indicator that the window is being captured. This indicator is a
+  // window itself with a very small height.
+  return window.windowLayer != 0 ||
+         window.frame.size.height < minimum_window_size_ ||
+         window.frame.size.width < minimum_window_size_;
 }
 
 void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids) {

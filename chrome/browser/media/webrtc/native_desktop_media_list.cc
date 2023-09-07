@@ -54,16 +54,17 @@ using content::DesktopMediaID;
 
 namespace {
 
-// Used solely to specify the parameter below which is used when interacting
-// with ThumbnailCapturerMac.
-BASE_FEATURE(kThumbnailCapturerMac,
-             "ThumbnailCapturerMac",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// The enable/disable property of this feature has no impact. The feature is
+// used solely to pass on the parameter below.
+BASE_FEATURE(kNativeDesktopMediaList,
+             "NativeDesktopMediaList",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The maximum number of window thumbnails that are concurrently captured when
-// the ThumbnailCapturerMac is used.
-const base::FeatureParam<int> kThumbnailCapturerMacMaxConcurrentStreams{
-    &kThumbnailCapturerMac, "max_concurrent_streams", 100};
+// the frame delivery mode is set to kMultipleSourcesRecurrent.
+// ThumbnailCapturerMac is the only capturer at the moment that implements this.
+const base::FeatureParam<int> kNativeDesktopMediaListMaxConcurrentStreams{
+    &kNativeDesktopMediaList, "max_concurrent_streams", 100};
 
 // Update the list every second.
 const int kDefaultNativeDesktopMediaListUpdatePeriod = 1000;
@@ -311,7 +312,7 @@ void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
     // TODO(https://crbug.com/1471931): Select windows to stream based on what's
     // visible. For now, select the first N windows.
     const size_t target_size = std::min(
-        static_cast<size_t>(kThumbnailCapturerMacMaxConcurrentStreams.Get()),
+        static_cast<size_t>(kNativeDesktopMediaListMaxConcurrentStreams.Get()),
         sources.size());
     std::vector<ThumbnailCapturer::SourceId> source_ids;
     for (size_t i = 0; i < target_size; ++i) {
