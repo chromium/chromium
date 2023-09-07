@@ -7,6 +7,8 @@
  * extension under test at runtime to populate testing functionality.
  */
 
+import './test_util.js';
+
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {metrics} from '../../common/js/metrics.js';

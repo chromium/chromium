@@ -77,10 +77,11 @@ export class FileManagerBase {
      * Drive sync handler.
      * @type {!DriveSyncHandler}
      */
-    this.driveSyncHandler = new DriveSyncHandlerImpl(this.progressCenter);
+    this.driveSyncHandler = /** @type {!DriveSyncHandler}*/ (
+        new DriveSyncHandlerImpl(this.progressCenter));
 
     /** @type {!Crostini} */
-    this.crostini = new CrostiniImpl();
+    this.crostini = /** @type {!Crostini} */ (new CrostiniImpl());
 
     /**
      * String assets.

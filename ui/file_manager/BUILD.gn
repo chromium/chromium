@@ -428,6 +428,7 @@ generate_grd("build_grd") {
 
   if (optimize_webui) {
     input_files += [
+      "file_manager/background/js/runtime_loaded_test_util.rollup.js",
       "file_manager/foreground/js/deferred_elements.rollup.js",
       "file_manager/foreground/js/main.rollup.js",
       "file_manager/foreground/js/metadata/metadata_dispatcher.rollup.js",
@@ -440,6 +441,7 @@ generate_grd("build_grd") {
     ]
 
     resource_path_rewrites += [
+      "file_manager/background/js/runtime_loaded_test_util.rollup.js|file_manager/background/js/runtime_loaded_test_util.js",
       "file_manager/foreground/js/deferred_elements.rollup.js|file_manager/foreground/js/deferred_elements.js",
       "file_manager/foreground/js/main.rollup.js|file_manager/foreground/js/main.js",
       "file_manager/foreground/js/metadata/metadata_dispatcher.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.js",
@@ -447,6 +449,7 @@ generate_grd("build_grd") {
 
     deps += [
       ":for_image_loader",
+      "//ui/file_manager/file_manager/background/js:build",
       "//ui/file_manager/file_manager/foreground/elements:elements",
       "//ui/file_manager/file_manager/foreground/js:build",
       "//ui/file_manager/file_manager/foreground/js:build_worker",

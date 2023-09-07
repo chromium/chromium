@@ -548,6 +548,7 @@ js_library("file_manager") {
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:event_target",
     "//ash/webui/common/resources:load_time_data.m",
+    "//ui/file_manager/file_manager/background/js:file_manager_base",
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/common/js:dialog_type",
@@ -846,6 +847,8 @@ js_library("main") {
   deps = [
     ":file_manager",
     ":metrics_start",
+    "//ui/file_manager/file_manager/common/js:glitch",
+    "//ui/file_manager/file_manager/common/js:script_loader",
     "//ui/file_manager/file_manager/common/js:util",
   ]
 }
@@ -1194,7 +1197,7 @@ image_loader_path =
 
 optimize_webui("build") {
   visibility += [ "//ui/file_manager:build_grd" ]
-  host = "file_manager"
+  host = "file-manager"
 
   input = tsc_folder
   js_module_in_files = [

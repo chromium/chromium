@@ -65,7 +65,6 @@ group("closure_compile") {
     "//ash/webui/connectivity_diagnostics:closure_compile",
     "//ash/webui/demo_mode_app_ui:closure_compile",
     "//ash/webui/eche_app_ui:closure_compile",
-    "//ash/webui/file_manager/resources:closure_compile",
     "//ash/webui/file_manager/untrusted_resources:closure_compile",
     "//ash/webui/files_internals:closure_compile",
     "//ash/webui/firmware_update_ui:closure_compile",

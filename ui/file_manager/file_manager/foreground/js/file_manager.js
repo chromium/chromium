@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 import '../../definitions/file_manager_private.js';
+import '../../widgets/xf_jellybean.js';
+import 'chrome://resources/cros_components/switch/switch.js';
+import '../../background/js/test_util.js';
 
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
+import {background} from '../../background/js/file_manager_base.js';
+import {VolumeManagerImpl} from '../../background/js/volume_manager_impl.js';
 import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
@@ -1025,6 +1030,8 @@ export class FileManager extends EventTarget {
         allowedPaths, writableOnly,
         this.fileBrowserBackground_.getVolumeManager(),
         this.launchParams_.volumeFilter, disabledVolumes);
+
+    await this.fileBrowserBackground_.getVolumeManager();
   }
 
   /**

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getSanitizedScriptUrl} from 'chrome://file-manager/common/js/trusted_script_url_policy_util.js';
+import {getSanitizedScriptUrl} from './trusted_script_url_policy_util.js';
 
 /**
  * @fileoverview Script loader allows loading scripts at the desired time.

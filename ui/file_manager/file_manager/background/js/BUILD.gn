@@ -5,6 +5,8 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_type_check.gni")
+import("//ui/webui/resources/tools/optimize_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 related_apps = [ "//ui/file_manager/file_manager/*" ]
 
@@ -94,6 +96,7 @@ js_library("app_window_wrapper") {
 }
 
 js_library("file_manager_base") {
+  visibility += [ "//ui/file_manager/file_manager/foreground/js:file_manager" ]
   deps = [
     ":file_operation_handler",
     ":file_operation_manager",
@@ -285,14 +288,13 @@ js_library("test_util_base") {
 }
 
 js_library("test_util") {
-  visibility += [ "//ash/webui/file_manager/resources:test_util_swa" ]
-
   deps = [
     ":file_manager_base",
     ":launcher",
     ":test_util_base",
     "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
+    "//ui/file_manager/file_manager/common/js:script_loader",
     "//ui/file_manager/file_manager/common/js:util",
   ]
 }
@@ -371,4 +373,25 @@ js_test_type_check("js_test_type_check") {
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                   ]
+}
+
+tsc_folder =
+    rebase_path("$target_gen_dir/../../../tsc/file_manager/background/js",
+                root_build_dir)
+
+# Build the test utils that is loaded at runtime by the browser test.
+optimize_webui("build") {
+  visibility += [ "//ui/file_manager:build_grd" ]
+  host = "file-manager"
+
+  input = tsc_folder
+
+  js_module_in_files = [ "runtime_loaded_test_util.js" ]
+
+  deps = [ ":runtime_loaded_test_util" ]
+  if (enable_webui_inline_sourcemaps) {
+    deps += [ "//ui/file_manager:merge_source_maps" ]
+  } else {
+    deps += [ "//ui/file_manager:build_ts" ]
+  }
 }

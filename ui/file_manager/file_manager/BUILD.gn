@@ -16,6 +16,7 @@ generate_grd("build_static_grdp") {
 
   input_files = [
     "main.html",
+    "init_globals.js",
 
     # For File Manager unittests:
     "common/js/lru_cache.js",

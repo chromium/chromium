@@ -2826,10 +2826,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
                                  params);
     observer.Wait();
     ASSERT_TRUE(observer.last_navigation_succeeded());
-    LoadSwaTestUtils(observer.web_contents());
 
     const std::string app_id = GetSwaAppId(observer.web_contents());
-
     swa_web_contents_.insert({app_id, observer.web_contents()});
     *output = app_id;
     return;
@@ -4103,19 +4101,6 @@ base::FilePath FileManagerBrowserTestBase::MaybeMountGuestOs(
 void FileManagerBrowserTestBase::EnableVirtualKeyboard() {
   ash::ShellTestApi().EnableVirtualKeyboard();
 }
-
-// Load runtime and static test_utils.js. In Files.app test_utils.js is always
-// loaded, while runtime_loaded_test_util.js is loaded on the first
-// chrome.runtime.sendMessage is sent by the test extension. However, since we
-// use callSwaTestMessageListener, rather than c.r.sendMessage to communicate
-// with Files SWA, we need to explicitly load those files.
-void FileManagerBrowserTestBase::LoadSwaTestUtils(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-
-  ASSERT_EQ(true, content::EvalJs(web_contents, "test.swaLoadTestUtils()"));
-}
-
 std::string FileManagerBrowserTestBase::GetSwaAppId(
     content::WebContents* web_contents) {
   CHECK(web_contents);

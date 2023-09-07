@@ -59,6 +59,7 @@ static_js_files = [
   "file_manager/common/js/notifications.js",
   "file_manager/common/js/progress_center_common.js",
   "file_manager/common/js/recent_date_bucket.js",
+  "file_manager/common/js/script_loader.js",
   "file_manager/common/js/storage.js",
   "file_manager/common/js/test_error_reporting.js",
   "file_manager/common/js/ui.js",

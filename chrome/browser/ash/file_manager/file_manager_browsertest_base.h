@@ -314,9 +314,6 @@ class FileManagerBrowserTestBase
   // File Manager app.
   content::WebContents* GetLastOpenWindowWebContents();
 
-  // Loads the test utils in the WebContents.
-  void LoadSwaTestUtils(content::WebContents*);
-
   // Returns appId from its WebContents.
   std::string GetSwaAppId(content::WebContents*);
 

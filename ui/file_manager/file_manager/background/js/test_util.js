@@ -4,9 +4,9 @@
 
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
+import {ScriptLoader} from '../../common/js/script_loader.js';
 import {util} from '../../common/js/util.js';
 
-import {background} from './file_manager_base.js';
 import {launcher} from './launcher.js';
 import {test} from './test_util_base.js';
 
@@ -945,6 +945,60 @@ test.util.sync.sendProgressItem =
       item.progressValue = progressValue;
       item.itemCount = count;
 
-      background.progressCenter.updateItem(item);
+      window.background.progressCenter.updateItem(item);
       return true;
     };
+
+/**
+ * Remote call API handler. This function handles messages coming from the test
+ * harness to execute known functions and return results. This is a dummy
+ * implementation that is replaced by a real one once the test harness is fully
+ * loaded.
+ * @type {function(*, function(*): void)}
+ */
+test.util.executeTestMessage = (request, callback) => {
+  throw new Error('executeTestMessage not implemented');
+};
+
+/**
+ * Handles a direct call from the integration test harness. We execute
+ * swaTestMessageListener call directly from the FileManagerBrowserTest.
+ * This method avoids enabling external callers to Files SWA. We forward
+ * the response back to the caller, as a serialized JSON string.
+ * @param {!Object} request
+ */
+test.swaTestMessageListener = (request) => {
+  request.contentWindow = window.contentWindow || window;
+  return new Promise(resolve => {
+    test.util.executeTestMessage(request, (response) => {
+      response = response === undefined ? '@undefined@' : response;
+      resolve(JSON.stringify(response));
+    });
+  });
+};
+
+let testUtilsLoaded = null;
+
+test.swaLoadTestUtils = async () => {
+  const scriptUrl = 'background/js/runtime_loaded_test_util.js';
+  try {
+    if (!testUtilsLoaded) {
+      console.log('Loading ' + scriptUrl);
+      testUtilsLoaded = new ScriptLoader(scriptUrl, {type: 'module'}).load();
+    }
+    await testUtilsLoaded;
+    console.log('Loaded ' + scriptUrl);
+    return true;
+  } catch (error) {
+    testUtilsLoaded = null;
+    return false;
+  }
+};
+
+test.getSwaAppId = async () => {
+  if (!testUtilsLoaded) {
+    await test.swaLoadTestUtils();
+  }
+
+  return String(window.appID);
+};
