@@ -95,7 +95,7 @@ class TransactionFulfilledFunction : public ScriptFunction::Callable {
       : connection_(connection) {}
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    ExceptionState exception_state(v8::Isolate::GetCurrent(),
+    ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kExecutionContext,
                                    "SmartCardConnection", "startTransaction");
 
