@@ -14,6 +14,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -69,10 +70,6 @@ void OnDllProcessDetach() {
 static bool g_thread_cache_key_created = false;
 }  // namespace
 
-constexpr internal::base::TimeDelta ThreadCacheRegistry::kMinPurgeInterval;
-constexpr internal::base::TimeDelta ThreadCacheRegistry::kMaxPurgeInterval;
-constexpr internal::base::TimeDelta ThreadCacheRegistry::kDefaultPurgeInterval;
-constexpr size_t ThreadCacheRegistry::kMinCachedMemoryForPurging;
 uint8_t ThreadCache::global_limits_[ThreadCache::kBucketCount];
 
 // Start with the normal size, not the maximum one.
@@ -244,11 +241,27 @@ void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
   }
 }
 
+void ThreadCacheRegistry::SetPurgingConfiguration(
+    const internal::base::TimeDelta min_purge_interval,
+    const internal::base::TimeDelta max_purge_interval,
+    const internal::base::TimeDelta default_purge_interval,
+    size_t min_cached_memory_for_purging_bytes) {
+  PA_CHECK(min_purge_interval <= default_purge_interval);
+  PA_CHECK(default_purge_interval <= max_purge_interval);
+  min_purge_interval_ = min_purge_interval;
+  max_purge_interval_ = max_purge_interval;
+  default_purge_interval_ = default_purge_interval;
+  min_cached_memory_for_purging_bytes_ = min_cached_memory_for_purging_bytes;
+  is_purging_configured_ = true;
+}
+
 void ThreadCacheRegistry::RunPeriodicPurge() {
   if (!periodic_purge_is_initialized_) {
     ThreadCache::EnsureThreadSpecificDataInitialized();
     periodic_purge_is_initialized_ = true;
   }
+
+  PA_CHECK(is_purging_configured_);
 
   // Summing across all threads can be slow, but is necessary. Otherwise we rely
   // on the assumption that the current thread is a good proxy for overall
@@ -284,15 +297,15 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
   // scheduled purge with a small enough interval. This is the case for instance
   // of a renderer moving to foreground. To mitigate that, if cached memory
   // jumps is very large, make a greater leap to faster purging.
-  if (cached_memory_approx > 10 * kMinCachedMemoryForPurging) {
+  if (cached_memory_approx > 10 * min_cached_memory_for_purging_bytes_) {
     periodic_purge_next_interval_ =
-        std::min(kDefaultPurgeInterval, periodic_purge_next_interval_ / 2);
-  } else if (cached_memory_approx > 2 * kMinCachedMemoryForPurging) {
+        std::min(default_purge_interval_, periodic_purge_next_interval_ / 2);
+  } else if (cached_memory_approx > 2 * min_cached_memory_for_purging_bytes_) {
     periodic_purge_next_interval_ =
-        std::max(kMinPurgeInterval, periodic_purge_next_interval_ / 2);
-  } else if (cached_memory_approx < kMinCachedMemoryForPurging) {
+        std::max(min_purge_interval_, periodic_purge_next_interval_ / 2);
+  } else if (cached_memory_approx < min_cached_memory_for_purging_bytes_) {
     periodic_purge_next_interval_ =
-        std::min(kMaxPurgeInterval, periodic_purge_next_interval_ * 2);
+        std::min(max_purge_interval_, periodic_purge_next_interval_ * 2);
   }
 
   // Make sure that the next interval is in the right bounds. Even though the
@@ -304,7 +317,7 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
   // background threads, but only ask them to purge their own cache at the next
   // allocation).
   periodic_purge_next_interval_ = std::clamp(
-      periodic_purge_next_interval_, kMinPurgeInterval, kMaxPurgeInterval);
+      periodic_purge_next_interval_, min_purge_interval_, max_purge_interval_);
 
   PurgeAll();
 }
@@ -315,7 +328,7 @@ int64_t ThreadCacheRegistry::GetPeriodicPurgeNextIntervalInMicroseconds()
 }
 
 void ThreadCacheRegistry::ResetForTesting() {
-  periodic_purge_next_interval_ = kDefaultPurgeInterval;
+  periodic_purge_next_interval_ = default_purge_interval_;
 }
 
 // static

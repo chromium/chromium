@@ -4,11 +4,15 @@
 
 #include "base/allocator/partition_alloc_features.h"
 
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -354,6 +358,58 @@ const base::FeatureParam<double> kThreadCacheMultiplier{
 const base::FeatureParam<double> kThreadCacheMultiplierForAndroid{
     &kEnableConfigurableThreadCacheMultiplier,
     "ThreadCacheMultiplierForAndroid", 1.};
+
+constexpr partition_alloc::internal::base::TimeDelta ToPartitionAllocTimeDelta(
+    base::TimeDelta time_delta) {
+  return partition_alloc::internal::base::Microseconds(
+      time_delta.InMicroseconds());
+}
+
+constexpr base::TimeDelta FromPartitionAllocTimeDelta(
+    partition_alloc::internal::base::TimeDelta time_delta) {
+  return base::Microseconds(time_delta.InMicroseconds());
+}
+
+BASE_FEATURE(kEnableConfigurableThreadCachePurgeInterval,
+             "EnableConfigurableThreadCachePurgeInterval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kThreadCacheMinPurgeInterval{
+    &kEnableConfigurableThreadCachePurgeInterval, "ThreadCacheMinPurgeInterval",
+    FromPartitionAllocTimeDelta(partition_alloc::kMinPurgeInterval)};
+
+const base::FeatureParam<base::TimeDelta> kThreadCacheMaxPurgeInterval{
+    &kEnableConfigurableThreadCachePurgeInterval, "ThreadCacheMaxPurgeInterval",
+    FromPartitionAllocTimeDelta(partition_alloc::kMaxPurgeInterval)};
+
+const base::FeatureParam<base::TimeDelta> kThreadCacheDefaultPurgeInterval{
+    &kEnableConfigurableThreadCachePurgeInterval,
+    "ThreadCacheDefaultPurgeInterval",
+    FromPartitionAllocTimeDelta(partition_alloc::kDefaultPurgeInterval)};
+
+const partition_alloc::internal::base::TimeDelta
+GetThreadCacheMinPurgeInterval() {
+  return ToPartitionAllocTimeDelta(kThreadCacheMinPurgeInterval.Get());
+}
+
+const partition_alloc::internal::base::TimeDelta
+GetThreadCacheMaxPurgeInterval() {
+  return ToPartitionAllocTimeDelta(kThreadCacheMaxPurgeInterval.Get());
+}
+
+const partition_alloc::internal::base::TimeDelta
+GetThreadCacheDefaultPurgeInterval() {
+  return ToPartitionAllocTimeDelta(kThreadCacheDefaultPurgeInterval.Get());
+}
+
+BASE_FEATURE(kEnableConfigurableThreadCacheMinCachedMemoryForPurging,
+             "EnableConfigurableThreadCacheMinCachedMemoryForPurging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kThreadCacheMinCachedMemoryForPurgingBytes{
+    &kEnableConfigurableThreadCacheMinCachedMemoryForPurging,
+    "ThreadCacheMinCachedMemoryForPurgingBytes",
+    partition_alloc::kMinCachedMemoryForPurgingBytes};
 
 }  // namespace features
 }  // namespace base
