@@ -1185,6 +1185,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       if (metadata.h264) {
         h264.temporal_idx = metadata.h264->temporal_idx;
         h264.base_layer_sync = metadata.h264->layer_sync;
+        image.SetTemporalIndex(metadata.h264->temporal_idx);
       } else {
         h264.temporal_idx = webrtc::kNoTemporalIdx;
         h264.base_layer_sync = false;
@@ -1192,6 +1193,9 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
     } break;
     case webrtc::kVideoCodecVP8:
       info.codecSpecific.VP8.keyIdx = -1;
+      if (metadata.vp8) {
+        image.SetTemporalIndex(metadata.vp8->temporal_idx);
+      }
       break;
     case webrtc::kVideoCodecVP9: {
       webrtc::CodecSpecificInfoVP9& vp9 = info.codecSpecific.VP9;
@@ -1263,11 +1267,12 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                         vea_active_spatial_layers.end_index)})});
           return;
         }
-        image.SetSpatialIndex(spatial_index);
         image._encodedWidth =
             init_spatial_layer_resolutions_[spatial_index].width();
         image._encodedHeight =
             init_spatial_layer_resolutions_[spatial_index].height();
+        image.SetSpatialIndex(spatial_index);
+        image.SetTemporalIndex(metadata.vp9->temporal_idx);
 
         vp9.first_frame_in_picture =
             spatial_index == vea_active_spatial_layers.begin_index;

@@ -1163,6 +1163,12 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
           codec_specific_info->end_of_picture) {
         waiter_.Signal();
       }
+
+      if (encoded_image.TemporalIndex().has_value()) {
+        EXPECT_EQ(encoded_image.TemporalIndex(),
+                  codec_specific_info->codecSpecific.VP9.temporal_idx);
+      }
+
       return Result(Result::OK);
     }
 
@@ -1614,6 +1620,11 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
         EXPECT_EQ(codec_specific_info->codecType, webrtc::kVideoCodecVP9);
         infos_.push_back(codec_specific_info->codecSpecific.VP9);
       }
+      if (encoded_image.TemporalIndex().has_value()) {
+        EXPECT_EQ(encoded_image.TemporalIndex(),
+                  codec_specific_info->codecSpecific.VP9.temporal_idx);
+      }
+
       return Result(Result::OK);
     }
 
