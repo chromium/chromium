@@ -3621,6 +3621,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-system-entropy",
+    "owners": [ "mjackson@microsoft.com", "dmurph@chromium.org" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "enable-system-notifications",
     "owners": [ "peter", "finnur" ],
     "expiry_milestone": 120

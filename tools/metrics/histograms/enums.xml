@@ -67906,6 +67906,7 @@ from previous Chrome versions.
   <int value="1654949170" label="ArcSwitchToKeyMintOnT:enabled"/>
   <int value="1656768789" label="EnableGetDebugdLogsInParallel:enabled"/>
   <int value="1657713458" label="disable-virtual-keyboard-overscroll"/>
+  <int value="1658361127" label="PerformanceNavigateSystemEntropy:enabled"/>
   <int value="1658644418" label="disable-app-list-voice-search"/>
   <int value="1658656322" label="IncognitoDownloadsWarning:enabled"/>
   <int value="1658676520" label="AsynchronousScannerDiscovery:disabled"/>
@@ -68128,6 +68129,7 @@ from previous Chrome versions.
   <int value="1762320532" label="AutofillKeyboardAccessory:enabled"/>
   <int value="1762346365"
       label="RevokeNotificationsPermissionIfDisabledOnAppLevel:enabled"/>
+  <int value="1763256921" label="PerformanceNavigateSystemEntropy:disabled"/>
   <int value="1764618580" label="MojoLinuxChannelSharedMem:disabled"/>
   <int value="1765184717"
       label="HighlightManagedPrefDisclaimerAndroid:disabled"/>
