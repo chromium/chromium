@@ -551,8 +551,8 @@ export class SettingsSiteSettingsPageElement extends
       return;
     }
 
-    this.showUnusedSitePermissions_ =
-        this.unusedSitePermissionsEnabled_ && permissions.length > 0;
+    this.showUnusedSitePermissions_ = this.unusedSitePermissionsEnabled_ &&
+        permissions.length > 0 && !loadTimeData.getBoolean('isGuest');
   }
 
   /** @return Class for the all site settings link */
