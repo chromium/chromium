@@ -27,7 +27,7 @@ extern "C" int LLVMFuzzerRunDriver(int* argc,
 
 InProcessFuzzerFactoryBase* g_in_process_fuzzer_factory;
 
-InProcessFuzzer::InProcessFuzzer() = default;
+InProcessFuzzer::InProcessFuzzer() : exit_after_fuzz_case_(false) {}
 
 InProcessFuzzer::~InProcessFuzzer() = default;
 
@@ -79,7 +79,7 @@ class FuzzTestLauncherDelegate : public content::TestLauncherDelegate {
 };
 
 int fuzz_callback(const uint8_t* data, size_t size) {
-  return g_test->Fuzz(data, size);
+  return g_test->DoFuzz(data, size);
 }
 
 void InProcessFuzzer::RunTestOnMainThread() {
@@ -92,7 +92,21 @@ void InProcessFuzzer::RunTestOnMainThread() {
   char** argv2 = argv.data();
   g_test = this;
   base::IgnoreResult(LLVMFuzzerRunDriver(&argc, &argv2, fuzz_callback));
+  if (exit_after_fuzz_case_) {
+    LOG(INFO) << "Early exit requested - exiting after LLVMFuzzerRunDriver.";
+    exit(0);
+  }
   g_test = nullptr;
+}
+
+int InProcessFuzzer::DoFuzz(const uint8_t* data, size_t size) {
+  // We actually exit before running the *next* fuzz case to give an opportunity
+  // to return the return value to the fuzzing engine.
+  if (exit_after_fuzz_case_) {
+    LOG(INFO) << "Early exit requested - exiting after fuzz case.";
+    exit(0);
+  }
+  return Fuzz(data, size);
 }
 
 // Main function for running in process fuzz tests.

@@ -69,10 +69,32 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // Callback to actually do your fuzzing. This is called from the UI thread,
   // so you should take care not to block the thread too long. If you need
   // to run your fuzz case across multiple threads, consider a nested RunLoop.
+  // Return 0 if the input is valid, -1 if it's invalid and should not be
+  // evolved further by the fuzzing engine.
   virtual int Fuzz(const uint8_t* data, size_t size) = 0;
+
+  // Should be called by subclasses from within Fuzz if they believe that
+  // a fuzz case is going to take infinite time to run. This will arrange
+  // to communicate this status to the fuzz engine as far as possible,
+  // then for the whole process to exit, thus throwing away that fuzz case.
+  // However, after calling this method, Fuzz should return -1 to indicate
+  // invalid input.
+  // The normal pattern for using this is, within Fuzz, to do this:
+  // 1. Create a RunLoop but don't start it yet
+  // 2. Start a OneShotTimer which calls this method then stops the RunLoop
+  // 3. Start an async task which will run the test case, cancel the timer,
+  //    and then stop the run loop
+  // 4. Start the RunLoop.
+  // If the test case turns out not actually to be infinite, step 3 could
+  // cause a UaF, so this pattern can probably be improved in future.
+  void DeclareInfiniteLoop() { exit_after_fuzz_case_ = true; }
+
+ private:
+  int DoFuzz(const uint8_t* data, size_t size);
 
  private:
   std::vector<std::string> libfuzzer_command_line_;
+  bool exit_after_fuzz_case_;
 };
 
 class InProcessFuzzerFactoryBase {
