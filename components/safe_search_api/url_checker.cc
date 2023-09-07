@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -17,22 +16,9 @@
 
 namespace safe_search_api {
 
-BASE_FEATURE(kCacheOnlyCertainUrlClassifications,
-             "CacheOnlyCertainUrlClassifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
-bool ShouldCacheUrlClassification(bool is_uncertain) {
-  if (!is_uncertain) {
-    return true;
-  }
-
-  return !base::FeatureList::IsEnabled(kCacheOnlyCertainUrlClassifications);
-}
-
 const size_t kDefaultCacheSize = 1000;
 const size_t kDefaultCacheTimeoutSeconds = 3600;
-
 }  // namespace
 
 struct URLChecker::Check {
@@ -116,7 +102,7 @@ void URLChecker::OnAsyncCheckComplete(CheckList::iterator it,
   std::vector<CheckCallback> callbacks = std::move(it->get()->callbacks);
   checks_in_progress_.erase(it);
 
-  if (ShouldCacheUrlClassification(uncertain)) {
+  if (!uncertain) {
     cache_.Put(url, CheckResult(classification, uncertain));
   }
 

@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -175,29 +174,12 @@ TEST_F(SafeSearchURLCheckerTest, CacheTimeout) {
 }
 
 TEST_F(SafeSearchURLCheckerTest, DoNotCacheUncertainClassifications) {
-  // TODO(b/272209467): Remove when uncertain classifications are never cached.
-  base::test::ScopedFeatureList enable_feature{
-      kCacheOnlyCertainUrlClassifications};
-
   GURL url(GetNewURL());
 
   ASSERT_FALSE(SendResponse(
       url, Classification::SAFE,
       /*uncertain=*/true));     // First check was asynchronous (uncached).
   EXPECT_FALSE(CheckURL(url));  // And so was the second one.
-}
-
-TEST_F(SafeSearchURLCheckerTest, CacheUncertainClassifications) {
-  base::test::ScopedFeatureList disable_feature;
-  disable_feature.InitAndDisableFeature(kCacheOnlyCertainUrlClassifications);
-  GURL url(GetNewURL());
-
-  ASSERT_FALSE(
-      SendResponse(url, Classification::SAFE,
-                   /*uncertain=*/true));  // First check was asynchronous
-                                          // (uncached), but is cached.
-  EXPECT_TRUE(
-      CheckURL(url));  // Then, second check is synchronous (from cache).
 }
 
 TEST_F(SafeSearchURLCheckerTest, DestroyURLCheckerBeforeCallback) {

@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/containers/lru_cache.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -17,10 +16,6 @@
 #include "url/gurl.h"
 
 namespace safe_search_api {
-
-// Controls caching for unknown url classifications. Such status might be a
-// result of any problem during classification. See b/272209467 for details.
-BASE_DECLARE_FEATURE(kCacheOnlyCertainUrlClassifications);
 
 // The SafeSearch API classification of a URL.
 enum class Classification { SAFE, UNSAFE };
