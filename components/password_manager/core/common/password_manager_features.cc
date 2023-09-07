@@ -176,6 +176,12 @@ BASE_FEATURE(kUsernameFirstFlowHonorAutocomplete,
              "UsernameFirstFlowHonorAutocomplete",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables storing more possible username values in the LRU cache. Part of the
+// `kUsernameFirstFlowWithIntermediateValues` feature.
+BASE_FEATURE(kUsernameFirstFlowStoreSeveralValues,
+             "UsernameFirstFlowStoreSeveralValues",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables tolerating intermediate fields like OTP or CAPTCHA
 // between username and password fields in Username First Flow.
 BASE_FEATURE(kUsernameFirstFlowWithIntermediateValues,

@@ -1239,6 +1239,9 @@ extern const char kMojoLinuxChannelSharedMemDescription[];
 extern const char kUsernameFirstFlowFallbackCrowdsourcingName[];
 extern const char kUsernameFirstFlowFallbackCrowdsourcingDescription[];
 
+extern const char kUsernameFirstFlowStoreSeveralValuesName[];
+extern const char kUsernameFirstFlowStoreSeveralValuesDescription[];
+
 extern const char kUsernameFirstFlowWithIntermediateValuesName[];
 extern const char kUsernameFirstFlowWithIntermediateValuesDescription[];
 

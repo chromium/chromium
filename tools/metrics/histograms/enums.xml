@@ -68317,6 +68317,7 @@ from previous Chrome versions.
   <int value="1855524566" label="allow-insecure-websocket-from-https-origin"/>
   <int value="1856270952" label="AutofillAssistantProactiveHelp:disabled"/>
   <int value="1857000695" label="SendWebUIJavaScriptErrorReports:disabled"/>
+  <int value="1858133486" label="UsernameFirstFlowStoreSeveralValues:enabled"/>
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
   <int value="1858523835" label="VerifyDidCommitParams:enabled"/>
   <int value="1859864175" label="AppDeduplicationServiceFondue:enabled"/>
@@ -68394,6 +68395,7 @@ from previous Chrome versions.
   <int value="1892201400" label="enable-password-separated-signin-flow"/>
   <int value="1892311584" label="NewStyleNotifications:disabled"/>
   <int value="1892640848" label="third-party-doodle-url"/>
+  <int value="1893163504" label="UsernameFirstFlowStoreSeveralValues:disabled"/>
   <int value="1893317228" label="WebPayments:enabled"/>
   <int value="1893463366" label="EnableHtmlBaseUsernameDetector:enabled"/>
   <int value="1893561439" label="HighEfficiencyModeAvailable:disabled"/>

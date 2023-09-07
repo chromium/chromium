@@ -8253,6 +8253,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "username-first-flow-store-several-values",
+    "owners": [ "kolos", "shaikhitdin@google.com",  "kazinova@google.com"],
+    "expiry_milestone": 123
+  },
+  {
     "name": "username-first-flow-with-intermediate-values",
     "owners": [ "kolos", "shaikhitdin@google.com" ],
     "expiry_milestone": 122

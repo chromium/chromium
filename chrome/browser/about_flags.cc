@@ -4582,6 +4582,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          password_manager::features::kUsernameFirstFlowFallbackCrowdsourcing)},
+    {"username-first-flow-store-several-values",
+     flag_descriptions::kUsernameFirstFlowStoreSeveralValuesName,
+     flag_descriptions::kUsernameFirstFlowStoreSeveralValuesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kUsernameFirstFlowStoreSeveralValues)},
     {"username-first-flow-with-intermediate-values",
      flag_descriptions::kUsernameFirstFlowWithIntermediateValuesName,
      flag_descriptions::kUsernameFirstFlowWithIntermediateValuesDescription,

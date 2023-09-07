@@ -3423,6 +3423,13 @@ const char kUsernameFirstFlowFallbackCrowdsourcingDescription[] =
     "and the value's type(or pattern) in the latter (e.g. email-like, "
     "phone-like, arbitrary string).";
 
+const char kUsernameFirstFlowStoreSeveralValuesName[] =
+    "Username First Flow store several possible username values";
+const char kUsernameFirstFlowStoreSeveralValuesDescription[] =
+    "Store several values as a possible username value instead of only one. "
+    "This flag is part of Username First Flow with intermediate values "
+    "feature.";
+
 const char kUsernameFirstFlowWithIntermediateValuesName[] =
     "Username first flow with intermediate values";
 
