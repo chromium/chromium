@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
@@ -31,6 +32,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
 @interface PasswordSharingCoordinator () <FamilyPickerCoordinatorDelegate,
                                           FamilyPromoCoordinatorDelegate,
+                                          PasswordPickerCoordinatorDelegate,
                                           PasswordSharingMediatorDelegate> {
   // The credentials for the password group from which the sharing originated.
   std::vector<password_manager::CredentialUIEntry> _credentials;
@@ -117,6 +119,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self stopFamilyPickerCoordinator];
   [self stopFamilyPromoCoordinator];
   [self stopAlertCoordinator];
+  [self stopPasswordPickerCoordinator];
 }
 
 #pragma mark - FamilyPickerCoordinatorDelegate
@@ -136,6 +139,17 @@ using password_manager::FetchFamilyMembersRequestStatus;
     (FamilyPromoCoordinator*)coordinator {
   if (self.familyPromoCoordinator == coordinator) {
     [self stopFamilyPromoCoordinator];
+  }
+
+  [self.delegate passwordSharingCoordinatorDidRemove:self];
+}
+
+#pragma mark - PasswordPickerCoordinatorDelegate
+
+- (void)passwordPickerCoordinatorWasDismissed:
+    (PasswordPickerCoordinator*)coordinator {
+  if (self.passwordPickerCoordinator == coordinator) {
+    [self stopPasswordPickerCoordinator];
   }
 
   [self.delegate passwordSharingCoordinatorDidRemove:self];
@@ -162,6 +176,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
             initWithBaseViewController:self.viewController
                                browser:self.browser
                            credentials:_credentials];
+        self.passwordPickerCoordinator.delegate = self;
         [self.passwordPickerCoordinator start];
       }
       break;
@@ -226,6 +241,12 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)stopAlertCoordinator {
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
+}
+
+- (void)stopPasswordPickerCoordinator {
+  [self.passwordPickerCoordinator stop];
+  self.passwordPickerCoordinator.delegate = nil;
+  self.passwordPickerCoordinator = nil;
 }
 
 @end

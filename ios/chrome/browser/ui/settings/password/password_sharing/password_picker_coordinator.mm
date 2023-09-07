@@ -7,10 +7,13 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_view_controller_presentation_delegate.h"
 
-@interface PasswordPickerCoordinator () {
+@interface PasswordPickerCoordinator () <
+    PasswordPickerViewControllerPresentationDelegate> {
   std::vector<password_manager::CredentialUIEntry> _credentials;
 }
 
@@ -46,6 +49,7 @@
 
   self.viewController = [[PasswordPickerViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  self.viewController.delegate = self;
   self.mediator =
       [[PasswordPickerMediator alloc] initWithCredentials:_credentials];
   self.mediator.consumer = self.viewController;
@@ -76,6 +80,12 @@
   self.navigationController = nil;
   self.viewController = nil;
   self.mediator = nil;
+}
+
+#pragma mark - PasswordPickerViewControllerPresentationDelegate
+
+- (void)passwordPickerWasDismissed:(PasswordPickerViewController*)controller {
+  [self.delegate passwordPickerCoordinatorWasDismissed:self];
 }
 
 @end

@@ -9,6 +9,8 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -44,6 +46,8 @@ const CGFloat kAccessorySymbolSize = 22;
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(cancelButtonTapped)];
+  self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
+      kPasswordPickerCancelButtonId;
   self.navigationItem.title =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_TITLE);
   UIBarButtonItem* nextButton = [[UIBarButtonItem alloc]
@@ -69,6 +73,11 @@ const CGFloat kAccessorySymbolSize = 22;
     [model addItem:[self credentialItem:credential]
         toSectionWithIdentifier:SectionIdentifierCredentials];
   }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [self.delegate passwordPickerWasDismissed:self];
+  [super viewDidDisappear:animated];
 }
 
 #pragma mark - UITableViewDelegate
@@ -150,7 +159,7 @@ const CGFloat kAccessorySymbolSize = 22;
 }
 
 - (void)cancelButtonTapped {
-  // TODO(crbug.com/1463882): Handle cancel tap.
+  [self.delegate passwordPickerWasDismissed:self];
 }
 
 - (void)nextButtonTapped {

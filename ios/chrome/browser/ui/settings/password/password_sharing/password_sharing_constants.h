@@ -10,6 +10,9 @@
 // The accessibility identifier of the family picker cancel button.
 extern NSString* const kFamilyPickerCancelButtonId;
 
+// The accessibility identifier of the password picker cancel button.
+extern NSString* const kPasswordPickerCancelButtonId;
+
 // Link for creating family group with Google Families.
 extern const char kFamilyGroupSiteURL[];
 

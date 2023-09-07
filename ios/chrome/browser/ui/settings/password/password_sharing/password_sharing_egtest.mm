@@ -38,6 +38,8 @@ void SignInAndEnableSync() {
 
 - (GREYElementInteraction*)saveExamplePasswordAndOpenDetails;
 
+- (GREYElementInteraction*)saveExamplePasswordsAndOpenDetails;
+
 @end
 
 @implementation PasswordSharingTestCase
@@ -53,6 +55,30 @@ void SignInAndEnableSync() {
 
   return [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"example.com"),
+                                          grey_accessibilityTrait(
+                                              UIAccessibilityTraitButton),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                  kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      performAction:grey_tap()];
+}
+
+- (GREYElementInteraction*)saveExamplePasswordsAndOpenDetails {
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  SavePasswordForm(/*password=*/@"password1",
+                   /*username=*/@"username1");
+  SavePasswordForm(/*password=*/@"password2",
+                   /*username=*/@"username2");
+  OpenPasswordManager();
+
+  return [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              @"example.com, 2 accounts"),
                                           grey_accessibilityTrait(
                                               UIAccessibilityTraitButton),
                                           grey_sufficientlyVisible(), nil)]
@@ -119,6 +145,27 @@ void SignInAndEnableSync() {
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kFamilyPickerCancelButtonId)]
+      performAction:grey_tap()];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsTableViewId)]
+      assertWithMatcher:grey_notNil()];
+}
+
+- (void)testPasswordPickerCancelFlow {
+  SignInAndEnableSync();
+  [self saveExamplePasswordsAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordPickerCancelButtonId)]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
