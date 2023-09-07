@@ -67,6 +67,7 @@ compile_ts("fill_js_dependencies") {
     "resources/fill_constants.js",
     "resources/fill_element_inference.js",
     "resources/fill_element_inference_util.js",
+    "resources/fill_util.js",
   ]
 }
 

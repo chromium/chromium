@@ -271,6 +271,91 @@ __gCrWeb.fill.ancestorTagNames = function(element) {
 };
 
 /**
+ * Returns true if |element| is a text input element.
+ *
+ * It is based on the logic in
+ *     bool IsTextInput(const blink::WebInputElement* element)
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
+ *
+ * @param {FormControlElement} element An element to examine.
+ * @return {boolean} Whether element is a text input field.
+ */
+__gCrWeb.fill.isTextInput = function(element) {
+  if (!element) {
+    return false;
+  }
+  return __gCrWeb.common.isTextField(element);
+};
+
+/**
+ * Returns true if |element| is a 'select' element.
+ *
+ * It is based on the logic in
+ *     bool IsSelectElement(const blink::WebFormControlElement& element)
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
+ *
+ * @param {FormControlElement|HTMLOptionElement} element An element to examine.
+ * @return {boolean} Whether element is a 'select' element.
+ */
+__gCrWeb.fill.isSelectElement = function(element) {
+  if (!element) {
+    return false;
+  }
+  return element.type === 'select-one';
+};
+
+/**
+ * Returns true if |element| is a 'textarea' element.
+ *
+ * It is based on the logic in
+ *     bool IsTextAreaElement(const blink::WebFormControlElement& element)
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
+ *
+ * @param {FormControlElement} element An element to examine.
+ * @return {boolean} Whether element is a 'textarea' element.
+ */
+__gCrWeb.fill.isTextAreaElement = function(element) {
+  if (!element) {
+    return false;
+  }
+  return element.type === 'textarea';
+};
+
+/**
+ * Returns true if |element| is a checkbox or a radio button element.
+ *
+ * It is based on the logic in
+ *     bool IsCheckableElement(const blink::WebInputElement* element)
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
+ *
+ * @param {FormControlElement} element An element to examine.
+ * @return {boolean} Whether element is a checkbox or a radio button.
+ */
+__gCrWeb.fill.isCheckableElement = function(element) {
+  if (!element) {
+    return false;
+  }
+  return element.type === 'checkbox' || element.type === 'radio';
+};
+
+/**
+ * Returns true if |element| is one of the input element types that can be
+ * autofilled. {Text, Radiobutton, Checkbox}.
+ *
+ * It is based on the logic in
+ *    bool IsAutofillableInputElement(const blink::WebInputElement* element)
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
+ *
+ * @param {FormControlElement} element An element to examine.
+ * @return {boolean} Whether element is one of the input element types that
+ *     can be autofilled.
+ */
+__gCrWeb.fill.isAutofillableInputElement = function(element) {
+  return __gCrWeb.fill.isTextInput(element) ||
+      __gCrWeb.fill.isCheckableElement(element);
+};
+
+/**
  * Helper for |InferLabelForElement()| that tests if an inferred label is valid
  * or not. A valid label is a label that does not only contains special
  * characters.
