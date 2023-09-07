@@ -84,8 +84,19 @@ public class MultiProfileTest {
     @Feature({"AndroidWebView"})
     public void testCannotDeleteDefault() throws Throwable {
         mActivityTestRule.runOnUiThread(() -> {
-            Assert.assertThrows(IllegalStateException.class,
+            Assert.assertThrows(IllegalArgumentException.class,
                     () -> { AwBrowserContext.deleteNamedContext("Default"); });
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCannotDeleteProfileInUse() throws Throwable {
+        getContextSync("myProfile", true);
+        mActivityTestRule.runOnUiThread(() -> {
+            Assert.assertThrows(IllegalStateException.class,
+                    () -> { AwBrowserContext.deleteNamedContext("myProfile"); });
         });
     }
 

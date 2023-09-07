@@ -233,10 +233,15 @@ public class AwBrowserContext implements BrowserContextHandle {
      * <p>
      * Name must be non-null and valid Unicode.
      *
-     * @throws IllegalStateException if trying to delete the default profile or a profile which is
-     *                               in use.
+     * @throws IllegalArgumentException if trying to delete the default profile.
+     * @throws IllegalStateException if trying to delete a profile which is in use.
      */
-    public static boolean deleteNamedContext(String name) {
+    public static boolean deleteNamedContext(String name)
+            throws IllegalArgumentException, IllegalStateException {
+        final String defaultContextName = AwBrowserContextJni.get().getDefaultContextName();
+        if (name.equals(defaultContextName)) {
+            throw new IllegalArgumentException("Cannot delete the default profile");
+        }
         return AwBrowserContextJni.get().deleteNamedContext(name);
     }
 
