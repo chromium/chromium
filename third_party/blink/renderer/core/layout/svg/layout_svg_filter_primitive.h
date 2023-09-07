@@ -61,6 +61,10 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
     NOT_DESTROYED();
     return gfx::RectF();
   }
+  gfx::RectF StrokeBoundingBox() const override {
+    NOT_DESTROYED();
+    return gfx::RectF();
+  }
   gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
     return gfx::RectF();
