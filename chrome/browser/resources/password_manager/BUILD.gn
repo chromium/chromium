@@ -65,6 +65,7 @@ build_webui("build") {
     "settings_section.ts",
     "sharing/share_password_flow.ts",
     "sharing/share_password_dialog_header.ts",
+    "sharing/share_password_group_avatar.ts",
     "sharing/share_password_recipient.ts",
     "sharing/share_password_family_picker_dialog.ts",
     "sharing/share_password_loading_dialog.ts",

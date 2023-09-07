@@ -37,6 +37,7 @@ export {CheckupSubpage, Page, Route, RouteObserverMixin, RouteObserverMixinInter
 export {SettingsSectionElement} from './settings_section.js';
 export {SharePasswordConfirmationDialogElement} from './sharing/share_password_confirmation_dialog.js';
 export {ShareFlowState, SharePasswordFlowElement} from './sharing/share_password_flow.js';
+export {SharePasswordGroupAvatarElement} from './sharing/share_password_group_avatar.js';
 export {SharePasswordLoadingDialogElement} from './sharing/share_password_loading_dialog.js';
 export {SharePasswordRecipientElement} from './sharing/share_password_recipient.js';
 export {PasswordManagerSideBarElement} from './side_bar.js';

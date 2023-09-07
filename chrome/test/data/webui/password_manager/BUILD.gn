@@ -35,6 +35,7 @@ build_webui_tests("build") {
     "share_password_loading_dialog_test.ts",
     "share_password_confirmation_dialog_test.ts",
     "share_password_header_test.ts",
+    "share_password_group_avatar_test.ts",
     "share_password_recipient_test.ts",
     "site_favicon_test.ts",
     "test_password_manager_proxy.ts",

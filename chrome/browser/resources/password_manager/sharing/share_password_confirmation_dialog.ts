@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './share_password_dialog_header.js';
+import './share_password_group_avatar.js';
 import '../site_favicon.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
