@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/events/ash/keyboard_device_id_event_rewriter.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_source.h"
 
@@ -59,6 +60,10 @@ void EventRewriterControllerImpl::Initialize(
     privacy_screen_supported = true;
   }
 
+  auto keyboard_device_id_event_rewriter =
+      std::make_unique<ui::KeyboardDeviceIdEventRewriter>(
+          Shell::Get()->keyboard_capability());
+
   event_rewriter_ash_delegate_ = event_rewriter_delegate;
   std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash =
       std::make_unique<ui::EventRewriterAsh>(
@@ -87,6 +92,7 @@ void EventRewriterControllerImpl::Initialize(
     AddEventRewriter(std::move(peripheral_customization_event_rewriter));
   }
   AddEventRewriter(std::move(keyboard_driven_event_rewriter));
+  AddEventRewriter(std::move(keyboard_device_id_event_rewriter));
   AddEventRewriter(std::move(event_rewriter_ash));
 }
 

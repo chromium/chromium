@@ -3950,6 +3950,7 @@ test("ash_unittests") {
     "//ui/events:gesture_detection",
     "//ui/events:test_support",
     "//ui/events/ash",
+    "//ui/events/ash:unit_tests",
     "//ui/events/devices",
     "//ui/events/devices:test_support",
     "//ui/events/ozone:ozone",

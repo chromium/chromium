@@ -279,12 +279,6 @@ class EventRewriterAsh : public EventRewriter {
   }
 
  private:
-  // Returns the fixed-up keyboard device id.
-  // |keyboard_device_id| should be KeyEvent::source_device_id() for the current
-  // event, and |last_keyboard_device_id| is the previous one.
-  int GetKeyboardDeviceId(int keyboard_device_id,
-                          int last_keyboard_device_id) const;
-
   // By default the top row (F1-F12) keys are system keys for back, forward,
   // brightness, volume, etc. However, windows for v2 apps can optionally
   // request raw function keys for these keys.

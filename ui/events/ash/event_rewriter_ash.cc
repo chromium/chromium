@@ -25,6 +25,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/keyboard_device_id_event_rewriter.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
@@ -1180,22 +1181,6 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
   return exact_event;
 }
 
-int EventRewriterAsh::GetKeyboardDeviceId(int keyboard_device_id,
-                                          int last_keyboard_device_id) const {
-  if (keyboard_device_id == ED_UNKNOWN_DEVICE) {
-    return ED_UNKNOWN_DEVICE;
-  }
-
-  // Ignore virtual Xorg keyboard (magic that generates key repeat events).
-  // Pretend that the previous real keyboard is the one that is still in use.
-  if (keyboard_capability_->GetDeviceType(keyboard_device_id) ==
-      KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard) {
-    return last_keyboard_device_id;
-  }
-
-  return keyboard_device_id;
-}
-
 bool EventRewriterAsh::IsHotrodRemote(int device_id) const {
   return keyboard_capability_->GetDeviceType(device_id) ==
          KeyboardCapability::DeviceType::kDeviceHotrodRemote;
@@ -1443,8 +1428,9 @@ void EventRewriterAsh::RecordModifierKeyPressedBeforeRemapping(
 EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
     const KeyEvent& key_event,
     std::unique_ptr<Event>* rewritten_event) {
-  int device_id = GetKeyboardDeviceId(key_event.source_device_id(),
-                                      last_keyboard_device_id_);
+  int device_id = KeyboardDeviceIdEventRewriter::GetKeyboardDeviceId(
+      key_event.source_device_id(), last_keyboard_device_id_,
+      keyboard_capability_);
   if (device_id != ED_UNKNOWN_DEVICE) {
     last_keyboard_device_id_ = device_id;
   }
