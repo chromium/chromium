@@ -11,6 +11,8 @@
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -23,7 +25,9 @@ namespace crosapi {
 // This class is the ash-chrome implementation of Arc interface. This claas must
 // only be used from the main thread.
 // ArcAsh must be destroyed after ArcIntentHelperBridge destruction.
-class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
+class ArcAsh : public mojom::Arc,
+               public arc::ArcIntentHelperObserver,
+               public ProfileObserver {
  public:
   ArcAsh();
   ArcAsh(const ArcAsh&) = delete;
@@ -57,6 +61,9 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
   void OnIconInvalidated(const std::string& package_name) override;
   void OnArcIntentHelperBridgeShutdown() override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
  private:
   // Called when activity icons are sent.
   void ConvertActivityIcons(RequestActivityIconsCallback callback,
@@ -83,7 +90,9 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
   mojo::RemoteSet<mojom::ArcObserver> observers_;
 
   // profile_ should not be overridden.
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // This must come last to make sure weak pointers are invalidated first.
   base::WeakPtrFactory<ArcAsh> weak_ptr_factory_{this};

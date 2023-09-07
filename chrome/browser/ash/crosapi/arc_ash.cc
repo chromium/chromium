@@ -79,6 +79,7 @@ void OnIsInstallable(mojom::Arc::IsInstallableCallback callback,
 }  // namespace
 
 ArcAsh::ArcAsh() = default;
+
 ArcAsh::~ArcAsh() = default;
 
 void ArcAsh::MaybeSetProfile(Profile* profile) {
@@ -93,6 +94,7 @@ void ArcAsh::MaybeSetProfile(Profile* profile) {
   if (bridge) {
     bridge->AddObserver(this);
   }
+  profile_observation_.Observe(profile_);
 }
 
 void ArcAsh::BindReceiver(mojo::PendingReceiver<mojom::Arc> receiver) {
@@ -389,6 +391,12 @@ void ArcAsh::IsInstallable(const std::string& package_name,
 void ArcAsh::OnIconInvalidated(const std::string& package_name) {
   for (auto& observer : observers_)
     observer->OnIconInvalidated(package_name);
+}
+
+void ArcAsh::OnProfileWillBeDestroyed(Profile* profile) {
+  CHECK_EQ(profile_, profile);
+  profile_ = nullptr;
+  profile_observation_.Reset();
 }
 
 }  // namespace crosapi
