@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -90,7 +91,7 @@ void MessagePumpWin::Quit() {
 MessagePumpForUI::MessagePumpForUI() {
   bool succeeded = message_window_.Create(
       BindRepeating(&MessagePumpForUI::MessageCallback, Unretained(this)));
-  DCHECK(succeeded);
+  CHECK(succeeded);
 }
 
 MessagePumpForUI::~MessagePumpForUI() = default;
