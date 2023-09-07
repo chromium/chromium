@@ -94426,6 +94426,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="ClosedByAnotherDialog"/>
 </enum>
 
+<enum name="SafeBrowsingTailoredSecurityShouldRetryOutcome">
+  <int value="0" label="UnknownType"/>
+  <int value="1" label="RetryNeededDoRetry"/>
+  <int value="2" label="RetryNeededKeepWaiting"/>
+  <int value="3" label="UnsetInitializeWaitingPeriod"/>
+  <int value="4" label="UnsetRetryBecauseDoneWaiting"/>
+  <int value="5" label="UnsetStillWaiting"/>
+</enum>
+
 <enum name="SafeBrowsingUrlScheme">
   <int value="0" label="Unknown scheme"/>
   <int value="1" label="about"/>

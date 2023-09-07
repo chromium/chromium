@@ -2351,6 +2351,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.TailoredSecurity.ShouldRetryOutcome"
+    enum="SafeBrowsingTailoredSecurityShouldRetryOutcome"
+    expires_after="2024-09-06">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the outcome of running the tailored security retry logic. It is
+    logged once each time Chrome starts for syncing users in the cases where the
+    retry attempt could occur.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult"
     enum="SafeBrowsingTailoredSecurityNotificationResult"

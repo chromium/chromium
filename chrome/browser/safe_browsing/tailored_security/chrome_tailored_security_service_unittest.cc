@@ -582,11 +582,18 @@ TEST_F(ChromeTailoredSecurityServiceTest,
           ChromeTailoredSecurityService::kRetryAttemptStartupDelay +
           base::Seconds(1));
 
+  base::HistogramTester tester;
   task_environment_.FastForwardBy(
       ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
 
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed);
+
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.ShouldRetryOutcome",
+      ChromeTailoredSecurityService::TailoredSecurityShouldRetryOutcome::
+          kRetryNeededKeepWaiting,
+      1);
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
@@ -606,12 +613,18 @@ TEST_F(ChromeTailoredSecurityServiceTest,
           ChromeTailoredSecurityService::kRetryAttemptStartupDelay -
           base::Seconds(1));
 
+  base::HistogramTester tester;
   task_environment_.FastForwardBy(
       ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
 
   // Verify that notification was shown.
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 1);
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.ShouldRetryOutcome",
+      ChromeTailoredSecurityService::TailoredSecurityShouldRetryOutcome::
+          kRetryNeededDoRetry,
+      1);
 }
 
 TEST_F(
@@ -651,11 +664,19 @@ TEST_F(
   prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
                       safe_browsing::UNSET);
   prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp, base::Time());
+
+  base::HistogramTester tester;
   task_environment_.FastForwardBy(
       ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
   EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp),
             base::Time::Now() +
                 ChromeTailoredSecurityService::kWaitingPeriodInterval);
+
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.ShouldRetryOutcome",
+      ChromeTailoredSecurityService::TailoredSecurityShouldRetryOutcome::
+          kUnsetInitializeWaitingPeriod,
+      1);
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
@@ -674,11 +695,17 @@ TEST_F(ChromeTailoredSecurityServiceTest,
                       safe_browsing::UNSET);
   prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
                    base::Time::Now());
+  base::HistogramTester tester;
   task_environment_.FastForwardBy(
       ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
   // Verify that notification was shown.
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 1);
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.ShouldRetryOutcome",
+      ChromeTailoredSecurityService::TailoredSecurityShouldRetryOutcome::
+          kUnsetRetryBecauseDoneWaiting,
+      1);
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
@@ -701,6 +728,37 @@ TEST_F(ChromeTailoredSecurityServiceTest,
   EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp),
             base::Time::Now() +
                 ChromeTailoredSecurityService::kRetryNextAttemptDelay);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryNotSetAndNextSyncFlowHasNotPassedDoesNotRunRetryLogic) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::UNSET);
+  // Set the next flow time to tomorrow. The logic should not run until then.
+  prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                   base::Time::Now() + base::Days(1));
+  base::HistogramTester tester;
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+  // Should not have displayed because it needs to wait more.
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
+
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.ShouldRetryOutcome",
+      ChromeTailoredSecurityService::TailoredSecurityShouldRetryOutcome::
+          kUnsetStillWaiting,
+      1);
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest, WhenNoRetryNeededDoesNotRetry) {

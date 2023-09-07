@@ -72,6 +72,36 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ChromeTailoredSecurityServiceTest,
+                           WhenRetryNeededAndEnoughTimeHasPassedRetries);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromeTailoredSecurityServiceTest,
+      WhenRetryNeededButNotEnoughTimeHasPassedDoesNotRetry);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromeTailoredSecurityServiceTest,
+      WhenRetryNotSetAndNextSyncFlowHasNotPassedDoesNotRunRetryLogic);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromeTailoredSecurityServiceTest,
+      WhenRetryNotSetAndNextSyncFlowNotSetSetsNextSyncFlowToWaitingIntervalFromNow);
+  FRIEND_TEST_ALL_PREFIXES(ChromeTailoredSecurityServiceTest,
+                           WhenRetryNotSetAndNextSyncFlowHasPassedRunsRetry);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class TailoredSecurityShouldRetryOutcome {
+    kUnknownType = 0,
+    kRetryNeededDoRetry = 1,
+    kRetryNeededKeepWaiting = 2,
+    kUnsetInitializeWaitingPeriod = 3,
+    kUnsetRetryBecauseDoneWaiting = 4,
+    kUnsetStillWaiting = 5,
+    kMaxValue = kUnsetStillWaiting,
+  };
+
+  friend void LogShouldRetryOutcome(
+      ChromeTailoredSecurityService::TailoredSecurityShouldRetryOutcome
+          outcome);
+
 #if BUILDFLAG(IS_ANDROID)
   void MessageDismissed();
 
