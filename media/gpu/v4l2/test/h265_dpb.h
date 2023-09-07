@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_TEST_H265_DPB_H_
 #define MEDIA_GPU_V4L2_TEST_H265_DPB_H_
 
+#include <set>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -148,6 +149,10 @@ class H265DPB {
   // Appends to |out| all of the pictures in the DPB that are not marked as
   // unused for reference.
   void AppendReferencePics(H265Picture::Vector* out);
+
+  // Returns a set of indices (buffer IDs) on the CAPTURE queue which are
+  // currently in use and cannot be refreshed.
+  std::set<uint32_t> GetBufferIdsInUse() const;
 
   size_t Size() const { return pics_.size(); }
   bool IsFull() const { return pics_.size() >= max_num_pics_; }

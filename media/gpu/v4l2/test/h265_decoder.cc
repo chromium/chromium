@@ -6,6 +6,7 @@
 
 #include <linux/videodev2.h>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/gpu/macros.h"
@@ -1107,6 +1108,36 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
   return true;
 }
 
+std::set<uint32_t> H265Decoder::GetReusableReferenceSlots(
+    const MmappedBuffer& buffer,
+    const std::set<uint32_t>& queued_buffer_ids) {
+  std::set<uint32_t> reusable_buffer_slots = {};
+  const std::set<uint32_t> buffer_ids_in_use = dpb_.GetBufferIdsInUse();
+
+  for (uint32_t i = 0; i < CAPTURE_queue_->num_buffers(); i++) {
+    // Checks that buffer ID is not currently queued in the CAPTURE queue
+    // and that it is not the same buffer ID previously written to.
+    const bool is_element_in_that_list = (queued_buffer_ids.count(i) != 0);
+    if (is_element_in_that_list) {
+      continue;
+    }
+
+    const bool is_buffer_previously_written_to = (i == buffer.buffer_id());
+    if (is_buffer_previously_written_to) {
+      continue;
+    }
+
+    const bool is_buffer_in_use = base::Contains(buffer_ids_in_use, i);
+    if (is_buffer_in_use) {
+      continue;
+    }
+
+    reusable_buffer_slots.insert(i);
+  }
+
+  return reusable_buffer_slots;
+}
+
 bool H265Decoder::DecodePicture() {
   CHECK(curr_pic_.get());
 
@@ -1122,7 +1153,20 @@ bool H265Decoder::DecodePicture() {
   CAPTURE_queue_->DequeueBufferId(CAPTURE_id);
   curr_pic_->capture_queue_buffer_id_ = CAPTURE_id;
 
-  // TODO(b/261127809): Check CAPTURE buffers which can be reused.
+  const std::set<uint32_t> reusable_buffer_slots =
+      GetReusableReferenceSlots(*CAPTURE_queue_->GetBuffer(CAPTURE_id).get(),
+                                CAPTURE_queue_->queued_buffer_ids());
+
+  for (const auto reusable_buffer_slot : reusable_buffer_slots) {
+    if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot)) {
+      VLOGF(4) << "VIDIOC_QBUF failed for CAPTURE queue.";
+      continue;
+    }
+    // Keeps track of which indices are currently queued in the
+    // CAPTURE queue. This will be used to determine which indices
+    // can/cannot be refreshed.
+    CAPTURE_queue_->QueueBufferId(reusable_buffer_slot);
+  }
 
   uint32_t OUTPUT_queue_buffer_id;
   v4l2_ioctl_->DQBuf(OUTPUT_queue_, &OUTPUT_queue_buffer_id);

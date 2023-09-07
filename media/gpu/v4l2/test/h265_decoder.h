@@ -130,6 +130,12 @@ class H265Decoder : public VideoDecoder {
   // reference picture marking, DPB management and picture output.
   bool StartNewFrame(const H265SliceHeader* slice_hdr);
 
+  // Returns all CAPTURE buffer indexes that can be reused
+  // for VIDIOC_QBUF ioctl call.
+  std::set<uint32_t> GetReusableReferenceSlots(
+      const MmappedBuffer& buffer,
+      const std::set<uint32_t>& queued_buffer_ids);
+
   // Commits all pending data for HW decoder and starts HW decoder.
   bool DecodePicture();
 
