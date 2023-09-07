@@ -122,6 +122,9 @@
 // UIBarButtonSystemItemDone). Must be set before the view is loaded.
 @property(nonatomic, assign) UIBarButtonSystemItem dismissBarButtonSystemItem;
 
+// Sets a custom UIBarButtonItem for the dismiss bar button.
+@property(nonatomic, assign) UIImage* customDismissBarButtonImage;
+
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
 

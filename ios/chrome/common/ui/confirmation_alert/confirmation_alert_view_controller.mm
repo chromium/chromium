@@ -534,10 +534,19 @@ const CGFloat kFaviconBadgeSideLength = 24;
   }
 
   if (self.showDismissBarButton) {
-    UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:self.dismissBarButtonSystemItem
-                             target:self
-                             action:@selector(didTapDismissBarButton)];
+    UIBarButtonItem* dismissButton;
+    if (self.customDismissBarButtonImage) {
+      dismissButton = [[UIBarButtonItem alloc]
+          initWithImage:self.customDismissBarButtonImage
+                  style:UIBarButtonItemStylePlain
+                 target:self
+                 action:@selector(didTapDismissBarButton)];
+    } else {
+      dismissButton = [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:self.dismissBarButtonSystemItem
+                               target:self
+                               action:@selector(didTapDismissBarButton)];
+    }
     navigationItem.rightBarButtonItem = dismissButton;
   }
 

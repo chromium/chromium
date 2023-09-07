@@ -75,6 +75,10 @@
   [self.delegate dismissWhatsNewInstructionsCoordinator:self];
 }
 
+- (void)confirmationAlertDismissAction {
+  [self.delegate dismissOnlyWhatsNewInstructionsCoordinator:self];
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:

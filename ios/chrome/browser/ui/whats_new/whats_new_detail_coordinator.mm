@@ -137,9 +137,14 @@
 
 - (void)dismissWhatsNewInstructionsCoordinator:
     (WhatsNewInstructionsCoordinator*)coordinator {
+  [self dismissOnlyWhatsNewInstructionsCoordinator:coordinator];
+  [self dismiss];
+}
+
+- (void)dismissOnlyWhatsNewInstructionsCoordinator:
+    (WhatsNewInstructionsCoordinator*)coordinator {
   DCHECK_EQ(self.whatsNewInstructionsCoordinator, coordinator);
   [self.whatsNewInstructionsCoordinator stop];
-  [self dismiss];
 }
 
 - (void)dismissWhatsNewScreenshotViewController:
