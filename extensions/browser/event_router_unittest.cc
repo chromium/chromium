@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_listener_map.h"
@@ -579,7 +580,8 @@ TEST_F(EventRouterTest, TestReportEvent) {
 }
 
 // Tests adding and removing events with filters.
-TEST_P(EventRouterFilterTest, Basic) {
+// TODO(https://crbug.com/1479954): test is flaky across platforms.
+TEST_P(EventRouterFilterTest, DISABLED_Basic) {
   // For the purpose of this test, "." is important in |event_name| as it
   // exercises the code path that uses |event_name| as a key in
   // base::Value::Dict.
@@ -643,7 +645,8 @@ TEST_P(EventRouterFilterTest, Basic) {
   ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[2]));
 }
 
-TEST_P(EventRouterFilterTest, URLBasedFilteredEventListener) {
+// TODO(https://crbug.com/1479954): test is flaky across platforms.
+TEST_P(EventRouterFilterTest, DISABLED_URLBasedFilteredEventListener) {
   const std::string kEventName = "windows.onRemoved";
   const GURL kUrl("chrome-untrusted://terminal");
   base::Value::Dict filter;
@@ -750,7 +753,8 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   EXPECT_EQ(0u, observer.dispatched_events().size());
 }
 
-TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
+// TODO(https://crbug.com/1479954): test is flaky across platforms.
+TEST_F(EventRouterDispatchTest, DISABLED_TestDispatchCallback) {
   std::string ext1 = "ext1";
   std::string ext2 = "ext2";
   std::string ext3 = "ext3";
