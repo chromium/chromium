@@ -452,7 +452,10 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
     case SafetyCheckItemType::kDefault:
       [HandlerForProtocol(self.browser->GetCommandDispatcher(),
                           ApplicationCommands)
-          showAndStartSafetyCheckInHalfSheet:YES];
+          showAndStartSafetyCheckInHalfSheet:YES
+                                    referrer:password_manager::
+                                                 PasswordCheckReferrer::
+                                                     kSafetyCheckMagicStack];
 
       break;
   }

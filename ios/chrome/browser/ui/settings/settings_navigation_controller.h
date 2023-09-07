@@ -20,6 +20,7 @@ enum class DefaultBrowserPromoSource;
 @class UserFeedbackData;
 namespace password_manager {
 struct CredentialUIEntry;
+enum class PasswordCheckReferrer;
 }  // namespace password_manager
 namespace autofill {
 class CreditCard;
@@ -216,12 +217,15 @@ extern NSString* const kSettingsDoneButtonId;
 // around it. `browser` is the browser where settings are being displayed and
 // should not be nil. `delegate` may be nil. `displayAsHalfSheet` determines
 // whether the Safety Check will be displayed as a half-sheet, or full-page
-// modal.
+// modal. `referrer` represents where in the
+// app the Safety Check is being requested from.
 + (instancetype)
     safetyCheckControllerForBrowser:(Browser*)browser
                            delegate:(id<SettingsNavigationControllerDelegate>)
                                         delegate
-                 displayAsHalfSheet:(BOOL)displayAsHalfSheet;
+                 displayAsHalfSheet:(BOOL)displayAsHalfSheet
+                           referrer:(password_manager::PasswordCheckReferrer)
+                                        referrer;
 
 // Creates a new PrivacySafeBrowsingViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and

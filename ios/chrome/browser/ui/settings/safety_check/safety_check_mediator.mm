@@ -182,12 +182,13 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
 @synthesize passwordCheckManager = _passwordCheckManager;
 
-- (instancetype)initWithUserPrefService:(PrefService*)userPrefService
-                   passwordCheckManager:
-                       (scoped_refptr<IOSChromePasswordCheckManager>)
-                           passwordCheckManager
-                            authService:(AuthenticationService*)authService
-                            syncService:(syncer::SyncService*)syncService {
+- (instancetype)
+    initWithUserPrefService:(PrefService*)userPrefService
+       passwordCheckManager:
+           (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager
+                authService:(AuthenticationService*)authService
+                syncService:(syncer::SyncService*)syncService
+                   referrer:(password_manager::PasswordCheckReferrer)referrer {
   self = [super init];
   if (self) {
     DCHECK(userPrefService);
@@ -218,8 +219,13 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
     _headerItem =
         [[TableViewLinkHeaderFooterItem alloc] initWithType:HeaderItem];
+
     _headerItem.text =
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_PAGE_HEADER);
+        referrer ==
+                password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack
+            ? l10n_util::GetNSString(
+                  IDS_IOS_SETTINGS_SAFETY_CHECK_MAGIC_STACK_PAGE_HEADER)
+            : l10n_util::GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_PAGE_HEADER);
 
     _updateCheckRowState = UpdateCheckRowStateDefault;
     _updateCheckItem = [[SettingsCheckItem alloc] initWithType:UpdateItemType];

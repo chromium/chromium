@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
@@ -222,7 +223,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     safetyCheckControllerForBrowser:(Browser*)browser
                            delegate:(id<SettingsNavigationControllerDelegate>)
                                         delegate
-                 displayAsHalfSheet:(BOOL)displayAsHalfSheet {
+                 displayAsHalfSheet:(BOOL)displayAsHalfSheet
+                           referrer:(password_manager::PasswordCheckReferrer)
+                                        referrer {
   DCHECK(browser);
 
   SettingsNavigationController* navigationController =
@@ -247,7 +250,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
   }
 
-  [navigationController showSafetyCheckAndStartSafetyCheck];
+  [navigationController showSafetyCheckAndStartSafetyCheck:referrer];
 
   return navigationController;
 }
@@ -768,7 +771,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.manageSyncSettingsCoordinator start];
 }
 
-- (void)showSafetyCheckAndStartSafetyCheck {
+- (void)showSafetyCheckAndStartSafetyCheck:
+    (password_manager::PasswordCheckReferrer)referrer {
   if ([self.topViewController isKindOfClass:[SafetyCheckCoordinator class]]) {
     // The top view controller is already the Safety Check panel.
     // No need to open it.
@@ -777,7 +781,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   DCHECK(!self.safetyCheckCoordinator);
   self.safetyCheckCoordinator = [[SafetyCheckCoordinator alloc]
       initWithBaseNavigationController:self
-                               browser:self.browser];
+                               browser:self.browser
+                              referrer:referrer];
   self.safetyCheckCoordinator.delegate = self;
   [self.safetyCheckCoordinator start];
   [self.safetyCheckCoordinator startCheckIfNotRunning];
@@ -1191,8 +1196,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.clearBrowsingDataCoordinator start];
 }
 
-- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)displayAsHalfSheet {
-  [self showSafetyCheckAndStartSafetyCheck];
+- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)displayAsHalfSheet
+                                  referrer:
+                                      (password_manager::PasswordCheckReferrer)
+                                          referrer {
+  [self showSafetyCheckAndStartSafetyCheck:referrer];
 }
 
 - (void)showSafeBrowsingSettings {

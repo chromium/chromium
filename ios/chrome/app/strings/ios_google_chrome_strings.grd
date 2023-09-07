@@ -815,6 +815,9 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_MANAGE_SETTINGS_DESCRIPTION" desc="Siri Shortcut description to manage settings in chrome [iOS only]">
         Opens The Settings in Chrome.
       </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_MAGIC_STACK_PAGE_HEADER" desc="Informational header at the top of the safety check page when opened via the Magic Stack">
+        Chrome automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.
+      </message>
     </messages>
   </release>
 </grit>

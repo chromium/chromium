@@ -727,7 +727,8 @@ void InjectNTP(Browser* browser) {
     self.settingsNavigationController =
         [SettingsNavigationController safetyCheckControllerForBrowser:browser
                                                              delegate:self
-                                                   displayAsHalfSheet:NO];
+                                                   displayAsHalfSheet:NO
+                                                             referrer:referrer];
   }
 
   self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
@@ -2270,12 +2271,19 @@ void InjectNTP(Browser* browser) {
                                  completion:nil];
 }
 
-- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)showHalfSheet {
+// Displays the Safety Check (via Settings) for `referrer`. `showHalfSheet`
+// determines whether the Safety Check will be displayed as a half-sheet, or
+// full-page modal.
+- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)showHalfSheet
+                                  referrer:
+                                      (password_manager::PasswordCheckReferrer)
+                                          referrer {
   UIViewController* baseViewController = self.currentInterface.viewController;
 
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-        showAndStartSafetyCheckInHalfSheet:showHalfSheet];
+        showAndStartSafetyCheckInHalfSheet:showHalfSheet
+                                  referrer:referrer];
     return;
   }
 
@@ -2284,7 +2292,8 @@ void InjectNTP(Browser* browser) {
   self.settingsNavigationController = [SettingsNavigationController
       safetyCheckControllerForBrowser:browser
                              delegate:self
-                   displayAsHalfSheet:showHalfSheet];
+                   displayAsHalfSheet:showHalfSheet
+                             referrer:referrer];
 
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
@@ -2531,7 +2540,11 @@ void InjectNTP(Browser* browser) {
       };
     case RUN_SAFETY_CHECK:
       return ^{
-        [weakSelf showAndStartSafetyCheckInHalfSheet:NO];
+        [weakSelf
+            showAndStartSafetyCheckInHalfSheet:NO
+                                      referrer:password_manager::
+                                                   PasswordCheckReferrer::
+                                                       kSafetyCheckMagicStack];
       };
     case MANAGE_PASSWORDS:
       return ^{

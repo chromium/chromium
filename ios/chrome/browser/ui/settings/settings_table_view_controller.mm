@@ -20,6 +20,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_member.h"
@@ -1604,7 +1605,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 - (void)showSafetyCheck {
   _safetyCheckCoordinator = [[SafetyCheckCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
-                               browser:_browser];
+                               browser:_browser
+                              referrer:password_manager::PasswordCheckReferrer::
+                                           kSafetyCheck];
   _safetyCheckCoordinator.delegate = self;
   [_safetyCheckCoordinator start];
 }

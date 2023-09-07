@@ -20,6 +20,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
@@ -167,11 +168,13 @@ class SafetyCheckMediatorTest : public PlatformTest {
 
     pref_service_ = SetPrefService();
 
-    mediator_ =
-        [[SafetyCheckMediator alloc] initWithUserPrefService:pref_service_
-                                        passwordCheckManager:password_check_
-                                                 authService:auth_service_
-                                                 syncService:syncService()];
+    mediator_ = [[SafetyCheckMediator alloc]
+        initWithUserPrefService:pref_service_
+           passwordCheckManager:password_check_
+                    authService:auth_service_
+                    syncService:syncService()
+                       referrer:password_manager::PasswordCheckReferrer::
+                                    kSafetyCheck];
   }
 
   syncer::SyncService* syncService() {

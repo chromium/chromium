@@ -64,6 +64,7 @@ source_set("popup") {
     "//components/image_fetcher/core",
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
+    "//components/password_manager/core/browser",
     "//components/search_engines",
     "//components/strings:components_strings_grit",
     "//components/variations",
