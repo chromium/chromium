@@ -95,15 +95,15 @@ gfx::ImageSkia CreateSquareIconImageSkia(int size_dp, SkColor solid_color) {
 FakeIconLoader::FakeIconLoader(apps::AppServiceProxy* proxy) : proxy_(proxy) {}
 
 std::unique_ptr<apps::IconLoader::Releaser> FakeIconLoader::LoadIconFromIconKey(
-    const std::string& app_id,
+    const std::string& id,
     const apps::IconKey& icon_key,
     apps::IconType icon_type,
     int32_t size_in_dip,
     bool allow_placeholder_icon,
     apps::LoadIconCallback callback) {
   if (proxy_) {
-    proxy_->ReadIconsForTesting(proxy_->AppRegistryCache().GetAppType(app_id),
-                                app_id, size_in_dip, icon_key, icon_type,
+    proxy_->ReadIconsForTesting(proxy_->AppRegistryCache().GetAppType(id), id,
+                                size_in_dip, icon_key, icon_type,
                                 std::move(callback));
   }
   return nullptr;

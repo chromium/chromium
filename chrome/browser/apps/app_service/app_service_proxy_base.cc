@@ -60,21 +60,21 @@ AppServiceProxyBase::InnerIconLoader::InnerIconLoader(AppServiceProxyBase* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}
 
 absl::optional<IconKey> AppServiceProxyBase::InnerIconLoader::GetIconKey(
-    const std::string& app_id) {
+    const std::string& id) {
   if (overriding_icon_loader_for_testing_) {
-    return overriding_icon_loader_for_testing_->GetIconKey(app_id);
+    return overriding_icon_loader_for_testing_->GetIconKey(id);
   }
 
   absl::optional<IconKey> icon_key;
   host_->app_registry_cache_.ForOneApp(
-      app_id,
+      id,
       [&icon_key](const AppUpdate& update) { icon_key = update.IconKey(); });
   return icon_key;
 }
 
 std::unique_ptr<IconLoader::Releaser>
 AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
-    const std::string& app_id,
+    const std::string& id,
     const IconKey& icon_key,
     IconType icon_type,
     int32_t size_hint_in_dip,
@@ -82,13 +82,13 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
     apps::LoadIconCallback callback) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->LoadIconFromIconKey(
-        app_id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+        id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
         std::move(callback));
   }
 
-  AppType app_type = host_->AppRegistryCache().GetAppType(app_id);
+  AppType app_type = host_->AppRegistryCache().GetAppType(id);
   if (host_->ShouldReadIcons(app_type)) {
-    host_->ReadIcons(app_type, app_id, size_hint_in_dip, icon_key.Clone(),
+    host_->ReadIcons(app_type, id, size_hint_in_dip, icon_key.Clone(),
                      icon_type, std::move(callback));
     return nullptr;
   }
@@ -101,7 +101,7 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
   }
 
   RecordIconLoadMethodMetrics(IconLoadingMethod::kViaNonMojomCall);
-  publisher->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
+  publisher->LoadIcon(id, icon_key, icon_type, size_hint_in_dip,
                       allow_placeholder_icon, std::move(callback));
   return nullptr;
 }
@@ -207,20 +207,19 @@ void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
   publishers_[app_type]->OnSupportedLinksPreferenceChanged(app_id, open_in_app);
 }
 
-absl::optional<IconKey> AppServiceProxyBase::GetIconKey(
-    const std::string& app_id) {
-  return outer_icon_loader_.GetIconKey(app_id);
+absl::optional<IconKey> AppServiceProxyBase::GetIconKey(const std::string& id) {
+  return outer_icon_loader_.GetIconKey(id);
 }
 
 std::unique_ptr<apps::IconLoader::Releaser>
-AppServiceProxyBase::LoadIconFromIconKey(const std::string& app_id,
+AppServiceProxyBase::LoadIconFromIconKey(const std::string& id,
                                          const IconKey& icon_key,
                                          IconType icon_type,
                                          int32_t size_hint_in_dip,
                                          bool allow_placeholder_icon,
                                          LoadIconCallback callback) {
   return outer_icon_loader_.LoadIconFromIconKey(
-      app_id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+      id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
       std::move(callback));
 }
 

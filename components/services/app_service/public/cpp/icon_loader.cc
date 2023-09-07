@@ -18,12 +18,12 @@ IconLoader::Releaser::~Releaser() {
   std::move(closure_).Run();
 }
 
-IconLoader::Key::Key(const std::string& app_id,
+IconLoader::Key::Key(const std::string& id,
                      const IconKey& icon_key,
                      IconType icon_type,
                      int32_t size_hint_in_dip,
                      bool allow_placeholder_icon)
-    : app_id_(app_id),
+    : id_(id),
       timeline_(icon_key.timeline),
       resource_id_(icon_key.resource_id),
       icon_effects_(icon_key.icon_effects),
@@ -52,14 +52,14 @@ bool IconLoader::Key::operator<(const Key& that) const {
   if (this->allow_placeholder_icon_ != that.allow_placeholder_icon_) {
     return this->allow_placeholder_icon_ < that.allow_placeholder_icon_;
   }
-  return this->app_id_ < that.app_id_;
+  return this->id_ < that.id_;
 }
 
 IconLoader::IconLoader() = default;
 
 IconLoader::~IconLoader() = default;
 
-absl::optional<IconKey> IconLoader::GetIconKey(const std::string& app_id) {
+absl::optional<IconKey> IconLoader::GetIconKey(const std::string& id) {
   return absl::make_optional<IconKey>(0, 0, 0);
 }
 

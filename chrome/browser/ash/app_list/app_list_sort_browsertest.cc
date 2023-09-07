@@ -91,7 +91,7 @@ class FakeIconLoader : public apps::IconLoader {
   }
 
   std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
-      const std::string& app_id,
+      const std::string& id,
       const apps::IconKey& icon_key,
       apps::IconType icon_type,
       int32_t size_hint_in_dip,
@@ -99,8 +99,7 @@ class FakeIconLoader : public apps::IconLoader {
       apps::LoadIconCallback callback) override {
     auto iv = std::make_unique<apps::IconValue>();
     iv->icon_type = icon_type;
-    iv->uncompressed =
-        CreateImageSkia(16, 16, GetIconColor(app_id, SK_ColorWHITE));
+    iv->uncompressed = CreateImageSkia(16, 16, GetIconColor(id, SK_ColorWHITE));
     iv->is_placeholder_icon = false;
 
     std::move(callback).Run(std::move(iv));

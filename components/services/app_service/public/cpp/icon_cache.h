@@ -86,9 +86,9 @@ class IconCache : public IconLoader {
   ~IconCache() override;
 
   // IconLoader overrides.
-  absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+  absl::optional<IconKey> GetIconKey(const std::string& id) override;
   std::unique_ptr<Releaser> LoadIconFromIconKey(
-      const std::string& app_id,
+      const std::string& id,
       const IconKey& icon_key,
       IconType icon_type,
       int32_t size_hint_in_dip,
@@ -99,7 +99,7 @@ class IconCache : public IconLoader {
   // actively held.
   void SweepReleasedIcons();
 
-  void RemoveIcon(const std::string& app_id);
+  void RemoveIcon(const std::string& id);
 
  private:
   class Value {

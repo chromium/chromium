@@ -94,7 +94,7 @@ class FakeIconLoader : public apps::IconLoader {
   ~FakeIconLoader() override = default;
 
   std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
-      const std::string& app_id,
+      const std::string& id,
       const apps::IconKey& icon_key,
       apps::IconType icon_type,
       int32_t size_hint_in_dip,

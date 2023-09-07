@@ -50,16 +50,18 @@ class IconLoader {
   IconLoader();
   virtual ~IconLoader();
 
-  // Looks up the IconKey for the given app ID. Return a fake icon key as the
-  // default implementation to simplify the sub class implementation in test
-  // code.
-  virtual absl::optional<IconKey> GetIconKey(const std::string& app_id);
+  // Looks up the IconKey for the given ID (For apps, the ID is the app id. For
+  // shortcut, the ID is the shortcut id.) Return a fake icon key as the default
+  // implementation to simplify the sub class implementation in test code.
+  virtual absl::optional<IconKey> GetIconKey(const std::string& id);
 
   // This can return nullptr, meaning that the IconLoader does not track when
   // the icon is no longer actively used by the caller. `callback` may be
   // dispatched synchronously if it's possible to quickly return a result.
+  // This interface can be used to load icon for apps or shortcuts. For apps,
+  // `id` is the app id. For shortcuts, `id` is the shortcut id.
   virtual std::unique_ptr<Releaser> LoadIconFromIconKey(
-      const std::string& app_id,
+      const std::string& id,
       const IconKey& icon_key,
       IconType icon_type,
       int32_t size_hint_in_dip,
@@ -86,7 +88,10 @@ class IconLoader {
   // callers, are expected to refer to a Key.
   class Key {
    public:
-    std::string app_id_;
+    // The id to indicate which item we want to load icon for. For example,
+    // for apps, the id_ is the app id, for shortcuts, the id_ is the shortcut
+    // id.
+    std::string id_;
     // IconKey fields.
     uint64_t timeline_;
     int32_t resource_id_;
@@ -96,7 +101,7 @@ class IconLoader {
     int32_t size_hint_in_dip_;
     bool allow_placeholder_icon_;
 
-    Key(const std::string& app_id,
+    Key(const std::string& id,
         const IconKey& icon_key,
         IconType icon_type,
         int32_t size_hint_in_dip,
