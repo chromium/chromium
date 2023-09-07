@@ -438,9 +438,22 @@ THIRD_PARTY_FOR_BUILD_FILES_ONLY = {
     os.path.join('buildtools', 'third_party', 'libunwind'),
 }
 
-# The delimiter used to separate license files specified in the 'License File'
-# field.
-LICENSE_FILE_DELIMITER = ","
+# The mandatory metadata fields for a single dependency.
+MANDATORY_FIELDS = {
+    "Name",  # Short name (for header on about:credits).
+    "URL",  # Project home page.
+    "License",  # Software license.
+    "License File",  # Relative paths to license texts.
+    "Shipped",  # Whether the package is in the shipped product.
+}
+
+# The metadata fields that can have multiple values.
+MULTIVALUE_FIELDS = {
+    "License File",
+}
+
+# The delimiter used to separate multiple values for one metadata field.
+VALUE_DELIMITER = ","
 
 # Soon-to-be-deprecated special value for 'License File' field used to indicate
 # that the library is not shipped so the license file should not be used in
@@ -515,9 +528,15 @@ KNOWN_NON_IOS_LIBRARIES = set([
 ])
 
 
+class InvalidMetadata(Exception):
+  """This exception is raised when metadata is invalid."""
+  pass
+
+
 class LicenseError(Exception):
-  """We raise this exception when a directory's licensing info isn't
-    fully filled out."""
+  """We raise this exception when a dependency's licensing info isn't
+  fully filled out.
+  """
   pass
 
 
@@ -535,96 +554,165 @@ def AbsolutePath(path, filename, root):
   return None
 
 
+def ParseMetadataFile(filepath: str,
+                      optional_fields: List[str] = []) -> Dict[str, Any]:
+  """Parses the metadata from the file.
+
+  Args:
+    filepath: the path to a file from which to parse metadata.
+    optional_fields: list of optional metadata fields.
+
+  Returns: a mapping of the metadata fields and values in the file.
+  """
+  known_fields = list(MANDATORY_FIELDS) + optional_fields
+  field_lookup = {name.lower(): name for name in known_fields}
+
+  metadata = {}
+  with codecs.open(filepath, encoding="utf-8") as readme:
+    for line in readme:
+      line = line.strip()
+      # Skip empty lines.
+      if not line:
+        continue
+      # Try to parse the field name and field value.
+      parts = line.split(": ", 1)
+      if len(parts) == 2:
+        raw_field, value = parts
+        field = field_lookup.get(raw_field.lower())
+        if field:
+          if field in metadata:
+            # Duplicate field in the file. For now, preserve the first
+            # value found.
+            continue
+
+          if field in MULTIVALUE_FIELDS:
+            metadata[field] = [
+                entry.strip() for entry in value.split(VALUE_DELIMITER)
+            ]
+          else:
+            metadata[field] = value
+
+  return metadata
+
+
+def ProcessMetadata(metadata: Dict[str, Any],
+                    readme_path: str,
+                    path: str,
+                    root: str,
+                    require_license_file: bool = True,
+                    enable_warnings: bool = False) -> List[str]:
+  """Process a single dependency's metadata in-place. This function will
+  update the given metadata to use fallback field values, and update
+  filepaths to absolute paths.
+
+  Args:
+    metadata: a single dependency's metadata.
+    readme_path: the source of the metadata (either a metadata file
+                 or a SPECIAL_CASES entry).
+    path: the source directory for the metadata.
+    root: the root directory of the repo.
+    require_license_file: whether a license file is required.
+    enable_warnings: whether warnings should be displayed.
+
+  Returns: error messages, if there were any issues processing the
+           metadata for license information.
+  """
+  errors = []
+
+  # The dependency reference, for more precise error messages.
+  dep_ref = readme_path
+  dep_name = metadata.get("Name")
+  if dep_name:
+    dep_ref = f"{readme_path}>>{dep_name}"
+
+  # Set the default "License File" value.
+  if metadata.get("License File") is None:
+    metadata["License File"] = ["LICENSE"]
+
+  # If the "Shipped" field isn't present (or is empty), set it based on
+  # the value of the "License File" field.
+  if not metadata.get("Shipped"):
+    shipped = YES
+    if NOT_SHIPPED in metadata.get("License File"):
+      shipped = NO
+    metadata["Shipped"] = shipped
+
+  # Check all mandatory fields have a non-empty value.
+  for field in MANDATORY_FIELDS:
+    if not metadata.get(field):
+      errors.append(f"couldn't find '{field}' line in README.chromium or "
+                    "licenses.py SPECIAL_CASES")
+
+  license_file_value = metadata.get("License File")
+  shipped_value = metadata.get("Shipped")
+  if enable_warnings:
+    # Check for the deprecated special value used in the "License File"
+    # field.
+    if NOT_SHIPPED in license_file_value:
+      logging.warning(
+          f"{dep_ref} is using deprecated {NOT_SHIPPED} value "
+          "in 'License File' field - remove this and instead specify "
+          f"'Shipped: {NO}'.")
+
+      # Check the "Shipped" field does not contradict the "License File"
+      # field.
+      if shipped_value == YES:
+        logging.warning(
+            f"Contradictory metadata for {dep_ref} - 'Shipped: {YES}' "
+            f"but 'License File' includes '{NOT_SHIPPED}'")
+
+  # For the modules that are in the shipping product, we need their
+  # license in about:credits, so update the license files to be the
+  # full paths.
+  license_paths = process_license_files(root, path, license_file_value)
+  if shipped_value == YES and require_license_file and not license_paths:
+    errors.append(
+        f"License file not found for {dep_ref}. Either add a file named "
+        "LICENSE, import upstream's COPYING if available, or add a "
+        "'License File:' line to README.chromium with the appropriate paths.")
+  metadata["License File"] = license_paths
+
+  return errors
+
+
 def ParseDir(path,
              root,
              require_license_file=True,
-             optional_keys=None,
+             optional_keys=[],
              enable_warnings=False):
   """Examine a third_party/foo component and extract its metadata."""
   if path in THIRD_PARTY_FOR_BUILD_FILES_ONLY:
     return {}
-  # Parse metadata fields out of README.chromium.
-  # We examine "LICENSE" for the license file by default.
-  metadata = {
-      "License File": ["LICENSE"],  # Relative paths to license texts.
-      "Name": None,  # Short name (for header on about:credits).
-      "URL": None,  # Project home page.
-      "License": None,  # Software license.
-      "Shipped": None,  # Whether the package is in the shipped product.
-  }
 
-  if optional_keys is None:
-    optional_keys = []
-
+  # Get the metadata values, from
+  # (a) looking up the path in SPECIAL_CASES; or
+  # (b) parsing the metadata from a README.chromium file.
   readme_path = ""
   if path in SPECIAL_CASES:
     readme_path = f"licenses.py SPECIAL_CASES entry for {path}"
-    metadata.update(SPECIAL_CASES[path])
+    metadata = dict(SPECIAL_CASES[path])
   else:
     # Try to find README.chromium.
-    readme_path = os.path.join(root, path, 'README.chromium')
+    readme_path = os.path.join(root, path, "README.chromium")
     if not os.path.exists(readme_path):
       raise LicenseError("missing README.chromium or licenses.py "
                          "SPECIAL_CASES entry in %s\n" % path)
 
-    with codecs.open(readme_path, encoding='utf-8') as readme:
-      for line in readme:
-        line = line.strip()
-        if not line:
-          break
-        for key in list(metadata.keys()) + optional_keys:
-          field = key + ": "
-          if line.startswith(field):
-            value = line[len(field):]
-            # Multiple license files can be specified.
-            if key == "License File":
-              licenses = value.split(LICENSE_FILE_DELIMITER)
-              metadata[key] = [license.strip() for license in licenses]
-            else:
-              metadata[key] = value
+    try:
+      metadata = ParseMetadataFile(readme_path, optional_fields=optional_keys)
+    except InvalidMetadata as e:
+      raise LicenseError(f"Invalid metadata file: {e}")
 
-  if enable_warnings:
-    # Check for the deprecated special value used in the "License File" field.
-    if NOT_SHIPPED in metadata["License File"]:
-      logging.warning(f"{readme_path} is using deprecated {NOT_SHIPPED} "
-                      "value in 'License File' field - remove this and instead "
-                      f"specify 'Shipped: {NO}'.")
-
-      # Check the "Shipped" field does not contradict the "License File" field.
-      if metadata["Shipped"] == YES:
-        logging.warning(f"Contradictory metadata for {readme_path} - "
-                        f"'Shipped: {YES}' but 'License File' includes "
-                        f"'{NOT_SHIPPED}'")
-
-  # If the "Shipped" field isn't present, set it based on the value of the
-  # "License File" field.
-  if not metadata["Shipped"]:
-    shipped = YES
-    if NOT_SHIPPED in metadata["License File"]:
-      shipped = NO
-    metadata["Shipped"] = shipped
-
-  # Check that all expected metadata is present.
-  errors = []
-  for key, value in metadata.items():
-    if not value:
-      errors.append("couldn't find '" + key + "' line "
-                    "in README.chromium or licences.py "
-                    "SPECIAL_CASES")
-
-  # For the modules that are in the shipping product, we need their license in
-  # about:credits, so update the license files to be the full paths.
-  license_paths = process_license_files(root, path, metadata["License File"])
-  if metadata["Shipped"] == YES and require_license_file and not license_paths:
-    errors.append("License file not found. "
-                  "Either add a file named LICENSE, "
-                  "import upstream's COPYING if available, "
-                  "or add a 'License File:' line to "
-                  "README.chromium with the appropriate paths.")
-  metadata["License File"] = license_paths
-
+  # Process the metadata for licensing info.
+  errors = ProcessMetadata(metadata,
+                           readme_path,
+                           path,
+                           root,
+                           require_license_file=require_license_file,
+                           enable_warnings=enable_warnings)
   if errors:
     raise LicenseError("Errors in %s:\n %s\n" % (path, ";\n ".join(errors)))
+
   return metadata
 
 
