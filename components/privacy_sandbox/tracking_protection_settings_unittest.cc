@@ -63,5 +63,13 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsDoNotTrackStatus) {
   EXPECT_TRUE(tracking_protection_settings()->IsDoNotTrackEnabled());
 }
 
+TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
+  EXPECT_FALSE(
+      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  EXPECT_TRUE(
+      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
+}
+
 }  // namespace
 }  // namespace privacy_sandbox

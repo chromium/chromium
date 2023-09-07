@@ -18,6 +18,10 @@ TrackingProtectionSettings::TrackingProtectionSettings(
 
 TrackingProtectionSettings::~TrackingProtectionSettings() = default;
 
+bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
+  return pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled);
+}
+
 tracking_protection::TrackingProtectionLevel
 TrackingProtectionSettings::GetTrackingProtectionLevel() const {
   return static_cast<tracking_protection::TrackingProtectionLevel>(
@@ -36,8 +40,7 @@ bool TrackingProtectionSettings::IsStandardTrackingProtectionLevel() const {
 
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
   // If we're not in custom mode, treat DNT as false.
-  if (pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled) &&
-      !IsCustomTrackingProtectionLevel()) {
+  if (IsTrackingProtection3pcdEnabled() && !IsCustomTrackingProtectionLevel()) {
     return false;
   }
   return pref_service_->GetBoolean(prefs::kEnableDoNotTrack);

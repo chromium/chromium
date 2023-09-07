@@ -29,6 +29,9 @@ class TrackingProtectionSettings : public KeyedService {
   // Returns whether "do not track" is enabled.
   bool IsDoNotTrackEnabled() const;
 
+  // Returns whether tracking protection for 3PCD (prefs + UX) is enabled.
+  bool IsTrackingProtection3pcdEnabled() const;
+
  private:
   raw_ptr<PrefService> pref_service_;
 };
