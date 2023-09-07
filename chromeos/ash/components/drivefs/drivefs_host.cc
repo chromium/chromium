@@ -385,14 +385,6 @@ DriveFsHost::~DriveFsHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void DriveFsHost::AddObserver(DriveFsHostObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void DriveFsHost::RemoveObserver(DriveFsHostObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 bool DriveFsHost::Mount() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const AccountId& account_id = delegate_->GetAccountId();

@@ -84,8 +84,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
 
   ~DriveFsHost();
 
-  void AddObserver(DriveFsHostObserver* observer);
-  void RemoveObserver(DriveFsHostObserver* observer);
+  using Observer = DriveFsHostObserver;
+  void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
+  void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
   // Mount DriveFS.
   bool Mount();
@@ -142,7 +143,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
   // State specific to the current mount, or null if not mounted.
   std::unique_ptr<MountState> mount_state_;
 
-  base::ObserverList<DriveFsHostObserver>::Unchecked observers_;
+  base::ObserverList<Observer>::Unchecked observers_;
   DialogHandler dialog_handler_;
 };
 
