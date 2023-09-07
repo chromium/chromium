@@ -2929,17 +2929,17 @@
   {
     "name": "enable-holding-space-predictability",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "enable-holding-space-refresh",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "enable-holding-space-suggestions",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "enable-hostname-setting",
@@ -3202,7 +3202,7 @@
   {
     "name": "enable-notification-image-drag",
     "owners": ["andrewxu", "dmblack"],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "enable-notifications-revamp",
