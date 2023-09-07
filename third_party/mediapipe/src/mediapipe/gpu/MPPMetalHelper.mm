@@ -15,12 +15,12 @@
 #import "mediapipe/gpu/MPPMetalHelper.h"
 
 #import "GTMDefines.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #import "mediapipe/gpu/gpu_buffer.h"
 #import "mediapipe/gpu/gpu_service.h"
 #import "mediapipe/gpu/graph_support.h"
 #import "mediapipe/gpu/metal_shared_resources.h"
-#import "third_party/absl/log/absl_check.h"
-#import "third_party/absl/log/absl_log.h"
 
 #include "mediapipe/framework/port/ret_check.h"
 

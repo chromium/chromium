@@ -26,7 +26,8 @@
 #include <utility>
 
 #include "absl/base/dynamic_annotations.h"
-#include "absl/log/log.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/synchronization/mutex.h"
@@ -38,7 +39,6 @@
 
 #ifndef __EMSCRIPTEN__
 #include "absl/debugging/leak_check.h"
-#include "absl/log/absl_check.h"
 #include "mediapipe/gpu/gl_thread_collector.h"
 #endif
 
