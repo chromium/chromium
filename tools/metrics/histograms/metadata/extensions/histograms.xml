@@ -3631,6 +3631,16 @@ chromium-metrics-reviews@google.com.
   <token key="ManifestLocation" variants="ManifestLocationGroup"/>
 </histogram>
 
+<histogram name="Extensions.MenuManager.MenuItemsCount" units="items"
+    expires_after="2024-03-31">
+  <owner>dbertoni@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of context menu items loaded from storage when an extension is
+    loaded.
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.Messaging.ExtensionPortsCreated{ExtensionMessagingPortCreationTime}"
     units="number of ports" expires_after="M85">
