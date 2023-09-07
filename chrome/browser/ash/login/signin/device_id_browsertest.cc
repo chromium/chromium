@@ -120,10 +120,10 @@ class DeviceIDTest : public OobeBaseTest,
     // emulate that, so the following users don't try to establish ownership.
     EnsureInstallAttributesCreated();
 
-    FakeGaia::MergeSessionParams params;
+    FakeGaia::Configuration params;
     params.email = user_id;
     params.refresh_token = refresh_token;
-    fake_gaia_.fake_gaia()->UpdateMergeSessionParams(params);
+    fake_gaia_.fake_gaia()->UpdateConfiguration(params);
     fake_gaia_.fake_gaia()->MapEmailToGaiaId(user_id, gaia_id);
 
     LoginDisplayHost::default_host()

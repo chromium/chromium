@@ -203,8 +203,8 @@ void SecurityTokenSamlTest::SetClientCertAutoSelectPolicy() {
 void SecurityTokenSamlTest::ConfigureFakeGaia() {
   // FakeGaia uses the fake merge session parameters for preparing the result
   // of the SAML sign-in.
-  gaia_mixin_.set_initialize_fake_merge_session(false);
-  gaia_mixin_.fake_gaia()->SetFakeMergeSessionParams(
+  gaia_mixin_.set_initialize_configuration(false);
+  gaia_mixin_.fake_gaia()->SetConfigurationHelper(
       saml_test_users::kFirstUserCorpExampleComEmail,
       /*auth_sid_cookie=*/std::string(),
       /*auth_lsid_cookie=*/std::string());

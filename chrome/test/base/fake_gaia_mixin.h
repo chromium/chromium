@@ -100,11 +100,9 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   void SetupFakeGaiaForLoginManager();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  bool initialize_fake_merge_session() {
-    return initialize_fake_merge_session_;
-  }
-  void set_initialize_fake_merge_session(bool value) {
-    initialize_fake_merge_session_ = value;
+  bool initialize_configuration() { return initialize_configuration_; }
+  void set_initialize_configuration(bool value) {
+    initialize_configuration_ = value;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -131,7 +129,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   net::EmbeddedTestServer gaia_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
   std::unique_ptr<FakeGaia> fake_gaia_;
-  bool initialize_fake_merge_session_ = true;
+  bool initialize_configuration_ = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool initialize_child_id_token_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

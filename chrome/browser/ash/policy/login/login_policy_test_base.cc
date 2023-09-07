@@ -63,14 +63,14 @@ void LoginPolicyTestBase::SetUpInProcessBrowserTestFixture() {
 }
 
 void LoginPolicyTestBase::SetUpOnMainThread() {
-  SetMergeSessionParams();
+  SetConfiguration();
   fake_gaia_.SetupFakeGaiaForLogin(account_id().GetUserEmail(),
                                    account_id().GetGaiaId(), kTestRefreshToken);
   OobeBaseTest::SetUpOnMainThread();
 
-  FakeGaia::MergeSessionParams params;
+  FakeGaia::Configuration params;
   params.id_token = GetIdToken();
-  fake_gaia_.fake_gaia()->UpdateMergeSessionParams(params);
+  fake_gaia_.fake_gaia()->UpdateConfiguration(params);
 }
 
 std::string LoginPolicyTestBase::GetIdToken() const {
@@ -89,8 +89,8 @@ Profile* LoginPolicyTestBase::GetProfileForActiveUser() {
 void LoginPolicyTestBase::GetPolicySettings(
     enterprise_management::CloudPolicySettings* settings) const {}
 
-void LoginPolicyTestBase::SetMergeSessionParams() {
-  FakeGaia::MergeSessionParams params;
+void LoginPolicyTestBase::SetConfiguration() {
+  FakeGaia::Configuration params;
   params.auth_sid_cookie = kTestAuthSIDCookie;
   params.auth_lsid_cookie = kTestAuthLSIDCookie;
   params.auth_code = kTestAuthCode;
@@ -100,7 +100,7 @@ void LoginPolicyTestBase::SetMergeSessionParams() {
   params.session_sid_cookie = kTestSessionSIDCookie;
   params.session_lsid_cookie = kTestSessionLSIDCookie;
   params.email = account_id().GetUserEmail();
-  fake_gaia_.fake_gaia()->SetMergeSessionParams(params);
+  fake_gaia_.fake_gaia()->SetConfiguration(params);
 }
 
 void LoginPolicyTestBase::SkipToLoginScreen() {

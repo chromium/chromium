@@ -235,11 +235,11 @@ class InlineLoginHandlerTest
     EXPECT_TRUE(future.Wait());
 
     // Setup fake Gaia.
-    FakeGaia::MergeSessionParams params;
+    FakeGaia::Configuration params;
     params.email = kSecondaryAccount1Email;
     params.refresh_token = kSecondaryAccountRefreshToken;
     params.auth_code = kSecondaryAccountOAuthCode;
-    fake_gaia_.UpdateMergeSessionParams(params);
+    fake_gaia_.UpdateConfiguration(params);
 
     // Setup handlers.
     handler_ =

@@ -64,7 +64,7 @@ class LoginPolicyTestBase : public ash::OobeBaseTest {
   ash::LoginManagerMixin login_manager_{&mixin_host_};
 
  private:
-  void SetMergeSessionParams();
+  void SetConfiguration();
 
   const AccountId account_id_;  // Test AccountId.
   std::unique_ptr<UserPolicyTestHelper> user_policy_helper_;

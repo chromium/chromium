@@ -127,8 +127,8 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
     fake_gaia_mixin()->fake_gaia()->RegisterSamlUser(
         FakeGaiaMixin::kEnterpriseUser1, fake_saml_idp_.GetSamlPageUrl());
 
-    fake_gaia_mixin()->set_initialize_fake_merge_session(false);
-    fake_gaia_mixin()->fake_gaia()->SetFakeMergeSessionParams(
+    fake_gaia_mixin()->set_initialize_configuration(false);
+    fake_gaia_mixin()->fake_gaia()->SetConfigurationHelper(
         FakeGaiaMixin::kEnterpriseUser1, kTestAuthSIDCookie1,
         kTestAuthLSIDCookie1);
     fake_gaia_mixin()->SetupFakeGaiaForLogin(FakeGaiaMixin::kEnterpriseUser1,
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ScrapedNone) {
 #define MAYBE_VerifyAgainFlow VerifyAgainFlow
 #endif
 IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_VerifyAgainFlow) {
-  fake_gaia_mixin()->fake_gaia()->SetFakeMergeSessionParams(
+  fake_gaia_mixin()->fake_gaia()->SetConfigurationHelper(
       FakeGaiaMixin::kEnterpriseUser2, kTestAuthSIDCookie1,
       kTestAuthLSIDCookie1);
 
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_VerifyAgainFlow) {
 
   // Authenticate in the IdP with another account other than the one used in
   // sign in.
-  fake_gaia_mixin()->fake_gaia()->SetFakeMergeSessionParams(
+  fake_gaia_mixin()->fake_gaia()->SetConfigurationHelper(
       FakeGaiaMixin::kEnterpriseUser2, kTestAuthSIDCookie2,
       kTestAuthLSIDCookie2);
   test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();

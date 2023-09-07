@@ -84,8 +84,8 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     fake_gaia_test_server_.StartAcceptingConnections();
-    fake_gaia_.SetFakeMergeSessionParams(kTestEmail, kTestAuthSIDCookie,
-                                         kTestAuthLSIDCookie);
+    fake_gaia_.SetConfigurationHelper(kTestEmail, kTestAuthSIDCookie,
+                                      kTestAuthLSIDCookie);
   }
 
   void TearDownOnMainThread() override {

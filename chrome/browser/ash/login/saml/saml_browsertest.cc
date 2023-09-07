@@ -225,7 +225,7 @@ class SamlTestBase : public OobeBaseTest {
     FakeUserDataAuthClient::TestApi::OverrideGlobalInstance(
         std::move(cryptohome_client));
 
-    fake_gaia_.set_initialize_fake_merge_session(false);
+    fake_gaia_.set_initialize_configuration(false);
   }
 
   SamlTestBase(const SamlTestBase&) = delete;
@@ -284,7 +284,7 @@ class SamlTestBase : public OobeBaseTest {
         saml_test_users::kSixthUserCorpExampleTestEmail,
         fake_saml_idp()->GetSamlWithDeviceTrustUrl());
 
-    fake_gaia_.fake_gaia()->SetFakeMergeSessionParams(
+    fake_gaia_.fake_gaia()->SetConfigurationHelper(
         saml_test_users::kFirstUserCorpExampleComEmail, kTestAuthSIDCookie1,
         kTestAuthLSIDCookie1);
 
@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, UseAutenticatedUserEmailAddress) {
 
   // Authenticate as the first user via SAML (the `Email` provided here is
   // irrelevant - the authenticated user's e-mail address that FakeGAIA reports
-  // was set via `SetFakeMergeSessionParams`).
+  // was set via `SetConfigurationHelper`).
   SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
   SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
 
@@ -850,8 +850,8 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
 
-  fake_gaia_.fake_gaia()->SetFakeMergeSessionParams("", kTestAuthSIDCookie1,
-                                                    kTestAuthLSIDCookie1);
+  fake_gaia_.fake_gaia()->SetConfigurationHelper("", kTestAuthSIDCookie1,
+                                                 kTestAuthLSIDCookie1);
   SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
   SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
   SigninFrameJS().TapOn("Submit");
@@ -1295,8 +1295,8 @@ void SAMLPolicyTest::LogInWithSAML(const std::string& user_id,
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   StartSamlAndWaitForIdpPageLoad(user_id);
 
-  fake_gaia_.fake_gaia()->SetFakeMergeSessionParams(user_id, auth_sid_cookie,
-                                                    auth_lsid_cookie);
+  fake_gaia_.fake_gaia()->SetConfigurationHelper(user_id, auth_sid_cookie,
+                                                 auth_lsid_cookie);
   fake_gaia_.SetupFakeGaiaForLogin(user_id, "", kTestRefreshToken);
 
   SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
@@ -1337,7 +1337,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_NoSAML) {
 
   WaitForSigninScreen();
 
-  fake_gaia_.fake_gaia()->SetFakeMergeSessionParams(
+  fake_gaia_.fake_gaia()->SetConfigurationHelper(
       kNonSAMLUserEmail, FakeGaiaMixin::kFakeSIDCookie,
       FakeGaiaMixin::kFakeLSIDCookie);
   fake_gaia_.SetupFakeGaiaForLogin(kNonSAMLUserEmail, "", kTestRefreshToken);
@@ -1507,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLChangeAccount) {
 // loaded and authenticating there is successful.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLClosaAndReopen) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
-  fake_gaia_.fake_gaia()->SetFakeMergeSessionParams(
+  fake_gaia_.fake_gaia()->SetConfigurationHelper(
       saml_test_users::kFirstUserCorpExampleComEmail, kTestAuthSIDCookie1,
       kTestAuthLSIDCookie1);
   SetLoginBehaviorPolicyToSAMLInterstitial();
@@ -1867,7 +1867,7 @@ IN_PROC_BROWSER_TEST_P(SAMLPasswordAttributesTest, LoginFailed) {
       saml_test_users::kFirstUserCorpExampleComEmail);
 
   // Give fake gaia an empty email address, so login will fail:
-  fake_gaia_.fake_gaia()->SetFakeMergeSessionParams(
+  fake_gaia_.fake_gaia()->SetConfigurationHelper(
       /*email=*/"", kTestAuthSIDCookie1, kTestAuthLSIDCookie1);
 
   SigninFrameJS().TypeIntoPath("fake_user", {"Email"});

@@ -103,13 +103,13 @@ void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
     fake_gaia_->IssueOAuthToken(refresh_token, all_scopes_token);
   }
 
-  if (initialize_fake_merge_session()) {
-    fake_gaia_->SetFakeMergeSessionParams(user_email, kFakeSIDCookie,
-                                          kFakeLSIDCookie);
+  if (initialize_configuration()) {
+    fake_gaia_->SetConfigurationHelper(user_email, kFakeSIDCookie,
+                                       kFakeLSIDCookie);
 
-    FakeGaia::MergeSessionParams merge_session_update;
-    merge_session_update.id_token = ::ash::test::GetChildAccountOAuthIdToken();
-    fake_gaia_->UpdateMergeSessionParams(merge_session_update);
+    FakeGaia::Configuration configuration_update;
+    configuration_update.id_token = ::ash::test::GetChildAccountOAuthIdToken();
+    fake_gaia_->UpdateConfiguration(configuration_update);
   }
 }
 
@@ -162,8 +162,8 @@ void FakeGaiaMixin::SetUpOnMainThread() {
 
   gaia_server_.StartAcceptingConnections();
 
-  if (initialize_fake_merge_session()) {
-    fake_gaia_->SetFakeMergeSessionParams(kFakeUserEmail, kFakeSIDCookie,
-                                          kFakeLSIDCookie);
+  if (initialize_configuration()) {
+    fake_gaia_->SetConfigurationHelper(kFakeUserEmail, kFakeSIDCookie,
+                                       kFakeLSIDCookie);
   }
 }
