@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/desk_bar_controller.h"
+
 #include <memory>
 
 #include "ash/public/cpp/shelf_types.h"
@@ -18,10 +19,12 @@
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_constants.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,6 +43,7 @@
 namespace ash {
 
 namespace {
+
 bool ShouldProcessLocatedEvent(const ui::LocatedEvent& event) {
   if (event.type() != ui::ET_MOUSE_PRESSED &&
       event.type() != ui::ET_TOUCH_PRESSED) {
@@ -57,6 +61,38 @@ bool ShouldProcessLocatedEvent(const ui::LocatedEvent& event) {
 
   return true;
 }
+
+// Moves the focus ring to the next traversable view.
+void MoveFocus(const DeskBarController::BarWidgetAndView& desk_bar,
+               bool reverse) {
+  auto* focus_manager = desk_bar.bar_widget->GetFocusManager();
+  views::View* focused_view = focus_manager->GetFocusedView();
+
+  views::View* first_focusable_view = desk_bar.GetFirstFocusableView();
+  views::View* last_focusable_view = desk_bar.GetLastFocusableView();
+
+  views::View* next_focusable_view;
+  if (focused_view) {
+    next_focusable_view = desk_bar.GetNextFocusableView(focused_view, reverse);
+  } else {
+    next_focusable_view = reverse ? last_focusable_view : first_focusable_view;
+  }
+
+  // If we are moving over either end of the list of traversible views and there
+  // is an active toast with an undo button for desk removal that can be
+  // focused, then we unfocus any traversible views while the dismiss button is
+  // focused.
+  if (((next_focusable_view == first_focusable_view && !reverse) ||
+       (next_focusable_view == last_focusable_view && reverse)) &&
+      DesksController::Get()
+          ->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
+    focus_manager->ClearFocus();
+    return;
+  }
+
+  focus_manager->AdvanceFocus(reverse);
+}
+
 }  // namespace
 
 DeskBarController::BarWidgetAndView::BarWidgetAndView(
@@ -72,6 +108,25 @@ DeskBarController::BarWidgetAndView::operator=(BarWidgetAndView&& other) =
     default;
 
 DeskBarController::BarWidgetAndView::~BarWidgetAndView() = default;
+
+views::View* DeskBarController::BarWidgetAndView::GetNextFocusableView(
+    views::View* starting_view,
+    bool reverse) const {
+  CHECK(bar_widget);
+  auto* focus_manager = bar_widget->GetFocusManager();
+  CHECK(focus_manager->ContainsView(starting_view));
+  return focus_manager->GetNextFocusableView(
+      starting_view, /*starting_widget=*/nullptr, reverse, /*dont_loop=*/false);
+}
+
+views::View* DeskBarController::BarWidgetAndView::GetFirstFocusableView()
+    const {
+  return GetNextFocusableView(bar_view, /*reverse=*/false);
+}
+
+views::View* DeskBarController::BarWidgetAndView::GetLastFocusableView() const {
+  return GetNextFocusableView(bar_view, /*reverse=*/true);
+}
 
 DeskBarController::DeskBarController() {
   Shell::Get()->overview_controller()->AddObserver(this);
@@ -126,6 +181,7 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
         views::AsViewClass<DeskPreviewView>(focused_view);
     DeskNameView* focused_name_view =
         views::AsViewClass<DeskNameView>(focused_view);
+    auto* desks_controller = DesksController::Get();
 
     // TODO(b/290651821): Consolidates arrow key behaviors for the desk bar.
     switch (event->key_code()) {
@@ -147,7 +203,7 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
         if (event->IsAltDown()) {
           return;
         }
-        focus_manager->AdvanceFocus(/*reverse=*/event->IsShiftDown());
+        MoveFocus(desk_bar, /*reverse=*/event->IsShiftDown());
         break;
       case ui::VKEY_LEFT:
       case ui::VKEY_RIGHT:
@@ -187,7 +243,13 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
           return;
         }
 
-        DesksController::Get()->MaybeCancelDeskRemoval();
+        desks_controller->MaybeCancelDeskRemoval();
+        break;
+      case ui::VKEY_RETURN:
+        if (!desks_controller
+                 ->MaybeActivateDeskRemovalUndoButtonOnHighlightedToast()) {
+          return;
+        }
         break;
       default:
         return;

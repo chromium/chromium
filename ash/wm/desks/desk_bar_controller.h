@@ -49,6 +49,19 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
     BarWidgetAndView& operator=(const BarWidgetAndView&) = delete;
     ~BarWidgetAndView();
 
+    // Returns the next focusable view based on `starting_view`, which is a
+    // focusable view in `bar_view`, and `reverse`. If `reverse` is false, it
+    // returns the traversible view after `starting_view`; otherwise, it returns
+    // the traversible view before `starting_view`.
+    views::View* GetNextFocusableView(views::View* starting_view,
+                                      bool reverse) const;
+
+    // Returns the first focusable view in `bar_view`.
+    views::View* GetFirstFocusableView() const;
+
+    // Returns the last focusable view in `bar_view`.
+    views::View* GetLastFocusableView() const;
+
     std::unique_ptr<views::Widget> bar_widget;
     raw_ptr<DeskBarViewBase> bar_view;
   };
