@@ -54,6 +54,15 @@ function createLayoutSuitableSampleCluster(
   });
 }
 
+function checkInfoDialogContent(
+    moduleElement: HistoryClustersModuleElement, id: string) {
+  const expectedInfo =
+      loadTimeData.getString(id).replaceAll('\n', '').replaceAll('<br>', '');
+  const actualInfo =
+      moduleElement.$.infoDialogRender.get().textContent!.replaceAll('\n', '');
+  assertEquals(expectedInfo, actualInfo);
+}
+
 function createSampleCluster(overrides: Partial<Cluster>): Cluster {
   return Object.assign(
       {
@@ -667,6 +676,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       for (const discount of moduleElement.discounts) {
         assertEquals('', discount);
       }
+      checkInfoDialogContent(moduleElement, 'modulesJourneysInfo');
     });
 
     test('Discount initialization', async () => {
@@ -710,6 +720,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           'https://www.annotated.com/2',
           visitTiles[2]!.visit.normalizedUrl.url);
       assertEquals('$10 off', visitTiles[2]!.discount);
+      checkInfoDialogContent(moduleElement, 'modulesHistoryWithDiscountInfo');
     });
   });
 });
