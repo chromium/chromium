@@ -4057,6 +4057,9 @@ extern const char kLauncherFuzzyMatchForOmniboxDescription[];
 extern const char kLauncherSearchControlName[];
 extern const char kLauncherSearchControlDescription[];
 
+extern const char kLauncherNudgeSessionResetName[];
+extern const char kLauncherNudgeSessionResetDescription[];
+
 extern const char kLauncherSystemInfoAnswerCardsName[];
 extern const char kLauncherSystemInfoAnswerCardsDescription[];
 

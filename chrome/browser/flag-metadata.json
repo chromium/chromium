@@ -5384,6 +5384,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "launcher-nudge-session-reset",
+    "owners":["wcwang", "tbarzic"],
+    "expiry_milestone": 124
+  },
+  {
     "name": "launcher-search-control",
     "owners": ["chenjih", "dgrebenyuk"],
     "expiry_milestone": 120

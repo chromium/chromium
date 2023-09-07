@@ -7062,6 +7062,12 @@ const char kLauncherSearchControlDescription[] =
     "Enable search control in launcher so that users can custmize the result "
     "results provided.";
 
+const char kLauncherNudgeSessionResetName[] =
+    "Enable resetting launcher nudge data";
+const char kLauncherNudgeSessionResetDescription[] =
+    "When enabled, this will reset the launcher nudge shown data on every new "
+    "user session, allowing the nudge to be shown again.";
+
 const char kLauncherSystemInfoAnswerCardsName[] =
     "System Info Answer Cards in launcher";
 const char kLauncherSystemInfoAnswerCardsDescription[] =
