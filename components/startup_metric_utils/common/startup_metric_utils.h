@@ -22,6 +22,7 @@ namespace startup_metric_utils {
 
 class BrowserStartupMetricRecorder;
 class GpuStartupMetricRecorder;
+class RendererStartupMetricRecorder;
 
 class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
  public:
@@ -48,6 +49,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
  private:
   friend class BrowserStartupMetricRecorder;
   friend class GpuStartupMetricRecorder;
+  friend class RendererStartupMetricRecorder;
   friend COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
       CommonStartupMetricRecorder& GetCommon();
 

@@ -870,6 +870,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Startup.Renderer.LoadTime.ApplicationStartToRendererStartRunLoop"
+    units="ms" expires_after="2024-09-01">
+  <owner>spvw@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Time from application start to renderer run loop start.
+
+    Application start is a time recorded as early as possible in renderer
+    process startup. Application start is at the start of the renderer process'
+    chrome.exe:main, before chrome.dll is loaded.
+
+    This metric is only recorded on Windows, and is recorded every time a
+    renderer process starts its run loop, meaning that many instances of this
+    metric will be recorded throughout one execution of the browser.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Renderer.LoadTime.ChromeMainToRendererStartRunLoop"
+    units="ms" expires_after="2024-09-01">
+  <owner>spvw@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Time from when ChromeMain in the renderer process was entered to when the
+    renderer run loop was started.
+
+    This metric is only recorded on Windows, and is recorded every time a
+    renderer process starts its run loop, meaning that many instances of this
+    metric will be recorded throughout one execution of the browser.
+  </summary>
+</histogram>
+
+<histogram
+    name="Startup.Renderer.LoadTime.ProcessCreationToRendererStartRunLoop"
+    units="ms" expires_after="2024-09-01">
+  <owner>spvw@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Time from when the renderer process was created (CreateProcess call) to when
+    the renderer run loop is started.
+
+    This metric is only recorded on Windows, and is recorded every time a
+    renderer process starts its run loop, meaning that many instances of this
+    metric will be recorded throughout one execution of the browser.
+  </summary>
+</histogram>
+
 <histogram name="Startup.ShowDefaultPromoFromApps"
     enum="MobileSessionCallerApp" expires_after="2023-05-23">
   <owner>djean@chromium.org</owner>

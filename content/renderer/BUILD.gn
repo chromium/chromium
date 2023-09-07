@@ -246,6 +246,7 @@ target(link_target_type, "renderer") {
     "//components/discardable_memory/client",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
+    "//components/startup_metric_utils",
     "//components/url_formatter",
     "//components/variations:variations_mojom",
     "//components/variations/net",
