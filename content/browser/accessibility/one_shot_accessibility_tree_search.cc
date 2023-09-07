@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -217,7 +218,7 @@ bool OneShotAccessibilityTreeSearch::Matches(BrowserAccessibility* node) {
     bool found_text_match = false;
     for (auto node_string : node_strings) {
       std::u16string node_string_lower = base::i18n::ToLower(node_string);
-      if (node_string_lower.find(search_text_lower) != std::u16string::npos) {
+      if (base::Contains(node_string_lower, search_text_lower)) {
         found_text_match = true;
         break;
       }

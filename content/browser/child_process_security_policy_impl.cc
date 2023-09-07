@@ -660,7 +660,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   bool CanRequestOrigin(const url::Origin& origin) {
     // Anything already in |origin_map_| must have at least request permissions
     // already.
-    return origin_map_.find(origin) != origin_map_.end();
+    return base::Contains(origin_map_, origin);
   }
 
   typedef std::map<std::string, CommitRequestPolicy> SchemeMap;
@@ -843,7 +843,7 @@ void ChildProcessSecurityPolicyImpl::Add(int child_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(child_id, ChildProcessHost::kInvalidUniqueID);
   base::AutoLock lock(lock_);
-  if (security_state_.find(child_id) != security_state_.end()) {
+  if (base::Contains(security_state_, child_id)) {
     NOTREACHED() << "Add child process at most once.";
     return;
   }
@@ -2842,7 +2842,7 @@ bool ChildProcessSecurityPolicyImpl::AddProcessReferenceLocked(
 
   // Check to see if the SecurityState has been removed from |security_state_|
   // via a Remove() call. This corresponds to the process being destroyed.
-  if (security_state_.find(child_id) == security_state_.end()) {
+  if (!base::Contains(security_state_, child_id)) {
     if (!duplicating_handle) {
       // Do not allow Handles to be created after the process has been
       // destroyed, unless they are being duplicated.

@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -1058,8 +1059,7 @@ void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(
     }
   } else {
     // We skip binding the receiver if any registrations are still ongoing
-    if (ongoing_background_registrations_.find(navigation_id) !=
-        ongoing_background_registrations_.end()) {
+    if (base::Contains(ongoing_background_registrations_, navigation_id)) {
       return;
     }
 

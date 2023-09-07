@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -68,7 +69,7 @@ class ChildProcessSecurityPolicyTestBrowserClient
   ChildProcessSecurityPolicyTestBrowserClient() {}
 
   bool IsHandledURL(const GURL& url) override {
-    return schemes_.find(url.scheme()) != schemes_.end();
+    return base::Contains(schemes_, url.scheme());
   }
 
   void ClearSchemes() {

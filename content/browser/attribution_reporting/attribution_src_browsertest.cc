@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   register_response->WaitForRequest();
   const net::test_server::HttpRequest* request =
       register_response->http_request();
-  EXPECT_TRUE(request->headers.find("Referer") == request->headers.end());
+  EXPECT_FALSE(base::Contains(request->headers, "Referer"));
 }
 
 class AttributionSrcBasicTriggerBrowserTest

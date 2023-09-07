@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
 #include "base/lazy_instance.h"
@@ -532,7 +533,7 @@ bool BrowserAccessibilityAndroid::IsChildOfLeaf() const {
 }
 
 bool BrowserAccessibilityAndroid::IsLeaf() const {
-  if (g_leaf_map.Get().find(this) != g_leaf_map.Get().end()) {
+  if (base::Contains(g_leaf_map.Get(), this)) {
     return g_leaf_map.Get()[this];
   }
 

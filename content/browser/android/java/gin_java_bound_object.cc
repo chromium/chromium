@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/contains.h"
 #include "content/browser/android/java/jni_reflect.h"
 
 #include "content/browser/reflection_jni_headers/Object_jni.h"
@@ -68,7 +69,7 @@ std::set<std::string> GinJavaBoundObject::GetMethodNames() {
 
 bool GinJavaBoundObject::HasMethod(const std::string& method_name) {
   EnsureMethodsAreSetUp();
-  return methods_.find(method_name) != methods_.end();
+  return base::Contains(methods_, method_name);
 }
 
 const JavaMethod* GinJavaBoundObject::FindMethod(

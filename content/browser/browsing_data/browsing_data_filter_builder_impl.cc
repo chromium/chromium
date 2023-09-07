@@ -97,7 +97,7 @@ bool MatchesPluginSiteForRegisterableDomainsAndIPs(
     domain_or_ip = site;
 
   return ((mode == BrowsingDataFilterBuilder::Mode::kDelete) ==
-          (domains_and_ips.find(domain_or_ip) != domains_and_ips.end()));
+          (base::Contains(domains_and_ips, domain_or_ip)));
 }
 
 template <typename T>
