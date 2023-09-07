@@ -204,11 +204,21 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
 
     suggestion_view_ = suggestion_and_buttons->AddChildView(
         std::make_unique<OmniboxMatchCellView>(this));
-    suggestion_view_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kUnbounded)
-            .WithWeight(4));
+    if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
+      // TODO(crbug/1479721): Fix the relative z-order to ensure that this view
+      // gets prioritized over the suggestion button row view when the user
+      // shrinks the width of the browser window.
+      suggestion_view_->SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kPreferred));
+    } else {
+      suggestion_view_->SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kUnbounded)
+              .WithWeight(4));
+    }
 
     remove_suggestion_button_ = right->AddChildView(
         std::make_unique<OmniboxRemoveSuggestionButton>(base::BindRepeating(

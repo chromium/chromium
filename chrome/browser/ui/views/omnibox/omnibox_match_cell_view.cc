@@ -430,8 +430,11 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
     vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
   }
+  const int right_margin = OmniboxFieldTrial::IsActionsUISimplificationEnabled()
+                               ? 3
+                               : OmniboxMatchCellView::kMarginRight;
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
-                           vertical_margin, OmniboxMatchCellView::kMarginRight);
+                           vertical_margin, right_margin);
 }
 
 void OmniboxMatchCellView::Layout() {
@@ -525,8 +528,25 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
   }
   if (layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION)
     height += description_view_->GetHeightForWidth(width() - GetTextIndent());
-  // Width is not calculated because it's not needed by current callers.
-  return gfx::Size(0, height);
+
+  // When `kOmniboxActionsUISimplification` is disabled, this view will be
+  // stretched to span the entire width of its parent. Hence, the preferred
+  // width does not need to be computed (since it's not used by the layout
+  // manager).
+  //
+  // However, when `kOmniboxActionsUISimplification` is enabled, this view will
+  // occupy the minimum amount of space needed to render its contents. Hence,
+  // the preferred width must be computed in order to ensure that the proper
+  // amount of space is allocated.
+  int width = 0;
+  if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
+    width = GetInsets().width() + GetTextIndent() +
+            content_view_->GetPreferredSize().width() +
+            separator_view_->GetPreferredSize().width() +
+            description_view_->GetPreferredSize().width();
+  }
+
+  return gfx::Size(width, height);
 }
 
 void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(

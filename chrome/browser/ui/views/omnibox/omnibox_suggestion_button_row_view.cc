@@ -199,11 +199,14 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
           ? 6
           : ChromeLayoutProvider::Get()->GetDistanceMetric(
                 DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
+  const auto insets =
+      OmniboxFieldTrial::IsActionsUISimplificationEnabled()
+          ? gfx::Insets()
+          : gfx::Insets::TLBR(top_margin, left_margin, bottom_margin, 0);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
-      .SetInteriorMargin(
-          gfx::Insets::TLBR(top_margin, left_margin, bottom_margin, 0))
+      .SetInteriorMargin(insets)
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
