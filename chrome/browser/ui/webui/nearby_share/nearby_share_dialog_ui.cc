@@ -97,6 +97,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types "
       // Required by lottie.
+      "cros-lottie-worker-script-loader "
       "lottie-worker-script-loader webui-test-script "
       // Required by parse-html-subset.
       "parse-html-subset sanitize-inner-html "
