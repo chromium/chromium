@@ -448,10 +448,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
 // Enables enabling third-party cookie blocking from the command line.
 NET_EXPORT BASE_DECLARE_FEATURE(kForceThirdPartyCookieBlocking);
 
-// If the HTTP Cache Transaction write lock should be acquired async with
-// sending the HTTP request.
-NET_EXPORT BASE_DECLARE_FEATURE(kAsyncCacheLock);
-
 // Enables Early Hints on HTTP/1.1.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableEarlyHintsOnHttp11);
 

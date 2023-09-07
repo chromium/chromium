@@ -1383,8 +1383,7 @@ int HttpCache::Transaction::DoAddToEntry() {
   // AddTransactionToEntry in parallel with sending the network request to
   // hide the latency. This will run until the next ERR_IO_PENDING (or
   // failure).
-  if (!partial_ && mode_ == WRITE &&
-      base::FeatureList::IsEnabled(features::kAsyncCacheLock)) {
+  if (!partial_ && mode_ == WRITE) {
     CHECK(!waiting_for_cache_io_);
     waiting_for_cache_io_ = true;
     rv = OK;
