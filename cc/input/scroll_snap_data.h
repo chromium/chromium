@@ -294,12 +294,15 @@ class CC_EXPORT SnapContainerData {
   // |snap_offset| and its visible range on the cross axis.
   // When |should_consider_covering| is true, the current offset can be valid if
   // it makes a snap area cover the snapport.
+  // When |active_element_range| is provided, only snap areas that overlap
+  // the active element are considered.
   absl::optional<SnapSearchResult> FindClosestValidAreaInternal(
       SearchAxis axis,
       const SnapSelectionStrategy& strategy,
       const SnapSearchResult& cross_axis_snap_result,
       const ElementId& active_element_id,
-      bool should_consider_covering = true) const;
+      bool should_consider_covering = true,
+      absl::optional<gfx::RangeF> active_element_range = absl::nullopt) const;
 
   // A wrapper of FindClosestValidAreaInternal(). If
   // FindClosestValidAreaInternal() doesn't return a valid result when the snap
@@ -318,7 +321,8 @@ class CC_EXPORT SnapContainerData {
   // given axis.
   absl::optional<SnapSearchResult> GetTargetSnapAreaSearchResult(
       const SnapSelectionStrategy& strategy,
-      SearchAxis axis) const;
+      SearchAxis axis,
+      SnapSearchResult cross_axis_snap_result) const;
 
   // Returns all the info needed to snap at this area on the given axis,
   // including:

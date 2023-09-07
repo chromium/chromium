@@ -95,8 +95,9 @@ promise_test(async t => {
   // Otherwise it is not possible to scroll to the last line of the snap-area
   // via keyboard.
   const scrollAmount = scroller.scrollTop;
-  target.style.height = `${scroller.clientHeight + scrollAmount - 1}px`;
-  assert_equals(scroller.scrollTop, 0, "Verify snap on relayout");
+  target.style.height = `${scroller.clientHeight + 2 * scrollAmount - 1}px`;
+  assert_equals(scroller.scrollTop, scrollAmount, "Verify container remains " +
+      "at the same covering snap offset.");
   await keyPress(scroller, "ArrowDown");
   await waitForAnimationEnd(scrollTop);
   assert_equals(scroller.scrollTop,
