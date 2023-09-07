@@ -11,10 +11,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
@@ -90,7 +88,6 @@ constexpr char kPassword[] = "test";
 class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
  protected:
   AddPasswordViewControllerTest() {
-    feature_list_.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
     delegate_ = [[FakeAddPasswordDelegate alloc] init];
   }
 
@@ -133,7 +130,6 @@ class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
   FakeAddPasswordDelegate* delegate() { return delegate_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   FakeAddPasswordDelegate* delegate_ = nil;
 };
 
@@ -178,30 +174,6 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAdd) {
                                  l10n_util::GetNSString(
                                      IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
       4);
-}
-
-// Tests the layout of the view controller when adding a new credential with
-// notes features disabled.
-TEST_F(AddPasswordViewControllerTest, TestSectionsInAddWithNotesDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kPasswordNotesWithBackup);
-
-  AddPasswordViewController* passwords_controller =
-      static_cast<AddPasswordViewController*>(controller());
-  [passwords_controller loadModel];
-
-  EXPECT_EQ(4, NumberOfSections());
-  EXPECT_EQ(1, NumberOfItemsInSection(0));
-  EXPECT_EQ(0, NumberOfItemsInSection(1));
-  EXPECT_EQ(2, NumberOfItemsInSection(2));
-
-  CheckSectionFooter(
-      [NSString stringWithFormat:@"%@\n\n%@",
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
-      3);
 }
 
 // Tests the layout of the view controller when adding a new credential with

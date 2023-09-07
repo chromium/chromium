@@ -19,7 +19,6 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/password_checkup_metrics.h"
@@ -36,10 +35,6 @@ using base::SysNSStringToUTF16;
 using password_manager::CredentialUIEntry;
 
 namespace {
-
-bool IsPasswordNotesWithBackupEnabled() {
-  return base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup);
-}
 
 bool MatchesRealmUsernameAndPassword(PasswordDetails* password,
                                      const CredentialUIEntry& credential) {
@@ -337,9 +332,8 @@ bool ShouldDisplayCredentialAsMuted(
                                                credential.username)] &&
               [oldPassword isEqualToString:base::SysUTF16ToNSString(
                                                credential.password)] &&
-              (!IsPasswordNotesWithBackupEnabled() ||
-               [oldNote
-                   isEqualToString:base::SysUTF16ToNSString(credential.note)]);
+              [oldNote
+                  isEqualToString:base::SysUTF16ToNSString(credential.note)];
         });
 
     // There should be no reason not to find the credential in the vector of
@@ -350,9 +344,7 @@ bool ShouldDisplayCredentialAsMuted(
     CredentialUIEntry updated_credential = original_credential;
     updated_credential.username = SysNSStringToUTF16(password.username);
     updated_credential.password = SysNSStringToUTF16(password.password);
-    if (IsPasswordNotesWithBackupEnabled()) {
-      updated_credential.note = SysNSStringToUTF16(password.note);
-    }
+    updated_credential.note = SysNSStringToUTF16(password.note);
     if (_manager->GetSavedPasswordsPresenter()->EditSavedCredentials(
             original_credential, updated_credential) ==
         password_manager::SavedPasswordsPresenter::EditResult::kSuccess) {

@@ -21,7 +21,6 @@
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
@@ -137,9 +136,7 @@ bool CheckForDuplicates(
   std::string signonRealm = password_manager::GetSignonRealm(self.URL);
   credential.username = SysNSStringToUTF16(username);
   credential.password = SysNSStringToUTF16(password);
-  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    credential.note = SysNSStringToUTF16(note);
-  }
+  credential.note = SysNSStringToUTF16(note);
   credential.stored_in = {
       password_manager::features_util::GetDefaultPasswordStore(_prefService,
                                                                _syncService)};

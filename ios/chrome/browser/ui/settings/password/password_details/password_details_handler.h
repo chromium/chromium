@@ -22,9 +22,6 @@
 // in -viewDidDisappear.
 - (void)dismissPasswordDetailsTableViewController;
 
-// Shows a dialog offering the user to set a passcode.
-- (void)showPasscodeDialog;
-
 // Called when the user wants to delete a password. `anchorView` should be
 // the button that triggered this deletion flow, to position the confirmation
 // dialog correctly on tablets.

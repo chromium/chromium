@@ -9,7 +9,6 @@
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/well_known_change_password_util.h"
-#import "components/sync/base/features.h"
 
 namespace {
 
@@ -80,10 +79,7 @@ NSSet<NSString*>* GetOriginsFromCredential(
           base::SysUTF8ToNSString(credential.federation_origin.host());
     }
 
-    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-      _note = base::SysUTF16ToNSString(credential.note);
-    }
-
+    _note = base::SysUTF16ToNSString(credential.note);
     _credentialType = credential.blocked_by_user ? CredentialTypeBlocked
                                                  : CredentialTypeRegular;
     if (_credentialType == CredentialTypeRegular &&
