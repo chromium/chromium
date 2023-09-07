@@ -34,7 +34,7 @@ const SettingsInternetSubpageMenuElementBase =
     Constructor<PolymerElement&ESimManagerListenerBehaviorInterface&
                 WebUiListenerMixinInterface>;
 
-class SettingsInternetSubpageMenuElement extends
+export class SettingsInternetSubpageMenuElement extends
     SettingsInternetSubpageMenuElementBase {
   static get is() {
     return 'settings-internet-subpage-menu' as const;
