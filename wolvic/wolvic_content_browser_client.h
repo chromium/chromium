@@ -27,8 +27,8 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   // Returns the single instance.
   static WolvicContentBrowserClient* Get();
 
-  // Returns the single browser context for Wolvic.
-  content::BrowserContext* GetBrowserContext();
+  content::BrowserContext* browser_context();
+  content::BrowserContext* off_the_record_browser_context();
 
   // ContentBrowserClient overrides.
   std::string GetUserAgent() override;
