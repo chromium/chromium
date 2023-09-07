@@ -501,15 +501,17 @@ export class BrowsingContextImpl {
     });
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
+      const accepted = params.result;
+
       this.#eventManager.registerEvent(
         {
           type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
           params: {
             context: this.id,
-            accepted: params.result,
-            // Cast empty string to undefined
-            userText: params.userInput ? params.userInput : undefined,
+            accepted,
+            userText:
+              accepted && params.userInput ? params.userInput : undefined,
           },
         },
         this.id
