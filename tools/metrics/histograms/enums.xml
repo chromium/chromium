@@ -55370,6 +55370,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="50" label="CRASH"/>
 </enum>
 
+<enum name="IntersectionObservationStateOnScroll">
+  <int value="0" label="Viewport only"/>
+  <int value="1" label="Newly desired"/>
+  <int value="2" label="Already desired"/>
+  <int value="3" label="Already required"/>
+</enum>
+
 <enum name="InterstitialCloseReason">
   <int value="0" label="Interstitial is shown"/>
   <int value="1" label="User leaves the interstitial by navigating away"/>

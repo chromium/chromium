@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_geometry.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -387,6 +388,9 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
                                            const Vector<float>& thresholds,
                                            const Vector<Length>& target_margin,
                                            CachedRects* cached_rects) {
+  UMA_HISTOGRAM_BOOLEAN("Blink.IntersectionObservation.UsesCachedRects",
+                        ShouldUseCachedRects());
+
   CHECK_GE(thresholds.size(), 1u);
   DCHECK(cached_rects || !ShouldUseCachedRects());
   flags_ |= kDidComputeGeometry;
@@ -562,6 +566,12 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   min_scroll_delta_to_update_ = ComputeMinScrollDeltaToUpdate(
       root_and_target, target_to_document_transform,
       root_geometry.root_to_document_transform, thresholds);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Blink.IntersectionObservation.MinScrollDeltaToUpdateX",
+      min_scroll_delta_to_update_.x());
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Blink.IntersectionObservation.MinScrollDeltaToUpdateY",
+      min_scroll_delta_to_update_.y());
 
   if (cached_rects) {
     cached_rects->min_scroll_delta_to_update = min_scroll_delta_to_update_;
