@@ -776,18 +776,6 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearServerCvcs(
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::AddUpiId(
-    const std::string& upi_id,
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (!AutofillTable::FromWebDatabase(db)->InsertUpiId(upi_id)) {
-    ReportResult(Result::kAddUpiId_Failure);
-    return WebDatabase::COMMIT_NOT_NEEDED;
-  }
-  ReportResult(Result::kAddUpiId_Success);
-  return WebDatabase::COMMIT_NEEDED;
-}
-
 std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetPaymentsCustomerData(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());

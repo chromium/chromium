@@ -301,12 +301,6 @@ void AutofillWebDataService::MaskServerCreditCard(const std::string& id) {
                      autofill_backend_, id));
 }
 
-void AutofillWebDataService::AddUpiId(const std::string& upi_id) {
-  wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::BindOnce(&AutofillWebDataBackendImpl::AddUpiId,
-                                       autofill_backend_, upi_id));
-}
-
 WebDataServiceBase::Handle AutofillWebDataService::GetPaymentsCustomerData(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(

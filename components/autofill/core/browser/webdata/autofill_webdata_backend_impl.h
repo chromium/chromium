@@ -218,8 +218,6 @@ class AutofillWebDataBackendImpl
   WebDatabase::State RemoveServerCvc(int64_t instrument_id, WebDatabase* db);
   WebDatabase::State ClearServerCvcs(WebDatabase* db);
 
-  WebDatabase::State AddUpiId(const std::string& upi_id, WebDatabase* db);
-
   // Returns the PaymentsCustomerData from the database.
   std::unique_ptr<WDTypedResult> GetPaymentsCustomerData(WebDatabase* db);
 

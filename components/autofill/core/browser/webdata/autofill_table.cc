@@ -266,7 +266,6 @@ constexpr std::string_view kPaymentsCustomerDataTable =
 constexpr std::string_view kCustomerId = "customer_id";
 
 constexpr std::string_view kPaymentsUpiVpaTable = "payments_upi_vpa";
-constexpr std::string_view kVpa = "vpa";
 
 constexpr std::string_view kOfferDataTable = "offer_data";
 constexpr std::string_view kOfferId = "offer_id";
@@ -1167,7 +1166,6 @@ bool AutofillTable::CreateTablesIfNecessary() {
          InitServerCardMetadataTable() && InitServerAddressesTable() &&
          InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
          InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
-         InitPaymentsUPIVPATable() &&
          InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
          InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable() &&
          InitProfileMetadataTable(AutofillProfile::Source::kAccount) &&
@@ -1286,6 +1284,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 117:
       *update_compatible_version = false;
       return MigrateToVersion117AddProfileObservationColumn();
+    case 118:
+      *update_compatible_version = true;
+      return MigrateToVersion118RemovePaymentsUpiVpaTable();
   }
   return true;
 }
@@ -2880,21 +2881,6 @@ bool AutofillTable::RemoveAllVirtualCardUsageData() {
   return Delete(db_, kVirtualCardUsageDataTable);
 }
 
-bool AutofillTable::InsertUpiId(const std::string& upi_id) {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin())
-    return false;
-
-  sql::Statement insert_upi_id_statement;
-  InsertBuilder(db_, insert_upi_id_statement, kPaymentsUpiVpaTable, {kVpa});
-  insert_upi_id_statement.BindString(0, upi_id);
-  insert_upi_id_statement.Run();
-
-  transaction.Commit();
-
-  return db_->GetLastChangeCount() > 0;
-}
-
 bool AutofillTable::ClearAllServerData() {
   sql::Transaction transaction(db_);
   if (!transaction.Begin())
@@ -3551,6 +3537,14 @@ bool AutofillTable::MigrateToVersion117AddProfileObservationColumn() {
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion118RemovePaymentsUpiVpaTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         (!db_->DoesTableExist(kPaymentsUpiVpaTable) ||
+          DropTable(db_, kPaymentsUpiVpaTable)) &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -4010,10 +4004,6 @@ bool AutofillTable::InitModelTypeStateTable() {
 bool AutofillTable::InitPaymentsCustomerDataTable() {
   return CreateTableIfNotExists(db_, kPaymentsCustomerDataTable,
                                 {{kCustomerId, "VARCHAR"}});
-}
-
-bool AutofillTable::InitPaymentsUPIVPATable() {
-  return CreateTableIfNotExists(db_, kPaymentsUpiVpaTable, {{kVpa, "VARCHAR"}});
 }
 
 bool AutofillTable::InitServerCreditCardCloudTokenDataTable() {

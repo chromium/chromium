@@ -140,7 +140,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 117;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 118;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1168,5 +1168,26 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion116ToCurrent) {
         connection.DoesColumnExist("contact_info_type_tokens", "observations"));
     EXPECT_TRUE(connection.DoesColumnExist("local_addresses_type_tokens",
                                            "observations"));
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion117ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_117.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(117, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("payments_upi_vpa"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesTableExist("payments_upi_vpa"));
   }
 }

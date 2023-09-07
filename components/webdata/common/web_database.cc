@@ -16,7 +16,7 @@
 // corresponding changes must happen in the unit tests, and new migration test
 // added.  See `WebDatabaseMigrationTest::kCurrentTestedVersionNumber`.
 // static
-const int WebDatabase::kCurrentVersionNumber = 117;
+const int WebDatabase::kCurrentVersionNumber = 118;
 
 const int WebDatabase::kDeprecatedVersionNumber = 82;
 
@@ -45,7 +45,7 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-const int kCompatibleVersionNumber = 115;
+const int kCompatibleVersionNumber = 118;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.

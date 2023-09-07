@@ -429,11 +429,6 @@ struct ServerCvc {
 //
 //   customer_id        A string representing the Google Payments customer id.
 //
-// payments_upi_vpa     Contains saved UPI/VPA payment data.
-//                      https://en.wikipedia.org/wiki/Unified_Payments_Interface
-//
-//   vpa                A string representing the UPI ID (a.k.a. VPA) value.
-//
 // offer_data           The data for Autofill offers which will be presented in
 //                      payments autofill flows.
 //
@@ -805,9 +800,6 @@ class AutofillTable : public WebDatabaseTable,
           virtual_card_usage_data);
   bool RemoveAllVirtualCardUsageData();
 
-  // Adds |upi_id| to the saved UPI IDs.
-  bool InsertUpiId(const std::string& upi_id);
-
   // Deletes all data from the server card and profile tables. Returns true if
   // any data was deleted, false if not (so false means "commit not needed"
   // rather than "error").
@@ -899,6 +891,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion115EncryptIbanValue();
   bool MigrateToVersion116AddStoredCvcTable();
   bool MigrateToVersion117AddProfileObservationColumn();
+  bool MigrateToVersion118RemovePaymentsUpiVpaTable();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -1013,7 +1006,6 @@ class AutofillTable : public WebDatabaseTable,
   bool InitAutofillSyncMetadataTable();
   bool InitModelTypeStateTable();
   bool InitPaymentsCustomerDataTable();
-  bool InitPaymentsUPIVPATable();
   bool InitServerCreditCardCloudTokenDataTable();
   bool InitStoredCvcTable();
   bool InitOfferDataTable();

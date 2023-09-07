@@ -3165,18 +3165,6 @@ INSTANTIATE_TEST_SUITE_P(AutofillTableTest,
                          testing::Values(syncer::AUTOFILL,
                                          syncer::AUTOFILL_PROFILE));
 
-TEST_F(AutofillTableTest, InsertUpiId) {
-  EXPECT_TRUE(table_->InsertUpiId("name@indianbank"));
-
-  sql::Statement s_inspect(db_->GetSQLConnection()->GetUniqueStatement(
-      "SELECT vpa FROM payments_upi_vpa"));
-
-  ASSERT_TRUE(s_inspect.is_valid());
-  ASSERT_TRUE(s_inspect.Step());
-  EXPECT_GE(s_inspect.ColumnString(0), "name@indianbank");
-  EXPECT_FALSE(s_inspect.Step());
-}
-
 TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
   // Set Offer ID.
   int64_t offer_id_1 = 1;

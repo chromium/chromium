@@ -168,9 +168,6 @@ class AutofillWebDataService : public WebDataServiceBase {
                               const std::u16string& full_number);
   void MaskServerCreditCard(const std::string& id);
 
-  // Store a UPI ID.
-  void AddUpiId(const std::string& upi_id);
-
   // Initiates the request for Payments customer data.  The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the customer data included in the argument |result|. The
