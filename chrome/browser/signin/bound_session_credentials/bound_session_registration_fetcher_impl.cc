@@ -8,8 +8,10 @@
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
@@ -73,9 +75,6 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
 
   absl::optional<int> http_response_code;
-  absl::optional<bound_session_credentials::BoundSessionParams> return_value =
-      absl::nullopt;
-
   if (head && head->headers) {
     http_response_code = head->headers->response_code();
   }
@@ -83,46 +82,70 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
   bool net_success = (net_error == net::OK ||
                       net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE) &&
                      http_response_code;
-
-  // Parse JSON response
-  if (response_body && net_success &&
-      network::IsSuccessfulStatus(*http_response_code)) {
-    // JSON responses normally should start with XSSI-protection prefix which
-    // should be removed prior to parsing.
-    base::StringPiece response_json = *response_body;
-    if (base::StartsWith(*response_body, kXSSIPrefix,
-                         base::CompareCase::SENSITIVE)) {
-      response_json = response_json.substr(strlen(kXSSIPrefix));
-    }
-
-    absl::optional<base::Value::Dict> maybe_root =
-        base::JSONReader::ReadDict(response_json);
-
-    std::string* session_id = nullptr;
-    if (maybe_root) {
-      // TODO(b/293985274): Also parse credentials field
-      session_id = maybe_root->FindString(kSessionIdentifier);
-    }
-    if (!session_id) {
-      // Incorrect registration params.
-      std::move(callback_).Run(absl::nullopt);
-      return;
-    }
-
-    return_value = CreateBoundSessionParams(
-        net::SchemefulSite(registration_params_.RegistrationEndpoint())
-            .Serialize(),
-        *session_id, wrapped_key_str_);
+  if (!net_success) {
+    RunCallbackAndRecordMetrics(
+        base::unexpected(RegistrationError::kNetworkError));
+    return;
   }
 
-  // Finish the request, object is invalid after this
-  std::move(callback_).Run(return_value);
+  if (!network::IsSuccessfulStatus(*http_response_code)) {
+    RunCallbackAndRecordMetrics(
+        base::unexpected(RegistrationError::kServerError));
+    return;
+  }
+
+  // `response_body` may be nullptr even if there's a valid response code
+  // like HTTP_OK, which could happen if there's an interruption before the
+  // full response body is received.
+  if (!response_body) {
+    RunCallbackAndRecordMetrics(
+        base::unexpected(RegistrationError::kNetworkError));
+    return;
+  }
+
+  // JSON responses normally should start with XSSI-protection prefix which
+  // should be removed prior to parsing.
+  base::StringPiece response_json = *response_body;
+  if (base::StartsWith(*response_body, kXSSIPrefix,
+                       base::CompareCase::SENSITIVE)) {
+    response_json = response_json.substr(strlen(kXSSIPrefix));
+  }
+
+  absl::optional<base::Value::Dict> maybe_root =
+      base::JSONReader::ReadDict(response_json);
+  if (!maybe_root) {
+    RunCallbackAndRecordMetrics(
+        base::unexpected(RegistrationError::kParseJsonFailed));
+    return;
+  }
+
+  std::string* session_id = maybe_root->FindString(kSessionIdentifier);
+  if (!session_id) {
+    RunCallbackAndRecordMetrics(
+        base::unexpected(RegistrationError::kRequiredFieldMissing));
+    return;
+  }
+
+  bound_session_credentials::BoundSessionParams session_params =
+      CreateBoundSessionParams(
+          net::SchemefulSite(registration_params_.RegistrationEndpoint())
+              .Serialize(),
+          *session_id, wrapped_key_str_);
+  if (!BoundSessionParamsStorage::AreParamsValid(session_params)) {
+    RunCallbackAndRecordMetrics(
+        base::unexpected(RegistrationError::kInvalidSessionParams));
+    return;
+  }
+
+  // Finish the request, object is invalid after this.
+  RunCallbackAndRecordMetrics(std::move(session_params));
 }
 
 void BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated(
     absl::optional<RegistrationTokenHelper::Result> result) {
   if (!result.has_value()) {
-    std::move(callback_).Run(absl::nullopt);
+    RunCallbackAndRecordMetrics(
+        base::unexpected(RegistrationError::kGenerateRegistrationTokenFailed));
     return;
   }
 
@@ -195,4 +218,22 @@ void BoundSessionRegistrationFetcherImpl::StartFetchingRegistration(
       base::BindOnce(&BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete,
                      base::Unretained(this)),
       10 * 1024);
+}
+
+void BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics(
+    base::expected<bound_session_credentials::BoundSessionParams,
+                   RegistrationError> params_or_error) {
+  CHECK(params_or_error.has_value() ||
+        params_or_error.error() != RegistrationError::kNone);
+
+  RegistrationError error_for_metrics =
+      params_or_error.error_or(RegistrationError::kNone);
+  base::UmaHistogramEnumeration(
+      "Signin.BoundSessionCredentials.SessionRegistrationResult",
+      error_for_metrics);
+
+  std::move(callback_).Run(
+      params_or_error.has_value()
+          ? std::move(params_or_error).value()
+          : absl::optional<bound_session_credentials::BoundSessionParams>());
 }

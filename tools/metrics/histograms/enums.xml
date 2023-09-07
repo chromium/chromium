@@ -13686,6 +13686,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="Sign challenge failed"/>
 </enum>
 
+<enum name="BoundSessionCredentialsSessionRegistrationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to generate a registration token"/>
+  <int value="2" label="Network error"/>
+  <int value="3" label="Server response contained an error"/>
+  <int value="4" label="Failed to parse the server response"/>
+  <int value="5" label="Invalid session parameters"/>
+</enum>
+
 <enum name="BreakageIndicatorType">
   <int value="0" label="User Reload"/>
 </enum>

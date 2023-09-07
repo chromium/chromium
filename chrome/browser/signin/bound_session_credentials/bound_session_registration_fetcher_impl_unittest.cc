@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
@@ -27,16 +28,35 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
 
 using unexportable_keys::ServiceErrorOr;
 using unexportable_keys::UnexportableKeyId;
+using RegistrationError =
+    BoundSessionRegistrationFetcherImpl::RegistrationError;
+using RegistrationResultFuture = base::test::TestFuture<
+    absl::optional<bound_session_credentials::BoundSessionParams>>;
 
-constexpr std::string_view kXSSIPrefix = ")]}'";
-constexpr std::string_view kJSONBoundSessionParams = R"(
+constexpr std::string_view kXssiPrefix = ")]}'";
+constexpr std::string_view kBoundSessionParamsValidJson = R"(
     {
         "session_identifier": "007",
+        "credentials": [
+            {
+                "type": "cookie",
+                "name": "auth_cookie",
+                "scope": {
+                    "domain": "test.me/",
+                    "path": "/"
+                }
+            }
+        ]
+    }
+)";
+constexpr std::string_view kBoundSessionParamsMissingSessionIdJson = R"(
+    {
         "credentials": [
             {
                 "type": "cookie",
@@ -95,6 +115,16 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
       RunBackgroundTasks();
     }
   }
+  void SetUpServerResponse(int network_error) {
+    url_loader_factory_.AddResponse(
+        kRegistrationUrl, network::mojom::URLResponseHead::New(),
+        /*content=*/std::string(),
+        network::URLLoaderCompletionStatus(network_error));
+    // Wait for a pending request to be handled.
+    if (WasRequestSent()) {
+      RunBackgroundTasks();
+    }
+  }
 
   bool WasRequestSent() const { return has_intercepted_request_; }
 
@@ -110,6 +140,17 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
     return std::make_unique<BoundSessionRegistrationFetcherImpl>(
         std::move(params), url_loader_factory_.GetSafeWeakWrapper(),
         unexportable_key_service());
+  }
+
+  void DisableKeyProvider() {
+    // Using `emplace()` to destroy the existing scoped object before
+    // constructing a new one.
+    scoped_key_provider_.emplace<crypto::ScopedNullUnexportableKeyProvider>();
+  }
+
+  void ExpectRecordedResultHistogram(RegistrationError error) {
+    histogram_tester_.ExpectUniqueSample(
+        "Signin.BoundSessionCredentials.SessionRegistrationResult", error, 1);
   }
 
  private:
@@ -133,8 +174,12 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
                     // called.
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  // Provides a mock key provider by default.
+  absl::variant<crypto::ScopedMockUnexportableKeyProvider,
+                crypto::ScopedNullUnexportableKeyProvider>
+      scoped_key_provider_;
   network::TestURLLoaderFactory url_loader_factory_;
+  base::HistogramTester histogram_tester_;
 
   bool has_intercepted_request_ = false;
   std::string intercepted_request_body_;
@@ -142,9 +187,7 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
 
 TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
-  base::test::TestFuture<
-      absl::optional<bound_session_credentials::BoundSessionParams>>
-      future;
+  RegistrationResultFuture future;
 
   fetcher->Start(future.GetCallback());
   EXPECT_FALSE(WasRequestSent());
@@ -154,9 +197,12 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   EXPECT_TRUE(WasRequestSent());
   EXPECT_FALSE(future.IsReady());
 
-  SetUpServerResponse(base::StrCat({kXSSIPrefix, kJSONBoundSessionParams}));
+  SetUpServerResponse(
+      base::StrCat({kXssiPrefix, kBoundSessionParamsValidJson}));
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestBoundSessionParams()));
+
+  ExpectRecordedResultHistogram(RegistrationError::kNone);
 
   // Verify the wrapped key.
   std::string wrapped_key = future.Get<>()->wrapped_key();
@@ -178,11 +224,9 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
 }
 
 TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
-  SetUpServerResponse(kJSONBoundSessionParams);
+  SetUpServerResponse(kBoundSessionParamsValidJson);
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
-  base::test::TestFuture<
-      absl::optional<bound_session_credentials::BoundSessionParams>>
-      future;
+  RegistrationResultFuture future;
 
   fetcher->Start(future.GetCallback());
   RunBackgroundTasks();
@@ -195,15 +239,66 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingJSONBoundSessionParams) {
   // Response body contains XSSI prefix but JSON of bound session params
   // missing. Expecting early termination and callback to be called with
   // absl::nullopt.
-  SetUpServerResponse(kXSSIPrefix);
+  SetUpServerResponse(kXssiPrefix);
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
-  base::test::TestFuture<
-      absl::optional<bound_session_credentials::BoundSessionParams>>
-      future;
+  RegistrationResultFuture future;
 
   fetcher->Start(future.GetCallback());
   RunBackgroundTasks();
   EXPECT_TRUE(WasRequestSent());
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get<>(), absl::nullopt);
+
+  ExpectRecordedResultHistogram(RegistrationError::kParseJsonFailed);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest,
+       MissingSessionIdBoundSessionParams) {
+  SetUpServerResponse(kBoundSessionParamsMissingSessionIdJson);
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  ExpectRecordedResultHistogram(RegistrationError::kRequiredFieldMissing);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, NonOkHttpResponseCode) {
+  SetUpServerResponse(/*body=*/std::string(), net::HTTP_UNAUTHORIZED);
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  ExpectRecordedResultHistogram(RegistrationError::kServerError);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, NetworkError) {
+  SetUpServerResponse(net::ERR_CONNECTION_TIMED_OUT);
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  ExpectRecordedResultHistogram(RegistrationError::kNetworkError);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, NoKeyProvider) {
+  DisableKeyProvider();
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_FALSE(WasRequestSent());
+  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  ExpectRecordedResultHistogram(
+      RegistrationError::kGenerateRegistrationTokenFailed);
 }

@@ -402,6 +402,20 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.BoundSessionCredentials.SessionRegistrationResult"
+    enum="BoundSessionCredentialsSessionRegistrationResult"
+    expires_after="2024-01-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the result of the bound session registration request. Recorded every
+    time Chrome attempts to register a bound session after an invitation from
+    the server via an HTTP header. This will not be recorded if Chrome couldn't
+    parse the server invitation or just decided to ignore it.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Signin.CookieJar.ChromeAccountRelation"
     enum="AccountRelation" expires_after="never">
 <!-- expires-never: this histogram gives important user information about user
