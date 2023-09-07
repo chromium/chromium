@@ -290,7 +290,7 @@ class WebAppBrowserTest_Tabbed : public WebAppBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsTabStrip};
+      blink::features::kDesktopPWAsTabStrip};
 };
 
 using WebAppBrowserTest_DetailedInstallDialog = WebAppBrowserTest;

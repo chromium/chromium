@@ -570,8 +570,9 @@ GURL WebAppRegistrar::GetComputedManifestId(const AppId& app_id) const {
 }
 
 bool WebAppRegistrar::IsTabbedWindowModeEnabled(const AppId& app_id) const {
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip))
+  if (!base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip)) {
     return false;
+  }
   return GetAppEffectiveDisplayMode(app_id) == DisplayMode::kTabbed;
 }
 

@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -45,6 +46,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
@@ -54,6 +56,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/features.h"
 
 using content::OpenURLParams;
@@ -74,7 +77,8 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
 
   void SetUp() override {
     features_.InitWithFeatures(
-        {features::kDesktopPWAsTabStrip, features::kDesktopPWAsTabStripSettings,
+        {blink::features::kDesktopPWAsTabStrip,
+         features::kDesktopPWAsTabStripSettings,
          blink::features::kDesktopPWAsTabStripCustomizations},
         {});
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -1230,6 +1234,156 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PageTitle) {
                                u"Tab Strip Customizations - Pinned"));
   EXPECT_TRUE(base::StartsWith(browser_view->GetAccessibleTabLabel(1),
                                u"Favicon only"));
+}
+
+class WebAppTabStripOriginTrialBrowserTest
+    : public WebAppControllerBrowserTest {
+ public:
+  WebAppTabStripOriginTrialBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {}, {blink::features::kDesktopPWAsTabStrip,
+             blink::features::kDesktopPWAsTabStripCustomizations});
+  }
+  ~WebAppTabStripOriginTrialBrowserTest() override = default;
+
+  // WebAppControllerBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Using the test public key from docs/origin_trials_integration.md#Testing.
+    command_line->AppendSwitchASCII(
+        embedder_support::kOriginTrialPublicKey,
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
+  }
+  void SetUpOnMainThread() override {
+    WebAppControllerBrowserTest::SetUpOnMainThread();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(browser()->profile()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+namespace {
+
+// InstallableManager requires https or localhost to load the manifest. Go with
+// localhost to avoid having to set up cert servers.
+constexpr char kTestWebAppUrl[] = "http://127.0.0.1:8000/";
+constexpr char kTestWebAppHeaders[] =
+    "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
+constexpr char kTestWebAppBody[] = R"(
+  <!DOCTYPE html>
+  <head>
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta http-equiv="origin-trial" content="$1">
+  </head>
+)";
+
+constexpr char kTestIconUrl[] = "http://127.0.0.1:8000/icon.png";
+constexpr char kTestManifestUrl[] =
+    "http://127.0.0.1:8000/manifest.webmanifest";
+constexpr char kTestManifestHeaders[] =
+    "HTTP/1.1 200 OK\nContent-Type: application/json; charset=utf-8\n";
+constexpr char kTestManifestBody[] = R"({
+  "name": "Test app",
+  "display": "standalone",
+  "display_override": ["tabbed"],
+  "start_url": "/",
+  "scope": "/",
+  "icons": [{
+    "src": "icon.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  }],
+  "tab_strip": {
+    "home_tab": {},
+    "new_tab_button": {"url": "/new"}
+  }
+})";
+
+// Generated from script:
+// $ tools/origin_trials/generate_token.py http://127.0.0.1:8000
+// "WebAppTabStrip" --expire-timestamp=2000000000
+constexpr char kOriginTrialToken[] =
+    "A+zTE7x8QQwxTcAbrcWlonv87BMD4dDJ28ibTBDL0MMRA50ubWkuaLvZ0+"
+    "kPlYFjp77y7S00CPBOC23ZH+"
+    "20DgcAAABWeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAi"
+    "V2ViQXBwVGFiU3RyaXAiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripOriginTrialBrowserTest, OriginTrial) {
+  ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting
+      bypass_window_close_waiting;
+
+  bool serve_token = true;
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&serve_token](
+          content::URLLoaderInterceptor::RequestParams* params) -> bool {
+        if (params->url_request.url.spec() == kTestWebAppUrl) {
+          content::URLLoaderInterceptor::WriteResponse(
+              kTestWebAppHeaders,
+              base::ReplaceStringPlaceholders(
+                  kTestWebAppBody, {serve_token ? kOriginTrialToken : ""},
+                  nullptr),
+              params->client.get());
+          return true;
+        }
+        if (params->url_request.url.spec() == kTestManifestUrl) {
+          content::URLLoaderInterceptor::WriteResponse(
+              kTestManifestHeaders, kTestManifestBody, params->client.get());
+          return true;
+        }
+        if (params->url_request.url.spec() == kTestIconUrl) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "chrome/test/data/web_apps/basic-192.png", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  // Install web app with origin trial token.
+  AppId app_id =
+      web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
+
+  WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
+#if BUILDFLAG(IS_CHROMEOS)
+  // Origin trial should grant the app access.
+  EXPECT_EQ(provider.registrar_unsafe()
+                .GetAppById(app_id)
+                ->display_mode_override()[0],
+            DisplayMode::kTabbed);
+  EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
+      provider.registrar_unsafe()
+          .GetAppById(app_id)
+          ->tab_strip()
+          .value()
+          .home_tab));
+  EXPECT_EQ(provider.registrar_unsafe()
+                .GetAppById(app_id)
+                ->tab_strip()
+                .value()
+                .new_tab_button.url,
+            "http://127.0.0.1:8000/new");
+
+  // Open the page again with the token missing.
+  {
+    UpdateAwaiter update_awaiter(provider.install_manager());
+
+    serve_token = false;
+    NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
+
+    update_awaiter.AwaitUpdate();
+  }
+#endif
+
+  // The app should update to no longer have any tabbed mode fields without the
+  // origin trial.
+  EXPECT_EQ(provider.registrar_unsafe()
+                .GetAppById(app_id)
+                ->display_mode_override()
+                .size(),
+            0u);
+  EXPECT_FALSE(
+      provider.registrar_unsafe().GetAppById(app_id)->tab_strip().has_value());
 }
 
 }  // namespace web_app

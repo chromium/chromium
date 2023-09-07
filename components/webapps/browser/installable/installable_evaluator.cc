@@ -90,14 +90,15 @@ bool DoesManifestContainRequiredIcon(const blink::mojom::Manifest& manifest) {
 }
 
 bool ShouldRejectDisplayMode(blink::mojom::DisplayMode display_mode) {
-  return !(display_mode == blink::mojom::DisplayMode::kStandalone ||
-           display_mode == blink::mojom::DisplayMode::kFullscreen ||
-           display_mode == blink::mojom::DisplayMode::kMinimalUi ||
-           display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay ||
-           (display_mode == blink::mojom::DisplayMode::kBorderless &&
-            base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)) ||
-           (display_mode == blink::mojom::DisplayMode::kTabbed &&
-            base::FeatureList::IsEnabled(::features::kDesktopPWAsTabStrip)));
+  return !(
+      display_mode == blink::mojom::DisplayMode::kStandalone ||
+      display_mode == blink::mojom::DisplayMode::kFullscreen ||
+      display_mode == blink::mojom::DisplayMode::kMinimalUi ||
+      display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay ||
+      (display_mode == blink::mojom::DisplayMode::kBorderless &&
+       base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)) ||
+      (display_mode == blink::mojom::DisplayMode::kTabbed &&
+       base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip)));
 }
 
 }  // namespace

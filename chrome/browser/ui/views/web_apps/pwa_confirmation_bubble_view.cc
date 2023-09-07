@@ -34,6 +34,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_elider.h"
@@ -159,7 +160,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
                            url::Origin::Create(web_app_info_->start_url), false)
                            .release());
 
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+  if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip) &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings)) {
     // This UI is only for prototyping and is not intended for shipping.
     DCHECK_EQ(features::kDesktopPWAsTabStripSettings.default_state,

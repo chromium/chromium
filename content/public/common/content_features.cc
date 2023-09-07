@@ -276,12 +276,6 @@ BASE_FEATURE(kDesktopCaptureChangeSource,
              "DesktopCaptureChangeSource",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Adds a tab strip to PWA windows.
-// TODO(crbug.com/897314): Enable this feature.
-BASE_FEATURE(kDesktopPWAsTabStrip,
-             "DesktopPWAsTabStrip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable the device posture API.
 // Tracking bug for enabling device posture API: https://crbug.com/1066842.
 BASE_FEATURE(kDevicePosture,

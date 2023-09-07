@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/features.h"
 
 class WebAppConfirmViewBrowserTest
     : public DialogBrowserTest,
@@ -53,12 +54,12 @@ class WebAppConfirmViewBrowserTest
 
   void SetUp() override {
     if (GetParam()) {
-      feature_list.InitWithFeatures({features::kDesktopPWAsTabStrip,
+      feature_list.InitWithFeatures({blink::features::kDesktopPWAsTabStrip,
                                      features::kDesktopPWAsTabStripSettings},
                                     {});
     } else {
       feature_list.InitWithFeatures({},
-                                    {features::kDesktopPWAsTabStrip,
+                                    {blink::features::kDesktopPWAsTabStrip,
                                      features::kDesktopPWAsTabStripSettings});
     }
     DialogBrowserTest::SetUp();

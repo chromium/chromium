@@ -240,7 +240,7 @@ class WebAppRegistrarTest_TabStrip : public WebAppRegistrarTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsTabStrip};
+      blink::features::kDesktopPWAsTabStrip};
 };
 
 TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {

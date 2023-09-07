@@ -52,6 +52,7 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -222,10 +223,11 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
     case DisplayMode::kWindowControlsOverlay:
       return DisplayMode::kWindowControlsOverlay;
     case DisplayMode::kTabbed:
-      if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip))
+      if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip)) {
         return DisplayMode::kTabbed;
-      else
+      } else {
         return DisplayMode::kStandalone;
+      }
     case DisplayMode::kBorderless:
       return DisplayMode::kBorderless;
   }

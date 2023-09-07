@@ -4874,7 +4874,7 @@ class ManifestUpdateManagerBrowserTest_TabStrip
   ManifestUpdateManagerBrowserTest_TabStrip() {
     feature_list_.InitWithFeatures(
         {blink::features::kDesktopPWAsTabStripCustomizations,
-         features::kDesktopPWAsTabStrip},
+         blink::features::kDesktopPWAsTabStrip},
         /*disabled_features=*/{});
   }
   base::test::ScopedFeatureList feature_list_;

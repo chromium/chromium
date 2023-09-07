@@ -34,6 +34,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
 #include "ui/views/vector_icons.h"
@@ -85,7 +86,7 @@ class AppServiceShelfContextMenuWebAppBrowserTest
  public:
   AppServiceShelfContextMenuWebAppBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsTabStrip,
+        {blink::features::kDesktopPWAsTabStrip,
          features::kDesktopPWAsTabStripSettings},
         {});
   }
@@ -226,7 +227,7 @@ class AppServiceShelfContextMenuTabbedWebAppBrowserTest
  public:
   AppServiceShelfContextMenuTabbedWebAppBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsTabStrip},
+        {blink::features::kDesktopPWAsTabStrip},
         {features::kDesktopPWAsTabStripSettings});
   }
   ~AppServiceShelfContextMenuTabbedWebAppBrowserTest() override = default;
@@ -270,7 +271,7 @@ class AppServiceShelfContextMenuNonTabbedWebAppBrowserTest
  public:
   AppServiceShelfContextMenuNonTabbedWebAppBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kDesktopPWAsTabStrip,
+        {}, {blink::features::kDesktopPWAsTabStrip,
              features::kDesktopPWAsTabStripSettings});
   }
   ~AppServiceShelfContextMenuNonTabbedWebAppBrowserTest() override = default;

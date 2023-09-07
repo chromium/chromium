@@ -12,6 +12,7 @@
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
@@ -281,8 +282,8 @@ TEST_F(InstallableEvaluatorUnitTest, ManifestDisplayModes) {
   manifest->display = blink::mojom::DisplayMode::kTabbed;
   EXPECT_TRUE(
       IsManifestValid(*manifest, false /* check_webapp_manifest_display */));
-  EXPECT_FALSE(IsManifestValid(*manifest));
-  EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED, GetErrorCode());
+  EXPECT_TRUE(IsManifestValid(*manifest));
+  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ManifestDisplayOverride) {
@@ -325,8 +326,8 @@ TEST_F(InstallableEvaluatorUnitTest, ManifestDisplayOverride) {
                                     blink::mojom::DisplayMode::kTabbed);
   EXPECT_TRUE(
       IsManifestValid(*manifest, false /* check_webapp_manifest_display */));
-  EXPECT_FALSE(IsManifestValid(*manifest));
-  EXPECT_EQ(MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED, GetErrorCode());
+  EXPECT_TRUE(IsManifestValid(*manifest));
+  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
 TEST_F(InstallableEvaluatorUnitTest, FallbackToBrowser) {
@@ -354,7 +355,7 @@ class InstallableEvaluatorUnitTest_Tabbed
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsTabStrip};
+      blink::features::kDesktopPWAsTabStrip};
 };
 
 TEST_F(InstallableEvaluatorUnitTest_Tabbed, SupportTabbed) {
