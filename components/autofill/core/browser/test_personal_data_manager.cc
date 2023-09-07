@@ -52,10 +52,6 @@ std::string TestPersonalDataManager::SaveImportedCreditCard(
   return imported_credit_card.guid();
 }
 
-void TestPersonalDataManager::AddUpiId(const std::string& profile) {
-  num_times_save_upi_id_called_++;
-}
-
 void TestPersonalDataManager::AddProfile(const AutofillProfile& profile) {
   std::unique_ptr<AutofillProfile> profile_ptr =
       std::make_unique<AutofillProfile>(profile);

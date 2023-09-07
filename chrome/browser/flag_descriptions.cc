@@ -629,13 +629,6 @@ const char kAutofillMoreProminentPopupDescription[] =
     "If enabled Autofill's popup becomes more prominent, i.e. its shadow "
     "becomes more emphasized, position is also updated";
 
-const char kAutofillSaveAndFillVPAName[] =
-    "Offer save and autofill of UPI/VPA values";
-const char kAutofillSaveAndFillVPADescription[] =
-    "If enabled, when autofill recognizes a UPI/VPA value in a payment form, "
-    "it will offer to save it. If saved, it will be offered for filling in "
-    "fields which expect a VPA.";
-
 const char kAutofillShowAutocompleteDeleteButtonName[] =
     "Show a delete button for Autocomplete entries";
 const char kAutofillShowAutocompleteDeleteButtonDescription[] =

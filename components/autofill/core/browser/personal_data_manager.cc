@@ -836,15 +836,6 @@ void PersonalDataManager::RecordUseOf(
   }
 }
 
-void PersonalDataManager::AddUpiId(const std::string& upi_id) {
-  DCHECK(!upi_id.empty());
-  if (!database_helper_->GetLocalDatabase()) {
-    return;
-  }
-
-  database_helper_->GetLocalDatabase()->AddUpiId(upi_id);
-}
-
 void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
   if (!IsAutofillProfileEnabled())
     return;

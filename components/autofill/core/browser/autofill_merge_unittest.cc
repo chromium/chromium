@@ -244,7 +244,6 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
           extracted_data.address_profile_import_candidates,
           /*allow_prompt=*/true);
       EXPECT_FALSE(extracted_data.extracted_credit_card);
-      EXPECT_FALSE(extracted_data.extracted_upi_id.has_value());
 
       // Clear the |form| to start a new profile.
       form.fields.clear();

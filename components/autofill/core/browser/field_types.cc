@@ -220,7 +220,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
       return true;
 
     case UPI_VPA:
-      return base::FeatureList::IsEnabled(features::kAutofillSaveAndFillVPA);
+      return false;
 
     case IBAN_VALUE:
       return true;

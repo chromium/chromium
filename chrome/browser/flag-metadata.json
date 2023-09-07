@@ -2114,11 +2114,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-autofill-upi-vpa",
-    "owners": [ "mlerman" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-autofill-virtual-cards-on-touch-to-fill",
     "owners": ["vishwasuppoor"],
     "expiry_milestone": 120

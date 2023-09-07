@@ -159,8 +159,6 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
                                                       payments_client,
                                                       app_locale,
                                                       personal_data_manager)),
-      upi_vpa_save_manager_(
-          std::make_unique<UpiVpaSaveManager>(client, personal_data_manager)),
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       personal_data_manager_(personal_data_manager),
       app_locale_(app_locale),
@@ -208,7 +206,7 @@ void FormDataImporter::ImportAndProcessFormData(
 
   bool cc_prompt_potentially_shown = ProcessExtractedCreditCard(
       submitted_form, extracted_data.extracted_credit_card,
-      extracted_data.extracted_upi_id, payment_methods_autofill_enabled,
+      payment_methods_autofill_enabled,
       credit_card_save_manager_->IsCreditCardUploadEnabled());
   fetched_card_instrument_id_.reset();
 
@@ -295,7 +293,6 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   if (payment_methods_autofill_enabled) {
     extracted_form_data.extracted_credit_card =
         ExtractCreditCard(submitted_form);
-    extracted_form_data.extracted_upi_id = ExtractUpiId(submitted_form);
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -328,7 +325,6 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   }
 
   if (!extracted_form_data.extracted_credit_card &&
-      !extracted_form_data.extracted_upi_id &&
       num_complete_address_profiles == 0 &&
       !extracted_form_data.iban_import_candidate) {
     personal_data_manager_->MarkObserversInsufficientFormDataForImport();
@@ -715,16 +711,8 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
 bool FormDataImporter::ProcessExtractedCreditCard(
     const FormStructure& submitted_form,
     const absl::optional<CreditCard>& extracted_credit_card,
-    const absl::optional<std::string>& extracted_upi_id,
     bool payment_methods_autofill_enabled,
     bool is_credit_card_upstream_enabled) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (extracted_upi_id && payment_methods_autofill_enabled &&
-      base::FeatureList::IsEnabled(features::kAutofillSaveAndFillVPA)) {
-    upi_vpa_save_manager_->OfferLocalSave(*extracted_upi_id);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
   // If no card was successfully extracted from the form, return.
   if (credit_card_import_type_ == CreditCardImportType::kNoCard) {
     return false;
@@ -1049,15 +1037,6 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
   }
 
   return candidate_iban;
-}
-
-absl::optional<std::string> FormDataImporter::ExtractUpiId(
-    const FormStructure& form) {
-  for (const auto& field : form) {
-    if (IsUPIVirtualPaymentAddress(field->value))
-      return base::UTF16ToUTF8(field->value);
-  }
-  return absl::nullopt;
 }
 
 bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(

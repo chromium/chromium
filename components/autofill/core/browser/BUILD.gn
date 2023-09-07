@@ -711,8 +711,6 @@ static_library("browser") {
       "payments/local_card_migration_manager.h",
       "payments/payments_requests/migrate_cards_request.cc",
       "payments/payments_requests/migrate_cards_request.h",
-      "payments/upi_vpa_save_manager.cc",
-      "payments/upi_vpa_save_manager.h",
       "server_prediction_overrides.cc",
       "server_prediction_overrides.h",
       "strike_databases/payments/local_card_migration_strike_database.cc",

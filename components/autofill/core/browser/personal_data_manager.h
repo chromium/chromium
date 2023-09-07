@@ -210,10 +210,6 @@ class PersonalDataManager : public KeyedService,
   // specific IBAN.
   std::string OnAcceptedLocalIbanSave(Iban& imported_iban);
 
-  // Triggered when the user accepts saving a UPI ID. Stores the |upi_id| to
-  // the database.
-  virtual void AddUpiId(const std::string& upi_id);
-
   // Adds |profile| to the web database.
   virtual void AddProfile(const AutofillProfile& profile);
 

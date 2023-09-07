@@ -3145,19 +3145,6 @@ TEST_P(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
 
-// Ensures that no UPI ID value is returned when there's a credit card and no
-// UPI ID.
-TEST_P(FormDataImporterTest,
-       ExtractFormData_DontSetUpiIdWhenOnlyCreditCardExists) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultCreditCardFormStructure();
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      *form_structure, /*profile_autofill_enabled=*/true,
-      /*payment_methods_autofill_enabled=*/true);
-  ASSERT_TRUE(extracted_data.extracted_credit_card);
-  ASSERT_FALSE(extracted_data.extracted_upi_id.has_value());
-}
-
 TEST_P(FormDataImporterTest,
        DuplicateFullServerCardWhileContainingLocalCardCopies) {
   std::vector<CreditCard> server_cards;
@@ -3460,52 +3447,6 @@ TEST_P(FormDataImporterTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.SubmittedServerCardExpirationStatus",
       AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH, 1);
-}
-
-TEST_P(FormDataImporterTest, ExtractUpiId) {
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-  form.fields = {
-      CreateTestFormField("UPI ID:", "upi_id", "user@indianbank", "text")};
-  FormStructure form_structure(form);
-
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/false,
-      /*payment_methods_autofill_enabled=*/true);
-  ASSERT_TRUE(extracted_data.extracted_upi_id.has_value());
-  EXPECT_EQ(extracted_data.extracted_upi_id.value(), "user@indianbank");
-}
-
-TEST_P(FormDataImporterTest, ExtractUpiIdDisabled) {
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-  form.fields = {
-      CreateTestFormField("UPI ID:", "upi_id", "user@indianbank", "text")};
-  FormStructure form_structure(form);
-
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/false,
-      /*payment_methods_autofill_enabled=*/false);
-  ASSERT_FALSE(extracted_data.extracted_upi_id.has_value());
-}
-
-TEST_P(FormDataImporterTest, ExtractUpiIdIgnoreNonUpiId) {
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-  form.fields = {
-      CreateTestFormField("UPI ID:", "upi_id", "user@gmail.com", "text")};
-  FormStructure form_structure(form);
-
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/false,
-      /*payment_methods_autofill_enabled=*/false);
-  ASSERT_FALSE(extracted_data.extracted_upi_id.has_value());
 }
 
 TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
@@ -3991,7 +3932,6 @@ class FormDataImporterNonParameterizedTest : public FormDataImporterTestBase,
 TEST_F(FormDataImporterNonParameterizedTest,
        ProcessExtractedCreditCard_EmptyCreditCard) {
   absl::optional<CreditCard> extracted_credit_card;
-  absl::optional<std::string> extracted_upi_id;
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
 
@@ -4008,7 +3948,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
   personal_data_manager_->SetSyncServiceForTest(&sync_service);
 
   EXPECT_FALSE(form_data_importer().ProcessExtractedCreditCardForTesting(
-      *form_structure, extracted_credit_card, extracted_upi_id,
+      *form_structure, extracted_credit_card,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
   personal_data_manager_->SetSyncServiceForTest(nullptr);
@@ -4022,7 +3962,6 @@ TEST_F(FormDataImporterNonParameterizedTest,
   extracted_credit_card.set_instrument_id(1111);
   extracted_credit_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
-  absl::optional<std::string> extracted_upi_id;
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
 
@@ -4042,7 +3981,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
       .Times(0);
 
   EXPECT_FALSE(form_data_importer().ProcessExtractedCreditCardForTesting(
-      *form_structure, extracted_credit_card, extracted_upi_id,
+      *form_structure, extracted_credit_card,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
 
@@ -4053,7 +3992,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
       .Times(1);
 
   EXPECT_TRUE(form_data_importer().ProcessExtractedCreditCardForTesting(
-      *form_structure, extracted_credit_card, extracted_upi_id,
+      *form_structure, extracted_credit_card,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
 
@@ -4089,7 +4028,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
       .Times(0);
 
   EXPECT_FALSE(form_data_importer().ProcessExtractedCreditCardForTesting(
-      *form_structure, extracted_credit_card, absl::nullopt,
+      *form_structure, extracted_credit_card,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
 }
@@ -4120,7 +4059,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
       .Times(1);
 
   EXPECT_TRUE(form_data_importer().ProcessExtractedCreditCardForTesting(
-      *form_structure, extracted_credit_card, absl::nullopt,
+      *form_structure, extracted_credit_card,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
 

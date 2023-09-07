@@ -546,11 +546,6 @@ BASE_FEATURE(kAutofillRequireNameForProfileImport,
              "AutofillRequireNameForProfileImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether UPI/VPA values will be saved and filled into payment forms.
-BASE_FEATURE(kAutofillSaveAndFillVPA,
-             "AutofillSaveAndFillVPA",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls non-default Autofill API predictions. See crbug.com/1331322.
 BASE_FEATURE(kAutofillServerBehaviors,
              "AutofillServerBehaviors",
