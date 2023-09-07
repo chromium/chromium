@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -52,6 +53,16 @@ class MockNotificationActionHandler
               (override));
 };
 
+// Returns a block that invokes a closure. Used to invoke a closure when certain
+// mock methods are called.
+using InvocationBlock = void (^)(NSInvocation* invocation);
+InvocationBlock invokeClosure(base::OnceClosure closure) {
+  __block auto block_closure = std::move(closure);
+  return ^(NSInvocation* invocation) {
+    std::move(block_closure).Run();
+  };
+}
+
 }  // namespace
 
 class MacNotificationServiceUNTest : public testing::Test {
@@ -62,36 +73,33 @@ class MacNotificationServiceUNTest : public testing::Test {
     // Expect the MacNotificationServiceUN ctor to register a delegate with
     // the UNNotificationCenter and ask for notification permissions.
     ExpectAndUpdateUNUserNotificationCenterDelegate(/*expect_not_nil=*/true);
-    [[mock_notification_center_ expect]
-        getNotificationSettingsWithCompletionHandler:[OCMArg any]];
-    [[[mock_notification_center_ expect] ignoringNonObjectArgs]
-        requestAuthorizationWithOptions:0
-                      completionHandler:[OCMArg any]];
+    OCMExpect([mock_notification_center_
+        getNotificationSettingsWithCompletionHandler:[OCMArg any]]);
+    OCMExpect([mock_notification_center_
+                  requestAuthorizationWithOptions:0
+                                completionHandler:[OCMArg any]])
+        .ignoringNonObjectArgs();
 
     // We also synchronize displayed notifications and categories.
-    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
-      __unsafe_unretained void (^callback)(NSArray* _Nonnull notifications);
-      [invocation getArgument:&callback atIndex:2];
-      callback(@[]);
-    }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
-    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
-      __unsafe_unretained void (^callback)(NSArray* _Nonnull categories);
-      [invocation getArgument:&callback atIndex:2];
-      callback(@[]);
-    }] getNotificationCategoriesWithCompletionHandler:[OCMArg any]];
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[], nil])]);
+    OCMExpect([mock_notification_center_
+        getNotificationCategoriesWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[], nil])]);
 
     service_ = std::make_unique<MacNotificationServiceUN>(
         service_remote_.BindNewPipeAndPassReceiver(),
         handler_receiver_.BindNewPipeAndPassRemote(),
         mock_notification_center_);
-    [[mock_notification_center_ stub]
+    OCMStub([mock_notification_center_
         setNotificationCategories:[OCMArg checkWithBlock:^BOOL(
                                               NSSet<UNNotificationCategory*>*
                                                   categories) {
           category_count_ = [categories count];
           return YES;
-        }]];
-    [mock_notification_center_ verify];
+        }]]);
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
 
   ~MacNotificationServiceUNTest() override {
@@ -99,18 +107,18 @@ class MacNotificationServiceUNTest : public testing::Test {
     // UNNotificationCenter.
     ExpectAndUpdateUNUserNotificationCenterDelegate(/*expect_not_nil=*/false);
     service_.reset();
-    [mock_notification_center_ verify];
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
 
  protected:
   void ExpectAndUpdateUNUserNotificationCenterDelegate(bool expect_not_nil) {
-    [[mock_notification_center_ expect]
+    OCMExpect([mock_notification_center_
         setDelegate:[OCMArg checkWithBlock:^BOOL(
                                 id<UNUserNotificationCenterDelegate> delegate) {
           EXPECT_EQ(expect_not_nil, delegate != nil);
           notification_center_delegate_ = delegate;
           return YES;
-        }]];
+        }]]);
   }
 
   FakeUNNotification* CreateNotification(const std::string& notification_id,
@@ -162,11 +170,9 @@ class MacNotificationServiceUNTest : public testing::Test {
     for (const auto& notification : notifications)
       [notifications_ns addObject:notification];
 
-    [[[mock_notification_center_ stub] andDo:^(NSInvocation* invocation) {
-      __unsafe_unretained void (^callback)(NSArray* _Nonnull toasts);
-      [invocation getArgument:&callback atIndex:2];
-      callback(notifications_ns);
-    }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
+    OCMStub([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:notifications_ns, nil])]);
 
     return notifications;
   }
@@ -198,15 +204,19 @@ class MacNotificationServiceUNTest : public testing::Test {
                                bool incognito,
                                bool success = true) {
     base::RunLoop run_loop;
-    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
-    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
-      __unsafe_unretained void (^callback)(NSError* error);
-      [invocation getArgument:&callback atIndex:3];
-      callback(success ? nil
-                       : [NSError errorWithDomain:@"" code:0 userInfo:nil]);
-      quit_closure.Run();
-    }] addNotificationRequest:[OCMArg any] withCompletionHandler:[OCMArg any]];
+    OCMExpect(
+        [mock_notification_center_
+            addNotificationRequest:[OCMArg any]
+             withCompletionHandler:
+                 ([OCMArg
+                     invokeBlockWithArgs:(success
+                                              ? [NSNull null]
+                                              : [NSError errorWithDomain:@""
+                                                                    code:0
+                                                                userInfo:nil]),
+                                         nil])])
+        .andDo(invokeClosure(run_loop.QuitClosure()));
 
     // Create and display a new notification.
     auto notification =
@@ -214,7 +224,7 @@ class MacNotificationServiceUNTest : public testing::Test {
     service_remote_->DisplayNotification(std::move(notification));
 
     run_loop.Run();
-    [mock_notification_center_ verify];
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
 
   mac_notifications::mojom::NotificationPtr CreateMojoNotification(
@@ -252,34 +262,31 @@ class MacNotificationServiceUNTest : public testing::Test {
         &mock_handler};
     mojo::Remote<mojom::MacNotificationService> service_remote;
 
-    [[mock_notification_center expect] setDelegate:[OCMArg any]];
-    [[mock_notification_center expect]
-        getNotificationSettingsWithCompletionHandler:[OCMArg any]];
-    [[[mock_notification_center stub] andDo:^(NSInvocation* invocation) {
-      __unsafe_unretained void (^callback)(NSArray* _Nonnull notifications);
-      [invocation getArgument:&callback atIndex:2];
-      callback(notifications ? notifications : @[]);
-    }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
-    [[[mock_notification_center stub] andDo:^(NSInvocation* invocation) {
-      __unsafe_unretained void (^callback)(NSArray* _Nonnull categories);
-      [invocation getArgument:&callback atIndex:2];
-      callback(categories ? categories : @[]);
-    }] getNotificationCategoriesWithCompletionHandler:[OCMArg any]];
+    OCMExpect([mock_notification_center setDelegate:[OCMArg any]]);
+    OCMExpect([mock_notification_center
+        getNotificationSettingsWithCompletionHandler:[OCMArg any]]);
+    OCMStub([mock_notification_center
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:(notifications ? notifications : @[]),
+                                         nil])]);
+    OCMStub([mock_notification_center
+        getNotificationCategoriesWithCompletionHandler:
+            ([OCMArg
+                invokeBlockWithArgs:(categories ? categories : @[]), nil])]);
 
-    [[[[mock_notification_center expect]
-        ignoringNonObjectArgs] andDo:^(NSInvocation* invocation) {
-      __unsafe_unretained void (^callback)(BOOL granted, NSError* error);
-      [invocation getArgument:&callback atIndex:3];
-
-      bool granted =
-          result == UNNotificationRequestPermissionResult::kPermissionGranted;
-      NSError* error =
-          result == UNNotificationRequestPermissionResult::kRequestFailed
-              ? [NSError errorWithDomain:@"" code:0 userInfo:nil]
-              : nil;
-
-      callback(granted, error);
-    }] requestAuthorizationWithOptions:0 completionHandler:[OCMArg any]];
+    bool granted =
+        result == UNNotificationRequestPermissionResult::kPermissionGranted;
+    id error = result == UNNotificationRequestPermissionResult::kRequestFailed
+                   ? [NSError errorWithDomain:@"" code:0 userInfo:nil]
+                   : NSNull.null;
+    OCMExpect(
+        [mock_notification_center
+            requestAuthorizationWithOptions:0
+                          completionHandler:([OCMArg
+                                                invokeBlockWithArgs:@(granted),
+                                                                    error,
+                                                                    nil])])
+        .ignoringNonObjectArgs();
 
     auto service = std::make_unique<MacNotificationServiceUN>(
         service_remote.BindNewPipeAndPassReceiver(),
@@ -287,7 +294,7 @@ class MacNotificationServiceUNTest : public testing::Test {
     if (on_create)
       std::move(on_create).Run(service.get());
 
-    [[mock_notification_center expect] setDelegate:[OCMArg any]];
+    OCMExpect([mock_notification_center setDelegate:[OCMArg any]]);
     service.reset();
   }
 
@@ -305,29 +312,28 @@ class MacNotificationServiceUNTest : public testing::Test {
 
 TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
   base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
   // Verify notification content.
-  [[mock_notification_center_ expect]
-      addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
-                                         UNNotificationRequest* request) {
-        EXPECT_NSEQ(@"i|profileId|notificationId", [request identifier]);
-        NSDictionary* user_info = [[request content] userInfo];
-        EXPECT_NSEQ(@"notificationId",
-                    [user_info objectForKey:kNotificationId]);
-        EXPECT_NSEQ(@"profileId",
-                    [user_info objectForKey:kNotificationProfileId]);
-        EXPECT_TRUE(
-            [[user_info objectForKey:kNotificationIncognito] boolValue]);
+  OCMExpect(
+      [mock_notification_center_
+          addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                             UNNotificationRequest* request) {
+            EXPECT_NSEQ(@"i|profileId|notificationId", [request identifier]);
+            NSDictionary* user_info = [[request content] userInfo];
+            EXPECT_NSEQ(@"notificationId",
+                        [user_info objectForKey:kNotificationId]);
+            EXPECT_NSEQ(@"profileId",
+                        [user_info objectForKey:kNotificationProfileId]);
+            EXPECT_TRUE(
+                [[user_info objectForKey:kNotificationIncognito] boolValue]);
 
-        EXPECT_NSEQ(@"title", [[request content] title]);
-        EXPECT_NSEQ(@"subtitle", [[request content] subtitle]);
-        EXPECT_NSEQ(@"body", [[request content] body]);
-
-        quit_closure.Run();
-        return YES;
-      }]
-       withCompletionHandler:[OCMArg any]];
+            EXPECT_NSEQ(@"title", [[request content] title]);
+            EXPECT_NSEQ(@"subtitle", [[request content] subtitle]);
+            EXPECT_NSEQ(@"body", [[request content] body]);
+            return YES;
+          }]
+           withCompletionHandler:[OCMArg any]])
+      .andDo(invokeClosure(run_loop.QuitClosure()));
 
   // Create and display a new notification.
   auto notification = CreateMojoNotification("notificationId", "profileId",
@@ -335,7 +341,7 @@ TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
   service_remote_->DisplayNotification(std::move(notification));
 
   run_loop.Run();
-  [mock_notification_center_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 
   // Expect a new notification category for this notification.
   EXPECT_EQ(1u, category_count_);
@@ -363,22 +369,22 @@ TEST_F(MacNotificationServiceUNTest, RedisplayNotification) {
   {
     // Display a new notification.
     base::RunLoop run_loop;
-    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
-    [[mock_notification_center_ expect]
-        addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
-                                           UNNotificationRequest* request) {
-          EXPECT_NSEQ(@"r|profileId|notificationId", request.identifier);
-          verify_notification_content(request.content);
-          quit_closure.Run();
-          return YES;
-        }]
-         withCompletionHandler:[OCMArg any]];
+    OCMExpect(
+        [mock_notification_center_
+            addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                               UNNotificationRequest* request) {
+              EXPECT_NSEQ(@"r|profileId|notificationId", request.identifier);
+              verify_notification_content(request.content);
+              return YES;
+            }]
+             withCompletionHandler:[OCMArg any]])
+        .andDo(invokeClosure(run_loop.QuitClosure()));
 
     service_remote_->DisplayNotification(notification_no_renotify.Clone());
 
     run_loop.Run();
-    [mock_notification_center_ verify];
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
 
   {
@@ -386,74 +392,74 @@ TEST_F(MacNotificationServiceUNTest, RedisplayNotification) {
     // This should query the currently displayed notifications, and only cause
     // the contents to be replaced if the notification is still delivered.
     base::RunLoop run_loop;
-    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
-    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
-      __unsafe_unretained void (^callback)(NSArray* _Nonnull toasts);
-      [invocation getArgument:&callback atIndex:2];
-      callback(@[ CreateNotification("notificationId", "profileId",
-                                     /*incognito=*/false, /*display=*/false) ]);
-    }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
-    [[mock_notification_center_ expect]
-        replaceContentForRequestWithIdentifier:@"r|profileId|notificationId"
-                            replacementContent:
-                                [OCMArg checkWithBlock:^BOOL(
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[
+              CreateNotification("notificationId", "profileId",
+                                 /*incognito=*/false, /*display=*/false)
+            ],
+                                         nil])]);
+    OCMExpect(
+        [mock_notification_center_
+            replaceContentForRequestWithIdentifier:@"r|profileId|notificationId"
+                                replacementContent:
+                                    [OCMArg
+                                        checkWithBlock:^BOOL(
                                             UNNotificationContent* content) {
-                                  verify_notification_content(content);
-                                  quit_closure.Run();
-                                  return YES;
-                                }]
-                             completionHandler:[OCMArg any]];
+                                          verify_notification_content(content);
+                                          return YES;
+                                        }]
+                                 completionHandler:[OCMArg any]])
+        .andDo(invokeClosure(run_loop.QuitClosure()));
     service_remote_->DisplayNotification(notification_no_renotify.Clone());
 
     run_loop.Run();
-    [mock_notification_center_ verify];
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
 
   {
     // Now display the notification with renotify set to true.
     base::RunLoop run_loop;
-    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
-    [[mock_notification_center_ expect]
-        addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
-                                           UNNotificationRequest* request) {
-          EXPECT_NSEQ(@"r|profileId|notificationId", request.identifier);
-          verify_notification_content(request.content);
-          quit_closure.Run();
-          return YES;
-        }]
-         withCompletionHandler:[OCMArg any]];
+    OCMExpect(
+        [mock_notification_center_
+            addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                               UNNotificationRequest* request) {
+              EXPECT_NSEQ(@"r|profileId|notificationId", request.identifier);
+              verify_notification_content(request.content);
+              return YES;
+            }]
+             withCompletionHandler:[OCMArg any]])
+        .andDo(invokeClosure(run_loop.QuitClosure()));
     service_remote_->DisplayNotification(notification_with_renotify.Clone());
 
     run_loop.Run();
-    [mock_notification_center_ verify];
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
 
   {
     // Finally, display the notification with renotify set to false, but with
     // the notification having been closed by the OS in the meantime,
     base::RunLoop run_loop;
-    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
-    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
-      __unsafe_unretained void (^callback)(NSArray* _Nonnull toasts);
-      [invocation getArgument:&callback atIndex:2];
-      callback(@[]);
-    }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
-    [[mock_notification_center_ expect]
-        addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
-                                           UNNotificationRequest* request) {
-          EXPECT_NSEQ(@"r|profileId|notificationId", request.identifier);
-          verify_notification_content(request.content);
-          quit_closure.Run();
-          return YES;
-        }]
-         withCompletionHandler:[OCMArg any]];
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[], nil])]);
+    OCMExpect(
+        [mock_notification_center_
+            addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                               UNNotificationRequest* request) {
+              EXPECT_NSEQ(@"r|profileId|notificationId", request.identifier);
+              verify_notification_content(request.content);
+              return YES;
+            }]
+             withCompletionHandler:[OCMArg any]])
+        .andDo(invokeClosure(run_loop.QuitClosure()));
     service_remote_->DisplayNotification(notification_no_renotify.Clone());
 
     run_loop.Run();
-    [mock_notification_center_ verify];
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
 }
 
@@ -488,12 +494,11 @@ TEST_F(MacNotificationServiceUNTest, CloseNotification) {
   EXPECT_EQ(1u, category_count_);
 
   base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
   NSString* identifier = @"i|profileId|notificationId";
-  [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
-    quit_closure.Run();
-  }] removeDeliveredNotificationsWithIdentifiers:@[ identifier ]];
+  OCMExpect([mock_notification_center_
+                removeDeliveredNotificationsWithIdentifiers:@[ identifier ]])
+      .andDo(invokeClosure(run_loop.QuitClosure()));
 
   auto profile_identifier =
       mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
@@ -502,7 +507,7 @@ TEST_F(MacNotificationServiceUNTest, CloseNotification) {
   service_remote_->CloseNotification(std::move(notification_identifier));
 
   run_loop.Run();
-  [mock_notification_center_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 
   // Expect closing the notification to remove the category as well.
   EXPECT_EQ(0u, category_count_);
@@ -542,22 +547,21 @@ TEST_F(MacNotificationServiceUNTest, CloseProfileNotifications) {
   EXPECT_EQ(1u, category_count_);
 
   base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
   NSArray* identifiers = @[
     @"i|profileId|notificationId2",
     @"i|profileId|notificationId",
   ];
-  [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
-    quit_closure.Run();
-  }] removeDeliveredNotificationsWithIdentifiers:identifiers];
+  OCMExpect([mock_notification_center_
+                removeDeliveredNotificationsWithIdentifiers:identifiers])
+      .andDo(invokeClosure(run_loop.QuitClosure()));
 
   auto profile_identifier =
       mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
   service_remote_->CloseNotificationsForProfile(std::move(profile_identifier));
 
   run_loop.Run();
-  [mock_notification_center_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   // Verify that we closed two notifications but one still holds a reverence
   // to the common category.
   EXPECT_EQ(1u, category_count_);
@@ -567,13 +571,11 @@ TEST_F(MacNotificationServiceUNTest, CloseAllNotifications) {
   DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true);
   EXPECT_EQ(1u, category_count_);
   base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-  [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
-    quit_closure.Run();
-  }] removeAllDeliveredNotifications];
+  OCMExpect([mock_notification_center_ removeAllDeliveredNotifications])
+      .andDo(invokeClosure(run_loop.QuitClosure()));
   service_remote_->CloseAllNotifications();
   run_loop.Run();
-  [mock_notification_center_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   EXPECT_EQ(0u, category_count_);
 }
 
@@ -583,8 +585,9 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForAlerts) {
       [OCMockObject partialMockForObject:base::apple::MainBundle()];
 
   // Mock the alert style to "alert" and verify we log the correct metrics.
-  [[[mainBundleMock stub]
-      andReturn:@{@"NSUserNotificationAlertStyle" : @"alert"}] infoDictionary];
+  OCMStub([mainBundleMock infoDictionary]).andReturn(@{
+    @"NSUserNotificationAlertStyle" : @"alert"
+  });
 
   for (auto result :
        {UNNotificationRequestPermissionResult::kRequestFailed,
@@ -605,8 +608,9 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForBanners) {
       [OCMockObject partialMockForObject:base::apple::MainBundle()];
 
   // Mock the alert style to "banner" and verify we log the correct metrics.
-  [[[mainBundleMock stub]
-      andReturn:@{@"NSUserNotificationAlertStyle" : @"banner"}] infoDictionary];
+  OCMStub([mainBundleMock infoDictionary]).andReturn(@{
+    @"NSUserNotificationAlertStyle" : @"banner"
+  });
 
   for (auto result :
        {UNNotificationRequestPermissionResult::kRequestFailed,
@@ -690,12 +694,12 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
     id response = [OCMockObject
         mockForClass:params.reply ? [UNTextInputNotificationResponse class]
                                   : [UNNotificationResponse class]];
-    [[[response stub] andReturn:params.action_identifier] actionIdentifier];
-    [[[response stub] andReturn:notification] notification];
+    OCMStub([response actionIdentifier]).andReturn(params.action_identifier);
+    OCMStub([response notification]).andReturn(notification);
 
     if (params.reply) {
-      [[[response stub] andReturn:base::SysUTF16ToNSString(*params.reply)]
-          userText];
+      OCMStub([response userText])
+          .andReturn(base::SysUTF16ToNSString(*params.reply));
     }
 
     [notification_center_delegate_
