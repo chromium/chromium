@@ -993,13 +993,13 @@ TEST_F(TaskEnvironmentTest, SetsDefaultRunTimeout) {
     }
     static auto& static_on_timeout_cb = run_timeout->on_timeout;
 #if defined(__clang__) && defined(_MSC_VER)
-    EXPECT_FATAL_FAILURE(
+    EXPECT_NONFATAL_FAILURE(
         static_on_timeout_cb.Run(FROM_HERE),
         "RunLoop::Run() timed out. Timeout set at "
         // We don't test the line number but it would be present.
         "TaskEnvironment@base\\test\\task_environment.cc:");
 #else
-    EXPECT_FATAL_FAILURE(
+    EXPECT_NONFATAL_FAILURE(
         static_on_timeout_cb.Run(FROM_HERE),
         "RunLoop::Run() timed out. Timeout set at "
         // We don't test the line number but it would be present.

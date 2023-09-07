@@ -41,7 +41,18 @@ void TimeoutCallbackWithGtestFailure(
     const Location& timeout_enabled_from_here,
     RepeatingCallback<std::string()> on_timeout_log,
     const Location& run_from_here) {
-  GTEST_FAIL_AT(run_from_here.file_name(), run_from_here.line_number())
+  // Add a non-fatal failure to GTest result and cause the test to fail.
+  // A non-fatal failure is preferred over a fatal one because LUCI Analysis
+  // will select the fatal failure over the non-fatal one as the primary error
+  // message for the test. The RunLoop::Run() function is generally called by
+  // the test framework and generates similar error messages and stack traces,
+  // making it difficult to cluster the failures. Making the failure non-fatal
+  // will propagate the ASSERT fatal failures in the test body as the primary
+  // error message.
+  // Also note that, the GTest fatal failure will not actually stop the test
+  // execution if not directly used in the test body. A non-fatal/fatal failure
+  // here makes no difference to the test running flow.
+  ADD_FAILURE_AT(run_from_here.file_name(), run_from_here.line_number())
       << TimeoutMessage(on_timeout_log, timeout_enabled_from_here);
 }
 

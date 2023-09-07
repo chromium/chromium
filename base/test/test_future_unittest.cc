@@ -99,7 +99,7 @@ TEST_F(TestFutureTest, WaitShouldReturnFalseIfTimeoutHappens) {
   static bool success;
   static TestFuture<AnyType> future;
 
-  EXPECT_FATAL_FAILURE({ success = future.Wait(); }, "timed out");
+  EXPECT_NONFATAL_FAILURE({ success = future.Wait(); }, "timed out");
 
   EXPECT_FALSE(success);
 }

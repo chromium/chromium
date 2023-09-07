@@ -35,10 +35,10 @@ IN_PROC_BROWSER_TEST_F(CrosapiPrefObserverLacrosBrowserTest, Basics) {
   EXPECT_TRUE(pref_observer1_future.Take().GetBool());
 
   // Browser tests use a `ScopedRunLoopTimeout` to automatically fail a test
-  // when a timeout happens, so we use EXPECT_FATAL_FAILURE to handle it.
-  // EXPECT_FATAL_FAILURE only works on static objects.
+  // when a timeout happens, so we use EXPECT_NONFATAL_FAILURE to handle it.
+  // EXPECT_NONFATAL_FAILURE only works on static objects.
   static bool success = false;
-  EXPECT_FATAL_FAILURE({ success = pref_observer2_future.Wait(); },
-                       "timed out");
+  EXPECT_NONFATAL_FAILURE({ success = pref_observer2_future.Wait(); },
+                          "timed out");
   EXPECT_FALSE(success);
 }

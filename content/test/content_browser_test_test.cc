@@ -389,17 +389,19 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RunTimeoutInstalled) {
 
   static auto& static_on_timeout_cb = run_timeout->on_timeout;
 #if defined(__clang__) && defined(_MSC_VER)
-  EXPECT_FATAL_FAILURE(static_on_timeout_cb.Run(FROM_HERE),
-                       "RunLoop::Run() timed out. Timeout set at "
-                       // We don't test the line number but it would be present.
-                       "ProxyRunTestOnMainThreadLoop@content\\public\\test\\"
-                       "browser_test_base.cc:");
+  EXPECT_NONFATAL_FAILURE(
+      static_on_timeout_cb.Run(FROM_HERE),
+      "RunLoop::Run() timed out. Timeout set at "
+      // We don't test the line number but it would be present.
+      "ProxyRunTestOnMainThreadLoop@content\\public\\test\\"
+      "browser_test_base.cc:");
 #else
-  EXPECT_FATAL_FAILURE(static_on_timeout_cb.Run(FROM_HERE),
-                       "RunLoop::Run() timed out. Timeout set at "
-                       // We don't test the line number but it would be present.
-                       "ProxyRunTestOnMainThreadLoop@content/public/test/"
-                       "browser_test_base.cc:");
+  EXPECT_NONFATAL_FAILURE(
+      static_on_timeout_cb.Run(FROM_HERE),
+      "RunLoop::Run() timed out. Timeout set at "
+      // We don't test the line number but it would be present.
+      "ProxyRunTestOnMainThreadLoop@content/public/test/"
+      "browser_test_base.cc:");
 #endif
 }
 

@@ -38,9 +38,9 @@ TEST(ScopedRunLoopTimeoutTest, TimesOut) {
   SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, MakeExpectedRunClosure(FROM_HERE), kArbitraryTimeout);
 
-  // EXPECT_FATAL_FAILURE() can only reference globals and statics.
+  // EXPECT_NONFATAL_FAILURE() can only reference globals and statics.
   static RunLoop& static_loop = run_loop;
-  EXPECT_FATAL_FAILURE(static_loop.Run(), "Run() timed out.");
+  EXPECT_NONFATAL_FAILURE(static_loop.Run(), "Run() timed out.");
 }
 
 TEST(ScopedRunLoopTimeoutTest, RunTasksUntilTimeout) {
@@ -56,9 +56,9 @@ TEST(ScopedRunLoopTimeoutTest, RunTasksUntilTimeout) {
   SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, MakeExpectedRunClosure(FROM_HERE), kArbitraryTimeout);
 
-  // EXPECT_FATAL_FAILURE() can only reference globals and statics.
+  // EXPECT_NONFATAL_FAILURE() can only reference globals and statics.
   static RunLoop& static_loop = run_loop;
-  EXPECT_FATAL_FAILURE(static_loop.Run(), "Run() timed out.");
+  EXPECT_NONFATAL_FAILURE(static_loop.Run(), "Run() timed out.");
 }
 
 TEST(ScopedRunLoopTimeoutTest, TimesOutWithInheritedTimeoutValue) {
@@ -87,9 +87,9 @@ TEST(ScopedRunLoopTimeoutTest, TimesOutWithInheritedTimeoutValue) {
 
   EXPECT_CALL(log_callback, Run).WillOnce(testing::Return(std::string()));
 
-  // EXPECT_FATAL_FAILURE() can only reference globals and statics.
+  // EXPECT_NONFATAL_FAILURE() can only reference globals and statics.
   static RunLoop& static_loop = run_loop;
-  EXPECT_FATAL_FAILURE(static_loop.Run(), "Run() timed out.");
+  EXPECT_NONFATAL_FAILURE(static_loop.Run(), "Run() timed out.");
 }
 
 TEST(ScopedRunLoopTimeoutTest, RunTasksUntilTimeoutWithInheritedTimeoutValue) {
@@ -111,9 +111,9 @@ TEST(ScopedRunLoopTimeoutTest, RunTasksUntilTimeoutWithInheritedTimeoutValue) {
 
   EXPECT_CALL(log_callback, Run).WillOnce(testing::Return(std::string()));
 
-  // EXPECT_FATAL_FAILURE() can only reference globals and statics.
+  // EXPECT_NONFATAL_FAILURE() can only reference globals and statics.
   static RunLoop& static_loop = run_loop;
-  EXPECT_FATAL_FAILURE(static_loop.Run(), "Run() timed out.");
+  EXPECT_NONFATAL_FAILURE(static_loop.Run(), "Run() timed out.");
 }
 
 namespace {
@@ -143,10 +143,10 @@ TEST(ScopedRunLoopTimeoutTest, OnTimeoutLog) {
       location, kArbitraryTimeout,
       BindRepeating([]() -> std::string { return kErrorMessage; }));
 
-  // EXPECT_FATAL_FAILURE() can only reference globals and statics.
+  // EXPECT_NONFATAL_FAILURE() can only reference globals and statics.
   static RunLoop& static_loop = run_loop;
-  EXPECT_FATAL_FAILURE(static_loop.Run(),
-                       GetExpectedTimeoutMessage(location, kErrorMessage));
+  EXPECT_NONFATAL_FAILURE(static_loop.Run(),
+                          GetExpectedTimeoutMessage(location, kErrorMessage));
 }
 
 TEST(ScopedRunLoopTimeoutTest, OnTimeoutLogWithNestedTimeouts) {
@@ -162,10 +162,10 @@ TEST(ScopedRunLoopTimeoutTest, OnTimeoutLogWithNestedTimeouts) {
       location, kArbitraryTimeout,
       BindRepeating([]() -> std::string { return kErrorMessage; }));
 
-  // EXPECT_FATAL_FAILURE() can only reference globals and statics.
+  // EXPECT_NONFATAL_FAILURE() can only reference globals and statics.
   static RunLoop& static_loop = run_loop;
-  EXPECT_FATAL_FAILURE(static_loop.Run(),
-                       GetExpectedTimeoutMessage(location, kErrorMessage));
+  EXPECT_NONFATAL_FAILURE(static_loop.Run(),
+                          GetExpectedTimeoutMessage(location, kErrorMessage));
 }
 
 }  // namespace base::test

@@ -149,9 +149,10 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest,
   // anymore.
   prefs->SetBoolean(ash::prefs::kPrimaryMouseButtonRight, true);
   // Browser tests use a `ScopedRunLoopTimeout` to automatically fail a test
-  // when a timeout happens, so we use EXPECT_FATAL_FAILURE to handle it.
+  // when a timeout happens, so we use EXPECT_NONFATAL_FAILURE to handle it.
   static bool success = false;
-  EXPECT_FATAL_FAILURE({ success = pref_changed_future.Wait(); }, "timed out");
+  EXPECT_NONFATAL_FAILURE({ success = pref_changed_future.Wait(); },
+                          "timed out");
   EXPECT_FALSE(success);
   EXPECT_EQ(base::Value(false),
             GetPrefValue(ash::prefs::kPrimaryMouseButtonRight));
