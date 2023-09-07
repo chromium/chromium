@@ -13,16 +13,18 @@
 #include "ash/wm/overview/overview_delegate.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
 
+class OverviewSession;
 class OverviewWallpaperController;
 
 // Manages a overview session which displays an overview of all windows and

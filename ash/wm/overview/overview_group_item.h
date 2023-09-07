@@ -7,14 +7,17 @@
 
 #include <memory>
 
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/aura/window.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
 class OverviewGroupContainerView;
-class OverviewItem;
 class OverviewSession;
 
 // This class implements `OverviewItemBase` and represents a window group in
@@ -22,7 +25,8 @@ class OverviewSession;
 // contains two individual `OverviewItem`s. It is responsible to place the group
 // item in the correct bounds calculated by `OverviewGrid`. It will also be the
 // target when handling overview group item drag events.
-class OverviewGroupItem : public OverviewItemBase {
+class OverviewGroupItem : public OverviewItemBase,
+                          public OverviewItem::WindowDestructionDelegate {
  public:
   using Windows = aura::Window::Windows;
 
@@ -81,6 +85,10 @@ class OverviewGroupItem : public OverviewItemBase {
   OverviewGridWindowFillMode GetWindowDimensionsType() const override;
   void UpdateWindowDimensionsType() override;
   gfx::Point GetMagnifierFocusPointInScreen() const override;
+
+  // OverviewItem::WindowDestructionDelegate:
+  void OnOverviewItemWindowDestroying(OverviewItem* overview_item,
+                                      bool reposition) override;
 
  protected:
   void CreateItemWidget() override;

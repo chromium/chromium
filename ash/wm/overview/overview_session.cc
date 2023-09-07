@@ -1655,4 +1655,5 @@ void OverviewSession::UpdateFrameThrottling() {
   Shell::Get()->frame_throttling_controller()->StartThrottling(
       windows_to_throttle);
 }
+
 }  // namespace ash

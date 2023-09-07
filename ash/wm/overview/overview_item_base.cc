@@ -38,11 +38,11 @@ std::unique_ptr<OverviewItemBase> OverviewItemBase::Create(
       return std::make_unique<OverviewGroupItem>(
           std::vector<aura::Window*>{snap_group->window1(),
                                      snap_group->window2()},
-          overview_session, overview_grid);
+          overview_session, /*delegate=*/overview_grid);
     }
   }
 
-  return std::make_unique<OverviewItem>(window, overview_session,
+  return std::make_unique<OverviewItem>(window, overview_session, overview_grid,
                                         overview_grid);
 }
 

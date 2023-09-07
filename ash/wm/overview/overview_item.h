@@ -42,9 +42,25 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
                                 public aura::WindowObserver,
                                 public WindowStateObserver {
  public:
+  // Defines an interface for the deletage to `OverviewItem`, which will be
+  // notified on the observed window represented by the overview item being
+  // destroyed.
+  class WindowDestructionDelegate {
+   public:
+    // Called when the observed window represented by the `overview_item` is
+    // being destroyed. `reposition` is true if the overview item needs to be
+    // repositioned and the grid bounds need to be updated.
+    virtual void OnOverviewItemWindowDestroying(OverviewItem* overview_item,
+                                                bool reposition) = 0;
+
+   protected:
+    virtual ~WindowDestructionDelegate() = default;
+  };
+
   OverviewItem(aura::Window* window,
                OverviewSession* overview_session,
-               OverviewGrid* overview_grid);
+               OverviewGrid* overview_grid,
+               WindowDestructionDelegate* delegate);
 
   OverviewItem(const OverviewItem&) = delete;
   OverviewItem& operator=(const OverviewItem&) = delete;
@@ -207,6 +223,8 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
 
   // The contained Window's wrapper.
   ScopedOverviewTransformWindow transform_window_;
+
+  const raw_ptr<WindowDestructionDelegate> window_destruction_delegate_;
 
   // Used to block events from reaching the item widget when the overview item
   // has been hidden.

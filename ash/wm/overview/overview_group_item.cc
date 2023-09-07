@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/window_util.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/widget/widget.h"
 
@@ -27,9 +28,11 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
 
   CHECK_EQ(windows.size(), 2u);
   for (auto* window : windows) {
-    // Create the overview items hosted by `this`.
+    // Create the overview items hosted by `this`, which will be the delegate to
+    // handle the window destroying if the overview representation for the
+    // window is hosted by `this`.
     overview_items_.push_back(std::make_unique<OverviewItem>(
-        window, overview_session_, overview_grid_));
+        window, overview_session_, overview_grid_, /*delegate=*/this));
   }
 }
 
@@ -185,7 +188,7 @@ void OverviewGroupItem::AnimateAndCloseItem(bool up) {}
 void OverviewGroupItem::StopWidgetAnimation() {}
 
 OverviewGridWindowFillMode OverviewGroupItem::GetWindowDimensionsType() const {
-  // This return value assumes that the snap group represented by this will
+  // This return value assumes that the snap group represented by `this` will
   // occupy the entire work space. So it's mostly likely that the window
   // dimension type will be normal.
   // TODO(michelefan): Consider the corner cases when the work space has
@@ -197,6 +200,15 @@ void OverviewGroupItem::UpdateWindowDimensionsType() {}
 
 gfx::Point OverviewGroupItem::GetMagnifierFocusPointInScreen() const {
   return overview_group_container_view_->GetMagnifierFocusPointInScreen();
+}
+
+void OverviewGroupItem::OnOverviewItemWindowDestroying(
+    OverviewItem* overview_item,
+    bool reposition) {
+  base::EraseIf(overview_items_, base::MatchesUniquePtr(overview_item));
+
+  // TODO(b/297960394): Remove `this` from the `overview_grid_` when
+  // `overview_items_` becomes empty.
 }
 
 void OverviewGroupItem::CreateItemWidget() {

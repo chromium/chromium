@@ -14,6 +14,7 @@
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
@@ -48,8 +49,9 @@ class SavedDeskSaveDeskButton;
 class SavedDeskLibraryView;
 class SplitViewController;
 
-// Manages and positions the overview UI on a per root window basis. Overview UI
-// elements include:
+// An instance of this class is created during the initialization of an overview
+// session which manages and positions the overview UI on a per root window
+// basis. Overview UI elements include:
 //   - Desks bar view which contains a desk preview and desk name per desk.
 //   - Splitview indicators for snapping windows in overview.
 //   - Overview items representing each application window associated with the
@@ -58,7 +60,8 @@ class SplitViewController;
 //   - etc.
 class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                                 public ScreenRotationAnimatorObserver,
-                                public WallpaperControllerObserver {
+                                public WallpaperControllerObserver,
+                                public OverviewItem::WindowDestructionDelegate {
  public:
   class MetricsTracker {
    public:
@@ -410,6 +413,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // WallpaperControllerObserver:
   void OnWallpaperChanging() override;
   void OnWallpaperChanged() override;
+
+  // OverviewItem::WindowDestructionDelegate:
+  void OnOverviewItemWindowDestroying(OverviewItem* overview_item,
+                                      bool reposition) override;
 
   // Returns the saved desk library view, or nullptr.
   SavedDeskLibraryView* GetSavedDeskLibraryView() const;

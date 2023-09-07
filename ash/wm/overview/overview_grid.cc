@@ -441,8 +441,10 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
     // OnImplicitAnimationsCompleted() of the observer of the
     // available-workspace-covering window's animation.
     auto* animator = window->layer()->GetAnimator();
-    if (animator->is_animating())
+    if (animator->is_animating()) {
       window->layer()->GetAnimator()->StopAnimating();
+    }
+
     window_list_.push_back(
         OverviewItemBase::Create(window, overview_session_, this));
 
@@ -2230,6 +2232,24 @@ void OverviewGrid::OnWallpaperChanging() {
 
 void OverviewGrid::OnWallpaperChanged() {
   grid_event_handler_ = std::make_unique<OverviewGridEventHandler>(this);
+}
+
+void OverviewGrid::OnOverviewItemWindowDestroying(OverviewItem* overview_item,
+                                                  bool reposition) {
+  // `this` will be the delegate to handle the window destroying if the
+  // underlying window represented by the corresponding overview item is a
+  // single window.
+  // Remove the item from `overview_session_` which will remove it from the
+  // grid. If `overview_session_` is not available then remove it from the grid
+  // directly.
+  // TODO(b/299391958): Investigate why `overview_session_` might be unavailable
+  // while grid is still alive.
+  if (overview_session_) {
+    overview_session_->RemoveItem(overview_item, /*item_destroying=*/true,
+                                  reposition);
+  } else {
+    RemoveItem(overview_item, /*item_destroying=*/true, reposition);
+  }
 }
 
 SavedDeskLibraryView* OverviewGrid::GetSavedDeskLibraryView() const {
