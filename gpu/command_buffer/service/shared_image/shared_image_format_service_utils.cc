@@ -253,6 +253,21 @@ bool HasVkFormat(viz::SharedImageFormat format) {
   return false;
 }
 
+VkFormat ToVkFormatExternalSampler(viz::SharedImageFormat format) {
+  CHECK(format.PrefersExternalSampler());
+  if (format == viz::MultiPlaneFormat::kYV12 ||
+      format == viz::MultiPlaneFormat::kI420) {
+    return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
+    return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
+  } else if (format == viz::MultiPlaneFormat::kP010) {
+    return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
+  }
+
+  NOTREACHED() << "Unsupported format: " << format.ToString();
+  return VK_FORMAT_UNDEFINED;
+}
+
 VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
 
@@ -262,9 +277,9 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
 
   // The following SharedImageFormat constants have PrefersExternalSampler()
   // false so they create a separate VkImage per plane and return the single
-  // planar equivalents.
-  // TODO(crbug.com/1366495): Add external sampler support if needed for
-  // platforms with Vulkan.
+  // planar equivalents. NOTE: Callsites that handle formats with external
+  // sampling need to call ToVkFormatExternalSampler() if external sampling is
+  // being used.
   CHECK(!format.PrefersExternalSampler());
   if (format == viz::MultiPlaneFormat::kYV12 ||
       format == viz::MultiPlaneFormat::kI420) {

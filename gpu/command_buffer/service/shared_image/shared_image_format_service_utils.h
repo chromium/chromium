@@ -79,6 +79,9 @@ GPU_GLES2_EXPORT GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
 #if BUILDFLAG(ENABLE_VULKAN)
 // Returns true if given `format` is supported by Vulkan.
 GPU_GLES2_EXPORT bool HasVkFormat(viz::SharedImageFormat format);
+// Returns vulkan format for given `format` with external sampler.
+GPU_GLES2_EXPORT VkFormat
+ToVkFormatExternalSampler(viz::SharedImageFormat format);
 // Returns vulkan format for given `format`.
 GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format,
                                      int plane_index = 0);
