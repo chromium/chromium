@@ -8,14 +8,14 @@ const DECLARATIONS_PER_RULE = 10;
 // Returns a style like this:
 //
 // div {
-//   not-a-property:is(.a0, &) {
+//   not-a-property:is(.a0) {
 //     --x0: a b c d e f g;
 //     --x1: a b c d e f g;
 //     ...
 //     --x9: a b c d e f g;
 //   }
 //
-//   not-a-property:is(.a1, &) {
+//   not-a-property:is(.a1) {
 //     --x0: a b c d e f g;
 //     --x1: a b c d e f g;
 //     ...
@@ -24,7 +24,7 @@ const DECLARATIONS_PER_RULE = 10;
 //
 //   ...
 //
-//   not-a-property:is(.a99, &) {
+//   not-a-property:is(.a99) {
 //     --x0: a b c d e f g;
 //     --x1: a b c d e f g;
 //     ...
@@ -35,15 +35,12 @@ const DECLARATIONS_PER_RULE = 10;
 // Each nested rule looks like a declaration, because it's an ident followed by
 // a colon. This case can be optimized by an implementation that recognizes
 // early (enough) that not-a-property is not a known property.
-//
-// The parent selector (&) is there to make the selector &-containing.
-// This prevents a & from being implicitly prepended.
 function makeStyle() {
   let rules = [];
 
   for (let i = 0; i < RULES; i++) {
     rules.push(`
-      not-a-property:is(.a${i}, &) {
+      not-a-property:is(.a${i}) {
         ${[...Array(DECLARATIONS_PER_RULE).keys()]
           .map(x => `--x${x}:a b c d e f g;`).join('\n')}
       }
