@@ -112,11 +112,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
     // AuctionConfig associated with the seller. For a component auction, this
     // is the nested AuctionConfig.
-    //
-    // TODO(mmenke):  Figure out how to make this survive the auction (perhaps
-    // pass ownership to the constructor).
-    raw_ptr<const blink::AuctionConfig, AcrossTasksDanglingUntriaged>
-        auction_config;
+    raw_ptr<const blink::AuctionConfig> auction_config;
 
     std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder;
     std::unique_ptr<HeaderDirectFromSellerSignals>

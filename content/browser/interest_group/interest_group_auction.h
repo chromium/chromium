@@ -506,7 +506,8 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Creates an InterestGroupAuctionReporter, after the auction has completed.
   // Takes ownership of the `auction_config`, so that the reporter can outlive
-  // other auction-related classes.
+  // other auction-related classes. This also means that various method on
+  // `this` that use the configuration should not be called past this point.
   std::unique_ptr<InterestGroupAuctionReporter> CreateReporter(
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
@@ -1118,7 +1119,7 @@ class CONTENT_EXPORT InterestGroupAuction
   const raw_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
 
   // Configuration of this auction.
-  raw_ptr<const blink::AuctionConfig, AcrossTasksDanglingUntriaged> config_;
+  raw_ptr<const blink::AuctionConfig> config_;
 
   // True once all promises in this and component auction's configuration have
   // been resolved. (Note that if `this` is a component auction, it only looks

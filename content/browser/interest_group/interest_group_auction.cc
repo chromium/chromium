@@ -2441,6 +2441,10 @@ InterestGroupAuction::CreateReporter(
   // Avoid dangling pointers for things transferred to the reporter.
   winner->bid->interest_group = nullptr;
   winner->bid->bid_ad = nullptr;
+  config_ = nullptr;
+  for (const auto& kv : component_auctions_) {
+    kv.second->config_ = nullptr;
+  }
 
   return result;
 }

@@ -544,6 +544,10 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
 
   auto errors = auction_.TakeErrors();
 
+  // Need this before `CreateReporter()` since the reporter takes over
+  // AuctonConfig.
+  auto requested_ad_size = auction_.RequestedAdSize();
+
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(
           browser_context_, private_aggregation_manager_, url_loader_factory_,
@@ -554,7 +558,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   state_ = State::kSucceeded;
   std::move(callback_).Run(
       this, /*manually_aborted=*/false, std::move(winning_group_key),
-      auction_.RequestedAdSize(), auction_.top_bid()->bid->ad_descriptor,
+      std::move(requested_ad_size), auction_.top_bid()->bid->ad_descriptor,
       auction_.top_bid()->bid->ad_component_descriptors, std::move(errors),
       std::move(reporter));
 }
@@ -583,6 +587,9 @@ void AuctionRunner::OnServerResponseAuctionComplete(base::TimeTicks start_time,
   UpdateInterestGroupsPostAuction();
 
   auto errors = auction_.TakeErrors();
+  // Need this before `CreateReporter()` since the reporter takes over
+  // AuctonConfig.
+  auto requested_ad_size = auction_.RequestedAdSize();
 
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(
@@ -597,7 +604,7 @@ void AuctionRunner::OnServerResponseAuctionComplete(base::TimeTicks start_time,
   state_ = State::kSucceeded;
   std::move(callback_).Run(
       this, /*manually_aborted=*/false, std::move(winning_group_key),
-      auction_.RequestedAdSize(), auction_.top_bid()->bid->ad_descriptor,
+      std::move(requested_ad_size), auction_.top_bid()->bid->ad_descriptor,
       auction_.top_bid()->bid->ad_component_descriptors, std::move(errors),
       std::move(reporter));
 }
