@@ -3130,7 +3130,6 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
       !disable_phrase_ && mode_ == NGLineBreakerMode::kContent) {
     // If the phrase line break overflowed, retry with the normal line break.
     disable_phrase_ = true;
-    break_iterator_.SetBreakType(LineBreakType::kNormal);
     RetryAfterOverflow(line_info, item_results);
     return;
   }
@@ -3139,7 +3138,6 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
     // Overflow occurred but `overflow-wrap` is set. Change the break type and
     // retry the line breaking.
     override_break_anywhere_ = true;
-    break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
     RetryAfterOverflow(line_info, item_results);
     return;
   }
@@ -3183,8 +3181,15 @@ void NGLineBreaker::RetryAfterOverflow(NGLineInfo* line_info,
   disable_score_line_break_ = true;
 
   state_ = LineBreakState::kContinue;
+
+  // Rewind all items.
+  //
+  // Also `SetCurrentStyle` forcibly, because the retry uses different
+  // conditions such as `override_break_anywhere_`.
+  //
   // TODO(kojii): Not all items need to rewind, but such case is rare and
   // rewinding all items simplifes the code.
+  SetCurrentStyleForce(ComputeCurrentStyle(0, line_info));
   if (!item_results->empty()) {
     Rewind(0, line_info);
   }
@@ -3432,7 +3437,9 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
     DCHECK_EQ(auto_wrap_, ShouldAutoWrap(style));
     if (auto_wrap_) {
       DCHECK_EQ(break_iterator_.IsSoftHyphenEnabled(),
-                style.GetHyphens() != Hyphens::kNone);
+                style.GetHyphens() != Hyphens::kNone &&
+                    (disable_phrase_ ||
+                     style.WordBreak() != EWordBreak::kAutoPhrase));
       DCHECK_EQ(break_iterator_.Locale(), style.GetFontDescription().Locale());
     }
     ShapeResultSpacing<String> spacing(spacing_.Text(), is_svg_text_);
@@ -3442,6 +3449,10 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
 #endif  //  EXPENSIVE_DCHECKS_ARE_ON()
     return;
   }
+  SetCurrentStyleForce(style);
+}
+
+void NGLineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
   current_style_ = &style;
 
   const FontDescription& font_description = style.GetFontDescription();
@@ -3451,6 +3462,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
   if (auto_wrap_) {
     DCHECK(!is_text_combine_);
     break_iterator_.SetLocale(font_description.Locale());
+    Hyphens hyphens = style.GetHyphens();
     const LineBreak line_break = style.GetLineBreak();
     if (UNLIKELY(line_break == LineBreak::kAnywhere)) {
       break_iterator_.SetStrictness(LineBreakStrictness::kDefault);
@@ -3482,6 +3494,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
             line_break_type = LineBreakType::kNormal;
           } else {
             line_break_type = LineBreakType::kPhrase;
+            hyphens = Hyphens::kNone;
           }
           break_anywhere_if_overflow_ = false;
           break;
@@ -3501,8 +3514,13 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
       break_iterator_.SetBreakType(line_break_type);
     }
 
-    break_iterator_.EnableSoftHyphen(style.GetHyphens() != Hyphens::kNone);
-    hyphenation_ = style.GetHyphenationWithLimits();
+    if (UNLIKELY(hyphens == Hyphens::kNone)) {
+      break_iterator_.EnableSoftHyphen(false);
+      hyphenation_ = nullptr;
+    } else {
+      break_iterator_.EnableSoftHyphen(true);
+      hyphenation_ = style.GetHyphenationWithLimits();
+    }
 
     if (style.ShouldBreakSpaces()) {
       break_iterator_.SetBreakSpace(BreakSpaceType::kAfterEverySpace);

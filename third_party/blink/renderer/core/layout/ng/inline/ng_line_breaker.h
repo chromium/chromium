@@ -233,6 +233,7 @@ class CORE_EXPORT NGLineBreaker {
   const ComputedStyle& ComputeCurrentStyle(unsigned item_result_index,
                                            NGLineInfo*) const;
   void SetCurrentStyle(const ComputedStyle&);
+  void SetCurrentStyleForce(const ComputedStyle&);
 
   bool IsPreviousItemOfType(NGInlineItem::NGInlineItemType);
   void MoveToNextOf(const NGInlineItem&);
