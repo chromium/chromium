@@ -642,9 +642,10 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
 }
 
 // mojom::AutofillAgent:
-void AutofillAgent::FillOrPreviewForm(
-    const FormData& form,
-    mojom::AutofillActionPersistence action_persistence) {
+void AutofillAgent::ApplyAutofillAction(
+    mojom::AutofillActionType action_type,
+    mojom::AutofillActionPersistence action_persistence,
+    const FormData& form) {
   // If `element_` is null or not focused, Autofill was either triggered from
   // another frame or the `element_` has been detached from the DOM or the focus
   // was moved otherwise.
@@ -677,16 +678,14 @@ void AutofillAgent::FillOrPreviewForm(
   if (action_persistence == mojom::AutofillActionPersistence::kPreview) {
     query_node_autofill_state_ = last_queried_element_.GetAutofillState();
     previewed_elements_ = form_util::ApplyAutofillAction(
-        form, last_queried_element_, mojom::AutofillActionType::kFill,
-        action_persistence);
+        form, last_queried_element_, action_type, action_persistence);
   } else {
     was_last_action_fill_ = true;
 
     query_node_autofill_state_ = last_queried_element_.GetAutofillState();
     bool filled_some_fields =
         !form_util::ApplyAutofillAction(form, last_queried_element_,
-                                        mojom::AutofillActionType::kFill,
-                                        action_persistence)
+                                        action_type, action_persistence)
              .empty();
 
     if (!last_queried_element_.Form().IsNull()) {
@@ -702,46 +701,12 @@ void AutofillAgent::FillOrPreviewForm(
       autofill_driver->DidFillAutofillFormData(form,
                                                AutofillTickClock::NowTicks());
     }
-
-    TriggerRefillIfNeeded(form);
+    if (action_type == mojom::AutofillActionType::kFill) {
+      TriggerRefillIfNeeded(form);
+    }
     SendPotentiallySubmittedFormToBrowser();
   }
-  last_action_type_ = mojom::AutofillActionType::kFill;
-}
-
-void AutofillAgent::UndoAutofill(
-    const FormData& form,
-    mojom::AutofillActionPersistence action_persistence) {
-  // If `element_` is null or not focused, Undo was either triggered from
-  // another frame or the `element_` has been detached from the DOM or the focus
-  // was moved otherwise. If `element_` is from a different form than `form`,
-  // then Undo was triggered from a different form in the same frame, and either
-  // this is a subframe and both forms should be filled, or focus has changed
-  // right after the user accepted the suggestions.
-  //
-  // In these cases, we set `element_` to some form field as if Undo had been
-  // triggered from that field. This is necessary because currently
-  // AutofillAgent relies on `element_` in many places.
-  if (!form.fields.empty() &&
-      (last_queried_element_.IsNull() || !last_queried_element_.Focused() ||
-       form_util::GetFormRendererId(last_queried_element_.Form()) !=
-           form.unique_renderer_id)) {
-    if (unsafe_render_frame() == nullptr) {
-      return;
-    }
-    WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
-    last_queried_element_ = form_util::FindFormControlElementByUniqueRendererId(
-        document, form.fields.front().unique_renderer_id);
-  }
-  if (last_queried_element_.IsNull()) {
-    return;
-  }
-  if (action_persistence == mojom::AutofillActionPersistence::kFill) {
-    form_util::ApplyAutofillAction(form, last_queried_element_,
-                                   mojom::AutofillActionType::kUndo,
-                                   action_persistence);
-  }
-  last_action_type_ = mojom::AutofillActionType::kUndo;
+  last_action_type_ = action_type;
 }
 
 void AutofillAgent::FieldTypePredictionsAvailable(

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
 
@@ -94,12 +95,16 @@ class TestAutofillDriverTemplate : public T {
 
   // The return value contains the members (field, type) of `field_type_map` for
   // which `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
-  std::vector<FieldGlobalId> FillOrPreviewForm(
+  std::vector<FieldGlobalId> ApplyAutofillAction(
+      mojom::AutofillActionType action_type,
       mojom::AutofillActionPersistence action_persistence,
       const FormData& form_data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override {
+    if (action_type == mojom::AutofillActionType::kUndo) {
+      return {};
+    }
     std::vector<FieldGlobalId> result;
     for (const auto& [id, type] : field_type_map) {
       if (!field_type_map_filter_ ||
@@ -109,12 +114,6 @@ class TestAutofillDriverTemplate : public T {
     }
     return result;
   }
-
-  void UndoAutofill(mojom::AutofillActionPersistence action_persistence,
-                    const FormData& form_data,
-                    const url::Origin& triggered_origin,
-                    const base::flat_map<FieldGlobalId, ServerFieldType>&
-                        field_type_map) override {}
 
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.

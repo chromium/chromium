@@ -1403,8 +1403,9 @@ void BrowserAutofillManager::UndoAutofill(
         operation.GetAutofillValue(field.global_id());
   }
 
-  driver().UndoAutofill(action_persistence, form, operation.GetOrigin(),
-                        operation.GetFieldTypeMap());
+  driver().ApplyAutofillAction(mojom::AutofillActionType::kUndo,
+                               action_persistence, form, operation.GetOrigin(),
+                               operation.GetFieldTypeMap());
   // Do not clear history on previews as it might be used for future previews or
   // for the filling.
   if (action_persistence == mojom::AutofillActionPersistence::kFill) {
@@ -2571,8 +2572,9 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
         return std::make_pair(field->global_id(),
                               field->Type().GetStorableType());
       });
-  std::vector<FieldGlobalId> safe_fields = driver().FillOrPreviewForm(
-      action_persistence, result, field.origin, field_types);
+  std::vector<FieldGlobalId> safe_fields = driver().ApplyAutofillAction(
+      mojom::AutofillActionType::kFill, action_persistence, result,
+      field.origin, field_types);
   client().DidFillOrPreviewForm(action_persistence,
                                 trigger_details.trigger_source, is_refill);
 

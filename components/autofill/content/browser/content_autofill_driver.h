@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -193,17 +194,13 @@ class ContentAutofillDriver : public AutofillDriver,
   //
   // These events are private to avoid accidental use in the browser.
   // They can be accessed explicitly through browser_events().
-  std::vector<FieldGlobalId> FillOrPreviewForm(
+  std::vector<FieldGlobalId> ApplyAutofillAction(
+      mojom::AutofillActionType action_type,
       mojom::AutofillActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
-  void UndoAutofill(mojom::AutofillActionPersistence action_persistence,
-                    const FormData& data,
-                    const url::Origin& triggered_origin,
-                    const base::flat_map<FieldGlobalId, ServerFieldType>&
-                        field_type_map) override;
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<FormStructure*>& forms) override;
   void RendererShouldAcceptDataListSuggestion(

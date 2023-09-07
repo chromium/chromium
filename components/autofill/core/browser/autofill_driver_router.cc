@@ -407,49 +407,26 @@ void AutofillDriverRouter::OnContextMenuShownInField(
 // The reason is that browser forms may be outdated and hence refer to frames
 // that do not exist anymore.
 
-std::vector<FieldGlobalId> AutofillDriverRouter::FillOrPreviewForm(
+std::vector<FieldGlobalId> AutofillDriverRouter::ApplyAutofillAction(
     AutofillDriver* source,
+    mojom::AutofillActionType action_type,
     mojom::AutofillActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
     void (*callback)(AutofillDriver* target,
+                     mojom::AutofillActionType action_type,
                      mojom::AutofillActionPersistence action_persistence,
                      const FormData& form)) {
   internal::FormForest::RendererForms renderer_forms =
       form_forest_.GetRendererFormsOfBrowserForm(
           data, {&triggered_origin, &field_type_map});
   for (const FormData& renderer_form : renderer_forms.renderer_forms) {
-    // Sending empty fill data to the renderer is semantically a no-op but
-    // causes some further mojo calls.
-    if (base::ranges::all_of(renderer_form.fields, &std::u16string::empty,
-                             &FormFieldData::value)) {
-      continue;
-    }
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
-      callback(target, action_persistence, renderer_form);
+      callback(target, action_type, action_persistence, renderer_form);
     }
   }
   return renderer_forms.safe_fields;
-}
-
-void AutofillDriverRouter::UndoAutofill(
-    AutofillDriver* source,
-    mojom::AutofillActionPersistence action_persistence,
-    const FormData& data,
-    const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
-    void (*callback)(AutofillDriver* target,
-                     const FormData& form,
-                     mojom::AutofillActionPersistence action_persistence)) {
-  internal::FormForest::RendererForms renderer_forms =
-      form_forest_.GetRendererFormsOfBrowserForm(
-          data, {&triggered_origin, &field_type_map});
-  for (const FormData& renderer_form : renderer_forms.renderer_forms) {
-    if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
-      callback(target, renderer_form, action_persistence);
-    }
-  }
 }
 
 void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(

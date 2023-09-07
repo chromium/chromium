@@ -16,6 +16,7 @@
 #include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -240,8 +241,9 @@ void SimulateFillForm(const FormData& form_data,
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->FillOrPreviewForm(form_data,
-                                    mojom::AutofillActionPersistence::kFill);
+  autofill_agent->ApplyAutofillAction(mojom::AutofillActionType::kFill,
+                                      mojom::AutofillActionPersistence::kFill,
+                                      form_data);
 }
 
 // Simulates receiving a message from the browser to fill a form.
@@ -304,8 +306,9 @@ void SimulateFillFormWithNonFillableFields(
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->FillOrPreviewForm(data,
-                                    mojom::AutofillActionPersistence::kFill);
+  autofill_agent->ApplyAutofillAction(mojom::AutofillActionType::kFill,
+                                      mojom::AutofillActionPersistence::kFill,
+                                      data);
 }
 
 }  // end namespace

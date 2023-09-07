@@ -119,33 +119,7 @@ class AutofillDriver {
   // Returns true iff the renderer is available for communication.
   virtual bool RendererIsAvailable() = 0;
 
-  // Forwards |data| to the renderer which shall preview or fill the values of
-  // |data|'s fields into the relevant DOM elements.
-  //
-  // |action| is the action the renderer should perform with the |data|.
-  //
-  // |triggered_origin| is the origin of the field on which Autofill was
-  // triggered, and |field_type_map| contains the type predictions of the fields
-  // that may be previewed or filled; these two parameters can be taken into
-  // account to decide which fields to preview or fill across frames. See
-  // FormForest::GetRendererFormsOfBrowserForm() for the details on Autofill's
-  // security policy.
-  //
-  // Returns the ids of those fields that are safe to fill according to the
-  // security policy for cross-frame previewing and filling. This is a subset of
-  // the ids of the fields in |data|. It is not necessarily a subset of the
-  // fields in |field_type_map|.
-  //
-  // This method is a no-op if the renderer is not currently available.
-  virtual std::vector<FieldGlobalId> FillOrPreviewForm(
-      mojom::AutofillActionPersistence action_persistence,
-      const FormData& data,
-      const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
-
-  // Forwards `data` to the renderer which shall fill the values of `data`'s
-  // fields, whose last filling operation was undone, into the relevant DOM
-  // elements.
+  // Forwards `form` to the renderer.
   //
   // `field_type_map` contains the type predictions of the fields that may be
   // modified; this parameter can be taken into account to decide which fields
@@ -155,12 +129,13 @@ class AutofillDriver {
   // consistency.
   //
   // `triggered_origin` is the origin of the field that triggered the filling
-  // operation currently being undone.
+  // operation currently being filled or undone.
   //
   // This method is a no-op if the renderer is not currently available.
-  virtual void UndoAutofill(
+  virtual std::vector<FieldGlobalId> ApplyAutofillAction(
+      mojom::AutofillActionType action_type,
       mojom::AutofillActionPersistence action_persistence,
-      const FormData& data,
+      const FormData& form,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
 

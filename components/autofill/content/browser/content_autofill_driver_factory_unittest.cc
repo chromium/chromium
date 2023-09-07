@@ -76,14 +76,10 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
-              FillOrPreviewForm,
-              (const FormData& form,
-               mojom::AutofillActionPersistence action_persistence),
-              (override));
-  MOCK_METHOD(void,
-              UndoAutofill,
-              (const FormData& form,
-               mojom::AutofillActionPersistence action_persistence),
+              ApplyAutofillAction,
+              (mojom::AutofillActionType action_type,
+               mojom::AutofillActionPersistence action_persistence,
+               const FormData& form),
               (override));
   MOCK_METHOD(void,
               FieldTypePredictionsAvailable,

@@ -20,16 +20,12 @@ interface AutofillAgent {
   // while another TriggerFormExtractionWithResponse() was ongoing.
   TriggerFormExtractionWithResponse() => (bool success);
 
-  // Instructs the renderer to fill or preview the active form with the given
-  // form data.
-  FillOrPreviewForm(FormData form,
-                    AutofillActionPersistence action);
-
-  // Fill the active form with some of `forms` data. This operation is ran
-  // with the specific intention to "undo" the last autofill operation that
-  // affected the field on which Undo was triggered. `renderer_action` denotes
-  // whether the renderer should actually fill or preview those changes.
-  UndoAutofill(FormData form, AutofillActionPersistence renderer_action);
+  // Fills or Previews the active form with some of `forms` data.
+  // `action_type` denotes if the action is a Fill or Undo.
+  // `action_persistence` denotes if the operation is a Fill or Preview.
+  ApplyAutofillAction(AutofillActionType action_type,
+                      AutofillActionPersistence action_persistence,
+                      FormData form);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);

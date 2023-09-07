@@ -14,6 +14,7 @@
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/form_event_logger_weblayer_android.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -246,7 +247,8 @@ void AndroidAutofillManager::FillOrPreviewForm(
     FieldTypeGroup field_type_group,
     const url::Origin& triggered_origin) {
   DCHECK_EQ(action_persistence, mojom::AutofillActionPersistence::kFill);
-  driver().FillOrPreviewForm(action_persistence, form, triggered_origin, {});
+  driver().ApplyAutofillAction(mojom::AutofillActionType::kFill,
+                               action_persistence, form, triggered_origin, {});
   // We do not call OnAutofillProfileOrCreditCardFormFilled() because WebView
   // doesn't have AutofillProfile or CreditCard.
   if (auto* logger = GetEventFormLogger(field_type_group)) {

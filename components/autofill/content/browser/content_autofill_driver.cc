@@ -217,38 +217,24 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 
-std::vector<FieldGlobalId> ContentAutofillDriver::FillOrPreviewForm(
+std::vector<FieldGlobalId> ContentAutofillDriver::ApplyAutofillAction(
+    mojom::AutofillActionType action_type,
     mojom::AutofillActionPersistence action_persistence,
-    const FormData& data,
+    const FormData& form,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-  return router().FillOrPreviewForm(
-      this, action_persistence, data, triggered_origin, field_type_map,
+  return router().ApplyAutofillAction(
+      this, action_type, action_persistence, form, triggered_origin,
+      field_type_map,
       [](autofill::AutofillDriver* target,
+         mojom::AutofillActionType action_type,
          mojom::AutofillActionPersistence action_persistence,
-         const FormData& data) {
+         const FormData& form) {
         if (!cast(target)->RendererIsAvailable()) {
           return;
         }
-        cast(target)->GetAutofillAgent()->FillOrPreviewForm(data,
-                                                            action_persistence);
-      });
-}
-
-void ContentAutofillDriver::UndoAutofill(
-    mojom::AutofillActionPersistence action_persistence,
-    const FormData& data,
-    const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-  return router().UndoAutofill(
-      this, action_persistence, data, triggered_origin, field_type_map,
-      [](autofill::AutofillDriver* target, const FormData& data,
-         mojom::AutofillActionPersistence action_persistence) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
-        cast(target)->GetAutofillAgent()->UndoAutofill(data,
-                                                       action_persistence);
+        cast(target)->GetAutofillAgent()->ApplyAutofillAction(
+            action_type, action_persistence, form);
       });
 }
 
