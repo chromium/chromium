@@ -1,5 +1,9 @@
+# The Clear-Site-Data head is co-owned by the security and privacy teams.
+# The privacy team is a better contact for the underlying data deletion
+# infrastructure. The security team is a better contact for the web platform
+# aspects of the header, standardization, etc.
+
 monorail {
   component: "Blink>SecurityFeature"
 }
-team_email: "security-dev@chromium.org"
-
+team_email: "chrome-security-owp-team@google.com, chrome-privacy-core@google.com"
