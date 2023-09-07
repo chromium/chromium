@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
@@ -255,11 +254,8 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
   parameters[kTabInactivityThresholdParameterName] =
       kTabInactivityThresholdOneWeekParam;
   feature_list.InitWithFeaturesAndParameters(
-      {
-          /* Enabled features */
-          {kTabInactivityThreshold, {parameters}},
-          {kEnablePinnedTabs, {}},
-      },
+      {/* Enabled features */
+       {kTabInactivityThreshold, {parameters}}},
       {/* Disabled features */});
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
@@ -348,9 +344,7 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
 // tabs, un-ordered, pinned tabs).
 TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {/* Enabled features */ kEnablePinnedTabs},
-      {/* Disabled features */ kTabInactivityThreshold});
+  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();

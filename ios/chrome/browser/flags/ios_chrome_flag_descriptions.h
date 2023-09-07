@@ -376,10 +376,6 @@ extern const char kEnableFeedAblationDescription[];
 extern const char kEnablePreferencesAccountStorageName[];
 extern const char kEnablePreferencesAccountStorageDescription[];
 
-// Title and description for the flag to enable pinned tabs.
-extern const char kEnablePinnedTabsName[];
-extern const char kEnablePinnedTabsDescription[];
-
 // Title and description for the flag to enable the account storage.
 extern const char kEnableReadingListAccountStorageName[];
 extern const char kEnableReadingListAccountStorageDescription[];

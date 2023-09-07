@@ -3314,11 +3314,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-pinned-tabs",
-    "owners": [ "ewannpv", "pakzhygitov", "bling-flags@google.com" ],
-    "expiry_milestone": 126
-  },
-  {
     "name": "enable-pip-double-tap-to-resize",
     "owners": [ "bpnguyen", "jorgegil" ],
     "expiry_milestone": 120

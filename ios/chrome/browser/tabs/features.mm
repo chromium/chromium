@@ -8,13 +8,6 @@
 #import "base/metrics/field_trial_params.h"
 #import "ui/base/device_form_factor.h"
 
-BASE_FEATURE(kEnablePinnedTabs,
-             "EnablePinnedTabs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsPinnedTabsEnabled() {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kEnablePinnedTabs);
+  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }

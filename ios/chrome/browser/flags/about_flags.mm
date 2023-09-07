@@ -88,7 +88,6 @@
 #import "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/text_selection/text_selection_util.h"
@@ -1321,9 +1320,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-grid-new-transitions", flag_descriptions::kTabGridNewTransitionsName,
      flag_descriptions::kTabGridNewTransitionsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridNewTransitions)},
-    {"enable-pinned-tabs", flag_descriptions::kEnablePinnedTabsName,
-     flag_descriptions::kEnablePinnedTabsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnablePinnedTabs)},
     {"credential-provider-extension-promo",
      flag_descriptions::kCredentialProviderExtensionPromoName,
      flag_descriptions::kCredentialProviderExtensionPromoDescription,
