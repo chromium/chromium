@@ -30,8 +30,8 @@ public class Tab {
     private TabCompositorView mCompositorView;
     protected WebContents mWebContents;
 
-    public WebContents createWebContents() {
-        return TabJni.get().createWebContents();
+    public WebContents createWebContents(boolean is_off_the_record) {
+        return TabJni.get().createWebContents(is_off_the_record);
     }
 
     public void setWebContentsDelegate(
@@ -39,7 +39,7 @@ public class Tab {
         TabJni.get().setWebContentsDelegate(webContents, delegate);
     }
 
-    public Tab(@NonNull Context context) {
+    public Tab(@NonNull Context context, boolean is_off_the_record) {
         mWindowAndroid = new ActivityWindowAndroid(context, false,
                 IntentRequestTracker.createFromActivity(ContextUtils.activityFromContext(context)));
 
@@ -47,7 +47,7 @@ public class Tab {
         mCompositorView.onNativeLibraryLoaded(mWindowAndroid);
         mWindowAndroid.setAnimationPlaceholderView(mCompositorView);
 
-        mWebContents = createWebContents();
+        mWebContents = createWebContents(is_off_the_record);
 
         mContentView =
                 ContentView.createContentView(context, null /* eventOffsetHandler */, mWebContents);
@@ -95,7 +95,7 @@ public class Tab {
 
     @NativeMethods
     public interface Natives {
-        WebContents createWebContents();
+        WebContents createWebContents(boolean is_off_the_record);
         void setWebContentsDelegate(WebContents webContents, WebContentsDelegateAndroid delegate);
     }
 }

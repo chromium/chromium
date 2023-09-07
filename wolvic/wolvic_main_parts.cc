@@ -24,7 +24,8 @@ int WolvicMainParts::PreEarlyInitialization() {
 }
 
 int WolvicMainParts::PreMainMessageLoopRun() {
-  browser_context_ = std::make_unique<WolvicBrowserContext>();
+  set_browser_context(new WolvicBrowserContext(false));
+  set_off_the_record_browser_context(new WolvicBrowserContext(true));
   ShellDevToolsManagerDelegate::StartHttpHandler(browser_context_.get());
   return 0;
 }
@@ -35,6 +36,11 @@ void WolvicMainParts::PostMainMessageLoopRun() {
 
 void WolvicMainParts::set_browser_context(WolvicBrowserContext* context) {
   browser_context_.reset(context);
+}
+
+void WolvicMainParts::set_off_the_record_browser_context(
+    WolvicBrowserContext* context) {
+  off_the_record_browser_context_.reset(context);
 }
 
 }  // namespace content

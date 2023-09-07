@@ -18,14 +18,17 @@ using web_contents_delegate_android::WebContentsDelegateAndroid;
 
 namespace content {
 
-ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(JNIEnv* env) {
+ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
+    JNIEnv* env,
+    jboolean is_off_the_record) {
   // TODO(wolvic-chromium#6): Consider handling browser profiles.
   auto* browser_client = content::WolvicContentBrowserClient::Get();
-  CHECK(browser_client->GetBrowserContext() != nullptr);
+  CHECK(browser_client->browser_context() != nullptr);
 
   std::unique_ptr<WebContents> web_contents =
       WebContents::Create(content::WebContents::CreateParams(
-          browser_client->GetBrowserContext()));
+          is_off_the_record ? browser_client->off_the_record_browser_context()
+                            : browser_client->browser_context()));
 
   return web_contents.release()->GetJavaWebContents();
 }

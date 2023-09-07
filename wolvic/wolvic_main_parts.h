@@ -26,11 +26,16 @@ class WolvicMainParts : public BrowserMainParts {
   void PostMainMessageLoopRun() override;
 
   WolvicBrowserContext* browser_context() { return browser_context_.get(); }
+  WolvicBrowserContext* off_the_record_browser_context() {
+    return off_the_record_browser_context_.get();
+  }
 
  private:
-  void set_browser_context(WolvicBrowserContext* context);
+  void set_browser_context(WolvicBrowserContext*);
+  void set_off_the_record_browser_context(WolvicBrowserContext*);
 
   std::unique_ptr<WolvicBrowserContext> browser_context_;
+  std::unique_ptr<WolvicBrowserContext> off_the_record_browser_context_;
 };
 
 }  // namespace content

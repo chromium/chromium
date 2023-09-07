@@ -42,8 +42,9 @@
 
 namespace content {
 
-WolvicBrowserContext::WolvicBrowserContext()
-    : resource_context_(std::make_unique<ResourceContext>()) {
+WolvicBrowserContext::WolvicBrowserContext(bool off_the_record)
+    : off_the_record_(off_the_record),
+      resource_context_(std::make_unique<ResourceContext>()) {
   LOG(ERROR) << "WolvicLifecycle WolvicBrowserContext()";
   InitWhileIOAllowed();
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
@@ -82,7 +83,7 @@ void WolvicBrowserContext::InitWhileIOAllowed() {
 }
 
 void WolvicBrowserContext::FinishInitWhileIOAllowed() {
-  key_ = std::make_unique<SimpleFactoryKey>(path_, /*off_the_record=*/false);
+  key_ = std::make_unique<SimpleFactoryKey>(path_, off_the_record_);
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
 }
 
@@ -96,7 +97,7 @@ base::FilePath WolvicBrowserContext::GetPath() {
 }
 
 bool WolvicBrowserContext::IsOffTheRecord() {
-  return false;
+  return off_the_record_;
 }
 
 DownloadManagerDelegate* WolvicBrowserContext::GetDownloadManagerDelegate() {

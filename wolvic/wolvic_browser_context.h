@@ -22,7 +22,7 @@ class WolvicBrowserContext : public BrowserContext {
  public:
   // If |delay_services_creation| is true, the owner is responsible for calling
   // CreateBrowserContextServices() for this BrowserContext.
-  WolvicBrowserContext();
+  WolvicBrowserContext(bool off_the_record);
 
   WolvicBrowserContext(const WolvicBrowserContext&) = delete;
   WolvicBrowserContext& operator=(const WolvicBrowserContext&) = delete;
@@ -71,6 +71,7 @@ class WolvicBrowserContext : public BrowserContext {
   void InitWhileIOAllowed();
   void FinishInitWhileIOAllowed();
 
+  const bool off_the_record_;
   std::unique_ptr<ResourceContext> resource_context_;
   base::FilePath path_;
   std::unique_ptr<SimpleFactoryKey> key_;

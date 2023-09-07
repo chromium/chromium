@@ -39,8 +39,13 @@ WolvicContentBrowserClient* WolvicContentBrowserClient::Get() {
   return g_instance;
 }
 
-content::BrowserContext* WolvicContentBrowserClient::GetBrowserContext() {
+content::BrowserContext* WolvicContentBrowserClient::browser_context() {
   return browser_main_parts_->browser_context();
+}
+
+content::BrowserContext*
+WolvicContentBrowserClient::off_the_record_browser_context() {
+  return browser_main_parts_->off_the_record_browser_context();
 }
 
 std::unique_ptr<BrowserMainParts>
@@ -54,7 +59,7 @@ WolvicContentBrowserClient::CreateBrowserMainParts(
 std::unique_ptr<content::DevToolsManagerDelegate>
 WolvicContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<content::ShellDevToolsManagerDelegate>(
-      GetBrowserContext());
+      browser_context());
 }
 
 #if BUILDFLAG(ENABLE_VR)
