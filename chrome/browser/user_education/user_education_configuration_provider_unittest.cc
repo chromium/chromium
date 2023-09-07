@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -212,7 +213,8 @@ TEST_F(UserEducationConfigurationProviderTest, v1_DoesntOverwriteValid) {
   EXPECT_EQ(used, config.used);
 }
 
-TEST_F(UserEducationConfigurationProviderTest, v2_DoesOverwriteValid) {
+// TODO(crbug.com/1479993): Test is flaky across platforms.
+TEST_F(UserEducationConfigurationProviderTest, DISABLED_v2_DoesOverwriteValid) {
   SetEnableV2(true);
   feature_engagement::FeatureConfig config;
   const feature_engagement::EventConfig trigger(
