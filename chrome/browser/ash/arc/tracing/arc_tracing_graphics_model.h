@@ -40,6 +40,11 @@ class ArcTracingModel;
 // frame, junk or another problem with rendering.
 class ArcTracingGraphicsModel {
  public:
+  // 'Obsolete' indicates a constant is only here to document legacy traces,
+  // especially those in test data. Such items are not included in new traces.
+  // When adding or editing lines, prefer an actual "= ###" rather than rely
+  // on implicit incrementing, and do not change constant values once added.
+  // clang-format off
   enum class BufferEventType {
     kNone,  // 0
 
@@ -53,17 +58,17 @@ class ArcTracingGraphicsModel {
     kBufferFillJank,                 // 106,
 
     // Wayland exo events
-    kExoSurfaceAttach = 200,  // 200
-    kExoProduceResource,      // 201
-    kExoBound,                // 202
-    kExoPendingQuery,         // 203
-    kExoReleased,             // 204
-    kExoJank,                 // 205
-    kExoSurfaceCommit,        // 206
+    kExoSurfaceAttach   = 200,
+    kExoProduceResource = 201,  // Obsolete
+    kExoBound           = 202,  // Obsolete
+    kExoPendingQuery    = 203,  // Obsolete
+    kExoReleased        = 204,  // Obsolete
+    kExoJank            = 205,
+    kExoSurfaceCommit   = 206,  // Obsolete
 
     // Chrome events
-    kChromeBarrierOrder = 300,  // 300
-    kChromeBarrierFlush,        // 301
+    kChromeBarrierOrder = 300,  // Obsolete
+    kChromeBarrierFlush = 301,  // Obsolete
 
     // Android Surface Flinger top level events.
     kSurfaceFlingerVsyncHandler = 400,  // 400
@@ -86,11 +91,12 @@ class ArcTracingGraphicsModel {
     kCustomEvent = 600,
 
     // Input events
-    kInputEventCreated = 700,      // 700
-    kInputEventWaylandDispatched,  // 701
-    kInputEventDeliverStart,       // 702
-    kInputEventDeliverEnd,         // 703
+    kInputEventCreated           = 700,  // Obsolete
+    kInputEventWaylandDispatched = 701,  // Obsolete
+    kInputEventDeliverStart      = 702,  // Obsolete
+    kInputEventDeliverEnd        = 703,  // Obsolete
   };
+  // clang-format on
 
   struct BufferEvent {
     BufferEvent(BufferEventType type, int64_t timestamp);
@@ -191,8 +197,6 @@ class ArcTracingGraphicsModel {
 
   const EventsContainer& chrome_top_level() const { return chrome_top_level_; }
 
-  const EventsContainer& input() const { return input_; }
-
   ArcSystemModel& system_model() { return system_model_; }
   const ArcSystemModel& system_model() const { return system_model_; }
 
@@ -226,7 +230,6 @@ class ArcTracingGraphicsModel {
   // To avoid overlapping events are stored interlaced.
   EventsContainer chrome_top_level_;
   EventsContainer android_top_level_;
-  EventsContainer input_;
   // Total duration of this model.
   uint32_t duration_ = 0;
   // Title of the traced app.

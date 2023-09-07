@@ -202,7 +202,7 @@ std::pair<base::Value, std::string> LoadGraphicsModel(
 constexpr char kJavascriptDomain[] = "cr.ArcOverviewTracing.";
 
 base::trace_event::TraceConfig GetTracingConfig() {
-  base::trace_event::TraceConfig config("-*,exo,viz,toplevel,gpu",
+  base::trace_event::TraceConfig config("-*,exo,viz,toplevel",
                                         base::trace_event::RECORD_CONTINUOUSLY);
   config.EnableSystrace();
   config.EnableSystraceEvent("i915:intel_gpu_freq_change");

@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
-#include "ui/events/types/event_type.h"
 
 namespace arc {
 
@@ -40,16 +39,11 @@ using BufferEvents = ArcTracingGraphicsModel::BufferEvents;
 using BufferEventType = ArcTracingGraphicsModel::BufferEventType;
 
 constexpr char kCustomTracePrefix[] = "customTrace";
-constexpr char kInputEventPrefix[] = "InputEvent: ";
-constexpr char kDeliverInputEvent[] = "deliverInputEvent";
 
 constexpr char kUnknownActivity[] = "unknown";
 
 constexpr char kArgumentAppId[] = "app_id";
 constexpr char kArgumentBufferId[] = "buffer_id";
-constexpr char kArgumentPutOffset[] = "put_offset";
-constexpr char kArgumentTimestamp[] = "timestamp";
-constexpr char kArgumentType[] = "type";
 
 constexpr char kKeyActivity[] = "activity";
 constexpr char kKeyAndroid[] = "android";
@@ -59,7 +53,6 @@ constexpr char kKeyDuration[] = "duration";
 constexpr char kKeyGlobalEvents[] = "global_events";
 constexpr char kKeyIcon[] = "icon";
 constexpr char kKeyInformation[] = "information";
-constexpr char kKeyInput[] = "input";
 constexpr char kKeyViews[] = "views";
 constexpr char kKeyPlatform[] = "platform";
 constexpr char kKeySystem[] = "system";
@@ -76,11 +69,6 @@ constexpr char kReleaseBufferQuery[] =
 constexpr char kDequeueBufferQuery[] = "android:dequeueBuffer";
 constexpr char kQueueBufferQuery[] = "android:queueBuffer";
 
-constexpr char kInputQuery[] =
-    "android:Choreographer#doFrame/android:input/android:";
-
-constexpr char kBarrierOrderingSubQuery[] =
-    "gpu:CommandBufferProxyImpl::OrderingBarrier";
 constexpr char kBufferInUseQuery[] = "exo:BufferInUse";
 constexpr char kHandleMessageRefreshQuery[] =
     "android:onMessageReceived/android:handleMessageRefresh";
@@ -91,15 +79,7 @@ constexpr char kChromeTopEventsQuery[] =
 constexpr char kSurfaceFlingerVsyncHandlerQuery[] = "android:HW_VSYNC_0|*";
 constexpr char kArcVsyncTimestampQuery[] = "android:ARC_VSYNC|*";
 
-constexpr char kBarrierFlushMatcher[] = "gpu:CommandBufferStub::OnAsyncFlush";
-
 constexpr char kExoSurfaceAttachMatcher[] = "exo:Surface::Attach";
-constexpr char kExoSurfaceCommitMatcher[] = "exo:Surface::Commit";
-constexpr char kExoBufferProduceResourceMatcher[] =
-    "exo:Buffer::ProduceTransferableResource";
-constexpr char kExoBufferReleaseContentsMatcher[] =
-    "exo:Buffer::ReleaseContents";
-constexpr char kExoInputEventMatcher[] = "exo:Input::OnInputEvent";
 
 constexpr ssize_t kInvalidBufferIndex = -1;
 
@@ -159,33 +139,6 @@ class BufferGraphicsEventMapper {
     rules_.emplace_back(MappingRule(
         std::make_unique<ArcTracingEventMatcher>(kExoSurfaceAttachMatcher),
         BufferEventType::kExoSurfaceAttach, BufferEventType::kNone));
-    rules_.emplace_back(MappingRule(
-        std::make_unique<ArcTracingEventMatcher>(kExoSurfaceCommitMatcher),
-        BufferEventType::kNone, BufferEventType::kExoSurfaceCommit));
-    rules_.emplace_back(MappingRule(std::make_unique<ArcTracingEventMatcher>(
-                                        kExoBufferProduceResourceMatcher),
-                                    BufferEventType::kExoProduceResource,
-                                    BufferEventType::kNone));
-    rules_.emplace_back(MappingRule(std::make_unique<ArcTracingEventMatcher>(
-                                        kExoBufferReleaseContentsMatcher),
-                                    BufferEventType::kNone,
-                                    BufferEventType::kExoReleased));
-    rules_.emplace_back(MappingRule(
-        std::make_unique<ArcTracingEventMatcher>("exo:BufferInUse(step=bound)"),
-        BufferEventType::kExoBound, BufferEventType::kNone));
-    rules_.emplace_back(MappingRule(std::make_unique<ArcTracingEventMatcher>(
-                                        "exo:BufferInUse(step=pending_query)"),
-                                    BufferEventType::kExoPendingQuery,
-                                    BufferEventType::kNone));
-
-    // gpu rules
-    rules_.emplace_back(MappingRule(
-        std::make_unique<ArcTracingEventMatcher>(
-            "gpu:CommandBufferProxyImpl::OrderingBarrier"),
-        BufferEventType::kChromeBarrierOrder, BufferEventType::kNone));
-    rules_.emplace_back(MappingRule(
-        std::make_unique<ArcTracingEventMatcher>(kBarrierFlushMatcher),
-        BufferEventType::kNone, BufferEventType::kChromeBarrierFlush));
 
     // android rules
     rules_.emplace_back(MappingRule(
@@ -445,487 +398,6 @@ bool GetSurfaceFlingerEvents(const ArcTracingModel& common_model,
   return true;
 }
 
-// Represents input event in Wayland. It contains input timestamp that shows the
-// time of event creation, event timestamp in this case shows the time when this
-// event was dispatched using Wayland interface. Type defines the input type.
-class ExoInputEvent {
- public:
-  ExoInputEvent(const ArcTracingEvent* event,
-                uint64_t input_timestamp,
-                ui::EventType type)
-      : event_(event), input_timestamp_(input_timestamp), type_(type) {}
-
-  ExoInputEvent(const ExoInputEvent&) = delete;
-  ExoInputEvent& operator=(const ExoInputEvent&) = delete;
-
-  ~ExoInputEvent() = default;
-
-  // Parses |event| and extracts information for Wayland input event. Returns
-  // nullptr in case |event| could not be parsed.
-  static std::unique_ptr<ExoInputEvent> Create(const ArcTracingEvent* event) {
-    const uint64_t timestamp =
-        event->GetArgAsDouble(kArgumentTimestamp, 0 /* default_value */);
-    const int type =
-        event->GetArgAsInteger(kArgumentType, 0 /* default_value */);
-
-    if (!timestamp || !type) {
-      LOG(ERROR) << "Could not parse timestamp or type of event: "
-                 << event->ToString();
-      return nullptr;
-    }
-
-    return std::make_unique<ExoInputEvent>(event, timestamp,
-                                           static_cast<ui::EventType>(type));
-  }
-
-  const ArcTracingEvent* event() const { return event_; }
-  uint64_t input_timestamp() const { return input_timestamp_; }
-  ui::EventType type() const { return type_; }
-
- private:
-  raw_ptr<const ArcTracingEvent, ExperimentalAsh> event_;
-  // Time of the creation of the event. Normally, it is before the event
-  // timestamp that indicates when event was seen in Wayland.
-  const uint64_t input_timestamp_;
-  // Type of the event;
-  const ui::EventType type_;
-};
-
-bool SortExoByInputTimestampPred(const std::unique_ptr<ExoInputEvent>& a,
-                                 const uint64_t input_timestamp) {
-  return a->input_timestamp() < input_timestamp;
-}
-
-// Represents input event in Android. It contains input timestamp that shows the
-// time of the creation event in Chrome. Source defines the origin of the input
-// event, mouse, keyboard, touch and so on. Sequence id is the unique
-// identifier of the input event in context of one application.
-class AndroidInputEvent {
- public:
-  enum Source {
-    Keyboard = 0x101,
-    Touch = 0x1002,
-    Mouse = 0x2002,
-  };
-
-  AndroidInputEvent(const ArcTracingEvent* event,
-                    std::vector<uint64_t> input_timestamps,
-                    Source source,
-                    int sequence_id)
-      : event_(event),
-        input_timestamps_(std::move(input_timestamps)),
-        source_(source),
-        sequence_id_(sequence_id) {}
-
-  AndroidInputEvent(const AndroidInputEvent&) = delete;
-  AndroidInputEvent& operator=(const AndroidInputEvent&) = delete;
-
-  ~AndroidInputEvent() = default;
-
-  // Parses |event| and extracts information for Android input event. Returns
-  // nullptr in case |event| could not be parsed.
-  static std::unique_ptr<AndroidInputEvent> Create(
-      const ArcTracingEvent* event) {
-    if (!base::StartsWith(event->GetName(), kInputEventPrefix,
-                          base::CompareCase::SENSITIVE)) {
-      return nullptr;
-    }
-
-    // Has following structure
-    // InputEvent: source timestamps sequence_id|0|
-    const std::string body =
-        event->GetName().substr(std::size(kInputEventPrefix) - 1);
-    base::StringTokenizer tokenizer(body, " ");
-    std::vector<std::string> tokens;
-    while (tokenizer.GetNext())
-      tokens.emplace_back(tokenizer.token());
-    if (tokens.size() != 3) {
-      LOG(ERROR) << "Failed to parse input event: " << event->ToString();
-      return nullptr;
-    }
-
-    uint32_t source = -1;
-    sscanf(tokens[0].c_str(), "%" PRId32, &source);
-    switch (static_cast<Source>(source)) {
-      case Source::Keyboard:
-      case Source::Mouse:
-      case Source::Touch:
-        break;
-      default:
-        LOG(ERROR) << "Unrecognized source: " << event->ToString();
-        return nullptr;
-    }
-
-    std::vector<uint64_t> input_timestamps;
-    // Timestamps are separated by comma. It is used in case event is synthetic
-    // and is composed from one more physical events.
-    base::StringTokenizer tokenizer_timestamps(tokens[1], ",");
-    while (tokenizer_timestamps.GetNext()) {
-      uint64_t timestamp;
-      if (sscanf(tokenizer_timestamps.token().c_str(), "%" PRId64,
-                 &timestamp) != 1) {
-        LOG(ERROR) << "Failed to parse timestamp: " << event->ToString();
-        return nullptr;
-      }
-      // Convert nanosecond to microseconds, as it is use in tracing.
-      input_timestamps.emplace_back(timestamp / 1000L);
-    }
-
-    if (input_timestamps.empty()) {
-      LOG(ERROR) << "Timestamp is not found: " << event->ToString();
-      return nullptr;
-    }
-
-    int sequence_id;
-    if (sscanf(tokens[2].c_str(), "%" PRId32 "|0|", &sequence_id) != 1) {
-      LOG(ERROR) << "Sequence id is not found: " << event->ToString();
-      return nullptr;
-    }
-
-    return std::make_unique<AndroidInputEvent>(
-        event, std::move(input_timestamps), static_cast<Source>(source),
-        sequence_id);
-  }
-
-  const ArcTracingEvent* event() const { return event_; }
-  std::vector<uint64_t> input_timestamps() const { return input_timestamps_; }
-  Source source() const { return source_; }
-  int sequence_id() const { return sequence_id_; }
-
- private:
-  raw_ptr<const ArcTracingEvent, ExperimentalAsh> event_;
-  // Time of the creation of the event. Note that Wayland passes only
-  // milliseconds. So for events coming from Chrome, it is expected 0 for
-  // microsecond and nanosecond fraction. There is special case for motion
-  // events, when Android motion event is composed from the set of actual
-  // events with prediction of trajectory. In last case |input_timestamps_|
-  // contains all events, used for calculation of synthetic move event.
-  const std::vector<uint64_t> input_timestamps_;
-
-  const Source source_;
-  const int sequence_id_;
-};
-
-// Maps Android sources to possible input types from Chrome.
-struct InputEventMapper {
-  InputEventMapper() {
-    source_to_type[AndroidInputEvent::Source::Keyboard] = {
-        ui::EventType::ET_KEY_PRESSED, ui::EventType::ET_KEY_RELEASED};
-    source_to_type[AndroidInputEvent::Source::Touch] = {
-        ui::EventType::ET_TOUCH_RELEASED, ui::EventType::ET_TOUCH_PRESSED,
-        ui::EventType::ET_TOUCH_MOVED, ui::EventType::ET_TOUCH_CANCELLED};
-    source_to_type[AndroidInputEvent::Source::Mouse] = {
-        ui::EventType::ET_MOUSE_PRESSED,
-        ui::EventType::ET_MOUSE_RELEASED,
-        ui::EventType::ET_MOUSE_MOVED,
-    };
-  }
-
-  std::map<int, std::set<ui::EventType>> source_to_type;
-};
-
-const InputEventMapper& GetInputEventMapper() {
-  static base::NoDestructor<InputEventMapper> instance;
-  return *instance;
-}
-
-// Finds the corresponded Wayland input event among |exo_input_events| for the
-// given |android_input_timestamp| and |source|. Return nullptr in case event
-// could not be found or more than one event matches the
-// |android_input_timestamp| and |source|. |exo_input_events| is sorted by input
-// timestamp.
-const ExoInputEvent* FindExoInputEventForAndroidEvent(
-    const std::vector<std::unique_ptr<ExoInputEvent>>& exo_input_events,
-    uint64_t android_input_timestamp,
-    int source) {
-  const InputEventMapper& mapper = GetInputEventMapper();
-  const auto& allowed_set = mapper.source_to_type.find(source);
-  if (allowed_set == mapper.source_to_type.end()) {
-    LOG(ERROR) << "Input source is not recognized " << source;
-    return nullptr;
-  }
-
-  // Wayland does not pass microsecond and nanosecond fraction. If it set, that
-  // means we deal with synthetic Android input event and does not have match in
-  // Wayland.
-  if (android_input_timestamp % 1000L)
-    return nullptr;
-
-  const ExoInputEvent* exo_input_event = nullptr;
-  // Seek in the range of 1 millisecond once |android_input_timestamp| has
-  // millisecond resolution.
-  const uint64_t max_input_timestamp = android_input_timestamp + 1000L;
-  auto it =
-      std::lower_bound(exo_input_events.begin(), exo_input_events.end(),
-                       android_input_timestamp, SortExoByInputTimestampPred);
-  while (it != exo_input_events.end() &&
-         it->get()->input_timestamp() < max_input_timestamp) {
-    if (allowed_set->second.count(it->get()->type())) {
-      // Check if detected more than one exo input event.
-      if (exo_input_event) {
-        LOG(WARNING) << "More than one exo input event found for timestamp "
-                     << android_input_timestamp;
-        return nullptr;
-      }
-      exo_input_event = it->get();
-    }
-    ++it;
-  }
-
-  return exo_input_event;
-}
-
-// Finds the timestamps when input event was delivered to the target app. This
-// finds the pair of asynchronous events deliverInputEvent that has the same
-// sequence id and belongs to the same process as |input_event|. Returns true
-// in case |out_start_delivery_timestamp| and |out_end_delivery_timestamp| are
-// set.
-bool GetDeliverInputEventTimestamp(const ArcTracingModel& common_model,
-                                   const AndroidInputEvent* input_event,
-                                   uint64_t* out_start_delivery_timestamp,
-                                   uint64_t* out_end_delivery_timestamp) {
-  const ArcTracingModel::TracingEventPtrs group_events =
-      common_model.GetGroupEvents(
-          base::StringPrintf("%d", input_event->sequence_id()));
-
-  const ArcTracingEvent* start_event = nullptr;
-  const ArcTracingEvent* end_event = nullptr;
-  for (const ArcTracingEvent* event : group_events) {
-    if (event->GetName() != kDeliverInputEvent)
-      continue;
-    // Potentially events from different tasks/processes may overlap.
-    if (event->GetPid() != input_event->event()->GetPid())
-      continue;
-
-    switch (event->GetPhase()) {
-      case TRACE_EVENT_PHASE_ASYNC_BEGIN:
-        if (start_event) {
-          LOG(ERROR) << "Double start event found " << start_event->ToString();
-          return false;
-        }
-        start_event = event;
-        break;
-      case TRACE_EVENT_PHASE_ASYNC_END:
-        if (end_event) {
-          LOG(ERROR) << "Double end event found " << end_event->ToString();
-          return false;
-        }
-        end_event = event;
-        break;
-    }
-  }
-
-  if (!start_event || !end_event)
-    return false;
-
-  *out_start_delivery_timestamp = start_event->GetTimestamp();
-  *out_end_delivery_timestamp = end_event->GetTimestamp();
-
-  if (*out_start_delivery_timestamp > *out_end_delivery_timestamp) {
-    LOG(ERROR) << "Start event is after end event " << start_event->ToString();
-    return false;
-  }
-
-  if (*out_start_delivery_timestamp > input_event->event()->GetTimestamp() ||
-      *out_end_delivery_timestamp < input_event->event()->GetTimestamp()) {
-    LOG(ERROR) << "Wrong start/end timestamps for "
-               << input_event->event()->ToString();
-    return false;
-  }
-
-  return true;
-}
-
-std::string InputTypeToString(ui::EventType type) {
-  switch (type) {
-    case ui::EventType::ET_MOUSE_PRESSED:
-      return "mouse pressed";
-    case ui::EventType::ET_MOUSE_RELEASED:
-      return "mouse released";
-    case ui::EventType::ET_MOUSE_MOVED:
-      return "mouse moved";
-    case ui::EventType::ET_KEY_PRESSED:
-      return "key pressed";
-    case ui::EventType::ET_KEY_RELEASED:
-      return "key released";
-    case ui::EventType::ET_TOUCH_RELEASED:
-      return "touch released";
-    case ui::EventType::ET_TOUCH_PRESSED:
-      return "touch pressed";
-    case ui::EventType::ET_TOUCH_MOVED:
-      return "touch moved";
-    default:
-      return base::StringPrintf("type: %d", type);
-  }
-}
-
-std::string SourceToString(AndroidInputEvent::Source source) {
-  switch (source) {
-    case AndroidInputEvent::Source::Keyboard:
-      return "keyboard";
-    case AndroidInputEvent::Source::Mouse:
-      return "mouse";
-    case AndroidInputEvent::Source::Touch:
-      return "touch";
-    default:
-      return base::StringPrintf("source: %d", static_cast<int>(source));
-  }
-}
-
-// Analyzes |common_model| and reconstructs input events activity.
-void GetInputEvents(
-    const ArcTracingModel& common_model,
-    ArcTracingGraphicsModel::EventsContainer* out_events_container) {
-  // Determine route to Wayland input events.
-  const ArcTracingModel::TracingEventPtrs top_level_events =
-      common_model.Select("toplevel:");
-  std::vector<const ArcTracingEvent*> route;
-  std::string exo_input_event_query;
-  for (const ArcTracingEvent* top_level_event : top_level_events) {
-    DetermineHierarchy(&route, top_level_event,
-                       ArcTracingEventMatcher(kExoInputEventMatcher),
-                       &exo_input_event_query);
-  }
-
-  // Collect list of input events, seen in Wayaland and sort them based on input
-  // event creation time.
-  std::vector<std::unique_ptr<ExoInputEvent>> exo_input_events;
-  if (!exo_input_event_query.empty()) {
-    const ArcTracingModel::TracingEventPtrs input_events =
-        common_model.Select(exo_input_event_query);
-    for (const ArcTracingEvent* input_event : input_events) {
-      std::unique_ptr<ExoInputEvent> exo_input_event =
-          ExoInputEvent::Create(input_event);
-      if (exo_input_event)
-        exo_input_events.emplace_back(std::move(exo_input_event));
-    }
-  }
-
-  std::sort(exo_input_events.begin(), exo_input_events.end(),
-            [](const auto& lhs, const auto& rhs) {
-              if (lhs->input_timestamp() != rhs->input_timestamp())
-                return lhs->input_timestamp() < rhs->input_timestamp();
-              return lhs->event()->GetTimestamp() <
-                     rhs->event()->GetTimestamp();
-            });
-
-  // Extracts Android input events that can appear as root events or under the
-  // |kInputQuery| hierarchy.
-  std::vector<std::unique_ptr<AndroidInputEvent>> android_input_events;
-  ArcTracingModel::TracingEventPtrs android_input_event_candidates =
-      common_model.GetRoots();
-  const ArcTracingModel::TracingEventPtrs inputs =
-      common_model.Select(kInputQuery);
-  android_input_event_candidates.insert(android_input_event_candidates.end(),
-                                        inputs.begin(), inputs.end());
-  for (const ArcTracingEvent* root : android_input_event_candidates) {
-    // It is logged as counter.
-    if (root->GetPhase() != TRACE_EVENT_PHASE_COUNTER)
-      continue;
-
-    std::unique_ptr<AndroidInputEvent> android_input_event =
-        AndroidInputEvent::Create(root);
-    if (android_input_event)
-      android_input_events.emplace_back(std::move(android_input_event));
-  }
-
-  std::sort(android_input_events.begin(), android_input_events.end(),
-            [](const auto& lhs, const auto& rhs) {
-              if (lhs->input_timestamps()[0] != rhs->input_timestamps()[0])
-                return lhs->input_timestamps()[0] < rhs->input_timestamps()[0];
-              return lhs->event()->GetTimestamp() <
-                     rhs->event()->GetTimestamp();
-            });
-
-  // Group of events per each input.
-  std::vector<BufferEvents> events_group;
-  for (const auto& android_input_event : android_input_events) {
-    uint64_t start_delivery_timestamp;
-    uint64_t end_delivery_timestamp;
-    if (!GetDeliverInputEventTimestamp(common_model, android_input_event.get(),
-                                       &start_delivery_timestamp,
-                                       &end_delivery_timestamp)) {
-      LOG(ERROR) << "Deliver input event is not found for "
-                 << android_input_event->event()->ToString();
-      continue;
-    }
-
-    BufferEvents input_events;
-    input_events.emplace_back(BufferEventType::kInputEventDeliverStart,
-                              start_delivery_timestamp);
-    input_events.emplace_back(BufferEventType::kInputEventDeliverEnd,
-                              end_delivery_timestamp);
-    // In case of synthetic move event, last timestamp is generated timestamp,
-    // discard it.
-    constexpr size_t one = 1;
-    const size_t timestamp_count =
-        std::max(one, android_input_event->input_timestamps().size() - 1);
-    for (size_t i = 0; i < timestamp_count; ++i) {
-      const uint64_t input_timestamp =
-          android_input_event->input_timestamps()[i];
-      const ExoInputEvent* exo_input_event = FindExoInputEventForAndroidEvent(
-          exo_input_events, input_timestamp, android_input_event->source());
-      if (exo_input_event) {
-        const uint64_t dispatch_timestamp =
-            exo_input_event->event()->GetTimestamp();
-        // crbug.com/968324, input timestamp might be set in the future, in this
-        // case use dispatch_timestamp as creation timestamp.
-        const uint64_t creation_timestamp = exo_input_event->input_timestamp();
-        if (creation_timestamp <= dispatch_timestamp) {
-          input_events.emplace_back(BufferEventType::kInputEventCreated,
-                                    creation_timestamp,
-                                    InputTypeToString(exo_input_event->type()));
-        } else {
-          // Sort by type.
-          input_events.emplace_back(
-              BufferEventType::kInputEventCreated, dispatch_timestamp,
-              InputTypeToString(exo_input_event->type()) + " - estimated");
-        }
-
-        input_events.emplace_back(BufferEventType::kInputEventWaylandDispatched,
-                                  dispatch_timestamp);
-      } else {
-        // Could not map Wayland event. Let use best we can, which precision
-        // rounded down to millisecond.
-        // crbug.com/968324, input timestamp might be set in the future, in this
-        // case, clamp to |start_delivery_timestamp|.
-        if (input_timestamp <= start_delivery_timestamp) {
-          input_events.emplace_back(
-              BufferEventType::kInputEventCreated, input_timestamp,
-              SourceToString(android_input_event->source()));
-        } else {
-          input_events.emplace_back(
-              BufferEventType::kInputEventCreated, start_delivery_timestamp,
-              SourceToString(android_input_event->source()) + " - estimated");
-        }
-      }
-    }
-    SortBufferEventsByTimestamp(&input_events);
-    DCHECK_EQ(BufferEventType::kInputEventCreated, input_events.begin()->type);
-    DCHECK_EQ(BufferEventType::kInputEventDeliverEnd,
-              input_events.rbegin()->type);
-
-    // Try to put series of events to the default first bar. However, in case
-    // series of events overlap, use another bar to keep them separated.
-    size_t target_buffer = 0;
-    for (target_buffer = 0;
-         target_buffer < out_events_container->buffer_events().size();
-         ++target_buffer) {
-      if (out_events_container->buffer_events()[target_buffer]
-              .rbegin()
-              ->timestamp < input_events.begin()->timestamp) {
-        break;
-      }
-    }
-    if (target_buffer == out_events_container->buffer_events().size())
-      out_events_container->buffer_events().emplace_back(BufferEvents());
-
-    out_events_container->buffer_events()[target_buffer].insert(
-        out_events_container->buffer_events()[target_buffer].end(),
-        input_events.begin(), input_events.end());
-  }
-}
-
 // Processes exo events Surface::Attach and Buffer::ReleaseContents. Each event
 // has argument buffer_id that identifies graphics buffer on Chrome side.
 // buffer_id is just row pointer to internal class. If |buffer_id_to_task_id| is
@@ -980,96 +452,17 @@ BufferToEvents GetChromeEvents(
   top_level_events.insert(top_level_events.end(), root_events.begin(),
                           root_events.end());
   std::vector<const ArcTracingEvent*> route;
-  std::string barrier_flush_query;
-  const ArcTracingEventMatcher barrier_flush_matcher(kBarrierFlushMatcher);
   std::string attach_surface_query;
   const ArcTracingEventMatcher attach_surface_matcher(kExoSurfaceAttachMatcher);
-  std::string commit_surface_query;
-  const ArcTracingEventMatcher commit_surface_matcher(kExoSurfaceCommitMatcher);
-  std::string produce_resource_query;
-  const ArcTracingEventMatcher produce_resource_matcher(
-      kExoBufferProduceResourceMatcher);
-  std::string release_contents_query;
-  const ArcTracingEventMatcher release_contents_matcher(
-      kExoBufferReleaseContentsMatcher);
   for (const ArcTracingEvent* top_level_event : top_level_events) {
-    DetermineHierarchy(&route, top_level_event, barrier_flush_matcher,
-                       &barrier_flush_query);
     DetermineHierarchy(&route, top_level_event, attach_surface_matcher,
                        &attach_surface_query);
-    DetermineHierarchy(&route, top_level_event, commit_surface_matcher,
-                       &commit_surface_query);
-    DetermineHierarchy(&route, top_level_event, produce_resource_matcher,
-                       &produce_resource_query);
-    DetermineHierarchy(&route, top_level_event, release_contents_matcher,
-                       &release_contents_query);
   }
 
   BufferToEvents per_buffer_chrome_events;
   // Only exo:Surface::Attach has app id argument.
   ProcessChromeEvents(common_model, attach_surface_query,
                       &per_buffer_chrome_events, buffer_id_to_task_id);
-  ProcessChromeEvents(common_model, commit_surface_query,
-                      &per_buffer_chrome_events,
-                      nullptr /* buffer_id_to_task_id */);
-  ProcessChromeEvents(common_model, release_contents_query,
-                      &per_buffer_chrome_events,
-                      nullptr /* buffer_id_to_task_id */);
-
-  // Handle ProduceTransferableResource events. They have extra link to barrier
-  // events. Use buffer_id to bind events for the same graphics buffer.
-  const ArcTracingModel::TracingEventPtrs produce_resource_events =
-      common_model.Select(produce_resource_query);
-  std::map<int, std::string> put_offset_to_buffer_id_map;
-  for (const ArcTracingEvent* event : produce_resource_events) {
-    const std::string buffer_id = event->GetArgAsString(
-        kArgumentBufferId, std::string() /* default_value */);
-    if (buffer_id.empty()) {
-      LOG(ERROR) << "Failed to get buffer id from event: " << event->ToString();
-      continue;
-    }
-
-    ArcTracingGraphicsModel::BufferEvents& graphics_events =
-        per_buffer_chrome_events[buffer_id];
-    GetEventMapper().Produce(*event, &graphics_events);
-
-    const ArcTracingModel::TracingEventPtrs ordering_barrier_events =
-        common_model.Select(event, kBarrierOrderingSubQuery);
-    if (ordering_barrier_events.size() != 1) {
-      LOG(ERROR) << "Expected only one " << kBarrierOrderingSubQuery << ". Got "
-                 << ordering_barrier_events.size();
-      continue;
-    }
-    const int put_offset = ordering_barrier_events[0]->GetArgAsInteger(
-        kArgumentPutOffset, 0 /* default_value */);
-    if (!put_offset) {
-      LOG(ERROR) << "No " << kArgumentPutOffset
-                 << " argument in: " << ordering_barrier_events[0]->ToString();
-      continue;
-    }
-    if (put_offset_to_buffer_id_map.count(put_offset) &&
-        put_offset_to_buffer_id_map[put_offset] != buffer_id) {
-      LOG(ERROR) << put_offset << " is already mapped to "
-                 << put_offset_to_buffer_id_map[put_offset]
-                 << ". Skip mapping to " << buffer_id;
-      continue;
-    }
-    put_offset_to_buffer_id_map[put_offset] = buffer_id;
-    GetEventMapper().Produce(*ordering_barrier_events[0], &graphics_events);
-  }
-
-  // Find associated barrier flush event using put_offset argument.
-  const ArcTracingModel::TracingEventPtrs barrier_flush_events =
-      common_model.Select(barrier_flush_query);
-  for (const ArcTracingEvent* event : barrier_flush_events) {
-    const int put_offset =
-        event->GetArgAsInteger(kArgumentPutOffset, 0 /* default_value */);
-    if (!put_offset_to_buffer_id_map.count(put_offset))
-      continue;
-    ArcTracingGraphicsModel::BufferEvents& graphics_events =
-        per_buffer_chrome_events[put_offset_to_buffer_id_map[put_offset]];
-    GetEventMapper().Produce(*event, &graphics_events);
-  }
 
   // Handle BufferInUse async events.
   const ArcTracingModel::TracingEventPtrs buffer_in_use_events =
@@ -1706,8 +1099,6 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model) {
       return false;
   }
 
-  GetInputEvents(common_model, &input_);
-
   system_model_.CopyFrom(common_model.system_model());
 
   VsyncTrim();
@@ -1728,7 +1119,7 @@ void ArcTracingGraphicsModel::NormalizeTimestamps() {
   }
 
   std::vector<EventsContainer*> containers{&android_top_level_,
-                                           &chrome_top_level_, &input_};
+                                           &chrome_top_level_};
   for (EventsContainer* container : containers) {
     for (auto& buffer : container->buffer_events())
       all_buffers.emplace_back(&buffer);
@@ -1775,7 +1166,6 @@ void ArcTracingGraphicsModel::NormalizeTimestamps() {
 void ArcTracingGraphicsModel::Reset() {
   chrome_top_level_.Reset();
   android_top_level_.Reset();
-  input_.Reset();
   view_buffers_.clear();
   chrome_buffer_id_to_task_id_.clear();
   system_model_.Reset();
@@ -1806,13 +1196,10 @@ void ArcTracingGraphicsModel::VsyncTrim() {
   TrimEventsContainer(&android_top_level_, trim_timestamp,
                       {BufferEventType::kSurfaceFlingerInvalidationStart,
                        BufferEventType::kSurfaceFlingerCompositionStart});
-  TrimEventsContainer(&input_, trim_timestamp,
-                      {BufferEventType::kInputEventCreated});
   for (auto& view_buffer : view_buffers_) {
     TrimEventsContainer(&view_buffer.second, trim_timestamp,
                         {BufferEventType::kBufferQueueDequeueStart,
-                         BufferEventType::kExoSurfaceAttach,
-                         BufferEventType::kChromeBarrierOrder});
+                         BufferEventType::kExoSurfaceAttach});
   }
   system_model_.Trim(trim_timestamp);
 }
@@ -1843,9 +1230,6 @@ base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
 
   // Chrome top events
   root.Set(kKeyChrome, SerializeEventsContainer(chrome_top_level_));
-
-  // Input events
-  root.Set(kKeyInput, SerializeEventsContainer(input_));
 
   // System.
   root.Set(kKeySystem, system_model_.Serialize());
@@ -1919,10 +1303,6 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
     return false;
 
   if (!LoadEventsContainer(root.FindDict(kKeyChrome), &chrome_top_level_))
-    return false;
-
-  const base::Value::Dict* input_value = root.FindDict(kKeyInput);
-  if (input_value && !LoadEventsContainer(input_value, &input_))
     return false;
 
   if (!system_model_.Load(root.Find(kKeySystem)))

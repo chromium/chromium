@@ -42,6 +42,9 @@ let zoomLevel = 5;
  * event, |name| is used in tooltips. |width| defines the width in case it is
  * rendered as a line and |radius| defines the radius in case it is rendered as
  * a circle.
+ *
+ * TODO(matvore): Only kIdleIn and kIdleOut are used in bands. Verify and clean
+ * up.
  */
 const eventAttributes = {
   // kIdleIn
@@ -63,21 +66,6 @@ const eventAttributes = {
   105: {color: unusedColor, name: 'buffer released'},
   // kBufferFillJank
   106: {color: '#ff0000', name: 'buffer filling jank', width: 1.0, radius: 4.0},
-
-  // kExoSurfaceAttach.
-  200: {color: '#99ccff', name: 'surface attach'},
-  // kExoProduceResource
-  201: {color: '#cc66ff', name: 'produce resource'},
-  // kExoBound
-  202: {color: '#66ffff', name: 'buffer bound'},
-  // kExoPendingQuery
-  203: {color: '#00ff99', name: 'pending query'},
-  // kExoReleased
-  204: {color: unusedColor, name: 'released'},
-  // kExoJank
-  205: {color: '#ff0000', name: 'surface attach jank', width: 1.0, radius: 4.0},
-  // kExoCommit
-  206: {color: '#3d5afe', name: 'buffer committed'},
 
   // kChromeBarrierOrder.
   300: {color: '#ff9933', name: 'barrier order'},
@@ -125,15 +113,6 @@ const eventAttributes = {
   // kCustomEvent
   600: {color: '#7cb342', name: 'Custom event', width: 1.0, radius: 4.0},
 
-  // kInputEventCreated
-  700: {color: '#ff6f00', name: 'create'},
-  // kInputEventWaylandDispatched
-  701: {color: '#f4ff81', name: 'dispatch'},
-  // kInputEventDeliverStart
-  702: {color: '#388e3c', name: 'deliver start'},
-  // kInputEventDeliverEnd
-  703: {color: unusedColor, name: 'deliver end'},
-
   // Service events.
   // kTimeMark
   10000: {color: '#888', name: 'Time mark', width: 0.75},
@@ -157,8 +136,6 @@ const endSequenceEvents = {
   103: [],
   // kBufferQueueReleased
   105: [],
-  // kExoReleased
-  204: [],
   // kChromeBarrierFlush
   301: [],
   // kSurfaceFlingerInvalidationDone
@@ -173,8 +150,6 @@ const endSequenceEvents = {
   503: [500 /* kChromeOSDraw */],
   // kChromeOSSwapDone
   504: [500 /* kChromeOSDraw */],
-  // kInputEventDeliverEnd
-  703: [],
 };
 
 /**

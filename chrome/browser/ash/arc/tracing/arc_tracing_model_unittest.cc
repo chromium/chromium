@@ -241,12 +241,6 @@ TEST_F(ArcTracingModelTest, TopLevel) {
                       GraphicsEventType::kBufferQueueAcquire,
                       GraphicsEventType::kBufferQueueReleased,
                       GraphicsEventType::kExoSurfaceAttach,
-                      GraphicsEventType::kExoProduceResource,
-                      GraphicsEventType::kExoBound,
-                      GraphicsEventType::kExoPendingQuery,
-                      GraphicsEventType::kExoReleased,
-                      GraphicsEventType::kChromeBarrierOrder,
-                      GraphicsEventType::kChromeBarrierFlush,
                   }));
     }
   }
@@ -693,65 +687,6 @@ TEST_F(ArcTracingModelTest, AsynchronousSystemEvents) {
   EXPECT_EQ(TRACE_EVENT_PHASE_ASYNC_END, group2[1]->GetPhase());
   EXPECT_EQ(1200000UL, group2[0]->GetTimestamp());
   EXPECT_EQ(1400000UL, group2[1]->GetTimestamp());
-}
-
-TEST_F(ArcTracingModelTest, InputEvents) {
-  base::FilePath base_path;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);
-  const base::FilePath tracing_path =
-      base_path.Append("arc_graphics_tracing").Append("trace_input.dat.gz");
-
-  std::string tracing_data_compressed;
-  ASSERT_TRUE(base::ReadFileToString(tracing_path, &tracing_data_compressed));
-
-  std::string tracing_data;
-  ASSERT_TRUE(
-      compression::GzipUncompress(tracing_data_compressed, &tracing_data));
-
-  ArcTracingModel model;
-  ASSERT_TRUE(model.Build(tracing_data));
-
-  ArcTracingGraphicsModel graphics_model;
-  graphics_model.set_skip_structure_validation();
-  ASSERT_TRUE(graphics_model.Build(model));
-
-  const std::vector<GraphicsEvents>& buffers =
-      graphics_model.input().buffer_events();
-  ASSERT_TRUE(buffers.size());
-
-  for (const GraphicsEvents& buffer : buffers) {
-    ASSERT_FALSE(buffer.empty());
-
-    uint64_t last_timestamp = buffer[0].timestamp;
-    GraphicsEventType last_type = buffer[0].type;
-    EXPECT_EQ(GraphicsEventType::kInputEventCreated, last_type);
-    for (size_t i = 1; i < buffer.size(); ++i) {
-      const uint64_t timestamp = buffer[i].timestamp;
-      const GraphicsEventType type = buffer[i].type;
-      EXPECT_GE(timestamp, last_timestamp);
-      // One input sequence may contain multiple input events.
-      switch (last_type) {
-        case GraphicsEventType::kInputEventCreated:
-        case GraphicsEventType::kInputEventWaylandDispatched:
-          EXPECT_TRUE(type == GraphicsEventType::kInputEventCreated ||
-                      type == GraphicsEventType::kInputEventWaylandDispatched ||
-                      type == GraphicsEventType::kInputEventDeliverStart);
-          break;
-        case GraphicsEventType::kInputEventDeliverStart:
-          EXPECT_EQ(GraphicsEventType::kInputEventDeliverEnd, type);
-          break;
-        case GraphicsEventType::kInputEventDeliverEnd:
-          EXPECT_EQ(GraphicsEventType::kInputEventCreated, type);
-          break;
-        default:
-          NOTREACHED();
-      }
-
-      last_timestamp = timestamp;
-      last_type = type;
-    }
-    EXPECT_EQ(GraphicsEventType::kInputEventDeliverEnd, last_type);
-  }
 }
 
 }  // namespace arc
