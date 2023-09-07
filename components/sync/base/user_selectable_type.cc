@@ -70,14 +70,11 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kThemes:
       return {kThemesTypeName, THEMES, {THEMES}};
     case UserSelectableType::kHistory: {
-      // TODO(crbug.com/1365291): After HISTORY has launched, remove TYPED_URLS
-      // from here.
-      ModelTypeSet types = {TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES,
-                            SESSIONS, USER_EVENTS};
-      if (base::FeatureList::IsEnabled(kSyncEnableHistoryDataType)) {
-        types.Remove(SESSIONS);
-      }
-      return {kHistoryTypeName, TYPED_URLS, types};
+      // TODO(crbug.com/1365291): Remove TYPED_URLS from here once it's no
+      // longer a registered type.
+      return {kHistoryTypeName,
+              HISTORY,
+              {HISTORY, HISTORY_DELETE_DIRECTIVES, TYPED_URLS, USER_EVENTS}};
     }
     case UserSelectableType::kExtensions:
       return {
