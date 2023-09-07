@@ -37,29 +37,4 @@ std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
   return components;
 }
 
-void DeleteFilesAndParentDirectory(const base::FilePath& file_path) {
-  const base::FilePath base_dir = file_path.DirName();
-  base::FileEnumerator file_enumerator(base_dir, false,
-                                       base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
-       path = file_enumerator.Next()) {
-    base::Version version(path.BaseName().MaybeAsASCII());
-
-    // Ignore folders that don't have valid version names. These folders are
-    // not managed by the component installer, so don't try to remove them.
-    if (!version.IsValid())
-      continue;
-
-    if (!base::DeletePathRecursively(path)) {
-      DLOG(ERROR) << "Couldn't delete " << path.value();
-    }
-  }
-
-  if (base::IsDirectoryEmpty(base_dir)) {
-    if (!base::DeleteFile(base_dir)) {
-      DLOG(ERROR) << "Couldn't delete " << base_dir.value();
-    }
-  }
-}
-
 }  // namespace component_updater

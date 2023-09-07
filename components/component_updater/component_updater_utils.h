@@ -11,10 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace component_updater {
 struct ComponentRegistration;
 
@@ -26,9 +22,6 @@ std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
     const base::flat_map<std::string, ComponentRegistration>&
         registered_components,
     const std::vector<std::string>& ids);
-
-// A helper function to delete the path and directory for removed compoennts.
-void DeleteFilesAndParentDirectory(const base::FilePath& file_path);
 
 }  // namespace component_updater
 
