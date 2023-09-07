@@ -62222,6 +62222,7 @@ from previous Chrome versions.
   <int value="-1202556733" label="PermissionStorageAccessAPI:disabled"/>
   <int value="-1201741587" label="DataReductionProxyDecidesTransform:disabled"/>
   <int value="-1201183153" label="enable-centered-app-list"/>
+  <int value="-1200367345" label="SyncAutofillWalletCredentialData:enabled"/>
   <int value="-1199738132" label="MediaAppMultiWindow:disabled"/>
   <int value="-1199416041"
       label="AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse:enabled"/>
@@ -67068,6 +67069,7 @@ from previous Chrome versions.
   <int value="1230018793" label="enable-dom-distiller"/>
   <int value="1230555479"
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:disabled"/>
+  <int value="1231489022" label="SyncAutofillWalletCredentialData:disabled"/>
   <int value="1233310128" label="ExoConsumedByImeByFlag:enabled"/>
   <int value="1234601252" label="ForceUseAPDownloadProtection:enabled"/>
   <int value="1234950775" label="FileTransferEnterpriseConnector:enabled"/>

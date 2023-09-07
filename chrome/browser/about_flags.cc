@@ -10196,6 +10196,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kGoogleOneOfferFilesBanner)},
 #endif
 
+    {"sync-autofill-wallet-credential-data",
+     flag_descriptions::kSyncAutofillWalletCredentialDataName,
+     flag_descriptions::kSyncAutofillWalletCredentialDataDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletCredentialData)},
+
     {"sync-autofill-wallet-usage-data",
      flag_descriptions::kSyncAutofillWalletUsageDataName,
      flag_descriptions::kSyncAutofillWalletUsageDataDescription, kOsAll,

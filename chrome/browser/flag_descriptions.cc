@@ -3217,6 +3217,11 @@ const char kSuppressToolbarCapturesName[] = "Suppress Toolbar Captures";
 const char kSuppressToolbarCapturesDescription[] =
     "Suppress Toolbar Captures except when certain properties change.";
 
+const char kSyncAutofillWalletCredentialDataName[] =
+    "Sync Autofill Wallet Credential Data";
+const char kSyncAutofillWalletCredentialDataDescription[] =
+    "When enabled, allows syncing of the autofill wallet credential data type.";
+
 const char kSyncAutofillWalletUsageDataName[] =
     "Sync Autofill Wallet Usage Data";
 const char kSyncAutofillWalletUsageDataDescription[] =

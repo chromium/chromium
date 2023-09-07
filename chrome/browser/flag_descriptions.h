@@ -1856,6 +1856,9 @@ extern const char kSystemSoundsDescription[];
 extern const char kSuggestionsWithSubStringMatchName[];
 extern const char kSuggestionsWithSubStringMatchDescription[];
 
+extern const char kSyncAutofillWalletCredentialDataName[];
+extern const char kSyncAutofillWalletCredentialDataDescription[];
+
 extern const char kSyncAutofillWalletUsageDataName[];
 extern const char kSyncAutofillWalletUsageDataDescription[];
 
