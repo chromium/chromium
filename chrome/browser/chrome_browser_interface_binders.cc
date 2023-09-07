@@ -385,6 +385,8 @@
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
+#include "chrome/browser/ui/webui/ash/status_area_internals/mojom/status_area_internals.mojom.h"
+#include "chrome/browser/ui/webui/ash/status_area_internals/status_area_internals_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
@@ -1631,6 +1633,9 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   registry.ForWebUI<ash::SampleSystemWebAppUI>()
       .Add<ash::mojom::sample_swa::PageHandlerFactory>()
       .Add<color_change_listener::mojom::PageHandler>();
+
+  registry.ForWebUI<ash::StatusAreaInternalsUI>()
+      .Add<ash::mojom::status_area_internals::PageHandler>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

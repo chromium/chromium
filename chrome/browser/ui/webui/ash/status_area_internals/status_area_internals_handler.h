@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webui/ash/status_area_internals/mojom/status_area_internals.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 class WebUI;
@@ -16,9 +19,12 @@ namespace ash {
 
 // WebUI message handler for chrome://status-area-internals from the Chrome page
 // to the System UI.
-class StatusAreaInternalsHandler : public content::WebUIMessageHandler {
+class StatusAreaInternalsHandler
+    : public mojom::status_area_internals::PageHandler {
  public:
-  StatusAreaInternalsHandler();
+  explicit StatusAreaInternalsHandler(
+      mojo::PendingReceiver<mojom::status_area_internals::PageHandler>
+          receiver);
   StatusAreaInternalsHandler(const StatusAreaInternalsHandler&) = delete;
   StatusAreaInternalsHandler& operator=(const StatusAreaInternalsHandler&) =
       delete;
@@ -29,16 +35,18 @@ class StatusAreaInternalsHandler : public content::WebUIMessageHandler {
   static const char kTogglePalette[];
   static const char kTriggerPrivacyIndicators[];
 
-  // content::WebUIMessageHandler:
-  void RegisterMessages() override;
+  // mojom::status_area_internals::PageHandler:
+  void ToggleImeTray(bool visible) override;
+  void TogglePaletteTray(bool visible) override;
+  void TriggerPrivacyIndicators(const std::string& app_id,
+                                const std::string& app_name,
+                                bool is_camera_used,
+                                bool is_microphone_used) override;
 
   void SetWebUiForTesting(content::WebUI* web_ui);
 
  private:
-  // Callbacks for events coming from the web UI.
-  void ToggleImeTray(const base::Value::List& args);
-  void TogglePaletteTray(const base::Value::List& args);
-  void TriggerPrivacyIndicators(const base::Value::List& args);
+  mojo::Receiver<mojom::status_area_internals::PageHandler> receiver_;
 
   base::WeakPtrFactory<StatusAreaInternalsHandler> weak_pointer_factory_{this};
 };

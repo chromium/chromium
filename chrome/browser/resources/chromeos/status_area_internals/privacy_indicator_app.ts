@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {pageHandler} from './page_handler.js';
 import {getTemplate} from './privacy_indicator_app.html.js';
 
 /**
@@ -47,24 +48,20 @@ export class PrivacyIndicatorAppElement extends PolymerElement {
     };
   }
 
-  private appid: string;
-  private name: string;
-  private useCamera: boolean;
-  private useMicrophone: boolean;
+  private appid: string = '';
+  private name: string = '';
+  private useCamera: boolean = false;
+  private useMicrophone: boolean = false;
 
-  private onTriggerPrivacyIndicators_(e: Event) {
+  public onTriggerPrivacyIndicators(e: Event) {
     e.stopPropagation();
 
     if (!this.appid || !this.name) {
       return;
     }
 
-    chrome.send('triggerPrivacyIndicators', [
-      this.appid,
-      this.name,
-      this.useCamera,
-      this.useMicrophone,
-    ]);
+    pageHandler.triggerPrivacyIndicators(
+        this.appid, this.name, this.useCamera, this.useMicrophone);
   }
 }
 

@@ -8224,6 +8224,7 @@ test("unit_tests") {
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/views/editor_menu:utils",
       "//chrome/browser/ui/views/editor_menu:views",
+      "//chrome/browser/ui/webui/ash/status_area_internals/mojom:mojom",
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/services/printing:pdf_thumbnailer_test",
       "//chrome/services/sharing:unit_tests",

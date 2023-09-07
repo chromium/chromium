@@ -5,18 +5,29 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_UI_H_
 
+#include "chrome/browser/ui/webui/ash/status_area_internals/mojom/status_area_internals.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
 
 // The UI controller for ChromeOS Status Area Internals page.
-class StatusAreaInternalsUI : public content::WebUIController {
+class StatusAreaInternalsUI : public ui::MojoWebUIController {
  public:
   explicit StatusAreaInternalsUI(content::WebUI* web_ui);
   StatusAreaInternalsUI(const StatusAreaInternalsUI&) = delete;
   StatusAreaInternalsUI& operator=(const StatusAreaInternalsUI&) = delete;
   ~StatusAreaInternalsUI() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<mojom::status_area_internals::PageHandler>
+          receiver);
+
+ private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
+
+  std::unique_ptr<mojom::status_area_internals::PageHandler> page_handler_;
 };
 
 // UI config for the class above.

@@ -7,6 +7,7 @@ import './privacy_indicator_app_manager.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {pageHandler} from './page_handler.js';
 import {getTemplate} from './status_area_internals.html.js';
 
 /**
@@ -28,18 +29,18 @@ export class StatusAreaInternalsElement extends PolymerElement {
     return {};
   }
 
-  private onImeToggled_(e: CustomEvent<boolean>) {
+  public onImeToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;
-    chrome.send('toggleIme', [toggled]);
+    pageHandler.toggleImeTray(toggled);
   }
 
-  private onPaletteToggled_(e: CustomEvent<boolean>) {
+  public onPaletteToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;
-    chrome.send('togglePalette', [toggled]);
+    pageHandler.togglePaletteTray(toggled);
   }
 }
 

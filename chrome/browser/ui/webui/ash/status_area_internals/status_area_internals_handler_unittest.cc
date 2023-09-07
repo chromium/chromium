@@ -16,8 +16,9 @@
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
+#include "chrome/browser/ui/webui/ash/status_area_internals/mojom/status_area_internals.mojom.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/test_web_ui.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -33,17 +34,10 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
   ~StatusAreaInternalsHandlerTest() override = default;
 
   void SetUp() override {
-    handler_ = std::make_unique<StatusAreaInternalsHandler>();
-    handler_->SetWebUiForTesting(&web_ui_);
-    handler_->RegisterMessages();
+    handler_ = std::make_unique<StatusAreaInternalsHandler>(
+        handler_remote_.BindNewPipeAndPassReceiver());
 
     AshTestBase::SetUp();
-  }
-
-  void SendMessage(const std::string& handler_name,
-                   const base::Value::List& args) {
-    web_ui_.HandleReceivedMessage(handler_name, args);
-    task_environment()->RunUntilIdle();
   }
 
   StatusAreaWidget* GetStatusAreaWidget() {
@@ -52,33 +46,36 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
         ->GetStatusAreaWidget();
   }
 
+  const mojo::Remote<mojom::status_area_internals::PageHandler>&
+  handler_remote() {
+    return handler_remote_;
+  }
+
  private:
-  content::TestWebUI web_ui_;
+  mojo::Remote<mojom::status_area_internals::PageHandler> handler_remote_;
 
   std::unique_ptr<StatusAreaInternalsHandler> handler_;
 };
 
-// Sending `kToggleIme` message from the web UI should update the visibility of
-// IME tray accordingly.
+// Trigger `ToggleImeTray` from the test web UI remote should update the
+// visibility of IME tray accordingly.
 TEST_F(StatusAreaInternalsHandlerTest, ToggleImeTray) {
   auto* ime_tray = GetStatusAreaWidget()->ime_menu_tray();
   EXPECT_FALSE(ime_tray->GetVisible());
 
-  base::Value::List args;
-  args.Append(true);
-  SendMessage(StatusAreaInternalsHandler::kToggleIme, args);
+  handler_remote()->ToggleImeTray(/*visible=*/true);
+  task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(ime_tray->GetVisible());
 
-  args.clear();
-  args.Append(false);
-  SendMessage(StatusAreaInternalsHandler::kToggleIme, args);
+  handler_remote()->ToggleImeTray(/*visible=*/false);
+  task_environment()->RunUntilIdle();
 
   EXPECT_FALSE(ime_tray->GetVisible());
 }
 
-// Sending `kTogglePalette` message from the web UI should update the visibility
-// of palette tray accordingly.
+// Trigger `TogglePaletteTray` from the test web UI remote should update the
+// visibility of palette tray accordingly.
 TEST_F(StatusAreaInternalsHandlerTest, TogglePaletteTray) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kEnableStylusTools, true);
@@ -86,42 +83,36 @@ TEST_F(StatusAreaInternalsHandlerTest, TogglePaletteTray) {
   auto* palette_tray = GetStatusAreaWidget()->palette_tray();
   EXPECT_FALSE(palette_tray->GetVisible());
 
-  base::Value::List args;
-  args.Append(true);
-  SendMessage(StatusAreaInternalsHandler::kTogglePalette, args);
+  handler_remote()->TogglePaletteTray(/*visible=*/true);
+  task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(palette_tray->GetVisible());
 
-  args.clear();
-  args.Append(false);
-  SendMessage(StatusAreaInternalsHandler::kTogglePalette, args);
+  handler_remote()->TogglePaletteTray(/*visible=*/false);
+  task_environment()->RunUntilIdle();
 
   EXPECT_FALSE(palette_tray->GetVisible());
 }
 
-// Sending `kTriggerPrivacyIndicators` message from the web UI should update the
-// visibility of the privacy indicators accordingly.
+// Trigger `TriggerPrivacyIndicators` from the test web UI remote should update
+// the visibility of the privacy indicators accordingly.
 TEST_F(StatusAreaInternalsHandlerTest, TriggerPrivacyIndicators) {
   auto* privacy_indicators_view = GetStatusAreaWidget()
                                       ->notification_center_tray()
                                       ->privacy_indicators_view();
   ASSERT_FALSE(privacy_indicators_view->GetVisible());
 
-  base::Value::List args;
-  args.Append("app_id");
-  args.Append("app_name");
-  args.Append(true);
-  args.Append(true);
-  SendMessage(StatusAreaInternalsHandler::kTriggerPrivacyIndicators, args);
+  handler_remote()->TriggerPrivacyIndicators("app_id", "app_name",
+                                             /*is_camera_used=*/true,
+                                             /*is_microphone_used=*/true);
+  task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(privacy_indicators_view->GetVisible());
 
-  args.clear();
-  args.Append("app_id");
-  args.Append("app_name");
-  args.Append(false);
-  args.Append(false);
-  SendMessage(StatusAreaInternalsHandler::kTriggerPrivacyIndicators, args);
+  handler_remote()->TriggerPrivacyIndicators("app_id", "app_name",
+                                             /*is_camera_used=*/false,
+                                             /*is_microphone_used=*/false);
+  task_environment()->RunUntilIdle();
 
   EXPECT_FALSE(privacy_indicators_view->GetVisible());
 }

@@ -13,11 +13,15 @@ build_webui("build") {
     "privacy_indicator_app_manager.ts",
     "status_area_internals.ts",
   ]
+  non_web_component_files = [ "page_handler.ts" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/status_area_internals/mojom/status_area_internals.mojom-webui.ts" ]
+  mojo_files_deps = [ "//chrome/browser/ui/webui/ash/status_area_internals/mojom:mojom_ts__generator" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

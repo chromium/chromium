@@ -17,11 +17,12 @@
 #include "chrome/grit/status_area_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
 
 StatusAreaInternalsUI::StatusAreaInternalsUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui) {
   // Set up the chrome://status-area-internals source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
@@ -33,11 +34,17 @@ StatusAreaInternalsUI::StatusAreaInternalsUI(content::WebUI* web_ui)
       base::make_span(kStatusAreaInternalsResources,
                       kStatusAreaInternalsResourcesSize),
       IDR_STATUS_AREA_INTERNALS_MAIN_HTML);
-
-  web_ui->AddMessageHandler(std::make_unique<StatusAreaInternalsHandler>());
 }
 
 StatusAreaInternalsUI::~StatusAreaInternalsUI() = default;
+
+void StatusAreaInternalsUI::BindInterface(
+    mojo::PendingReceiver<mojom::status_area_internals::PageHandler> receiver) {
+  page_handler_ =
+      std::make_unique<StatusAreaInternalsHandler>(std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(StatusAreaInternalsUI)
 
 StatusAreaInternalsUIConfig::StatusAreaInternalsUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
