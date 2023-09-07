@@ -79,7 +79,7 @@ class CORE_EXPORT SelectorFilter {
   DISALLOW_NEW();
 
  public:
-  class ParentStackFrame {
+  class CORE_EXPORT ParentStackFrame {
     DISALLOW_NEW();
 
    public:
@@ -96,8 +96,15 @@ class CORE_EXPORT SelectorFilter {
   SelectorFilter(const SelectorFilter&) = delete;
   SelectorFilter& operator=(const SelectorFilter&) = delete;
 
+  // Call before the first PushParent(), if you are starting traversal at
+  // some tree scope that is not at the root of the document.
+  void PushAllParentsOf(TreeScope& tree_scope);
+
   void PushParent(Element& parent);
   void PopParent(Element& parent);
+
+  // Work around crbug.com/1478343 by calling the destructors right away.
+  void Clear() { parent_stack_.clear(); }
 
   bool ParentStackIsConsistent(const ContainerNode* parent_node) const {
     return !parent_stack_.empty() &&
@@ -114,6 +121,7 @@ class CORE_EXPORT SelectorFilter {
   void Trace(Visitor*) const;
 
  private:
+  void PushAncestors(const Node& node);
   void PushParentStackFrame(Element& parent);
   void PopParentStackFrame();
 

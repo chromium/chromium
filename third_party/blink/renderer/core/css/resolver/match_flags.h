@@ -12,6 +12,9 @@ namespace blink {
 // During rule-matching, we collect some information about what the match
 // result depended on. This is useful for for e.g. targeted invalidation when
 // hover-state (etc) changes.
+//
+// If you add any new flags here, see if you need to update
+// FlagsCauseInvalidation().
 enum class MatchFlag {
   // The following flags are set when the given pseudo-class is encountered
   // in a right-most compound selector:
