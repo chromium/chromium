@@ -325,6 +325,10 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
     frame_host_->DidAccessInitialMainDocument();
   }
 
+  if (!navigation_requests_.empty()) {
+    session->SuspendSendingMessagesToAgent();
+  }
+
   session->CreateAndAddHandler<protocol::AuditsHandler>();
   session->CreateAndAddHandler<protocol::BackgroundServiceHandler>();
   auto* browser_handler =
