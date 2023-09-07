@@ -314,9 +314,7 @@ void CountVideoConstraintUses(ExecutionContext* context,
 
 void RecordGetDisplayMediaIncludeExcludeConstraintUma(
     absl::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude,
-    const std::string& histogram_suffix) {
-  const std::string histogram_name =
-      "Media.GetDisplayMedia.Constraints." + histogram_suffix;
+    const std::string& histogram_name) {
   const GetDisplayMediaIncludeExcludeConstraint value =
       (!include_or_exclude.has_value()
            ? GetDisplayMediaIncludeExcludeConstraint::kNotSpecified
@@ -505,7 +503,7 @@ UserMediaRequest* UserMediaRequest::Create(
       include_or_exclude = options->systemAudio().AsEnum();
     }
     RecordGetDisplayMediaIncludeExcludeConstraintUma(
-        include_or_exclude, /*histogram_suffix=*/"SystemAudio");
+        include_or_exclude, "Media.GetDisplayMedia.Constraints.SystemAudio");
   }
 
   // The default is to include.
@@ -526,7 +524,8 @@ UserMediaRequest* UserMediaRequest::Create(
       include_or_exclude = options->selfBrowserSurface().AsEnum();
     }
     RecordGetDisplayMediaIncludeExcludeConstraintUma(
-        include_or_exclude, /*histogram_suffix=*/"SelfBrowserSurface");
+        include_or_exclude,
+        "Media.GetDisplayMedia.Constraints.SelfBrowserSurface");
   }
 
   mojom::blink::PreferredDisplaySurface preferred_display_surface =
@@ -553,7 +552,8 @@ UserMediaRequest* UserMediaRequest::Create(
       include_or_exclude = options->surfaceSwitching().AsEnum();
     }
     RecordGetDisplayMediaIncludeExcludeConstraintUma(
-        include_or_exclude, /*histogram_suffix=*/"SurfaceSwitching");
+        include_or_exclude,
+        "Media.GetDisplayMedia.Constraints.SurfaceSwitching");
   }
 
   // The default is to include.
@@ -575,7 +575,8 @@ UserMediaRequest* UserMediaRequest::Create(
       include_or_exclude = options->monitorTypeSurfaces().AsEnum();
     }
     RecordGetDisplayMediaIncludeExcludeConstraintUma(
-        include_or_exclude, /*histogram_suffix=*/"MonitorTypeSurfaces");
+        include_or_exclude,
+        "Media.GetDisplayMedia.Constraints.MonitorTypeSurfaces");
   }
 
   result->set_suppress_local_audio_playback(
