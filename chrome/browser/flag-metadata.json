@@ -5764,7 +5764,7 @@
   {
     "name": "ntp-comprehensive-theme-realbox",
     "owners": [ "romanarora", "tiborg", "tluk" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-desktop-lens",
@@ -5834,12 +5834,12 @@
   {
     "name": "ntp-modules-header-icon",
     "owners": [ "romanarora", "mfacey", "tiborg" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-modules-redesigned",
     "owners": [ "mahmadi", "tiborg", "romanarora" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 122
   },
   {
     "name": "ntp-photos-module",
@@ -5919,7 +5919,7 @@
   {
     "name": "ntp-wide-modules",
     "owners": [ "//components/search/OWNERS" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "offline-pages-live-page-sharing",
