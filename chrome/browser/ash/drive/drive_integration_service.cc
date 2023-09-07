@@ -404,14 +404,12 @@ void DriveIntegrationService::RegisterPrefs() {
                             base::Unretained(this)));
   }
 
-  DCHECK(!network_state_handler_);
   if (!ash::NetworkHandler::IsInitialized()) {
     return;  // Test environment.
   }
 
-  network_state_handler_ = ash::NetworkHandler::Get()->network_state_handler();
-  DCHECK(network_state_handler_);
-  network_state_handler_->AddObserver(this);
+  network_state_handler_.Observe(
+      ash::NetworkHandler::Get()->network_state_handler());
 }
 
 class DriveIntegrationService::DriveFsHolder
@@ -642,12 +640,7 @@ DriveIntegrationService::DriveIntegrationService(
   SetEnabled(util::IsDriveEnabledForProfile(profile));
 }
 
-DriveIntegrationService::~DriveIntegrationService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (network_state_handler_) {
-    network_state_handler_->RemoveObserver(this);
-  }
-}
+DriveIntegrationService::~DriveIntegrationService() = default;
 
 void DriveIntegrationService::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -974,8 +967,6 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
 
   if (pin_manager_) {
     pin_manager_->Stop();
-    pin_manager_->RemoveObserver(this);
-    GetDriveFsHost()->RemoveObserver(pin_manager_.get());
     pin_manager_.reset();
   }
 }
@@ -1074,7 +1065,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
       OnProgress(pin_manager_->GetProgress());
     }
 
-    GetDriveFsHost()->AddObserver(pin_manager_.get());
+    pin_manager_->SetDriveFsHost(GetDriveFsHost());
 
     // Ensure the new PinManager has the right view of the network state.
     pin_manager_->SetOnline(is_online_);
@@ -1733,10 +1724,7 @@ void DriveIntegrationService::DefaultNetworkChanged(const ash::NetworkState*) {
 
 void DriveIntegrationService::OnShuttingDown() {
   VLOG(1) << "OnShuttingDown";
-  if (network_state_handler_) {
-    network_state_handler_->RemoveObserver(this);
-    network_state_handler_ = nullptr;
-  }
+  network_state_handler_.Reset();
 }
 
 //===================== DriveIntegrationServiceFactory =======================

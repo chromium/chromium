@@ -20,12 +20,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom.h"
@@ -170,7 +172,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 //  - Rebuild the progress of bulk pinned items (if turned off mid way through a
 //    bulk pinning event).
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
-    : public DriveFsHostObserver,
+    : DriveFsHostObserver,
       ash::UserDataAuthClient::Observer,
       ash::SpacedClient::Observer,
       chromeos::PowerManagerClient::Observer {
@@ -186,6 +188,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   PinManager& operator=(const PinManager&) = delete;
 
   ~PinManager() override;
+
+  void SetDriveFsHost(DriveFsHost* const host) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    drivefs_host_.Observe(host);
+  }
 
   // Starts up the manager, which will first search for any unpinned items and
   // pin them (within the users My drive) then turn to a "monitoring" phase
@@ -240,7 +247,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Notify any ongoing syncing events that a delete operation has occurred.
   void NotifyDelete(Id id, const Path& path);
 
-  // drivefs::DriveFsHostObserver
+  // DriveFsHostObserver implementation.
   void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) override;
   void OnUnmounted() override;
   void OnFilesChanged(const std::vector<mojom::FileChange>& changes) override;
@@ -415,13 +422,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Report progress to all the observers.
   void NotifyProgress();
 
-  // ash::UserDataAuthClient::Observer
+  // UserDataAuthClient::Observer implementation.
   void LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) override;
 
-  // ash::SpacedClient::Observer
+  // SpacedClient::Observer implementation.
   void OnSpaceUpdate(const SpaceEvent& event) override;
 
-  // chromeos::PowerManagerClient::Observer
+  // PowerManagerClient::Observer implementation.
   void BatterySaverModeStateChanged(
       const power_manager::BatterySaverModeState& state) override;
 
@@ -482,9 +489,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   bool should_pin_files_for_testing_ GUARDED_BY_CONTEXT(sequence_checker_) =
       true;
 
-  // `spaced` daemon client.
-  raw_ptr<ash::SpacedClient, ExperimentalAsh> spaced_
-      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  GUARDED_BY_CONTEXT(sequence_checker_)
+  base::ScopedObservation<DriveFsHost, DriveFsHostObserver> drivefs_host_{this};
+
+  GUARDED_BY_CONTEXT(sequence_checker_)
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_{this};
+
+  GUARDED_BY_CONTEXT(sequence_checker_)
+  base::ScopedObservation<ash::UserDataAuthClient,
+                          ash::UserDataAuthClient::Observer>
+      user_data_auth_client_{this};
+
+  GUARDED_BY_CONTEXT(sequence_checker_)
+  base::ScopedObservation<ash::SpacedClient, ash::SpacedClient::Observer>
+      spaced_client_{this};
 
   SpaceGetter space_getter_ GUARDED_BY_CONTEXT(sequence_checker_);
   CompletionCallback completion_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
