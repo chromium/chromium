@@ -1030,3 +1030,44 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogWithRpContext) {
     EXPECT_EQ(controller->GetRpContext(), blink::mojom::RpContext::kUse);
   }
 }
+
+// Tests the flow for when the "got it" button on the error dialog is clicked.
+TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogGotItClicked) {
+  // Trigger error dialog.
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowErrorDialog();
+  EXPECT_TRUE(widget_->IsVisible());
+
+  // Emulate user clicking on "got it" button in the error dialog.
+  AccountSelectionBubbleView::Observer* observer =
+      static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
+  observer->OnGotItButtonClicked(CreateMouseEvent());
+
+  // Widget should be closed.
+  EXPECT_TRUE(widget_->IsClosed());
+}
+
+// Tests the flow for when the "more details" button on the error dialog is
+// clicked.
+TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogMoreDetailsClicked) {
+  // Trigger error dialog.
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowErrorDialog();
+  EXPECT_TRUE(widget_->IsVisible());
+
+  // Emulate user clicking on "more details" button in the error dialog.
+  AccountSelectionBubbleView::Observer* observer =
+      static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
+  observer->OnMoreDetailsButtonClicked(GURL(), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Widget should be hidden but not closed.
+  EXPECT_FALSE(widget_->IsVisible());
+  EXPECT_FALSE(widget_->IsClosed());
+
+  // Emulate user closing the pop-up window.
+  controller->OnPopupWindowDestroyed();
+
+  // Widget should be closed.
+  EXPECT_TRUE(widget_->IsClosed());
+}

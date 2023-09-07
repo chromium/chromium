@@ -199,6 +199,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                      const ui::Event& event) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked(const ui::Event& event) override;
+  void OnMoreDetailsButtonClicked(const GURL& url,
+                                  const ui::Event& event) override;
+  void OnGotItButtonClicked(const ui::Event& event) override;
   void OnSigninToIdP() override;
 
   void ShowVerifyingSheet(const Account& account,
@@ -230,7 +233,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
 
-  std::unique_ptr<FedCmModalDialogView> idp_signin_modal_dialog_;
+  std::unique_ptr<FedCmModalDialogView> popup_window_;
 
   // If dialog has been populated with accounts as a result of the IDP sign-in
   // flow but the IDP sign-in pop-up window has not been closed yet, we use this

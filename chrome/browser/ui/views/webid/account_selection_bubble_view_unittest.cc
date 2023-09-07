@@ -401,7 +401,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 
   void TestErrorDialog(const std::u16string expected_title,
                        const absl::optional<std::u16string> expected_subtitle,
-                       bool expect_idp_brand_icon_in_header) {
+                       bool expect_idp_brand_icon_in_header,
+                       const GURL& error_url) {
     CreateAccountSelectionBubble(
         /*exclude_title=*/false,
         /*exclude_iframe=*/!expected_subtitle.has_value(),
@@ -412,10 +413,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
             ? absl::make_optional<std::u16string>(kIframeETLDPlusOne)
             : absl::nullopt,
         kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-        /*error=*/absl::nullopt);
+        content::IdentityCredentialTokenError(/*code=*/0, error_url));
 
     const std::vector<views::View*> children = dialog()->children();
-    ASSERT_EQ(children.size(), 3u);
+    ASSERT_EQ(children.size(), 4u);
 
     PerformHeaderChecks(children[0], expected_title, expected_subtitle,
                         expect_idp_brand_icon_in_header);
@@ -429,13 +430,39 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     views::Label* summary =
         static_cast<views::Label*>(error_dialog_children[0]);
     ASSERT_TRUE(summary);
-    EXPECT_EQ(summary->GetText(), u"Cannot continue with idp-example.com.");
+    EXPECT_EQ(summary->GetText(), u"Can't continue with idp-example.com");
 
     // Check the description shown.
     views::Label* description =
         static_cast<views::Label*>(error_dialog_children[1]);
     ASSERT_TRUE(description);
-    EXPECT_EQ(description->GetText(), u"Something went wrong.");
+    EXPECT_EQ(description->GetText(), u"Something went wrong");
+
+    // Check the buttons shown.
+    const std::vector<views::View*> button_row = children[3]->children();
+
+    if (error_url.is_empty()) {
+      ASSERT_EQ(button_row.size(), 1u);
+
+      views::MdTextButton* got_it_button =
+          static_cast<views::MdTextButton*>(button_row[0]);
+      ASSERT_TRUE(got_it_button);
+      EXPECT_EQ(
+          got_it_button->GetText(),
+          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
+      return;
+    }
+
+    ASSERT_EQ(button_row.size(), 2u);
+    for (size_t i = 0; i < button_row.size(); ++i) {
+      views::MdTextButton* button =
+          static_cast<views::MdTextButton*>(button_row[i]);
+      ASSERT_TRUE(button);
+      EXPECT_EQ(button->GetText(),
+                l10n_util::GetStringUTF16(
+                    i == 0 ? IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON
+                           : IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
+    }
   }
 
   // Checks the account rows starting at `accounts[accounts_index]`. Updates
@@ -890,5 +917,13 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
 TEST_F(AccountSelectionBubbleViewTest, Error) {
   TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
                   /*expected_subtitle=*/absl::nullopt,
-                  /*expect_idp_brand_icon_in_header=*/true);
+                  /*expect_idp_brand_icon_in_header=*/true,
+                  /*error_url=*/GURL());
+}
+
+TEST_F(AccountSelectionBubbleViewTest, ErrorWithMoreDetails) {
+  TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
+                  /*expected_subtitle=*/absl::nullopt,
+                  /*expect_idp_brand_icon_in_header=*/true,
+                  GURL(u"https://idp-example.com/more-details"));
 }
