@@ -159,13 +159,14 @@ void FileSystemAccessFileHandleImpl::AsBlob(AsBlobCallback callback) {
 void FileSystemAccessFileHandleImpl::CreateFileWriter(
     bool keep_existing_data,
     bool auto_close,
+    blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessFileHandleImpl::CreateFileWriterImpl,
-                     weak_factory_.GetWeakPtr(), keep_existing_data,
-                     auto_close),
+                     weak_factory_.GetWeakPtr(), keep_existing_data, auto_close,
+                     mode),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         CreateFileWriterCallback callback) {
         std::move(callback).Run(std::move(result), mojo::NullRemote());
@@ -487,6 +488,7 @@ void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
 void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
     bool keep_existing_data,
     bool auto_close,
+    blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
@@ -499,18 +501,19 @@ void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
         base::BindOnce(&HasWritePermission, url().path()),
         base::BindOnce(
             &FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions,
-            weak_factory_.GetWeakPtr(), keep_existing_data, auto_close,
+            weak_factory_.GetWeakPtr(), keep_existing_data, auto_close, mode,
             std::move(callback)));
     return;
   }
 
-  DidVerifyHasWritePermissions(keep_existing_data, auto_close,
+  DidVerifyHasWritePermissions(keep_existing_data, auto_close, mode,
                                std::move(callback), /*can_write=*/true);
 }
 
 void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
     bool keep_existing_data,
     bool auto_close,
+    blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
     CreateFileWriterCallback callback,
     bool can_write) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -523,7 +526,12 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
     return;
   }
 
-  auto lock = manager()->TakeLock(url(), manager()->GetWFSSiloedLockType());
+  FileSystemAccessLockManager::LockType lock_type =
+      mode == blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed
+          ? manager()->GetWFSSiloedLockType()
+          : manager()->GetExclusiveLockType();
+
+  auto lock = manager()->TakeLock(url(), lock_type);
   if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(

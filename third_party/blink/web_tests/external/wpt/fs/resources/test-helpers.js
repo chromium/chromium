@@ -4,6 +4,18 @@ const kCurrentDirectory = '.';
 // A special path component meaning "the parent directory."
 const kParentDirectory = '..';
 
+// The lock modes of a writable file stream.
+const WFS_MODES = ['siloed', 'exclusive'];
+
+// The lock modes of an access handle.
+const SAH_MODES = ['readwrite', 'read-only', 'readwrite-unsafe'];
+
+// Possible return values of testLockAccess.
+const LOCK_ACCESS = {
+  SHARED: 'shared',
+  EXCLUSIVE: 'exclusive',
+};
+
 // Array of separators used to separate components in hierarchical paths.
 let kPathSeparators;
 if (navigator.userAgent.includes('Windows NT')) {
@@ -120,8 +132,13 @@ function cleanupLockPromise(t, lockPromise) {
   return cleanup(t, lockPromise, () => releaseLock(lockPromise));
 }
 
-function createWritableWithCleanup(t, fileHandle) {
-  return cleanupLockPromise(t, fileHandle.createWritable());
+function createWFSWithCleanup(t, fileHandle, wfsOptions) {
+  return cleanupLockPromise(t, fileHandle.createWritable(wfsOptions));
+}
+
+// Returns createWFSWithCleanup bound with wfsOptions.
+function createWFSWithCleanupFactory(wfsOptions) {
+  return (t, fileHandle) => createWFSWithCleanup(t, fileHandle, wfsOptions);
 }
 
 function createSAHWithCleanup(t, fileHandle, sahOptions) {
@@ -173,7 +190,7 @@ function generateCrossLockTests(createLock1, createLock2, testDescs) {
     // This tests that a lock can't be acquired on a file that already has a
     // lock of another type.
     sameFile: async (t, rootDir) => {
-      const [fileHandle] = await createFileHandles(rootDir, 'OPFS.test');
+      const [fileHandle] = await createFileHandles(rootDir, 'BFS.test');
 
       createLock1(t, fileHandle);
       await promise_rejects_dom(
@@ -194,7 +211,7 @@ function generateCrossLockTests(createLock1, createLock2, testDescs) {
     // released, another lock of another type can be acquired. This will fail if
     // `createLock1` and `createLock2` create the same shared lock.
     acquireAfterRelease: async (t, rootDir) => {
-      let [fileHandle] = await createFileHandles(rootDir, 'OPFS.test');
+      let [fileHandle] = await createFileHandles(rootDir, 'BFS.test');
 
       const lockPromise = createLock1(t, fileHandle);
       await promise_rejects_dom(
@@ -202,7 +219,7 @@ function generateCrossLockTests(createLock1, createLock2, testDescs) {
 
       await releaseLock(lockPromise);
       // Recreate the file in case releasing the lock moves/removes it.
-      [fileHandle] = await createFileHandles(rootDir, 'OPFS.test');
+      [fileHandle] = await createFileHandles(rootDir, 'BFS.test');
       await createLock2(t, fileHandle);
     },
 
@@ -210,7 +227,7 @@ function generateCrossLockTests(createLock1, createLock2, testDescs) {
     // acquired on a file and then all released, another lock of another lock
     // type can be acquired.
     multiAcquireAfterRelease: async (t, rootDir) => {
-      const [fileHandle] = await createFileHandles(rootDir, 'OPFS.test');
+      const [fileHandle] = await createFileHandles(rootDir, 'BFS.test');
 
       const lock1 = await createLock1(t, fileHandle);
       const lock2 = await createLock1(t, fileHandle);
@@ -229,7 +246,7 @@ function generateCrossLockTests(createLock1, createLock2, testDescs) {
     // acquired on a file contained within that directory.
     takeDirThenFile: async (t, rootDir) => {
       const dirHandle = await rootDir.getDirectoryHandle('foo', {create: true});
-      const [fileHandle] = await createFileHandles(dirHandle, 'OPFS.test');
+      const [fileHandle] = await createFileHandles(dirHandle, 'BFS.test');
 
       createLock1(t, dirHandle);
       await promise_rejects_dom(
@@ -243,7 +260,7 @@ function generateCrossLockTests(createLock1, createLock2, testDescs) {
           await rootDir.getDirectoryHandle('foo', {create: true});
       const parentHandle =
           await grandparentHandle.getDirectoryHandle('bar', {create: true});
-      let [fileHandle] = await createFileHandles(parentHandle, 'OPFS.test');
+      let [fileHandle] = await createFileHandles(parentHandle, 'BFS.test');
 
       // Test parent handle.
       const lock1 = createLock1(t, fileHandle);
@@ -253,7 +270,7 @@ function generateCrossLockTests(createLock1, createLock2, testDescs) {
       // Release the lock so we can recreate it.
       await releaseLock(lock1);
       // Recreate the file in case releasing the lock moves/removes it.
-      [fileHandle] = await createFileHandles(parentHandle, 'OPFS.test');
+      [fileHandle] = await createFileHandles(parentHandle, 'BFS.test');
 
       // Test grandparent handle.
       createLock1(t, fileHandle);
@@ -261,4 +278,24 @@ function generateCrossLockTests(createLock1, createLock2, testDescs) {
           t, 'NoModificationAllowedError', createLock2(t, grandparentHandle));
     },
   });
+}
+
+// Tests whether the multiple locks can be created by createLock on a file
+// handle or if only one can. Returns LOCK_ACCESS.SHARED for the former and
+// LOCK_ACCESS.EXCLUSIVE for the latter.
+async function testLockAccess(t, fileHandle, createLock) {
+  createLock(t, fileHandle);
+
+  let access;
+  try {
+    await createLock(t, fileHandle);
+    access = LOCK_ACCESS.SHARED;
+  } catch (e) {
+    access = LOCK_ACCESS.EXCLUSIVE;
+    assert_throws_dom('NoModificationAllowedError', () => {
+      throw e;
+    });
+  }
+
+  return access;
 }

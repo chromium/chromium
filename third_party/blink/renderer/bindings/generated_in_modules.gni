@@ -1298,6 +1298,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_permission_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_sync_access_handle_mode.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_sync_access_handle_mode.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_writable_file_stream_mode.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_writable_file_stream_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptic_actuator_type.cc",

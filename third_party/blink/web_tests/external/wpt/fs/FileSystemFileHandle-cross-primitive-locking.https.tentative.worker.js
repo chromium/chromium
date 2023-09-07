@@ -42,17 +42,31 @@ function generateCrossLockRemoveTests(lockName, createLock) {
   });
 }
 
+// Gets the name of a writable file stream opened in `wfsMode` to be used in
+// tests.
+function getWFSLockName(wfsMode) {
+  return `an open writable stream in ${wfsMode} mode`
+}
+
 // Adds tests to test the interaction between a lock created by an open writable
 // and a lock created by `createLock`.
-function generateCrossLockWFSTests(lockName, createLock) {
-  generateCrossLockTests(createWritableWithCleanup, createLock, {
-    sameFile: `When there's an open writable stream on a file, cannot have a` +
+function generateCrossLockWFSTests(lockName, createLock, wfsMode) {
+  const WFSLockName = getWFSLockName(wfsMode);
+  const tests = {
+    sameFile: `When there's ${WFSLockName} on a file, cannot have` +
         ` ${lockName} on that same file`,
-    diffFile: `A writable stream from one file does not interfere with a` +
+    diffFile: `A file with ${WFSLockName} does not interfere with` +
         ` ${lockName} on another file`,
-    multiAcquireAfterRelease: `After all writable streams have been closed` +
-        ` for a file, that file can have ${lockName}`,
-  });
+  };
+  if (wfsMode === 'siloed') {
+    tests.multiAcquireAfterRelease = `After all writable streams in siloed` +
+        ` mode have been closed for a file, that file can have ${lockName}`;
+  } else {
+    tests.acquireAfterRelease = `After a writable stream in exclusive mode` +
+        ` has been closed for a file, that file can have ${lockName}`;
+  }
+  generateCrossLockTests(
+      createWFSWithCleanupFactory({mode: wfsMode}), createLock, tests);
 }
 
 // Adds tests to test the interaction between a lock created by an open access
@@ -82,28 +96,40 @@ function generateCrossLockSAHTests(sahMode) {
   });
 
   // Test interaction between WFS locks and SAH locks.
-  generateCrossLockWFSTests(SAHLockName, createSAHLock);
-  generateCrossLockTests(createSAHLock, createWritableWithCleanup, {
-    sameFile: `When there's ${SAHLockName} on a file, cannot open a writable` +
-        ` stream on that same file`,
-    diffFile: `A file with ${SAHLockName} does not interfere with the` +
-        ` creation of a writable stream on another file`
-  });
+  for (const wfsMode of WFS_MODES) {
+    const WFSLockName = getWFSLockName(wfsMode);
+    const wfsOptions = {mode: wfsMode};
+    generateCrossLockWFSTests(SAHLockName, createSAHLock, wfsMode);
+    generateCrossLockTests(
+        createSAHLock, createWFSWithCleanupFactory(wfsOptions), {
+          sameFile: `When there's ${SAHLockName} on a file, cannot open` +
+              ` ${WFSLockName} on that same file`,
+          diffFile: `A file with ${SAHLockName} does not interfere with the` +
+              ` creation of ${WFSLockName} on another file`,
+        });
+  }
 }
 
-generateCrossLockSAHTests('readwrite');
-generateCrossLockSAHTests('read-only');
-generateCrossLockSAHTests('readwrite-unsafe');
+// Test interaction for each SAH lock mode.
+for (const sahMode of SAH_MODES) {
+  generateCrossLockSAHTests(sahMode);
+}
 
-// Test interaction between move locks and WFS locks.
-generateCrossLockMoveTests(
-  'an open writable stream', createWritableWithCleanup);
-generateCrossLockWFSTests('an ongoing move operation', createMoveWithCleanup);
+// Test interaction for each WFS lock mode.
+for (const wfsMode of WFS_MODES) {
+  const WFSLockName = getWFSLockName(wfsMode);
+  const wfsOptions = {mode: wfsMode};
+  // Test interaction between move locks and WFS locks.
+  generateCrossLockMoveTests(
+      WFSLockName, createWFSWithCleanupFactory(wfsOptions));
+  generateCrossLockWFSTests(
+      'an ongoing move operation', createMoveWithCleanup, wfsMode);
 
-// Test interaction between remove locks and WFS locks.
-generateCrossLockRemoveTests(
-    'an open writable stream', createWritableWithCleanup);
-generateCrossLockWFSTests(
-    'an ongoing remove operation', createRemoveWithCleanup);
+  // Test interaction between remove locks and WFS locks.
+  generateCrossLockRemoveTests(
+      WFSLockName, createWFSWithCleanupFactory(wfsOptions));
+  generateCrossLockWFSTests(
+      'an ongoing remove operation', createRemoveWithCleanup, wfsMode);
+}
 
 done();

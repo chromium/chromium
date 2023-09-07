@@ -50,10 +50,24 @@ ScriptPromise FileSystemFileHandle::createWritable(
       script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
+  mojom::blink::FileSystemAccessWritableFileStreamLockMode lock_mode;
+
+  switch (options->mode().AsEnum()) {
+    case V8FileSystemWritableFileStreamMode::Enum::kExclusive:
+      lock_mode =
+          mojom::blink::FileSystemAccessWritableFileStreamLockMode::kExclusive;
+      break;
+    case V8FileSystemWritableFileStreamMode::Enum::kSiloed:
+      lock_mode =
+          mojom::blink::FileSystemAccessWritableFileStreamLockMode::kSiloed;
+      break;
+  }
+
   mojo_ptr_->CreateFileWriter(
-      options->keepExistingData(), options->autoClose(),
+      options->keepExistingData(), options->autoClose(), lock_mode,
       WTF::BindOnce(
           [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
+             V8FileSystemWritableFileStreamMode lock_mode,
              mojom::blink::FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>
                  writer) {
@@ -69,9 +83,9 @@ ScriptPromise FileSystemFileHandle::createWritable(
             }
 
             resolver->Resolve(FileSystemWritableFileStream::Create(
-                script_state, std::move(writer)));
+                script_state, std::move(writer), lock_mode));
           },
-          WrapPersistent(this), WrapPersistent(resolver)));
+          WrapPersistent(this), WrapPersistent(resolver), options->mode()));
 
   return result;
 }

@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_writable_file_stream_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
@@ -24,8 +25,13 @@ class FileSystemWritableFileStream final : public WritableStream {
 
  public:
   static FileSystemWritableFileStream* Create(
-      ScriptState*,
-      mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>);
+      ScriptState* script_state,
+      mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>
+          writer_pending_remote,
+      V8FileSystemWritableFileStreamMode lock_mode);
+
+  explicit FileSystemWritableFileStream(
+      V8FileSystemWritableFileStreamMode lock_mode);
 
   void Trace(Visitor* visitor) const override;
 
@@ -36,9 +42,12 @@ class FileSystemWritableFileStream final : public WritableStream {
       ExceptionState&);
   ScriptPromise truncate(ScriptState*, uint64_t size, ExceptionState&);
   ScriptPromise seek(ScriptState*, uint64_t offset, ExceptionState&);
+  const char* mode() const;
 
  private:
   Member<FileSystemUnderlyingSink> underlying_sink_;
+
+  const V8FileSystemWritableFileStreamMode lock_mode_;
 };
 }  // namespace blink
 
