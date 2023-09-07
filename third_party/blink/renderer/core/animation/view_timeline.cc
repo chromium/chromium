@@ -23,11 +23,9 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 
 namespace blink {
@@ -501,28 +499,33 @@ absl::optional<gfx::SizeF> ViewTimeline::SubjectSize() const {
   if (!subject()) {
     return absl::nullopt;
   }
-  LayoutObject* subject_layout_object = subject()->GetLayoutObject();
+  const LayoutObject* subject_layout_object = subject()->GetLayoutObject();
   if (!subject_layout_object) {
     return absl::nullopt;
   }
 
-  if (subject_layout_object->IsBox()) {
-    PhysicalRect rect =
-        To<LayoutBox>(subject_layout_object)->PhysicalBorderBoxRect();
-    return gfx::SizeF(rect.Width().ToDouble(), rect.Height().ToDouble());
-  }
-
-  if (subject_layout_object->IsLayoutInline()) {
-    gfx::RectF rect =
-        To<LayoutInline>(subject_layout_object)->LocalBoundingBoxRectF();
-    return gfx::SizeF(rect.width(), rect.height());
-  }
-
   if (subject_layout_object->IsSVGChild()) {
-    PhysicalRect rect = SVGLayoutSupport::VisualRectInAncestorSpace(
-        *subject_layout_object,
-        *To<SVGElement>(subject())->ownerSVGElement()->GetLayoutBox());
-    return gfx::SizeF(rect.Width().ToDouble(), rect.Height().ToDouble());
+    // Find the outermost SVG root.
+    const LayoutObject* svg_root = subject_layout_object->Parent();
+    while (svg_root && !svg_root->IsSVGRoot()) {
+      svg_root = svg_root->Parent();
+    }
+    // Map the bounds of the element into the (border-box relative) coordinate
+    // space of the CSS box of the outermost SVG root.
+    const gfx::QuadF local_bounds(
+        subject_layout_object->DecoratedBoundingBox());
+    return subject_layout_object
+        ->LocalToAncestorQuad(local_bounds, To<LayoutSVGRoot>(svg_root))
+        .BoundingBox()
+        .size();
+  }
+
+  if (auto* layout_box = DynamicTo<LayoutBox>(subject_layout_object)) {
+    return gfx::SizeF(layout_box->Size());
+  }
+
+  if (auto* layout_inline = DynamicTo<LayoutInline>(subject_layout_object)) {
+    return layout_inline->LocalBoundingBoxRectF().size();
   }
 
   return absl::nullopt;
@@ -540,9 +543,8 @@ absl::optional<gfx::PointF> ViewTimeline::SubjectPosition(
   }
   MapCoordinatesFlags flags =
       kIgnoreScrollOffset | kIgnoreStickyOffset | kIgnoreTransforms;
-  gfx::PointF subject_pos =
-      gfx::PointF(subject_layout_object->LocalToAncestorPoint(
-          PhysicalOffset(), source_layout_box, flags));
+  gfx::PointF subject_pos = subject_layout_object->LocalToAncestorPoint(
+      gfx::PointF(), source_layout_box, flags);
 
   // We call LayoutObject::ClientLeft/Top directly and avoid
   // Element::clientLeft/Top because:
