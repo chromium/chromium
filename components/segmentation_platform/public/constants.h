@@ -183,6 +183,7 @@ const char kMostVisitedTiles[] = "MostVisitedTiles";
 const char kShortcuts[] = "Shortcuts";
 const char kSafetyCheck[] = "SafetyCheck";
 const char kTabResumption[] = "TabResumption";
+const char kParcelTracking[] = "ParcelTracking";
 
 // Input Context keys for freshness for IOS modules.
 const char kMostVisitedTilesFreshness[] = "most_visited_tiles_freshness";

@@ -22,7 +22,7 @@ using proto::SegmentId;
 // Default parameters for IosModuleRanker model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER;
-constexpr int64_t kModelVersion = 2;
+constexpr int64_t kModelVersion = 3;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
 // Wait until we have 0 days of data.
@@ -30,12 +30,13 @@ constexpr int64_t kMinSignalCollectionLength = 0;
 // Refresh the result every time.
 constexpr int64_t kResultTTLMinutes = 1;
 
-constexpr std::array<const char*, 4> kIosModuleLabels = {
-    kMostVisitedTiles, kShortcuts, kSafetyCheck, kTabResumption};
+constexpr std::array<const char*, 5> kIosModuleLabels = {
+    kMostVisitedTiles, kShortcuts, kSafetyCheck, kTabResumption,
+    kParcelTracking};
 
-constexpr std::array<const char*, 4> kIosModuleInputContextKeys = {
+constexpr std::array<const char*, 5> kIosModuleInputContextKeys = {
     kMostVisitedTilesFreshness, kShortcutsFreshness, kSafetyCheckFreshness,
-    kTabResumptionFreshness};
+    kTabResumptionFreshness, kParcelTrackingFreshness};
 
 // InputFeatures.
 
@@ -47,10 +48,12 @@ constexpr std::array<int32_t, 1> kEnumValueForShortcuts{/*Shortcuts=*/1};
 constexpr std::array<int32_t, 1> kEnumValueForSafetyCheck{/*SafetyCheck=*/7};
 constexpr std::array<int32_t, 1> kEnumValueForTabResumption{
     /*TabResumption=*/8};
+constexpr std::array<int32_t, 1> kEnumValueForParcelTracking{
+    /*ParcelTracking=*/9};
 
 // TODO(ritikagup) : Loop through all the modules for these features for better
 // readability. Set UMA metrics to use as input.
-constexpr std::array<MetadataWriter::UMAFeature, 26> kUMAFeatures = {
+constexpr std::array<MetadataWriter::UMAFeature, 30> kUMAFeatures = {
     // Most Visited Tiles
     // 0
     MetadataWriter::UMAFeature::FromEnumHistogram("IOS.MagicStack.Module.Click",
@@ -191,6 +194,32 @@ constexpr std::array<MetadataWriter::UMAFeature, 26> kUMAFeatures = {
         28,
         kEnumValueForTabResumption.data(),
         kEnumValueForTabResumption.size()),
+
+    // Parcel Tracking
+    // 26
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.Click",
+        7,
+        kEnumValueForParcelTracking.data(),
+        kEnumValueForParcelTracking.size()),
+    // 27
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.TopImpression",
+        7,
+        kEnumValueForParcelTracking.data(),
+        kEnumValueForParcelTracking.size()),
+    // 28
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.Click",
+        28,
+        kEnumValueForParcelTracking.data(),
+        kEnumValueForParcelTracking.size()),
+    // 29
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.TopImpression",
+        28,
+        kEnumValueForParcelTracking.data(),
+        kEnumValueForParcelTracking.size()),
 };
 
 }  // namespace
@@ -241,6 +270,7 @@ IosModuleRanker::GetModelConfig() {
   writer.AddFromInputContext("shortcuts_input", kShortcutsFreshness);
   writer.AddFromInputContext("safety_check_input", kSafetyCheckFreshness);
   writer.AddFromInputContext("tab_resumption_input", kTabResumptionFreshness);
+  writer.AddFromInputContext("parcel_tracking_input", kParcelTrackingFreshness);
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
@@ -260,10 +290,11 @@ void IosModuleRanker::ExecuteModelWithInput(
 
   ModelProvider::Response response(kIosModuleLabels.size(), 0);
   // Default ranking
-  response[0] = 4;  // Most Visited Tiles
-  response[1] = 3;  // Shortcuts
-  response[2] = 2;  // Safety Check
-  response[3] = 1;  // Tab resumption
+  response[0] = 5;  // Most Visited Tiles
+  response[1] = 4;  // Shortcuts
+  response[2] = 3;  // Safety Check
+  response[3] = 2;  // Tab resumption
+  response[4] = 1;  // Parcel Tracking
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));

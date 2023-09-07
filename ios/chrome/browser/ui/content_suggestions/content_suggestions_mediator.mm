@@ -1126,6 +1126,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       segmentation_platform::kTabResumptionFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           tab_resumption_freshness_impression_count));
+  int parcel_tracking_freshness_impression_count = _localState->GetInteger(
+      prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kParcelTrackingFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          parcel_tracking_freshness_impression_count));
   __weak ContentSuggestionsMediator* weakSelf = self;
   segmentation_platform::PredictionOptions options;
   options.on_demand_execution = true;
