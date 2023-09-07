@@ -20,7 +20,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -188,8 +187,9 @@ class CrosUsbNotificationDelegate
   }
 
   void Close(bool by_user) override {
-    if (by_user)
+    if (by_user) {
       disposition_ = CrosUsbNotificationClosed::kByUser;
+    }
   }
 
  private:
@@ -329,7 +329,7 @@ void ShowNotificationForDevice(const std::string& guid,
         chromeos::settings::mojom::kArcVmUsbPreferencesSubpagePath;
   }
 
-  if (bruschetta::BruschettaFeatures::Get()->IsEnabled()) {
+  if (bruschetta::IsInstalled(profile(), bruschetta::GetBruschettaAlphaId())) {
     vm_name = bruschetta::GetOverallVmName(profile());
     rich_notification_data.buttons.emplace_back(
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
@@ -345,8 +345,9 @@ void ShowNotificationForDevice(const std::string& guid,
       IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION, label,
       CombineVmNames(vm_names_in_notification));
 
-  if (vm_names.size() > 1)
+  if (vm_names.size() > 1) {
     settings_sub_page = std::string();
+  }
 
   std::string notification_id = CrosUsbDetector::MakeNotificationId(guid);
   message_center::Notification notification(
@@ -535,7 +536,8 @@ bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
 
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
       !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile()) &&
-      !IsPlayStoreEnabledWithArcVmForProfile(profile())) {
+      !IsPlayStoreEnabledWithArcVmForProfile(profile()) &&
+      !bruschetta::IsInstalled(profile(), bruschetta::GetBruschettaAlphaId())) {
     return false;
   }
 
@@ -852,9 +854,10 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
 
 void CrosUsbDetector::OnListAttachedDevices(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
-  for (device::mojom::UsbDeviceInfoPtr& device_info : devices)
+  for (device::mojom::UsbDeviceInfoPtr& device_info : devices) {
     CrosUsbDetector::OnDeviceAdded(std::move(device_info),
                                    /*hide_notification*/ true);
+  }
 }
 
 void CrosUsbDetector::UnmountFilesystems(

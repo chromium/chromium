@@ -19,7 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/bruschetta/fake_bruschetta_features.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -278,8 +278,9 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
             .SetMountPath("/mount/" + name)
             .SetIsMounted(mounted)
             .Build());
-    if (mounted)
+    if (mounted) {
       NotifyMountEvent(name, disks::DiskMountManager::MOUNTING);
+    }
   }
 
   void NotifyMountEvent(const std::string& name,
@@ -414,8 +415,7 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   base::RunLoop().RunUntilIdle();
 
   // Now should have 4 buttons when Bruschetta is enabled.
-  bruschetta::FakeBruschettaFeatures bruschetta_features;
-  bruschetta_features.set_enabled(true);
+  AddContainerToPrefs(profile(), bruschetta::GetBruschettaAlphaId(), {});
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
   notification = display_service_->GetNotification(notification_id);
