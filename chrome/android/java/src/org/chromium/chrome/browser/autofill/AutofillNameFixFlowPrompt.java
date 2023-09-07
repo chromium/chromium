@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
@@ -74,8 +75,9 @@ public class AutofillNameFixFlowPrompt
     private AutofillNameFixFlowPrompt(Context context, AutofillNameFixFlowPromptDelegate delegate,
             String inferredName, String title, int drawableId, String confirmButtonLabel,
             boolean filledConfirmButton) {
-        super(context, delegate, R.layout.autofill_name_fixflow, title, drawableId,
-                confirmButtonLabel, filledConfirmButton);
+        super(context, delegate, R.layout.autofill_name_fixflow,
+                /*customTitleLayoutId=*/Resources.ID_NULL, title, drawableId, confirmButtonLabel,
+                filledConfirmButton);
         mDelegate = delegate;
         // Dialog of infobar doesn't show any details of the cc.
         mDialogView.findViewById(R.id.cc_details).setVisibility(View.GONE);

@@ -520,6 +520,7 @@ chrome_java_resources = [
   "java/res/layout/history_privacy_disclaimer_header.xml",
   "java/res/layout/history_toggle.xml",
   "java/res/layout/history_toolbar.xml",
+  "java/res/layout/icon_after_title_view.xml",
   "java/res/layout/improved_bookmark_folder_view_layout.xml",
   "java/res/layout/improved_bookmark_row_end.xml",
   "java/res/layout/improved_bookmark_row_layout.xml",

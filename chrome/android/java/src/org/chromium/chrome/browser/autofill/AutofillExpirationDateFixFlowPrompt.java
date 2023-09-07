@@ -71,8 +71,9 @@ public class AutofillExpirationDateFixFlowPrompt
     private AutofillExpirationDateFixFlowPrompt(Context context,
             AutofillExpirationDateFixFlowPromptDelegate delegate, String title, int drawableId,
             String cardLabel, String confirmButtonLabel, boolean filledConfirmButton) {
-        super(context, delegate, R.layout.autofill_expiration_date_fix_flow, title, drawableId,
-                confirmButtonLabel, filledConfirmButton);
+        super(context, delegate, R.layout.autofill_expiration_date_fix_flow,
+                R.layout.icon_after_title_view, title, drawableId, confirmButtonLabel,
+                filledConfirmButton);
         mDelegate = delegate;
         mErrorMessage = (TextView) mDialogView.findViewById(R.id.error_message);
         // Infobar: show masked card number only.
