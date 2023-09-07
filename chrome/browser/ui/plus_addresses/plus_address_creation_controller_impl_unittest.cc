@@ -9,6 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -47,7 +48,8 @@ class PlusAddressCreationControllerImplEnabledTest
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
-TEST_F(PlusAddressCreationControllerImplEnabledTest, DirectCallback) {
+// TODO(crbug.com/1479967): test is flaky across platforms.
+TEST_F(PlusAddressCreationControllerImplEnabledTest, DISABLED_DirectCallback) {
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
