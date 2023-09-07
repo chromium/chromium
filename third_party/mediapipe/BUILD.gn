@@ -613,6 +613,7 @@ tflite_static_library("mediapipe_tasks") {
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
+    ":stamp_metadata_parser_version",
     "//third_party/abseil-cpp:absl",
     "//third_party/gemmlowp",
     "//third_party/protobuf:protobuf_lite",
