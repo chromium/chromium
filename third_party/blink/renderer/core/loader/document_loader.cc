@@ -2710,6 +2710,9 @@ void DocumentLoader::CommitNavigation() {
       document_load_timing_.RedirectEnd();
 
   DCHECK(frame_->DomWindow());
+
+  // TODO(crbug.com/1476866): We should check for protocols and not emit
+  // performance timeline entries for file protocol navigations.
   DOMWindowPerformance::performance(*frame_->DomWindow())
       ->CreateNavigationTimingInstance(std::move(navigation_timing_info));
 

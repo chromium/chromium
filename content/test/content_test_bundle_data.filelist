@@ -6504,6 +6504,8 @@ data/payments/payment_app_window.html
 data/performance_timeline/cross-origin-non-tao-image.html
 data/performance_timeline/lcp-start-time-precision.html
 data/performance_timeline/prefetch.html
+data/performance_timeline/resource-timing-not-for-file-protocol.html
+data/performance_timeline/resources/style.css
 data/permissions-policy-main.html
 data/permissions-policy-main.html.mock-http-headers
 data/permissions-policy.xml

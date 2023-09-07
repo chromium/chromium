@@ -2351,7 +2351,13 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
   PendingResourceTimingInfo info = resource_timing_info_map_.Take(resource);
 
   if (!info.is_null()) {
-    PopulateAndAddResourceTimingInfo(resource, std::move(info), finish_time);
+    if (resource->GetResourceRequest().Url().ProtocolIsInHTTPFamily() ||
+        (resource->GetResourceRequest().GetWebBundleTokenParams() &&
+         resource->GetResourceRequest()
+             .GetWebBundleTokenParams()
+             ->bundle_url.IsValid())) {
+      PopulateAndAddResourceTimingInfo(resource, std::move(info), finish_time);
+    }
   }
 
   resource->VirtualTimePauser().UnpauseVirtualTime();

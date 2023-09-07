@@ -1364,6 +1364,7 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/web_tests/overflow/",
       "//third_party/blink/web_tests/paint/",
       "//third_party/blink/web_tests/payments/",
+      "//third_party/blink/web_tests/performance_timeline/",
       "//third_party/blink/web_tests/permissionclient/",
       "//third_party/blink/web_tests/plugins/",
       "//third_party/blink/web_tests/pointer-lock/",

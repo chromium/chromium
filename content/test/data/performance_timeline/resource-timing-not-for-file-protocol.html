@@ -1,0 +1,17 @@
+<!doctype html>
+
+<head>
+  <link rel="stylesheet" href="resources/style.css">
+  <link rel="stylesheet" href="resources/non_exist_style.css">
+</head>
+
+<body>
+  <p id="test">test</p>
+</body>
+<script>
+  const getTextColor = () => {
+    return getComputedStyle(
+      document.getElementById('test')).getPropertyValue('color');
+  }
+</script>
+</html>
