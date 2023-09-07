@@ -36,6 +36,32 @@ TEST(LanguageStateTest, IsPageTranslated) {
   EXPECT_FALSE(language_state.IsPageTranslated());
 }
 
+TEST(LanguageStateTest, SetPredefinedTargetLanguage) {
+  MockTranslateDriver driver;
+  LanguageState language_state(&driver);
+
+  // Language codes that do not have Translate synonyms.
+  language_state.SetPredefinedTargetLanguage("fr", false);
+  EXPECT_EQ("fr", language_state.GetPredefinedTargetLanguage());
+
+  language_state.SetPredefinedTargetLanguage("sw", false);
+  EXPECT_EQ("sw", language_state.GetPredefinedTargetLanguage());
+
+  // Check that country codes are only preserved for "zh"
+  language_state.SetPredefinedTargetLanguage("fr-CA", false);
+  EXPECT_EQ("fr", language_state.GetPredefinedTargetLanguage());
+
+  language_state.SetPredefinedTargetLanguage("zh-HK", false);
+  EXPECT_EQ("zh-TW", language_state.GetPredefinedTargetLanguage());
+
+  // Language codes that have Translate synonyms.
+  language_state.SetPredefinedTargetLanguage("fil", false);
+  EXPECT_EQ("tl", language_state.GetPredefinedTargetLanguage());
+
+  language_state.SetPredefinedTargetLanguage("he", false);
+  EXPECT_EQ("iw", language_state.GetPredefinedTargetLanguage());
+}
+
 TEST(LanguageStateTest, Driver) {
   MockTranslateDriver driver;
   LanguageState language_state(&driver);
