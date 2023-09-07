@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/form_field_data_android_bridge.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -37,10 +38,10 @@ FormFieldDataAndroid::FieldTypes& FormFieldDataAndroid::FieldTypes::operator=(
 
 FormFieldDataAndroid::FieldTypes::~FieldTypes() = default;
 
-FormFieldDataAndroid::FormFieldDataAndroid(
-    std::unique_ptr<FormFieldDataAndroidBridge> bridge,
-    FormFieldData* field)
-    : bridge_(std::move(bridge)), field_(*field) {
+FormFieldDataAndroid::FormFieldDataAndroid(FormFieldData* field)
+    : bridge_(AndroidAutofillBridgeFactory::GetInstance()
+                  .CreateFormFieldDataAndroidBridge()),
+      field_(*field) {
   field_types_.heuristic_type = AutofillType(UNKNOWN_TYPE);
 }
 

@@ -41,8 +41,7 @@ class FormFieldDataAndroid {
     std::vector<AutofillType> server_predictions;
   };
 
-  FormFieldDataAndroid(std::unique_ptr<FormFieldDataAndroidBridge> bridge,
-                       FormFieldData* field);
+  explicit FormFieldDataAndroid(FormFieldData* field);
   FormFieldDataAndroid(const FormFieldDataAndroid&) = delete;
   FormFieldDataAndroid& operator=(const FormFieldDataAndroid&) = delete;
 

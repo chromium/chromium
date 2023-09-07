@@ -10,7 +10,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
-#include "components/android_autofill/browser/form_field_data_android_bridge_impl.h"
 #include "components/android_autofill/browser/jni_headers/FormData_jni.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -43,9 +42,7 @@ ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer(
     fields_.clear();
     fields_.reserve(form_.fields.size());
     for (FormFieldData& field : form_.fields) {
-      // TODO(crbug.com/1478934): Use a factory for the bridge.
-      fields_.push_back(std::make_unique<FormFieldDataAndroid>(
-          std::make_unique<FormFieldDataAndroidBridgeImpl>(), &field));
+      fields_.push_back(std::make_unique<FormFieldDataAndroid>(&field));
     }
 
     if (form_structure)

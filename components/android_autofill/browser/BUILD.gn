@@ -87,6 +87,8 @@ generate_jni("jni_headers_features") {
 
 static_library("android") {
   sources = [
+    "android_autofill_bridge_factory.cc",
+    "android_autofill_bridge_factory.h",
     "autofill_provider_android.cc",
     "autofill_provider_android.h",
     "form_data_android.cc",
