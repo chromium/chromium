@@ -72,11 +72,6 @@ class AlsReader {
   friend LightProviderMojo;
   friend LightSamplesObserver;
 
-#if !BUILDFLAG(USE_IIOSERVICE)
-  // Called when we've retrieved the number of ALS present.
-  void OnNumAlsRetrieved(int num_als);
-#endif  // !BUILDFLAG(USE_IIOSERVICE)
-
   void SetLux(int lux);
   void SetAlsInitStatus(AlsInitStatus status);
   void SetAlsInitStatusForTesting(AlsInitStatus status);
