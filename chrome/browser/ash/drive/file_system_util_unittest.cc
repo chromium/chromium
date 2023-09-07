@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ash/drive/file_system_util.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/drive/drive_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace drive::util {
 namespace {
+
+using ash::features::kDriveFsBulkPinning;
+using ash::features::kFeatureManagementDriveFsBulkPinning;
+using base::test::ScopedFeatureList;
 
 // Marks the current thread as UI by BrowserTaskEnvironment. We need the task
 // environment since Profile objects must be touched from UI and hence has
@@ -56,6 +63,73 @@ TEST_F(ProfileRelatedFileSystemUtilTest, SetDriveConnectionStatusForTesting) {
        {kNoNetwork, kNotReady, kNoService, kMetered, kConnected}) {
     SetDriveConnectionStatusForTesting(status);
     EXPECT_EQ(GetDriveConnectionStatus(&profile), status);
+  }
+}
+
+TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningEnabled) {
+  TestingProfile profile;
+  PrefService* const prefs = profile.GetPrefs();
+  DCHECK(prefs);
+
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kDriveFsBulkPinningVisible));
+
+  {
+    ScopedFeatureList features;
+    features.InitWithFeatures(
+        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(&profile));
+    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(nullptr));
+    EXPECT_TRUE(IsDriveFsBulkPinningEnabled());
+  }
+
+  {
+    ScopedFeatureList features;
+    features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning},
+                              {kDriveFsBulkPinning});
+    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(&profile));
+    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(nullptr));
+    EXPECT_FALSE(IsDriveFsBulkPinningEnabled());
+  }
+
+  {
+    ScopedFeatureList features;
+    features.InitWithFeatures({kDriveFsBulkPinning},
+                              {kFeatureManagementDriveFsBulkPinning});
+    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(&profile));
+    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(nullptr));
+    EXPECT_FALSE(IsDriveFsBulkPinningEnabled());
+  }
+
+  prefs->SetBoolean(prefs::kDriveFsBulkPinningVisible, false);
+
+  {
+    ScopedFeatureList features;
+    features.InitWithFeatures(
+        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(&profile));
+    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(nullptr));
+  }
+
+  prefs->SetBoolean(prefs::kDriveFsBulkPinningVisible, true);
+
+  {
+    ScopedFeatureList features;
+    features.InitWithFeatures(
+        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(&profile));
+    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(nullptr));
+  }
+
+  {
+    TestingProfile::Builder builder;
+    builder.SetProfileName("foobar@example.com");
+    builder.OverridePolicyConnectorIsManagedForTesting(true);
+    const std::unique_ptr<TestingProfile> profile_with_domain = builder.Build();
+    ScopedFeatureList features;
+    features.InitWithFeatures(
+        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(profile_with_domain.get()));
+    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(nullptr));
   }
 }
 
