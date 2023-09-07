@@ -1101,6 +1101,20 @@ void ServiceWorkerContextCore::OnMainScriptResponseSet(
       version_id, response.response_time, response.last_modified);
 }
 
+void ServiceWorkerContextCore::OnWindowOpened(const GURL& script_url,
+                                              const GURL& url) {
+  observer_list_->Notify(FROM_HERE,
+                         &ServiceWorkerContextCoreObserver::OnWindowOpened,
+                         script_url, url);
+}
+
+void ServiceWorkerContextCore::OnClientNavigated(const GURL& script_url,
+                                                 const GURL& url) {
+  observer_list_->Notify(FROM_HERE,
+                         &ServiceWorkerContextCoreObserver::OnClientNavigated,
+                         script_url, url);
+}
+
 void ServiceWorkerContextCore::OnControlleeAdded(
     ServiceWorkerVersion* version,
     const std::string& client_uuid,

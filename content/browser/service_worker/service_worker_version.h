@@ -1016,6 +1016,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void NotifyControlleeNavigationCommitted(
       const std::string& uuid,
       GlobalRenderFrameHostId render_frame_host_id);
+  void NotifyWindowOpened(const GURL& script_url, const GURL& url);
+  void NotifyClientNavigated(const GURL& script_url, const GURL& url);
 
   void GetClientOnExecutionReady(const std::string& client_uuid,
                                  GetClientCallback callback,

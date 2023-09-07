@@ -11,10 +11,12 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/fake_service_worker_context.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -37,19 +39,21 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
     NavigateAndCommit(GURL("http://foo/0"));
 
     HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
+    safe_browsing::RegisterProfilePrefs(pref_service_.registry());
     settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &pref_service_, false /* is_off_the_record */,
         false /* store_last_modified */, false /* restore_session*/,
         false /* should_record_metrics */);
-
     navigation_observer_manager_ =
-        std::make_unique<SafeBrowsingNavigationObserverManager>(&pref_service_);
+        std::make_unique<SafeBrowsingNavigationObserverManager>(
+            &pref_service_, &service_worker_context_);
 
     navigation_observer_ = std::make_unique<SafeBrowsingNavigationObserver>(
         web_contents(), settings_map_.get(),
         navigation_observer_manager_.get());
   }
   void TearDown() override {
+    service_worker_context_.RemoveObserver(navigation_observer_manager_.get());
     navigation_observer_.reset();
     settings_map_->ShutdownOnUIThread();
     content::RenderViewHostTestHarness::TearDown();
@@ -89,6 +93,17 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
 
   SafeBrowsingNavigationObserverManager::HostToIpMap* host_to_ip_map() {
     return &navigation_observer_manager_->host_to_ip_map_;
+  }
+
+  base::flat_map<GURL, std::unique_ptr<NavigationEvent>>*
+  notification_navigation_events() {
+    return &navigation_observer_manager_->notification_navigation_events_;
+  }
+
+  void RecordNotificationNavigationEvent(const GURL& script_url,
+                                         const GURL& url) {
+    navigation_observer_manager_->RecordNotificationNavigationEvent(script_url,
+                                                                    url);
   }
 
   void RecordHostToIpMapping(const std::string& host, const std::string& ip) {
@@ -171,12 +186,21 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
     navigation_observer_manager_->CleanUpUserGestures();
   }
 
+  void CleanUpNotificationNavigationEvents() {
+    navigation_observer_manager_->CleanUpNotificationNavigationEvents();
+  }
+
+  void SetEnhancedProtection(bool esb_enabled) {
+    SetEnhancedProtectionPrefForTests(&pref_service_, esb_enabled);
+  }
+
  protected:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<SafeBrowsingNavigationObserverManager>
       navigation_observer_manager_;
   std::unique_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
+  content::FakeServiceWorkerContext service_worker_context_;
 };
 
 TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
@@ -417,6 +441,78 @@ TEST_F(SBNavigationObserverTest, ServerRedirect) {
       true,  // has_committed
       true,  // has_server_redirect
       nav_list->GetNavigationEvent(0U));
+}
+
+TEST_F(SBNavigationObserverTest,
+       TestNotificationNavigationEventsNotAddedForNonESBUsers) {
+  GURL url_0("http://foo/0");
+  GURL url_1("http://foo/1");
+  GURL url_2("http://foo/2");
+  GURL script_url("https://example.com/script.js");
+  SetEnhancedProtection(/*esb_enabled=*/false);
+  RecordNotificationNavigationEvent(script_url, url_0);
+  RecordNotificationNavigationEvent(script_url, url_1);
+  RecordNotificationNavigationEvent(script_url, url_2);
+  EXPECT_EQ(0U, notification_navigation_events()->size());
+}
+
+TEST_F(SBNavigationObserverTest,
+       TestNotificationNavigationEventsNotAddedForNonHttps) {
+  GURL url_0("http://foo/0");
+  GURL url_1("http://foo/1");
+  GURL url_2("http://foo/2");
+  GURL script_url("https://example.com/script.js");
+  SetEnhancedProtection(/*esb_enabled=*/true);
+  RecordNotificationNavigationEvent(script_url, url_0);
+  RecordNotificationNavigationEvent(GURL("chrome-extension://some-extension"),
+                                    url_1);
+  RecordNotificationNavigationEvent(GURL("http://bogus-web-origin.com"), url_2);
+  EXPECT_EQ(1U, notification_navigation_events()->size());
+}
+
+TEST_F(SBNavigationObserverTest,
+       TestCleanUpStableNotificationNavigationEvents) {
+  base::Time now = base::Time::Now();  // Fresh
+  base::Time one_hour_ago =
+      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);  // Stale
+  base::Time one_minute_ago =
+      base::Time::FromDoubleT(now.ToDoubleT() - 60.0);  // Fresh
+  GURL url_0("http://foo/0");
+  GURL url_1("http://foo/1");
+  GURL url_2("http://foo/2");
+  GURL script_url("https://example.com/script.js");
+  SetEnhancedProtection(/*esb_enabled=*/true);
+  RecordNotificationNavigationEvent(script_url, url_0);
+  RecordNotificationNavigationEvent(script_url, url_1);
+  RecordNotificationNavigationEvent(script_url, url_2);
+  (*notification_navigation_events())[url_1]->last_updated = one_hour_ago;
+  (*notification_navigation_events())[url_2]->last_updated = one_minute_ago;
+
+  CleanUpNotificationNavigationEvents();
+
+  EXPECT_EQ(2U, notification_navigation_events()->size());
+  EXPECT_TRUE(notification_navigation_events()->contains(url_0));
+  EXPECT_TRUE(notification_navigation_events()->contains(url_2));
+}
+
+TEST_F(SBNavigationObserverTest, TestAddNotificationOriginToReferrerChain) {
+  GURL url_0("http://foo/0");
+  std::unique_ptr<NavigationEvent> nav_event =
+      CreateNavigationEventUniquePtr(url_0, base::Time::Now());
+  nav_event->source_url = GURL::EmptyGURL();
+  nav_event->navigation_initiation =
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
+  navigation_event_list()->RecordNavigationEvent(std::move(nav_event));
+  GURL script_url("https://example.com/script.js");
+  SetEnhancedProtection(/*esb_enabled=*/true);
+  RecordNotificationNavigationEvent(script_url, url_0);
+  ReferrerChain referrer_chain;
+  navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      url_0, SessionID::InvalidValue(), content::GlobalRenderFrameHostId(), 10,
+      &referrer_chain);
+  EXPECT_EQ(ReferrerChainEntry::NOTIFICATION_INITIATED,
+            referrer_chain[0].navigation_initiation());
+  EXPECT_EQ(script_url.spec(), referrer_chain[0].referrer_url());
 }
 
 TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {

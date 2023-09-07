@@ -423,6 +423,24 @@ void ServiceWorkerContextWrapper::OnControlleeNavigationCommitted(
                                              render_frame_host_id);
 }
 
+void ServiceWorkerContextWrapper::OnWindowOpened(const GURL& script_url,
+                                                 const GURL& url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (auto& observer : observer_list_) {
+    observer.OnWindowOpened(script_url, url);
+  }
+}
+
+void ServiceWorkerContextWrapper::OnClientNavigated(const GURL& script_url,
+                                                    const GURL& url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (auto& observer : observer_list_) {
+    observer.OnClientNavigated(script_url, url);
+  }
+}
+
 void ServiceWorkerContextWrapper::OnStarted(
     int64_t version_id,
     const GURL& scope,

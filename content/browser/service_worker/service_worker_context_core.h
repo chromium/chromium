@@ -136,6 +136,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       int64_t version_id,
       const ServiceWorkerVersion::MainScriptResponse& response);
 
+  // Called when a Service Worker opens a window.
+  void OnWindowOpened(const GURL& script_url, const GURL& url);
+
+  // Called when a Service Worker navigates an existing tab.
+  void OnClientNavigated(const GURL& script_url, const GURL& url);
+
   // OnControlleeAdded/Removed are called asynchronously. It is possible the
   // container host identified by |client_uuid| was already destroyed when they
   // are called.

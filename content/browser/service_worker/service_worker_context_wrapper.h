@@ -155,6 +155,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                              const GURL& scope,
                              const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override;
+  void OnWindowOpened(const GURL& script_url, const GURL& url) override;
+  void OnClientNavigated(const GURL& script_url, const GURL& url) override;
 
   // ServiceWorkerContext implementation:
   void AddObserver(ServiceWorkerContextObserver* observer) override;

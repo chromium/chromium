@@ -1651,6 +1651,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.NavigationObserver.NotificationNavigationEventAdded"
+    enum="BooleanAccepted" expires_after="2024-02-23">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the number of times we have added Push notification-intiated navigation
+    events.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.NavigationObserver.NotificationOriginAddedToReferrerChain"
+    enum="BooleanAccepted" expires_after="2024-02-23">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the number of times a notification's service worker's URL is added as a
+    referrer in a referrer chain.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.PageLoadToken.ClearReason"
     enum="SafeBrowsingPageLoadTokenClearReason" expires_after="2024-02-04">
   <owner>xinghuilu@chromium.org</owner>

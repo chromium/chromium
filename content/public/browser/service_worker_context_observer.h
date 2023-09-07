@@ -107,6 +107,16 @@ class ServiceWorkerContextObserver {
   // Called when |context| is destroyed. Observers must no longer use |context|.
   virtual void OnDestruct(ServiceWorkerContext* context) {}
 
+  // Called when a Service Worker opens a new window.
+  // |script_url| is the URL of the service worker.
+  // |url| is the destination URL.
+  virtual void OnWindowOpened(const GURL& script_url, const GURL& url) {}
+
+  // Called when a Service Worker navigates an existing tab.
+  // |script_url| is the URL of the service worker.
+  // |url| is the destination URL.
+  virtual void OnClientNavigated(const GURL& script_url, const GURL& url) {}
+
  protected:
   virtual ~ServiceWorkerContextObserver() {}
 };

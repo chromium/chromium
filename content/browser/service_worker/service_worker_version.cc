@@ -1813,6 +1813,8 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
   service_worker_client_utils::NavigateClient(
       url, script_url_, key_, container_host->GetRenderFrameHostId(), context_,
       base::BindOnce(&DidNavigateClient, std::move(callback), url));
+
+  NotifyClientNavigated(script_url_, url);
 }
 
 void ServiceWorkerVersion::SkipWaiting(SkipWaitingCallback callback) {
@@ -1938,6 +1940,8 @@ void ServiceWorkerVersion::OpenWindow(
       url, script_url_, key_, embedded_worker_->embedded_worker_id(),
       embedded_worker_->process_id(), context_, type,
       base::BindOnce(&OnOpenWindowFinished, std::move(callback)));
+
+  NotifyWindowOpened(script_url_, url);
 }
 
 bool ServiceWorkerVersion::HasWorkInBrowser() const {
@@ -2798,6 +2802,20 @@ void ServiceWorkerVersion::NotifyControlleeNavigationCommitted(
     GlobalRenderFrameHostId render_frame_host_id) {
   if (context_)
     context_->OnControlleeNavigationCommitted(this, uuid, render_frame_host_id);
+}
+
+void ServiceWorkerVersion::NotifyWindowOpened(const GURL& script_url,
+                                              const GURL& url) {
+  if (context_) {
+    context_->OnWindowOpened(script_url, url);
+  }
+}
+
+void ServiceWorkerVersion::NotifyClientNavigated(const GURL& script_url,
+                                                 const GURL& url) {
+  if (context_) {
+    context_->OnClientNavigated(script_url, url);
+  }
 }
 
 void ServiceWorkerVersion::PrepareForUpdate(

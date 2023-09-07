@@ -17,6 +17,8 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
@@ -190,6 +192,7 @@ struct NavigationEventList {
 // referrer for a specific Safe Browsing event.
 class SafeBrowsingNavigationObserverManager
     : public ReferrerChainProvider,
+      public content::ServiceWorkerContextObserver,
       public KeyedService,
       public ui::Clipboard::ClipboardWriteObserver {
  public:
@@ -213,7 +216,9 @@ class SafeBrowsingNavigationObserverManager
   // Sanitize referrer chain by only keeping origin information of all URLs.
   static void SanitizeReferrerChain(ReferrerChain* referrer_chain);
 
-  explicit SafeBrowsingNavigationObserverManager(PrefService* pref_service);
+  explicit SafeBrowsingNavigationObserverManager(
+      PrefService* pref_service,
+      content::ServiceWorkerContext* context);
 
   SafeBrowsingNavigationObserverManager(
       const SafeBrowsingNavigationObserverManager&) = delete;
@@ -229,6 +234,11 @@ class SafeBrowsingNavigationObserverManager
   void RecordPendingNavigationEvent(
       content::NavigationHandle* navigation_handle,
       std::unique_ptr<NavigationEvent> nav_event);
+  // Record that a Push Notification initiated a navigation.
+  // |script_url| is the URL of the service worker.
+  // |url| is the destination URL.
+  void RecordNotificationNavigationEvent(const GURL& script_url,
+                                         const GURL& url);
   void AddRedirectUrlToPendingNavigationEvent(
       content::NavigationHandle* navigation_handle,
       const GURL& server_redirect_url);
@@ -329,6 +339,10 @@ class SafeBrowsingNavigationObserverManager
                  const GURL& source_frame_url,
                  const GURL& source_main_frame_url) override;
 
+  // content::ServiceWorkerContextObserver implementation.
+  void OnClientNavigated(const GURL& script_url, const GURL& url) override;
+  void OnWindowOpened(const GURL& script_url, const GURL& url) override;
+
  protected:
   NavigationEventList* navigation_event_list() {
     return &navigation_event_list_;
@@ -366,6 +380,9 @@ class SafeBrowsingNavigationObserverManager
 
   // Remove stale copy entries.
   void CleanUpCopyData();
+
+  // Remove stale entries from notification_navigation_events_.
+  void CleanUpNotificationNavigationEvents();
 
   bool IsCleanUpScheduled() const;
 
@@ -431,6 +448,23 @@ class SafeBrowsingNavigationObserverManager
   base::OneShotTimer cleanup_timer_;
 
   absl::optional<CopyPasteEntry> last_copy_paste_entry_;
+
+  // A map of destination URLs to Push notification initiated navigation events.
+  base::flat_map<GURL, std::unique_ptr<NavigationEvent>>
+      notification_navigation_events_;
+
+  // A reference to the ServiceWorkerContext that enables us to observe clicks
+  // on Push notifications.
+  //
+  // |notification_context_| is expected to outlive the
+  // SafeBrowsingNavigationObserverManager.
+  //
+  // SafeBrowsingNavigationObserverManager is owned by
+  // SafeBrowsingNavigationObserverManagerFactory which listens for
+  // BrowserContextDestroyed events which happen before the BrowserContext is
+  // destroyed. (Note: the BrowserContext initiates ServiceWorkerContext
+  // destruction via the StoragePartition.)
+  raw_ptr<content::ServiceWorkerContext> notification_context_;
 };
 }  // namespace safe_browsing
 

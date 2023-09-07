@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -428,10 +429,13 @@ void SafeBrowsingNavigationObserverManager::SanitizeReferrerChain(
 }
 
 SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager(
-    PrefService* pref_service)
+    PrefService* pref_service,
+    content::ServiceWorkerContext* context)
     : navigation_event_list_(GetNavigationRecordMaxSize()),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      notification_context_(context) {
   ui::Clipboard::GetForCurrentThread()->AddObserver(this);
+  notification_context_->AddObserver(this);
   // Schedule clean up in 2 minutes.
   ScheduleNextCleanUpAfterInterval(GetNavigationFootprintTTL());
 }
@@ -523,6 +527,7 @@ void SafeBrowsingNavigationObserverManager::CleanUpStaleNavigationFootprints() {
   CleanUpUserGestures();
   CleanUpIpAddresses();
   CleanUpCopyData();
+  CleanUpNotificationNavigationEvents();
   ScheduleNextCleanUpAfterInterval(GetNavigationFootprintTTL());
 }
 
@@ -666,6 +671,7 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByHostingPage(
 SafeBrowsingNavigationObserverManager::
     ~SafeBrowsingNavigationObserverManager() {
   ui::Clipboard::GetForCurrentThread()->RemoveObserver(this);
+  notification_context_->RemoveObserver(this);
 }
 
 void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
@@ -838,6 +844,18 @@ void SafeBrowsingNavigationObserverManager::CleanUpCopyData() {
   }
 }
 
+void SafeBrowsingNavigationObserverManager::
+    CleanUpNotificationNavigationEvents() {
+  auto it = notification_navigation_events_.begin();
+  while (it != notification_navigation_events_.end()) {
+    if (IsEventExpired(it->second->last_updated, GetNavigationFootprintTTL())) {
+      it = notification_navigation_events_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
 bool SafeBrowsingNavigationObserverManager::IsCleanUpScheduled() const {
   return cleanup_timer_.IsRunning();
 }
@@ -849,6 +867,39 @@ void SafeBrowsingNavigationObserverManager::ScheduleNextCleanUpAfterInterval(
   cleanup_timer_.Start(
       FROM_HERE, interval, this,
       &SafeBrowsingNavigationObserverManager::CleanUpStaleNavigationFootprints);
+}
+
+void SafeBrowsingNavigationObserverManager::OnClientNavigated(
+    const GURL& script_url,
+    const GURL& url) {
+  RecordNotificationNavigationEvent(script_url, url);
+}
+
+void SafeBrowsingNavigationObserverManager::OnWindowOpened(
+    const GURL& script_url,
+    const GURL& url) {
+  RecordNotificationNavigationEvent(script_url, url);
+}
+
+void SafeBrowsingNavigationObserverManager::RecordNotificationNavigationEvent(
+    const GURL& script_url,
+    const GURL& url) {
+  // Push notifications are tied to the https scheme.
+  if (!script_url.SchemeIs(url::kHttpsScheme)) {
+    return;
+  }
+  // We only collect notification referrers for ESB users.
+  if (!IsEnhancedProtectionEnabled(*pref_service_)) {
+    return;
+  }
+  auto nav_event = std::make_unique<NavigationEvent>();
+  nav_event->source_url =
+      SafeBrowsingNavigationObserverManager::ClearURLRef(script_url);
+  notification_navigation_events_
+      [SafeBrowsingNavigationObserverManager::ClearURLRef(url)] =
+          std::move(nav_event);
+  UMA_HISTOGRAM_BOOLEAN(
+      "SafeBrowsing.NavigationObserver.NotificationNavigationEventAdded", true);
 }
 
 void SafeBrowsingNavigationObserverManager::MaybeAddToReferrerChain(
@@ -891,6 +942,28 @@ void SafeBrowsingNavigationObserverManager::MaybeAddToReferrerChain(
         nav_event->source_url != nav_event->source_main_frame_url) {
       referrer_chain_entry->set_referrer_main_frame_url(
           ShortURLForReporting(nav_event->source_main_frame_url));
+    }
+  }
+  // Update the referrer entry if we got here from a Push notification.
+  if (base::Contains(notification_navigation_events_,
+                     nav_event->original_request_url) &&
+      nav_event->navigation_initiation ==
+          ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE &&
+      nav_event->source_url.is_empty()) {
+    // The navigation event and the Push notification click should have happened
+    // close in time to each other.
+    if ((nav_event->last_updated -
+         notification_navigation_events_[nav_event->original_request_url]
+             ->last_updated) < base::Seconds(5)) {
+      referrer_chain_entry->set_referrer_url(ShortURLForReporting(
+          notification_navigation_events_[nav_event->original_request_url]
+              ->source_url));
+      referrer_chain_entry->set_navigation_initiation(
+          ReferrerChainEntry::NOTIFICATION_INITIATED);
+      UMA_HISTOGRAM_BOOLEAN(
+          "SafeBrowsing.NavigationObserver."
+          "NotificationOriginAddedToReferrerChain",
+          true);
     }
   }
   referrer_chain_entry->set_is_retargeting(nav_event->source_tab_id !=

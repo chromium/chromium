@@ -131,6 +131,12 @@ class ServiceWorkerContextCoreObserver {
                                  const GURL& url,
                                  blink::mojom::ServiceWorkerClientType type) {}
 
+  // Called when a Service Worker opens a new window.
+  virtual void OnWindowOpened(const GURL& script_url, const GURL& url) {}
+
+  // Called when a Service Worker navigates an existing tab.
+  virtual void OnClientNavigated(const GURL& script_url, const GURL& url) {}
+
  protected:
   virtual ~ServiceWorkerContextCoreObserver() {}
 };
