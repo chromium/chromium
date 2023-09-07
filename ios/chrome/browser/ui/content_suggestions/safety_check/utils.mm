@@ -10,7 +10,6 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
@@ -130,29 +129,33 @@ void HandleSafetyCheckPasswordTap(
                password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
 }
 
+bool InvalidUpdateChromeState(UpdateChromeSafetyCheckState state) {
+  return state == UpdateChromeSafetyCheckState::kOutOfDate;
+}
+
+bool InvalidPasswordState(PasswordSafetyCheckState state) {
+  return state == PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
+         state == PasswordSafetyCheckState::kReusedPasswords ||
+         state == PasswordSafetyCheckState::kWeakPasswords;
+}
+
+bool InvalidSafeBrowsingState(SafeBrowsingSafetyCheckState state) {
+  return state == SafeBrowsingSafetyCheckState::kUnsafe;
+}
+
 int CheckIssuesCount(SafetyCheckState* state) {
-  bool invalid_update_chrome_state =
-      state.updateChromeState == UpdateChromeSafetyCheckState::kOutOfDate;
-
-  bool invalid_password_state =
-      state.passwordState ==
-          PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
-      state.passwordState == PasswordSafetyCheckState::kReusedPasswords ||
-      state.passwordState == PasswordSafetyCheckState::kWeakPasswords;
-
-  bool invalid_safe_browsing_state =
-      state.safeBrowsingState == SafeBrowsingSafetyCheckState::kUnsafe;
-
   int invalid_check_count = 0;
 
-  std::vector<bool> invalid_checks = {invalid_update_chrome_state,
-                                      invalid_password_state,
-                                      invalid_safe_browsing_state};
+  if (InvalidUpdateChromeState(state.updateChromeState)) {
+    invalid_check_count++;
+  }
 
-  for (bool invalid_check : invalid_checks) {
-    if (invalid_check) {
-      invalid_check_count++;
-    }
+  if (InvalidPasswordState(state.passwordState)) {
+    invalid_check_count++;
+  }
+
+  if (InvalidSafeBrowsingState(state.safeBrowsingState)) {
+    invalid_check_count++;
   }
 
   return invalid_check_count;

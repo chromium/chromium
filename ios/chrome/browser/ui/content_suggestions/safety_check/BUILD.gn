@@ -20,6 +20,7 @@ source_set("safety_check") {
   ]
   public_deps = [
     "//base",
+    "//ios/chrome/browser/safety_check:constants",
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
@@ -31,7 +32,6 @@ source_set("safety_check") {
     "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/passwords:password_checkup_utils",
-    "//ios/chrome/browser/safety_check:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

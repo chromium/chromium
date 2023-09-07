@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol ApplicationCommands;
@@ -29,6 +30,18 @@ void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& credentials,
     id<ApplicationCommands> handler);
+
+// Returns true if `state` is considered an invalid state for the Update Chrome
+// check in the Safety Check (Magic Stack) module.
+bool InvalidUpdateChromeState(UpdateChromeSafetyCheckState state);
+
+// Returns true if `state` is considered an invalid state for the Password
+// check in the Safety Check (Magic Stack) module.
+bool InvalidPasswordState(PasswordSafetyCheckState state);
+
+// Returns true if `state` is considered an invalid state for the Safe Browsing
+// check in the Safety Check (Magic Stack) module.
+bool InvalidSafeBrowsingState(SafeBrowsingSafetyCheckState state);
 
 // Returns the number of check issues found given `state`.
 int CheckIssuesCount(SafetyCheckState* state);

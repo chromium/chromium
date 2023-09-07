@@ -169,22 +169,18 @@
   // Show hero-cell view for single check issue.
   SafetyCheckItemView* view;
 
-  if (_state.updateChromeState != UpdateChromeSafetyCheckState::kUpToDate) {
+  if (InvalidUpdateChromeState(_state.updateChromeState)) {
     view = [[SafetyCheckItemView alloc]
         initWithItemType:SafetyCheckItemType::kUpdateChrome
               layoutType:SafetyCheckItemLayoutType::kHero];
-  }
-
-  if (_state.passwordState != PasswordSafetyCheckState::kSafe) {
+  } else if (InvalidPasswordState(_state.passwordState)) {
     view = [[SafetyCheckItemView alloc]
                  initWithItemType:SafetyCheckItemType::kPassword
                        layoutType:SafetyCheckItemLayoutType::kHero
                weakPasswordsCount:_state.weakPasswordsCount
              reusedPasswordsCount:_state.reusedPasswordsCount
         compromisedPasswordsCount:_state.compromisedPasswordsCount];
-  }
-
-  if (_state.safeBrowsingState != SafeBrowsingSafetyCheckState::kSafe) {
+  } else if (InvalidSafeBrowsingState(_state.safeBrowsingState)) {
     view = [[SafetyCheckItemView alloc]
         initWithItemType:SafetyCheckItemType::kSafeBrowsing
               layoutType:SafetyCheckItemLayoutType::kHero];
