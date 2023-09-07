@@ -81,37 +81,6 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   };
 
   InterestGroup();
-
-  // Constructor takes arguments by value. They're unlikely to be independently
-  // useful at the point of construction, so caller can std::move() them when
-  // invoking the constructor.
-  InterestGroup(
-      base::Time expiry,
-      url::Origin owner,
-      std::string name,
-      double priority,
-      bool enable_bidding_signals_prioritization,
-      absl::optional<base::flat_map<std::string, double>> priority_vector,
-      absl::optional<base::flat_map<std::string, double>>
-          priority_signals_overrides,
-      absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
-          seller_capabilities,
-      SellerCapabilitiesType all_sellers_capabilities,
-      ExecutionMode execution_mode,
-      absl::optional<GURL> bidding_url,
-      absl::optional<GURL> bidding_wasm_helper_url,
-      absl::optional<GURL> update_url,
-      absl::optional<GURL> trusted_bidding_signals_url,
-      absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
-      absl::optional<std::string> user_bidding_signals,
-      absl::optional<std::vector<InterestGroup::Ad>> ads,
-      absl::optional<std::vector<InterestGroup::Ad>> ad_components,
-      absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes,
-      absl::optional<base::flat_map<std::string, std::vector<std::string>>>
-          size_groups,
-      AuctionServerRequestFlags auction_server_request_flags,
-      absl::optional<AdditionalBidKey> additional_bid_key);
-
   ~InterestGroup();
 
   // Checks for validity. Performs same checks as IsBlinkInterestGroupValid().
@@ -153,7 +122,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
 
   absl::optional<AdditionalBidKey> additional_bid_key;
 
-  static_assert(__LINE__ == 156, R"(
+  static_assert(__LINE__ == 125, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

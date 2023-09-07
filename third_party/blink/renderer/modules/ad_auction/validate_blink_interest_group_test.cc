@@ -69,18 +69,18 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
   // `blink_origin`, and returns the provided error values.
   void ExpectInterestGroupIsNotValid(
       const mojom::blink::InterestGroupPtr& blink_interest_group,
-      const std::string& expected_error_field_name,
-      const std::string& expected_error_field_value,
-      const std::string& expected_error,
+      String expected_error_field_name,
+      String expected_error_field_value,
+      String expected_error,
       bool check_deserialization = true) {
     String error_field_name;
     String error_field_value;
     String error;
     EXPECT_FALSE(ValidateBlinkInterestGroup(
         *blink_interest_group, error_field_name, error_field_value, error));
-    EXPECT_EQ(String::FromUTF8(expected_error_field_name), error_field_name);
-    EXPECT_EQ(String::FromUTF8(expected_error_field_value), error_field_value);
-    EXPECT_EQ(String::FromUTF8(expected_error), error);
+    EXPECT_EQ(expected_error_field_name, error_field_name);
+    EXPECT_EQ(expected_error_field_value, error_field_value);
+    EXPECT_EQ(expected_error, error);
 
     if (check_deserialization) {
       blink::InterestGroup interest_group;
@@ -166,11 +166,6 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         mojom::blink::AuctionServerRequestFlags::New();
     blink_interest_group->auction_server_request_flags->omit_ads = true;
 
-    blink_interest_group->additional_bid_key = {
-        0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
-        0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
-        0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
-
     return blink_interest_group;
   }
 
@@ -207,17 +202,19 @@ TEST_F(ValidateBlinkInterestGroupTest, NonHttpsOriginRejected) {
   blink_interest_group->owner =
       SecurityOrigin::CreateFromString(String::FromUTF8("http://origin.test/"));
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"owner",
-      /*expected_error_field_value=*/"http://origin.test",
-      /*expected_error=*/"owner origin must be HTTPS.");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("owner"),
+      /*expected_error_field_value=*/String::FromUTF8("http://origin.test"),
+      /*expected_error=*/String::FromUTF8("owner origin must be HTTPS."));
 
   blink_interest_group->owner =
       SecurityOrigin::CreateFromString(String::FromUTF8("data:,foo"));
   // Data URLs have opaque origins, which are mapped to the string "null".
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"owner",
-      /*expected_error_field_value=*/"null",
-      /*expected_error=*/"owner origin must be HTTPS.");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("owner"),
+      /*expected_error_field_value=*/String::FromUTF8("null"),
+      /*expected_error=*/String::FromUTF8("owner origin must be HTTPS."));
 }
 
 // Same as NonHttpsOriginRejected, but for `seller_capabilities`.
@@ -234,9 +231,11 @@ TEST_F(ValidateBlinkInterestGroupTest,
       SecurityOrigin::CreateFromString(String::FromUTF8("http://origin.test/")),
       mojom::blink::SellerCapabilities::New());
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"sellerCapabilities",
-      /*expected_error_field_value=*/"http://origin.test",
-      /*expected_error=*/"sellerCapabilities origins must all be HTTPS.");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("sellerCapabilities"),
+      /*expected_error_field_value=*/String::FromUTF8("http://origin.test"),
+      /*expected_error=*/
+      String::FromUTF8("sellerCapabilities origins must all be HTTPS."));
 
   blink_interest_group->seller_capabilities->clear();
   blink_interest_group->seller_capabilities->insert(
@@ -248,9 +247,11 @@ TEST_F(ValidateBlinkInterestGroupTest,
       mojom::blink::SellerCapabilities::New());
   // Data URLs have opaque origins, which are mapped to the string "null".
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"sellerCapabilities",
-      /*expected_error_field_value=*/"null",
-      /*expected_error=*/"sellerCapabilities origins must all be HTTPS.");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("sellerCapabilities"),
+      /*expected_error_field_value=*/String::FromUTF8("null"),
+      /*expected_error=*/
+      String::FromUTF8("sellerCapabilities origins must all be HTTPS."));
 
   blink_interest_group->seller_capabilities->clear();
   blink_interest_group->seller_capabilities->insert(
@@ -261,9 +262,11 @@ TEST_F(ValidateBlinkInterestGroupTest,
       mojom::blink::SellerCapabilities::New());
   // Data URLs have opaque origins, which are mapped to the string "null".
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"sellerCapabilities",
-      /*expected_error_field_value=*/"null",
-      /*expected_error=*/"sellerCapabilities origins must all be HTTPS.");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("sellerCapabilities"),
+      /*expected_error_field_value=*/String::FromUTF8("null"),
+      /*expected_error=*/
+      String::FromUTF8("sellerCapabilities origins must all be HTTPS."));
 }
 
 // Check that `bidding_url`, `bidding_wasm_helper_url`, `update_url`, and
@@ -332,35 +335,38 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         CreateMinimalInterestGroup();
     blink_interest_group->bidding_url = rejected_url;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"biddingLogicURL",
-        /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
-        /*expected_error=*/kBadBiddingUrlError);
+        blink_interest_group,
+        /*expected_error_field_name=*/String::FromUTF8("biddingLogicURL"),
+        /*expected_error_field_value=*/rejected_url.GetString(),
+        /*expected_error=*/String::FromUTF8(kBadBiddingUrlError));
 
     // Test `bidding_wasm_helper_url`
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->bidding_wasm_helper_url = rejected_url;
     ExpectInterestGroupIsNotValid(
         blink_interest_group,
-        /*expected_error_field_name=*/"biddingWasmHelperURL",
-        /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
-        /*expected_error=*/kBadBiddingWasmHelperUrlError);
+        /*expected_error_field_name=*/String::FromUTF8("biddingWasmHelperURL"),
+        /*expected_error_field_value=*/rejected_url.GetString(),
+        /*expected_error=*/String::FromUTF8(kBadBiddingWasmHelperUrlError));
 
     // Test `update_url`.
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->update_url = rejected_url;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"updateURL",
-        /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
-        /*expected_error=*/kBadUpdateUrlError);
+        blink_interest_group,
+        /*expected_error_field_name=*/String::FromUTF8("updateURL"),
+        /*expected_error_field_value=*/rejected_url.GetString(),
+        /*expected_error=*/String::FromUTF8(kBadUpdateUrlError));
 
     // Test `trusted_bidding_signals_url`.
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->trusted_bidding_signals_url = rejected_url;
     ExpectInterestGroupIsNotValid(
         blink_interest_group,
-        /*expected_error_field_name=*/"trustedBiddingSignalsURL",
-        /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
-        /*expected_error=*/kBadTrustedBiddingSignalsUrlError);
+        /*expected_error_field_name=*/
+        String::FromUTF8("trustedBiddingSignalsURL"),
+        /*expected_error_field_value=*/rejected_url.GetString(),
+        /*expected_error=*/String::FromUTF8(kBadTrustedBiddingSignalsUrlError));
   }
 
   // `trusted_bidding_signals_url` also can't include query strings.
@@ -370,9 +376,10 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
   blink_interest_group->trusted_bidding_signals_url = rejected_url;
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
-      /*expected_error_field_name=*/"trustedBiddingSignalsURL",
-      /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
-      /*expected_error=*/kBadTrustedBiddingSignalsUrlError);
+      /*expected_error_field_name=*/
+      String::FromUTF8("trustedBiddingSignalsURL"),
+      /*expected_error_field_value=*/rejected_url.GetString(),
+      /*expected_error=*/String::FromUTF8(kBadTrustedBiddingSignalsUrlError));
 }
 
 // Tests valid and invalid ad render URLs.
@@ -427,9 +434,9 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          /*expected_error_field_name=*/"ads[0].renderURL",
-          /*expected_error_field_value=*/test_case_url.GetString().Utf8(),
-          /*expected_error=*/kBadAdUrlError);
+          /*expected_error_field_name=*/String::FromUTF8("ads[0].renderURL"),
+          /*expected_error_field_value=*/test_case_url.GetString(),
+          /*expected_error=*/String::FromUTF8(kBadAdUrlError));
     }
 
     // Add an InterestGroup with the test cases's URL as the second ad's URL.
@@ -443,9 +450,9 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          /*expected_error_field_name=*/"ads[1].renderURL",
-          /*expected_error_field_value=*/test_case_url.GetString().Utf8(),
-          /*expected_error=*/kBadAdUrlError);
+          /*expected_error_field_name=*/String::FromUTF8("ads[1].renderURL"),
+          /*expected_error_field_value=*/test_case_url.GetString(),
+          /*expected_error=*/String::FromUTF8(kBadAdUrlError));
     }
   }
 }
@@ -504,9 +511,10 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          /*expected_error_field_name=*/"adComponents[0].renderURL",
-          /*expected_error_field_value=*/test_case_url.GetString().Utf8(),
-          /*expected_error=*/kBadAdUrlError);
+          /*expected_error_field_name=*/
+          String::FromUTF8("adComponents[0].renderURL"),
+          /*expected_error_field_value=*/test_case_url.GetString(),
+          /*expected_error=*/String::FromUTF8(kBadAdUrlError));
     }
 
     // Add an InterestGroup with the test cases's URL as the second ad
@@ -522,9 +530,10 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          /*expected_error_field_name=*/"adComponents[1].renderURL",
-          /*expected_error_field_value=*/test_case_url.GetString().Utf8(),
-          /*expected_error=*/kBadAdUrlError);
+          /*expected_error_field_name=*/
+          String::FromUTF8("adComponents[1].renderURL"),
+          /*expected_error_field_value=*/test_case_url.GetString(),
+          /*expected_error=*/String::FromUTF8(kBadAdUrlError));
     }
   }
 }
@@ -584,9 +593,11 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
   std::string long_string(kTooLongNameLength, 'n');
   blink_interest_group->name = String(long_string);
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"1048576",
-      /*expected_error=*/"interest groups must be less than 1048576 bytes");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("size"),
+      /*expected_error_field_value=*/String::FromUTF8("1048576"),
+      /*expected_error=*/
+      String::FromUTF8("interest groups must be less than 1048576 bytes"));
 
   // Almost too long should still work.
   long_string = std::string(kTooLongNameLength - 1, 'n');
@@ -623,9 +634,11 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargePriorityVector) {
   blink_interest_group->name = String(too_long_name);
 
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"1048576",
-      /*expected_error=*/"interest groups must be less than 1048576 bytes");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("size"),
+      /*expected_error_field_value=*/String::FromUTF8("1048576"),
+      /*expected_error=*/
+      String::FromUTF8("interest groups must be less than 1048576 bytes"));
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -662,9 +675,11 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargePrioritySignalsOverride) {
   blink_interest_group->name = String(too_long_name);
 
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"1048576",
-      /*expected_error=*/"interest groups must be less than 1048576 bytes");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("size"),
+      /*expected_error_field_value=*/String::FromUTF8("1048576"),
+      /*expected_error=*/
+      String::FromUTF8("interest groups must be less than 1048576 bytes"));
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -706,9 +721,11 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSellerCapabilities) {
   blink_interest_group->name = String(too_long_name);
 
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"1048576",
-      /*expected_error=*/"interest groups must be less than 1048576 bytes");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("size"),
+      /*expected_error_field_value=*/String::FromUTF8("1048576"),
+      /*expected_error=*/
+      String::FromUTF8("interest groups must be less than 1048576 bytes"));
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -751,9 +768,11 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAdSizes) {
   blink_interest_group->name = String(too_long_name);
 
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"1048576",
-      /*expected_error=*/"interest groups must be less than 1048576 bytes");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("size"),
+      /*expected_error_field_value=*/String::FromUTF8("1048576"),
+      /*expected_error=*/
+      String::FromUTF8("interest groups must be less than 1048576 bytes"));
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -801,9 +820,11 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSizeGroups) {
   blink_interest_group->name = String(too_long_name);
 
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"1048576",
-      /*expected_error=*/"interest groups must be less than 1048576 bytes");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("size"),
+      /*expected_error_field_value=*/String::FromUTF8("1048576"),
+      /*expected_error=*/
+      String::FromUTF8("interest groups must be less than 1048576 bytes"));
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -828,9 +849,11 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
         std::move(mojo_ad_component1));
   }
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"1048576",
-      /*expected_error=*/"interest groups must be less than 1048576 bytes");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("size"),
+      /*expected_error_field_value=*/String::FromUTF8("1048576"),
+      /*expected_error=*/
+      String::FromUTF8("interest groups must be less than 1048576 bytes"));
 
   // Almost too big should still work.
   blink_interest_group->ad_components->resize(13979);
@@ -853,9 +876,10 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidPriority) {
         CreateMinimalInterestGroup();
     blink_interest_group->priority = test_case.priority;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"priority",
+        blink_interest_group,
+        /*expected_error_field_name=*/String::FromUTF8("priority"),
         /*expected_error_field_value=*/test_case.priority_text,
-        /*expected_error=*/"priority must be finite.");
+        /*expected_error=*/String::FromUTF8("priority must be finite."));
   }
 }
 
@@ -903,7 +927,8 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidAdSizes) {
                                test_case.width, test_case.width_units,
                                test_case.height, test_case.height_units));
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"adSizes",
+        blink_interest_group,
+        /*expected_error_field_name=*/String::FromUTF8("adSizes"),
         test_case.expected_error_field_value, test_case.expected_error);
   }
 }
@@ -939,7 +964,8 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidSizeGroups) {
     blink_interest_group->size_groups->insert(
         test_case.size_group, WTF::Vector<WTF::String>(1, test_case.size_name));
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"sizeGroups",
+        blink_interest_group,
+        /*expected_error_field_name=*/String::FromUTF8("sizeGroups"),
         test_case.expected_error_field_value, test_case.expected_error);
   }
 }
@@ -978,7 +1004,8 @@ TEST_F(ValidateBlinkInterestGroupTest, AdSizeGroupEmptyNameOrNotInSizeGroups) {
     blink_interest_group->size_groups->insert(
         test_case.size_group, WTF::Vector<WTF::String>(1, "size_name"));
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"ads[0].sizeGroup",
+        blink_interest_group,
+        /*expected_error_field_name=*/String::FromUTF8("ads[0].sizeGroup"),
         test_case.expected_error_field_value, test_case.expected_error);
   }
 }
@@ -1018,10 +1045,11 @@ TEST_F(ValidateBlinkInterestGroupTest,
     blink_interest_group->size_groups.emplace();
     blink_interest_group->size_groups->insert(
         test_case.size_group, WTF::Vector<WTF::String>(1, "size_name"));
-    ExpectInterestGroupIsNotValid(
-        blink_interest_group,
-        /*expected_error_field_name=*/"adComponents[0].sizeGroup",
-        test_case.expected_error_field_value, test_case.expected_error);
+    ExpectInterestGroupIsNotValid(blink_interest_group,
+                                  /*expected_error_field_name=*/
+                                  String::FromUTF8("adComponents[0].sizeGroup"),
+                                  test_case.expected_error_field_value,
+                                  test_case.expected_error);
   }
 }
 
@@ -1034,9 +1062,10 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderIdTooLong) {
   ad->ad_render_id = String::FromUTF8("ThisIsTooLong");
   blink_interest_group->ads->emplace_back(std::move(ad));
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, /*expected_error_field_name=*/"ads[0].adRenderId",
-      /*expected_error_field_value=*/"ThisIsTooLong",
-      /*expected_error=*/"The adRenderId is too long.");
+      blink_interest_group,
+      /*expected_error_field_name=*/String::FromUTF8("ads[0].adRenderId"),
+      /*expected_error_field_value=*/String::FromUTF8("ThisIsTooLong"),
+      /*expected_error=*/String::FromUTF8("The adRenderId is too long."));
 }
 
 TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderIdTooLong) {
@@ -1051,9 +1080,10 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderIdTooLong) {
       std::move(mojo_ad_component));
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
-      /*expected_error_field_name=*/"adComponents[0].adRenderId",
-      /*expected_error_field_value=*/"ThisIsTooLong",
-      /*expected_error=*/"The adRenderId is too long.");
+      /*expected_error_field_name=*/
+      String::FromUTF8("adComponents[0].adRenderId"),
+      /*expected_error_field_value=*/String::FromUTF8("ThisIsTooLong"),
+      /*expected_error=*/String::FromUTF8("The adRenderId is too long."));
 }
 
 // The interest group is invalid if its ad object's "allowedReporting" field
@@ -1073,8 +1103,9 @@ TEST_F(ValidateBlinkInterestGroupTest, AdTooManyAllowedReportingOrigins) {
   blink_interest_group->ads->emplace_back(std::move(ad));
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
-      /*expected_error_field_name=*/"ads[0].allowedReportingOrigins",
-      /*expected_error_field_value=*/"",
+      /*expected_error_field_name=*/
+      String::FromUTF8("ads[0].allowedReportingOrigins"),
+      /*expected_error_field_value=*/String::FromUTF8(""),
       /*expected_error=*/
       "allowedReportingOrigins cannot have more than 10 elements.");
 }
@@ -1093,9 +1124,22 @@ TEST_F(ValidateBlinkInterestGroupTest, AdNonHttpsAllowedReportingOrigins) {
   blink_interest_group->ads->emplace_back(std::move(ad));
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
-      /*expected_error_field_name=*/"ads[0].allowedReportingOrigins",
-      /*expected_error_field_value=*/"http://origin2.test",
-      /*expected_error=*/"allowedReportingOrigins must all be HTTPS.");
+      /*expected_error_field_name=*/
+      String::FromUTF8("ads[0].allowedReportingOrigins"),
+      /*expected_error_field_value=*/String::FromUTF8("http://origin2.test"),
+      /*expected_error=*/
+      String::FromUTF8("allowedReportingOrigins must all be HTTPS."));
+}
+
+// Test behavior with a negative InterestGroup.
+TEST_F(ValidateBlinkInterestGroupTest, JustAdditionalBidKeyIsValid) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->additional_bid_key = {
+      0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
+      0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
+      0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
+  ExpectInterestGroupIsValid(blink_interest_group);
 }
 
 TEST_F(ValidateBlinkInterestGroupTest, AdditionalBidKeyWrongSize) {
@@ -1108,10 +1152,32 @@ TEST_F(ValidateBlinkInterestGroupTest, AdditionalBidKeyWrongSize) {
   // of the expected size.
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
-      /*expected_error_field_name=*/"additionalBidKey",
-      /*expected_error_field_value=*/"5",
-      /*expected_error=*/"additionalBidKey must be exactly 32 bytes.",
+      /*expected_error_field_name=*/String::FromUTF8("additionalBidKey"),
+      /*expected_error_field_value=*/String::FromUTF8("5"),
+      /*expected_error=*/
+      String::FromUTF8("additionalBidKey must be exactly 32 bytes."),
       /*check_deserialization=*/false);
+}
+
+TEST_F(ValidateBlinkInterestGroupTest,
+       AdditionalBidKeyAndAdsNotAllowedTogether) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  blink_interest_group->ads->emplace_back(
+      MakeAdWithUrl(KURL(String::FromUTF8("https://origin.test/"))));
+  blink_interest_group->additional_bid_key = {
+      0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
+      0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
+      0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
+
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/String(),
+      /*expected_error_field_value=*/String(),
+      /*expected_error=*/
+      "Interest groups that provide a value of additionalBidKey for negative "
+      "targeting must not provide a value for ads.");
 }
 
 }  // namespace blink
