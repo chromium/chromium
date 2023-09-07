@@ -69,13 +69,10 @@
 }
 
 - (void)dealloc {
-  DCHECK(!self.authenticationFlow);
-  DCHECK(!self.identityManager);
-  DCHECK(!self.accountManagerService);
-  DCHECK(!self.consentAuditor);
-  DCHECK(!self.authenticationService);
-  DCHECK(!self.syncService);
-  DCHECK(!self.delegate);
+  DCHECK(!self.identityManager)
+      << "delegate: " << base::SysNSStringToUTF8([self.delegate description])
+      << ", AuthenticationFlow "
+      << base::SysNSStringToUTF8([self.authenticationFlow description]);
 }
 
 - (void)authenticateWithIdentity:(id<SystemIdentity>)identity
