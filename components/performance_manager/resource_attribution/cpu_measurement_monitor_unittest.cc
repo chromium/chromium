@@ -85,6 +85,11 @@ struct SinglePageRendererNodes {
   TestNodeWrapper<ProcessNodeImpl> process_node;
   TestNodeWrapper<PageNodeImpl> page_node;
   TestNodeWrapper<FrameNodeImpl> frame_node;
+
+  // Shorter aliases for each node's ResourceContext.
+  ProcessContext process_context;
+  PageContext page_context;
+  FrameContext frame_context;
 };
 
 // State of a simulated process for CPU measurements.
@@ -161,6 +166,7 @@ void RunOnPMSequence(base::OnceCallback<void(Graph*)> callback) {
 
 }  // namespace
 
+// A test that creates mock processes to simulate exact CPU usage.
 class CPUMeasurementMonitorTest : public GraphTestHarness {
  protected:
   using Super = GraphTestHarness;
@@ -181,14 +187,18 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
         base::Unretained(this)));
   }
 
-  // Creates a renderer process containing a single page and frame, for simple
-  // tracking of CPU usage.
+  // Creates a renderer process containing a single page and frame. CPU
+  // measurements for the renderer are all assigned to that frame for easy
+  // validation. By default the process will use 100% CPU as long as it's alive.
   SinglePageRendererNodes CreateSimpleCPUTrackingRenderer() {
     // CreateNode's default arguments create a renderer process node.
     auto process_node = CreateNode<ProcessNodeImpl>();
+    ProcessContext process_context = process_node->resource_context();
     auto page_node = CreateNode<PageNodeImpl>();
+    PageContext page_context = page_node->resource_context();
     auto frame_node =
         CreateFrameNodeAutoId(process_node.get(), page_node.get());
+    FrameContext frame_context = frame_node->resource_context();
 
     // By default simulate 100% CPU usage in the renderer. To override this call
     // SetProcessCPUUsage again before advancing the clock.
@@ -198,6 +208,9 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
         .process_node = std::move(process_node),
         .page_node = std::move(page_node),
         .frame_node = std::move(frame_node),
+        .process_context = std::move(process_context),
+        .page_context = std::move(page_context),
+        .frame_context = std::move(frame_context),
     };
   }
 
@@ -369,15 +382,11 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
   std::map<PageContext, base::TimeDelta> current_page_cpu_usage_;
 };
 
-TEST_F(CPUMeasurementMonitorTest, CPUMeasurement) {
-  // Create several renderer processes to measure. Put one page and one frame in
-  // each renderer, so CPU measurements for the renderer are all assigned to
-  // that frame for easy validation. By default each process will use 100% CPU
-  // as long as it's alive.
-
+// Tests that renderers created at various points around CPU measurement
+// snapshots are handled correctly.
+TEST_F(CPUMeasurementMonitorTest, CreateTiming) {
   // Renderer in existence before StartMonitoring().
   const SinglePageRendererNodes renderer1 = CreateSimpleCPUTrackingRenderer();
-  const FrameContext& frame_context1 = renderer1.frame_node->resource_context();
   SetProcessId(renderer1.process_node.get());
 
   // Renderer starts and exits before StartMonitoring().
@@ -389,7 +398,6 @@ TEST_F(CPUMeasurementMonitorTest, CPUMeasurement) {
   // Renderer creation racing with StartMonitoring(). Its pid will not be
   // available until after monitoring starts.
   const SinglePageRendererNodes renderer2 = CreateSimpleCPUTrackingRenderer();
-  const FrameContext& frame_context2 = renderer2.frame_node->resource_context();
   ASSERT_EQ(renderer2.process_node->process_id(), base::kNullProcessId);
 
   // `renderer1` begins measurement as soon as StartMonitoring is called.
@@ -403,7 +411,6 @@ TEST_F(CPUMeasurementMonitorTest, CPUMeasurement) {
 
   // Renderer created halfway through the measurement interval.
   const SinglePageRendererNodes renderer3 = CreateSimpleCPUTrackingRenderer();
-  const FrameContext& frame_context3 = renderer3.frame_node->resource_context();
   SetProcessId(renderer3.process_node.get());
   const auto renderer3_start_time = base::TimeTicks::Now();
 
@@ -411,9 +418,7 @@ TEST_F(CPUMeasurementMonitorTest, CPUMeasurement) {
   // pid will become available on the same tick the measurement is taken,
   // `renderer5`'s pid will become available after the measurement.
   const SinglePageRendererNodes renderer4 = CreateSimpleCPUTrackingRenderer();
-  const FrameContext& frame_context4 = renderer4.frame_node->resource_context();
   const SinglePageRendererNodes renderer5 = CreateSimpleCPUTrackingRenderer();
-  const FrameContext& frame_context5 = renderer5.frame_node->resource_context();
 
   // Finish next measurement interval.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
@@ -430,21 +435,21 @@ TEST_F(CPUMeasurementMonitorTest, CPUMeasurement) {
   UpdateAndGetCPUMeasurements();
 
   EXPECT_FALSE(
-      base::Contains(current_measurements_,
-                     early_exit_renderer.frame_node->resource_context()));
-  EXPECT_THAT(current_measurements_[frame_context1],
-              AllOf(CPUDeltaMatches(frame_context1, kTimeBetweenMeasurements),
-                    StartTimeMatches(renderer1_start_time)));
+      base::Contains(current_measurements_, early_exit_renderer.frame_context));
   EXPECT_THAT(
-      current_measurements_[frame_context2],
-      AllOf(CPUDeltaMatches(frame_context2, kTimeBetweenMeasurements / 2),
-            StartTimeMatches(renderer2_start_time)));
-  EXPECT_THAT(
-      current_measurements_[frame_context3],
-      AllOf(CPUDeltaMatches(frame_context3, kTimeBetweenMeasurements / 2),
-            StartTimeMatches(renderer3_start_time)));
-  EXPECT_FALSE(base::Contains(current_measurements_, frame_context4));
-  EXPECT_FALSE(base::Contains(current_measurements_, frame_context5));
+      current_measurements_[renderer1.frame_context],
+      AllOf(CPUDeltaMatches(renderer1.frame_context, kTimeBetweenMeasurements),
+            StartTimeMatches(renderer1_start_time)));
+  EXPECT_THAT(current_measurements_[renderer2.frame_context],
+              AllOf(CPUDeltaMatches(renderer2.frame_context,
+                                    kTimeBetweenMeasurements / 2),
+                    StartTimeMatches(renderer2_start_time)));
+  EXPECT_THAT(current_measurements_[renderer3.frame_context],
+              AllOf(CPUDeltaMatches(renderer3.frame_context,
+                                    kTimeBetweenMeasurements / 2),
+                    StartTimeMatches(renderer3_start_time)));
+  EXPECT_FALSE(base::Contains(current_measurements_, renderer4.frame_context));
+  EXPECT_FALSE(base::Contains(current_measurements_, renderer5.frame_context));
 
   SetProcessId(renderer5.process_node.get());
   const auto renderer5_start_time = base::TimeTicks::Now();
@@ -455,18 +460,156 @@ TEST_F(CPUMeasurementMonitorTest, CPUMeasurement) {
   // All nodes existed for entire measurement interval.
   UpdateAndGetCPUMeasurements();
 
-  EXPECT_THAT(current_measurements_[frame_context1],
-              CPUDeltaMatches(frame_context1, kTimeBetweenMeasurements));
-  EXPECT_THAT(current_measurements_[frame_context2],
-              CPUDeltaMatches(frame_context2, kTimeBetweenMeasurements));
-  EXPECT_THAT(current_measurements_[frame_context3],
-              CPUDeltaMatches(frame_context3, kTimeBetweenMeasurements));
-  EXPECT_THAT(current_measurements_[frame_context4],
-              AllOf(CPUDeltaMatches(frame_context4, kTimeBetweenMeasurements),
-                    StartTimeMatches(renderer4_start_time)));
-  EXPECT_THAT(current_measurements_[frame_context5],
-              AllOf(CPUDeltaMatches(frame_context5, kTimeBetweenMeasurements),
-                    StartTimeMatches(renderer5_start_time)));
+  EXPECT_THAT(
+      current_measurements_[renderer1.frame_context],
+      CPUDeltaMatches(renderer1.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer2.frame_context],
+      CPUDeltaMatches(renderer2.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer3.frame_context],
+      CPUDeltaMatches(renderer3.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer4.frame_context],
+      AllOf(CPUDeltaMatches(renderer4.frame_context, kTimeBetweenMeasurements),
+            StartTimeMatches(renderer4_start_time)));
+  EXPECT_THAT(
+      current_measurements_[renderer5.frame_context],
+      AllOf(CPUDeltaMatches(renderer5.frame_context, kTimeBetweenMeasurements),
+            StartTimeMatches(renderer5_start_time)));
+}
+
+// Tests that renderers exiting at various points around CPU measurement
+// snapshots are handled correctly.
+TEST_F(CPUMeasurementMonitorTest, ExitTiming) {
+  const SinglePageRendererNodes renderer1 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer1.process_node.get());
+  const SinglePageRendererNodes renderer2 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer2.process_node.get());
+  const SinglePageRendererNodes renderer3 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer3.process_node.get());
+  const SinglePageRendererNodes renderer4 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer4.process_node.get());
+  const SinglePageRendererNodes renderer5 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer5.process_node.get());
+  const SinglePageRendererNodes renderer6 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer6.process_node.get());
+  const SinglePageRendererNodes renderer7 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer7.process_node.get());
+  const SinglePageRendererNodes renderer8 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer8.process_node.get());
+
+  StartMonitoring();
+
+  // Test renderers that exit before UpdateAndGetCPUMeasurements is ever called:
+  // `renderer1` exits at the beginning of the first measurement interval.
+  // `renderer2` exits halfway through.
+  // `renderer3` exits at the end of the interval.
+  SetProcessExited(renderer1.process_node.get());
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  SetProcessExited(renderer2.process_node.get());
+
+  // Finish the measurement interval.
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  SetProcessExited(renderer3.process_node.get());
+
+  UpdateAndGetCPUMeasurements();
+  const auto previous_update_time = base::TimeTicks::Now();
+
+  // Renderers that have exited were never measured.
+  EXPECT_FALSE(base::Contains(current_measurements_, renderer1.frame_context));
+  EXPECT_FALSE(base::Contains(current_measurements_, renderer2.frame_context));
+  EXPECT_FALSE(base::Contains(current_measurements_, renderer3.frame_context));
+
+  // Remaining renderers are using 100% CPU.
+  EXPECT_THAT(
+      current_measurements_[renderer4.frame_context],
+      CPUDeltaMatches(renderer4.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer5.frame_context],
+      CPUDeltaMatches(renderer5.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer6.frame_context],
+      CPUDeltaMatches(renderer6.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer7.frame_context],
+      CPUDeltaMatches(renderer7.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer8.frame_context],
+      CPUDeltaMatches(renderer8.frame_context, kTimeBetweenMeasurements));
+
+  // `renderer4` exits at the beginning of the next measurement interval.
+  // `renderer5` exits halfway through.
+  // `renderer6` exits at the end of the interval.
+  SetProcessExited(renderer4.process_node.get());
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  SetProcessExited(renderer5.process_node.get());
+
+  // Finish the measurement interval.
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  SetProcessExited(renderer6.process_node.get());
+
+  // TODO(crbug.com/1410503): Processes that exited at any point during the
+  // interval still return their last measurement before the interval, so
+  // their delta is always empty. Capture the final CPU usage correctly, and
+  // test that the renderers that have exited return their CPU usage for the
+  // time they were alive and 0% for the rest of the measurement interval.
+  UpdateAndGetCPUMeasurements();
+
+  EXPECT_THAT(current_measurements_[renderer4.frame_context],
+              CPUDeltaMatches(renderer4.frame_context, base::TimeDelta(),
+                              previous_update_time));
+  EXPECT_THAT(current_measurements_[renderer5.frame_context],
+              CPUDeltaMatches(renderer5.frame_context, base::TimeDelta(),
+                              previous_update_time));
+  EXPECT_THAT(current_measurements_[renderer6.frame_context],
+              CPUDeltaMatches(renderer6.frame_context, base::TimeDelta(),
+                              previous_update_time));
+
+  EXPECT_THAT(
+      current_measurements_[renderer7.frame_context],
+      CPUDeltaMatches(renderer7.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer8.frame_context],
+      CPUDeltaMatches(renderer8.frame_context, kTimeBetweenMeasurements));
+
+  // `renderer7` exits just before the StopMonitoring call and `renderer7`
+  // exits just after. This should not cause any assertion failures.
+  SetProcessExited(renderer7.process_node.get());
+  cpu_monitor_.StopMonitoring();
+  SetProcessExited(renderer8.process_node.get());
+}
+
+// Tests that varying CPU usage between measurement snapshots is reported
+// correctly.
+TEST_F(CPUMeasurementMonitorTest, VaryingMeasurements) {
+  const SinglePageRendererNodes renderer1 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer1.process_node.get());
+  const SinglePageRendererNodes renderer2 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer2.process_node.get());
+  const SinglePageRendererNodes renderer3 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer3.process_node.get());
+  const SinglePageRendererNodes renderer4 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer4.process_node.get());
+
+  StartMonitoring();
+
+  // All processes are at 100% for first measurement interval.
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  UpdateAndGetCPUMeasurements();
+
+  EXPECT_THAT(
+      current_measurements_[renderer1.frame_context],
+      CPUDeltaMatches(renderer1.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer2.frame_context],
+      CPUDeltaMatches(renderer2.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer3.frame_context],
+      CPUDeltaMatches(renderer3.frame_context, kTimeBetweenMeasurements));
+  EXPECT_THAT(
+      current_measurements_[renderer4.frame_context],
+      CPUDeltaMatches(renderer4.frame_context, kTimeBetweenMeasurements));
 
   // `renderer1` drops to 50% CPU usage for the next period.
   // `renderer2` stays at 100% for the first half, 50% for the last half
@@ -488,59 +631,24 @@ TEST_F(CPUMeasurementMonitorTest, CPUMeasurement) {
   SetProcessCPUUsage(renderer4.process_node.get(), 0);
 
   UpdateAndGetCPUMeasurements();
-  const auto previous_measurement_time = base::TimeTicks::Now();
 
-  EXPECT_THAT(current_measurements_[frame_context1],
-              CPUDeltaMatches(frame_context1, kTimeBetweenMeasurements * 0.5));
-  EXPECT_THAT(current_measurements_[frame_context2],
-              CPUDeltaMatches(frame_context2, kTimeBetweenMeasurements * 0.75));
-  EXPECT_THAT(current_measurements_[frame_context3],
-              CPUDeltaMatches(frame_context3, kTimeBetweenMeasurements * 0.25));
-  EXPECT_THAT(current_measurements_[frame_context4],
-              CPUDeltaMatches(frame_context4, kTimeBetweenMeasurements));
-  EXPECT_THAT(current_measurements_[frame_context5],
-              CPUDeltaMatches(frame_context5, kTimeBetweenMeasurements));
-
-  // `renderer1` exits at the beginning of the next measurement interval.
-  // `renderer2` exits halfway through.
-  // `renderer3` and `renderer4` are still using 0% CPU.
-  // `renderer5` exits at the end of the interval.
-  SetProcessExited(renderer1.process_node.get());
-  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
-  SetProcessExited(renderer2.process_node.get());
-
-  // Finish next measurement interval.
-  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
-  SetProcessExited(renderer5.process_node.get());
-
-  // TODO(crbug.com/1410503): Processes that exited at any point during the
-  // interval still return their last measurement before the interval, so
-  // their delta is always empty. Capture the final CPU usage correctly, and
-  // test that the renderers that have exited return their CPU usage for the
-  // time they were alive and 0% for the rest of the measurement interval.
-  UpdateAndGetCPUMeasurements();
-
-  EXPECT_THAT(current_measurements_[frame_context1],
-              CPUDeltaMatches(frame_context1, base::TimeDelta(),
-                              previous_measurement_time));
-  EXPECT_THAT(current_measurements_[frame_context2],
-              CPUDeltaMatches(frame_context2, base::TimeDelta(),
-                              previous_measurement_time));
-  EXPECT_THAT(current_measurements_[frame_context3],
-              CPUDeltaMatches(frame_context3, base::TimeDelta()));
-  EXPECT_THAT(current_measurements_[frame_context4],
-              CPUDeltaMatches(frame_context4, base::TimeDelta()));
-  EXPECT_THAT(current_measurements_[frame_context5],
-              CPUDeltaMatches(frame_context5, base::TimeDelta(),
-                              previous_measurement_time));
-
-  // `renderer3` exits just before the StopMonitoring call and `renderer4`
-  // exits just after. This should not cause any assertion failures.
-  SetProcessExited(renderer3.process_node.get());
-  cpu_monitor_.StopMonitoring(graph());
-  SetProcessExited(renderer4.process_node.get());
+  EXPECT_THAT(
+      current_measurements_[renderer1.frame_context],
+      CPUDeltaMatches(renderer1.frame_context, kTimeBetweenMeasurements * 0.5));
+  EXPECT_THAT(current_measurements_[renderer2.frame_context],
+              CPUDeltaMatches(renderer2.frame_context,
+                              kTimeBetweenMeasurements * 0.75));
+  EXPECT_THAT(current_measurements_[renderer3.frame_context],
+              CPUDeltaMatches(renderer3.frame_context,
+                              kTimeBetweenMeasurements * 0.25));
+  EXPECT_THAT(
+      current_measurements_[renderer4.frame_context],
+      CPUDeltaMatches(renderer4.frame_context, kTimeBetweenMeasurements));
 }
 
+// Tests that CPU usage of processes is correctly distributed between frames and
+// workers in those processes, and correctly aggregated to pages containing
+// frames and workers from multiple processes.
 TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
   // Track CPU usage of the mock utility process to make sure that measuring it
   // doesn't crash. Currently only measurements of renderer processes are
@@ -679,21 +787,15 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
               kShortInterval * 0.2);
   EXPECT_THAT(GetPageCPUUsageDelta(mock_graph_->other_page->resource_context()),
               kShortInterval * 0.1);
-
-  cpu_monitor_.StopMonitoring(graph());
 }
 
-TEST_F(CPUMeasurementMonitorTest, CPUMeasurementError) {
+// Tests that errors returned from ProcessMetrics are correctly ignored.
+TEST_F(CPUMeasurementMonitorTest, MeasurementError) {
   const SinglePageRendererNodes renderer1 = CreateSimpleCPUTrackingRenderer();
-  const FrameContext& frame_context1 = renderer1.frame_node->resource_context();
   SetProcessId(renderer1.process_node.get());
-
   const SinglePageRendererNodes renderer2 = CreateSimpleCPUTrackingRenderer();
-  const FrameContext& frame_context2 = renderer2.frame_node->resource_context();
   SetProcessId(renderer2.process_node.get());
-
   const SinglePageRendererNodes renderer3 = CreateSimpleCPUTrackingRenderer();
-  const FrameContext& frame_context3 = renderer3.frame_node->resource_context();
   SetProcessId(renderer3.process_node.get());
 
   StartMonitoring();
@@ -704,15 +806,18 @@ TEST_F(CPUMeasurementMonitorTest, CPUMeasurementError) {
   UpdateAndGetCPUMeasurements();
   const auto previous_measurement_time = base::TimeTicks::Now();
 
-  EXPECT_THAT(current_measurements_[frame_context1],
-              AllOf(CPUDeltaMatches(frame_context1, kTimeBetweenMeasurements),
-                    StartTimeMatches(monitoring_start_time)));
-  EXPECT_THAT(current_measurements_[frame_context2],
-              AllOf(CPUDeltaMatches(frame_context2, kTimeBetweenMeasurements),
-                    StartTimeMatches(monitoring_start_time)));
-  EXPECT_THAT(current_measurements_[frame_context3],
-              AllOf(CPUDeltaMatches(frame_context3, kTimeBetweenMeasurements),
-                    StartTimeMatches(monitoring_start_time)));
+  EXPECT_THAT(
+      current_measurements_[renderer1.frame_context],
+      AllOf(CPUDeltaMatches(renderer1.frame_context, kTimeBetweenMeasurements),
+            StartTimeMatches(monitoring_start_time)));
+  EXPECT_THAT(
+      current_measurements_[renderer2.frame_context],
+      AllOf(CPUDeltaMatches(renderer2.frame_context, kTimeBetweenMeasurements),
+            StartTimeMatches(monitoring_start_time)));
+  EXPECT_THAT(
+      current_measurements_[renderer3.frame_context],
+      AllOf(CPUDeltaMatches(renderer3.frame_context, kTimeBetweenMeasurements),
+            StartTimeMatches(monitoring_start_time)));
 
   SetProcessCPUUsage(renderer1.process_node.get(), 0.5);
   SetProcessCPUUsage(renderer2.process_node.get(), 0.5);
@@ -728,18 +833,19 @@ TEST_F(CPUMeasurementMonitorTest, CPUMeasurementError) {
   // After an error the previous measurement should be returned unchanged.
   UpdateAndGetCPUMeasurements();
 
-  EXPECT_THAT(current_measurements_[frame_context1],
-              CPUDeltaMatches(frame_context1, base::TimeDelta(),
+  EXPECT_THAT(current_measurements_[renderer1.frame_context],
+              CPUDeltaMatches(renderer1.frame_context, base::TimeDelta(),
                               previous_measurement_time));
-  EXPECT_THAT(current_measurements_[frame_context2],
-              CPUDeltaMatches(frame_context2, base::TimeDelta(),
+  EXPECT_THAT(current_measurements_[renderer2.frame_context],
+              CPUDeltaMatches(renderer2.frame_context, base::TimeDelta(),
                               previous_measurement_time));
-  EXPECT_THAT(current_measurements_[frame_context3],
-              CPUDeltaMatches(frame_context3, kTimeBetweenMeasurements * 0.5));
-
-  cpu_monitor_.StopMonitoring(graph());
+  EXPECT_THAT(
+      current_measurements_[renderer3.frame_context],
+      CPUDeltaMatches(renderer3.frame_context, kTimeBetweenMeasurements * 0.5));
 }
 
+// A test that creates real processes, to verify that measurement works with the
+// timing of real node creation.
 class CPUMeasurementMonitorTimingTest : public PerformanceManagerTestHarness {
  protected:
   using Super = PerformanceManagerTestHarness;
@@ -754,10 +860,7 @@ class CPUMeasurementMonitorTimingTest : public PerformanceManagerTestHarness {
   }
 
   void TearDown() override {
-    RunOnPMSequence(base::BindLambdaForTesting([&](Graph* graph) {
-      cpu_monitor_->StopMonitoring(graph);
-      cpu_monitor_.reset();
-    }));
+    RunOnPMSequence(base::BindLambdaForTesting([&] { cpu_monitor_.reset(); }));
     Super::TearDown();
   }
 

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/process_node.h"
@@ -88,8 +89,8 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
   // Starts monitoring CPU usage for all renderer ProcessNode's in `graph`.
   void StartMonitoring(Graph* graph);
 
-  // Stops monitoring ProcessNode's in `graph`.
-  void StopMonitoring(Graph* graph);
+  // Stops monitoring the graph.
+  void StopMonitoring();
 
   // Updates the CPU measurements for each ProcessNode being tracked and returns
   // the estimated CPU usage of each frame and worker in those processes.
@@ -172,8 +173,9 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
   CPUMeasurementDelegate::FactoryCallback cpu_measurement_delegate_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // True if StartMonitoring() was called and StopMonitoring() was not.
-  bool is_monitoring_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // Graph being monitored. This will be only be set if StartMonitoring() was
+  // called and StopMonitoring() was not.
+  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 };
 
 }  // namespace performance_manager::resource_attribution

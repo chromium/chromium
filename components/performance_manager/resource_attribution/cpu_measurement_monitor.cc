@@ -127,7 +127,12 @@ CPUMeasurementMonitor::CPUMeasurementMonitor()
     : cpu_measurement_delegate_factory_(
           base::BindRepeating(&CPUMeasurementDelegateImpl::Create)) {}
 
-CPUMeasurementMonitor::~CPUMeasurementMonitor() = default;
+CPUMeasurementMonitor::~CPUMeasurementMonitor() {
+  if (graph_) {
+    StopMonitoring();
+  }
+  CHECK(!graph_);
+}
 
 void CPUMeasurementMonitor::SetCPUMeasurementDelegateFactoryForTesting(
     CPUMeasurementDelegate::FactoryCallback factory) {
@@ -144,10 +149,9 @@ void CPUMeasurementMonitor::SetCPUMeasurementDelegateFactoryForTesting(
 
 void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph->AddProcessNodeObserver(this);
-
-  CHECK(!is_monitoring_);
-  is_monitoring_ = true;
+  CHECK(!graph_);
+  graph_ = graph;
+  graph_->AddProcessNodeObserver(this);
 
   // Start monitoring CPU usage for all existing processes. Can't read their CPU
   // usage until they have a pid assigned.
@@ -159,12 +163,12 @@ void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
   }
 }
 
-void CPUMeasurementMonitor::StopMonitoring(Graph* graph) {
+void CPUMeasurementMonitor::StopMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_monitoring_);
-  is_monitoring_ = false;
+  CHECK(graph_);
   cpu_measurement_map_.clear();
-  graph->RemoveProcessNodeObserver(this);
+  graph_->RemoveProcessNodeObserver(this);
+  graph_ = nullptr;
 }
 
 std::map<ResourceContext, CPUTimeResult>
@@ -214,7 +218,7 @@ base::TimeDelta CPUMeasurementMonitor::EstimatePageCPUUsage(
 void CPUMeasurementMonitor::OnProcessLifetimeChange(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_monitoring_) {
+  if (!graph_) {
     // Not monitoring CPU usage yet.
     CHECK(cpu_measurement_map_.empty());
     return;
@@ -254,9 +258,11 @@ void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
 
 void CPUMeasurementMonitor::UpdateCPUMeasurements() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Must call StartMonitoring() before getting measurements.
+  CHECK(graph_);
+
   // Update CPU metrics, attributing the cumulative CPU of each process to its
   // frames and workers.
-  CHECK(is_monitoring_);
   for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
     cpu_measurement.MeasureAndDistributeCPUUsage(process_node,
                                                  measurement_results_);
