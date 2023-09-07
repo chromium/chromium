@@ -16,7 +16,6 @@
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
-#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_footer_view.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_table_cell.h"
 #import "ios/chrome/credential_provider_extension/ui/password_note_cell.h"
@@ -124,12 +123,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
          forCellReuseIdentifier:NewPasswordTableCell.reuseID];
   [self.tableView registerClass:[NewPasswordFooterView class]
       forHeaderFooterViewReuseIdentifier:NewPasswordFooterView.reuseID];
-  if (IsPasswordNotesWithBackupEnabled()) {
-    [self.tableView registerClass:[PasswordNoteCell class]
-           forCellReuseIdentifier:PasswordNoteCell.reuseID];
-    [self.tableView registerClass:[PasswordNoteFooterView class]
-        forHeaderFooterViewReuseIdentifier:PasswordNoteFooterView.reuseID];
-  }
+  [self.tableView registerClass:[PasswordNoteCell class]
+         forCellReuseIdentifier:PasswordNoteCell.reuseID];
+  [self.tableView registerClass:[PasswordNoteFooterView class]
+      forHeaderFooterViewReuseIdentifier:PasswordNoteFooterView.reuseID];
 }
 
 #pragma mark - UITableViewDataSource
@@ -151,17 +148,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
-  if (IsPasswordNotesWithBackupEnabled()) {
-    return SectionIdentifierNumSections;
-  }
-
-  return SectionIdentifierNumSections - 1;
+  return SectionIdentifierNumSections;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (IsPasswordNotesWithBackupEnabled() &&
-      indexPath.section == SectionIdentifierNote) {
+  if (indexPath.section == SectionIdentifierNote) {
     DCHECK(indexPath.row == 0);
     PasswordNoteCell* cell =
         [tableView dequeueReusableCellWithIdentifier:PasswordNoteCell.reuseID];
@@ -370,15 +362,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Updates the save button state based on whether there is text in the password
 // cell.
 - (void)updateSaveButtonState {
-  if (IsPasswordNotesWithBackupEnabled()) {
-    self.navigationItem.rightBarButtonItem.enabled =
-        self.passwordText.length > 0 &&
-        self.noteText.length <=
-            password_manager::constants::kMaxPasswordNoteLength;
-  } else {
-    self.navigationItem.rightBarButtonItem.enabled =
-        self.passwordCell.textField.text.length > 0;
-  }
+  self.navigationItem.rightBarButtonItem.enabled =
+      self.passwordText.length > 0 &&
+      self.noteText.length <=
+          password_manager::constants::kMaxPasswordNoteLength;
 }
 
 #pragma mark - Private
@@ -394,43 +381,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [self saveCredential:NO];
 }
 
-- (NSString*)currentUsername {
-  NSIndexPath* usernameIndexPath =
-      [NSIndexPath indexPathForRow:NewPasswordTableCellTypeUsername
-                         inSection:SectionIdentifierPassword];
-  NewPasswordTableCell* usernameCell =
-      [self.tableView cellForRowAtIndexPath:usernameIndexPath];
-  return usernameCell.textField.text;
-}
-
-- (NSString*)currentPassword {
-  NSIndexPath* passwordIndexPath =
-      [NSIndexPath indexPathForRow:NewPasswordTableCellTypePassword
-                         inSection:SectionIdentifierPassword];
-  NewPasswordTableCell* passwordCell =
-      [self.tableView cellForRowAtIndexPath:passwordIndexPath];
-  return passwordCell.textField.text;
-}
-
-- (NSString*)currentNote {
-  NSIndexPath* noteIndexPath =
-      [NSIndexPath indexPathForRow:0 inSection:SectionIdentifierNote];
-  PasswordNoteCell* noteCell =
-      [self.tableView cellForRowAtIndexPath:noteIndexPath];
-  return noteCell.textView.text;
-}
-
 // Saves the current data as a credential. If `shouldReplace` is YES, then the
 // user has already said they are aware that they are replacing a previous
 // credential.
 - (void)saveCredential:(BOOL)shouldReplace {
-  NSString* username = IsPasswordNotesWithBackupEnabled()
-                           ? self.usernameText
-                           : [self currentUsername];
-  NSString* password = IsPasswordNotesWithBackupEnabled()
-                           ? self.passwordText
-                           : [self currentPassword];
-  NSString* note = IsPasswordNotesWithBackupEnabled() ? self.noteText : @"";
+  NSString* username = self.usernameText;
+  NSString* password = self.passwordText;
+  NSString* note = self.noteText;
 
   [self.credentialHandler saveCredentialWithUsername:username
                                             password:password
@@ -493,9 +450,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   NSString* messageBaseLocalizedString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_REPLACE_MESSAGE",
       @"Message for password replace alert");
-  NSString* username = IsPasswordNotesWithBackupEnabled()
-                           ? self.usernameText
-                           : [self currentUsername];
+  NSString* username = self.usernameText;
   NSString* message = [[messageBaseLocalizedString
       stringByReplacingOccurrencesOfString:@"$2"
                                 withString:self.currentHost]

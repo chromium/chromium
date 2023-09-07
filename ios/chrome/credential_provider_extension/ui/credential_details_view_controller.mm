@@ -102,17 +102,12 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  if (IsPasswordNotesWithBackupEnabled()) {
-    return RowIdentifier::NumRows;
-  }
-
-  return RowIdentifier::NumRows - 1;
+  return RowIdentifier::NumRows;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (indexPath.row == RowIdentifier::RowIdentifierNote &&
-      IsPasswordNotesWithBackupEnabled()) {
+  if (indexPath.row == RowIdentifier::RowIdentifierNote) {
     PasswordNoteCell* cell =
         [tableView dequeueReusableCellWithIdentifier:PasswordNoteCell.reuseID];
     if (!cell) {

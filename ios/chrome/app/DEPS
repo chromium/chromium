@@ -29,7 +29,6 @@ include_rules = [
   "+components/signin/internal",
   "+components/signin/public/identity_manager/identity_manager.h",
   "+components/suggestions",
-  "+components/sync/base",
   "+components/sync/service",
   "+components/ukm/ios",
   "+components/unified_consent",

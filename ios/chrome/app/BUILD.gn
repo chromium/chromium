@@ -451,7 +451,6 @@ source_set("app_internal") {
     "//components/proxy_config",
     "//components/signin/internal/identity_manager",
     "//components/sync",
-    "//components/sync/base",
     "//components/web_resource",
     "//ios/chrome/app/application_delegate",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
