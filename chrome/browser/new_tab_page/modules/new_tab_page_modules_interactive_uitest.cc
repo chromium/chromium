@@ -350,7 +350,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
                                       kSampleNumClusters - 1));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1469698): Flaky on Linux Tests (dbg).
+#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_ClickingDoneButtonDismissesCluster \
   DISABLED_ClickingDoneButtonDismissesCluster
 #else
