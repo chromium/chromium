@@ -62,7 +62,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void EnableScreenCoordinates() override;
 #endif
-  void SetFloat() override;
+  void SetFloatToLocation(
+      WaylandFloatStartLocation float_start_location) override;
   void UnSetFloat() override;
   void SetZOrder(ZOrderLevel z_order) override;
   bool SupportsActivation() override;

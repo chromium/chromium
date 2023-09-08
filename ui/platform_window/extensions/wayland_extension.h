@@ -19,6 +19,11 @@ enum class WaylandWindowSnapDirection {
   kSecondary,
 };
 
+enum class WaylandFloatStartLocation {
+  kBottomRight,
+  kBottomLeft,
+};
+
 enum class WaylandOrientationLockType {
   kAny,
   kNatural,
@@ -89,7 +94,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
 
   // Signals the underneath platform to float the browser window on top other
   // windows.
-  virtual void SetFloat(bool value) = 0;
+  virtual void SetFloatToLocation(
+      WaylandFloatStartLocation float_start_location) = 0;
+  virtual void UnSetFloat() = 0;
 
  protected:
   virtual ~WaylandExtension();

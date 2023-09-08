@@ -166,7 +166,8 @@ class ShellToplevelWrapper {
 
   // Sets/usets a native window to float state. This places it on top of other
   // windows.
-  virtual void SetFloat() = 0;
+  virtual void SetFloatToLocation(
+      WaylandFloatStartLocation float_start_location) = 0;
   virtual void UnSetFloat() = 0;
 
   // Sets the z order of the window.

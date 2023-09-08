@@ -1217,12 +1217,15 @@ bool WaylandToplevelWindow::GetTabletMode() {
   return connection()->GetTabletMode();
 }
 
-void WaylandToplevelWindow::SetFloat(bool value) {
-  DCHECK(shell_toplevel_);
-  if (value)
-    shell_toplevel_->SetFloat();
-  else
-    shell_toplevel_->UnSetFloat();
+void WaylandToplevelWindow::SetFloatToLocation(
+    WaylandFloatStartLocation float_start_location) {
+  CHECK(shell_toplevel_);
+  shell_toplevel_->SetFloatToLocation(float_start_location);
+}
+
+void WaylandToplevelWindow::UnSetFloat() {
+  CHECK(shell_toplevel_);
+  shell_toplevel_->UnSetFloat();
 }
 
 }  // namespace ui

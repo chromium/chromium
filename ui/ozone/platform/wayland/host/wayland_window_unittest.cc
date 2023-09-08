@@ -4935,6 +4935,43 @@ TEST_P(WaylandWindowTest, OverviewMode) {
 }
 #endif
 
+// Tests setting and unsetting float state on a wayland toplevel window.
+TEST_P(WaylandWindowTest, SetUnsetFloat) {
+  if (!IsAuraShellEnabled()) {
+    GTEST_SKIP();
+  }
+
+  auto post_to_server_and_wait = [&]() {
+    base::RunLoop run_loop;
+    PostToServerAndWait(run_loop.QuitClosure());
+    run_loop.Run();
+  };
+
+  // Sets up a callback to verify server function calls.
+  base::MockRepeatingCallback<void(bool, uint32_t)> set_unset_float_cb;
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    server->GetObject<wl::MockSurface>(surface_id_)
+        ->xdg_surface()
+        ->xdg_toplevel()
+        ->zaura_toplevel()
+        ->set_set_unset_float_callback(set_unset_float_cb.Get());
+  });
+
+  window_->AsWaylandToplevelWindow()->SetFloatToLocation(
+      ui::WaylandFloatStartLocation::kBottomRight);
+  EXPECT_CALL(set_unset_float_cb, Run(/*floated=*/true, 0));
+  post_to_server_and_wait();
+
+  window_->AsWaylandToplevelWindow()->SetFloatToLocation(
+      ui::WaylandFloatStartLocation::kBottomLeft);
+  EXPECT_CALL(set_unset_float_cb, Run(/*floated=*/true, 1));
+  post_to_server_and_wait();
+
+  window_->AsWaylandToplevelWindow()->UnSetFloat();
+  EXPECT_CALL(set_unset_float_cb, Run(/*floated=*/false, _));
+  post_to_server_and_wait();
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{}));

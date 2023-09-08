@@ -52,12 +52,22 @@ class TestZAuraToplevel : public ServerObject {
   }
   bool can_fullscreen() const { return can_fullscreen_; }
 
+  using SetUnsetFloatCallback =
+      base::RepeatingCallback<void(bool floated, uint32_t start_location)>;
+  void set_set_unset_float_callback(const SetUnsetFloatCallback cb) {
+    set_unset_float_callback_ = cb;
+  }
+  SetUnsetFloatCallback set_unset_float_callback() {
+    return set_unset_float_callback_;
+  }
+
  private:
   absl::optional<TestRegion> shape_;
   int top_inset_;
   AckRotateFocusCallback ack_rotate_focus_callback_;
   bool can_maximize_ = false;
   bool can_fullscreen_ = false;
+  SetUnsetFloatCallback set_unset_float_callback_;
 };
 
 }  // namespace wl
