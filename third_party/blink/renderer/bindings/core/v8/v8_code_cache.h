@@ -59,12 +59,15 @@ class CORE_EXPORT V8CodeCache final {
       CachedMetadataHandler::GetCachedMetadataBehavior behavior =
           CachedMetadataHandler::kCrashIfUnchecked);
 
+  // `can_use_compile_hints` may be set to true only if we're compiling a script
+  // in a LocalMainFrame.
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
   GetCompileOptions(mojom::blink::V8CacheOptions,
                     const ClassicScript&,
-                    bool might_generate_compile_hints = false);
+                    bool might_generate_compile_hints = false,
+                    bool can_use_compile_hints = false);
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
@@ -73,7 +76,8 @@ class CORE_EXPORT V8CodeCache final {
                     size_t source_text_length,
                     ScriptSourceLocationType,
                     const KURL& url,
-                    bool might_generate_compile_hints = false);
+                    bool might_generate_compile_hints = false,
+                    bool can_use_compile_hints = false);
 
   static bool IsFull(const CachedMetadata* metadata);
 

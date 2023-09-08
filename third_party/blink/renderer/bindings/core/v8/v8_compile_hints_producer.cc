@@ -10,7 +10,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_hashing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -21,10 +21,6 @@
 #include <limits>
 
 namespace blink::v8_compile_hints {
-
-namespace {
-constexpr int kBloomFilterInt32Count = 2048;
-}
 
 std::atomic<bool>
     V8CrowdsourcedCompileHintsProducer::data_generated_for_this_process_ =
@@ -152,7 +148,6 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
 
   // Create a Bloom filter w/ 16 key bits. This results in a Bloom filter
   // containing 2 ^ 16 bits, which equals to 1024 64-bit ints.
-  constexpr int kBloomFilterKeySize = 16;
   static_assert((1 << kBloomFilterKeySize) / (sizeof(int32_t) * 8) ==
                 kBloomFilterInt32Count);
   WTF::BloomFilter<kBloomFilterKeySize> bloom;

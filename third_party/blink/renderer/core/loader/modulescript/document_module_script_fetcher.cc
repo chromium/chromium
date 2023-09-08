@@ -38,8 +38,11 @@ void DocumentModuleScriptFetcher::Fetch(
   ScriptResource::StreamingAllowed streaming_allowed =
                         IsMainThread() ? ScriptResource::kAllowStreaming
                                        : ScriptResource::kNoStreaming;
+  // TODO(chromium:1406506): Compile hints for modules.
+  constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+      kNoCompileHintsConsumer = nullptr;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
-                        this, streaming_allowed);
+                        this, streaming_allowed, kNoCompileHintsConsumer);
 }
 
 void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {

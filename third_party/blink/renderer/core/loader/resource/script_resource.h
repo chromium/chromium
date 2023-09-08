@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/text_resource.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -65,10 +66,12 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   // is passed in.
   enum StreamingAllowed { kNoStreaming, kAllowStreaming };
 
-  static ScriptResource* Fetch(FetchParameters&,
-                               ResourceFetcher*,
-                               ResourceClient*,
-                               StreamingAllowed);
+  static ScriptResource* Fetch(
+      FetchParameters&,
+      ResourceFetcher*,
+      ResourceClient*,
+      StreamingAllowed,
+      v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*);
 
   // Public for testing
   static ScriptResource* CreateForTest(
@@ -140,6 +143,11 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   // Visible for tests.
   void SetRevalidatingRequest(const ResourceRequestHead&) override;
+
+  v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+  GetV8CrowdsourcedCompileHintsConsumer() const {
+    return v8_compile_hints_consumer_;
+  }
 
  protected:
   void DestroyDecodedDataIfPossible() override;
@@ -245,6 +253,20 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   ConsumeCacheState consume_cache_state_;
   const mojom::blink::ScriptType initial_request_script_type_;
   std::unique_ptr<TextResourceDecoder> stream_text_decoder_;
+
+  // The data V8CrowdsourcedCompileHintsConsumer consumes is tied to a Page.
+  // It's possible that another Page requests the same script while streaming is
+  // ongoing, and starts using the same ScriptResource. This is safe to do, as
+  // compile hints only affect what's compiled upfront, but don't change the
+  // semantics of JavaScript. It might lead to compiling a non-optimal set of
+  // functions (compiling too much and consuming memory, or not compiling enough
+  // and increasing the execution time). In practice, the compile hints are
+  // probably mostly reasonable, e.g., pages often use a common library in a
+  // similar way. As this situation is rare and nothing will go too badly wrong,
+  // we don't do anything to avoid false sharing of compile hints via a common
+  // ScriptResource.
+  Member<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>
+      v8_compile_hints_consumer_;
 };
 
 template <>

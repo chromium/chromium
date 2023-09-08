@@ -42,6 +42,7 @@
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
 #include "third_party/blink/public/web/web_window_features.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
@@ -427,6 +428,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return *v8_compile_hints_producer_;
   }
 
+  v8_compile_hints::V8CrowdsourcedCompileHintsConsumer&
+  GetV8CrowdsourcedCompileHintsConsumer() {
+    return *v8_compile_hints_consumer_;
+  }
+
   // Returns the token uniquely identifying the browsing context group this page
   // lives in.
   const base::UnguessableToken& BrowsingContextGroupToken();
@@ -592,6 +598,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   Member<v8_compile_hints::V8CrowdsourcedCompileHintsProducer>
       v8_compile_hints_producer_;
+
+  Member<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>
+      v8_compile_hints_consumer_;
 
   // The information determining the browsing context group this page lives in.
   BrowsingContextGroupInfo browsing_context_group_info_;

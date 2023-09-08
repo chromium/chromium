@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/loader/resource/link_prefetch_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
@@ -914,12 +915,22 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
     case ResourceType::kImage:
       resource = ImageResource::Fetch(params, resource_fetcher);
       break;
-    case ResourceType::kScript:
+    case ResourceType::kScript: {
+      Page* page = document.GetPage();
+      v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+          v8_compile_hints_consumer = nullptr;
+      if (page->MainFrame()->IsLocalFrame()) {
+        v8_compile_hints_consumer =
+            &page->GetV8CrowdsourcedCompileHintsConsumer();
+      }
+
       params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
       params.SetRequestDestination(network::mojom::RequestDestination::kScript);
       resource = ScriptResource::Fetch(params, resource_fetcher, nullptr,
-                                       ScriptResource::kAllowStreaming);
+                                       ScriptResource::kAllowStreaming,
+                                       v8_compile_hints_consumer);
       break;
+    }
     case ResourceType::kCSSStyleSheet:
       resource =
           CSSStyleSheetResource::Fetch(params, resource_fetcher, nullptr);

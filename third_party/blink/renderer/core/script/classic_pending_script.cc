@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/loader/url_matcher.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -98,8 +99,17 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
   // We allow streaming, as WatchForLoad() is always called when the script
   // needs to execute and the ScriptResource is not finished, so
   // SetClientIsWaitingForFinished is always set on the resource.
+
+  Page* page = element_document.GetPage();
+  v8_compile_hints::V8CrowdsourcedCompileHintsConsumer* compile_hints_consumer =
+      nullptr;
+  if (page->MainFrame()->IsLocalFrame()) {
+    compile_hints_consumer = &page->GetV8CrowdsourcedCompileHintsConsumer();
+  }
+
   ScriptResource::Fetch(params, element_document.Fetcher(), pending_script,
-                        ScriptResource::kAllowStreaming);
+                        ScriptResource::kAllowStreaming,
+                        compile_hints_consumer);
   pending_script->CheckState();
   return pending_script;
 }

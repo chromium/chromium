@@ -38,6 +38,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -152,6 +154,33 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
   }
 
   switch (compile_options) {
+    case v8::ScriptCompiler::kConsumeCompileHints: {
+      ExecutionContext* execution_context =
+          ExecutionContext::From(script_state);
+      // Based on how `can_use_compile_hints` in CompileScript is computed, we
+      // must get a non-null LocalDOMWindow and LocalFrame here.
+      LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
+      CHECK(window);
+      LocalFrame* frame = window->GetFrame();
+      CHECK(frame);
+      Page* page = frame->GetPage();
+      CHECK(page);
+      // This ptr keeps the data alive during v8::ScriptCompiler::Compile.
+      std::unique_ptr<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
+                          DataAndScriptNameHash>
+          compile_hint_data =
+              page->GetV8CrowdsourcedCompileHintsConsumer()
+                  .GetDataWithScriptNameHash(v8_compile_hints::ScriptNameHash(
+                      origin.ResourceName(), script_state->GetContext(),
+                      isolate));
+      v8::ScriptCompiler::Source source(
+          code, origin,
+          &v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
+              CompileHintCallback,
+          compile_hint_data.get());
+      return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
+                                         compile_options, no_cache_reason);
+    }
     case v8::ScriptCompiler::kNoCompileOptions:
     case v8::ScriptCompiler::kEagerCompile:
     case v8::ScriptCompiler::kProduceCompileHints: {
@@ -302,6 +331,10 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         code, origin);
   } else {
     switch (compile_options) {
+      case v8::ScriptCompiler::kConsumeCompileHints:
+        // TODO(chromium:1406506): Compile hints for modules.
+        compile_options = v8::ScriptCompiler::kNoCompileOptions;
+        ABSL_FALLTHROUGH_INTENDED;
       case v8::ScriptCompiler::kNoCompileOptions:
       case v8::ScriptCompiler::kEagerCompile:
       case v8::ScriptCompiler::kProduceCompileHints: {
@@ -508,11 +541,13 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     bool might_generate_compile_hints =
         page ? page->GetV8CrowdsourcedCompileHintsProducer().MightGenerateData()
              : false;
-
+    bool can_use_compile_hints =
+        page != nullptr && page->MainFrame() == frame &&
+        page->GetV8CrowdsourcedCompileHintsConsumer().HasData();
     std::tie(compile_options, produce_cache_options, no_cache_reason) =
-        V8CodeCache::GetCompileOptions(execution_context->GetV8CacheOptions(),
-                                       *classic_script,
-                                       might_generate_compile_hints);
+        V8CodeCache::GetCompileOptions(
+            execution_context->GetV8CacheOptions(), *classic_script,
+            might_generate_compile_hints, can_use_compile_hints);
 
     v8::ScriptOrigin origin = classic_script->CreateScriptOrigin(isolate);
     v8::MaybeLocal<v8::Value> maybe_result;

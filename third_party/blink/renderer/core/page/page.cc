@@ -234,6 +234,9 @@ Page::Page(base::PassKey<Page>,
       v8_compile_hints_producer_(
           MakeGarbageCollected<
               v8_compile_hints::V8CrowdsourcedCompileHintsProducer>(this)),
+      v8_compile_hints_consumer_(
+          MakeGarbageCollected<
+              v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>()),
       browsing_context_group_info_(browsing_context_group_info) {
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
@@ -965,6 +968,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(prev_related_page_);
   visitor->Trace(agent_group_scheduler_);
   visitor->Trace(v8_compile_hints_producer_);
+  visitor->Trace(v8_compile_hints_consumer_);
   Supplementable<Page>::Trace(visitor);
 }
 

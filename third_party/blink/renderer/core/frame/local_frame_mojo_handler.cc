@@ -1322,8 +1322,21 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
 
 void LocalFrameMojoHandler::SetV8CompileHints(
     base::ReadOnlySharedMemoryRegion data) {
-  // TODO(chromium:1406506): Verify the memory region size.
-  // TODO(chromium:1406506): Transmit the compile hints further.
+  Page* page = GetPage();
+  if (page == nullptr) {
+    return;
+  }
+  base::ReadOnlySharedMemoryMapping mapping = data.Map();
+  if (!mapping.IsValid()) {
+    return;
+  }
+  const int64_t* memory = mapping.GetMemoryAs<int64_t>();
+  if (memory == nullptr) {
+    return;
+  }
+
+  page->GetV8CrowdsourcedCompileHintsConsumer().SetData(memory,
+                                                        mapping.size() / 8);
 }
 
 void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(

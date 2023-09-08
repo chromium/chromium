@@ -41,8 +41,13 @@ void WorkletModuleScriptFetcher::Fetch(
   // different global scope?
   url_ = fetch_params.Url();
   expected_module_type_ = expected_module_type;
+
+  // If streaming is not allowed, no compile hints are needed either.
+  constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+      kNoCompileHintsConsumer = nullptr;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
-                        this, ScriptResource::kNoStreaming);
+                        this, ScriptResource::kNoStreaming,
+                        kNoCompileHintsConsumer);
 }
 
 void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {

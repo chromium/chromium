@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_hashing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "base/hash/hash.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink::v8_compile_hints {
 
@@ -25,6 +26,14 @@ uint32_t ScriptNameHash(v8::Local<v8::Value> name_value,
   // We need the hash function to be stable across computers, thus using
   // PersistentHash.
   return base::PersistentHash(name_std_string.c_str(), name_length);
+}
+
+uint32_t ScriptNameHash(const KURL& url) {
+  const std::string& name_std_string = url.GetString().Utf8();
+  // We need the hash function to be stable across computers, thus using
+  // PersistentHash.
+  return base::PersistentHash(name_std_string.c_str(),
+                              name_std_string.length());
 }
 
 uint32_t CombineHash(uint32_t script_name_hash, int position) {

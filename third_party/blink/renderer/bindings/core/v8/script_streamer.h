@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
@@ -266,6 +267,11 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   v8::ScriptCompiler::StreamedSource::Encoding encoding_;
 
   v8::ScriptType script_type_;
+
+  // For transmitting compile hints to V8 while streaming.
+  std::unique_ptr<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
+                      DataAndScriptNameHash>
+      compile_hint_callback_data_;
 };
 
 // BackgroundInlineScriptStreamer allows parsing and compiling inline scripts in

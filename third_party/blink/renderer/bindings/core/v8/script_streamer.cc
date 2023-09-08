@@ -18,6 +18,7 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -749,18 +750,36 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
       std::move(stream_ptr), encoding_);
 
   // Call FeatureList::IsEnabled only once.
-  static bool compile_hints_enabled =
+  static bool produce_compile_hints_enabled =
       base::FeatureList::IsEnabled(features::kProduceCompileHints);
 
   v8::ScriptCompiler::CompileOptions compile_options =
-      compile_hints_enabled ? v8::ScriptCompiler::kProduceCompileHints
-                            : v8::ScriptCompiler::kNoCompileOptions;
+      v8::ScriptCompiler::kNoCompileOptions;
+  v8::CompileHintCallback compile_hint_callback = nullptr;
+
+  v8_compile_hints::V8CrowdsourcedCompileHintsConsumer* compile_hints_consumer =
+      script_resource_->GetV8CrowdsourcedCompileHintsConsumer();
+  if (produce_compile_hints_enabled) {
+    compile_options = v8::ScriptCompiler::kProduceCompileHints;
+  } else if (compile_hints_consumer && compile_hints_consumer->HasData()) {
+    // This doesn't need to be gated behind a runtime flag, because there won't
+    // be any data unless the v8_compile_hints::kConsumeCompileHints
+    // flag is on.
+    compile_hint_callback_data_ =
+        compile_hints_consumer->GetDataWithScriptNameHash(
+            v8_compile_hints::ScriptNameHash(script_resource_->Url()));
+    compile_hint_callback =
+        &v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
+            CompileHintCallback;
+    compile_options = v8::ScriptCompiler::kConsumeCompileHints;
+  }
 
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
       script_streaming_task =
           base::WrapUnique(v8::ScriptCompiler::StartStreaming(
               V8PerIsolateData::MainThreadIsolate(), source_.get(),
-              script_type_, compile_options));
+              script_type_, compile_options, compile_hint_callback,
+              compile_hint_callback_data_.get()));
 
   if (!script_streaming_task) {
     // V8 cannot stream the script.

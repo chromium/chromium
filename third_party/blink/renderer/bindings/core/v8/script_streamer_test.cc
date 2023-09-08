@@ -157,8 +157,11 @@ class ScriptStreamingTest : public testing::Test {
     resource_client_ =
         MakeGarbageCollected<TestResourceClient>(run_loop_.QuitClosure());
     FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+    constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+        kNoCompileHintsConsumer = nullptr;
     resource_ = ScriptResource::Fetch(params, fetcher, resource_client_,
-                                      ScriptResource::kAllowStreaming);
+                                      ScriptResource::kAllowStreaming,
+                                      kNoCompileHintsConsumer);
     resource_->AddClient(resource_client_, task_runner.get());
 
     ResourceResponse response(url_);
