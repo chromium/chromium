@@ -50,32 +50,32 @@ inline bool IsExcludedAttribute(const AtomicString& name) {
          name == html_names::kStyleAttr.LocalName();
 }
 
-inline void CollectElementIdentifierHashes(
-    const Element& element,
-    Vector<unsigned, 4>& identifier_hashes) {
-  identifier_hashes.push_back(element.LocalNameForSelectorMatching().Hash() *
-                              kTagNameSalt);
+template <class Func>
+inline void CollectElementIdentifierHashes(const Element& element,
+                                           Func&& func) {
+  func(element.LocalNameForSelectorMatching().Hash() * kTagNameSalt);
   if (element.HasID()) {
-    identifier_hashes.push_back(element.IdForStyleResolution().Hash() *
-                                kIdSalt);
+    func(element.IdForStyleResolution().Hash() * kIdSalt);
   }
 
   if (element.IsStyledElement() && element.HasClass()) {
     const SpaceSplitString& class_names = element.ClassNames();
     wtf_size_t count = class_names.size();
     for (wtf_size_t i = 0; i < count; ++i) {
-      identifier_hashes.push_back(class_names[i].Hash() * kClassSalt);
+      func(class_names[i].Hash() * kClassSalt);
     }
   }
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
-    auto attribute_name = attribute_item.LocalName();
+    const AtomicString& attribute_name = attribute_item.LocalName();
     if (IsExcludedAttribute(attribute_name)) {
       continue;
     }
-    auto lower = attribute_name.IsLowerASCII() ? attribute_name
-                                               : attribute_name.LowerASCII();
-    identifier_hashes.push_back(lower.Hash() * kAttributeSalt);
+    if (attribute_name.IsLowerASCII()) {
+      func(attribute_name.Hash() * kAttributeSalt);
+    } else {
+      func(attribute_name.LowerASCII().Hash() * kAttributeSalt);
+    }
   }
 }
 
@@ -214,24 +214,19 @@ void SelectorFilter::PushParentStackFrame(Element& parent) {
                                       FlatTreeTraversal::ParentElement(parent));
   DCHECK(!parent_stack_.empty() || !FlatTreeTraversal::ParentElement(parent));
   parent_stack_.push_back(ParentStackFrame(parent));
-  ParentStackFrame& parent_frame = parent_stack_.back();
   // Mix tags, class names and ids into some sort of weird bouillabaisse.
   // The filter is used for fast rejection of child and descendant selectors.
-  CollectElementIdentifierHashes(parent, parent_frame.identifier_hashes);
-  wtf_size_t count = parent_frame.identifier_hashes.size();
-  for (wtf_size_t i = 0; i < count; ++i) {
-    ancestor_identifier_filter_->Add(parent_frame.identifier_hashes[i]);
-  }
+  CollectElementIdentifierHashes(parent, [this](unsigned hash) {
+    ancestor_identifier_filter_->Add(hash);
+  });
 }
 
 void SelectorFilter::PopParentStackFrame() {
   DCHECK(!parent_stack_.empty());
   DCHECK(ancestor_identifier_filter_);
-  const ParentStackFrame& parent_frame = parent_stack_.back();
-  wtf_size_t count = parent_frame.identifier_hashes.size();
-  for (wtf_size_t i = 0; i < count; ++i) {
-    ancestor_identifier_filter_->Remove(parent_frame.identifier_hashes[i]);
-  }
+  CollectElementIdentifierHashes(
+      *parent_stack_.back().element,
+      [this](unsigned hash) { ancestor_identifier_filter_->Remove(hash); });
   parent_stack_.pop_back();
   if (parent_stack_.empty()) {
 #if DCHECK_IS_ON()

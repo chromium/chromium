@@ -89,7 +89,6 @@ class CORE_EXPORT SelectorFilter {
     void Trace(Visitor*) const;
 
     Member<Element> element;
-    Vector<unsigned, 4> identifier_hashes;
   };
 
   SelectorFilter() = default;
