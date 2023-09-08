@@ -11437,15 +11437,13 @@ class PrerenderSessionHistoryBrowserTest
   void ExpectAttemptUkm(ukm::TestUkmRecorder& ukm_recorder,
                         bool accurate,
                         PreloadingEligibility eligibility,
-                        WebContentsImpl* web_contents) {
+                        ukm::SourceId source_id) {
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> attempts =
         ukm_recorder.GetEntries(ukm::builders::Preloading_Attempt::kEntryName,
                                 test::kPreloadingAttemptUkmMetrics);
     ASSERT_EQ(attempts.size(), 1u);
 
     const auto predictor = content_preloading_predictor::kMouseBackButton;
-    const ukm::SourceId source_id =
-        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
     const PreloadingHoldbackStatus holdback_status =
         eligibility == PreloadingEligibility::kEligible
             ? PreloadingHoldbackStatus::kAllowed
@@ -11488,9 +11486,16 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   NavigationControllerImpl& controller = web_contents_impl()->GetController();
   ASSERT_TRUE(controller.CanGoBack());
   TestNavigationObserver back_observer(web_contents_impl());
-  SimulateMouseClick(web_contents_impl(), blink::WebMouseEvent::kNoModifiers,
-                     blink::WebMouseEvent::Button::kBack);
+  const gfx::Point click_location(50, 50);
+  SimulateMouseEvent(web_contents_impl(),
+                     blink::WebInputEvent::Type::kMouseDown,
+                     blink::WebMouseEvent::Button::kBack, click_location);
   WaitForHttpCacheQueryCompletion(web_contents_impl());
+  // The mouse up triggers the navigation. We wait until after the cache query
+  // to send the mouse up to ensure the navigation happens after the browser
+  // decides whether to prerender.
+  SimulateMouseEvent(web_contents_impl(), blink::WebInputEvent::Type::kMouseUp,
+                     blink::WebMouseEvent::Button::kBack, click_location);
   back_observer.Wait();
 
   histogram_tester.ExpectUniqueSample(
@@ -11512,6 +11517,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   PredictBackNavigation(web_contents_impl());
   PerformBackNavigation(web_contents_impl());
 
+  ukm::SourceId source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
       PrerenderBackNavigationEligibility::kEligible, 1);
@@ -11528,7 +11536,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
       "Preloading.Prerender.Attempt.MouseBackButton.Recall",
       PredictorConfusionMatrix::kTruePositive, 1);
   ExpectAttemptUkm(ukm_recorder, true, PreloadingEligibility::kEligible,
-                   web_contents_impl());
+                   source_id);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
@@ -11577,6 +11585,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   ASSERT_TRUE(ExecJs(web_contents_impl(), JsReplace("location = $1;", url3)));
   nav_observer.Wait();
 
+  ukm::SourceId source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
       PrerenderBackNavigationEligibility::kEligible, 1);
@@ -11592,7 +11603,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Preloading.Prerender.Attempt.MouseBackButton.Recall", 0);
   ExpectAttemptUkm(ukm_recorder, false, PreloadingEligibility::kEligible,
-                   web_contents_impl());
+                   source_id);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
@@ -11633,6 +11644,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   PredictBackNavigation(web_contents_impl());
   PerformBackNavigation(web_contents_impl());
 
+  ukm::SourceId source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
       PrerenderBackNavigationEligibility::kTargetIsSameSite, 1);
@@ -11651,7 +11665,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   ExpectAttemptUkm(ukm_recorder, true,
                    ToPreloadingEligibility(
                        PrerenderBackNavigationEligibility::kTargetIsSameSite),
-                   web_contents_impl());
+                   source_id);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
@@ -11668,6 +11682,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
 
   PredictBackNavigation(web_contents_impl());
   PerformBackNavigation(web_contents_impl());
+
+  ukm::SourceId source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
@@ -11687,7 +11704,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   ExpectAttemptUkm(ukm_recorder, true,
                    ToPreloadingEligibility(
                        PrerenderBackNavigationEligibility::kNoHttpCacheEntry),
-                   web_contents_impl());
+                   source_id);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
@@ -11717,6 +11734,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   PredictBackNavigation(web_contents_impl());
   PerformBackNavigation(web_contents_impl());
 
+  ukm::SourceId source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
       PrerenderBackNavigationEligibility::kMethodNotGet, 1);
@@ -11734,7 +11754,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   ExpectAttemptUkm(ukm_recorder, true,
                    ToPreloadingEligibility(
                        PrerenderBackNavigationEligibility::kMethodNotGet),
-                   web_contents_impl());
+                   source_id);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
@@ -11750,6 +11770,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
 
   PredictBackNavigation(web_contents_impl());
   PerformBackNavigation(web_contents_impl());
+
+  ukm::SourceId source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
@@ -11770,7 +11793,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
       ukm_recorder, true,
       ToPreloadingEligibility(
           PrerenderBackNavigationEligibility::kTargetIsFailedNavigation),
-      web_contents_impl());
+      source_id);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
@@ -11786,6 +11809,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
 
   PredictBackNavigation(web_contents_impl());
   PerformBackNavigation(web_contents_impl());
+
+  ukm::SourceId source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
@@ -11804,7 +11830,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   ExpectAttemptUkm(ukm_recorder, true,
                    ToPreloadingEligibility(
                        PrerenderBackNavigationEligibility::kTargetIsNonHttp),
-                   web_contents_impl());
+                   source_id);
 }
 
 // Returns whether the two given windows can script each other.
@@ -11820,7 +11846,6 @@ bool IsScriptable(WebContentsImpl* opener, WebContentsImpl* openee) {
                                    newWindow[$1] = $2;
                                    result = newWindow[$1] || '';
                                  } catch {}
-                                 console.log('hello ', result);
                                  return result;
                                })();)",
                                kPropName, kPropValue))
@@ -11890,6 +11915,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   EXPECT_TRUE(IsScriptable(web_contents_impl(), popup_contents));
   EXPECT_EQ(2u, opener_rfh->GetSiteInstance()->GetRelatedActiveContentsCount());
 
+  ukm::SourceId source_id =
+      popup_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
       PrerenderBackNavigationEligibility::kRelatedActiveContents, 1);
@@ -11909,7 +11937,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
       ukm_recorder, true,
       ToPreloadingEligibility(
           PrerenderBackNavigationEligibility::kRelatedActiveContents),
-      popup_contents);
+      source_id);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
@@ -11945,6 +11973,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   PredictBackNavigation(web_contents_impl());
   PerformBackNavigation(web_contents_impl());
 
+  ukm::SourceId source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
       PrerenderBackNavigationEligibility::kEligible, 1);
@@ -11961,7 +11992,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
       "Preloading.Prerender.Attempt.MouseBackButton.Recall",
       PredictorConfusionMatrix::kTruePositive, 1);
   ExpectAttemptUkm(ukm_recorder, true, PreloadingEligibility::kEligible,
-                   web_contents_impl());
+                   source_id);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
@@ -11982,10 +12013,12 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
       !web_contents_impl()->GetSiteInstance()->IsRelatedSiteInstance(
           prev_site_instance);
 
+  FakePrerenderWebContentsDelegate clone_delegate;
   std::unique_ptr<WebContents> new_web_contents_owned =
       web_contents_impl()->Clone();
   WebContentsImpl* new_web_contents =
       static_cast<WebContentsImpl*>(new_web_contents_owned.get());
+  new_web_contents->SetDelegate(&clone_delegate);
   TestNavigationObserver clone_load_observer(new_web_contents);
   new_web_contents->GetController().LoadIfNecessary();
   clone_load_observer.Wait();
@@ -12000,6 +12033,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
       original_navs_swapped_browsing_instance
           ? PrerenderBackNavigationEligibility::kEligible
           : PrerenderBackNavigationEligibility::kRelatedActiveContents;
+  ukm::SourceId source_id =
+      new_web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
       expected_eligibility, 1);
@@ -12016,8 +12052,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
       "Preloading.Prerender.Attempt.MouseBackButton.Recall",
       PredictorConfusionMatrix::kTruePositive, 1);
   ExpectAttemptUkm(ukm_recorder, true,
-                   ToPreloadingEligibility(expected_eligibility),
-                   new_web_contents);
+                   ToPreloadingEligibility(expected_eligibility), source_id);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -12027,10 +12062,12 @@ IN_PROC_BROWSER_TEST_P(
   const GURL url2 = GetCrossSiteUrl("/title2.html");
   PerformInitialNavigations(web_contents_impl(), url1, url2);
 
+  FakePrerenderWebContentsDelegate clone_delegate;
   std::unique_ptr<WebContents> new_web_contents_owned =
       web_contents_impl()->Clone();
   WebContentsImpl* new_web_contents =
       static_cast<WebContentsImpl*>(new_web_contents_owned.get());
+  new_web_contents->SetDelegate(&clone_delegate);
   TestNavigationObserver clone_load_observer(new_web_contents);
   new_web_contents->GetController().LoadIfNecessary();
   clone_load_observer.Wait();
@@ -12042,6 +12079,9 @@ IN_PROC_BROWSER_TEST_P(
 
   PredictBackNavigation(new_web_contents);
   PerformBackNavigation(new_web_contents);
+
+  ukm::SourceId source_id =
+      new_web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
@@ -12062,7 +12102,7 @@ IN_PROC_BROWSER_TEST_P(
       ukm_recorder, true,
       ToPreloadingEligibility(
           PrerenderBackNavigationEligibility::kRelatedActiveContents),
-      new_web_contents);
+      source_id);
 }
 
 // PrerenderHosts created through speculation rules are not suitable for use in
