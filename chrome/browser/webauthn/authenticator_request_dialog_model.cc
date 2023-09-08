@@ -1685,7 +1685,9 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     priority_phone_name =
         base::UTF8ToUTF16(paired_phones_[*priority_phone_index]->name);
   }
-  bool list_phone_passkeys = is_new_get_assertion_ui && priority_phone_index;
+  bool list_phone_passkeys =
+      is_new_get_assertion_ui && priority_phone_index &&
+      base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys);
   bool specific_phones_listed = false;
   if (is_new_get_assertion_ui && !use_conditional_mediation_) {
     // List passkeys instead of mechanisms for platform & GPM authenticators.
