@@ -12,6 +12,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.BooleanPreferenceDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -86,16 +87,13 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         if (mDelegate.showPageZoomSettingsUI()) {
             mTextScalePref.setVisible(false);
             // Set the initial values for page zoom and text contrast.
-            // TODO(crbug.com/1459631): Edit this initial value when we propagate text contrast
-            // changes to the backend.
             mPageZoomDefaultZoomPref.setInitialValue(PageZoomUtils.getDefaultZoomAsSeekBarValue(
                     mDelegate.getBrowserContextHandle()));
             mPageZoomDefaultZoomPref.setmBrowserContextHandle(mDelegate.getBrowserContextHandle());
             if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
                 mPageZoomDefaultZoomPref.setInitialTextSizeContrastValue(
-                        PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL
-                        - UserPrefs.get(mDelegate.getBrowserContextHandle())
-                                  .getInteger("settings.a11y.text_size_contrast_factor"));
+                        UserPrefs.get(mDelegate.getBrowserContextHandle())
+                                .getInteger(Pref.ACCESSIBILITY_TEXT_SIZE_CONTRAST_FACTOR));
             }
             mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
             mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());

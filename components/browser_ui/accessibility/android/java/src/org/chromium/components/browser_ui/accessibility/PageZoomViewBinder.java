@@ -50,9 +50,9 @@ class PageZoomViewBinder {
             view.findViewById(R.id.page_zoom_reset_divider).setVisibility(visibility);
 
             // Edit the size of the text box to match that of the reset button
-            // TODO aashnas: when matching the reset button in the first half of the ternary, use
-            // getMeasuredWidth() and getMeasureHeight() instead of getLayoutParams() to prevent
-            // wrap_content issues
+            // TODO(crbug.com/1459631): when matching the reset button in the first half of the
+            // ternary, use getMeasuredWidth() and getMeasureHeight() instead of getLayoutParams()
+            // to prevent wrap_content issues
             LayoutParams params = model.get(PageZoomProperties.RESET_ZOOM_VISIBLE)
                     ? new LayoutParams(
                             view.findViewById(R.id.page_zoom_reset_zoom_button).getLayoutParams())

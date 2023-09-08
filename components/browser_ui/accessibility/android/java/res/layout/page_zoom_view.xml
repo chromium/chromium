@@ -39,7 +39,7 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical"
         android:visibility="gone" />
 
-    <!-- TODO aashnas: do not use a hardcoded value for the width
+    <!-- TODO(crbug.com/1459631): do not use a hardcoded value for the width
             (should be wrap_content) -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/page_zoom_reset_zoom_button"
