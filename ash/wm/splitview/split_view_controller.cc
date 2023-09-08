@@ -370,8 +370,7 @@ class SplitViewController::AutoSnapController
   }
 
   ~AutoSnapController() override {
-    for (auto* window : observed_windows_)
-      window->RemoveObserver(this);
+    window_observations_.RemoveAllObservations();
     Shell::Get()->activation_client()->RemoveObserver(this);
   }
 
@@ -545,20 +544,20 @@ class SplitViewController::AutoSnapController
     if (split_view_controller_->root_window() != window->GetRootWindow())
       return;
 
-    if (!window->HasObserver(this))
-      window->AddObserver(this);
-    observed_windows_.insert(window);
+    if (!window_observations_.IsObservingSource(window)) {
+      window_observations_.AddObservation(window);
+    }
   }
 
   void RemoveWindow(aura::Window* window) {
-    window->RemoveObserver(this);
-    observed_windows_.erase(window);
+    window_observations_.RemoveObservation(window);
   }
 
   raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
 
   // Tracks observed windows.
-  base::flat_set<aura::Window*> observed_windows_;
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
 };
 
 // -----------------------------------------------------------------------------
