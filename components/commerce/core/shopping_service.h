@@ -24,6 +24,7 @@
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
+#include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -115,6 +116,7 @@ class ScheduledMetricsManager;
 }  // namespace metrics
 
 class BookmarkUpdateManager;
+class DiscountsStorage;
 class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
 class SubscriptionsManager;
@@ -223,7 +225,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       SessionProtoStorage<
           commerce_subscription_db::CommerceSubscriptionContentProto>*
           subscription_proto_db,
-      power_bookmarks::PowerBookmarkService* power_bookmark_service);
+      power_bookmarks::PowerBookmarkService* power_bookmark_service,
+      SessionProtoStorage<discounts_db::DiscountsContentProto>*
+          discounts_proto_db);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;
@@ -598,6 +602,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // The object tracking metrics that are recorded at specific intervals.
   std::unique_ptr<commerce::metrics::ScheduledMetricsManager>
       scheduled_metrics_manager_;
+
+  // The object handling discounts storage.
+  std::unique_ptr<DiscountsStorage> discounts_storage_;
 
   // A consent throttle that will hold callbacks until the specific consent is
   // obtained.

@@ -75,7 +75,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
           ->GetForBrowserState(chrome_state),
-      PowerBookmarkServiceFactory::GetForBrowserState(chrome_state));
+      PowerBookmarkServiceFactory::GetForBrowserState(chrome_state), nullptr);
 }
 
 bool ShoppingServiceFactory::ServiceIsNULLWhileTesting() const {

@@ -269,6 +269,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
+#include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1041,6 +1042,7 @@ void ChromeBrowserMainExtraPartsProfiles::
                             CommerceSubscriptionContentProto>::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   SessionProtoDBFactory<coupon_db::CouponContentProto>::GetInstance();
+  SessionProtoDBFactory<discounts_db::DiscountsContentProto>::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
   SessionProtoDBFactory<

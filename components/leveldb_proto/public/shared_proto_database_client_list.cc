@@ -118,6 +118,8 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "NearbyPresencePrivateCredentialDatabase";
     case ProtoDbType::NEARBY_PRESENCE_REMOTE_PUBLIC_CREDENTIAL_DATABASE:
       return "NearbyPresenceRemotePublicCredentialDatabase";
+    case ProtoDbType::DISCOUNTS_DATABASE:
+      return "DiscountsDatabase";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();
