@@ -244,16 +244,18 @@ AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
 }
 
 bool LayoutSVGResourceClipper::HitTestClipContent(
-    const gfx::RectF& object_bounding_box,
+    const gfx::RectF& reference_box,
+    const LayoutObject& reference_box_object,
     const HitTestLocation& location) const {
   NOT_DESTROYED();
   if (HasClipPath() &&
-      !ClipPathClipper::HitTest(*this, object_bounding_box, location)) {
+      !ClipPathClipper::HitTest(*this, reference_box, reference_box_object,
+                                location)) {
     return false;
   }
 
   TransformedHitTestLocation local_location(
-      location, CalculateClipTransform(object_bounding_box));
+      location, CalculateClipTransform(reference_box));
   if (!local_location)
     return false;
 

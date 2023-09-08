@@ -49,7 +49,9 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
     return kResourceType;
   }
 
-  bool HitTestClipContent(const gfx::RectF&, const HitTestLocation&) const;
+  bool HitTestClipContent(const gfx::RectF& reference_box,
+                          const LayoutObject& reference_box_object,
+                          const HitTestLocation&) const;
 
   SVGUnitTypes::SVGUnitType ClipPathUnits() const;
   AffineTransform CalculateClipTransform(const gfx::RectF& reference_box) const;

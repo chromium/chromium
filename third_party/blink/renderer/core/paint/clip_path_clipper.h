@@ -43,11 +43,12 @@ class CORE_EXPORT ClipPathClipper {
       const LayoutObject& clip_path_owner,
       const bool is_in_block_fragmentation);
 
-  // Returns true if `location` intersects the LayoutObject's clip-path.
-  // `reference_box` is used to resolve 'objectBoundingBox' units/percentages,
-  // and can differ from the reference box of the passed LayoutObject.
-  static bool HitTest(const LayoutObject&,
+  // Returns true if `location` intersects the `clip_path_owner`'s clip-path.
+  // `reference_box`, which should be calculated from `reference_box_object`, is
+  // used to resolve 'objectBoundingBox' units/percentages.
+  static bool HitTest(const LayoutObject& clip_path_owner,
                       const gfx::RectF& reference_box,
+                      const LayoutObject& reference_box_object,
                       const HitTestLocation& location);
 
   // Like the above, but derives the reference box from the LayoutObject using
