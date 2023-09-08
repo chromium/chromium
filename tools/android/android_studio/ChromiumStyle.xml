@@ -25,6 +25,18 @@
   <option name="DOWHILE_BRACE_FORCE" value="3" />
   <option name="WHILE_BRACE_FORCE" value="3" />
   <option name="FOR_BRACE_FORCE" value="3" />
+  <AndroidXmlCodeStyleSettings>
+    <option name="LAYOUT_SETTINGS">
+      <value>
+        <option name="INSERT_BLANK_LINE_BEFORE_TAG" value="false" />
+      </value>
+    </option>
+    <option name="VALUE_RESOURCE_FILE_SETTINGS">
+      <value>
+        <option name="INSERT_LINE_BREAKS_AROUND_STYLE" value="false" />
+      </value>
+    </option>
+  </AndroidXmlCodeStyleSettings>
   <JavaCodeStyleSettings>
     <option name="FIELD_NAME_PREFIX" value="m" />
     <option name="STATIC_FIELD_NAME_PREFIX" value="s" />
