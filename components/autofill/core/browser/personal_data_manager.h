@@ -641,6 +641,9 @@ class PersonalDataManager : public KeyedService,
   // Returns true if the user pref to store CVC is enabled.
   virtual bool IsPaymentCvcStorageEnabled();
 
+  // Get pointer to the image fetcher.
+  AutofillImageFetcherBase* GetImageFetcher() const;
+
   // Used to automatically import addresses without a prompt. Should only be
   // set to true in tests.
   void set_auto_accept_address_imports_for_testing(bool auto_accept) {

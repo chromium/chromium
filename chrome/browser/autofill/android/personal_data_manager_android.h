@@ -322,6 +322,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   void SetSyncServiceForTesting(JNIEnv* env);
 
+  // Get Java AutofillImageFetcher.
+  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaImageFetcher(
+      JNIEnv* env);
+
  private:
   ~PersonalDataManagerAndroid() override;
 

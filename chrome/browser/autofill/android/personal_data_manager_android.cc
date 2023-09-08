@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/autofill/android/autofill_image_fetcher_impl.h"
 #include "chrome/browser/autofill/android/jni_headers/PersonalDataManager_jni.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -587,6 +588,13 @@ jboolean PersonalDataManagerAndroid::IsFidoAuthenticationAvailable(
 
 void PersonalDataManagerAndroid::SetSyncServiceForTesting(JNIEnv* env) {
   personal_data_manager_->SetSyncingForTest(true);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+PersonalDataManagerAndroid::GetOrCreateJavaImageFetcher(JNIEnv* env) {
+  return static_cast<AutofillImageFetcherImpl*>(
+             personal_data_manager_->GetImageFetcher())
+      ->GetOrCreateJavaImageFetcher();
 }
 
 ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileGUIDs(
