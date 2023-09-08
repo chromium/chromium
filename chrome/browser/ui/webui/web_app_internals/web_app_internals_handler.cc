@@ -386,6 +386,7 @@ class WebAppInternalsHandler::IsolatedWebAppDevBundleSelectListener
   void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
                     const base::FilePath& base_dir,
                     blink::mojom::FileChooserParams::Mode mode) override {
+    CHECK(callback_);
     // `params.mode` is kOpen so a single file should have been selected.
     CHECK_EQ(files.size(), 1u);
     auto& file = *files[0];
@@ -395,6 +396,7 @@ class WebAppInternalsHandler::IsolatedWebAppDevBundleSelectListener
   }
 
   void FileSelectionCanceled() override {
+    CHECK(callback_);
     std::move(callback_).Run(absl::nullopt);
   }
 
@@ -440,16 +442,17 @@ void WebAppInternalsHandler::BuildDebugInfo(
 WebAppInternalsHandler::WebAppInternalsHandler(
     content::WebUI* web_ui,
     mojo::PendingReceiver<mojom::WebAppInternalsHandler> receiver)
-    : web_ui_(web_ui),
-      profile_(Profile::FromBrowserContext(
-          web_ui_->GetWebContents()->GetBrowserContext())),
+    : web_ui_(raw_ref<content::WebUI>::from_ptr(web_ui)),
+      profile_(raw_ref<Profile>::from_ptr(Profile::FromBrowserContext(
+          web_ui_->GetWebContents()->GetBrowserContext()))),
       receiver_(this, std::move(receiver)) {}
 
 WebAppInternalsHandler::~WebAppInternalsHandler() = default;
 
 void WebAppInternalsHandler::GetDebugInfoAsJsonString(
     GetDebugInfoAsJsonStringCallback callback) {
-  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
+  auto* provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(&profile_.get());
   if (!provider) {
     return std::move(callback).Run("Web app system not enabled for profile.");
   }
@@ -459,14 +462,14 @@ void WebAppInternalsHandler::GetDebugInfoAsJsonString(
 
   provider->on_registry_ready().Post(
       FROM_HERE,
-      base::BindOnce(&WebAppInternalsHandler::BuildDebugInfo, profile_,
+      base::BindOnce(&WebAppInternalsHandler::BuildDebugInfo, &profile_.get(),
                      std::move(value_to_string).Then(std::move(callback))));
 }
 
 void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
     const GURL& url,
     InstallIsolatedWebAppFromDevProxyCallback callback) {
-  if (!web_app::AreWebAppsEnabled(profile_)) {
+  if (!web_app::AreWebAppsEnabled(&profile_.get())) {
     auto result = mojom::InstallIsolatedWebAppResult::New();
     result->success = false;
     result->error = std::string("web apps not enabled");
@@ -474,7 +477,7 @@ void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
     return;
   }
 
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
   if (!provider) {
     auto result = mojom::InstallIsolatedWebAppResult::New();
     result->success = false;
@@ -529,7 +532,7 @@ void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
     return;
   }
 
-  if (!web_app::AreWebAppsEnabled(profile_)) {
+  if (!web_app::AreWebAppsEnabled(&profile_.get())) {
     auto result = mojom::InstallIsolatedWebAppResult::New();
     result->success = false;
     result->error = std::string("web apps not enabled");
@@ -537,7 +540,7 @@ void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
     return;
   }
 
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
   if (!provider) {
     auto result = mojom::InstallIsolatedWebAppResult::New();
     result->success = false;

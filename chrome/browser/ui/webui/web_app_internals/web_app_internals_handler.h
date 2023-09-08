@@ -60,8 +60,8 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
       web_app::IsolatedWebAppInstallationManager::
           MaybeInstallIsolatedWebAppCommandSuccess result);
 
-  const raw_ptr<content::WebUI> web_ui_;
-  const raw_ptr<Profile> profile_;
+  const raw_ref<content::WebUI> web_ui_;
+  const raw_ref<Profile> profile_;
   mojo::Receiver<mojom::WebAppInternalsHandler> receiver_;
   base::WeakPtrFactory<WebAppInternalsHandler> weak_ptr_factory_{this};
 };
