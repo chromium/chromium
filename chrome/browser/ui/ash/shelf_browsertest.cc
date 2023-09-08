@@ -138,6 +138,50 @@ IN_PROC_BROWSER_TEST_P(ShelfBrowserTest, AutoHideSmoke) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+using ShelfTabletModeBrowserTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(ShelfTabletModeBrowserTest, AutoHideSmoke) {
+  Shelf* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  ASSERT_TRUE(shelf);
+  ASSERT_EQ(shelf->auto_hide_behavior(), ShelfAutoHideBehavior::kNever);
+  ASSERT_EQ(shelf->GetVisibilityState(), SHELF_VISIBLE);
+  ShelfAutoHideWaiter shelf_waiter(shelf);
+
+  // Enable auto-hide.
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_EQ(shelf->GetVisibilityState(), SHELF_AUTO_HIDE);
+
+  // The test starts with a browser window open, so the shelf auto-hides.
+  shelf_waiter.WaitForState(SHELF_AUTO_HIDE_HIDDEN);
+
+  // Enter tablet mode.
+  ShellTestApi().SetTabletModeEnabledForTest(true);
+
+  // Swipe up from the bottom-center of the display.
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root_window);
+  gfx::Point start_point = root_window->bounds().bottom_center();
+  generator.set_current_screen_location(start_point);
+  generator.PressMoveAndReleaseTouchBy(0, -80);
+
+  // The shelf shows.
+  shelf_waiter.WaitForState(SHELF_AUTO_HIDE_SHOWN);
+
+  // Swipe down from the last point to the bottom of the screen.
+  generator.PressMoveAndReleaseTouchBy(0, 80);
+
+  // The shelf hides.
+  shelf_waiter.WaitForState(SHELF_AUTO_HIDE_HIDDEN);
+
+  // Close the browser window.
+  CloseAllBrowsers();
+
+  // The shelf shows.
+  shelf_waiter.WaitForState(SHELF_AUTO_HIDE_SHOWN);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 class ShelfGuestSessionBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
