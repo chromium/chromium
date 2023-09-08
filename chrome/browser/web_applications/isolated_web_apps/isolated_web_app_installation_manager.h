@@ -58,14 +58,6 @@ class IsolatedWebAppInstallationManager {
 
   void Start();
 
-  // Install an IWA from command line, if the command line specifies the
-  // appropriate switches.
-  void InstallFromCommandLine(
-      const base::CommandLine& command_line,
-      std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      base::TaskPriority task_priority);
-
   void InstallIsolatedWebAppFromDevModeProxy(
       const GURL& gurl,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
@@ -82,6 +74,8 @@ class IsolatedWebAppInstallationManager {
     on_report_installation_result_ = std::move(on_report_installation_result);
   }
 
+  static bool HasIwaInstallSwitch(const base::CommandLine& command_line);
+
   // Attempts to install an IWA if the respective command line parameters are
   // provided. It might silently fail for multiple reasons, such as:
   // - missing command line parameters
@@ -91,14 +85,30 @@ class IsolatedWebAppInstallationManager {
       const base::CommandLine& command_line_,
       Profile& profile);
 
-  static bool HasIwaInstallSwitch(const base::CommandLine& command_line);
-
   static void GetIsolatedWebAppLocationFromCommandLine(
       const base::CommandLine& command_line,
       base::OnceCallback<void(MaybeIwaLocation)> callback);
 
  private:
-  void MaybeScheduleGarbageCollection();
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallationManagerTest,
+                           NoInstallationWhenFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallationManagerTest,
+                           NoInstallationWhenDevModeFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallationManagerTest,
+                           NoInstallationWhenDevModePolicyDisabled);
+
+  // Install an IWA from command line, if the command line specifies the
+  // appropriate switches.
+  void InstallFromCommandLine(
+      const base::CommandLine& command_line,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      base::TaskPriority task_priority);
+
+  void InstallIsolatedWebAppFromLocation(
+      MaybeIwaLocation location,
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+          callback);
 
   void InstallIsolatedWebAppFromLocation(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
@@ -129,6 +139,8 @@ class IsolatedWebAppInstallationManager {
 
   void ReportInstallationResult(
       MaybeInstallIsolatedWebAppCommandSuccess result);
+
+  void MaybeScheduleGarbageCollection();
 
   raw_ref<Profile> profile_;
 
