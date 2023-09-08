@@ -15,6 +15,7 @@ import {assertNotStyle, assertStyle, createElement, initNullModule, installMock}
 
 const SAMPLE_SCREEN_WIDTH = 1080;
 const MAX_COLUMN_COUNT = 5;
+const NO_MAX_INSTANCE_COUNT = -1;
 
 suite('NewTabPageModulesModulesV2Test', () => {
   let callbackRouterRemote: PageRemote;
@@ -26,6 +27,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       modulesMaxColumnCount: MAX_COLUMN_COUNT,
+      multipleLoadedModulesMaxModuleInstanceCount: NO_MAX_INSTANCE_COUNT,
     });
     handler = installMock(
         PageHandlerRemote,
@@ -251,6 +253,47 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(
             0, metrics.count('NewTabPage.Modules.LoadedWith.bar', 'bar'));
       });
+
+  test('modules maxium instance count works correctly', async () => {
+    const SAMPLE_MAX_MODULE_INSTANCE_COUNT = 2;
+    loadTimeData.overrideValues({
+      modulesMaxColumnCount: MAX_COLUMN_COUNT,
+      multipleLoadedModulesMaxModuleInstanceCount:
+          SAMPLE_MAX_MODULE_INSTANCE_COUNT,
+    });
+
+    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+    const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+    const descriptors = [
+      {id: fooDescriptor.id, name: fooDescriptor.id},
+      {id: barDescriptor.id, name: barDescriptor.id},
+    ];
+    handler.setResultFor('getModulesIdNames', {
+      data: descriptors,
+    });
+
+    const modulesElement = await createModulesElement(
+        [
+          {
+            descriptor: fooDescriptor,
+            elements: Array(SAMPLE_MAX_MODULE_INSTANCE_COUNT + 1)
+                          .fill(0)
+                          .map(_ => createElement()),
+          },
+          {
+            descriptor: barDescriptor,
+            elements: Array(SAMPLE_MAX_MODULE_INSTANCE_COUNT + 1)
+                          .fill(0)
+                          .map(_ => createElement()),
+          },
+        ],
+        true, SAMPLE_SCREEN_WIDTH);
+    const moduleWrappers =
+        modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+    assertEquals(
+        descriptors.length * SAMPLE_MAX_MODULE_INSTANCE_COUNT,
+        moduleWrappers.length);
+  });
 
   enum UndoStrategy {
     BUTTON_ACTIVATION = 'button activation',

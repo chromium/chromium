@@ -238,6 +238,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      ntp_features::GetModulesLoadTimeout().InMilliseconds());
   source->AddInteger("modulesMaxColumnCount",
                      ntp_features::GetModulesMaxColumnCount());
+  source->AddInteger(
+      "multipleLoadedModulesMaxModuleInstanceCount",
+      ntp_features::GetMultipleLoadedModulesMaxModuleInstanceCount());
   source->AddBoolean("mostVisitedReflowOnOverflowEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpMostVisitedReflowOnOverflow));
