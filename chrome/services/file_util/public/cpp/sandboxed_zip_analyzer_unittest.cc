@@ -479,6 +479,29 @@ TEST_F(SandboxedZipAnalyzerTest, EncryptedZipAes) {
             safe_browsing::EncryptionInfo::kUnknown);
 }
 
+TEST_F(SandboxedZipAnalyzerTest, EncryptedZipAesNoPassword) {
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunAnalyzer(
+      dir_test_data_.AppendASCII("download_protection/encrypted_aes.zip"),
+      &results);
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_archive);
+  ASSERT_EQ(1, results.archived_binary.size());
+
+  const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary =
+      results.archived_binary.Get(0);
+  EXPECT_EQ("signed.exe", binary.file_path());
+  EXPECT_EQ(safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
+            binary.download_type());
+  EXPECT_FALSE(binary.has_digests());
+  EXPECT_FALSE(binary.has_length());
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            safe_browsing::EncryptionInfo::kKnownIncorrect);
+}
+
 #if BUILDFLAG(IS_MAC)
 TEST_F(SandboxedZipAnalyzerTest, ZippedAppWithUnsignedAndSignedExecutable) {
   base::HistogramTester histograms;
