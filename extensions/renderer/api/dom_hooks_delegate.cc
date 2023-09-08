@@ -61,8 +61,8 @@ v8::Local<v8::Value> DOMHooksDelegate::OpenOrClosedShadowRoot(
   DCHECK(script_context->extension());
   DCHECK(parsed_arguments[0]->IsObject());
 
-  blink::WebElement element =
-      blink::WebElement::FromV8Value(parsed_arguments[0]);
+  blink::WebElement element = blink::WebElement::FromV8Value(
+      script_context->isolate(), parsed_arguments[0]);
   if (element.IsNull())
     return v8::Null(script_context->isolate());
 

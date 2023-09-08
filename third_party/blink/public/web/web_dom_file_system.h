@@ -68,9 +68,10 @@ class BLINK_EXPORT WebDOMFileSystem {
     return *this;
   }
 
-  static WebDOMFileSystem FromV8Value(v8::Local<v8::Value>);
+  static WebDOMFileSystem FromV8Value(v8::Isolate*, v8::Local<v8::Value>);
   // Create file system URL from the given entry.
-  static WebURL CreateFileSystemURL(v8::Local<v8::Value> entry);
+  static WebURL CreateFileSystemURL(v8::Isolate* isolate,
+                                    v8::Local<v8::Value> entry);
 
   // FIXME: Deprecate the last argument when all filesystems become
   // serializable.

@@ -57,7 +57,7 @@ class BLINK_EXPORT WebElement : public WebNode {
   WebElement(const WebElement& e) = default;
 
   // Returns the empty WebElement if the argument doesn't represent an Element.
-  static WebElement FromV8Value(v8::Local<v8::Value>);
+  static WebElement FromV8Value(v8::Isolate*, v8::Local<v8::Value>);
 
   WebElement& operator=(const WebElement& e) {
     WebNode::Assign(e);

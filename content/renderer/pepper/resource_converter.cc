@@ -219,7 +219,7 @@ bool ResourceConverterImpl::FromV8Value(v8::Local<v8::Object> val,
   *was_resource = false;
 
   blink::WebDOMFileSystem dom_file_system =
-      blink::WebDOMFileSystem::FromV8Value(val);
+      blink::WebDOMFileSystem::FromV8Value(context->GetIsolate(), val);
   if (!dom_file_system.IsNull()) {
     int pending_renderer_id;
     std::unique_ptr<IPC::Message> create_message;
@@ -243,7 +243,7 @@ bool ResourceConverterImpl::FromV8Value(v8::Local<v8::Object> val,
   }
 
   blink::WebDOMMediaStreamTrack dom_media_stream_track =
-      blink::WebDOMMediaStreamTrack::FromV8Value(val);
+      blink::WebDOMMediaStreamTrack::FromV8Value(context->GetIsolate(), val);
   if (!dom_media_stream_track.IsNull()) {
     int pending_renderer_id;
     std::unique_ptr<IPC::Message> create_message;

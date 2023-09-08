@@ -66,7 +66,7 @@ void FileManagerPrivateCustomBindings::GetEntryURL(
   CHECK(args.Length() == 1);
   CHECK(args[0]->IsObject());
   const blink::WebURL& url =
-      blink::WebDOMFileSystem::CreateFileSystemURL(args[0]);
+      blink::WebDOMFileSystem::CreateFileSystemURL(args.GetIsolate(), args[0]);
   args.GetReturnValue().Set(v8_helpers::ToV8StringUnsafe(
       args.GetIsolate(), url.GetString().Utf8().c_str()));
 }

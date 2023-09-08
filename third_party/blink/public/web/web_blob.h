@@ -62,7 +62,7 @@ class BLINK_EXPORT WebBlob {
   static WebBlob CreateFromFile(v8::Isolate* isolate,
                                 const WebString& path,
                                 uint64_t size);
-  static WebBlob FromV8Value(v8::Local<v8::Value>);
+  static WebBlob FromV8Value(v8::Isolate* isolate, v8::Local<v8::Value>);
 
   void Reset();
   void Assign(const WebBlob&);

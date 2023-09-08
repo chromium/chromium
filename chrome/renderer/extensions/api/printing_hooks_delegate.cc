@@ -76,7 +76,8 @@ RequestResult PrintingHooksDelegate::HandleSubmitJob(
   DCHECK(!v8_document->IsNull());
   DCHECK(!v8_document->IsUndefined());
 
-  blink::WebBlob document_blob = blink::WebBlob::FromV8Value(v8_document);
+  blink::WebBlob document_blob =
+      blink::WebBlob::FromV8Value(isolate, v8_document);
   v8::Local<v8::String> document_blob_uuid;
   v8_helpers::ToV8String(isolate, document_blob.Uuid().Utf8().data(),
                          &document_blob_uuid);

@@ -62,8 +62,8 @@ WebBlob WebBlob::CreateFromFile(v8::Isolate* isolate,
       /*content_type=*/""));
 }
 
-WebBlob WebBlob::FromV8Value(v8::Local<v8::Value> value) {
-  if (Blob* blob = V8Blob::ToWrappable(v8::Isolate::GetCurrent(), value)) {
+WebBlob WebBlob::FromV8Value(v8::Isolate* isolate, v8::Local<v8::Value> value) {
+  if (Blob* blob = V8Blob::ToWrappable(isolate, value)) {
     return blob;
   }
   return WebBlob();

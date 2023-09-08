@@ -47,17 +47,18 @@
 
 namespace blink {
 
-WebDOMFileSystem WebDOMFileSystem::FromV8Value(v8::Local<v8::Value> value) {
+WebDOMFileSystem WebDOMFileSystem::FromV8Value(v8::Isolate* isolate,
+                                               v8::Local<v8::Value> value) {
   if (DOMFileSystem* dom_file_system =
-          V8DOMFileSystem::ToWrappable(v8::Isolate::GetCurrent(), value)) {
+          V8DOMFileSystem::ToWrappable(isolate, value)) {
     return WebDOMFileSystem(dom_file_system);
   }
   return WebDOMFileSystem();
 }
 
-WebURL WebDOMFileSystem::CreateFileSystemURL(v8::Local<v8::Value> value) {
-  const Entry* const entry =
-      V8Entry::ToWrappable(v8::Isolate::GetCurrent(), value);
+WebURL WebDOMFileSystem::CreateFileSystemURL(v8::Isolate* isolate,
+                                             v8::Local<v8::Value> value) {
+  const Entry* const entry = V8Entry::ToWrappable(isolate, value);
   if (entry)
     return entry->filesystem()->CreateFileSystemURL(entry);
   return WebURL();
