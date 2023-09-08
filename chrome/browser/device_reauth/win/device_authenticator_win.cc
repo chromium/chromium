@@ -17,6 +17,9 @@
 namespace {
 
 void SaveAvailability(BiometricAuthenticationStatusWin availability) {
+  CHECK(g_browser_process);
+  CHECK(g_browser_process->local_state());
+
   bool is_available =
       availability == BiometricAuthenticationStatusWin::kAvailable;
   g_browser_process->local_state()->SetBoolean(
