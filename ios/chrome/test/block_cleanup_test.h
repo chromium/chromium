@@ -10,7 +10,9 @@
 #import <memory>
 
 #import "base/apple/scoped_nsautorelease_pool.h"
+#import "base/memory/stack_allocated.h"
 #import "testing/platform_test.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 // Extends PlatformTest to provide a TearDown() method that spins the runloop
 // for a short time.  This allows any blocks created during tests to clean up
@@ -27,7 +29,8 @@ class BlockCleanupTest : public PlatformTest {
   void SpinRunLoop(NSTimeInterval cleanup_time);
 
  private:
-  std::unique_ptr<base::apple::ScopedNSAutoreleasePool> pool_;
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
+  absl::optional<base::apple::ScopedNSAutoreleasePool> pool_;
 };
 
 #endif  // IOS_CHROME_TEST_BLOCK_CLEANUP_TEST_H_

@@ -390,7 +390,7 @@ void RenderViewTest::SetUp() {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  autorelease_pool_ = std::make_unique<base::apple::ScopedNSAutoreleasePool>();
+  autorelease_pool_.emplace();
 #endif
   command_line_ =
       std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);

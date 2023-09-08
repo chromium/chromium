@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "base/threading/thread_checker.h"
 
 namespace base::apple {
@@ -20,12 +21,11 @@ namespace base::apple {
 // pool lower on the stack destroys all pools higher on the stack, which does
 // not mesh well with the existence of C++ objects for each pool.
 //
-// TODO(https://crbug.com/1424190): Enforce stack-only use via the
-// STACK_ALLOCATED annotation.
-//
 // Use this class only in C++ code; use @autoreleasepool in Obj-C(++) code.
 
 class BASE_EXPORT ScopedNSAutoreleasePool {
+  STACK_ALLOCATED();
+
  public:
   ScopedNSAutoreleasePool();
 

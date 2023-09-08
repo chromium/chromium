@@ -28,6 +28,12 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_frame.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/apple/scoped_nsautorelease_pool.h"
+#include "base/memory/stack_allocated.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
+
 namespace blink {
 class PageState;
 namespace scheduler {
@@ -243,7 +249,8 @@ class RenderViewTest : public testing::Test {
   mojo::BinderMap binders_;
 
 #if BUILDFLAG(IS_MAC)
-  std::unique_ptr<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
+  absl::optional<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
 #endif
 
  private:
