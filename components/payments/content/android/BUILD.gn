@@ -236,7 +236,6 @@ android_library("full_java") {
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
-    "//url:origin_java",
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
   ]
@@ -287,7 +286,6 @@ android_library("minimal_java") {
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//url:gurl_java",
-    "//url:origin_java",
   ]
   srcjar_deps = [
     ":app_creation_failure_reason_generated_enum",
@@ -368,7 +366,6 @@ robolectric_library("junit_test_support") {
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
-    "//url:origin_java",
     "//url/mojom:url_mojom_origin_java",
   ]
 }
@@ -400,7 +397,6 @@ robolectric_library("junit") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
-    "//url:origin_java",
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
   ]

@@ -197,7 +197,6 @@ android_library("content_full_java") {
     "//ui/base/ime/mojom:mojom_java",
     "//ui/gfx/geometry/mojom:mojom_java",
     "//url:gurl_java",
-    "//url:origin_java",
   ]
   srcjar_deps = [
     ":content_jni_headers",
@@ -586,7 +585,6 @@ android_library("content_javatests") {
     "//ui/base/ime/mojom:mojom_java",
     "//ui/gfx/geometry/mojom:mojom_java",
     "//url:gurl_java",
-    "//url:origin_java",
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
   ]

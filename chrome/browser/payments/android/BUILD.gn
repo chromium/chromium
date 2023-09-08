@@ -29,7 +29,6 @@ robolectric_library("junit_test_support") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
-    "//url:origin_java",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/payments/test_support/MockPaymentUiServiceBuilder.java",

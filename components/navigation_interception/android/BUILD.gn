@@ -10,7 +10,6 @@ android_library("navigation_interception_java") {
     "//content/public/android:content_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
-    "//url:origin_java",
   ]
   sources = [ "java/src/org/chromium/components/navigation_interception/InterceptNavigationDelegate.java" ]
 }
