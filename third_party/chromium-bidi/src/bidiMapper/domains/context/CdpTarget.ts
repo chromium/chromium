@@ -134,11 +134,7 @@ export class CdpTarget {
    */
   async #unblock() {
     try {
-      // Collect all command promises and wait for them after
-      // `Runtime.runIfWaitingForDebugger`.
-      const promises: Promise<unknown>[] = [];
-
-      promises.push(
+      await Promise.all([
         this.#cdpClient.sendCommand('Runtime.enable'),
         this.#cdpClient.sendCommand('Page.enable'),
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
@@ -153,12 +149,9 @@ export class CdpTarget {
           waitForDebuggerOnStart: true,
           flatten: true,
         }),
-        this.#initAndEvaluatePreloadScripts()
-      );
-
-      await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
-
-      await Promise.all(promises);
+        this.#initAndEvaluatePreloadScripts(),
+        this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+      ]);
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
       if (!this.#cdpClient.isCloseError(error)) {
