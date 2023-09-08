@@ -5,8 +5,6 @@
 #ifndef BASE_MEMORY_STACK_ALLOCATED_H_
 #define BASE_MEMORY_STACK_ALLOCATED_H_
 
-#include <stddef.h>
-
 #if defined(__clang__)
 #define STACK_ALLOCATED_IGNORE(reason) \
   __attribute__((annotate("stack_allocated_ignore")))

@@ -21,7 +21,6 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_nsautorelease_pool.h"
-#include "base/memory/stack_allocated.h"
 #endif
 
 namespace base {
@@ -105,7 +104,6 @@ class ScopedRlzValueStoreLock {
 #if BUILDFLAG(IS_WIN)
   LibMutex lock_;
 #elif BUILDFLAG(IS_APPLE)
-  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
   base::apple::ScopedNSAutoreleasePool autorelease_pool_;
 #endif
 };

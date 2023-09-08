@@ -914,7 +914,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   // deallocation via an autorelease pool (such as browser window closure and
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
-  autorelease_pool_.emplace();
+  autorelease_pool_ = new base::apple::ScopedNSAutoreleasePool;
 #endif
 
   // Pump any pending events that were created as a result of creating a
@@ -963,12 +963,9 @@ void InProcessBrowserTest::QuitBrowsers() {
     // runs at the current thread.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&chrome::OnAppExiting));
-    // Spin the message loop to ensure OnAppExiting finishes so that proper
+    // Spin the message loop to ensure OnAppExitting finishes so that proper
     // clean up happens before returning.
     content::RunAllPendingInMessageLoop();
-#if BUILDFLAG(IS_MAC)
-    autorelease_pool_.reset();
-#endif
     return;
   }
 
@@ -990,7 +987,8 @@ void InProcessBrowserTest::QuitBrowsers() {
   // below is necessary to pump these pending messages to ensure all Browsers
   // get deleted.
   content::RunAllPendingInMessageLoop();
-  autorelease_pool_.reset();
+  delete autorelease_pool_;
+  autorelease_pool_ = nullptr;
 #endif
 }
 

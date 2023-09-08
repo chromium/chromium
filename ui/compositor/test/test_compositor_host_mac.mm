@@ -12,7 +12,6 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/stack_allocated.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -60,12 +59,12 @@ class FoundationHost {
   FoundationHost& operator=(const FoundationHost&) = delete;
 
  protected:
-  FoundationHost() = default;
+  FoundationHost()
+      : pool_(std::make_unique<base::apple::ScopedNSAutoreleasePool>()) {}
   virtual ~FoundationHost() = default;
 
  private:
-  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
-  base::apple::ScopedNSAutoreleasePool pool_;
+  std::unique_ptr<base::apple::ScopedNSAutoreleasePool> pool_;
 };
 
 // Tests that use the AppKit framework need to have the NSApplication

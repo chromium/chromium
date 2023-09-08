@@ -18,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_policy.h"
-#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -68,8 +67,6 @@ MessagePumpNSApplication* g_app_pump;
 
 // A scoper for an optional autorelease pool.
 class OptionalAutoreleasePool {
-  STACK_ALLOCATED();
-
  public:
   explicit OptionalAutoreleasePool(MessagePumpCFRunLoopBase* pump) {
     if (pump->ShouldCreateAutoreleasePool()) {

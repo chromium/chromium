@@ -71,6 +71,11 @@ class WiFiTest {
     VLOG(0) << "Network List Changed: " << network_guid_list.size();
   }
 
+#if BUILDFLAG(IS_APPLE)
+  // Without this there will be a mem leak on osx.
+  base::apple::ScopedNSAutoreleasePool scoped_pool_;
+#endif
+
   std::unique_ptr<WiFiService> wifi_service_;
 
   // Need AtExitManager to support AsWeakPtr (in NetLog).
@@ -259,11 +264,6 @@ int main(int argc, const char* argv[]) {
   settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
-
-#if BUILDFLAG(IS_APPLE)
-  // Without this there will be a memory leak on the Mac.
-  base::apple::ScopedNSAutoreleasePool pool;
-#endif
 
   wifi::WiFiTest wifi_test;
   return wifi_test.Main(argc, argv);
