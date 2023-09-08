@@ -627,20 +627,21 @@ using signin_metrics::PromoAction;
 
 - (NSString*)description {
   return [NSString
-      stringWithFormat:@"<%@: %p, addAccountSigninCoordinator: "
-                       @"%p, advancedSettingsSigninCoordinator: "
-                       @"%p, signinIntent: %lu, accessPoint: %d, "
-                       @"viewController: %p, beingPresented: %d, "
-                       @"baseViewController: %@, window: %p>",
-                       self.class.description, self,
-                       self.addAccountSigninCoordinator,
-                       self.advancedSettingsSigninCoordinator,
-                       self.signinIntent,
-                       static_cast<int>(self.logger.accessPoint),
-                       self.viewController,
-                       self.viewController.isBeingPresented,
-                       NSStringFromClass([self.baseViewController class]),
-                       self.baseViewController.view.window];
+      stringWithFormat:
+          @"<%@: %p, addAccountSigninCoordinator: "
+          @"%p, advancedSettingsSigninCoordinator: "
+          @"%p, signinIntent: %lu, signinStateOnStart: %lu, interruptCallback "
+          @"%p, accessPoint: %d, signin in progress %d, mediator %p, "
+          @"viewController: %p, beingPresented: %d, baseViewController: %@, "
+          @"window: %p>",
+          self.class.description, self, self.addAccountSigninCoordinator,
+          self.advancedSettingsSigninCoordinator, self.signinIntent,
+          self.signinStateOnStart, self.interruptCallback,
+          static_cast<int>(self.logger.accessPoint),
+          self.mediator.isAuthenticationInProgress, self.mediator,
+          self.viewController, self.viewController.isBeingPresented,
+          NSStringFromClass([self.baseViewController class]),
+          self.baseViewController.view.window];
 }
 
 #pragma mark - Methods for unittests
