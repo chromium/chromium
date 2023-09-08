@@ -165,3 +165,36 @@ type BarcodeFormat =
 interface SharedWorkerGlobalScope {
   onconnect?: ((this: SharedWorkerGlobalScope, ev: MessageEvent) => any)|null;
 }
+
+// Measure Memory API interface. This is currently only supported in
+// Chromium-based browsers. https://wicg.github.io/performance-measure-memory/
+interface MemoryAttributionContainer {
+  id: string;
+  src: string;
+}
+
+interface MemoryAttribution {
+  // Container is absent if the memory attribution is for the same-origin
+  // top-level realm.
+  container?: MemoryAttributionContainer;
+  scope: string;
+  url: string;
+}
+
+interface MemoryBreakdownEntry {
+  attribution: MemoryAttribution[];
+  bytes: number;
+  types: string[];
+}
+
+interface MemoryMeasurement {
+  breakdown: MemoryBreakdownEntry[];
+  bytes: number;
+}
+
+// This interface is only exposed to cross-origin-isolated Window,
+// ServiceWorker, and SharedWorker.
+// https://wicg.github.io/performance-measure-memory/#processing-model
+interface Performance {
+  measureUserAgentSpecificMemory(): Promise<MemoryMeasurement>;
+}
