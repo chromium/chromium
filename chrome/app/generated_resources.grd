@@ -3300,16 +3300,24 @@ are declared in tools/grit/grit_rule.gni.
         desc="Prompt for the user to enter the file's password">
         File password
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_ACCESSIBLE_ALERT"
-        desc="Accessible alert text for screen readers when users focus on the password textfield">
-        File password
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_EMPTY"
         desc="Prompt for the user when the password entered is empty">
         Enter the file's password
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_INVALID"
         desc="Prompt for the user when the password entered is incorrect">
+        Incorrect password. Try again.
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_ACCESSIBLE_ALERT"
+        desc="Accessible alert text for screen readers when users focus on the password textfield with no subtext">
+        File password
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_ACCESSIBLE_ALERT_EMPTY"
+        desc="Accessible alert text for screen readers when users focus on the password textfield with subtext indicating empty password">
+        Enter the file's password
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_ACCESSIBLE_ALERT_INVALID"
+        desc="Accessible alert text for screen readers when users focus on the password textfield with subtext indicating invalid password">
         Incorrect password. Try again.
       </message>
 

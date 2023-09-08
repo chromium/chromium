@@ -45,8 +45,10 @@ DownloadBubblePasswordPromptView::~DownloadBubblePasswordPromptView() = default;
 void DownloadBubblePasswordPromptView::SetState(State state) {
   password_field_->SetText(std::u16string());
   password_field_->SetInvalid(IsError(state));
+  password_field_->SetAccessibleName(GetAccessibleName(state));
   error_message_->SetVisible(IsError(state));
   error_message_->SetText(GetErrorMessage(state));
+  password_field_->RequestFocus();
 }
 
 const std::u16string& DownloadBubblePasswordPromptView::GetText() const {
@@ -68,6 +70,21 @@ std::u16string DownloadBubblePasswordPromptView::GetErrorMessage(
     case State::kInvalidEmpty:
       return l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_EMPTY);
+  }
+}
+
+std::u16string DownloadBubblePasswordPromptView::GetAccessibleName(
+    State state) const {
+  switch (state) {
+    case State::kValid:
+      return l10n_util::GetStringUTF16(
+          IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_ACCESSIBLE_ALERT);
+    case State::kInvalid:
+      return l10n_util::GetStringUTF16(
+          IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_ACCESSIBLE_ALERT_INVALID);
+    case State::kInvalidEmpty:
+      return l10n_util::GetStringUTF16(
+          IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_ACCESSIBLE_ALERT_EMPTY);
   }
 }
 
