@@ -364,8 +364,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
         sync_client_->GetHistoryService(), sync_client_->GetPrefService()));
   }
 
-  if (!disabled_types.Has(syncer::HISTORY) &&
-      base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+  if (!disabled_types.Has(syncer::HISTORY)) {
     controllers.push_back(std::make_unique<history::HistoryModelTypeController>(
         syncer::HISTORY, sync_service, sync_client_->GetIdentityManager(),
         sync_client_->GetHistoryService(), sync_client_->GetPrefService()));

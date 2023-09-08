@@ -604,8 +604,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return true;
     case UserSelectableType::kHistory:
     case UserSelectableType::kTabs:
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
-             base::FeatureList::IsEnabled(kSyncEnableHistoryDataType);
+      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kApps:
     case UserSelectableType::kExtensions:
     case UserSelectableType::kThemes:
