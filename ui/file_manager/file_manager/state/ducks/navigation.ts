@@ -10,7 +10,7 @@ import {NavigationKey, NavigationRoot, NavigationSection, NavigationType, State,
 import {Slice} from '../../lib/base_store.js';
 import {getMyFiles} from '../ducks/all_entries.js';
 import {driveRootEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
-import {FileKey} from '../file_key.js';
+import type {FileKey} from '../file_key.js';
 import {getEntry, getFileData} from '../store.js';
 
 /**

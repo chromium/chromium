@@ -23,9 +23,9 @@ import {convertEntryToFileData, readSubDirectories} from '../state/ducks/all_ent
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots, updateNavigationEntry} from '../state/ducks/navigation.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
-import {getEntry, getFileData, getStore, getVolumeType, Store} from '../state/store.js';
-import {TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
-import {TreeItemCollapsedEvent, TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
+import {getEntry, getFileData, getStore, getVolumeType, type Store} from '../state/store.js';
+import {type TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
+import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
 
 /**
  * @fileoverview The Directory Tree aka Navigation Tree.

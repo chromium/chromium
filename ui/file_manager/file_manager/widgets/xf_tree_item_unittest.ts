@@ -11,7 +11,7 @@ import {constants} from '../foreground/js/constants.js';
 
 import {XfIcon} from './xf_icon.js';
 import {XfTree} from './xf_tree.js';
-import {TREE_ITEM_INDENT, TreeItemCollapsedEvent, TreeItemExpandedEvent, XfTreeItem} from './xf_tree_item.js';
+import {TREE_ITEM_INDENT, type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} from './xf_tree_item.js';
 
 /** Construct a single tree item. */
 async function setUpSingleTreeItem() {

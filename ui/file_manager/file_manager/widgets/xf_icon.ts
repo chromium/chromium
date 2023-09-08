@@ -5,7 +5,7 @@
 import {util} from '../common/js/util.js';
 import {constants} from '../foreground/js/constants.js';
 
-import {css, customElement, html, property, PropertyValues, styleMap, svg, XfBase} from './xf_base.js';
+import {css, customElement, html, property, type PropertyValues, styleMap, svg, XfBase} from './xf_base.js';
 
 @customElement('xf-icon')
 export class XfIcon extends XfBase {

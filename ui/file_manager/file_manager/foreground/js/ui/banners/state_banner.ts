@@ -14,7 +14,7 @@ import {util} from '../../../../common/js/util.js';
 import {Command} from '../command.js';
 
 import {getTemplate} from './state_banner.html.js';
-import {AllowedVolumeOrType, Banner} from './types.js';
+import {type AllowedVolumeOrType, Banner} from './types.js';
 
 /**
  * State banner is a type of banner that indicates the Files app has reached a

@@ -10,7 +10,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {State} from '../../externs/ts/state.js';
 import {constants} from '../../foreground/js/constants.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, waitDeepEquals} from '../for_tests.js';
-import {getEmptyState, getEntry, getFileData, getStore, Store} from '../store.js';
+import {getEmptyState, getEntry, getFileData, getStore, type Store} from '../store.js';
 
 import {updateDeviceConnectionState} from './device.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume} from './volumes.js';

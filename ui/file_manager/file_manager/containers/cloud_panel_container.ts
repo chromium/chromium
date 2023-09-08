@@ -10,8 +10,8 @@
 
 import {util} from '../common/js/util.js';
 import {State} from '../externs/ts/state.js';
-import {getStore, Store} from '../state/store.js';
-import {CloudPanelSettingsClickEvent, CloudPanelType, XfCloudPanel} from '../widgets/xf_cloud_panel.js';
+import {getStore, type Store} from '../state/store.js';
+import {type CloudPanelSettingsClickEvent, CloudPanelType, XfCloudPanel} from '../widgets/xf_cloud_panel.js';
 
 export type BulkPinProgress = chrome.fileManagerPrivate.BulkPinProgress;
 export const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;

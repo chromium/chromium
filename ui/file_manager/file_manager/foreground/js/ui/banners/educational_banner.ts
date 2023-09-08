@@ -13,7 +13,7 @@ import 'chrome://resources/cros_components/button/button.js';
 import {util} from '../../../../common/js/util.js';
 
 import {getTemplate} from './educational_banner.html.js';
-import {AllowedVolumeOrType, Banner, BannerEvent, DismissedForeverEventSource} from './types.js';
+import {type AllowedVolumeOrType, Banner, BannerEvent, DismissedForeverEventSource} from './types.js';
 
 /**
  * EducationalBanner is a type of banner that is the second highest priority

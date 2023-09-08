@@ -13,7 +13,7 @@ import {waitDeepEquals} from '../state/for_tests.js';
 import {getEmptyState, getStore} from '../state/store.js';
 import {XfCloudPanel} from '../widgets/xf_cloud_panel.js';
 
-import {BulkPinProgress, BulkPinStage, CloudPanelContainer} from './cloud_panel_container.js';
+import {type BulkPinProgress, BulkPinStage, CloudPanelContainer} from './cloud_panel_container.js';
 
 /**
  * An instance of the cloud panel container.

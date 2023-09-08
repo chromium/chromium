@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionsProducer, ActionsProducerGen, ConcurrentActionInvalidatedError} from './actions_producer.js';
+import {type ActionsProducer, type ActionsProducerGen, ConcurrentActionInvalidatedError} from './actions_producer.js';
 
 /**
  * Wraps the Actions Producer and enforces the Keep Last concurrency model.

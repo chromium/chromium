@@ -9,19 +9,19 @@
 
 import '../common/js/tslib_shim.js';
 
-import {classMap, css, CSSResult, CSSResultGroup, customElement, html, ifDefined, LitElement, nothing, property, PropertyValues, query, repeat, state, styleMap, svg} from 'chrome://resources/mwc/lit/index.js';
+import {classMap, css, CSSResult, type CSSResultGroup, customElement, html, ifDefined, LitElement, nothing, property, type PropertyValues, query, repeat, state, styleMap, svg} from 'chrome://resources/mwc/lit/index.js';
 
 export {
   classMap,
   css,
   CSSResult,
-  CSSResultGroup,
+  type CSSResultGroup,
   customElement,
   html,
   ifDefined,
   nothing,
   property,
-  PropertyValues,
+  type PropertyValues,
   query,
   repeat,
   state,

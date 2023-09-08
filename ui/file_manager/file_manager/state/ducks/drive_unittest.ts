@@ -5,7 +5,7 @@
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {setUpFileManagerOnWindow} from '../for_tests.js';
-import {getEmptyState, getStore, Store} from '../store.js';
+import {getEmptyState, getStore, type Store} from '../store.js';
 
 import {updateDriveConnectionStatus} from './drive.js';
 

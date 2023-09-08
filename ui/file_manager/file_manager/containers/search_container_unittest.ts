@@ -10,7 +10,7 @@ import {EntryLocation} from '../externs/entry_location.js';
 import {State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {waitDeepEquals} from '../state/for_tests.js';
-import {getEmptyState, getStore, Store} from '../state/store.js';
+import {getEmptyState, getStore, type Store} from '../state/store.js';
 
 import {SearchContainer} from './search_container.js';
 

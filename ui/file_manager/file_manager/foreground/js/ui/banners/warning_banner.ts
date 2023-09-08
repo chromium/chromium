@@ -10,7 +10,7 @@
 
 import {util} from '../../../../common/js/util.js';
 
-import {AllowedVolumeOrType, Banner, BannerEvent} from './types.js';
+import {type AllowedVolumeOrType, Banner, BannerEvent} from './types.js';
 import {getTemplate} from './warning_banner.html.js';
 
 /**

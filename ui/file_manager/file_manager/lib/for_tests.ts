@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionsProducerGen} from './actions_producer.js';
-import {Action, BaseStore, Slice} from './base_store.js';
+import type {ActionsProducerGen} from './actions_producer.js';
+import {type Action, BaseStore, Slice} from './base_store.js';
 
 export type TestStore = BaseStore<TestState>;
 

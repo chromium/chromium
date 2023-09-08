@@ -10,7 +10,7 @@
 import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {getMimeType, startIOTask} from '../../common/js/api.js';
-import {AnnotatedTask, getDefaultTask} from '../../common/js/file_tasks.js';
+import {type AnnotatedTask, getDefaultTask} from '../../common/js/file_tasks.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {Crostini} from '../../externs/background/crostini.js';
@@ -19,7 +19,7 @@ import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_int
 import {FileData, FileKey, FileTasks as StoreFileTasks, PropStatus, State} from '../../externs/ts/state.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {fetchFileTasks} from '../../state/ducks/current_directory.js';
-import {getFilesData, getStore, Store, waitForState} from '../../state/store.js';
+import {getFilesData, getStore, type Store, waitForState} from '../../state/store.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
 import {DirectoryModel} from './directory_model.js';

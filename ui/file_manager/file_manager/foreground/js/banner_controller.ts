@@ -42,7 +42,7 @@ import {TAG_NAME as LocalDiskLowSpaceBannerTagName} from './ui/banners/local_dis
 import {TAG_NAME as PhotosWelcomeBannerTagName} from './ui/banners/photos_welcome_banner.js';
 import {TAG_NAME as SharedWithCrostiniPluginVmBanner} from './ui/banners/shared_with_crostini_pluginvm_banner.js';
 import {TAG_NAME as TrashBannerTagName} from './ui/banners/trash_banner.js';
-import {AllowedVolumeOrType, Banner, BANNER_INFINITE_TIME, BannerEvent, MinDiskThreshold} from './ui/banners/types.js';
+import {type AllowedVolumeOrType, Banner, BANNER_INFINITE_TIME, BannerEvent, type MinDiskThreshold} from './ui/banners/types.js';
 
 /**
  * Local storage key suffix for how many times a banner was shown.

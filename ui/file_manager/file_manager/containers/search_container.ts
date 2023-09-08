@@ -14,11 +14,11 @@ import {PathComponent} from '../foreground/js/path_component.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../state/ducks/search.js';
-import {FileKey} from '../state/file_key.js';
-import {getStore, Store} from '../state/store.js';
-import {BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
-import {OptionKind, SEARCH_OPTIONS_CHANGED, SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
-import {XfOption} from '../widgets/xf_select.js';
+import type {FileKey} from '../state/file_key.js';
+import {getStore, type Store} from '../state/store.js';
+import {type BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
+import {OptionKind, SEARCH_OPTIONS_CHANGED, type SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
+import type {XfOption} from '../widgets/xf_select.js';
 
 /**
  * @fileoverview

@@ -17,7 +17,7 @@ import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
 import {addChildEntries} from '../ducks/all_entries.js';
 import {allEntriesSize, assertAllEntriesEqual, cd, changeSelection, createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, updMetadata, waitDeepEquals} from '../for_tests.js';
-import {getEmptyState, Store} from '../store.js';
+import {getEmptyState, type Store} from '../store.js';
 
 import {clearCachedEntries, convertEntryToFileData, getMyFiles, readSubDirectories} from './all_entries.js';
 import {convertVolumeInfoAndMetadataToVolume, myFilesEntryListKey} from './volumes.js';

@@ -15,11 +15,11 @@ import {CurrentDirectory, EntryType, FileData, State, Volume, VolumeMap} from '.
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
-import {ActionsProducerGen} from '../../lib/actions_producer.js';
+import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {Slice} from '../../lib/base_store.js';
 import {hasDlpDisabledFiles} from '../ducks/current_directory.js';
 import {driveRootEntryListKey, getVolumeTypesNestedInMyFiles, makeRemovableParentKey, myFilesEntryListKey, recentRootKey, removableGroupKey} from '../ducks/volumes.js';
-import {FileKey} from '../file_key.js';
+import type {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore} from '../store.js';
 
 /**

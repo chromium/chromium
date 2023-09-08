@@ -13,7 +13,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 
 import {addCSSPrefixSelector, getCrActionMenuTop} from '../common/js/dom_utils.js';
 
-import {css, CSSResultGroup, customElement, html, property, query, XfBase} from './xf_base.js';
+import {css, type CSSResultGroup, customElement, html, property, query, XfBase} from './xf_base.js';
 
 /**
  * The data structure used to set the new options on the select element.

@@ -8,7 +8,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {isAllowedVolume, isBelowThreshold} from './banner_controller.js';
-import {AllowedVolumeOrType, MinDiskThreshold} from './ui/banners/types.js';
+import type {AllowedVolumeOrType, MinDiskThreshold} from './ui/banners/types.js';
 
 let allowedVolumes: AllowedVolumeOrType[] = [];
 

@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from '
 import {hasOverflowEllipsis} from '../common/js/dom_utils.js';
 import {waitUntil} from '../common/js/test_error_reporting.js';
 
-import {BreadcrumbClickedEvent, XfBreadcrumb} from './xf_breadcrumb.js';
+import {type BreadcrumbClickedEvent, XfBreadcrumb} from './xf_breadcrumb.js';
 
 /**
  * Creates new <xf-breadcrumb> element for each test. Asserts it has no initial

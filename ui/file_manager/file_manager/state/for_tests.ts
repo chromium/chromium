@@ -17,9 +17,9 @@ import {MockMetadataModel} from '../foreground/js/metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from '../foreground/js/mock_directory_model.js';
 import {TaskController} from '../foreground/js/task_controller.js';
 
-import {EntryMetadata, updateMetadata} from './ducks/all_entries.js';
+import {type EntryMetadata, updateMetadata} from './ducks/all_entries.js';
 import {changeDirectory, updateDirectoryContent, updateSelection} from './ducks/current_directory.js';
-import {getEmptyState, getStore, StateSelector, Store, waitForState} from './store.js';
+import {getEmptyState, getStore, type StateSelector, type Store, waitForState} from './store.js';
 
 /**
  * Compares 2 State objects and fails with nicely formatted message when it

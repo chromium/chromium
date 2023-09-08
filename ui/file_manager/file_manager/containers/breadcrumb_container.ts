@@ -9,9 +9,9 @@ import {SEARCH_RESULTS_KEY} from '../common/js/url_constants.js';
 import {str, util} from '../common/js/util.js';
 import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
-import {FileKey} from '../state/file_key.js';
-import {getStore, getVolumeType, Store} from '../state/store.js';
-import {BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
+import type {FileKey} from '../state/file_key.js';
+import {getStore, getVolumeType, type Store} from '../state/store.js';
+import {type BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
 
 /**
  * The controller of breadcrumb. The Breadcrumb element only renders a given

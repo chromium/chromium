@@ -13,7 +13,7 @@ import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {clearCachedEntries} from '../ducks/all_entries.js';
 import {fetchFileTasks} from '../ducks/current_directory.js';
 import {allEntriesSize, assertAllEntriesEqual, assertStateEquals, setUpFileManagerOnWindow, setupStore, updateContent, updMetadata, waitDeepEquals} from '../for_tests.js';
-import {getFilesData, Store} from '../store.js';
+import {getFilesData, type Store} from '../store.js';
 
 import {changeDirectory, updateSelection} from './current_directory.js';
 
