@@ -433,8 +433,6 @@ TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
-  base::test::ScopedFeatureList features(kSyncEnableHistoryDataType);
-
   ASSERT_FALSE(AlwaysPreferredUserTypes().Has(TYPED_URLS));
   ASSERT_FALSE(AlwaysPreferredUserTypes().Has(HISTORY));
   ASSERT_FALSE(AlwaysPreferredUserTypes().Has(HISTORY_DELETE_DIRECTIVES));

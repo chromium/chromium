@@ -139,11 +139,9 @@ class MockHistoryServiceObserver : public history::HistoryServiceObserver {
 class SingleClientHistorySyncTest : public SyncTest {
  public:
   SingleClientHistorySyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeatures(
-        {syncer::kSyncEnableHistoryDataType},
-        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
-        // disable this feature.
-        /*disabled_features=*/{features::kHttpsUpgrades});
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    features_.InitAndDisableFeature(features::kHttpsUpgrades);
   }
   ~SingleClientHistorySyncTest() override = default;
 

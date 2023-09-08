@@ -165,9 +165,7 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::BOOKMARKS);
     datatypes.Put(syncer::CONTACT_INFO);
     datatypes.Put(syncer::DEVICE_INFO);
-    if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
-      datatypes.Put(syncer::HISTORY);
-    }
+    datatypes.Put(syncer::HISTORY);
     datatypes.Put(syncer::HISTORY_DELETE_DIRECTIVES);
     datatypes.Put(syncer::PREFERENCES);
     datatypes.Put(syncer::PRIORITY_PREFERENCES);

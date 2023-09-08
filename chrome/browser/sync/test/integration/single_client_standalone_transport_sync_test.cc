@@ -291,8 +291,7 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
   SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest() {
     override_features_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kSyncEnableHistoryDataType,
-         syncer::kEnablePreferencesAccountStorage,
+        {syncer::kEnablePreferencesAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
          syncer::kReplaceSyncPromosWithSignInPromos},
@@ -459,8 +458,7 @@ class SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest
  public:
   SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest() {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncEnableHistoryDataType,
-                              syncer::kEnablePreferencesAccountStorage},
+        /*enabled_features=*/{syncer::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
   }
   ~SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest()

@@ -73,11 +73,9 @@ class TestBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
 class TwoClientHistorySyncTest : public SyncTest {
  public:
   TwoClientHistorySyncTest() : SyncTest(TWO_CLIENT) {
-    features_.InitWithFeatures(
-        {syncer::kSyncEnableHistoryDataType},
-        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
-        // disable this feature.
-        /*disabled_features=*/{features::kHttpsUpgrades});
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    features_.InitAndDisableFeature(features::kHttpsUpgrades);
   }
   ~TwoClientHistorySyncTest() override = default;
 
