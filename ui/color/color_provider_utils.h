@@ -88,11 +88,11 @@ ColorProvider COMPONENT_EXPORT(COLOR)
 ColorProvider COMPONENT_EXPORT(COLOR)
     CreateEmulatedForcedColorsColorProviderForWebTests();
 
-// Fluent scrollbars have three main colors. This function completes the
+// Scrollbars have three main colors. This function completes the
 // definition of colors for all scrollbar parts in relation to the three main
 // ones.
 void COMPONENT_EXPORT(COLOR)
-    CompleteFluentScrollbarColorsDefinition(ui::ColorMixer& mixer);
+    CompleteScrollbarColorsDefinition(ui::ColorMixer& mixer);
 
 // Completes color definitions for the controls defined in
 // NativeThemeBase::ControlColorId when in forced colors mode.

@@ -147,6 +147,8 @@ component("mixers") {
     "color_provider_manager.h",
     "core_default_color_mixer.cc",
     "core_default_color_mixer.h",
+    "forced_colors_mixer.cc",
+    "forced_colors_mixer.h",
     "material_ui_color_mixer.cc",
     "material_ui_color_mixer.h",
     "native_color_mixers.cc",
@@ -180,7 +182,11 @@ component("mixers") {
     sources += [ "mac/native_color_mixers_mac.mm" ]
     frameworks = [ "AppKit.framework" ]
   } else if (is_win) {
-    sources += [ "win/native_color_mixers_win.cc" ]
+    sources += [
+      "win/forced_colors_mixer_win.cc",
+      "win/forced_colors_mixer_win.h",
+      "win/native_color_mixers_win.cc",
+    ]
     deps += [
       ":accent_color_observer",
       "//ui/native_theme:features",

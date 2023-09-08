@@ -393,7 +393,6 @@ ColorProvider CreateEmulatedForcedColorsColorProvider(bool dark_mode) {
       kColorForcedHighlight};
   mixer[kColorWebNativeControlScrollbarCorner] = {kColorForcedBtnFace};
   CompleteControlsForcedColorsDefinition(mixer);
-  CompleteFluentScrollbarColorsDefinition(mixer);
   color_provider.GenerateColorMap();
   return color_provider;
 }
@@ -451,7 +450,7 @@ ColorProvider CreateEmulatedForcedColorsColorProviderForWebTests() {
   return color_provider;
 }
 
-void CompleteFluentScrollbarColorsDefinition(ui::ColorMixer& mixer) {
+void CompleteScrollbarColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
       kColorWebNativeControlScrollbarCorner};
   mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
@@ -494,10 +493,15 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlFillPressed] = {kColorForcedWindow};
   mixer[kColorWebNativeControlLightenLayer] = {kColorForcedWindow};
   mixer[kColorWebNativeControlProgressValue] = {kColorForcedHighlight};
+  mixer[kColorWebNativeControlScrollbarArrowForeground] = {kColorForcedBtnText};
+  mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
+      kColorForcedHighlight};
+  mixer[kColorWebNativeControlScrollbarCorner] = {kColorForcedBtnFace};
   mixer[kColorWebNativeControlSlider] = {kColorForcedHighlight};
   mixer[kColorWebNativeControlSliderDisabled] = {kColorForcedGrayText};
   mixer[kColorWebNativeControlSliderHovered] = {kColorForcedHighlight};
   mixer[kColorWebNativeControlSliderPressed] = {kColorForcedHighlight};
+  CompleteScrollbarColorsDefinition(mixer);
 }
 
 bool IsRendererColorMappingEquivalent(
