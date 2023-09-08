@@ -726,7 +726,7 @@ TEST_F(GameDashboardCaptureModeTest, NoDimmingOfGameDashboardWidgets) {
       GameDashboardController::Get()->GetGameDashboardContext(game_window()),
       GetEventGenerator()};
   auto* game_dashboard_button_widget =
-      context_test_api.GetMainMenuButtonWidget();
+      context_test_api.GetGameDashboardButtonWidget();
   ASSERT_TRUE(game_dashboard_button_widget);
   EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(
       game_dashboard_button_widget->GetNativeWindow()));

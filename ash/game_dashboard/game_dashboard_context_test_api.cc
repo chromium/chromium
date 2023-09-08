@@ -40,15 +40,16 @@ const std::u16string& GameDashboardContextTestApi::GetRecordingDuration()
   return context_->recording_duration_;
 }
 
-GameDashboardWidget* GameDashboardContextTestApi::GetMainMenuButtonWidget() {
-  return context_->main_menu_button_widget();
+GameDashboardWidget* GameDashboardContextTestApi::GetGameDashboardButtonWidget()
+    const {
+  return context_->game_dashboard_button_widget();
 }
 
-PillButton* GameDashboardContextTestApi::GetMainMenuButton() {
-  auto* main_menu_button_widget = GetMainMenuButtonWidget();
-  CHECK(main_menu_button_widget);
+PillButton* GameDashboardContextTestApi::GetGameDashboardButton() const {
+  auto* game_dashboard_button_widget = GetGameDashboardButtonWidget();
+  CHECK(game_dashboard_button_widget);
   return views::AsViewClass<PillButton>(
-      main_menu_button_widget->GetContentsView());
+      game_dashboard_button_widget->GetContentsView());
 }
 
 views::Widget* GameDashboardContextTestApi::GetMainMenuWidget() {
@@ -124,9 +125,9 @@ IconButton* GameDashboardContextTestApi::GetMainMenuSettingsButton() {
 void GameDashboardContextTestApi::OpenTheMainMenu() {
   ASSERT_FALSE(GetMainMenuView()) << "The main menu view is already open.";
   ASSERT_FALSE(GetMainMenuWidget()) << "The main menu widget is already open.";
-  auto* main_menu_button = GetMainMenuButton();
-  ASSERT_TRUE(main_menu_button);
-  ClickOnView(main_menu_button, event_generator_);
+  auto* game_dashboard_button = GetGameDashboardButton();
+  ASSERT_TRUE(game_dashboard_button);
+  ClickOnView(game_dashboard_button, event_generator_);
   ASSERT_TRUE(GetMainMenuView());
   ASSERT_TRUE(GetMainMenuWidget());
 }
@@ -134,9 +135,9 @@ void GameDashboardContextTestApi::OpenTheMainMenu() {
 void GameDashboardContextTestApi::CloseTheMainMenu() {
   ASSERT_TRUE(GetMainMenuView()) << "The main menu view is already closed.";
   ASSERT_TRUE(GetMainMenuWidget()) << "The main menu widget is already closed.";
-  auto* main_menu_button = GetMainMenuButton();
-  ASSERT_TRUE(main_menu_button);
-  ClickOnView(main_menu_button, event_generator_);
+  auto* game_dashboard_button = GetGameDashboardButton();
+  ASSERT_TRUE(game_dashboard_button);
+  ClickOnView(game_dashboard_button, event_generator_);
   ASSERT_FALSE(GetMainMenuView());
   ASSERT_FALSE(GetMainMenuWidget());
 }

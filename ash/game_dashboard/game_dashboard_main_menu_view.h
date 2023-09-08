@@ -26,8 +26,6 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   explicit GameDashboardMainMenuView(GameDashboardContext* context);
 
-  GameDashboardMainMenuView(views::Widget* main_menu_button_widget,
-                            aura::Window* game_window);
   GameDashboardMainMenuView(const GameDashboardMainMenuView&) = delete;
   GameDashboardMainMenuView& operator=(const GameDashboardMainMenuView) =
       delete;

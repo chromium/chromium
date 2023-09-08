@@ -7092,7 +7092,7 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_HELP_TOOLTIP" translateable="false" desc="Tooltip for the Game Dashboard help icon button.">
         Help center
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_MAIN_MENU_BUTTON_TITLE" desc="The title of the Game Dashboard main menu button.">
+      <message name="IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE" desc="The title of the main Game Dashboard button.">
         Game Dashboard
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard record game tile.">

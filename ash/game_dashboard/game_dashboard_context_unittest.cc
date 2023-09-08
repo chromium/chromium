@@ -610,25 +610,27 @@ class GameTypeGameDashboardContextTest
 
 // GameTypeGameDashboardContextTest Tests
 // -----------------------------------------------------------------------
-// Verifies the initial location of the main menu button widget relative to the
-// game window.
-TEST_P(GameTypeGameDashboardContextTest, MainMenuButtonWidget_InitialLocation) {
+// Verifies the initial location of the Game Dashboard button widget relative to
+// the game window.
+TEST_P(GameTypeGameDashboardContextTest,
+       GameDashboardButtonWidget_InitialLocation) {
   const gfx::Point expected_button_center_point(
       game_window_->GetBoundsInScreen().top_center().x(),
       kAppBounds.y() + frame_header_->GetHeaderHeight() / 2);
-  EXPECT_EQ(expected_button_center_point, test_api_->GetMainMenuButtonWidget()
-                                              ->GetNativeWindow()
-                                              ->GetBoundsInScreen()
-                                              .CenterPoint());
+  EXPECT_EQ(expected_button_center_point,
+            test_api_->GetGameDashboardButtonWidget()
+                ->GetNativeWindow()
+                ->GetBoundsInScreen()
+                .CenterPoint());
 }
 
-// Verifies the main menu button widget bounds are updated, relative to the
+// Verifies the Game Dashboard button widget bounds are updated, relative to the
 // game window.
 TEST_P(GameTypeGameDashboardContextTest,
-       MainMenuButtonWidget_MoveWindowAndVerifyLocation) {
+       GameDashboardButtonWidget_MoveWindowAndVerifyLocation) {
   const gfx::Vector2d move_vector = gfx::Vector2d(100, 200);
   aura::Window* native_window =
-      test_api_->GetMainMenuButtonWidget()->GetNativeWindow();
+      test_api_->GetGameDashboardButtonWidget()->GetNativeWindow();
   const gfx::Rect expected_widget_location =
       native_window->GetBoundsInScreen() + move_vector;
 
@@ -638,8 +640,8 @@ TEST_P(GameTypeGameDashboardContextTest,
   EXPECT_EQ(expected_widget_location, native_window->GetBoundsInScreen());
 }
 
-// Verifies clicking the main menu button will open the main menu widget.
-TEST_P(GameTypeGameDashboardContextTest, OpenMainMenuButtonWidget) {
+// Verifies clicking the Game Dashboard button will open the main menu widget.
+TEST_P(GameTypeGameDashboardContextTest, OpenGameDashboardButtonWidget) {
   // Close the window and create a new game window without setting the
   // `kArcGameControlsFlagsKey` property.
   game_window_.reset();
@@ -650,9 +652,10 @@ TEST_P(GameTypeGameDashboardContextTest, OpenMainMenuButtonWidget) {
   EXPECT_FALSE(test_api_->GetMainMenuWidget());
 
   if (IsArcGame()) {
-    // Main menu button is not enabled util the Game Controls state is known.
-    EXPECT_FALSE(test_api_->GetMainMenuButton()->GetEnabled());
-    LeftClickOn(test_api_->GetMainMenuButton());
+    // Game Dashboard button is not enabled util the Game Controls state is
+    // known.
+    EXPECT_FALSE(test_api_->GetGameDashboardButton()->GetEnabled());
+    LeftClickOn(test_api_->GetGameDashboardButton());
     EXPECT_FALSE(test_api_->GetMainMenuWidget());
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
@@ -662,9 +665,9 @@ TEST_P(GameTypeGameDashboardContextTest, OpenMainMenuButtonWidget) {
   test_api_->OpenTheMainMenu();
 }
 
-// Verifies clicking the main menu button will close the main menu widget if
-// it's already open.
-TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuButtonWidget) {
+// Verifies clicking the Game Dashboard button will close the main menu widget
+// if it's already open.
+TEST_P(GameTypeGameDashboardContextTest, CloseGameDashboardButtonWidget) {
   // Open the main menu widget and verify the main menu open.
   test_api_->OpenTheMainMenu();
 
@@ -868,8 +871,8 @@ TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
 
-  const GameDashboardWidget* widgets[] = {test_api_->GetMainMenuButtonWidget(),
-                                          test_api_->GetToolbarWidget()};
+  const GameDashboardWidget* widgets[] = {
+      test_api_->GetGameDashboardButtonWidget(), test_api_->GetToolbarWidget()};
 
   for (auto* widget : widgets) {
     auto color_provider_key = widget->GetColorProviderKey();
@@ -1122,21 +1125,22 @@ class OnOverviewModeEndedWaiter : public OverviewObserver {
   const raw_ptr<OverviewController, ExperimentalAsh> overview_controller_;
 };
 
-// Verifies that in overview mode, the main menu button is not visible, the main
-// menu is closed, and the toolbar visibility is unchanged.
+// Verifies that in overview mode, the Game Dashboard button is not visible, the
+// main menu is closed, and the toolbar visibility is unchanged.
 TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
   auto* overview_controller = Shell::Get()->overview_controller();
   ASSERT_TRUE(overview_controller);
-  auto* main_menu_button_widget = test_api_->GetMainMenuButtonWidget();
-  ASSERT_TRUE(main_menu_button_widget);
+  auto* game_dashboard_button_widget =
+      test_api_->GetGameDashboardButtonWidget();
+  ASSERT_TRUE(game_dashboard_button_widget);
 
   // Open the main menu view and toolbar.
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
 
   // Verify the initial state.
-  // Main menu button is visible.
-  EXPECT_TRUE(main_menu_button_widget->IsVisible());
+  // Game Dashboard button is visible.
+  EXPECT_TRUE(game_dashboard_button_widget->IsVisible());
   // Toolbar is visible.
   auto* toolbar_widget = test_api_->GetToolbarWidget();
   ASSERT_TRUE(toolbar_widget);
@@ -1150,7 +1154,7 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
   ASSERT_TRUE(overview_controller->InOverviewSession());
 
   // Verify states in overview mode.
-  EXPECT_FALSE(main_menu_button_widget->IsVisible());
+  EXPECT_FALSE(game_dashboard_button_widget->IsVisible());
   ASSERT_EQ(toolbar_widget, test_api_->GetToolbarWidget());
   EXPECT_TRUE(toolbar_widget->IsVisible());
   EXPECT_FALSE(test_api_->GetMainMenuWidget());
@@ -1161,7 +1165,7 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
   ASSERT_FALSE(overview_controller->InOverviewSession());
 
   // Verify states after exiting overview mode.
-  EXPECT_TRUE(main_menu_button_widget->IsVisible());
+  EXPECT_TRUE(game_dashboard_button_widget->IsVisible());
   ASSERT_EQ(toolbar_widget, test_api_->GetToolbarWidget());
   EXPECT_TRUE(toolbar_widget->IsVisible());
   EXPECT_FALSE(test_api_->GetMainMenuWidget());

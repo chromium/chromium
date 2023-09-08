@@ -49,9 +49,9 @@ class GameDashboardContextTestApi {
   const base::RepeatingTimer& GetRecordingTimer() const;
   const std::u16string& GetRecordingDuration() const;
 
-  // Returns the main menu button widget and button.
-  GameDashboardWidget* GetMainMenuButtonWidget();
-  PillButton* GetMainMenuButton();
+  // Returns the Game Dashboard button widget and button.
+  GameDashboardWidget* GetGameDashboardButtonWidget() const;
+  PillButton* GetGameDashboardButton() const;
 
   // Returns the main menu widget and all its views.
   views::Widget* GetMainMenuWidget();

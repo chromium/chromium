@@ -114,7 +114,7 @@ void GameDashboardController::OnWindowPropertyChanged(aura::Window* window,
   }
 
   if (key == kArcGameControlsFlagsKey) {
-    RefreshMainMenuButton(window);
+    RefreshGameDashboardButton(window);
   }
 }
 
@@ -165,10 +165,10 @@ void GameDashboardController::OnRecordingStartAborted() {
 }
 
 void GameDashboardController::OnOverviewModeWillStart() {
-  // In overview mode, hide the main menu button, and if open, close the main
-  // menu.
+  // In overview mode, hide the Game Dashboard button, and if open, close the
+  // main menu.
   for (auto const& [_, context] : game_window_contexts_) {
-    context->main_menu_button_widget()->Hide();
+    context->game_dashboard_button_widget()->Hide();
     if (context->IsMainMenuOpen()) {
       context->CloseMainMenu();
     }
@@ -176,9 +176,9 @@ void GameDashboardController::OnOverviewModeWillStart() {
 }
 
 void GameDashboardController::OnOverviewModeEnded() {
-  // Make the main menu button visible.
+  // Make the Game Dashboard button visible.
   for (auto const& [_, context] : game_window_contexts_) {
-    context->main_menu_button_widget()->Show();
+    context->game_dashboard_button_widget()->Show();
   }
 }
 
@@ -207,7 +207,7 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window) {
       auto& context = game_window_contexts_[window];
       if (!context) {
         context = std::make_unique<GameDashboardContext>(window);
-        RefreshMainMenuButton(window);
+        RefreshGameDashboardButton(window);
       }
     }
   }
@@ -223,14 +223,14 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window) {
   }
 }
 
-void GameDashboardController::RefreshMainMenuButton(aura::Window* window) {
+void GameDashboardController::RefreshGameDashboardButton(aura::Window* window) {
   if (!IsArcWindow(window)) {
     return;
   }
 
   auto it = game_window_contexts_.find(window);
   if (it != game_window_contexts_.end()) {
-    it->second->SetMainMenuButtonEnabled(game_dashboard_utils::IsFlagSet(
+    it->second->SetGameDashboardButtonEnabled(game_dashboard_utils::IsFlagSet(
         window->GetProperty(kArcGameControlsFlagsKey),
         ArcGameControlsFlag::kKnown));
   }

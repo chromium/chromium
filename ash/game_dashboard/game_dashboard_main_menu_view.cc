@@ -214,14 +214,15 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
     GameDashboardContext* context)
     : context_(context) {
   DCHECK(context_);
-  DCHECK(context_->main_menu_button_widget());
+  DCHECK(context_->game_dashboard_button_widget());
 
   set_corner_radius(kBubbleCornerRadius);
   set_close_on_deactivate(false);
   set_internal_name("GameDashboardMainMenuView");
   set_margins(gfx::Insets());
-  set_parent_window(context_->main_menu_button_widget()->GetNativeWindow());
-  SetAnchorView(context_->main_menu_button_widget()->GetContentsView());
+  set_parent_window(
+      context_->game_dashboard_button_widget()->GetNativeWindow());
+  SetAnchorView(context_->game_dashboard_button_widget()->GetContentsView());
   SetArrow(views::BubbleBorder::Arrow::NONE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetLayoutManager(std::make_unique<views::BoxLayout>(

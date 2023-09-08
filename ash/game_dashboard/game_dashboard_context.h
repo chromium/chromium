@@ -42,8 +42,8 @@ class ASH_EXPORT GameDashboardContext {
 
   aura::Window* game_window() { return game_window_.get(); }
 
-  GameDashboardWidget* main_menu_button_widget() {
-    return main_menu_button_widget_.get();
+  GameDashboardWidget* game_dashboard_button_widget() {
+    return game_dashboard_button_widget_.get();
   }
 
   ToolbarSnapLocation toolbar_snap_location() const {
@@ -57,8 +57,8 @@ class ASH_EXPORT GameDashboardContext {
   // Called by `GameDashboardController` when the game window bounds change.
   void OnWindowBoundsChanged();
 
-  // Sets whether the main menu button is enabled/clickable.
-  void SetMainMenuButtonEnabled(bool enable);
+  // Sets whether the Game Dashboard button is enabled/clickable.
+  void SetGameDashboardButtonEnabled(bool enable);
 
   // Toggles the creation/deletion of the main menu within the game window.
   void ToggleMainMenu();
@@ -93,17 +93,17 @@ class ASH_EXPORT GameDashboardContext {
  private:
   friend class GameDashboardContextTestApi;
 
-  // Creates a main menu button widget and adds it as a sibling of the game
+  // Creates a Game Dashboard button widget and adds it as a sibling of the game
   // window.
-  void CreateAndAddMainMenuButtonWidget();
+  void CreateAndAddGameDashboardButtonWidget();
 
-  // Updates the main menu button widget's bounds and location, relative to the
-  // `game_window_`.
-  void UpdateMainMenuButtonWidgetBounds();
+  // Updates the Game Dashboard button widget's bounds and location, relative to
+  // the `game_window_`.
+  void UpdateGameDashboardButtonWidgetBounds();
 
-  // Called when the button in the `main_menu_button_widget_` is pressed, and
-  // toggles the main menu.
-  void OnMainMenuButtonPressed();
+  // Called when the button in the `game_dashboard_button_widget_` is pressed,
+  // and toggles the main menu.
+  void OnGameDashboardButtonPressed();
 
   // Determines the toolbar's physical location on screen based on the
   // `toolbar_snap_location_` value.
@@ -119,8 +119,8 @@ class ASH_EXPORT GameDashboardContext {
 
   const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
 
-  // Main menu button widget for the Game Dashboard.
-  std::unique_ptr<GameDashboardWidget> main_menu_button_widget_;
+  // Game Dashboard button widget for the Game Dashboard.
+  std::unique_ptr<GameDashboardWidget> game_dashboard_button_widget_;
 
   // Expanded main menu for the Game Dashboard.
   views::UniqueWidgetPtr main_menu_widget_;
@@ -131,8 +131,8 @@ class ASH_EXPORT GameDashboardContext {
   // The indicator of the current corner that the toolbar is placed.
   ToolbarSnapLocation toolbar_snap_location_;
 
-  // The `GameDashboardMainMenuView` when the user presses the main menu button.
-  // Owned by the views hierarchy.
+  // The `GameDashboardMainMenuView` when the user presses the Game Dashboard
+  // button. Owned by the views hierarchy.
   raw_ptr<GameDashboardMainMenuView, DanglingUntriaged | ExperimentalAsh>
       main_menu_view_ = nullptr;
 
