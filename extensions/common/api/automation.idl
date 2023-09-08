@@ -310,7 +310,7 @@
     pluginObject,
     popUpButton,
     portal,
-    pre,
+    preDeprecated,
     progressIndicator,
     radioButton,
     radioGroup,

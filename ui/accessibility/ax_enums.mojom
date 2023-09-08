@@ -303,7 +303,7 @@ enum Role {
   // combobox which can contain a value and associated list of values.
   kPopUpButton = 137,
   kPortal = 138,
-  kPre = 139,
+  kPreDeprecated = 139,
   kProgressIndicator = 140,
   kRadioButton = 141,
   kRadioGroup = 142,

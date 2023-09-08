@@ -1559,9 +1559,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->HasTagName(html_names::kAsideTag))
     return ax::mojom::blink::Role::kComplementary;
 
-  if (GetNode()->HasTagName(html_names::kPreTag))
-    return ax::mojom::blink::Role::kPre;
-
   if (GetNode()->HasTagName(html_names::kSectionTag)) {
     // Treat a named <section> as role="region".
     return IsNameFromAuthorAttribute() ? ax::mojom::blink::Role::kRegion

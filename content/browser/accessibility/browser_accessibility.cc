@@ -1395,7 +1395,6 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kPane:
     case ax::mojom::Role::kParagraph:
     case ax::mojom::Role::kPdfRoot:
-    case ax::mojom::Role::kPre:
     case ax::mojom::Role::kRow:
     case ax::mojom::Role::kScrollView:
     case ax::mojom::Role::kTableHeaderContainer:
@@ -1754,6 +1753,8 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kVideo:
       // Android returns IDS_AX_MEDIA_VIDEO_ELEMENT.
       return {};
+    case ax::mojom::Role::kPreDeprecated:
+      NOTREACHED_NORETURN();
   }
 }
 

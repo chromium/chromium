@@ -501,7 +501,6 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kParagraph:
     case ax::mojom::Role::kPdfRoot:
     case ax::mojom::Role::kPluginObject:
-    case ax::mojom::Role::kPre:
     case ax::mojom::Role::kRegion:
     case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kRuby:
@@ -685,6 +684,8 @@ void CollectAncestorRoles(
       // specially by screen readers, can break their ability to find the
       // content window. See http://crbug.com/875843 for more information.
       return NSAccessibilityGroupRole;
+    case ax::mojom::Role::kPreDeprecated:
+      NOTREACHED_NORETURN();
   }
 }
 

@@ -1246,10 +1246,6 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
               L"button"};
 
-    case ax::mojom::Role::kPre:
-      return {UIALocalizationStrategy::kSupply, UIA_PaneControlTypeId,
-              L"region"};
-
     case ax::mojom::Role::kProgressIndicator:
       return {UIALocalizationStrategy::kSupply, UIA_ProgressBarControlTypeId,
               L"progressbar"};
@@ -1449,6 +1445,9 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
     case ax::mojom::Role::kUnknown:
       return {UIALocalizationStrategy::kSupply, UIA_PaneControlTypeId,
               L"region"};
+
+    case ax::mojom::Role::kPreDeprecated:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -6708,9 +6707,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kPortal:
       return ROLE_SYSTEM_PUSHBUTTON;
 
-    case ax::mojom::Role::kPre:
-      return ROLE_SYSTEM_TEXT;
-
     case ax::mojom::Role::kProgressIndicator:
       return ROLE_SYSTEM_PROGRESSBAR;
 
@@ -6865,6 +6861,8 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kNone:
     case ax::mojom::Role::kUnknown:
       return ROLE_SYSTEM_PANE;
+    case ax::mojom::Role::kPreDeprecated:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -7134,9 +7132,6 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
         ia2_role = IA2_ROLE_EMBEDDED_OBJECT;
       }
       break;
-    case ax::mojom::Role::kPre:
-      ia2_role = IA2_ROLE_PARAGRAPH;
-      break;
     case ax::mojom::Role::kRegion:
       ia2_role = IA2_ROLE_LANDMARK;
       break;
@@ -7168,6 +7163,8 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kTime:
       ia2_role = IA2_ROLE_TEXT_FRAME;
       break;
+    case ax::mojom::Role::kPreDeprecated:
+      NOTREACHED_NORETURN();
     default:
       break;
   }

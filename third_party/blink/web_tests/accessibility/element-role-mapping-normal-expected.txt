@@ -169,7 +169,7 @@ AXRole: AXGenericContainer
         AXRole: AXParagraph
             AXRole: AXStaticText "Text that appears under aside"
                 AXRole: AXInlineTextBox "Text that appears under aside"
-    AXRole: AXPre
+    AXRole: AXGenericContainer
         AXRole: AXStaticText "Text in a    pre
 element
 "

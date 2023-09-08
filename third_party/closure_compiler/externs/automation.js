@@ -309,7 +309,7 @@ chrome.automation.RoleType = {
   PLUGIN_OBJECT: 'pluginObject',
   POP_UP_BUTTON: 'popUpButton',
   PORTAL: 'portal',
-  PRE: 'pre',
+  PRE_DEPRECATED: 'preDeprecated',
   PROGRESS_INDICATOR: 'progressIndicator',
   RADIO_BUTTON: 'radioButton',
   RADIO_GROUP: 'radioGroup',
