@@ -103,6 +103,15 @@ class IsolatedWebAppURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
 
+  void HandleRequest(
+      const IsolatedWebAppUrlInfo& url_info,
+      const IsolatedWebAppLocation& location,
+      bool is_pending_install,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+      const network::ResourceRequest& resource_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
