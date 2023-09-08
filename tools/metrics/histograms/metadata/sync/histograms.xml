@@ -540,6 +540,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.FcmRegistrationTokenFetchTime" units="ms"
+    expires_after="2024-09-06">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records time required to obtain an FCM registration token for Sync
+    invalidations. Recorded on successful token fetch excluding token validation
+    requests (Sync.FCMInstanceIdTokenRetrievalStatus can be used to compare with
+    token fetch failure count).
+  </summary>
+</histogram>
+
 <histogram name="Sync.History.DatabaseError" enum="SyncHistoryDatabaseError"
     expires_after="2024-01-14">
   <owner>treib@chromium.org</owner>
