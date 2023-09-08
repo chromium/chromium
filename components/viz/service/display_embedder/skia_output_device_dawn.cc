@@ -163,7 +163,7 @@ void SkiaOutputDeviceDawn::EndPaint() {
   CHECK(sk_surface_);
   if (GrDirectContext* direct_context =
           GrAsDirectContext(sk_surface_->recordingContext())) {
-    direct_context->flush(sk_surface_,
+    direct_context->flush(sk_surface_.get(),
                           SkSurfaces::BackendSurfaceAccess::kPresent, {});
   }
   sk_surface_.reset();

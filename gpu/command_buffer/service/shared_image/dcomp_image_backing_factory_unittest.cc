@@ -240,7 +240,7 @@ TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
             context) = std::move(result);
       },
       &readback_result);
-  direct_context->submit(true);
+  direct_context->submit(GrSyncCpu::kYes);
 
   ASSERT_NE(nullptr, readback_result);
   EXPECT_EQ(1, readback_result->count());
@@ -531,7 +531,7 @@ class DCompImageBackingFactoryVisualTreeTest
         direct_context->flush(write_access->surface(), flush_info, nullptr));
 
     write_access->ApplyBackendSurfaceEndState();
-    direct_context->submit(true);
+    direct_context->submit(GrSyncCpu::kYes);
   }
 
   // Create a backing, fill |draw_area| with |draw_color|, and schedule the

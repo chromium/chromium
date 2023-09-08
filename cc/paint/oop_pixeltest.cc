@@ -48,6 +48,7 @@
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -1771,7 +1772,7 @@ class OopTextBlobPixelTest
     SkCanvas* canvas = surface->getCanvas();
     canvas->clear(SkColors::kBlack);
     DrawExpectedToCanvas(*canvas);
-    context_state->gr_context()->flushAndSubmit(surface);
+    context_state->gr_context()->flushAndSubmit(surface.get(), GrSyncCpu::kNo);
 
     // Readback the expected image into `expected`.
     expected.allocPixels(image_info);

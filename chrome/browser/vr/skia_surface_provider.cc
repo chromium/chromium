@@ -46,7 +46,7 @@ SkiaSurfaceProvider::CreateTextureWithSkiaImpl(
       kTopLeft_GrSurfaceOrigin, nullptr);
 
   paint(surface->getCanvas());
-  gr_context->flush(surface);
+  gr_context->flush(surface.get());
 
   return std::make_unique<Texture>(std::move(surface));
 }

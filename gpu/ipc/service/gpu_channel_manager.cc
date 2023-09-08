@@ -43,6 +43,8 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "third_party/skia/include/core/SkGraphics.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_features.h"
@@ -845,7 +847,7 @@ void GpuChannelManager::PerformImmediateCleanup() {
 
     // TODO(lizeb): Also perform this on GL devices.
     if (auto* context = shared_context_state_->gr_context()) {
-      context->flushAndSubmit(true);
+      context->flushAndSubmit(GrSyncCpu::kYes);
     }
   }
 #endif

@@ -393,7 +393,7 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
     gl::ScopedProgressReporter scoped_process_reporter(
         context_state_->progress_reporter());
     gr_context()->flush(flush_info);
-    gr_context()->submit(true);
+    gr_context()->submit(GrSyncCpu::kYes);
 
 #if BUILDFLAG(ENABLE_VULKAN)
     // No frame will come for us, make sure that all the cleanup is done.
@@ -807,7 +807,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   bool sync_cpu =
       gpu::ShouldVulkanSyncCpuForSkiaSubmit(vulkan_context_provider_);
   if (sync_cpu) {
-    gr_context()->submit(true);
+    gr_context()->submit(GrSyncCpu::kYes);
   }
 }
 
@@ -1339,7 +1339,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                         request->blit_request());
   }
 
-  gr_context()->flush(intermediate_surface);
+  gr_context()->flush(intermediate_surface.get());
 
   auto intermediate_image = intermediate_surface->makeImageSnapshot();
   if (!intermediate_image) {

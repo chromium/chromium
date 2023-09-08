@@ -116,7 +116,7 @@ void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
                                      queue_index);
     if (GrDirectContext* direct_context =
             GrAsDirectContext(sk_surface->recordingContext())) {
-      direct_context->flush(sk_surface, {}, &state);
+      direct_context->flush(sk_surface.get(), {}, &state);
     }
   }
 

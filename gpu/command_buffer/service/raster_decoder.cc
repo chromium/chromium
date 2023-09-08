@@ -78,6 +78,7 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
@@ -623,7 +624,7 @@ class RasterDecoderImpl final : public RasterDecoder,
     if (!flush_workaround_disabled_for_test_) {
       TRACE_EVENT0("gpu", "RasterDecoderImpl::FlushToWorkAroundMacCrashes");
       if (gr_context())
-        gr_context()->flushAndSubmit();
+        gr_context()->flushAndSubmit(GrSyncCpu::kNo);
 
       gl::GLApi* const api = gl::g_current_gl_context;
       api->glFlushFn();
@@ -845,7 +846,7 @@ class RasterDecoderImpl final : public RasterDecoder,
       // representation does not set semaphores, and we are not enabling DrDC
       // with Graphite.
       CHECK(gr_context());
-      gr_context()->submit(sync_cpu);
+      gr_context()->submit(sync_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo);
     }
   }
 
@@ -1868,7 +1869,7 @@ error::Error RasterDecoderImpl::HandleQueryCounterEXT(
 
 void RasterDecoderImpl::DoFinish() {
   if (gr_context()) {
-    gr_context()->flushAndSubmit(/*syncCpu=*/true);
+    gr_context()->flushAndSubmit(GrSyncCpu::kYes);
   } else if (graphite_context()) {
     GraphiteFlushAndSubmit(skgpu::graphite::SyncToCpu::kYes);
   }
@@ -1877,7 +1878,7 @@ void RasterDecoderImpl::DoFinish() {
 
 void RasterDecoderImpl::DoFlush() {
   if (gr_context()) {
-    gr_context()->flushAndSubmit(/*syncCpu=*/false);
+    gr_context()->flushAndSubmit(GrSyncCpu::kNo);
   } else if (graphite_context()) {
     GraphiteFlushAndSubmit();
   }

@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
@@ -234,7 +235,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
     // Do the blit.
     skia::BlitRGBAToYUVA(scoped_sk_image->sk_image().get(), sk_surface_ptrs,
                          holder.yuva_info());
-    provider->GrContext()->flushAndSubmit(false);
+    provider->GrContext()->flushAndSubmit(GrSyncCpu::kNo);
   }
   ri->Flush();
 
