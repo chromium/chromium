@@ -138,12 +138,6 @@ public class ExternalAuthUtils {
         return matchFound;
     }
 
-    /** Do not use, being removed. */
-    public boolean isCallerValidForPackage(
-            Context context, int authRequirements, String packageToMatch) {
-        return isCallerValidForPackage(authRequirements, packageToMatch);
-    }
-
     /**
      * Returns whether the callers of the current transaction contains a package that matches
      * the give authentication requirements.
