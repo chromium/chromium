@@ -550,8 +550,7 @@ TEST_F(CRWWebViewScrollViewProxyTest,
 
 // Verifies that adding a key-value observer to a CRWWebViewScrollViewProxy
 // works as expected.
-// TODO(crbug.com/1478243): reenable this test
-TEST_F(CRWWebViewScrollViewProxyTest, DISABLED_AddKVObserver) {
+TEST_F(CRWWebViewScrollViewProxyTest, AddKVObserver) {
   UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
   underlying_scroll_view.contentOffset = CGPointZero;
   [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
@@ -587,9 +586,8 @@ TEST_F(CRWWebViewScrollViewProxyTest, DISABLED_AddKVObserver) {
 
 // Verifies that a key-value observer is kept after the underlying scroll view
 // is set.
-// TODO(crbug.com/1478243): reenable this test
 TEST_F(CRWWebViewScrollViewProxyTest,
-       DISABLED_KVObserversAreKeptAfterSettingUnderlyingScrollView) {
+       KVObserversAreKeptAfterSettingUnderlyingScrollView) {
   // Add a key-value observer to a CRWWebViewScrollViewProxy.
   NSObject* observer = OCMClassMock([NSObject class]);
   int context = 0;
@@ -624,8 +622,7 @@ TEST_F(CRWWebViewScrollViewProxyTest,
 
 // Verifies that removing a key-value observer from a CRWWebViewScrollViewProxy
 // works as expected.
-// TODO(crbug.com/1478243): reenable this test
-TEST_F(CRWWebViewScrollViewProxyTest, DISABLED_RemoveKVObserver) {
+TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserver) {
   UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
   underlying_scroll_view.contentOffset = CGPointZero;
   [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
@@ -663,9 +660,7 @@ TEST_F(CRWWebViewScrollViewProxyTest, DISABLED_RemoveKVObserver) {
 // observation.
 //
 // This matches the (undocumented) behavior of the built-in KVO.
-// TODO(crbug.com/1478243): reenable this test
-TEST_F(CRWWebViewScrollViewProxyTest,
-       DISABLED_RemoveKVObserverRemovesLastObservation) {
+TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserverRemovesLastObservation) {
   UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
   underlying_scroll_view.contentOffset = CGPointZero;
   [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
