@@ -196,7 +196,6 @@ void HlsCodecDetector::DetermineContainer(bool container_only,
                 std::move(on_container_configs),
                 base::BindRepeating(&HlsCodecDetector::OnNewBuffers,
                                     base::Unretained(this)),
-                true,
                 base::BindRepeating(&HlsCodecDetector::OnEncryptedMediaInit,
                                     base::Unretained(this)),
                 base::DoNothing(), base::DoNothing(), log_.get());
@@ -212,9 +211,7 @@ void HlsCodecDetector::AddCodecToResponse(std::string codec) {
 
 void HlsCodecDetector::ParserInit(const StreamParser::InitParameters& params) {}
 
-bool HlsCodecDetector::OnNewConfigMP2T(
-    std::unique_ptr<MediaTracks> tracks,
-    const StreamParser::TextTrackConfigMap& map) {
+bool HlsCodecDetector::OnNewConfigMP2T(std::unique_ptr<MediaTracks> tracks) {
   for (const auto& [id, video_config] : tracks->GetVideoConfigs()) {
     if (video_config.codec() != VideoCodec::kH264) {
       HlsDemuxerStatus error = HlsDemuxerStatus::Codes::kUnsupportedCodec;

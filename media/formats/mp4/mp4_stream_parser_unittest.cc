@@ -29,7 +29,6 @@
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/base/test_helpers.h"
-#include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/fourccs.h"
@@ -139,12 +138,9 @@ class MP4StreamParserTest : public testing::Test {
               params.detected_audio_track_count);
     EXPECT_EQ(expected_params.detected_video_track_count,
               params.detected_video_track_count);
-    EXPECT_EQ(expected_params.detected_text_track_count,
-              params.detected_text_track_count);
   }
 
-  bool NewConfigF(std::unique_ptr<MediaTracks> tracks,
-                  const StreamParser::TextTrackConfigMap& tc) {
+  bool NewConfigF(std::unique_ptr<MediaTracks> tracks) {
     size_t audio_config_count = 0;
     size_t video_config_count = 0;
     configs_received_ = true;
@@ -238,7 +234,6 @@ class MP4StreamParserTest : public testing::Test {
                                       base::Unretained(this)),
                   base::BindRepeating(&MP4StreamParserTest::NewBuffersF,
                                       base::Unretained(this)),
-                  true,
                   base::BindRepeating(&MP4StreamParserTest::KeyNeededF,
                                       base::Unretained(this)),
                   base::BindRepeating(&MP4StreamParserTest::NewSegmentF,
@@ -255,7 +250,6 @@ class MP4StreamParserTest : public testing::Test {
     params.liveness = StreamLiveness::kLive;
     params.detected_audio_track_count = 1;
     params.detected_video_track_count = 1;
-    params.detected_text_track_count = 0;
     return params;
   }
 
@@ -851,18 +845,6 @@ TEST_F(MP4StreamParserTest, MediaTrackInfoSourcing) {
   EXPECT_EQ(audio_track.kind().value(), "main");
   EXPECT_EQ(audio_track.label().value(), "SoundHandler");
   EXPECT_EQ(audio_track.language().value(), "und");
-}
-
-TEST_F(MP4StreamParserTest, TextTrackDetection) {
-  auto params = GetDefaultInitParametersExpectations();
-  params.detected_text_track_count = 1;
-  InitializeParserWithInitParametersExpectations(params);
-
-  scoped_refptr<DecoderBuffer> buffer =
-      ReadTestDataFile("bear-1280x720-avt_subt_frag.mp4");
-
-  EXPECT_TRUE(
-      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, MultiTrackFile) {

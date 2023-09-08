@@ -13,7 +13,6 @@
 #include "media/base/media_export.h"
 #include "media/base/media_log_type_enforcement.h"
 #include "media/base/renderer_factory_selector.h"
-#include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -85,7 +84,6 @@ enum class MediaLogProperty {
 
   // Track metadata.
   kAudioTracks,
-  kTextTracks,
   kVideoTracks,
 
   // Effective video playback frame rate adjusted for the playback speed.
@@ -121,7 +119,6 @@ MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoEncoderName, std::string);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsPlatformVideoEncoder, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsAudioDecryptingDemuxerStream, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kAudioTracks, std::vector<AudioDecoderConfig>);
-MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kTextTracks, std::vector<TextTrackConfig>);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoTracks, std::vector<VideoDecoderConfig>);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kFramerate, double);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoPlaybackRoughness, double);

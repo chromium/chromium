@@ -32,9 +32,6 @@ class MEDIA_EXPORT SourceBufferState {
   using CreateDemuxerStreamCB =
       base::RepeatingCallback<ChunkDemuxerStream*(DemuxerStream::Type)>;
 
-  using NewTextTrackCB = base::RepeatingCallback<void(ChunkDemuxerStream*,
-                                                      const TextTrackConfig&)>;
-
   SourceBufferState(std::unique_ptr<StreamParser> stream_parser,
                     std::unique_ptr<FrameProcessor> frame_processor,
                     CreateDemuxerStreamCB create_demuxer_stream_cb,
@@ -48,8 +45,7 @@ class MEDIA_EXPORT SourceBufferState {
   void Init(StreamParser::InitCB init_cb,
             const std::string& expected_codecs,
             const StreamParser::EncryptedMediaInitDataCB&
-                encrypted_media_init_data_cb,
-            NewTextTrackCB new_text_track_cb);
+                encrypted_media_init_data_cb);
 
   // Reconfigures this source buffer to use |new_stream_parser|. Caller must
   // first ensure that ResetParserState() was done to flush any pending frames
@@ -209,8 +205,7 @@ class MEDIA_EXPORT SourceBufferState {
   // Returns true on a successful call. Returns false if an error occurred while
   // processing decoder configurations.
   bool OnNewConfigs(std::string expected_codecs,
-                    std::unique_ptr<MediaTracks> tracks,
-                    const StreamParser::TextTrackConfigMap& text_configs);
+                    std::unique_ptr<MediaTracks> tracks);
 
   // Called by the |stream_parser_| at the beginning of a new media segment.
   void OnNewMediaSegment();
@@ -268,7 +263,6 @@ class MEDIA_EXPORT SourceBufferState {
   using DemuxerStreamMap = std::map<StreamParser::TrackId, ChunkDemuxerStream*>;
   DemuxerStreamMap audio_streams_;
   DemuxerStreamMap video_streams_;
-  DemuxerStreamMap text_streams_;
 
   std::unique_ptr<FrameProcessor> frame_processor_;
   const CreateDemuxerStreamCB create_demuxer_stream_cb_;
@@ -276,7 +270,6 @@ class MEDIA_EXPORT SourceBufferState {
 
   StreamParser::InitCB init_cb_;
   StreamParser::EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
-  NewTextTrackCB new_text_track_cb_;
 
   State state_;
 

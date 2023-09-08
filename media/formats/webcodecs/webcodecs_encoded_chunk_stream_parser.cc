@@ -14,7 +14,6 @@
 #include "media/base/media_tracks.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
-#include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
 
 namespace {
@@ -49,7 +48,6 @@ void WebCodecsEncodedChunkStreamParser::Init(
     InitCB init_cb,
     NewConfigCB config_cb,
     NewBuffersCB new_buffers_cb,
-    bool /* ignore_text_tracks */,
     EncryptedMediaInitDataCB /* ignored */,
     NewMediaSegmentCB new_segment_cb,
     EndMediaSegmentCB end_of_segment_cb,
@@ -129,7 +127,7 @@ bool WebCodecsEncodedChunkStreamParser::ProcessChunks(
           MediaTrack::Label(""), MediaTrack::Language(""));
     }
 
-    if (!config_cb_.Run(std::move(media_tracks), TextTrackConfigMap())) {
+    if (!config_cb_.Run(std::move(media_tracks))) {
       ChangeState(kError);
       return false;
     }
@@ -141,7 +139,6 @@ bool WebCodecsEncodedChunkStreamParser::ProcessChunks(
         params.detected_audio_track_count = 1;
       if (video_config_)
         params.detected_video_track_count = 1;
-      params.detected_text_track_count = 0;
       std::move(init_cb_).Run(params);
     }
 

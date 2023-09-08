@@ -14,7 +14,6 @@
 #include "media/base/media_tracks.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
-#include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp2t/descriptors.h"
 #include "media/formats/mp2t/es_parser.h"
@@ -235,7 +234,6 @@ void Mp2tStreamParser::Init(
     InitCB init_cb,
     NewConfigCB config_cb,
     NewBuffersCB new_buffers_cb,
-    bool /* ignore_text_tracks */,
     EncryptedMediaInitDataCB encrypted_media_init_data_cb,
     NewMediaSegmentCB new_segment_cb,
     EndMediaSegmentCB end_of_segment_cb,
@@ -794,15 +792,14 @@ bool Mp2tStreamParser::FinishInitializationIfNeeded() {
   // Pass the config before invoking the initialization callback.
   std::unique_ptr<MediaTracks> media_tracks = GenerateMediaTrackInfo(
       queue_with_config.audio_config, queue_with_config.video_config);
-  RCHECK(config_cb_.Run(std::move(media_tracks), TextTrackConfigMap()));
+  RCHECK(config_cb_.Run(std::move(media_tracks)));
   queue_with_config.is_config_sent = true;
 
   // For Mpeg2 TS, the duration is not known.
   DVLOG(1) << "Mpeg2TS stream parser initialization done";
 
   // TODO(wolenetz): If possible, detect and report track counts by type more
-  // accurately here. Currently, capped at max 1 each for audio and video, with
-  // assumption of 0 text tracks.
+  // accurately here. Currently, capped at max 1 each for audio and video.
   InitParameters params(kInfiniteDuration);
   params.detected_audio_track_count =
       queue_with_config.audio_config.IsValidConfig() ? 1 : 0;
@@ -902,8 +899,9 @@ bool Mp2tStreamParser::EmitRemainingBuffers() {
     if (!queue_with_config.is_config_sent) {
       std::unique_ptr<MediaTracks> media_tracks = GenerateMediaTrackInfo(
           queue_with_config.audio_config, queue_with_config.video_config);
-      if (!config_cb_.Run(std::move(media_tracks), TextTrackConfigMap()))
+      if (!config_cb_.Run(std::move(media_tracks))) {
         return false;
+      }
       queue_with_config.is_config_sent = true;
     }
 

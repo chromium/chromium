@@ -49,7 +49,6 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_inband_text_track.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -88,7 +87,6 @@
 #include "third_party/blink/renderer/core/html/track/automatic_track_selection.h"
 #include "third_party/blink/renderer/core/html/track/cue_timeline.h"
 #include "third_party/blink/renderer/core/html/track/html_track_element.h"
-#include "third_party/blink/renderer/core/html/track/inband_text_track.h"
 #include "third_party/blink/renderer/core/html/track/loadable_text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_container.h"
 #include "third_party/blink/renderer/core/html/track/text_track_list.h"
@@ -3274,65 +3272,7 @@ void HTMLMediaElement::RemoveVideoTrack(WebMediaPlayer::TrackId track_id) {
   videoTracks().Remove(track_id);
 }
 
-void HTMLMediaElement::AddTextTrack(WebInbandTextTrack* web_track) {
-  // 4.8.12.11.2 Sourcing in-band text tracks
-  // 1. Associate the relevant data with a new text track and its corresponding
-  // new TextTrack object.
-  auto* text_track = MakeGarbageCollected<InbandTextTrack>(web_track, *this);
-
-  // 2. Set the new text track's kind, label, and language based on the
-  // semantics of the relevant data, as defined by the relevant specification.
-  // If there is no label in that data, then the label must be set to the empty
-  // string.
-  // 3. Associate the text track list of cues with the rules for updating the
-  // text track rendering appropriate for the format in question.
-  // 4. If the new text track's kind is metadata, then set the text track
-  // in-band metadata track dispatch type as follows, based on the type of the
-  // media resource:
-  // 5. Populate the new text track's list of cues with the cues parsed so far,
-  // folllowing the guidelines for exposing cues, and begin updating it
-  // dynamically as necessary.
-  //   - Thess are all done by the media engine.
-
-  // 6. Set the new text track's readiness state to loaded.
-  text_track->SetReadinessState(TextTrack::kLoaded);
-
-  // 7. Set the new text track's mode to the mode consistent with the user's
-  // preferences and the requirements of the relevant specification for the
-  // data.
-  //  - This will happen in honorUserPreferencesForAutomaticTextTrackSelection()
-  ScheduleTextTrackResourceLoad();
-
-  // 8. Add the new text track to the media element's list of text tracks.
-  // 9. Fire an event with the name addtrack, that does not bubble and is not
-  // cancelable, and that uses the TrackEvent interface, with the track
-  // attribute initialized to the text track's TextTrack object, at the media
-  // element's textTracks attribute's TextTrackList object.
-  textTracks()->Append(text_track);
-}
-
-void HTMLMediaElement::RemoveTextTrack(WebInbandTextTrack* web_track) {
-  if (!text_tracks_)
-    return;
-
-  // This cast is safe because InbandTextTrack is the only concrete
-  // implementation of WebInbandTextTrackClient.
-  auto* text_track = To<InbandTextTrack>(web_track->Client());
-  if (!text_track)
-    return;
-
-  text_tracks_->Remove(text_track);
-}
-
 void HTMLMediaElement::ForgetResourceSpecificTracks() {
-  // Implements the "forget the media element's media-resource-specific tracks"
-  // algorithm.  The order is explicitly specified as text, then audio, and
-  // finally video.  Also 'removetrack' events should not be fired.
-  if (text_tracks_) {
-    auto scope = GetCueTimeline().BeginIgnoreUpdateScope();
-    text_tracks_->RemoveAllInbandTracks();
-  }
-
   audio_tracks_->RemoveAll();
   video_tracks_->RemoveAll();
 
@@ -3377,18 +3317,6 @@ TextTrack* HTMLMediaElement::addTextTrack(const AtomicString& kind,
 
   // 5. Return the new TextTrack object.
   return text_track;
-}
-
-Vector<TextTrackMetadata> HTMLMediaElement::GetTextTrackMetadata() {
-  TextTrackList* tracks = textTracks();
-  Vector<TextTrackMetadata> result;
-  for (unsigned i = 0; i < tracks->length(); i++) {
-    TextTrack* track = tracks->AnonymousIndexedGetter(i);
-    result.emplace_back(track->language().GetString().Utf8(),
-                        track->kind().GetString().Utf8(),
-                        track->label().GetString().Utf8(), track->id().Utf8());
-  }
-  return result;
 }
 
 TextTrackList* HTMLMediaElement::textTracks() {

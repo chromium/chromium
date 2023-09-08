@@ -169,8 +169,6 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
                                        const WebString&,
                                        bool));
   MOCK_METHOD1(RemoveVideoTrack, void(WebMediaPlayer::TrackId));
-  MOCK_METHOD1(AddTextTrack, void(WebInbandTextTrack*));
-  MOCK_METHOD1(RemoveTextTrack, void(WebInbandTextTrack*));
   MOCK_METHOD1(MediaSourceOpened, void(WebMediaSource*));
   MOCK_METHOD2(RemotePlaybackCompatibilityChanged, void(const WebURL&, bool));
   MOCK_METHOD0(WasAlwaysMuted, bool());
@@ -210,7 +208,6 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD0(DidSeek, void());
   MOCK_METHOD2(OnFirstFrame, void(base::TimeTicks, size_t));
   MOCK_METHOD0(OnRequestVideoFrameCallback, void());
-  MOCK_METHOD0(GetTextTrackMetadata, Vector<TextTrackMetadata>());
 };
 
 class MockWebMediaPlayerEncryptedMediaClient

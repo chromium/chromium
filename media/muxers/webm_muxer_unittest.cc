@@ -23,7 +23,6 @@
 #include "media/base/mock_media_log.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
-#include "media/base/text_track_config.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/formats/webm/webm_stream_parser.h"
@@ -473,7 +472,6 @@ class WebmMuxerTestUnparametrized : public testing::Test {
                             base::Unretained(this)),
         base::BindRepeating(&WebmMuxerTestUnparametrized::OnNewBuffers,
                             base::Unretained(this)),
-        /*ignore_text_tracks=*/true,
         base::BindRepeating(
             &WebmMuxerTestUnparametrized::OnEncryptedMediaInitData,
             base::Unretained(this)),
@@ -525,10 +523,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
  protected:
   // media::StreamParser callbacks.
   void OnInit(const media::StreamParser::InitParameters&) {}
-  bool OnNewConfig(std::unique_ptr<media::MediaTracks> tracks,
-                   const media::StreamParser::TextTrackConfigMap&) {
-    return true;
-  }
+  bool OnNewConfig(std::unique_ptr<media::MediaTracks> tracks) { return true; }
   bool OnNewBuffers(const media::StreamParser::BufferQueueMap& map) {
     for (const auto& [track_id, queue] : map) {
       for (const auto& stream_parser_buffer : queue) {

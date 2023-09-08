@@ -21,8 +21,6 @@
 #include "media/base/null_video_sink.h"
 #include "media/base/pipeline_impl.h"
 #include "media/base/pipeline_status.h"
-#include "media/base/text_track.h"
-#include "media/base/text_track_config.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/audio_renderer_impl.h"
 #include "media/renderers/video_renderer_impl.h"
@@ -249,8 +247,6 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   MOCK_METHOD2(OnBufferingStateChange,
                void(BufferingState, BufferingStateChangeReason));
   MOCK_METHOD0(OnDurationChange, void());
-  MOCK_METHOD2(OnAddTextTrack,
-               void(const TextTrackConfig& config, AddTextTrackDoneCB done_cb));
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
   MOCK_METHOD1(OnVideoNaturalSizeChange, void(const gfx::Size&));
   MOCK_METHOD1(OnVideoConfigChange, void(const VideoDecoderConfig&));

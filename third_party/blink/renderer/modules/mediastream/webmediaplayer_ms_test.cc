@@ -560,8 +560,6 @@ class WebMediaPlayerMSTest
     return WebMediaPlayer::TrackId();
   }
   void RemoveVideoTrack(WebMediaPlayer::TrackId) override {}
-  void AddTextTrack(WebInbandTextTrack*) override {}
-  void RemoveTextTrack(WebInbandTextTrack*) override {}
   void MediaSourceOpened(WebMediaSource*) override {}
   void RemotePlaybackCompatibilityChanged(const WebURL& url,
                                           bool is_compatible) override {}
@@ -607,10 +605,6 @@ class WebMediaPlayerMSTest
   // For test use
   void SetBackgroundRendering(bool background_rendering) {
     background_rendering_ = background_rendering;
-  }
-
-  Vector<blink::TextTrackMetadata> GetTextTrackMetadata() override {
-    return {};
   }
 
   void SetGpuMemoryBufferVideoForTesting() {

@@ -35,7 +35,6 @@
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/routing_token_callback.h"
 #include "media/base/simple_watch_timer.h"
-#include "media/base/text_track.h"
 #include "media/filters/demuxer_manager.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/mojom/playback_events_recorder.mojom.h"
@@ -399,8 +398,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       media::BufferingState state,
       media::BufferingStateChangeReason reason) override;
   void OnDurationChange() override;
-  void OnAddTextTrack(const media::TextTrackConfig& config,
-                      media::AddTextTrackDoneCB done_cb) override;
   void OnWaiting(media::WaitingReason reason) override;
   void OnAudioConfigChange(const media::AudioDecoderConfig& config) override;
   void OnVideoConfigChange(const media::VideoDecoderConfig& config) override;

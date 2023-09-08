@@ -213,8 +213,6 @@ source_set("blink_headers") {
     "platform/web_http_header_visitor.h",
     "platform/web_icon_sizes_parser.h",
     "platform/web_image_generator.h",
-    "platform/web_inband_text_track.h",
-    "platform/web_inband_text_track_client.h",
     "platform/web_input_event_result.h",
     "platform/web_isolated_world_info.h",
     "platform/web_loader_freeze_mode.h",

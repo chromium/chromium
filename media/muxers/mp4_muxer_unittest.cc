@@ -45,8 +45,7 @@ class Mp4MuxerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void InitF(const StreamParser::InitParameters& expected_params) {}
-  bool NewConfigCB(std::unique_ptr<MediaTracks> tracks,
-                   const StreamParser::TextTrackConfigMap& text_track_map) {
+  bool NewConfigCB(std::unique_ptr<MediaTracks> tracks) {
     tracks_ = std::move(tracks);
     return true;
   }
@@ -228,7 +227,6 @@ class Mp4MuxerTest : public testing::Test {
         base::BindOnce(&Mp4MuxerTest::InitF, base::Unretained(this)),
         base::BindRepeating(&Mp4MuxerTest::NewConfigCB, base::Unretained(this)),
         base::BindRepeating(&Mp4MuxerTest::NewBuffersF, base::Unretained(this)),
-        /*ignore_text_tracks=*/false,
         base::BindRepeating(&Mp4MuxerTest::KeyNeededF, base::Unretained(this)),
         base::BindRepeating(&Mp4MuxerTest::NewSegmentF, base::Unretained(this)),
         base::BindRepeating(&Mp4MuxerTest::EndOfSegmentF,

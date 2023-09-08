@@ -24,7 +24,6 @@
 #include "media/base/media_util.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
-#include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_util.h"
@@ -95,7 +94,6 @@ void MP4StreamParser::Init(
     InitCB init_cb,
     NewConfigCB config_cb,
     NewBuffersCB new_buffers_cb,
-    bool /* ignore_text_tracks */,
     EncryptedMediaInitDataCB encrypted_media_init_data_cb,
     NewMediaSegmentCB new_segment_cb,
     EndMediaSegmentCB end_of_segment_cb,
@@ -382,7 +380,6 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
   VideoDecoderConfig video_config;
   int detected_audio_track_count = 0;
   int detected_video_track_count = 0;
-  int detected_text_track_count = 0;
 
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
        track != moov_->tracks.end(); ++track) {
@@ -697,19 +694,12 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           MediaTrack::Language(track->media.header.language()));
       continue;
     }
-
-    // TODO(wolenetz): Investigate support in MSE and Chrome MSE for CEA 608/708
-    // embedded caption data in video track. At time of init segment parsing, we
-    // don't have this data (unless maybe by SourceBuffer's mimetype).
-    // See https://crbug.com/597073
-    if (track->media.handler.type == kText)
-      detected_text_track_count++;
   }
 
   if (!moov_->pssh.empty())
     OnEncryptedMediaInitData(moov_->pssh);
 
-  RCHECK(config_cb_.Run(std::move(media_tracks), TextTrackConfigMap()));
+  RCHECK(config_cb_.Run(std::move(media_tracks)));
 
   StreamParser::InitParameters params(kInfiniteDuration);
   if (moov_->extends.header.fragment_duration > 0) {
@@ -760,7 +750,6 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
   if (init_cb_) {
     params.detected_audio_track_count = detected_audio_track_count;
     params.detected_video_track_count = detected_video_track_count;
-    params.detected_text_track_count = detected_text_track_count;
     std::move(init_cb_).Run(params);
   }
 

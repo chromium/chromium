@@ -49,7 +49,6 @@
 #include "media/base/renderer.h"
 #include "media/base/routing_token_callback.h"
 #include "media/base/supported_types.h"
-#include "media/base/text_renderer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/filters/chunk_demuxer.h"
@@ -80,7 +79,6 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
-#include "third_party/blink/public/platform/web_texttrack_metadata.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -91,10 +89,8 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/power_status_helper.h"
-#include "third_party/blink/renderer/platform/media/text_track_impl.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
-#include "third_party/blink/renderer/platform/media/web_inband_text_track_impl.h"
 #include "third_party/blink/renderer/platform/media/web_media_source_impl.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -838,14 +834,6 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   media_log_->AddEvent<MediaLogEvent::kLoad>(
       url.GetString().Substring(0, media::kMaxUrlLength + 1).Utf8());
   load_start_time_ = base::TimeTicks::Now();
-
-  std::vector<media::TextTrackConfig> text_configs;
-  for (const auto& metadata : client_->GetTextTrackMetadata()) {
-    text_configs.emplace_back(
-        media::TextTrackConfig::ConvertKind(metadata.kind()), metadata.label(),
-        metadata.language(), metadata.id());
-  }
-  media_log_->SetProperty<MediaLogProperty::kTextTracks>(text_configs);
 
   // If we're adapting, then restart the smoothness experiment.
   if (smoothness_helper_)
@@ -2251,25 +2239,6 @@ void WebMediaPlayerImpl::OnDurationChange() {
 
   if (watch_time_reporter_)
     watch_time_reporter_->OnDurationChanged(GetPipelineMediaDuration());
-}
-
-void WebMediaPlayerImpl::OnAddTextTrack(const media::TextTrackConfig& config,
-                                        media::AddTextTrackDoneCB done_cb) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  const WebInbandTextTrackImpl::Kind web_kind =
-      static_cast<WebInbandTextTrackImpl::Kind>(config.kind());
-  const WebString web_label = WebString::FromUTF8(config.label());
-  const WebString web_language = WebString::FromUTF8(config.language());
-  const WebString web_id = WebString::FromUTF8(config.id());
-
-  std::unique_ptr<WebInbandTextTrackImpl> web_inband_text_track(
-      new WebInbandTextTrackImpl(web_kind, web_label, web_language, web_id));
-
-  std::unique_ptr<media::TextTrack> text_track(new TextTrackImpl(
-      main_task_runner_, client_, std::move(web_inband_text_track)));
-
-  std::move(done_cb).Run(std::move(text_track));
 }
 
 void WebMediaPlayerImpl::OnWaiting(media::WaitingReason reason) {

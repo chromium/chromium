@@ -44,14 +44,8 @@ class Mp4MuxerDelegateTest : public testing::Test {
 
   void InitF(const StreamParser::InitParameters& expected_params) {}
 
-  bool NewConfigCB(std::unique_ptr<MediaTracks> tracks,
-                   const StreamParser::TextTrackConfigMap& text_track_map) {
-    return true;
-  }
-  bool NewConfigF(std::unique_ptr<MediaTracks> tracks,
-                  const StreamParser::TextTrackConfigMap& tc) {
-    return true;
-  }
+  bool NewConfigCB(std::unique_ptr<MediaTracks> tracks) { return true; }
+  bool NewConfigF(std::unique_ptr<MediaTracks> tracks) { return true; }
 
   bool NewBuffersF(const StreamParser::BufferQueueMap& buffer_queue_map) {
     return true;
@@ -226,7 +220,6 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
                             base::Unretained(this)),
         base::BindRepeating(&Mp4MuxerDelegateTest::NewBuffersF,
                             base::Unretained(this)),
-        true,
         base::BindRepeating(&Mp4MuxerDelegateTest::KeyNeededF,
                             base::Unretained(this)),
         base::BindRepeating(&Mp4MuxerDelegateTest::NewSegmentF,
@@ -529,7 +522,6 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
                             base::Unretained(this)),
         base::BindRepeating(&Mp4MuxerDelegateTest::NewBuffersF,
                             base::Unretained(this)),
-        true,
         base::BindRepeating(&Mp4MuxerDelegateTest::KeyNeededF,
                             base::Unretained(this)),
         base::BindRepeating(&Mp4MuxerDelegateTest::NewSegmentF,

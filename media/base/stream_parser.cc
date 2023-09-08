@@ -9,10 +9,7 @@
 namespace media {
 
 StreamParser::InitParameters::InitParameters(base::TimeDelta duration)
-    : duration(duration),
-      detected_audio_track_count(0),
-      detected_video_track_count(0),
-      detected_text_track_count(0) {}
+    : duration(duration) {}
 
 StreamParser::StreamParser() = default;
 

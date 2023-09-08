@@ -156,10 +156,6 @@ MockTimeSource::MockTimeSource() = default;
 
 MockTimeSource::~MockTimeSource() = default;
 
-MockTextTrack::MockTextTrack() = default;
-
-MockTextTrack::~MockTextTrack() = default;
-
 MockCdmClient::MockCdmClient() = default;
 
 MockCdmClient::~MockCdmClient() = default;

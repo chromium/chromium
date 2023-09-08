@@ -523,8 +523,6 @@ blink_core_sources_html = [
   "track/cue_timeline.h",
   "track/html_track_element.cc",
   "track/html_track_element.h",
-  "track/inband_text_track.cc",
-  "track/inband_text_track.h",
   "track/loadable_text_track.cc",
   "track/loadable_text_track.h",
   "track/text_track.cc",

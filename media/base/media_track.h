@@ -15,7 +15,7 @@ namespace media {
 
 class MEDIA_EXPORT MediaTrack {
  public:
-  enum class Type { kText, kAudio, kVideo };
+  enum class Type { kAudio, kVideo };
   using Id = base::StrongAlias<class IdTag, std::string>;
   using Kind = base::StrongAlias<class KindTag, std::string>;
   using Label = base::StrongAlias<class LabelTag, std::string>;

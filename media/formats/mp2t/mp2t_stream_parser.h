@@ -48,7 +48,6 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   void Init(InitCB init_cb,
             NewConfigCB config_cb,
             NewBuffersCB new_buffers_cb,
-            bool ignore_text_tracks,
             EncryptedMediaInitDataCB encrypted_media_init_data_cb,
             NewMediaSegmentCB new_segment_cb,
             EndMediaSegmentCB end_of_segment_cb,

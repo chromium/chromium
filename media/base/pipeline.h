@@ -16,7 +16,6 @@
 #include "media/base/pipeline_metadata.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/ranges.h"
-#include "media/base/text_track.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/base/waiting.h"
@@ -58,11 +57,6 @@ class MEDIA_EXPORT Pipeline {
 
     // Executed whenever the presentation duration changes.
     virtual void OnDurationChange() = 0;
-
-    // Executed whenever a text track is added.
-    // The client is expected to create a TextTrack and call |done_cb|.
-    virtual void OnAddTextTrack(const TextTrackConfig& config,
-                                AddTextTrackDoneCB done_cb) = 0;
 
     // Executed whenever the pipeline is waiting because of |reason|.
     virtual void OnWaiting(WaitingReason reason) = 0;

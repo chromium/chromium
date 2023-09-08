@@ -292,10 +292,6 @@ FFmpegDemuxerStream::FFmpegDemuxerStream(
       type_ = VIDEO;
       is_encrypted = video_config_->is_encrypted();
       break;
-    case AVMEDIA_TYPE_SUBTITLE:
-      DCHECK(!video_config_.get() && !audio_config_.get());
-      type_ = TEXT;
-      break;
     default:
       NOTREACHED();
       break;
@@ -394,10 +390,6 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
 
   scoped_refptr<DecoderBuffer> buffer;
 
-  if (type() == DemuxerStream::TEXT) {
-    // TODO(crbug.com/1471504): This is now broken without side data; remove.
-    buffer = DecoderBuffer::CopyFrom(packet->data, packet->size);
-  } else {
     size_t side_data_size = 0;
     uint8_t* side_data = av_packet_get_side_data(
         packet.get(), AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL, &side_data_size);
@@ -498,7 +490,6 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
 
     if (decrypt_config)
       buffer->set_decrypt_config(std::move(decrypt_config));
-  }
 
   if (packet->duration >= 0) {
     buffer->set_duration(

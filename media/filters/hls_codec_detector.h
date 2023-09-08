@@ -38,8 +38,7 @@ class MEDIA_EXPORT HlsCodecDetector {
                           const uint8_t* data,
                           size_t size);
   void ParserInit(const StreamParser::InitParameters& params);
-  bool OnNewConfigMP2T(std::unique_ptr<MediaTracks> tracks,
-                       const StreamParser::TextTrackConfigMap& map);
+  bool OnNewConfigMP2T(std::unique_ptr<MediaTracks> tracks);
   bool OnNewBuffers(const StreamParser::BufferQueueMap& buffers);
   void OnEncryptedMediaInit(EmeInitDataType type,
                             const std::vector<uint8_t>& data);

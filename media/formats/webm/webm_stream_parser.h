@@ -33,7 +33,6 @@ class MEDIA_EXPORT WebMStreamParser : public StreamParser {
   void Init(InitCB init_cb,
             NewConfigCB config_cb,
             NewBuffersCB new_buffers_cb,
-            bool ignore_text_tracks,
             EncryptedMediaInitDataCB encrypted_media_init_data_cb,
             NewMediaSegmentCB new_segment_cb,
             EndMediaSegmentCB end_of_segment_cb,
@@ -80,7 +79,6 @@ class MEDIA_EXPORT WebMStreamParser : public StreamParser {
   InitCB init_cb_;
   NewConfigCB config_cb_;
   NewBuffersCB new_buffers_cb_;
-  bool ignore_text_tracks_;
   EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
 
   NewMediaSegmentCB new_segment_cb_;

@@ -76,7 +76,6 @@ class WebmVerifier {
         base::BindRepeating(&WebmVerifier::OnNewConfig, base::Unretained(this)),
         base::BindRepeating(&WebmVerifier::OnNewBuffers,
                             base::Unretained(this)),
-        /*ignore_text_tracks=*/true,
         base::BindRepeating(&WebmVerifier::OnEncryptedMediaInitData,
                             base::Unretained(this)),
         base::BindRepeating(&WebmVerifier::OnNewMediaSegment,
@@ -111,10 +110,7 @@ class WebmVerifier {
 
  private:
   void OnInit(const media::StreamParser::InitParameters&) {}
-  bool OnNewConfig(std::unique_ptr<media::MediaTracks> tracks,
-                   const media::StreamParser::TextTrackConfigMap&) {
-    return true;
-  }
+  bool OnNewConfig(std::unique_ptr<media::MediaTracks> tracks) { return true; }
   bool OnNewBuffers(const media::StreamParser::BufferQueueMap& map) {
     return true;
   }

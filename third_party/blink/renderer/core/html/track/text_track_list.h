@@ -67,7 +67,6 @@ class CORE_EXPORT TextTrackList final : public EventTarget {
   HTMLMediaElement* Owner() const;
 
   void ScheduleChangeEvent();
-  void RemoveAllInbandTracks();
 
   bool HasShowingTracks();
 
@@ -85,7 +84,6 @@ class CORE_EXPORT TextTrackList final : public EventTarget {
 
   HeapVector<Member<TextTrack>> add_track_tracks_;
   HeapVector<Member<TextTrack>> element_tracks_;
-  HeapVector<Member<TextTrack>> inband_tracks_;
 };
 
 }  // namespace blink

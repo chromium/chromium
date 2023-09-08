@@ -32,8 +32,6 @@
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
 #include "media/base/serial_runner.h"
-#include "media/base/text_renderer.h"
-#include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_decoder_config.h"
 
@@ -242,9 +240,8 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   // reset the pipeline state, and restore this to PIPELINE_OK.
   PipelineStatus status_;
 
-  // Whether we've received the audio/video/text ended events.
+  // Whether we've received the audio/video ended events.
   bool renderer_ended_;
-  bool text_renderer_ended_;
 
   // Series of tasks to Start(), Seek(), and Resume().
   std::unique_ptr<SerialRunner> pending_callbacks_;
@@ -272,8 +269,7 @@ PipelineImpl::RendererWrapper::RendererWrapper(
       cdm_context_(nullptr),
       state_(kCreated),
       status_(PIPELINE_OK),
-      renderer_ended_(false),
-      text_renderer_ended_(false) {}
+      renderer_ended_(false) {}
 
 PipelineImpl::RendererWrapper::~RendererWrapper() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
@@ -296,7 +292,6 @@ void PipelineImpl::RendererWrapper::Start(
       << "Received start in unexpected state: " << state_;
   DCHECK(!demuxer_);
   DCHECK(!renderer_ended_);
-  DCHECK(!text_renderer_ended_);
 
   SetState(kStarting);
   demuxer_ = demuxer;
@@ -383,7 +378,6 @@ void PipelineImpl::RendererWrapper::Seek(base::TimeDelta time) {
 
   SetState(kSeeking);
   renderer_ended_ = false;
-  text_renderer_ended_ = false;
 
   // Queue asynchronous actions required to start.
   DCHECK(!pending_callbacks_);
@@ -470,7 +464,6 @@ void PipelineImpl::RendererWrapper::Resume(
 
   default_renderer_ = std::move(default_renderer);
   renderer_ended_ = false;
-  text_renderer_ended_ = false;
   base::TimeDelta start_timestamp =
       std::max(timestamp, demuxer_->GetStartTime());
 
@@ -831,8 +824,6 @@ void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
       shared_state_.renderer->OnSelectedVideoTracksChanged(
           streams, std::move(change_completed_cb));
       break;
-    // TODO(tmathmeyer): Look into text track switching.
-    case DemuxerStream::TEXT:
     case DemuxerStream::UNKNOWN:  // Fail on unknown type.
       NOTREACHED_NORETURN();
   }

@@ -41,8 +41,6 @@
 #include "media/base/renderer_client.h"
 #include "media/base/renderer_factory.h"
 #include "media/base/stream_parser.h"
-#include "media/base/text_track.h"
-#include "media/base/text_track_config.h"
 #include "media/base/time_source.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -67,8 +65,6 @@ class MockPipelineClient : public Pipeline::Client {
   MOCK_METHOD2(OnBufferingStateChange,
                void(BufferingState, BufferingStateChangeReason));
   MOCK_METHOD0(OnDurationChange, void());
-  MOCK_METHOD2(OnAddTextTrack,
-               void(const TextTrackConfig&, AddTextTrackDoneCB));
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
   MOCK_METHOD1(OnAudioConfigChange, void(const AudioDecoderConfig&));
   MOCK_METHOD1(OnVideoConfigChange, void(const VideoDecoderConfig&));
@@ -589,23 +585,6 @@ class MockTimeSource : public TimeSource {
                     std::vector<base::TimeTicks>*));
 };
 
-class MockTextTrack : public TextTrack {
- public:
-  MockTextTrack();
-
-  MockTextTrack(const MockTextTrack&) = delete;
-  MockTextTrack& operator=(const MockTextTrack&) = delete;
-
-  ~MockTextTrack() override;
-
-  MOCK_METHOD5(addWebVTTCue,
-               void(base::TimeDelta start,
-                    base::TimeDelta end,
-                    const std::string& id,
-                    const std::string& content,
-                    const std::string& settings));
-};
-
 // Mock CDM callbacks.
 // TODO(xhwang): This could be a subclass of CdmClient if we plan to add one.
 // See http://crbug.com/657940
@@ -860,11 +839,10 @@ class MockStreamParser : public StreamParser {
   ~MockStreamParser() override;
 
   // StreamParser interface
-  MOCK_METHOD8(Init,
+  MOCK_METHOD7(Init,
                void(InitCB init_cb,
                     NewConfigCB config_cb,
                     NewBuffersCB new_buffers_cb,
-                    bool ignore_text_track,
                     EncryptedMediaInitDataCB encrypted_media_init_data_cb,
                     NewMediaSegmentCB new_segment_cb,
                     EndMediaSegmentCB end_of_segment_cb,

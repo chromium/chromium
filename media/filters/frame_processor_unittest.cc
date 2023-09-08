@@ -251,7 +251,6 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
   // range in integer milliseconds.
   void CheckExpectedRangesByTimestamp(ChunkDemuxerStream* stream,
                                       const std::string& expected) {
-    // Note, DemuxerStream::TEXT streams return [0,duration (==infinity here))
     Ranges<base::TimeDelta> r = stream->GetBufferedRanges(kInfiniteDuration);
 
     std::stringstream ss;
@@ -457,8 +456,6 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
         stream = video_.get();
         break;
       }
-      // TODO(wolenetz): Test text coded frame processing.
-      case DemuxerStream::TEXT:
       case DemuxerStream::UNKNOWN: {
         ASSERT_FALSE(true);
       }

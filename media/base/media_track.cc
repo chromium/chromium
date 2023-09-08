@@ -23,8 +23,6 @@ const char* TrackTypeToStr(MediaTrack::Type type) {
   switch (type) {
     case MediaTrack::Type::kAudio:
       return "audio";
-    case MediaTrack::Type::kText:
-      return "text";
     case MediaTrack::Type::kVideo:
       return "video";
   }

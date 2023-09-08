@@ -41,7 +41,6 @@
 #include "media/base/demuxer.h"
 #include "media/base/media_log.h"
 #include "media/base/pipeline_status.h"
-#include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_decoder_config.h"
 #include "media/ffmpeg/scoped_av_packet.h"
@@ -134,8 +133,6 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   // Returns the total buffer size FFMpegDemuxerStream is holding onto.
   size_t MemoryUsage() const;
 
-  TextKind GetTextKind() const;
-
   // Returns the value associated with |key| in the metadata for the avstream.
   // Returns an empty string if the key is not present.
   std::string GetMetadata(const char* key) const;
@@ -150,8 +147,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
 
   // Use FFmpegDemuxerStream::Create to construct.
   // Audio/Video streams must include their respective DecoderConfig. At most
-  // one DecoderConfig should be provided (leaving the other nullptr). Both
-  // configs should be null for text streams.
+  // one DecoderConfig should be provided (leaving the other nullptr).
   FFmpegDemuxerStream(FFmpegDemuxer* demuxer,
                       AVStream* stream,
                       std::unique_ptr<AudioDecoderConfig> audio_config,
@@ -328,10 +324,6 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // FFmpegDemuxerStream and is enabled.
   FFmpegDemuxerStream* GetFirstEnabledFFmpegStream(
       DemuxerStream::Type type) const;
-
-  // Called after the streams have been collected from the media, to allow
-  // the text renderer to bind each text stream to the cue rendering engine.
-  void AddTextStreams();
 
   void SetLiveness(StreamLiveness liveness);
 

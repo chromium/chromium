@@ -24,8 +24,6 @@ const char* DemuxerStream::GetTypeName(Type type) {
       return "audio";
     case DemuxerStream::VIDEO:
       return "video";
-    case DemuxerStream::TEXT:
-      return "text";
     case DemuxerStream::UNKNOWN:
       return "unknown";
   }

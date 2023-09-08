@@ -147,8 +147,6 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   void OnBufferingStateChange(BufferingState state,
                               BufferingStateChangeReason reason) override {}
   void OnDurationChange() override {}
-  void OnAddTextTrack(const TextTrackConfig& config,
-                      AddTextTrackDoneCB done_cb) override {}
   void OnWaiting(WaitingReason reason) override {}
   void OnVideoNaturalSizeChange(const gfx::Size& size) override {}
   void OnAudioConfigChange(const AudioDecoderConfig& config) override {}

@@ -31,7 +31,6 @@
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/test_data_util.h"
-#include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -251,8 +250,7 @@ class Mp2tStreamParserTest : public testing::Test {
     DVLOG(1) << "OnInit: dur=" << params.duration.InMilliseconds();
   }
 
-  bool OnNewConfig(std::unique_ptr<MediaTracks> tracks,
-                   const StreamParser::TextTrackConfigMap& tc) {
+  bool OnNewConfig(std::unique_ptr<MediaTracks> tracks) {
     DVLOG(1) << "OnNewConfig: got " << tracks->tracks().size() << " tracks";
     size_t audio_track_count = 0;
     size_t video_track_count = 0;
@@ -376,7 +374,6 @@ class Mp2tStreamParserTest : public testing::Test {
                             base::Unretained(this)),
         base::BindRepeating(&Mp2tStreamParserTest::OnNewBuffers,
                             base::Unretained(this)),
-        true,
         base::BindRepeating(&Mp2tStreamParserTest::OnKeyNeeded,
                             base::Unretained(this)),
         base::BindRepeating(&Mp2tStreamParserTest::OnNewSegment,

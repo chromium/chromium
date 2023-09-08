@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
-#include "third_party/blink/renderer/core/html/track/inband_text_track.h"
 #include "third_party/blink/renderer/core/html/track/loadable_text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/track_event.h"
@@ -40,8 +39,7 @@ TextTrackList::TextTrackList(HTMLMediaElement* owner) : owner_(owner) {}
 TextTrackList::~TextTrackList() = default;
 
 unsigned TextTrackList::length() const {
-  return add_track_tracks_.size() + element_tracks_.size() +
-         inband_tracks_.size();
+  return add_track_tracks_.size() + element_tracks_.size();
 }
 
 int TextTrackList::GetTrackIndex(TextTrack* text_track) {
@@ -50,10 +48,6 @@ int TextTrackList::GetTrackIndex(TextTrack* text_track) {
 
   if (text_track->TrackType() == TextTrack::kAddTrack)
     return element_tracks_.size() + add_track_tracks_.Find(text_track);
-
-  if (text_track->TrackType() == TextTrack::kInBand)
-    return element_tracks_.size() + add_track_tracks_.size() +
-           inband_tracks_.Find(text_track);
 
   NOTREACHED();
 
@@ -85,15 +79,6 @@ int TextTrackList::GetTrackIndexRelativeToRenderedTracks(
     ++track_index;
   }
 
-  for (const auto& track : inband_tracks_) {
-    if (!track->IsRendered())
-      continue;
-
-    if (track == text_track)
-      return track_index;
-    ++track_index;
-  }
-
   NOTREACHED();
 
   return -1;
@@ -116,10 +101,6 @@ TextTrack* TextTrackList::AnonymousIndexedGetter(unsigned index) {
   index -= element_tracks_.size();
   if (index < add_track_tracks_.size())
     return add_track_tracks_[index];
-
-  index -= add_track_tracks_.size();
-  if (index < inband_tracks_.size())
-    return inband_tracks_[index];
 
   return nullptr;
 }
@@ -146,14 +127,8 @@ void TextTrackList::InvalidateTrackIndexesAfterTrack(TextTrack* track) {
     tracks = &element_tracks_;
     for (const auto& add_track : add_track_tracks_)
       add_track->InvalidateTrackIndex();
-    for (const auto& inband_track : inband_tracks_)
-      inband_track->InvalidateTrackIndex();
   } else if (track->TrackType() == TextTrack::kAddTrack) {
     tracks = &add_track_tracks_;
-    for (const auto& inband_track : inband_tracks_)
-      inband_track->InvalidateTrackIndex();
-  } else if (track->TrackType() == TextTrack::kInBand) {
-    tracks = &inband_tracks_;
   } else {
     NOTREACHED();
   }
@@ -173,8 +148,6 @@ void TextTrackList::Append(TextTrack* track) {
     // Insert tracks added for <track> element in tree order.
     wtf_size_t index = loadable_text_track->TrackElementIndex();
     element_tracks_.insert(index, track);
-  } else if (track->TrackType() == TextTrack::kInBand) {
-    inband_tracks_.push_back(track);
   } else {
     NOTREACHED();
   }
@@ -194,8 +167,6 @@ void TextTrackList::Remove(TextTrack* track) {
     tracks = &element_tracks_;
   } else if (track->TrackType() == TextTrack::kAddTrack) {
     tracks = &add_track_tracks_;
-  } else if (track->TrackType() == TextTrack::kInBand) {
-    tracks = &inband_tracks_;
   } else {
     NOTREACHED();
   }
@@ -214,13 +185,6 @@ void TextTrackList::Remove(TextTrack* track) {
   ScheduleRemoveTrackEvent(track);
 }
 
-void TextTrackList::RemoveAllInbandTracks() {
-  for (const auto& track : inband_tracks_) {
-    track->SetTrackList(nullptr);
-  }
-  inband_tracks_.clear();
-}
-
 bool TextTrackList::Contains(TextTrack* track) const {
   const HeapVector<Member<TextTrack>>* tracks = nullptr;
 
@@ -228,8 +192,6 @@ bool TextTrackList::Contains(TextTrack* track) const {
     tracks = &element_tracks_;
   else if (track->TrackType() == TextTrack::kAddTrack)
     tracks = &add_track_tracks_;
-  else if (track->TrackType() == TextTrack::kInBand)
-    tracks = &inband_tracks_;
   else
     NOTREACHED();
 
@@ -301,7 +263,6 @@ void TextTrackList::Trace(Visitor* visitor) const {
   visitor->Trace(owner_);
   visitor->Trace(add_track_tracks_);
   visitor->Trace(element_tracks_);
-  visitor->Trace(inband_tracks_);
   EventTarget::Trace(visitor);
 }
 
