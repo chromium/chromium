@@ -1,9 +1,0 @@
-# Copyright 2018 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-declare_args() {
-  reporter_branding_path = "//chrome/chrome_cleaner/constants/REPORTER_BRANDING"
-  cleaner_branding_path = "//chrome/chrome_cleaner/constants/CLEANER_BRANDING"
-  version_path = "//chrome/chrome_cleaner/constants/VERSION"
-}

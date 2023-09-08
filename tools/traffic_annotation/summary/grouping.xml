@@ -313,9 +313,7 @@ after discussions on the right group.
     </sender>
   </group>
   <group name="Apps and Content" hidden="true">
-    <sender name="Chrome Cleanup">
-      <annotation id="chrome_cleaner"/>
-    </sender>
+    <sender name="Chrome Cleanup"/>
     <sender name="Extension and App Management">
       <annotation id="chrome_apps_socket_api"/>
       <annotation id="extension_blacklist"/>

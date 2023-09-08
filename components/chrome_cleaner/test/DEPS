@@ -1,5 +1,0 @@
-# Allow the typemaps to access their dependencies.
-include_rules = [
-  '+base/strings/string_util.h',
-  '+testing/gtest/include/gtest/gtest.h',
-]

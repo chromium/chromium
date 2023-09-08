@@ -1,7 +1,0 @@
-COMPANY_FULLNAME=The Chromium Authors
-COMPANY_SHORTNAME=The Chromium Authors
-PRODUCT_FULLNAME=Software Reporter Tool
-PRODUCT_SHORTNAME=Software Reporter Tool
-PRODUCT_INSTALLER_FULLNAME=Software Reporter Tool Installer
-PRODUCT_INSTALLER_SHORTNAME=Software Reporter Tool Installer
-COPYRIGHT=Copyright @LASTCHANGE_YEAR@ The Chromium Authors. All rights reserved.
