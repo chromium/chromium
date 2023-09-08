@@ -163,6 +163,13 @@ void OpenAccountSettingsAndSignOut(BOOL syncEnabled) {
                    grey_text(l10n_util::GetNSString(
                        IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
         performAction:grey_tap()];
+
+    // Check that the sign-out snackbar does not show for BrowserSignin forced.
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityLabel(l10n_util::GetNSString(
+                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE))]
+        assertWithMatcher:grey_notVisible()];
   } else {
     OpenAccountSignOutActionsSheets();
     SignOutFromActionSheets(syncEnabled);
@@ -480,6 +487,53 @@ void CompleteSigninFlow() {
 
   // Sign out account from account settings.
   OpenAccountSettingsAndSignOut(NO);
+
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests signing out account from accounts on this device with sync disabled.
+- (void)testSignOutFromAccountsOnThisDeviceSyncDisabled {
+  // Add account.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Sign in account without enabling sync.
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
+
+  // Make sure the forced sign-in screen isn't shown.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Sign out account from accounts on this device settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  // With ReplaceSyncWithSignin, we're now in the "manage sync" view, and
+  // the "manage accounts on this device" button is at the very bottom. Scroll
+  // there.
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap the "manage accounts on this device" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM))]
+      performAction:grey_tap()];
+
+  // Tap the "Sign out" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE))]
+      performAction:grey_tap()];
+
+  // Check that the sign-out snackbar does not show for BrowserSignin forced.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityLabel(l10n_util::GetNSString(
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE))]
+      assertWithMatcher:grey_notVisible()];
 
   // Wait and verify that the forced sign-in screen is shown.
   [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
