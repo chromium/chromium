@@ -10,7 +10,8 @@ import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 
 import {EditableLine} from './editable_line.js';
-import {AutomationEditableText, AutomationRichEditableText} from './editing.js';
+import {AutomationEditableText} from './editable_text.js';
+import {AutomationRichEditableText} from './editing.js';
 
 const AutomationIntent = chrome.automation.AutomationIntent;
 const AutomationNode = chrome.automation.AutomationNode;

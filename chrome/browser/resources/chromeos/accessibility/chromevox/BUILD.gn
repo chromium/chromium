@@ -74,6 +74,7 @@ chromevox_es6_modules = [
   "background/earcon_engine.js",
   "background/earcons.js",
   "background/editing/editable_line.js",
+  "background/editing/editable_text.js",
   "background/editing/editable_text_base.js",
   "background/editing/editing.js",
   "background/editing/intent_handler.js",
