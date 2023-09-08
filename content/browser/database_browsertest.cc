@@ -4,6 +4,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -14,6 +15,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -26,6 +28,13 @@ namespace content {
 class MAYBE_DatabaseTest : public ContentBrowserTest {
  public:
   MAYBE_DatabaseTest() {}
+
+  void SetUp() override {
+    // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
+    // in tests during deprecation trial and enterprise policy support.
+    base::test::ScopedFeatureList feature_list{blink::features::kWebSQLAccess};
+    ContentBrowserTest::SetUp();
+  }
 
   void RunScriptAndCheckResult(Shell* shell,
                                const std::string& script,

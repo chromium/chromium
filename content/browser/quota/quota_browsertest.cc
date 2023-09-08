@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/public/browser/browser_context.h"
@@ -15,6 +16,7 @@
 #include "content/shell/browser/shell.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -22,6 +24,13 @@ namespace content {
 class QuotaBrowserTest : public ContentBrowserTest {
  public:
   QuotaBrowserTest() = default;
+
+  void SetUp() override {
+    // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
+    // in tests during deprecation trial and enterprise policy support.
+    base::test::ScopedFeatureList feature_list{blink::features::kWebSQLAccess};
+    ContentBrowserTest::SetUp();
+  }
 
   base::FilePath profile_path() {
     return shell()

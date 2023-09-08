@@ -209,6 +209,10 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
     // specific or smaller cache size (e.g. 1) rather than 6.
     DisableFeature(kBackForwardCacheSize);
 
+    // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
+    // in tests during deprecation trial and enterprise policy support.
+    EnableFeatureAndSetParams(blink::features::kWebSQLAccess, "", "");
+
     SetupFeaturesAndParameters();
 
     command_line->AppendSwitchASCII(
