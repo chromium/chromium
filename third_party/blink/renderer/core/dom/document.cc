@@ -3897,6 +3897,7 @@ void Document::Abort() {
 
 void Document::CheckCompleted() {
   if (CheckCompletedInternal()) {
+    CHECK(GetFrame());
     GetFrame()->Loader().DidFinishNavigation(
         FrameLoader::NavigationFinishState::kSuccess);
   }
@@ -3973,6 +3974,11 @@ bool Document::CheckCompletedInternal() {
   } else if (loading_for_print_) {
     loading_for_print_ = false;
     GetFrame()->Client()->DispatchDidFinishLoadForPrinting();
+    // Refresh the page when the print preview pops up.
+    // DispatchDidFinishLoadForPrinting could detach this frame
+    if (!GetFrame()) {
+      return false;
+    }
   }
 
   if (auto* view = View()) {
