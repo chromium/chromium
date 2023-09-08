@@ -180,18 +180,6 @@ void AssistantClientImpl::GetSpeakerIdEnrollmentInfo(
       kDefaultStateConfig);
 }
 
-void AssistantClientImpl::ResetAllDataAndShutdown() {
-  // ResetAllDataAndShutdown request may have high latency. Server
-  // recommendation is to set proper deadlines for every RPC.
-  constexpr int kResetAllDataAndShutdownTimeoutMs = 10000;
-  StateConfig custom_config(kMaxRpcRetries, kResetAllDataAndShutdownTimeoutMs);
-  libassistant_client_->CallServiceMethod(
-      ::assistant::api::ResetAllDataAndShutdownRequest(),
-      GetLoggingCallback<::assistant::api::ResetAllDataAndShutdownResponse>(
-          /*request_name=*/__func__),
-      custom_config);
-}
-
 void AssistantClientImpl::SendDisplayRequest(
     const OnDisplayRequestRequest& request) {
   libassistant_client_->CallServiceMethod(

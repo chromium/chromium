@@ -80,6 +80,7 @@ component("lib") {
     deps += [
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/libassistant",
+      "//chromeos/ash/services/libassistant:constants",
       "//chromeos/ash/services/libassistant:loader",
     ]
   } else {

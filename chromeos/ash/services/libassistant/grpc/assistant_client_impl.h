@@ -50,7 +50,6 @@ class AssistantClientImpl : public AssistantClientV1 {
   void GetSpeakerIdEnrollmentInfo(
       const GetSpeakerIdEnrollmentInfoRequest& request,
       base::OnceCallback<void(bool user_model_exists)> on_done) override;
-  void ResetAllDataAndShutdown() override;
   void SendDisplayRequest(const OnDisplayRequestRequest& request) override;
   void AddDisplayEventObserver(
       GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) override;
