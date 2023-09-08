@@ -111,6 +111,12 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
       const net::HttpRequestHeaders& potential_activation_headers,
       const net::HttpRequestHeaders& prerender_headers);
 
+  static bool AreHttpRequestHeadersCompatible(
+      const std::string& potential_activation_headers_str,
+      const std::string& prerender_headers_str,
+      PrerenderTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix);
+
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt,

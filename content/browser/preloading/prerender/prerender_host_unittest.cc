@@ -520,5 +520,14 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
             PreloadingTriggeringOutcome::kFailure);
 }
 
+TEST(AreHttpRequestHeadersCompatible, IgnoreRTT) {
+  const std::string prerender_headers = "rtt: 1 \r\n downlink: 3";
+  const std::string potential_activation_headers = "rtt: 2 \r\n downlink: 4";
+  EXPECT_TRUE(PrerenderHost::AreHttpRequestHeadersCompatible(
+      potential_activation_headers, prerender_headers,
+      PrerenderTriggerType::kSpeculationRule,
+      /*embedder_histogram_suffix=*/""));
+}
+
 }  // namespace
 }  // namespace content
