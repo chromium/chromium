@@ -1969,20 +1969,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
 namespace {
 
-class NoNavigationsObserver : public WebContentsObserver {
- public:
-  // Observes navigation for the specified |web_contents|.
-  explicit NoNavigationsObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-
- private:
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->HasCommitted())
-      return;
-    FAIL() << "No navigations should occur";
-  }
-};
-
 // Test that going back in a subframe on a loadDataWithBaseURL page doesn't
 // crash.  See https://crbug.com/768575.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
@@ -2052,17 +2038,14 @@ class LoadCommittedCapturer : public WebContentsObserver {
   explicit LoadCommittedCapturer(FrameTreeNode* node)
       : WebContentsObserver(
             WebContents::FromRenderFrameHost(node->current_frame_host())),
-        frame_tree_node_id_(node->frame_tree_node_id()),
-        message_loop_runner_(new MessageLoopRunner) {}
+        frame_tree_node_id_(node->frame_tree_node_id()) {}
 
   // Observes the load commit for the next created frame in the specified
   // |web_contents|.
   explicit LoadCommittedCapturer(WebContents* web_contents)
-      : WebContentsObserver(web_contents),
-        frame_tree_node_id_(0),
-        message_loop_runner_(new MessageLoopRunner) {}
+      : WebContentsObserver(web_contents), frame_tree_node_id_(0) {}
 
-  void Wait() { message_loop_runner_->Run(); }
+  void Wait() { loop_.Run(); }
 
   ui::PageTransition transition_type() const { return transition_type_; }
 
@@ -2100,11 +2083,12 @@ class LoadCommittedCapturer : public WebContentsObserver {
     }
 
     transition_type_ = navigation_handle->GetPageTransition();
-    if (!web_contents()->IsLoading())
-      message_loop_runner_->Quit();
+    if (!web_contents()->IsLoading()) {
+      loop_.Quit();
+    }
   }
 
-  void DidStopLoading() override { message_loop_runner_->Quit(); }
+  void DidStopLoading() override { loop_.Quit(); }
 
   // The id of the FrameTreeNode whose navigations to observe.
   int frame_tree_node_id_;
@@ -2112,8 +2096,7 @@ class LoadCommittedCapturer : public WebContentsObserver {
   // The transition_type of the last navigation.
   ui::PageTransition transition_type_;
 
-  // The MessageLoopRunner used to spin the message loop.
-  scoped_refptr<MessageLoopRunner> message_loop_runner_;
+  base::RunLoop loop_;
 };
 
 }  // namespace
@@ -7200,21 +7183,20 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 class DataUrlCommitObserver : public WebContentsObserver {
  public:
   explicit DataUrlCommitObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents),
-        message_loop_runner_(new MessageLoopRunner) {}
+      : WebContentsObserver(web_contents) {}
 
-  void Wait() { message_loop_runner_->Run(); }
+  void Wait() { loop_.Run(); }
 
  private:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (navigation_handle->HasCommitted() &&
         !navigation_handle->IsErrorPage() &&
-        navigation_handle->GetURL().scheme() == "data")
-      message_loop_runner_->Quit();
+        navigation_handle->GetURL().scheme() == "data") {
+      loop_.Quit();
+    }
   }
 
-  // The MessageLoopRunner used to spin the message loop.
-  scoped_refptr<MessageLoopRunner> message_loop_runner_;
+  base::RunLoop loop_;
 };
 
 // Verify that dynamically generated iframes load properly during a history
@@ -12068,10 +12050,9 @@ class FailureWatcher : public WebContentsObserver {
   explicit FailureWatcher(FrameTreeNode* node)
       : WebContentsObserver(
             WebContents::FromRenderFrameHost(node->current_frame_host())),
-        frame_tree_node_id_(node->frame_tree_node_id()),
-        message_loop_runner_(new MessageLoopRunner) {}
+        frame_tree_node_id_(node->frame_tree_node_id()) {}
 
-  void Wait() { message_loop_runner_->Run(); }
+  void Wait() { loop_.Run(); }
 
  private:
   void DidFailLoad(RenderFrameHost* render_frame_host,
@@ -12082,7 +12063,7 @@ class FailureWatcher : public WebContentsObserver {
     if (rfh->frame_tree_node()->frame_tree_node_id() != frame_tree_node_id_)
       return;
 
-    message_loop_runner_->Quit();
+    loop_.Quit();
   }
 
   void DidFinishNavigation(NavigationHandle* handle) override {
@@ -12091,14 +12072,13 @@ class FailureWatcher : public WebContentsObserver {
       return;
     }
 
-    message_loop_runner_->Quit();
+    loop_.Quit();
   }
 
   // The id of the FrameTreeNode whose navigations to observe.
   int frame_tree_node_id_;
 
-  // The MessageLoopRunner used to spin the message loop.
-  scoped_refptr<MessageLoopRunner> message_loop_runner_;
+  base::RunLoop loop_;
 };
 
 }  // namespace
@@ -14371,24 +14351,23 @@ class WebContentsLoadFinishedWaiter : public WebContentsObserver {
  public:
   WebContentsLoadFinishedWaiter(WebContents* web_contents,
                                 const GURL& expected_url)
-      : WebContentsObserver(web_contents),
-        expected_url_(expected_url),
-        message_loop_runner_(new MessageLoopRunner) {
+      : WebContentsObserver(web_contents), expected_url_(expected_url) {
     EXPECT_TRUE(web_contents != nullptr);
   }
 
-  void Wait() { message_loop_runner_->Run(); }
+  void Wait() { loop_.Run(); }
 
  private:
   void DidFinishLoad(RenderFrameHost* render_frame_host,
                      const GURL& url) override {
     bool is_main_frame = !render_frame_host->GetParent();
-    if (url == expected_url_ && is_main_frame)
-      message_loop_runner_->Quit();
+    if (url == expected_url_ && is_main_frame) {
+      loop_.Quit();
+    }
   }
 
   GURL expected_url_;
-  scoped_refptr<MessageLoopRunner> message_loop_runner_;
+  base::RunLoop loop_;
 };
 
 }  // namespace
