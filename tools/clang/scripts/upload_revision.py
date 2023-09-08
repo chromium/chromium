@@ -72,7 +72,7 @@ Cq-Include-Trybots: chromium/try:mac-official,linux-official
 Cq-Include-Trybots: chromium/try:win-official,win32-official
 Cq-Include-Trybots: chromium/try:linux-swangle-try-x64,win-swangle-try-x86
 Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
-Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
+Cq-Include-Trybots: chrome/try:linux-chromeos-chrome,win-arm64-rel
 Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,linux-chrome,mac-chrome
 Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo'''
 
