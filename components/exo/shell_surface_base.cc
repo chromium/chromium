@@ -1778,13 +1778,14 @@ void ShellSurfaceBase::UpdateHostWindowOrigin() {
   gfx::Point origin = GetClientViewBounds().origin();
 
   origin += GetSurfaceOrigin().OffsetFromOrigin();
-  const gfx::Vector2dF scaled_root_origin = ScaleVector2d(
-      root_surface_origin().OffsetFromOrigin(), 1.f / GetScaleFactor());
-  origin -= ToFlooredVector2d(scaled_root_origin);
-  // Set subpixel offset to the diff between the scaled origin in float and its
-  // floored value to adjust root surface origin to be at the same position.
+  const gfx::Vector2dF root_surface_origin_dp = ScaleVector2d(
+      root_surface_origin_pixel().OffsetFromOrigin(), 1.f / GetScaleFactor());
+  origin -= ToFlooredVector2d(root_surface_origin_dp);
+  // Set subpixel offset to the diff between the dp scaled origin in float and
+  // its floored value to adjust root surface origin to be at the same position.
   host_window()->layer()->SetSubpixelPositionOffset(
-      ToFlooredVector2d(scaled_root_origin) - scaled_root_origin);
+      ToFlooredVector2d(root_surface_origin_dp) - root_surface_origin_dp);
+
   if (origin != host_window()->bounds().origin()) {
     AllocateLocalSurfaceId();
   }

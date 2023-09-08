@@ -45,6 +45,9 @@
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/aura/window_event_dispatcher.h"
+#include "ui/aura/window_targeter.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -444,7 +447,7 @@ TEST_F(ShellSurfaceTest, HostWindowBoundsUpdatedWithNegativeCoordinate) {
   EXPECT_EQ(gfx::Rect(-20, -20, 300, 300),
             shell_surface->host_window()->bounds());
   // Root surface origin must be adjusted relative to host window.
-  EXPECT_EQ(gfx::Point(20, 20), shell_surface->root_surface_origin());
+  EXPECT_EQ(gfx::Point(20, 20), shell_surface->root_surface_origin_pixel());
 }
 
 TEST_F(ShellSurfaceTest, HostWindowIncludesAllSubSurfaces) {
@@ -486,7 +489,7 @@ TEST_F(ShellSurfaceTest, HostWindowIncludesAllSubSurfaces) {
   EXPECT_EQ(gfx::Rect(-10, -10, 292, 292),
             shell_surface->host_window()->bounds());
   // Root surface origin must be adjusted relative to host window.
-  EXPECT_EQ(gfx::Point(10, 10), shell_surface->root_surface_origin());
+  EXPECT_EQ(gfx::Point(10, 10), shell_surface->root_surface_origin_pixel());
 }
 
 TEST_F(ShellSurfaceTest, HostWindowIncludesAllSubSurfacesWithScaleFactor) {
@@ -533,7 +536,261 @@ TEST_F(ShellSurfaceTest, HostWindowIncludesAllSubSurfacesWithScaleFactor) {
   EXPECT_EQ(gfx::Rect(-5, -5, 146, 146),
             shell_surface->host_window()->bounds());
   // Root surface origin must be adjusted relative to host window.
-  EXPECT_EQ(gfx::Point(10, 10), shell_surface->root_surface_origin());
+  EXPECT_EQ(gfx::Point(10, 10), shell_surface->root_surface_origin_pixel());
+}
+
+TEST_F(ShellSurfaceTest, EventTargetWithNegativeHostWindowOrigin) {
+  constexpr gfx::Point kOrigin(20, 20);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .SetGeometry(gfx::Rect(0, 0, 256, 256))
+          .SetInputRegion(gfx::Rect(0, 0, 256, 256))
+          .SetFrame(SurfaceFrameType::SHADOW)
+          .BuildShellSurface();
+
+  auto* root_surface = shell_surface->root_surface();
+
+  // Add child buffer at the upper-left corner of the root surface with empty
+  // input region.
+  auto* child_surface1 = test::ShellSurfaceBuilder::AddChildSurface(
+      root_surface, gfx::Rect(-10, -10, 32, 32));
+  child_surface1->SetInputRegion(cc::Region());
+  // Add child buffer at the bottom-right corner of the root surface with empty
+  // input region.
+  auto* child_surface2 = test::ShellSurfaceBuilder::AddChildSurface(
+      root_surface, gfx::Rect(250, 250, 32, 32));
+  child_surface2->SetInputRegion(cc::Region());
+
+  child_surface1->Commit();
+  child_surface2->Commit();
+  root_surface->Commit();
+
+  ASSERT_TRUE(shell_surface->GetWidget());
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  aura::Window* root_window = window->GetRootWindow();
+  ui::EventTargeter* targeter =
+      root_window->GetHost()->dispatcher()->GetDefaultEventTargeter();
+
+  {
+    // Mouse is in the middle of the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_MOVED, gfx::Point(120, 120),
+                         gfx::Point(120, 120), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(root_surface->window(),
+              targeter->FindTargetForEvent(root_window, &event));
+  }
+
+  {
+    // Mouse is on upper-left of the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(21, 21),
+                         gfx::Point(21, 21), ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
+    EXPECT_EQ(root_surface->window(),
+              targeter->FindTargetForEvent(root_window, &event));
+  }
+
+  {
+    // Mouse is on bottom-right of the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(275, 275),
+                         gfx::Point(275, 275), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(root_surface->window(),
+              targeter->FindTargetForEvent(root_window, &event));
+  }
+
+  {
+    // Mouse is outside of the root surface and host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(300, 300),
+                         gfx::Point(300, 300), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is on the left side of the root surface but inside host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(19, 100),
+                         gfx::Point(19, 100), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is on the right side of the root surface but inside host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(277, 100),
+                         gfx::Point(277, 100), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is above the root surface but inside host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(100, 19),
+                         gfx::Point(100, 19), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is below the root surface but inside host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(100, 277),
+                         gfx::Point(100, 277), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is on `child_surface1` but not on the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(19, 19),
+                         gfx::Point(19, 19), ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is on `child_surface2` but not on the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(277, 277),
+                         gfx::Point(277, 277), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+}
+
+TEST_F(ShellSurfaceTest,
+       EventTargetWithNegativeHostWindowOriginWithScaleFactor) {
+  constexpr gfx::Point kOrigin(20, 20);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .SetGeometry(gfx::Rect(0, 0, 256, 256))
+          .SetInputRegion(gfx::Rect(0, 0, 256, 256))
+          .SetFrame(SurfaceFrameType::SHADOW)
+          .BuildShellSurface();
+
+  // Set scale.
+  constexpr float kScaleFactor = 2.0;
+  shell_surface->set_client_submits_surfaces_in_pixel_coordinates(true);
+  shell_surface->SetScaleFactor(kScaleFactor);
+
+  auto* root_surface = shell_surface->root_surface();
+
+  // Add child buffer at the upper-left corner of the root surface with empty
+  // input region.
+  auto* child_surface1 = test::ShellSurfaceBuilder::AddChildSurface(
+      root_surface, gfx::Rect(-10, -10, 32, 32));
+  child_surface1->SetInputRegion(cc::Region());
+  // Add child buffer at the bottom-right corner of the root surface with empty
+  // input region.
+  auto* child_surface2 = test::ShellSurfaceBuilder::AddChildSurface(
+      root_surface, gfx::Rect(250, 250, 32, 32));
+  child_surface2->SetInputRegion(cc::Region());
+
+  child_surface1->Commit();
+  child_surface2->Commit();
+  root_surface->Commit();
+
+  ASSERT_TRUE(shell_surface->GetWidget());
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  aura::Window* root_window = window->GetRootWindow();
+  ui::EventTargeter* targeter =
+      root_window->GetHost()->dispatcher()->GetDefaultEventTargeter();
+
+  {
+    // Mouse is in the middle of the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_MOVED, gfx::Point(80, 80),
+                         gfx::Point(80, 80), ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
+    EXPECT_EQ(root_surface->window(),
+              targeter->FindTargetForEvent(root_window, &event));
+  }
+
+  {
+    // Mouse is on upper-left of the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(21, 21),
+                         gfx::Point(21, 21), ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
+    EXPECT_EQ(root_surface->window(),
+              targeter->FindTargetForEvent(root_window, &event));
+  }
+
+  {
+    // Mouse is on bottom-right of the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(147, 147),
+                         gfx::Point(147, 147), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(root_surface->window(),
+              targeter->FindTargetForEvent(root_window, &event));
+  }
+
+  {
+    // Mouse is outside of the root surface and host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(200, 200),
+                         gfx::Point(200, 200), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is on the left side of the root surface but inside host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(19, 100),
+                         gfx::Point(19, 100), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is on the right side of the root surface but inside host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(149, 100),
+                         gfx::Point(149, 100), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is above the root surface but inside host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(100, 19),
+                         gfx::Point(100, 19), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is below the root surface but inside host window.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(100, 149),
+                         gfx::Point(100, 149), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is on `child_surface1` but not on the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(19, 19),
+                         gfx::Point(19, 19), ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
+
+  {
+    // Mouse is on `child_surface2` but not on the root surface.
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(149, 149),
+                         gfx::Point(149, 149), ui::EventTimeForNow(),
+                         ui::EF_NONE, ui::EF_NONE);
+    EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
+        targeter->FindTargetForEvent(root_window, &event))));
+  }
 }
 
 TEST_F(ShellSurfaceTest, SetFullscreen) {

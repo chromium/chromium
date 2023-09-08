@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="9">
+  <interface name="surface_augmenter" version="10">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -89,7 +89,7 @@
     </request>
   </interface>
 
-  <interface name="augmented_surface" version="9">
+  <interface name="augmented_surface" version="10">
     <description summary="delegate composition of a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to specify the delegated composition of the surface
@@ -241,8 +241,15 @@
 
     <!-- Version 9 additions -->
 
-    <!-- CAUTION: Use version 10 as a next since version.
+    <!--
       This version updates `set_rounded_corners_clip_bounds` behavior.
+      No protocol is added for this version.
+    -->
+
+    <!-- Version 10 additions -->
+
+    <!-- CAUTION: Use Version 11 as a next since version.
+      This version updates the inner implementation of surface coordinate.
       No protocol is added for this version.
     -->
 
