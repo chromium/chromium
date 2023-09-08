@@ -560,6 +560,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppImageLoadPriority>
 // the LCP element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPScriptObserver);
 
+// The maximum URL count for LCPP.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLCPScriptObserverMaxUrlCountPerOrigin;
+
+// The maximum URL length allowed for LCPP.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLCPScriptObserverMaxUrlLength;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);

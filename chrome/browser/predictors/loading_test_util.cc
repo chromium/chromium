@@ -99,10 +99,28 @@ void InitializeLcpElementLocatorBucket(LcppData& lcpp_data,
   bucket.set_frequency(frequency);
 }
 
+void InitializeLcpInfluencerScriptUrlsBucket(LcppData& lcpp_data,
+                                             const std::vector<GURL>& urls,
+                                             double frequency) {
+  for (auto& url : urls) {
+    lcpp_data.mutable_lcpp_stat()
+        ->mutable_lcp_script_url_stat()
+        ->mutable_lcp_script_url_buckets()
+        ->insert({url.spec(), frequency});
+  }
+}
+
 void InitializeLcpElementLocatorOtherBucket(LcppData& lcpp_data,
                                             double frequency) {
   lcpp_data.mutable_lcpp_stat()
       ->mutable_lcp_element_locator_stat()
+      ->set_other_bucket_frequency(frequency);
+}
+
+void InitializeLcpInfluencerScriptUrlsOtherBucket(LcppData& lcpp_data,
+                                                  double frequency) {
+  lcpp_data.mutable_lcpp_stat()
+      ->mutable_lcp_script_url_stat()
       ->set_other_bucket_frequency(frequency);
 }
 
@@ -232,6 +250,16 @@ std::ostream& operator<<(std::ostream& os, const LcppData& data) {
      << "[<other_bucket>,"
      << data.lcpp_stat().lcp_element_locator_stat().other_bucket_frequency()
      << "]" << std::endl;
+  os << "\t\t"
+     << "lcp_script_url_stat:" << std::endl;
+  for (const auto& [url, frequency] :
+       data.lcpp_stat().lcp_script_url_stat().lcp_script_url_buckets()) {
+    os << "\t\t\t\t" << url << ":" << frequency << std::endl;
+  }
+  os << "\t\t\t\t"
+     << "[<other_bucket>,"
+     << data.lcpp_stat().lcp_script_url_stat().other_bucket_frequency() << "]"
+     << std::endl;
   return os;
 }
 
@@ -352,8 +380,27 @@ bool operator==(const LcpElementLocatorStat& lhs,
   return true;
 }
 
+bool operator==(const LcpScriptUrlStat& lhs, const LcpScriptUrlStat& rhs) {
+  if (lhs.lcp_script_url_buckets_size() != rhs.lcp_script_url_buckets_size() ||
+      !AlmostEqual(lhs.other_bucket_frequency(),
+                   rhs.other_bucket_frequency())) {
+    return false;
+  }
+
+  for (const auto& [rhs_url, rhs_frequency] : rhs.lcp_script_url_buckets()) {
+    const auto& lhs_it = lhs.lcp_script_url_buckets().find(rhs_url);
+    if (lhs_it == lhs.lcp_script_url_buckets().end() ||
+        !AlmostEqual(lhs_it->second, rhs_frequency)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool operator==(const LcppStat& lhs, const LcppStat& rhs) {
-  return lhs.lcp_element_locator_stat() == rhs.lcp_element_locator_stat();
+  return lhs.lcp_element_locator_stat() == rhs.lcp_element_locator_stat() &&
+         lhs.lcp_script_url_stat() == rhs.lcp_script_url_stat();
 }
 
 bool operator==(const LcppData& lhs, const LcppData& rhs) {

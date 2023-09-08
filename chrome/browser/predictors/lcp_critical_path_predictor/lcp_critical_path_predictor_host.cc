@@ -6,6 +6,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace predictors {
 
@@ -38,6 +39,21 @@ void LCPCriticalPathPredictorHost::SetLcpElementLocator(
     if (auto* plmo =
             page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
       plmo->SetLcpElementLocator(lcp_element_locator);
+    }
+  }
+}
+
+void LCPCriticalPathPredictorHost::SetLcpInfluencerScriptUrls(
+    const std::vector<GURL>& lcp_influencer_scripts) {
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPScriptObserver)) {
+    return;
+  }
+  if (auto* page_data =
+          LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
+              render_frame_host().GetPage())) {
+    if (auto* plmo =
+            page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+      plmo->SetLcpInfluencerScriptUrls(lcp_influencer_scripts);
     }
   }
 }

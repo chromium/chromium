@@ -1018,6 +1018,12 @@ BASE_FEATURE(kLCPScriptObserver,
              "LCPScriptObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kLCPScriptObserverMaxUrlLength{
+    &kLCPScriptObserver, "lcpp_max_url_length", 1024};
+
+const base::FeatureParam<int> kLCPScriptObserverMaxUrlCountPerOrigin{
+    &kLCPScriptObserver, "lcpp_max_url_count_per_origin", 5};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",

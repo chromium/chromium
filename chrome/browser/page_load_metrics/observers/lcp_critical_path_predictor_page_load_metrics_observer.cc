@@ -125,8 +125,9 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
     predictors::ResourcePrefetchPredictor* predictor =
         loading_predictor->resource_prefetch_predictor();
 
-    if (lcp_element_locator_) {
-      predictor->LearnLcpp(commit_url_->host(), *lcp_element_locator_);
+    if (!lcp_element_locator_.empty() || !lcp_influencer_scripts_.empty()) {
+      predictor->LearnLcpp(commit_url_->host(), lcp_element_locator_,
+                           lcp_influencer_scripts_);
     }
   }
 

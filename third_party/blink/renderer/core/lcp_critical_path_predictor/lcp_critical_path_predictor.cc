@@ -55,8 +55,38 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
       GetHost().SetLcpElementLocator(lcp_element_locator_string);
     }
 
-    if (IsA<HTMLImageElement>(lcp_element)) {
-      // TODO(crbug.com/1419756): Record LCP element's `creator_scripts`.
+    if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+      if (HTMLImageElement* image_element =
+              DynamicTo<HTMLImageElement>(lcp_element)) {
+        auto& creators = image_element->creator_scripts();
+        size_t max_allowed_url_length = base::checked_cast<size_t>(
+            features::kLCPScriptObserverMaxUrlLength.Get());
+        size_t max_url_length_encountered = 0;
+
+        if (creators.size() <=
+            base::checked_cast<size_t>(
+                features::kLCPScriptObserverMaxUrlCountPerOrigin.Get())) {
+          Vector<KURL> filtered_script_urls;
+
+          for (auto& url : creators) {
+            max_url_length_encountered =
+                std::max<size_t>(max_url_length_encountered, url.length());
+            if (url.length() >= max_allowed_url_length) {
+              continue;
+            }
+            KURL parsed_url(url);
+            if (parsed_url.IsEmpty() || !parsed_url.IsValid() ||
+                !parsed_url.ProtocolIsInHTTPFamily()) {
+              continue;
+            }
+            filtered_script_urls.push_back(parsed_url);
+          }
+          GetHost().SetLcpInfluencerScriptUrls(filtered_script_urls);
+        }
+
+        // TODO(crbug.com/1419756): Track max url count (creators.size()) and
+        // max encountered url length through UMA.
+      }
     }
   }
 }

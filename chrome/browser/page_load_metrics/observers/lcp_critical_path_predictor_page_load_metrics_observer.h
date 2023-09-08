@@ -57,6 +57,11 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
     lcp_element_locator_ = lcp_element_locator;
   }
 
+  void SetLcpInfluencerScriptUrls(
+      const std::vector<GURL>& lcp_influencer_scripts) {
+    lcp_influencer_scripts_ = lcp_influencer_scripts;
+  }
+
  private:
   // PageLoadMetricsObserver implementation:
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
@@ -86,7 +91,9 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   // LCPP write path [1]: Staging area of the proto3 serialized element locator
   // of the latest LCP candidate element. [1]
   // https://docs.google.com/document/d/1waakt6bSvedWdaUQ2mC255NF4k8j7LybK2dQ7WptxiE/edit#heading=h.hy4g58pyf548
-  absl::optional<std::string> lcp_element_locator_;
+  std::string lcp_element_locator_;
+  // async script urls of the latest LCP candidate element.
+  std::vector<GURL> lcp_influencer_scripts_;
 
   base::WeakPtrFactory<LcpCriticalPathPredictorPageLoadMetricsObserver>
       weak_factory_{this};

@@ -79,10 +79,16 @@ message LcpElementLocatorStat {
   optional double other_bucket_frequency = 2;
 }
 
+message LcpScriptUrlStat {
+  map<string, double> lcp_script_url_buckets = 1;
+  optional double other_bucket_frequency = 2;
+}
+
 // `LcppStat` contains all LCP predictor related statistics
 // accessed from a host.
 message LcppStat {
   optional LcpElementLocatorStat lcp_element_locator_stat = 1;
+  optional LcpScriptUrlStat lcp_script_url_stat = 2;
 }
 
 // [LCP Critical Path Predictor (LCPP)]

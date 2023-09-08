@@ -65,9 +65,13 @@ LcppData CreateLcppData(const std::string& host, uint64_t last_visit_time = 0);
 void InitializeLcpElementLocatorBucket(LcppData& lcpp_data,
                                        const std::string& lcp_element_locator,
                                        double frequency);
-
+void InitializeLcpInfluencerScriptUrlsBucket(LcppData& lcpp_data,
+                                             const std::vector<GURL>& urls,
+                                             double frequency);
 void InitializeLcpElementLocatorOtherBucket(LcppData& lcpp_data,
                                             double frequency);
+void InitializeLcpInfluencerScriptUrlsOtherBucket(LcppData& lcpp_data,
+                                                  double frequency);
 
 PageRequestSummary CreatePageRequestSummary(
     const std::string& main_frame_url,
@@ -123,6 +127,7 @@ bool operator==(const LcpElementLocatorBucket& lhs,
                 const LcpElementLocatorBucket& rhs);
 bool operator==(const LcpElementLocatorStat& lhs,
                 const LcpElementLocatorStat& rhs);
+bool operator==(const LcpScriptUrlStat& lhs, const LcpScriptUrlStat& rhs);
 bool operator==(const LcppStat& lhs, const LcppStat& rhs);
 bool operator==(const LcppData& lhs, const LcppData& rhs);
 bool operator==(const OriginStat& lhs, const OriginStat& rhs);

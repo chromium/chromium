@@ -12,6 +12,10 @@ interface LCPCriticalPathPredictorHost {
   // `lcp_element_locator` is a LCP ElementLocator information
   // serialized in proto3 binary format.
   SetLcpElementLocator(mojo_base.mojom.ByteString lcp_element_locator);
+
+  // `lcp_influencer_scripts` contain the list of script URLs that affected
+  // the LCP element.
+  SetLcpInfluencerScriptUrls(array<url.mojom.Url> lcp_influencer_scripts);
 };
 
 // LCP Critical Path Predictor hints provided at navigation time.
