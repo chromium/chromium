@@ -139,7 +139,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 }
 
 - (instancetype)initWithViewsHostableView:(ui::ViewsHostableView*)v {
-  self = [super initWithFrame:NSZeroRect];
+  self = [super initWithFrame:NSZeroRect tracking:YES];
   if (self != nil) {
     _viewsHostableView = v;
     [self registerDragTypes];

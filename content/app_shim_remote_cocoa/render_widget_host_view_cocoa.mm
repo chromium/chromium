@@ -359,7 +359,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
 - (instancetype)initWithHost:(RenderWidgetHostNSViewHost*)host
               withHostHelper:(RenderWidgetHostNSViewHostHelper*)hostHelper {
-  self = [super initWithFrame:NSZeroRect];
+  self = [super initWithFrame:NSZeroRect tracking:YES];
   if (self) {
     // Enable trackpad touches ("direct" touches are touchbar touches).
     self.allowedTouchTypes |= NSTouchTypeMaskIndirect;

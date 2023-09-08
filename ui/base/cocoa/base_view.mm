@@ -19,16 +19,11 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
   NSInteger _pressureEventStage;
 }
 
-- (instancetype)initWithFrame:(NSRect)frame {
+- (instancetype)initWithFrame:(NSRect)frame tracking:(BOOL)tracking {
   if ((self = [super initWithFrame:frame])) {
-    [self enableTracking];
-  }
-  return self;
-}
-
-- (instancetype)initWithCoder:(NSCoder*)decoder {
-  if ((self = [super initWithCoder:decoder])) {
-    [self enableTracking];
+    if (tracking) {
+      [self enableTracking];
+    }
   }
   return self;
 }

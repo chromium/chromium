@@ -205,7 +205,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // case for something other than that.
   DCHECK(bounds.origin().IsOrigin());
   NSRect initialFrame = NSMakeRect(0, 0, bounds.width(), bounds.height());
-  if ((self = [super initWithFrame:initialFrame])) {
+  if ((self = [super initWithFrame:initialFrame tracking:NO])) {
     _bridge = bridge;
 
     // Get notified whenever Full Keyboard Access mode is changed.

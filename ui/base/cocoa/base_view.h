@@ -21,6 +21,10 @@ COMPONENT_EXPORT(UI_BASE)
   enum EventHandled { kEventNotHandled, kEventHandled };
 }
 
+// |tracking| determines whether a CrTrackingArea is initialized during the
+// constructor.
+- (instancetype)initWithFrame:(NSRect)frame tracking:(BOOL)tracking;
+
 // Process an NSEventTypeLeftMouseUp event on this view that wasn't dispatched
 // already to BaseView (e.g. if captured via an event monitor). This may
 // generate a synthetic NSEventTypeMouseExited if the mouse exited the view area
