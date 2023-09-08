@@ -9602,7 +9602,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"download-warning-improvements",
      flag_descriptions::kDownloadWarningImprovementsName,
      flag_descriptions::kDownloadWarningImprovementsDescription,
-     kOsLinux | kOsLacros | kOsMac | kOsWin,
+     kOsLinux | kOsLacros | kOsMac | kOsWin | kOsCrOS,
      MULTI_VALUE_TYPE(kDownloadWarningImprovementsChoices)},
 
     {"unthrottled-nested-timeout",
