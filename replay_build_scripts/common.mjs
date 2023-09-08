@@ -103,6 +103,10 @@ function maybeDeleteGitLockFile(dir) {
   }
 }
 
+function runGnGen() {
+  spawnChecked("gn", ["gen", "out/Release"], { stdio:"inherit" });
+}
+
 export function updateRepo() {
   const chromium = process.cwd();
   // delete git lock file if it exists on Windows
@@ -127,6 +131,8 @@ export function updateRepo() {
     path.join(chromium, "third_party", "boringssl", "src"),
     deps.boringssl
   );
+
+  runGnGen();
 }
 
 function getChromiumDeps() {
