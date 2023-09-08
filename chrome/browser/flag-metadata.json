@@ -2151,7 +2151,7 @@
   {
     "name": "enable-borderless-printing",
     "owners": [ "bryancain@chromium.org", "project-bolton-eng@google.com" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "enable-browser-lockdown-mode",
