@@ -606,7 +606,13 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
   }
 #if BUILDFLAG(IS_APPLE)
   // Graphite only works well with ANGLE Metal on Mac or iOS.
-  if (!base::FeatureList::IsEnabled(features::kDefaultANGLEMetal)) {
+  // TODO(crbug.com/1423574): Remove this after ANGLE Metal launches fully.
+  const bool is_angle_metal_enabled =
+      UsePassthroughCommandDecoder() &&
+      (base::FeatureList::IsEnabled(features::kDefaultANGLEMetal) ||
+       command_line->GetSwitchValueASCII(switches::kUseANGLE) ==
+           gl::kANGLEImplementationMetalName);
+  if (!is_angle_metal_enabled) {
     return false;
   }
 #if BUILDFLAG(IS_MAC)
