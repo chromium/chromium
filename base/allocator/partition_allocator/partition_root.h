@@ -462,15 +462,15 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // increasing cache footprint). Set PA_NOINLINE on the "basic" top-level
   // functions to mitigate that for "vanilla" callers.
   template <unsigned int flags = 0>
-  PA_NOINLINE PA_MALLOC_FN void* Alloc(size_t requested_size,
-                                       const char* type_name)
-      PA_MALLOC_ALIGNED {
+  PA_NOINLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* Alloc(
+      size_t requested_size,
+      const char* type_name) {
     return AllocInline<flags>(requested_size, type_name);
   }
   template <unsigned int flags = 0>
-  PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocInline(size_t requested_size,
-                                                  const char* type_name)
-      PA_MALLOC_ALIGNED {
+  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInline(
+      size_t requested_size,
+      const char* type_name) {
     static_assert((flags & AllocFlags::kNoHooks) == 0);  // Internal only.
     return AllocInternal<flags>(requested_size, internal::PartitionPageSize(),
                                 type_name);
@@ -482,10 +482,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // alignment, otherwise a sub-optimal allocation strategy is used to
   // guarantee the higher-order alignment.
   template <unsigned int flags>
-  PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocInternal(size_t requested_size,
-                                                    size_t slot_span_alignment,
-                                                    const char* type_name)
-      PA_MALLOC_ALIGNED;
+  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInternal(
+      size_t requested_size,
+      size_t slot_span_alignment,
+      const char* type_name);
   // Same as |Alloc()|, but bypasses the allocator hooks.
   //
   // This is separate from Alloc() because other callers of
@@ -496,25 +496,25 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // for the malloc() case, the compiler correctly removes the branch, since
   // this is marked |PA_ALWAYS_INLINE|.
   template <unsigned int flags = 0>
-  PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocNoHooks(size_t requested_size,
-                                                   size_t slot_span_alignment)
-      PA_MALLOC_ALIGNED;
+  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocNoHooks(
+      size_t requested_size,
+      size_t slot_span_alignment);
 
   template <unsigned int flags = 0>
-  PA_NOINLINE void* Realloc(void* ptr,
-                            size_t new_size,
-                            const char* type_name) PA_MALLOC_ALIGNED {
+  PA_NOINLINE PA_MALLOC_ALIGNED void* Realloc(void* ptr,
+                                              size_t new_size,
+                                              const char* type_name) {
     return ReallocInline<flags>(ptr, new_size, type_name);
   }
   template <unsigned int flags = 0>
-  PA_ALWAYS_INLINE void* ReallocInline(void* ptr,
-                                       size_t new_size,
-                                       const char* type_name) PA_MALLOC_ALIGNED;
+  PA_ALWAYS_INLINE PA_MALLOC_ALIGNED void* ReallocInline(void* ptr,
+                                                         size_t new_size,
+                                                         const char* type_name);
   // Overload that may return nullptr if reallocation isn't possible. In this
   // case, |ptr| remains valid.
-  PA_NOINLINE void* TryRealloc(void* ptr,
-                               size_t new_size,
-                               const char* type_name) PA_MALLOC_ALIGNED {
+  PA_NOINLINE PA_MALLOC_ALIGNED void* TryRealloc(void* ptr,
+                                                 size_t new_size,
+                                                 const char* type_name) {
     return ReallocInline<AllocFlags::kReturnNull>(ptr, new_size, type_name);
   }
 
