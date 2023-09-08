@@ -1150,7 +1150,7 @@ void StyleResolver::InitStyle(Element& element,
                               const ComputedStyle& source_for_noninherited,
                               const ComputedStyle* parent_style,
                               StyleResolverState& state) {
-  if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
+  if (state.UsesHighlightPseudoInheritance()) {
     // When resolving highlight styles for children, we need to default all
     // properties (whether or not defined as inherited) to parent values.
 
@@ -1205,7 +1205,7 @@ void StyleResolver::InitStyle(Element& element,
 
   // For highlight inheritance, propagate link visitedness and forced-colors
   // status.
-  if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
+  if (state.UsesHighlightPseudoInheritance()) {
     state.StyleBuilder().SetInForcedColorsMode(
         style_request.originating_element_style->InForcedColorsMode());
     state.StyleBuilder().SetForcedColorAdjust(
