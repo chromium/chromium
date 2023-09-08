@@ -39,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/mouse_constants.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
@@ -70,6 +71,13 @@ CreateAssignmentsForStudents(int count) {
         base::Time(), absl::nullopt));
   }
   return assignments;
+}
+
+void WaitForTimeBetweenButtonOnClicks() {
+  base::RunLoop loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), views::kMinimumTimeBetweenButtonClicks);
+  loop.Run();
 }
 
 class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
@@ -262,7 +270,7 @@ class DateTrayTest
     return date_tray_->unified_system_tray_;
   }
 
-  GlanceableTrayBubble* GetGlanceableTrayBubble() {
+  GlanceableTrayBubble* GetGlanceableTrayBubble() const {
     return date_tray_->bubble_.get();
   }
 
@@ -322,6 +330,16 @@ class DateTrayTest
     Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesV2Controller::ClientsRegistration{
                          .classroom_client = nullptr, .tasks_client = nullptr});
+  }
+
+  TasksBubbleView* GetTasksView() const {
+    return GetGlanceableTrayBubble()->GetTasksView();
+  }
+
+  Combobox* GetTasksComboBoxView() const {
+    return views::AsViewClass<Combobox>(
+        GetGlanceableTrayBubble()->GetTasksView()->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox)));
   }
 
  private:
@@ -732,7 +750,7 @@ TEST_P(GlanceablesDateTrayTest, TrayBubbleGrowsWithTeacherGlanceableViews) {
   auto* calendar_view = GetGlanceableTrayBubble()->GetCalendarView();
   ASSERT_TRUE(calendar_view);
 
-  auto* tasks_view = GetGlanceableTrayBubble()->GetTasksView();
+  auto* tasks_view = GetTasksView();
   ASSERT_TRUE(tasks_view);
 
   EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
@@ -804,7 +822,7 @@ TEST_P(GlanceablesDateTrayTest, TrayBubbleGrowsWithStudentGlanceableView) {
   auto* calendar_view = GetGlanceableTrayBubble()->GetCalendarView();
   ASSERT_TRUE(calendar_view);
 
-  auto* tasks_view = GetGlanceableTrayBubble()->GetTasksView();
+  auto* tasks_view = GetTasksView();
   ASSERT_TRUE(tasks_view);
 
   EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
@@ -1152,6 +1170,64 @@ TEST_P(GlanceablesDateTrayTest,
       student_view->GetBoundsInScreen()));
   EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
       calendar_view->GetBoundsInScreen()));
+}
+
+TEST_P(GlanceablesDateTrayTest, ClickOutsideComboboxMenu) {
+  EXPECT_FALSE(GetGlanceableTrayBubble());
+
+  // Click the date tray to show the glanceable bubbles.
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  // Check that the tasks glanceable is completely shown on the primary screen.
+  GetTasksView()->ScrollViewToVisible();
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetTasksView()->GetBoundsInScreen()));
+
+  // Click on the combo box to show the task lists.
+  GetEventGenerator()->MoveMouseTo(
+      GetTasksComboBoxView()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(GetTasksComboBoxView()->IsMenuRunning());
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+
+  // Click at the top of the tasks view and make sure the menu gets closed.
+  GetEventGenerator()->MoveMouseTo(
+      GetTasksView()->GetBoundsInScreen().top_center());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(GetTasksComboBoxView()->IsMenuRunning());
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+
+  WaitForTimeBetweenButtonOnClicks();
+
+  // Click on the combo box to show the task lists again.
+  GetEventGenerator()->MoveMouseTo(
+      GetTasksComboBoxView()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(GetTasksComboBoxView()->IsMenuRunning());
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+
+  const gfx::Point left_side_of_screen =
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().left_center();
+
+  // Click outside of the glanceables bubbles, on the left side of the screen.
+  GetEventGenerator()->MoveMouseTo(left_side_of_screen);
+  GetEventGenerator()->ClickLeftButton();
+
+  // Check that the combobox menu is closed, but that the glaneable bubbles
+  // are still open.
+  EXPECT_FALSE(GetTasksComboBoxView()->IsMenuRunning());
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+
+  // Click outside the glanceabes bubble again to ensure closing occurs.
+  GetEventGenerator()->MoveMouseTo(left_side_of_screen);
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(GetGlanceableTrayBubble());
 }
 
 }  // namespace ash

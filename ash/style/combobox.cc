@@ -300,6 +300,7 @@ class Combobox::ComboboxEventHandler : public ui::EventHandler {
       case ui::ET_TOUCH_PRESSED:
         // Close menu if pressing outside menu and combobox.
         if (!event_in_menu && !event_in_combobox) {
+          event->StopPropagation();
           combobox_->CloseDropDownMenu();
         }
         break;
