@@ -536,6 +536,13 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
   if (flush_cb_) {
     std::move(flush_cb_).Run(DecoderStatus::Codes::kAborted);
   }
+
+  // There might be available resources for |CAPTURE_queue_| from previous
+  // cycles, i.e. from before Reset(); try and make them available for the
+  // driver.
+  if (CAPTURE_queue_) {
+    TryAndEnqueueCAPTUREQueueBuffers();
+  }
 }
 
 bool V4L2StatefulVideoDecoder::NeedsBitstreamConversion() const {
