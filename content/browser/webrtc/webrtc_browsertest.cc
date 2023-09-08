@@ -87,7 +87,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 
 // These tests will make a complete PeerConnection-based call and verify that
 // video is playing for the call.
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupDefaultVideoCall) {
+//
+// TODO(crbug/1480170): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+                       DISABLED_CanSetupDefaultVideoCall) {
   MakeTypicalPeerConnectionCall(
       "callAndExpectResolution({video: true}, 640, 480);");
 }
@@ -100,8 +103,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
   MakeTypicalPeerConnectionCall(javascript);
 }
 
+// TODO(crbug/1480170): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
-                       CanSetupVideoCallWith16To9AspectRatio) {
+                       DISABLED_CanSetupVideoCallWith16To9AspectRatio) {
 #if BUILDFLAG(IS_ANDROID)
   // Android requires 16x16 alignment for hardware encoding.
   constexpr int kExpectedAlignment = 16;
