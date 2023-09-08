@@ -3860,7 +3860,7 @@
     {
       // https://chromestatus.com/feature/5132477781245952
       name: "UserValidUserInvalid",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "V8IdleTasks",
