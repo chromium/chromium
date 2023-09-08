@@ -101,15 +101,19 @@ bool AshNotificationDragController::CanStartDragForView(
     views::View* sender,
     const gfx::Point& press_pt,
     const gfx::Point& p) {
-  AshNotificationView* notification_view =
+  const AshNotificationView* const notification_view =
       static_cast<AshNotificationView*>(sender);
   const absl::optional<gfx::Rect> drag_area =
       notification_view->GetDragAreaBounds();
 
   // Enable dragging `notification_view_` if:
-  // 1. `notification_view_` is draggable; and
-  // 2. `drag_area` contains the initial press point.
-  const bool can_start_drag = (drag_area && drag_area->Contains(press_pt));
+  // 1. `notification_view` is backed by a notification; and
+  // 2. `notification_view` is draggable; and
+  // 3. `drag_area` contains the initial press point.
+  const bool can_start_drag =
+      (!!message_center::MessageCenter::Get()->FindNotificationById(
+           notification_view->notification_id()) &&
+       drag_area && drag_area->Contains(press_pt));
 
   // Assume that the drag on `sender` will start when `can_start_drag` is true.
   // TODO(https://crbug.com/1410276): in some edge cases, the view drag does not
