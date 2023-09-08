@@ -183,7 +183,9 @@ HRESULT CommandRecorder::InitializeOperator(
       initialization_binding_properties.TemporaryResourceSize;
   if (temp_resource_size > 0) {
     ComPtr<ID3D12Resource> temp_resource;
-    RETURN_IF_FAILED(CreateDefaultBuffer(temp_resource_size, temp_resource));
+    RETURN_IF_FAILED(CreateDefaultBuffer(
+        temp_resource_size, L"WebNN_Temporary_Buffer_For_Initialization",
+        temp_resource));
     DML_BUFFER_BINDING temp_buffer_binding{.Buffer = temp_resource.Get(),
                                            .Offset = 0,
                                            .SizeInBytes = temp_resource_size};
@@ -275,7 +277,9 @@ HRESULT CommandRecorder::ExecuteOperator(
   auto temp_resource_size = execution_binding_properties.TemporaryResourceSize;
   if (temp_resource_size > 0) {
     ComPtr<ID3D12Resource> temp_resource;
-    RETURN_IF_FAILED(CreateDefaultBuffer(temp_resource_size, temp_resource));
+    RETURN_IF_FAILED(CreateDefaultBuffer(
+        temp_resource_size, L"WebNN_Temporary_Buffer_For_Execution",
+        temp_resource));
     DML_BUFFER_BINDING temp_buffer_binding{.Buffer = temp_resource.Get(),
                                            .Offset = 0,
                                            .SizeInBytes = temp_resource_size};
@@ -315,6 +319,7 @@ HRESULT CommandRecorder::ExecuteOperator(
 }
 
 HRESULT CommandRecorder::CreateDefaultBuffer(uint64_t size,
+                                             const wchar_t* name_for_debugging,
                                              ComPtr<ID3D12Resource>& resource) {
   auto heap_properties = CreateHeapProperties(D3D12_HEAP_TYPE_DEFAULT);
   auto resource_desc =
@@ -323,10 +328,14 @@ HRESULT CommandRecorder::CreateDefaultBuffer(uint64_t size,
       &heap_properties, D3D12_HEAP_FLAG_NONE, &resource_desc,
       D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr, IID_PPV_ARGS(&resource)));
   CHECK(resource.Get());
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(resource->SetName(name_for_debugging), S_OK);
   return S_OK;
 }
 
 HRESULT CommandRecorder::CreateUploadBuffer(uint64_t size,
+                                            const wchar_t* name_for_debugging,
                                             ComPtr<ID3D12Resource>& resource) {
   auto heap_properties = CreateHeapProperties(D3D12_HEAP_TYPE_UPLOAD);
   auto resource_desc = CreateResourceDesc(size, D3D12_RESOURCE_FLAG_NONE);
@@ -334,11 +343,15 @@ HRESULT CommandRecorder::CreateUploadBuffer(uint64_t size,
       &heap_properties, D3D12_HEAP_FLAG_NONE, &resource_desc,
       D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&resource)));
   CHECK(resource.Get());
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(resource->SetName(name_for_debugging), S_OK);
   return S_OK;
 }
 
 HRESULT CommandRecorder::CreateReadbackBuffer(
     uint64_t size,
+    const wchar_t* name_for_debugging,
     ComPtr<ID3D12Resource>& resource) {
   auto heap_properties = CreateHeapProperties(D3D12_HEAP_TYPE_READBACK);
   auto resource_desc = CreateResourceDesc(size, D3D12_RESOURCE_FLAG_NONE);
@@ -346,6 +359,9 @@ HRESULT CommandRecorder::CreateReadbackBuffer(
       &heap_properties, D3D12_HEAP_FLAG_NONE, &resource_desc,
       D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&resource)));
   CHECK(resource.Get());
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(resource->SetName(name_for_debugging), S_OK);
   return S_OK;
 }
 

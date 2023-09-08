@@ -111,23 +111,26 @@ class CommandRecorder final {
       base::span<const DML_BINDING_DESC> output_bindings,
       const absl::optional<DML_BINDING_DESC>& persistent_resource_binding);
 
-  // TODO(crbug.com/1476375): Associates a name with the default, upload and
-  // readback buffer.
-  //
   // Create a resource with `size` bytes in
   // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state from the default heap of the
   // owned D3D12 device. For this method and the other two, if there are no
   // errors, S_OK is returned and the created resource is returned via
   // `resource`. Otherwise, the corresponding HRESULT error code is returned.
-  HRESULT CreateDefaultBuffer(uint64_t size, ComPtr<ID3D12Resource>& resource);
+  HRESULT CreateDefaultBuffer(uint64_t size,
+                              const wchar_t* name_for_debugging,
+                              ComPtr<ID3D12Resource>& resource);
 
   // Create a resource with `size` bytes in D3D12_RESOURCE_STATE_GENERIC_READ
   // state from the uploading heap of the owned D3D12 device.
-  HRESULT CreateUploadBuffer(uint64_t size, ComPtr<ID3D12Resource>& resource);
+  HRESULT CreateUploadBuffer(uint64_t size,
+                             const wchar_t* name_for_debugging,
+                             ComPtr<ID3D12Resource>& resource);
 
   // Create a resource with `size` bytes in D3D12_RESOURCE_STATE_COPY_DEST state
   // from the reading-back heap of the owned D3D12 device.
-  HRESULT CreateReadbackBuffer(uint64_t size, ComPtr<ID3D12Resource>& resource);
+  HRESULT CreateReadbackBuffer(uint64_t size,
+                               const wchar_t* name_for_debugging,
+                               ComPtr<ID3D12Resource>& resource);
 
  private:
   CommandRecorder(scoped_refptr<CommandQueue> command_queue,

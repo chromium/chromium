@@ -129,7 +129,8 @@ UploadAndCreateBufferBinding(
   // create a resource to map the heap.
   ComPtr<ID3D12Resource> upload_buffer;
   HRESULT hr = command_recorder->CreateUploadBuffer(
-      total_byte_length.ValueOrDie(), upload_buffer);
+      total_byte_length.ValueOrDie(), L"WebNN_Inputs_Upload_Buffer",
+      upload_buffer);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create upload buffer for the input: "
                 << logging::SystemErrorCodeToString(hr);
@@ -139,6 +140,7 @@ UploadAndCreateBufferBinding(
   // access, and create a resource to map the heap.
   ComPtr<ID3D12Resource> default_buffer;
   hr = command_recorder->CreateDefaultBuffer(total_byte_length.ValueOrDie(),
+                                             L"WebNN_Inputs_Default_Buffer",
                                              default_buffer);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create default buffer: "
@@ -761,8 +763,8 @@ void GraphImpl::OnCompilationComplete(
       execution_binding_properties.PersistentResourceSize;
   ComPtr<ID3D12Resource> persistent_buffer;
   if (persistent_buffer_size) {
-    hr = command_recorder->CreateDefaultBuffer(persistent_buffer_size,
-                                               persistent_buffer);
+    hr = command_recorder->CreateDefaultBuffer(
+        persistent_buffer_size, L"WebNN_Persistent_Buffer", persistent_buffer);
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to create the default buffer: "
                   << logging::SystemErrorCodeToString(hr);
