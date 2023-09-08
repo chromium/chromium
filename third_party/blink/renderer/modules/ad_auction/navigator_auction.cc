@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -305,11 +306,16 @@ String ErrorInvalidInterestGroup(const AuctionAdInterestGroup& group,
                                  const String& field_name,
                                  const String& field_value,
                                  const String& error) {
-  return String::Format(
-      "%s '%s' for AuctionAdInterestGroup with owner '%s' and name '%s' %s",
-      field_name.Utf8().c_str(), field_value.Utf8().c_str(),
-      group.owner().Utf8().c_str(), group.name().Utf8().c_str(),
-      error.Utf8().c_str());
+  StringBuilder error_builder;
+  if (!field_name.empty()) {
+    error_builder.AppendFormat("%s '%s' for ", field_name.Utf8().c_str(),
+                               field_value.Utf8().c_str());
+  }
+  error_builder.AppendFormat(
+      "AuctionAdInterestGroup with owner '%s' and name '%s' ",
+      group.owner().Utf8().c_str(), group.name().Utf8().c_str());
+  error_builder.Append(error);
+  return error_builder.ReleaseString();
 }
 
 String ErrorInvalidInterestGroupJson(const AuctionAdInterestGroup& group,

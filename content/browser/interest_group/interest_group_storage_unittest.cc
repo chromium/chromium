@@ -93,70 +93,63 @@ class InterestGroupStorageTest : public testing::Test {
     InterestGroup partial = NewInterestGroup(partial_origin, "partial");
     const url::Origin full_origin =
         url::Origin::Create(GURL("https://full.example.com"));
-    constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey1 = {
-        0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
-        0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
-        0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
-    constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey2 = {
-        0x10, 0x0f, 0xdf, 0x47, 0xfb, 0x94, 0xf1, 0x53, 0x6a, 0x4f, 0x7c,
-        0x3f, 0xda, 0x27, 0x38, 0x3f, 0xa0, 0x33, 0x75, 0xa8, 0xf5, 0x27,
-        0xc5, 0x37, 0xe6, 0xf1, 0x70, 0x3c, 0x47, 0xf9, 0x4f, 0x86};
 
-    InterestGroup full(
-        /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
-        /*name=*/"full", /*priority=*/1.0,
-        /*enable_bidding_signals_prioritization=*/true,
-        /*priority_vector=*/{{{"a", 2}, {"b", -2.2}}},
-        /*priority_signals_overrides=*/{{{"a", -2}, {"c", 10}, {"d", 1.2}}},
-        /*seller_capabilities=*/
-        {{{full_origin, {SellerCapabilities::kInterestGroupCounts}},
-          {partial_origin, {SellerCapabilities::kLatencyStats}}}},
-        /*all_sellers_capabilities=*/
-        {SellerCapabilities::kInterestGroupCounts,
-         SellerCapabilities::kLatencyStats},
-        /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
-        /*bidding_url=*/GURL("https://full.example.com/bid"),
-        /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
-        /*update_url=*/GURL("https://full.example.com/update"),
-        /*trusted_bidding_signals_url=*/
-        GURL("https://full.example.com/signals"),
-        /*trusted_bidding_signals_keys=*/
-        std::vector<std::string>{"a", "b", "c", "d"},
-        /*user_bidding_signals=*/"foo",
-        /*ads=*/
-        std::vector<InterestGroup::Ad>{
-            blink::InterestGroup::Ad(
-                GURL("https://full.example.com/ad1"), "metadata1", "group_1",
-                "buyer_id", "shared_id", "adRenderId",
-                std::vector<url::Origin>{
-                    url::Origin::Create(GURL("https://reporting.com"))}),
-            blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
-                                     "metadata2", "group_2", "buyer_id2")},
-        /*ad_components=*/
-        std::vector<InterestGroup::Ad>{
-            blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent1"), "metadata1c",
-                "group_1", /*buyer_reporting_id=*/absl::nullopt,
-                /*buyer_and_seller_reporting_id=*/absl::nullopt, "adRenderId2"),
-            blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent2"), "metadata2c",
-                "group_2")},
-        /*ad_sizes=*/
-        {{{"size_1", blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
-                                   blink::AdSize::LengthUnit::kPixels)},
-          {"size_2", blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
-                                   blink::AdSize::LengthUnit::kPixels)},
-          {"size_3",
-           blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 100,
-                         blink::AdSize::LengthUnit::kScreenWidth)}}},
-        /*size_groups=*/
-        {{{"group_1", std::vector<std::string>{"size_1"}},
-          {"group_2", std::vector<std::string>{"size_1", "size_2"}},
-          {"group_3", std::vector<std::string>{"size_3"}}}},
-        /*auction_server_request_flags=*/
-        {blink::AuctionServerRequestFlagsEnum::kOmitAds,
-         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds},
-        /*additional_bid_key=*/kAdditionalBidKey1);
+    InterestGroup full =
+        blink::TestInterestGroupBuilder(/*owner=*/full_origin, /*name=*/"full")
+            .SetPriority(1.0)
+            .SetEnableBiddingSignalsPrioritization(true)
+            .SetPriorityVector({{{"a", 2}, {"b", -2.2}}})
+            .SetPrioritySignalsOverrides({{{"a", -2}, {"c", 10}, {"d", 1.2}}})
+            .SetSellerCapabilities(
+                {{{full_origin, {SellerCapabilities::kInterestGroupCounts}},
+                  {partial_origin, {SellerCapabilities::kLatencyStats}}}})
+            .SetAllSellerCapabilities({SellerCapabilities::kInterestGroupCounts,
+                                       SellerCapabilities::kLatencyStats})
+            .SetBiddingUrl(GURL("https://full.example.com/bid"))
+            .SetBiddingWasmHelperUrl(GURL("https://full.example.com/bid_wasm"))
+            .SetUpdateUrl(GURL("https://full.example.com/update"))
+            .SetTrustedBiddingSignalsUrl(
+                GURL("https://full.example.com/signals"))
+            .SetTrustedBiddingSignalsKeys(
+                std::vector<std::string>{"a", "b", "c", "d"})
+            .SetUserBiddingSignals("foo")
+            .SetAds(std::vector<InterestGroup::Ad>{
+                blink::InterestGroup::Ad(
+                    GURL("https://full.example.com/ad1"), "metadata1",
+                    "group_1", "buyer_id", "shared_id", "adRenderId",
+                    std::vector<url::Origin>{
+                        url::Origin::Create(GURL("https://reporting.com"))}),
+                blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
+                                         "metadata2", "group_2", "buyer_id2")})
+            .SetAdComponents(std::vector<InterestGroup::Ad>{
+                blink::InterestGroup::Ad(
+                    GURL("https://full.example.com/adcomponent1"), "metadata1c",
+                    "group_1", /*buyer_reporting_id=*/absl::nullopt,
+                    /*buyer_and_seller_reporting_id=*/absl::nullopt,
+                    "adRenderId2"),
+                blink::InterestGroup::Ad(
+                    GURL("https://full.example.com/adcomponent2"), "metadata2c",
+                    "group_2")})
+            .SetAdSizes(
+                {{{"size_1",
+                   blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
+                                 blink::AdSize::LengthUnit::kPixels)},
+                  {"size_2",
+                   blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
+                                 blink::AdSize::LengthUnit::kPixels)},
+                  {"size_3",
+                   blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
+                                 100,
+                                 blink::AdSize::LengthUnit::kScreenWidth)}}})
+            .SetSizeGroups(
+                {{{"group_1", std::vector<std::string>{"size_1"}},
+                  {"group_2", std::vector<std::string>{"size_1", "size_2"}},
+                  {"group_3", std::vector<std::string>{"size_3"}}}})
+            .SetAuctionServerRequestFlags(
+                {blink::AuctionServerRequestFlagsEnum::kOmitAds,
+                 blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
+            .Build();
+
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
     storage->JoinInterestGroup(partial, partial_origin.GetURL());
@@ -197,7 +190,6 @@ class InterestGroupStorageTest : public testing::Test {
     update.ad_components = full.ad_components;
     update.ad_components->emplace_back(
         GURL("https://full.example.com/adcomponent3"), "metadata3c", "group_3");
-    update.additional_bid_key = kAdditionalBidKey2;
     storage->UpdateInterestGroup(blink::InterestGroupKey(full.owner, full.name),
                                  update);
 
@@ -208,7 +200,6 @@ class InterestGroupStorageTest : public testing::Test {
     updated.trusted_bidding_signals_keys = update.trusted_bidding_signals_keys;
     updated.ads = update.ads;
     updated.ad_components = update.ad_components;
-    updated.additional_bid_key = kAdditionalBidKey2;
 
     storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
     ASSERT_EQ(1u, storage_interest_groups.size());
@@ -2059,6 +2050,66 @@ TEST_F(InterestGroupStorageTest, OnlyDeletesExpiredKAnon) {
             storage->GetLastKAnonymityReported(ad1_url.spec()));
   EXPECT_EQ(base::Time::Min(),
             storage->GetLastKAnonymityReported(ad2_url.spec()));
+}
+
+TEST_F(InterestGroupStorageTest, UpdateAdditionalBidKey) {
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://example.com"));
+
+  constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey1 = {
+      0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
+      0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
+      0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
+  constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey2 = {
+      0x10, 0x0f, 0xdf, 0x47, 0xfb, 0x94, 0xf1, 0x53, 0x6a, 0x4f, 0x7c,
+      0x3f, 0xda, 0x27, 0x38, 0x3f, 0xa0, 0x33, 0x75, 0xa8, 0xf5, 0x27,
+      0xc5, 0x37, 0xe6, 0xf1, 0x70, 0x3c, 0x47, 0xf9, 0x4f, 0x86};
+
+  InterestGroup negative_interest_group =
+      blink::TestInterestGroupBuilder(/*owner=*/test_origin,
+                                      /*name=*/"negative")
+          .SetBiddingUrl(GURL("https://example.com/bid"))
+          .SetAdditionalBidKey(kAdditionalBidKey1)
+          .Build();
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  storage->JoinInterestGroup(negative_interest_group, test_origin.GetURL());
+
+  std::vector<StorageInterestGroup> storage_interest_groups =
+      storage->GetInterestGroupsForOwner(test_origin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_TRUE(negative_interest_group.IsEqualForTesting(
+      storage_interest_groups[0].interest_group));
+  base::Time join_time = base::Time::Now();
+  EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
+  EXPECT_EQ(storage_interest_groups[0].last_updated, join_time);
+
+  // Test update as well.
+
+  // Pass time, so can check if `join_time` or `last_updated` is updated.
+  task_environment().FastForwardBy(base::Seconds(1234));
+
+  InterestGroupUpdate update;
+  update.additional_bid_key = kAdditionalBidKey2;
+  storage->UpdateInterestGroup(
+      blink::InterestGroupKey(negative_interest_group.owner,
+                              negative_interest_group.name),
+      update);
+
+  InterestGroup updated = negative_interest_group;
+  updated.additional_bid_key = kAdditionalBidKey2;
+
+  storage_interest_groups = storage->GetInterestGroupsForOwner(test_origin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_TRUE(
+      updated.IsEqualForTesting(storage_interest_groups[0].interest_group));
+  // `join_time` should not be modified be updates, but `last_updated` should
+  // be.
+  EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
+  EXPECT_EQ(storage_interest_groups[0].last_updated, base::Time::Now());
+  // Make sure the clock was advanced.
+  EXPECT_NE(storage_interest_groups[0].join_time,
+            storage_interest_groups[0].last_updated);
 }
 
 }  // namespace

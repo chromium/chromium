@@ -415,6 +415,13 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     }
   }
 
+  if (group.additional_bid_key && group.ads) {
+    error =
+        "Interest groups that provide a value of additionalBidKey "
+        "for negative targeting must not provide a value for ads.";
+    return false;
+  }
+
   size_t size = EstimateBlinkInterestGroupSize(group);
   if (size >= mojom::blink::kMaxInterestGroupSize) {
     error_field_name = "size";

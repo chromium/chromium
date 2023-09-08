@@ -129,6 +129,17 @@ const uint8_t kTestPublicKey[] = {
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
 };
 
+constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey1 = {
+    0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
+    0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
+    0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
+constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey2 = {
+    0x10, 0x0f, 0xdf, 0x47, 0xfb, 0x94, 0xf1, 0x53, 0x6a, 0x4f, 0x7c,
+    0x3f, 0xda, 0x27, 0x38, 0x3f, 0xa0, 0x33, 0x75, 0xa8, 0xf5, 0x27,
+    0xc5, 0x37, 0xe6, 0xf1, 0x70, 0x3c, 0x47, 0xf9, 0x4f, 0x86};
+constexpr char kAdditionalBidKey2Base64[] =
+    "EA/fR/uU8VNqT3w/2ic4P6Azdaj1J8U35vFwPEf5T4Y=";
+
 // Returns a basic bidder script that sends reports to
 // kOriginStringA/report_bidder.
 std::string BasicBiddingReportScript() {
@@ -1260,17 +1271,6 @@ TEST_F(AdAuctionServiceImplTest, FixExpiryOnJoin) {
 
 // The server JSON updates all fields that can be updated.
 TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
-  constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey1 = {
-      0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
-      0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
-      0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
-  constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey2 = {
-      0x10, 0x0f, 0xdf, 0x47, 0xfb, 0x94, 0xf1, 0x53, 0x6a, 0x4f, 0x7c,
-      0x3f, 0xda, 0x27, 0x38, 0x3f, 0xa0, 0x33, 0x75, 0xa8, 0xf5, 0x27,
-      0xc5, 0x37, 0xe6, 0xf1, 0x70, 0x3c, 0x47, 0xf9, 0x4f, 0x86};
-  constexpr char kAdditionalBidKey2Base64[] =
-      "EA/fR/uU8VNqT3w/2ic4P6Azdaj1J8U35vFwPEf5T4Y=";
-
   content_browser_client_.SetAllowList({kOriginF, kOriginG});
   // TODO(caraitto): Remove camelCase sellerCapabilities fields when no longer
   // supported.
@@ -1309,12 +1309,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
                  }],
 "adSizes": {"size_new": {"width": "300px", "height": "150px"}},
 "sizeGroups": {"group_new": ["size_new"]},
-"auctionServerRequestFlags": ["omit-ads", "include-full-ads"],
-"additionalBidKey": "%s"
+"auctionServerRequestFlags": ["omit-ads", "include-full-ads"]
 })",
                          kOriginStringA, kOriginStringA, kOriginStringA,
-                         kOriginStringA, kOriginStringA, kOriginStringA,
-                         kAdditionalBidKey2Base64));
+                         kOriginStringA, kOriginStringA, kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.priority = 2.0;
@@ -1359,7 +1357,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.size_groups.emplace();
   std::vector<std::string> size_list = {"size_old"};
   interest_group.size_groups->emplace("group_old", size_list);
-  interest_group.additional_bid_key = kAdditionalBidKey1;
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
@@ -1456,6 +1453,28 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       blink::AuctionServerRequestFlagsEnum::kOmitAds));
   EXPECT_TRUE(group.auction_server_request_flags.Has(
       blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
+}
+
+// The server JSON updates additionalBidKey for negative interest groups.
+TEST_F(AdAuctionServiceImplTest, UpdateAdditionalBidKey) {
+  network_responder_->RegisterUpdateResponse(
+      kUpdateUrlPath, base::StringPrintf(R"({"additionalBidKey": "%s"})",
+                                         kAdditionalBidKey2Base64));
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.additional_bid_key = kAdditionalBidKey1;
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  EXPECT_EQ(group.name, kInterestGroupName);
   EXPECT_EQ(*group.additional_bid_key, kAdditionalBidKey2);
 }
 
@@ -2383,6 +2402,97 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
+}
+
+// An InterestGroup can't have both ads and an additionalBidKey.
+TEST_F(AdAuctionServiceImplTest, UpdateAdsOnNegativeInterestGroupFails) {
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.additional_bid_key = kAdditionalBidKey1;
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "ads": [{"renderURL": "https://example.com/new_render"}]
+  })");
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the additionalBidKey didn't change.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.additional_bid_key.has_value());
+  EXPECT_EQ(*group.additional_bid_key, kAdditionalBidKey1);
+
+  // And that the ads weren't set.
+  EXPECT_FALSE(group.ads.has_value());
+}
+
+// An InterestGroup can't have both ads and an additionalBidKey.
+TEST_F(AdAuctionServiceImplTest, UpdateAdsAndAdditionalBidKeyAlwaysFails) {
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  network_responder_->RegisterUpdateResponse(
+      kUpdateUrlPath, base::StringPrintf(R"({
+          "ads": [{"renderURL": "https://example.com/new_render"}],
+          "additionalBidKey": "%s"
+      })",
+                                         kAdditionalBidKey2Base64));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that neither field changed.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  EXPECT_FALSE(group.additional_bid_key.has_value());
+  EXPECT_FALSE(group.ads.has_value());
+}
+
+// An InterestGroup can't have both ads and an additionalBidKey.
+TEST_F(AdAuctionServiceImplTest,
+       UpdateAdditionalBidKeyOnAdsInterestGroupFails) {
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  network_responder_->RegisterUpdateResponse(
+      kUpdateUrlPath, base::StringPrintf(R"({"additionalBidKey": "%s"})",
+                                         kAdditionalBidKey2Base64));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the ads didn't change.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+
+  // And the additionalBidKey wasn't set.
+  EXPECT_FALSE(group.additional_bid_key.has_value());
 }
 
 // UpdateJSONParserCrash fails on Android or with the Rust parser because in
