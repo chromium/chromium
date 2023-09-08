@@ -14,6 +14,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class AnimationAbortHandle;
 class Button;
 class LabelButton;
 }  // namespace views
@@ -171,6 +172,10 @@ class AppListToastContainerView : public views::View {
 
   // True if committing the sort order via the close button is in progress.
   bool committing_sort_order_ = false;
+
+  // The abort handle for the `toast_view_` fade out animation.
+  std::unique_ptr<views::AnimationAbortHandle>
+      toast_view_fade_out_animation_abort_handle_;
 
   base::WeakPtrFactory<AppListToastContainerView> weak_factory_{this};
 };

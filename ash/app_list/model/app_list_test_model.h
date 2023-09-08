@@ -68,6 +68,7 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
                            const std::string& new_name) override;
   void RequestAppListSort(AppListSortOrder order) override;
   void RequestAppListSortRevert() override;
+  void RequestCommitTemporarySortOrder() override;
 
   // Raw pointer version convenience versions of AppListModel methods.
   AppListItem* AddItem(AppListItem* item);

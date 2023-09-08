@@ -57,6 +57,7 @@ class AppListItemListWithUpdater : public AppListModelDelegate {
                            const std::string& name) override {}
   void RequestAppListSort(AppListSortOrder order) override {}
   void RequestAppListSortRevert() override {}
+  void RequestCommitTemporarySortOrder() override {}
 
   AppListItemList* item_list() { return item_list_.get(); }
 

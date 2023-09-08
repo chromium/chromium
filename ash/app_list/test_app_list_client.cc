@@ -123,13 +123,6 @@ ash::AppListSortOrder TestAppListClient::GetPermanentSortingOrder() const {
   return ash::AppListSortOrder::kCustom;
 }
 
-void TestAppListClient::CommitTemporarySortOrder() {
-  // Committing the temporary sort order should not introduce item reorder so
-  // reset the sort order without reorder animation.
-  AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
-      /*new_order=*/absl::nullopt, /*animate=*/false, base::NullCallback());
-}
-
 void TestAppListClient::OnZeroStateSearchDone(base::OnceClosure on_done) {
   zero_state_search_done_count_++;
   std::move(on_done).Run();

@@ -110,7 +110,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
       bool update_folder) override;
 
   void OnAppListHidden() override;
-  void CommitTemporarySortOrder() override;
 
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
@@ -137,6 +136,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                            const std::string& new_name) override;
   void RequestAppListSort(ash::AppListSortOrder order) override;
   void RequestAppListSortRevert() override;
+  void RequestCommitTemporarySortOrder() override;
 
   // Returns the temporary sort order.
   ash::AppListSortOrder GetTemporarySortOrderForTest() const;

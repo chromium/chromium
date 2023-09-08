@@ -28,6 +28,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
@@ -245,7 +246,7 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
   // Remove `toast_view_` when the temporary sorting order is cleared.
   if (!GetVisibilityForSortOrder(new_order)) {
     if (committing_sort_order_) {
-      // When the toast view is closed due to committing the sort  order via the
+      // When the toast view is closed due to committing the sort order via the
       // close button , the toast view should be faded out with animation.
       FadeOutToastView();
     } else {
@@ -331,12 +332,20 @@ views::Button* AppListToastContainerView::GetCloseButton() {
 }
 
 void AppListToastContainerView::OnReorderUndoButtonClicked() {
+  toast_view_->toast_button()->SetEnabled(false);
   AppListModelProvider::Get()->model()->delegate()->RequestAppListSortRevert();
 }
 
 void AppListToastContainerView::OnReorderCloseButtonClicked() {
+  // Prevent the close button from being clicked again during the fade out
+  // animation.
+  toast_view_->close_button()->SetEnabled(false);
+
   base::AutoReset auto_reset(&committing_sort_order_, true);
-  view_delegate_->CommitTemporarySortOrder();
+  AppListModelProvider::Get()
+      ->model()
+      ->delegate()
+      ->RequestCommitTemporarySortOrder();
 }
 
 bool AppListToastContainerView::IsToastVisible() const {
@@ -345,12 +354,19 @@ bool AppListToastContainerView::IsToastVisible() const {
 }
 
 void AppListToastContainerView::FadeOutToastView() {
+  views::AnimationBuilder builder;
+  toast_view_fade_out_animation_abort_handle_ = builder.GetAbortHandle();
+  if (!toast_view_) {
+    // Aborting an existing fade out animation deletes the `toast_view_`, so
+    // avoid creating new animations.
+    return;
+  }
+
   if (!toast_view_->layer()) {
     toast_view_->SetPaintToLayer();
     toast_view_->layer()->SetFillsBoundsOpaquely(false);
   }
-
-  views::AnimationBuilder()
+  builder
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .OnEnded(

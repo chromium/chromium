@@ -63,6 +63,10 @@ class AppListModelDelegate {
   // order (i.e. the order that has not been committed yet).
   virtual void RequestAppListSortRevert() = 0;
 
+  // Requests to commit the app list item positions under the temporary sort
+  // order.
+  virtual void RequestCommitTemporarySortOrder() = 0;
+
  protected:
   virtual ~AppListModelDelegate() = default;
 };

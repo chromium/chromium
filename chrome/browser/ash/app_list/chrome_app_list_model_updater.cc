@@ -909,6 +909,14 @@ void ChromeAppListModelUpdater::RequestAppListSortRevert() {
   EndTemporarySortAndTakeAction(EndAction::kRevert);
 }
 
+void ChromeAppListModelUpdater::RequestCommitTemporarySortOrder() {
+  if (!is_under_temporary_sort()) {
+    return;
+  }
+
+  EndTemporarySortAndTakeAction(EndAction::kCommit);
+}
+
 void ChromeAppListModelUpdater::RequestPositionUpdate(
     std::string id,
     const syncer::StringOrdinal& new_position,
@@ -1058,10 +1066,6 @@ void ChromeAppListModelUpdater::OnAppListHidden() {
   DCHECK(temporary_sort_manager_->is_active());
 
   // Commit the temporary sort order if app list gets hidden.
-  EndTemporarySortAndTakeAction(EndAction::kCommit);
-}
-
-void ChromeAppListModelUpdater::CommitTemporarySortOrder() {
   EndTemporarySortAndTakeAction(EndAction::kCommit);
 }
 

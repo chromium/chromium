@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -152,6 +153,13 @@ void AppListTestModel::RequestAppListSort(AppListSortOrder order) {
 
 void AppListTestModel::RequestAppListSortRevert() {
   requested_sort_order_.reset();
+}
+
+void AppListTestModel::RequestCommitTemporarySortOrder() {
+  // Committing the temporary sort order should not introduce item reorder so
+  // reset the sort order without reorder animation.
+  AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
+      /*new_order=*/absl::nullopt, /*animate=*/false, base::NullCallback());
 }
 
 AppListItem* AppListTestModel::AddItemToFolder(AppListItem* item,

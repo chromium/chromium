@@ -62,7 +62,6 @@ class TestAppListClient : public AppListClient {
   void OpenSearchBoxIphUrl() override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
-  void CommitTemporarySortOrder() override;
 
   int start_zero_state_search_count() const {
     return start_zero_state_search_count_;

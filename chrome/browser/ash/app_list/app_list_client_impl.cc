@@ -755,11 +755,6 @@ ash::AppListSortOrder AppListClientImpl::GetPermanentSortingOrder() const {
       ->GetPermanentSortingOrder();
 }
 
-void AppListClientImpl::CommitTemporarySortOrder() {
-  DCHECK(current_model_updater_);
-  current_model_updater_->CommitTemporarySortOrder();
-}
-
 void AppListClientImpl::RecordViewShown() {
   base::RecordAction(base::UserMetricsAction("Launcher_Show"));
 

@@ -1426,11 +1426,6 @@ void AppListControllerImpl::SetHideContinueSection(bool hide) {
   bubble_presenter_->UpdateContinueSectionVisibility();
 }
 
-void AppListControllerImpl::CommitTemporarySortOrder() {
-  DCHECK(client_);
-  client_->CommitTemporarySortOrder();
-}
-
 void AppListControllerImpl::GetAppLaunchedMetricParams(
     AppLaunchedMetricParams* metric_params) {
   metric_params->app_list_view_state = GetAppListViewState();
