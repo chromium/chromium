@@ -130,8 +130,10 @@ source_set("unit_tests") {
   sources = [
     "autofill_provider_unittest.cc",
     "form_event_logger_weblayer_android_unittest.cc",
+    "form_field_data_android_unittest.cc",
   ]
   deps = [
+    ":android",
     ":browser",
     ":test_support",
     "//components/autofill/content/browser:test_support",
@@ -144,9 +146,17 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_form_field_data_android_bridge.cc",
+    "mock_form_field_data_android_bridge.h",
     "test_autofill_provider.cc",
     "test_autofill_provider.h",
   ]
-  public_deps = [ ":browser" ]
-  deps = [ "//content/public/browser" ]
+  public_deps = [
+    ":android",
+    ":browser",
+  ]
+  deps = [
+    "//content/public/browser",
+    "//testing/gmock",
+  ]
 }
