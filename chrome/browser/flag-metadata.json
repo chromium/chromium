@@ -1847,16 +1847,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "download-bubble",
-    "owners": [ "chlily", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
-    "name": "download-bubble-v2",
-    "owners": [ "chlily", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "download-later",
     "owners": [ "xingliu", "dtrainor" ],
     "expiry_milestone": 102

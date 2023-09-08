@@ -60637,7 +60637,6 @@ from previous Chrome versions.
   <int value="-1983891525" label="DecodeJpeg420ImagesToYUV:disabled"/>
   <int value="-1983569861" label="WebXROrientationSensorDevice:disabled"/>
   <int value="-1982700103" label="EnableAppsGridGapFeature:enabled"/>
-  <int value="-1982298556" label="DownloadBubble:disabled"/>
   <int value="-1982080540" label="DurableClientHintsCache:disabled"/>
   <int value="-1981692093"
       label="SafeBrowsingPasswordProtectionForSignedInUsers:enabled"/>
@@ -62102,7 +62101,6 @@ from previous Chrome versions.
   <int value="-1262302650" label="StorageBuckets:disabled"/>
   <int value="-1262152606" label="disable-lock-screen-apps"/>
   <int value="-1261972671" label="OmniboxDocumentProvider:disabled"/>
-  <int value="-1261699926" label="DownloadBubbleV2:disabled"/>
   <int value="-1261263046"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:disabled"/>
   <int value="-1261110018" label="AllowDisableTouchpadHapticFeedback:disabled"/>
@@ -62250,7 +62248,6 @@ from previous Chrome versions.
   <int value="-1195034892" label="ContinuousSearch:disabled"/>
   <int value="-1194747282" label="kNearbySharingSelfShare:enabled"/>
   <int value="-1194129602" label="ClientSideDetectionModelOnAndroid:disabled"/>
-  <int value="-1193375480" label="DownloadBubble:enabled"/>
   <int value="-1192790333" label="ArcUseHighMemoryDalvikProfile:disabled"/>
   <int value="-1192334995" label="CrOSLateBootAudioHFPOffload:enabled"/>
   <int value="-1191671217" label="TabGroupsNewBadgePromo:disabled"/>
@@ -62851,7 +62848,6 @@ from previous Chrome versions.
   <int value="-892428689" label="ManualPasswordGenerationAndroid:enabled"/>
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
-  <int value="-890224928" label="DownloadBubbleV2:enabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
   <int value="-888336510" label="NtpSingleRowShortcuts:enabled"/>
   <int value="-887101831" label="StoreHoursAndroid:disabled"/>

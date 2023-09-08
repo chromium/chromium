@@ -1245,16 +1245,6 @@ const char kExperimentalRgbKeyboardPatternsName[] =
 const char kExperimentalRgbKeyboardPatternsDescription[] =
     "Enable experimental RGB Keyboard patterns support on supported devices.";
 
-const char kDownloadBubbleName[] = "Enable download bubble";
-const char kDownloadBubbleDescription[] =
-    "Enables the download bubble instead of the download shelf.";
-
-const char kDownloadBubbleV2Name[] = "Enable download bubble V2";
-const char kDownloadBubbleV2Description[] =
-    "Adds features to the download bubble not available on the download shelf. "
-    "Only works if the base download bubble flag download-bubble is also "
-    "enabled.";
-
 const char kDownloadRangeName[] = "Enable download range support";
 const char kDownloadRangeDescription[] =
     "Enables arbitrary download range request support.";
