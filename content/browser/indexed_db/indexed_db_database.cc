@@ -323,13 +323,7 @@ leveldb::Status IndexedDBDatabase::ForceCloseAndRunTasks() {
   DCHECK(!force_closing_);
   force_closing_ = true;
   for (IndexedDBConnection* connection : connections_) {
-    leveldb::Status last_error = connection->CloseAndReportForceClose();
-    if (UNLIKELY(!last_error.ok())) {
-      base::UmaHistogramEnumeration(
-          "WebCore.IndexedDB.ErrorDuringForceCloseAborts",
-          leveldb_env::GetLevelDBStatusUMAValue(last_error),
-          leveldb_env::LEVELDB_STATUS_MAX);
-    }
+    connection->CloseAndReportForceClose();
   }
   connections_.clear();
   leveldb::Status abort_status =

@@ -49,9 +49,9 @@ class CONTENT_EXPORT IndexedDBConnection {
     kAbortAllReturnLastError,
   };
 
-  leveldb::Status AbortTransactionsAndClose(CloseErrorHandling error_handling);
+  void AbortTransactionsAndClose(CloseErrorHandling error_handling);
 
-  leveldb::Status CloseAndReportForceClose();
+  void CloseAndReportForceClose();
   bool IsConnected();
 
   void VersionChangeIgnored();

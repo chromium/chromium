@@ -56,17 +56,14 @@ IndexedDBConnection::~IndexedDBConnection() {
   // during destruction. This is likely the case during regular execution, but
   // is definitely not the case in unit tests.
 
-  leveldb::Status status =
-      AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
-  if (!status.ok())
-    bucket_context_handle_->delegate().on_fatal_error.Run(status);
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
 }
 
-leveldb::Status IndexedDBConnection::AbortTransactionsAndClose(
+void IndexedDBConnection::AbortTransactionsAndClose(
     CloseErrorHandling error_handling) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected())
-    return leveldb::Status::OK();
+    return;
 
   DCHECK(database_);
   callbacks_ = nullptr;
@@ -86,20 +83,20 @@ leveldb::Status IndexedDBConnection::AbortTransactionsAndClose(
 
   std::move(on_close_).Run(this);
   client_keep_active_remotes_.Clear();
+  if (!status.ok()) {
+    bucket_context_handle_->delegate().on_fatal_error.Run(status);
+  }
   bucket_context_handle_.Release();
-  return status;
 }
 
-leveldb::Status IndexedDBConnection::CloseAndReportForceClose() {
+void IndexedDBConnection::CloseAndReportForceClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected())
-    return leveldb::Status::OK();
+    return;
 
   scoped_refptr<IndexedDBDatabaseCallbacks> callbacks(callbacks_);
-  leveldb::Status last_error =
-      AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
   callbacks->OnForcedClose();
-  return last_error;
 }
 
 void IndexedDBConnection::VersionChangeIgnored() {

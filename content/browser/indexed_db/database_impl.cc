@@ -18,7 +18,6 @@
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
-#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/transaction_impl.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -75,13 +74,9 @@ DatabaseImpl::~DatabaseImpl() {
   // Calling `GetBucketLocator` after aborting the transaction would be an
   // error.
   const storage::BucketLocator bucket_locator = GetBucketLocator();
-  status = connection_->AbortTransactionsAndClose(
+  connection_->AbortTransactionsAndClose(
       IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
   indexed_db_context_->ConnectionClosed(bucket_locator);
-  if (!status.ok()) {
-    indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        bucket_locator, status, "Error during rollbacks.");
-  }
 }
 
 void DatabaseImpl::RenameObjectStore(int64_t transaction_id,
@@ -172,13 +167,8 @@ void DatabaseImpl::Close() {
   // Calling `GetBucketLocator` after aborting the transaction would be an
   // error.
   const storage::BucketLocator bucket_locator = GetBucketLocator();
-  leveldb::Status status = connection_->AbortTransactionsAndClose(
+  connection_->AbortTransactionsAndClose(
       IndexedDBConnection::CloseErrorHandling::kReturnOnFirstError);
-
-  if (!status.ok()) {
-    indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        bucket_locator, status, "Error during rollbacks.");
-  }
 }
 
 void DatabaseImpl::VersionChangeIgnored() {

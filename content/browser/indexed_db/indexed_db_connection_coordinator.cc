@@ -97,10 +97,8 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
   virtual void UpgradeTransactionFinished(bool committed) = 0;
 
   // Called on all pending tasks during a force close. Returns if the task
-  // should be pruned (removed) from the task queue during the force close and
-  // any leveldb error that may have occurred while shutting down the connection
-  // request.
-  virtual std::tuple<bool, leveldb::Status> ShouldPruneForForceClose() = 0;
+  // should be pruned (removed) from the task queue during the force close.
+  virtual bool ShouldPruneForForceClose() = 0;
 
   RequestState state() const { return state_; }
 
@@ -374,7 +372,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     tasks_available_callback_.Run();
   }
 
-  std::tuple<bool, leveldb::Status> ShouldPruneForForceClose() override {
+  bool ShouldPruneForForceClose() override {
     DCHECK(pending_);
     if (!pending_->factory_client->is_complete()) {
       pending_->factory_client->OnError(
@@ -384,11 +382,10 @@ class IndexedDBConnectionCoordinator::OpenRequest
     if (state_ != RequestState::kError)
       state_ = RequestState::kDone;
 
-    leveldb::Status status;
     if (connection_) {
       // CloseAndReportForceClose calls OnForcedClose on the database callbacks,
       // so we don't need to.
-      status = connection_->CloseAndReportForceClose();
+      connection_->CloseAndReportForceClose();
       connection_.reset();
     } else {
       pending_->database_callbacks->OnForcedClose();
@@ -396,7 +393,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     pending_.reset();
     // The tasks_available_callback_ is NOT run here, because we are assuming
     // the caller is doing their own cleanup & execution for ForceClose.
-    return {true, status};
+    return true;
   }
 
  private:
@@ -549,9 +546,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
   void UpgradeTransactionFinished(bool committed) override { NOTREACHED(); }
 
   // The delete requests should always be run during force close.
-  std::tuple<bool, leveldb::Status> ShouldPruneForForceClose() override {
-    return {false, leveldb::Status::OK()};
-  }
+  bool ShouldPruneForForceClose() override { return false; }
 
  private:
   std::unique_ptr<IndexedDBFactoryClient> factory_client_;
@@ -593,21 +588,15 @@ leveldb::Status IndexedDBConnectionCoordinator::PruneTasksForForceClose() {
     std::unique_ptr<ConnectionRequest> request =
         std::move(request_queue_.front());
     request_queue_.pop();
-    bool prune;
     leveldb::Status old_error = request->status();
-    leveldb::Status status;
-    std::tie(prune, status) = request->ShouldPruneForForceClose();
 
-    if (prune) {
+    if (request->ShouldPruneForForceClose()) {
       if (!old_error.ok())
         last_error = old_error;
       request.reset();
     } else {
       requests_to_still_run.push(std::move(request));
     }
-
-    if (!status.ok())
-      last_error = status;
   }
 
   request_queue_ = std::move(requests_to_still_run);
