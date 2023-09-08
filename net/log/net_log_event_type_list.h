@@ -402,6 +402,26 @@ EVENT_TYPE(SUBMITTED_TO_RESOLVER_THREAD)
 //   }
 EVENT_TYPE(SOCKET_ALIVE)
 
+// Records Open calls to sockets.
+//   {
+//     "net_error": <On failure; net integer error code>
+//   }
+EVENT_TYPE(SOCKET_OPEN)
+
+// Records Connect calls to sockets.
+//   {
+//     "address": <Remote address being connected to>
+//     "net_error": <On failure; net integer error code>
+//   }
+EVENT_TYPE(SOCKET_CONNECT)
+
+// Records BindToNetwork calls to sockets.
+//   {
+//     "network": <Network this socket is being bound to>
+//     "net_error": <On failure; net integer error code>
+//   }
+EVENT_TYPE(SOCKET_BIND_TO_NETWORK)
+
 // ------------------------------------------------------------------------
 // Brokered Socket (Shared by stream and datagram sockets)
 // ------------------------------------------------------------------------

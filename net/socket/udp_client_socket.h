@@ -102,6 +102,7 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
 #endif
 
  private:
+  NetLogWithSource net_log_;
   UDPSocket socket_;
   bool adopted_opened_socket_ = false;
   bool connect_called_ = false;

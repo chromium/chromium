@@ -12,18 +12,58 @@
 
 namespace net {
 
+namespace {
+
+base::Value::Dict CreateNetLogUDPConnectParams(const IPEndPoint& address,
+                                               int net_error) {
+  DCHECK_NE(ERR_IO_PENDING, net_error);
+  base::Value::Dict params;
+  params.Set("address", address.ToString());
+  if (net_error < 0) {
+    params.Set("net_error", net_error);
+  }
+  return params;
+}
+
+base::Value::Dict CreateNetLogUDPBindToNetworkParams(
+    handles::NetworkHandle network,
+    int net_error) {
+  DCHECK_NE(ERR_IO_PENDING, net_error);
+  base::Value::Dict params;
+  params.Set("network", static_cast<int>(network));
+  if (net_error < 0) {
+    params.Set("net_error", net_error);
+  }
+  return params;
+}
+
+}  // namespace
+
 UDPClientSocket::UDPClientSocket(DatagramSocket::BindType bind_type,
                                  net::NetLog* net_log,
                                  const net::NetLogSource& source,
                                  handles::NetworkHandle network)
-    : socket_(bind_type, net_log, source), connect_using_network_(network) {}
+    : net_log_(
+          NetLogWithSource::Make(net_log, NetLogSourceType::UDP_CLIENT_SOCKET)),
+      socket_(bind_type, net_log, net_log_.source()),
+      connect_using_network_(network) {
+  net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
+}
 
 UDPClientSocket::UDPClientSocket(DatagramSocket::BindType bind_type,
                                  NetLogWithSource source_net_log,
                                  handles::NetworkHandle network)
-    : socket_(bind_type, source_net_log), connect_using_network_(network) {}
+    : net_log_(NetLogWithSource::Make(source_net_log.net_log(),
+                                      NetLogSourceType::UDP_CLIENT_SOCKET)),
+      socket_(bind_type, net_log_),
+      connect_using_network_(network) {
+  net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE,
+                                       source_net_log.source());
+}
 
-UDPClientSocket::~UDPClientSocket() = default;
+UDPClientSocket::~UDPClientSocket() {
+  net_log_.EndEvent(NetLogEventType::SOCKET_ALIVE);
+}
 
 int UDPClientSocket::Connect(const IPEndPoint& address) {
   CHECK(!connect_called_);
@@ -34,10 +74,14 @@ int UDPClientSocket::Connect(const IPEndPoint& address) {
   int rv = OK;
   if (!adopted_opened_socket_) {
     rv = socket_.Open(address.GetFamily());
+    net_log_.AddEventWithNetErrorCode(NetLogEventType::SOCKET_OPEN, rv);
   }
   if (rv != OK)
     return rv;
-  return socket_.Connect(address);
+  rv = socket_.Connect(address);
+  net_log_.AddEvent(NetLogEventType::SOCKET_CONNECT,
+                    [&] { return CreateNetLogUDPConnectParams(address, rv); });
+  return rv;
 }
 
 int UDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
@@ -49,15 +93,22 @@ int UDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
   int rv = OK;
   if (!adopted_opened_socket_) {
     rv = socket_.Open(address.GetFamily());
+    net_log_.AddEventWithNetErrorCode(NetLogEventType::SOCKET_OPEN, rv);
   }
   if (rv != OK) {
     return rv;
   }
   rv = socket_.BindToNetwork(network);
+  net_log_.AddEvent(NetLogEventType::SOCKET_BIND_TO_NETWORK, [&] {
+    return CreateNetLogUDPBindToNetworkParams(network, rv);
+  });
   if (rv != OK)
     return rv;
   network_ = network;
-  return socket_.Connect(address);
+  rv = socket_.Connect(address);
+  net_log_.AddEvent(NetLogEventType::SOCKET_CONNECT,
+                    [&] { return CreateNetLogUDPConnectParams(address, rv); });
+  return rv;
 }
 
 int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
@@ -68,6 +119,7 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   int rv = OK;
   if (!adopted_opened_socket_) {
     rv = socket_.Open(address.GetFamily());
+    net_log_.AddEventWithNetErrorCode(NetLogEventType::SOCKET_OPEN, rv);
   }
   if (rv != OK)
     return rv;
@@ -84,6 +136,9 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
     if (network == handles::kInvalidNetworkHandle)
       return ERR_INTERNET_DISCONNECTED;
     rv = socket_.BindToNetwork(network);
+    net_log_.AddEvent(NetLogEventType::SOCKET_BIND_TO_NETWORK, [&] {
+      return CreateNetLogUDPBindToNetworkParams(network, rv);
+    });
     // |network| may have disconnected between the call to GetDefaultNetwork()
     // and the call to BindToNetwork(). Loop only if this is the case (|rv| will
     // be ERR_NETWORK_CHANGED).
@@ -93,7 +148,10 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   if (rv != OK)
     return rv;
   network_ = network;
-  return socket_.Connect(address);
+  rv = socket_.Connect(address);
+  net_log_.AddEvent(NetLogEventType::SOCKET_CONNECT,
+                    [&] { return CreateNetLogUDPConnectParams(address, rv); });
+  return rv;
 }
 
 int UDPClientSocket::ConnectAsync(const IPEndPoint& address,
