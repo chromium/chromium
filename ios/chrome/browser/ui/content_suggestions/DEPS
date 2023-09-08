@@ -9,7 +9,6 @@ include_rules = [
   "+ios/chrome/browser/ui/menu",
   "+ios/chrome/browser/ui/favicon",
   "+ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h",
-  "+ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h",
   "+ios/chrome/browser/ui/lens",
   "+ios/chrome/browser/ui/sharing",
   "+ios/chrome/browser/ui/location_bar/location_bar_constants.h",

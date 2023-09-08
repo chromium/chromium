@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_OBSERVABLE_BOOLEAN_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_OBSERVABLE_BOOLEAN_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_UTILS_OBSERVABLE_BOOLEAN_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_UTILS_OBSERVABLE_BOOLEAN_H_
 
 #import <Foundation/Foundation.h>
 
 @protocol BooleanObserver;
 
 // Describes the trait an observable boolean has.
-@protocol ObservableBoolean<NSObject>
+@protocol ObservableBoolean <NSObject>
 
 // The value of this observable boolean.
 @property(nonatomic, assign) BOOL value;
@@ -30,4 +30,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_OBSERVABLE_BOOLEAN_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_UTILS_OBSERVABLE_BOOLEAN_H_

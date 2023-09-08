@@ -12,7 +12,6 @@ include_rules = [
   "+ios/chrome/browser/ui/toolbar/buttons",
   "+ios/chrome/browser/ui/start_surface",
   "+ios/chrome/browser/ui/lens",
-  "+ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h",
   "+ios/chrome/browser/ui/toolbar/public",
 ]
 

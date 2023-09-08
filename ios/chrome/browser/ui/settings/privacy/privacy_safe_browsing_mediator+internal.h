@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_SAFE_BROWSING_MEDIATOR_INTERNAL_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_SAFE_BROWSING_MEDIATOR_INTERNAL_H_
 
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator.h"
-#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 
 // Used for testing.
 @interface PrivacySafeBrowsingMediator (Test)

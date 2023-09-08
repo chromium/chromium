@@ -8,6 +8,7 @@ source_set("utils") {
     "first_run_util.mm",
     "notification_observer_bridge.h",
     "notification_observer_bridge.mm",
+    "observable_boolean.h",
   ]
 
   deps = [
@@ -15,4 +16,13 @@ source_set("utils") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/shared/public/features:system_flags",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_observable_boolean.h",
+    "fake_observable_boolean.mm",
+  ]
+  deps = [ ":utils" ]
 }

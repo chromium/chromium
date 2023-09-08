@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/utils/fake_observable_boolean.h"
+#import "ios/chrome/browser/shared/model/utils/fake_observable_boolean.h"
 
 @implementation FakeObservableBoolean
 
@@ -12,8 +12,9 @@
 - (void)setValue:(BOOL)value {
   bool changed = value != _value;
   _value = value;
-  if (changed)
+  if (changed) {
     [self.observer booleanDidChange:self];
+  }
 }
 
 @end
