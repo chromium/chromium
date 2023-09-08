@@ -16,7 +16,7 @@
 
 #include <string>
 
-using blink::mojom::MDocElementPtr;
+using blink::mojom::WalletFieldRequirementPtr;
 
 namespace content {
 

@@ -18,38 +18,40 @@ dictionary IdentityProviderConfig {
 
 // extends the IdentityProviderConfig with Wallet-specific attributes
 partial dictionary IdentityProviderConfig  {
-  [RuntimeEnabled=WebIdentityMDocs] MDocProvider holder;
+  [RuntimeEnabled=WebIdentityMDocs] WalletProvider holder;
 };
 
-dictionary MDocProvider  {
-  // A query selector.
-  MDocSelector selector;
+dictionary WalletProvider  {
+  // A query selector that is used by wallets to filter credentials for
+  // selection.
+  WalletSelector selector;
 
-  // An opaque map of parameters.
+  // An opaque map of parameters sent to wallets upon selection.
   record<USVString, USVString> params;
 };
 
-dictionary MDocSelector {
-  // A list of desired response types.
+dictionary WalletSelector {
+  // A list of desired formats for the credential.
   sequence<USVString> format;
 
   // The top-level type of document (e.g. a passport, driver's license, etc).
   DOMString doctype;
 
+  // The amount of time the verifier intends to retain the credential.
   // Omitting `retention` implies that the identity information will not be stored.
   // How long the verifier intends to retent the credential.
-  MDocStorageDuration retention;
+  WalletStorageDuration retention;
 
   // The requested fields.
-  sequence<(MDocElement or DOMString)> fields;
+  sequence<(WalletFieldRequirement or DOMString)> fields;
 };
 
-dictionary MDocElement {
+dictionary WalletFieldRequirement {
   required DOMString name;
   DOMString equals;
 };
 
-dictionary MDocStorageDuration {
+dictionary WalletStorageDuration {
   // Exactly one of the following must be provided.
   boolean forever;
   long days;

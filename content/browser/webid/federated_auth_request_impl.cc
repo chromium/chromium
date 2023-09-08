@@ -539,26 +539,26 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
       permission_context, identity_registry, std::move(receiver));
 }
 
-void FederatedAuthRequestImpl::CompleteMDocRequest(std::string mdoc) {
-  if (!mdoc_provider_) {
-    std::move(mdoc_request_callback_)
+void FederatedAuthRequestImpl::CompleteWalletRequest(std::string response) {
+  if (!wallet_provider_) {
+    std::move(wallet_request_callback_)
         .Run(RequestTokenStatus::kError, absl::nullopt, "",
              /*is_account_auto_selected=*/false);
     return;
   }
 
-  if (!mdoc.empty()) {
-    std::move(mdoc_request_callback_)
-        .Run(RequestTokenStatus::kSuccess, absl::nullopt, mdoc,
+  if (!response.empty()) {
+    std::move(wallet_request_callback_)
+        .Run(RequestTokenStatus::kSuccess, absl::nullopt, response,
              /*is_account_auto_selected=*/false);
   } else {
-    std::move(mdoc_request_callback_)
+    std::move(wallet_request_callback_)
         .Run(RequestTokenStatus::kError, absl::nullopt, "",
              /*is_account_auto_selected=*/false);
   }
 }
 
-base::Value::Dict BuildMDocRequest(blink::mojom::MDocProviderPtr provider) {
+base::Value::Dict BuildWalletRequest(blink::mojom::WalletProviderPtr provider) {
   auto formats = Value::List();
   for (auto& format : provider->selector->format) {
     formats.Append(format);
@@ -632,7 +632,7 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
-  if (idp_get_params_ptrs[0]->providers[0]->is_mdoc()) {
+  if (idp_get_params_ptrs[0]->providers[0]->is_holder()) {
     if (!IsWebIdentityMDocsEnabled() ||
         IsFedCmMultipleIdentityProvidersEnabled()) {
       // TODO(https://crbug.com/1416939): Support calling the MDocs API with the
@@ -642,8 +642,8 @@ void FederatedAuthRequestImpl::RequestToken(
       return;
     }
 
-    if (mdoc_request_callback_) {
-      // Similar to the token request, only allow one in-flight mdoc request.
+    if (wallet_request_callback_) {
+      // Similar to the token request, only allow one in-flight wallet request.
       // TODO(https://crbug.com/1416939): Reconcile with federated identity
       // requests.
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
@@ -652,31 +652,31 @@ void FederatedAuthRequestImpl::RequestToken(
       return;
     }
 
-    mdoc_request_callback_ = std::move(callback);
-    // mdoc_provider_ is not destroyed after a successful mdoc request so we
+    wallet_request_callback_ = std::move(callback);
+    // wallet_provider_ is not destroyed after a successful wallet request so we
     // need to have the nullcheck to avoid duplicated creation.
-    if (!mdoc_provider_) {
-      mdoc_provider_ = CreateMDocProvider();
+    if (!wallet_provider_) {
+      wallet_provider_ = CreateWalletProvider();
     }
-    if (!mdoc_provider_) {
-      std::move(mdoc_request_callback_)
+    if (!wallet_provider_) {
+      std::move(wallet_request_callback_)
           .Run(RequestTokenStatus::kError, absl::nullopt, "",
                /*is_account_auto_selected=*/false);
       return;
     }
 
-    auto mdoc = std::move(idp_get_params_ptrs[0]->providers[0]->get_mdoc());
+    auto wallet = std::move(idp_get_params_ptrs[0]->providers[0]->get_holder());
 
-    auto request = BuildMDocRequest(std::move(mdoc));
+    auto request = BuildWalletRequest(std::move(wallet));
 
-    mdoc_provider_->RequestMDoc(
+    wallet_provider_->RequestMDoc(
         WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
         request,
-        base::BindOnce(&FederatedAuthRequestImpl::CompleteMDocRequest,
+        base::BindOnce(&FederatedAuthRequestImpl::CompleteWalletRequest,
                        weak_ptr_factory_.GetWeakPtr()));
 
     // TODO(https://crbug.com/1416939): rather than returning early,
-    // we would ultimately like to make the mdocs response reconcile with the
+    // we would ultimately like to make the wallet response reconcile with the
     // federated identities, so that they can be presented to the user in an
     // unified manner.
     return;
@@ -762,8 +762,8 @@ void FederatedAuthRequestImpl::RequestToken(
 
   // This counter measures the number of requests made to FedCM in a document to
   // identify RPs calling FedCM in quick succession. Requests made when FedCM is
-  // disabled, when there is a pending FedCM request or for the purpose of MDocs
-  // or multi-IDP are not counted.
+  // disabled, when there is a pending FedCM request or for the purpose of
+  // wallets or multi-IDP are not counted.
   if (!IsFedCmMultipleIdentityProvidersEnabled()) {
     ++num_requests_;
   }
@@ -2242,7 +2242,7 @@ FederatedAuthRequestImpl::CreateDialogController() {
       web_contents);
 }
 
-std::unique_ptr<MDocProvider> FederatedAuthRequestImpl::CreateMDocProvider() {
+std::unique_ptr<MDocProvider> FederatedAuthRequestImpl::CreateWalletProvider() {
   // A provider may only be created in browser tests by this moment.
   std::unique_ptr<MDocProvider> provider =
       GetContentClient()->browser()->CreateMDocProvider();

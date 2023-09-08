@@ -284,7 +284,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       RequestUserInfoCallback callback,
       blink::mojom::RequestUserInfoStatus status,
       absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info);
-  void CompleteMDocRequest(std::string mdoc);
+  void CompleteWalletRequest(std::string response);
 
   // Notifies metrics endpoint that either the user did not select the IDP in
   // the prompt or that there was an error in fetching data for the IDP.
@@ -296,7 +296,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager();
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
-  std::unique_ptr<MDocProvider> CreateMDocProvider();
+  std::unique_ptr<MDocProvider> CreateWalletProvider();
 
   // Creates an inspector issue related to a federated authentication request to
   // the Issues panel in DevTools.
@@ -420,8 +420,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   DialogType dialog_type_ = kNone;
   MediationRequirement mediation_requirement_;
 
-  std::unique_ptr<MDocProvider> mdoc_provider_;
-  RequestTokenCallback mdoc_request_callback_;
+  std::unique_ptr<MDocProvider> wallet_provider_;
+  RequestTokenCallback wallet_request_callback_;
 
   // Time when the accounts dialog is last shown for metrics purposes.
   absl::optional<base::TimeTicks> accounts_dialog_shown_time_;
@@ -431,7 +431,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Number of navigator.credentials.get() requests made for metrics purposes.
   // Requests made when there is a pending FedCM request or for the purpose of
-  // MDocs or multi-IDP are not counted.
+  // Wallets or multi-IDP are not counted.
   int num_requests_{0};
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};

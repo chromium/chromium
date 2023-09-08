@@ -69,24 +69,24 @@ struct LogoutRpsRequest {
 // are being prototyped.
 union IdentityProvider {
   IdentityProviderConfig federated;
-  MDocProvider mdoc;
+  WalletProvider holder;
 };
 
-// The details of an mdoc provider.
-struct MDocProvider {
+// The specification of the query to wallets.
+struct WalletProvider {
   map<string, string> params;
-  MDocSelector selector;
+  WalletSelector selector;
 };
 
-// The details of the selector.
-struct MDocSelector {
+// The requirements of the credentials that are being requested.
+struct WalletSelector {
   array<string> format;
   string? doctype;
-  array<MDocElement> fields;
+  array<WalletFieldRequirement> fields;
 };
 
-// The requirements that the verifier needs on fields.
-struct MDocElement {
+// The requirements that the verifier needs on specific fields.
+struct WalletFieldRequirement {
   // The name of the field (e.g. "org.iso.18013.5.1.family_name").
   string name;
 
