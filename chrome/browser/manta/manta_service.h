@@ -37,7 +37,7 @@ class MantaService : public KeyedService {
   // IdentityManager and should not be called past its lifetime. See
   // `Provider` header for details.
   std::unique_ptr<OrcaProvider> CreateOrcaProvider();
-  std::unique_ptr<SnapperProvider> CreateSnapperProvider();
+  virtual std::unique_ptr<SnapperProvider> CreateSnapperProvider();
 
  private:
   const raw_ptr<Profile> profile_;

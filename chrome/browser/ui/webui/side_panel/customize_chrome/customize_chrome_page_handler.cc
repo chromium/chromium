@@ -223,11 +223,22 @@ void CustomizeChromePageHandler::RemoveBackgroundImage() {
 }
 
 void CustomizeChromePageHandler::WallpaperSearchCallback(
+    SearchWallpaperCallback callback,
     std::unique_ptr<manta::proto::Response> response) {
-  return;
+  if (!response || response->output_data_size() < 1) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (ntp_custom_background_service_) {
+    ntp_custom_background_service_->SelectLocalBackgroundImage(
+        response->output_data(0).image().serialized_bytes());
+  }
+  std::move(callback).Run(true);
 }
 
-void CustomizeChromePageHandler::GetWallpaperSearchBackground() {
+void CustomizeChromePageHandler::SearchWallpaper(
+    const std::string& query,
+    SearchWallpaperCallback callback) {
   if (base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
       base::FeatureList::IsEnabled(features::kMantaService)) {
@@ -239,11 +250,11 @@ void CustomizeChromePageHandler::GetWallpaperSearchBackground() {
     request_config.set_image_resolution(
         manta::proto::ImageResolution::RESOLUTION_64);
     manta::proto::InputData& input_data = *request.add_input_data();
-    input_data.set_text("");
+    input_data.set_text(query);
     snapper_provider_->Call(
         request,
         base::BindOnce(&CustomizeChromePageHandler::WallpaperSearchCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 

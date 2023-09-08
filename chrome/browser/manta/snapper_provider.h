@@ -59,8 +59,8 @@ class SnapperProvider {
   // `SnapperDoneCallback` callback.
   //
   // NOTE: This methods internally depends on a valid `IdentityManager`.
-  void Call(const manta::proto::Request& request,
-            SnapperDoneCallback done_callback);
+  virtual void Call(const manta::proto::Request& request,
+                    SnapperDoneCallback done_callback);
 
  private:
   friend class FakeSnapperProvider;

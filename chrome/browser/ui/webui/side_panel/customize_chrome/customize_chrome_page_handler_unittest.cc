@@ -10,11 +10,17 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/manta/manta_service.h"
+#include "chrome/browser/manta/manta_service_factory.h"
+#include "chrome/browser/manta/snapper_provider.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -60,6 +66,10 @@ class BrowserContext;
 namespace {
 
 using testing::_;
+using testing::An;
+using testing::DoAll;
+using testing::Invoke;
+using testing::SaveArg;
 
 // A test SelectFileDialog to go straight to calling the listener.
 class TestSelectFileDialog : public ui::SelectFileDialog {
@@ -168,6 +178,7 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
   MOCK_METHOD(absl::optional<CustomBackground>, GetCustomBackground, ());
   MOCK_METHOD(void, ResetCustomBackgroundInfo, ());
   MOCK_METHOD(void, SelectLocalBackgroundImage, (const base::FilePath&));
+  MOCK_METHOD(void, SelectLocalBackgroundImage, (const std::string&));
   MOCK_METHOD(void, AddObserver, (NtpCustomBackgroundServiceObserver*));
   MOCK_METHOD(void,
               SetCustomBackgroundInfo,
@@ -209,7 +220,38 @@ class MockThemeService : public ThemeService {
   ThemeHelper theme_helper_;
 };
 
+using SnapperProviderCall =
+    base::RepeatingCallback<void(const manta::proto::Request&,
+                                 manta::SnapperProvider::SnapperDoneCallback)>;
+
+class TestSnapperProvider : public manta::SnapperProvider {
+ public:
+  explicit TestSnapperProvider(SnapperProviderCall call)
+      : manta::SnapperProvider(nullptr, nullptr), call_(call) {}
+  void Call(
+      const manta::proto::Request& request,
+      manta::SnapperProvider::SnapperDoneCallback done_callback) override {
+    call_.Run(request, std::move(done_callback));
+  }
+
+ private:
+  SnapperProviderCall call_;
+};
+
+class TestMantaService : public manta::MantaService {
+ public:
+  explicit TestMantaService(Profile* profile, SnapperProviderCall call)
+      : manta::MantaService(profile), call_(call) {}
+  std::unique_ptr<manta::SnapperProvider> CreateSnapperProvider() override {
+    return std::make_unique<TestSnapperProvider>(call_);
+  }
+
+ private:
+  SnapperProviderCall call_;
+};
+
 std::unique_ptr<TestingProfile> MakeTestingProfile(
+    SnapperProviderCall snapper_provider_call,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactory(
@@ -229,6 +271,16 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
                               -> std::unique_ptr<KeyedService> {
         return std::make_unique<testing::NiceMock<MockThemeService>>();
       }));
+  profile_builder.AddTestingFactory(
+      manta::MantaServiceFactory::GetInstance(),
+      base::BindRepeating(
+          [](SnapperProviderCall snapper_provider_call,
+             content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            return std::make_unique<TestMantaService>(
+                static_cast<Profile*>(context), snapper_provider_call);
+          },
+          snapper_provider_call));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();
   return profile;
@@ -240,6 +292,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
  public:
   CustomizeChromePageHandlerTest()
       : profile_(MakeTestingProfile(
+            mock_snapper_provider_call_.Get(),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_))),
         mock_ntp_custom_background_service_(profile_.get()),
@@ -301,6 +354,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
 
  protected:
   // NOTE: The initialization order of these members matters.
+  base::MockCallback<SnapperProviderCall> mock_snapper_provider_call_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockNtpCustomBackgroundService>
@@ -628,7 +682,8 @@ TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundSuccess) {
       .Times(1)
       .WillOnce(testing::Invoke(
           [&success](bool success_arg) { success = std::move(success_arg); }));
-  EXPECT_CALL(mock_ntp_custom_background_service_, SelectLocalBackgroundImage)
+  EXPECT_CALL(mock_ntp_custom_background_service_,
+              SelectLocalBackgroundImage(An<const base::FilePath&>()))
       .Times(1);
   EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
   handler().ChooseLocalCustomBackground(callback.Get());
@@ -802,4 +857,96 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
 
   EXPECT_EQ(1u, disabled_module_ids.size());
   EXPECT_EQ(kDriveModuleId, disabled_module_ids.front().GetString());
+}
+
+class CustomizeChromePageHandlerWithWallpaperSearchTest
+    : public CustomizeChromePageHandlerTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ntp_features::kCustomizeChromeWallpaperSearch,
+                              features::kMantaService},
+        /*disabled_features=*/{});
+    CustomizeChromePageHandlerTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       SearchWallpaper_Success) {
+  manta::proto::Request request;
+  manta::SnapperProvider::SnapperDoneCallback done_callback;
+  EXPECT_CALL(mock_snapper_provider_call_, Run(_, _))
+      .Times(1)
+      .WillOnce(DoAll(SaveArg<0>(&request), MoveArg<1>(&done_callback)));
+  base::MockCallback<CustomizeChromePageHandler::SearchWallpaperCallback>
+      callback;
+
+  handler().SearchWallpaper("foo", callback.Get());
+  EXPECT_EQ("foo", request.input_data(0).text());
+
+  std::string bytes;
+  EXPECT_CALL(mock_ntp_custom_background_service_,
+              SelectLocalBackgroundImage(An<const std::string&>()))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&bytes));
+  auto response = std::make_unique<manta::proto::Response>();
+  auto& output_data = *response->add_output_data();
+  auto& image = *output_data.mutable_image();
+  image.set_serialized_bytes("bar");
+  bool success = false;
+  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(SaveArg<0>(&success));
+
+  std::move(done_callback).Run(std::move(response));
+  EXPECT_EQ("bar", bytes);
+  EXPECT_TRUE(success);
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       SearchWallpaper_NoResponse) {
+  manta::proto::Request request;
+  manta::SnapperProvider::SnapperDoneCallback done_callback;
+  EXPECT_CALL(mock_snapper_provider_call_, Run(_, _))
+      .Times(1)
+      .WillOnce(DoAll(SaveArg<0>(&request), MoveArg<1>(&done_callback)));
+  base::MockCallback<CustomizeChromePageHandler::SearchWallpaperCallback>
+      callback;
+
+  handler().SearchWallpaper("foo", callback.Get());
+  EXPECT_EQ("foo", request.input_data(0).text());
+
+  EXPECT_CALL(mock_ntp_custom_background_service_,
+              SelectLocalBackgroundImage(An<const std::string&>()))
+      .Times(0);
+  bool success = true;
+  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(SaveArg<0>(&success));
+
+  std::move(done_callback).Run(nullptr);
+  EXPECT_FALSE(success);
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       SearchWallpaper_NoImages) {
+  manta::proto::Request request;
+  manta::SnapperProvider::SnapperDoneCallback done_callback;
+  EXPECT_CALL(mock_snapper_provider_call_, Run(_, _))
+      .Times(1)
+      .WillOnce(DoAll(SaveArg<0>(&request), MoveArg<1>(&done_callback)));
+  base::MockCallback<CustomizeChromePageHandler::SearchWallpaperCallback>
+      callback;
+
+  handler().SearchWallpaper("foo", callback.Get());
+  EXPECT_EQ("foo", request.input_data(0).text());
+
+  EXPECT_CALL(mock_ntp_custom_background_service_,
+              SelectLocalBackgroundImage(An<const std::string&>()))
+      .Times(0);
+  auto response = std::make_unique<manta::proto::Response>();
+  bool success = true;
+  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(SaveArg<0>(&success));
+
+  std::move(done_callback).Run(std::move(response));
+  EXPECT_FALSE(success);
 }

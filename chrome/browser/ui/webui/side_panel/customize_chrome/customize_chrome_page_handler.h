@@ -96,12 +96,13 @@ class CustomizeChromePageHandler
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void UpdateModulesSettings() override;
   void UpdateScrollToSection() override;
-
-  void GetWallpaperSearchBackground();
+  void SearchWallpaper(const std::string& query,
+                       SearchWallpaperCallback callback) override;
 
  private:
   void LogEvent(NTPLoggingEventType event);
   void WallpaperSearchCallback(
+      SearchWallpaperCallback callback,
       std::unique_ptr<manta::proto::Response> response);
 
   bool IsCustomLinksEnabled() const;

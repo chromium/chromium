@@ -150,6 +150,9 @@ interface CustomizeChromePageHandler {
 
   // Triggers a call to |CustomizeChromePage.UpdateScrollToSection()|.
   UpdateScrollToSection();
+
+  // Searches NTP wallpaper for `query`. Returns true if search was successful.
+  SearchWallpaper(string query) => (bool success);
 };
 
 // WebUI-side handler for requests from the browser.

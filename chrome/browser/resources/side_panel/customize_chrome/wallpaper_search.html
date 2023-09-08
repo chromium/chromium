@@ -5,8 +5,9 @@
   }
 </style>
 <cr-input
+    id="queryInput"
     type="text"
     placeholder="Query"
     value="{{query_}}">
 </cr-input>
-<cr-button id="submitButton">Search</cr-button>
+<cr-button id="submitButton" on-click="onSearchClick_">Search</cr-button>
