@@ -8,10 +8,12 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
@@ -47,6 +49,7 @@ public class PageInsightsCoordinator {
      * Constructor.
      * @param context The associated {@link Context}.
      * @param tabProvider Provider of the current activity tab.
+     * @param shareDelegateSupplier Supplier of {@link ShareDelegate}.
      * @param bottomSheetController {@link ManagedBottomSheetController} for page insights.
      * @param bottomUiController {@link BottomSheetController} for other bottom sheet UIs.
      * @param expandedSheetHelper Helps interaction with other UI in expanded mode.
@@ -55,6 +58,7 @@ public class PageInsightsCoordinator {
      * @param isPageInsightsHubEnabled Supplier of the feature flag.
      */
     public PageInsightsCoordinator(Context context, ObservableSupplier<Tab> tabProvider,
+            Supplier<ShareDelegate> shareDelegateSupplier,
             ManagedBottomSheetController bottomSheetController,
             BottomSheetController bottomUiController, ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
@@ -66,9 +70,9 @@ public class PageInsightsCoordinator {
         mBottomUiController = bottomUiController;
         mControlsStateProvider = controlsStateProvider;
         mBrowserControlsSizer = browserControlsSizer;
-        mMediator = new PageInsightsMediator(mContext, mTabProvider, mBottomSheetController,
-                mBottomUiController, mExpandedSheetHelper, mControlsStateProvider,
-                mBrowserControlsSizer, isPageInsightsHubEnabled);
+        mMediator = new PageInsightsMediator(mContext, mTabProvider, shareDelegateSupplier,
+                mBottomSheetController, mBottomUiController, mExpandedSheetHelper,
+                mControlsStateProvider, mBrowserControlsSizer, isPageInsightsHubEnabled);
     }
 
     /**

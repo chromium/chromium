@@ -4,21 +4,57 @@
 
 package org.chromium.chrome.browser.page_insights;
 
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsActionsHandler;
+import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.HashMap;
 
 /** Implementation of {@link PageInsightsActionsHandler}. */
 class PageInsightsActionHandlerImpl implements PageInsightsActionsHandler {
-    // TODO(b/286003870): Implement all methods.
+    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final ChildPageNavigator mChildPageNavigator;
 
-    /**
-     * Creates and returns a map containing an instance of this {@link PageInsightsActionsHandler}
-     * implementation.
-     */
-    static HashMap<String, Object> createContextValues() {
+    static interface ChildPageNavigator {
+        void navigateToChildPage(int pageId);
+    }
+
+    /** Creates and returns a map containing the given {@link PageInsightsActionsHandlerImpl}. */
+    static HashMap<String, Object> createContextValues(
+            PageInsightsActionHandlerImpl pageInsightsActionHandlerImpl) {
         HashMap<String, Object> contextValues = new HashMap<>();
-        contextValues.put(PageInsightsActionsHandler.KEY, new PageInsightsActionHandlerImpl());
+        contextValues.put(PageInsightsActionsHandler.KEY, pageInsightsActionHandlerImpl);
         return contextValues;
+    }
+
+    PageInsightsActionHandlerImpl(Supplier<Tab> tabSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier, ChildPageNavigator childPageNavigator) {
+        mTabSupplier = tabSupplier;
+        mShareDelegateSupplier = shareDelegateSupplier;
+        mChildPageNavigator = childPageNavigator;
+    }
+
+    @Override
+    public void openUrl(String url, boolean doesRequestSpecifySameSession) {
+        // TODO(b/286003870): Consider opening a new CCT if doesRequestSpecifySameSession is false.
+        mTabSupplier.get().loadUrl(new LoadUrlParams(url));
+    }
+
+    @Override
+    public void share(String url, String title) {
+        mShareDelegateSupplier.get().share(
+                new ShareParams.Builder(mTabSupplier.get().getWindowAndroid(), title, url).build(),
+                new ChromeShareExtras.Builder().build(), ShareOrigin.PAGE_INSIGHTS);
+    }
+
+    @Override
+    public void navigateToPageInsightsPage(int pageId) {
+        mChildPageNavigator.navigateToChildPage(pageId);
     }
 }
