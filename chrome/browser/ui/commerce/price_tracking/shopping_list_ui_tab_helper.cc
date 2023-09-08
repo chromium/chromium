@@ -553,8 +553,18 @@ ShoppingListUiTabHelper::GetPageActionToExpand() {
   // If none of the above cases expanded a chip, expand the price tracking chip
   // if the product price is > $100.
   if (product_info_for_page_.has_value() &&
-      product_info_for_page_->amount_micros > kAlwaysExpandChipPriceMicros) {
-    return PageActionIconType::kPriceTracking;
+      product_info_for_page_->amount_micros > kAlwaysExpandChipPriceMicros &&
+      product_info_for_page_->product_cluster_id.has_value()) {
+    CommerceSubscription sub(
+        SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+        base::NumberToString(
+            product_info_for_page_->product_cluster_id.value()),
+        ManagementType::kUserManaged);
+
+    // Only expand the chip if the product isn't already tracked.
+    if (!shopping_service_->IsSubscribedFromCache(sub)) {
+      return PageActionIconType::kPriceTracking;
+    }
   }
 
   return absl::nullopt;
