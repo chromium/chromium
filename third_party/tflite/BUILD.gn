@@ -144,7 +144,6 @@ if (build_with_mediapipe_lib) {
       "src/tensorflow/lite/kernels/kernel_util.h",
       "src/tensorflow/lite/kernels/mfcc.cc",
       "src/tensorflow/lite/kernels/multinomial.cc",
-      "src/tensorflow/lite/kernels/random_ops.cc",
       "src/tensorflow/lite/kernels/random_standard_normal_custom.cc",
       "src/tensorflow/lite/kernels/random_uniform_custom.cc",
       "src/tensorflow/lite/kernels/right_shift.cc",
