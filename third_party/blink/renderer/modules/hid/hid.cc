@@ -8,6 +8,7 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_device_filter.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid_connection_event.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -129,9 +131,26 @@ void HID::AddedEventListener(const AtomicString& event_type,
     return;
   }
 
-  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
-                                GetExecutionContext(), nullptr)) {
+  auto* context = GetExecutionContext();
+  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(), context,
+                                nullptr)) {
     return;
+  }
+
+  if (context->IsServiceWorkerGlobalScope()) {
+    auto* service_worker_global_scope =
+        static_cast<ServiceWorkerGlobalScope*>(context);
+    if (service_worker_global_scope->did_evaluate_script()) {
+      String message = String::Format(
+          "Event handler of '%s' event must be added on the initial evaluation "
+          "of worker script. More info: "
+          "https://developer.chrome.com/docs/extensions/mv3/service_workers/"
+          "events/",
+          event_type.Utf8().c_str());
+      GetExecutionContext()->AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning, message);
+    }
   }
 
   EnsureServiceConnection();

@@ -344,6 +344,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   FindRaceNetworkRequestURLLoaderFactory(
       const base::UnguessableToken& token) final;
 
+  bool did_evaluate_script() { return did_evaluate_script_; }
+
  protected:
   // EventTarget
   bool AddEventListenerInternal(

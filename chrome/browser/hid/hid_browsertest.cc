@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
@@ -24,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/service_worker_running_info.h"
@@ -150,6 +153,43 @@ class TestServiceWorkerContextObserver
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
   GURL extension_url_;
+};
+
+class TestServiceWorkerConsoleObserver
+    : public content::ServiceWorkerContextObserver {
+ public:
+  explicit TestServiceWorkerConsoleObserver(
+      content::BrowserContext* browser_context) {
+    content::StoragePartition* partition =
+        browser_context->GetDefaultStoragePartition();
+    scoped_observation_.Observe(partition->GetServiceWorkerContext());
+  }
+  ~TestServiceWorkerConsoleObserver() override = default;
+
+  TestServiceWorkerConsoleObserver(const TestServiceWorkerConsoleObserver&) =
+      delete;
+  TestServiceWorkerConsoleObserver& operator=(
+      const TestServiceWorkerConsoleObserver&) = delete;
+
+  using Message = content::ConsoleMessage;
+  const std::vector<Message>& messages() const { return messages_; }
+
+  void WaitForMessages() { run_loop_.Run(); }
+
+ private:
+  // ServiceWorkerContextObserver:
+  void OnReportConsoleMessage(int64_t version_id,
+                              const GURL& scope,
+                              const Message& message) override {
+    messages_.push_back(message);
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  std::vector<Message> messages_;
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserver>
+      scoped_observation_{this};
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -532,5 +572,56 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
   // Since we have active HID device session at this point, click the HID system
   // tray icon and check right links are opened by the browser.
   SimulateClickOnSystemTrayIconButton(browser(), extension);
+}
+
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
+                       EventListenerAddedAfterServiceWorkerIsActivated) {
+  const char kWarningMessage[] =
+      "Event handler of '%s' event must be added on the initial evaluation "
+      "of worker script. More info: "
+      "https://developer.chrome.com/docs/extensions/mv3/service_workers/"
+      "events/";
+
+  content::ServiceWorkerContext* context = browser()
+                                               ->profile()
+                                               ->GetDefaultStoragePartition()
+                                               ->GetServiceWorkerContext();
+  // Set up an observer for service worker events.
+  TestServiceWorkerContextObserver sw_observer(context, kTestExtensionId);
+  // Set up an observer for console messages reported by service worker
+  TestServiceWorkerConsoleObserver console_observer(browser()
+                                                        ->tab_strip_model()
+                                                        ->GetActiveWebContents()
+                                                        ->GetBrowserContext());
+  TestExtensionDir test_dir;
+  constexpr char kBackgroundJs[] = R"(
+      chrome.test.sendMessage("ready", function() {
+        navigator.hid.addEventListener("connect", () => {});
+      });
+    )";
+  SetUpTestDir(test_dir, kBackgroundJs);
+
+  // Launch the test app.
+  extensions::ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  // TODO(crbug.com/1336400): Grant permission using requestDevice().
+  // Run the test.
+  SetUpPolicy(extension);
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension->id(), kTestExtensionId);
+  sw_observer.WaitForWorkerStart();
+  sw_observer.WaitForWorkerActivated();
+
+  auto device = CreateTestDeviceWithInputAndOutputReports();
+  hid_manager()->AddDevice(device.Clone());
+
+  // Warning message will be displayed when event listener is nested inside a
+  // function
+  console_observer.WaitForMessages();
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+  EXPECT_EQ(console_observer.messages().begin()->message_level,
+            blink::mojom::ConsoleMessageLevel::kWarning);
+  EXPECT_EQ(console_observer.messages().begin()->message,
+            base::UTF8ToUTF16(base::StringPrintf(kWarningMessage, "connect")));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
