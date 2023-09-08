@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.26](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.25...chromium-bidi-v0.4.26) (2023-09-08)
+
+
+### Bug Fixes
+
+* catch uncaught throws from #getHandleFromWindow ([#1273](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1273)) ([f41d5cf](https://github.com/GoogleChromeLabs/chromium-bidi/commit/f41d5cf1decac1e1edf811fe3f482beff67dacba))
+
 ## [0.4.25](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.24...chromium-bidi-v0.4.25) (2023-09-08)
 
 
