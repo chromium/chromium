@@ -50,6 +50,8 @@
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -815,6 +817,16 @@ void WebAppPublisherHelper::UninstallWebApp(
     return;
   }
 
+  // Off the record profiles cannot be 'kept alive'.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+      profile_->IsOffTheRecord()
+          ? nullptr
+          : std::make_unique<ScopedProfileKeepAlive>(
+                profile_, ProfileKeepAliveOrigin::kWebAppUninstall);
+  // Ensure profile is kept alive until ClearSiteData is done.
+  auto callback = base::BindOnce(
+      [](std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {},
+      std::move(profile_keep_alive));
   content::ClearSiteData(
       base::BindRepeating(
           [](content::BrowserContext* browser_context) {
@@ -826,7 +838,7 @@ void WebAppPublisherHelper::UninstallWebApp(
       /*storage_buckets_to_remove=*/{}, /*avoid_closing_connections=*/false,
       /*cookie_partition_key=*/absl::nullopt,
       /*storage_key=*/absl::nullopt,
-      /*partitioned_state_allowed_only=*/false, base::DoNothing());
+      /*partitioned_state_allowed_only=*/false, std::move(callback));
 }
 
 void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {

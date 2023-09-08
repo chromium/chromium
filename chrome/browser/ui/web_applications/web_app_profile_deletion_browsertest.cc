@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -95,6 +96,16 @@ class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
   base::AutoReset<bool> skip_preinstalled_;
 };
 
+class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
+  // WebAppPublisherHelper::Delegate:
+  void PublishWebApps(std::vector<apps::AppPtr> apps) override {}
+  void PublishWebApp(apps::AppPtr app) override {}
+  void ModifyWebAppCapabilityAccess(
+      const std::string& app_id,
+      absl::optional<bool> accessing_camera,
+      absl::optional<bool> accessing_microphone) override {}
+};
+
 // Flaky on Windows: https://crbug.com/1247547.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AppRegistrarNotifiesProfileDeletion \
@@ -161,6 +172,51 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest, OsIntegrationRemoved) {
   base::test::TestFuture<const AppId&> app_id_future;
   provider->os_integration_manager().SetForceUnregisterCalledForTesting(
       app_id_future.GetRepeatingCallback());
+
+  // Trigger profile deletion while uninstalling the app to simulate profile
+  // pointer being invalidated.
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile_to_delete.GetPath(), base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+
+  ASSERT_TRUE(app_id_future.Wait());
+  EXPECT_EQ(app_id_future.Get(), app_id);
+}
+
+using WebAppProfileDeletionBrowserTest_WebAppPublisher =
+    WebAppProfileDeletionBrowserTest;
+IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest_WebAppPublisher,
+                       UninstallWhileProfileIsBeingDeleted) {
+  const GURL app_url = GetInstallableAppURL();
+
+  /// Create a new profile and install a web app.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CreateSession(test_account_id_);
+  Profile& profile_to_delete = StartUserSession(test_account_id_);
+#else
+  base::FilePath profile_path_to_delete =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile_to_delete = profiles::testing::CreateProfileSync(
+      profile_manager, profile_path_to_delete);
+#endif
+  Browser::Create(Browser::CreateParams(&profile_to_delete, true));
+  const AppId app_id = InstallAppToProfile(&profile_to_delete, app_url);
+  auto* provider = WebAppProvider::GetForTest(&profile_to_delete);
+  auto* web_app = provider->registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+
+  base::test::TestFuture<const AppId&> app_id_future;
+  provider->os_integration_manager().SetForceUnregisterCalledForTesting(
+      app_id_future.GetRepeatingCallback());
+
+  // Uninstall the web app.
+  NoOpWebAppPublisherDelegate no_op_delegate;
+  auto web_app_publisher_helper = std::make_unique<WebAppPublisherHelper>(
+      &profile_to_delete, provider, &no_op_delegate);
+  web_app_publisher_helper->UninstallWebApp(
+      web_app, apps::UninstallSource::kAppList, /*clear_site_data*/ true,
+      /*report_abuse*/ false);
 
   // Trigger profile deletion while uninstalling the app to simulate profile
   // pointer being invalidated.
