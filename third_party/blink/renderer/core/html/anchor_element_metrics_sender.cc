@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/rand_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
@@ -65,7 +66,8 @@ bool AnchorElementMetricsSender::HasAnchorElementMetricsSender(
       base::FeatureList::IsEnabled(features::kNavigationPredictor);
   const KURL& url = document.BaseURL();
   return is_feature_enabled && document.IsInOutermostMainFrame() &&
-         url.IsValid() && url.ProtocolIs("https");
+         url.IsValid() && url.ProtocolIsInHTTPFamily() &&
+         network::IsUrlPotentiallyTrustworthy(GURL(url));
 }
 
 void AnchorElementMetricsSender::
