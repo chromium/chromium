@@ -906,6 +906,11 @@ const char kDriveFsBulkPinningMaxQueueSize[] =
 
 // Deprecated 09/2023.
 const char kPrivacySandboxM1Unrestricted[] = "privacy_sandbox.m1.unrestricted";
+#if BUILDFLAG(IS_WIN)
+const char kSwReporter[] = "software_reporter";
+inline constexpr char kChromeCleaner[] = "chrome_cleaner";
+inline constexpr char kSettingsResetPrompt[] = "settings_reset_prompt";
+#endif
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1030,6 +1035,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kShutdownNumProcesses, 0);
   registry->RegisterIntegerPref(kShutdownNumProcessesSlow, 0);
   registry->RegisterIntegerPref(kShutdownType, 0);
+
+  // Deprecated 09/2023.
+#if BUILDFLAG(IS_WIN)
+  registry->RegisterDictionaryPref(kSwReporter);
+  registry->RegisterDictionaryPref(kChromeCleaner);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1269,6 +1280,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 09/2023.
   registry->RegisterBooleanPref(kPrivacySandboxM1Unrestricted, false);
+#if BUILDFLAG(IS_WIN)
+  registry->RegisterDictionaryPref(kSwReporter);
+  registry->RegisterDictionaryPref(kSettingsResetPrompt);
+  registry->RegisterDictionaryPref(kChromeCleaner);
+#endif
 }
 
 }  // namespace
@@ -2091,6 +2107,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kShutdownNumProcessesSlow);
   local_state->ClearPref(kShutdownType);
 
+  // Added 09/2023.
+#if BUILDFLAG(IS_WIN)
+  local_state->ClearPref(kSwReporter);
+  local_state->ClearPref(kChromeCleaner);
+#endif
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2405,6 +2427,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 09/2023
   profile_prefs->ClearPref(kPrivacySandboxM1Unrestricted);
+#if BUILDFLAG(IS_WIN)
+  profile_prefs->ClearPref(kSwReporter);
+  profile_prefs->ClearPref(kSettingsResetPrompt);
+  profile_prefs->ClearPref(kChromeCleaner);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

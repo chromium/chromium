@@ -153,11 +153,6 @@ bool IsSettingReadOnly(const std::string& pref_name) {
     return true;
   }
 #endif
-#if BUILDFLAG(IS_WIN)
-  // Don't allow user to change sw_reporter preferences.
-  if (pref_name == prefs::kSwReporterEnabled)
-    return true;
-#endif
   return false;
 }
 
@@ -1073,14 +1068,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Media Remoting settings.
   (*s_allowlist)[media_router::prefs::kMediaRouterMediaRemotingEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-
-#if BUILDFLAG(IS_WIN)
-  // SwReporter settings.
-  (*s_allowlist)[::prefs::kSwReporterEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kSwReporterReportingEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-#endif
 
   // Performance settings.
   (*s_allowlist)

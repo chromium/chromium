@@ -107195,16 +107195,21 @@ Full version information for the fingerprint enum values:
   <int value="16" label="kSafeBrowsingIncidentReportSent"/>
   <int value="17" label="kSyncRemainingRollbackTries"/>
   <int value="18" label="kSafeBrowsingIncidentsSent"/>
-  <int value="19" label="kSwReporterPromptVersion"/>
-  <int value="20" label="kSwReporterPromptReason"/>
+  <int value="19" label="kSwReporterPromptVersion (Obsolete 9/2023)"/>
+  <int value="20" label="kSwReporterPromptReason (Obsolete 9/2023)"/>
   <int value="21" label="kGoogleServicesUsername (Obsolete 9/2019)"/>
-  <int value="22" label="kSwReporterPromptSeed"/>
+  <int value="22" label="kSwReporterPromptSeed (Obsolete 9/2023)"/>
   <int value="23" label="kGoogleServicesAccountId"/>
   <int value="24" label="kGoogleServicesLastAccountId"/>
-  <int value="25" label="kSettingsResetPromptPromptWave"/>
-  <int value="26" label="kSettingsResetPromptLastTriggeredForDefaultSearch"/>
-  <int value="27" label="kSettingsResetPromptLastTriggeredForStartupUrls"/>
-  <int value="28" label="kSettingsResetPromptLastTriggeredForHomepage"/>
+  <int value="25" label="kSettingsResetPromptPromptWave (Obsolete 9/2023)"/>
+  <int value="26"
+      label="kSettingsResetPromptLastTriggeredForDefaultSearch (Obsolete
+             9/2023)"/>
+  <int value="27"
+      label="kSettingsResetPromptLastTriggeredForStartupUrls (Obsolete
+             9/2023)"/>
+  <int value="28"
+      label="kSettingsResetPromptLastTriggeredForHomepage (Obsolete 9/2023)"/>
   <int value="29" label="kMediaStorageIdSalt"/>
   <int value="30" label="kModuleBlocklistCacheMD5Digest"/>
   <int value="32" label="kMediaCdmOriginData"/>

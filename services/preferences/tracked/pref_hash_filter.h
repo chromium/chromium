@@ -99,6 +99,9 @@ class PrefHashFilter : public InterceptablePrefFilter {
 
   void OnStoreDeletionFromDisk() override;
 
+  static void SetDeprecatedPrefsForTesting(
+      const std::vector<const char*>& deprecated_prefs);
+
  private:
   // InterceptablePrefFilter implementation.
   void FinalizeFilterOnLoad(

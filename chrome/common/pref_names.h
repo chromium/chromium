@@ -123,16 +123,6 @@ inline constexpr char kProfileCreationTime[] = "profile.creation_time";
 // prompt. See triggered_profile_resetter.h for more information.
 inline constexpr char kLastProfileResetTimestamp[] =
     "profile.last_reset_timestamp";
-
-// A boolean indicating if settings should be reset for this profile once a
-// run of the Chrome Cleanup Tool has completed.
-inline constexpr char kChromeCleanerResetPending[] =
-    "chrome_cleaner.reset_pending";
-
-// The last time the Chrome cleaner scan completed without finding anything,
-// while Chrome was opened.
-inline constexpr char kChromeCleanerScanCompletionTime[] =
-    "chrome_cleaner.scan_completion_time";
 #endif
 
 // The URL to open the new tab page to. Only set by Group Policy.
@@ -3389,31 +3379,6 @@ inline constexpr char kRendererAppContainerEnabled[] =
 inline constexpr char kBlockBrowserLegacyExtensionPoints[] =
     "block_browser_legacy_extension_points";
 #endif  // BUILDFLAG(IS_WIN)
-
-// An integer that keeps track of prompt waves for the settings reset
-// prompt. Users will be prompted to reset settings at most once per prompt wave
-// for each setting that the prompt targets (default search, startup URLs and
-// homepage). The value is obtained via a feature parameter. When the stored
-// value is different from the feature parameter, a new prompt wave begins.
-inline constexpr char kSettingsResetPromptPromptWave[] =
-    "settings_reset_prompt.prompt_wave";
-
-// Timestamp of the last time the settings reset prompt was shown during the
-// current prompt wave asking the user if they want to restore their search
-// engine.
-inline constexpr char kSettingsResetPromptLastTriggeredForDefaultSearch[] =
-    "settings_reset_prompt.last_triggered_for_default_search";
-
-// Timestamp of the last time the settings reset prompt was shown during the
-// current prompt wave asking the user if they want to restore their startup
-// settings.
-inline constexpr char kSettingsResetPromptLastTriggeredForStartupUrls[] =
-    "settings_reset_prompt.last_triggered_for_startup_urls";
-
-// Timestamp of the last time the settings reset prompt was shown during the
-// current prompt wave asking the user if they want to restore their homepage.
-inline constexpr char kSettingsResetPromptLastTriggeredForHomepage[] =
-    "settings_reset_prompt.last_triggered_for_homepage";
 
 #if BUILDFLAG(IS_ANDROID)
 // Timestamp of the clipboard's last modified time, stored in base::Time's
