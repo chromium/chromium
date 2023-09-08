@@ -49,8 +49,6 @@ consoles.console_view(
             "win11",
             "win32",
             "buildperf",
-            # TODO(crbug.com/1441164): remove after CR2023 launch.
-            "cr23",
         ],
         "code_coverage": consoles.ordering(
             short_names = ["and", "ann", "lnx", "lcr", "jcr", "mac"],
@@ -2552,72 +2550,4 @@ ci.builder(
     execution_timeout = 16 * time.hour,
     notifies = ["annotator-rel"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-)
-
-# TODO(crbug.com/1441164): ChromeRefresh2023 builders. Remove after launch.
-ci.builder(
-    name = "linux-cr23-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "cr23",
-        short_name = "lnx",
-    ),
-)
-
-ci.builder(
-    name = "win-cr23-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-    ),
-    builderless = True,
-    os = os.WINDOWS_10,
-    console_view_entry = consoles.console_view_entry(
-        category = "cr23",
-        short_name = "win",
-    ),
-)
-
-fyi_mac_builder(
-    name = "mac-cr23-rel",
-    # TODO(crbug.com/1422735): use thin_tester once FYI bots have
-    # dedicated compilators.
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    builderless = True,
-    cores = None,
-    os = os.MAC_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "cr23",
-        short_name = "mac",
-    ),
 )

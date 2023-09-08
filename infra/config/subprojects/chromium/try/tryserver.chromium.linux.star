@@ -932,8 +932,3 @@ try_.builder(
     use_javascript_coverage = True,
 )
 ############### Coverage Builders End ##################
-
-try_.builder(
-    name = "linux-cr23-rel",
-    mirrors = ["ci/linux-cr23-rel"],
-)

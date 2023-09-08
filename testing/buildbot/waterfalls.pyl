@@ -3665,15 +3665,6 @@
           'scripts': 'test_traffic_annotation_auditor_script'
         },
       },
-      'linux-cr23-rel': {
-        'mixins': [
-          'linux-jammy',
-          'x86-64',
-        ],
-        'test_suites': {
-        },
-        'os_type': 'linux',
-      },
       'linux-fieldtrial-rel': {
         'mixins': [
           'linux-jammy',
@@ -3829,14 +3820,6 @@
           'isolated_scripts': 'wpt_web_tests_input',
         },
       },
-      'mac-cr23-rel': {
-        'test_suites': {
-        },
-        'mixins': [
-          'mac_x64',
-        ],
-        'os_type': 'mac',
-      },
       'mac-fieldtrial-tester': {
         'mixins': [
           'finch-chromium-swarming-pool',
@@ -3953,15 +3936,6 @@
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',
         },
-      },
-      'win-cr23-rel': {
-        'test_suites': {
-        },
-        'mixins': [
-          'win10-any',
-          'x86-64',
-        ],
-        'os_type': 'win',
       },
       'win-fieldtrial-rel': {
         'mixins': [

@@ -354,8 +354,3 @@ try_.gpu.optional_tests_builder(
         ],
     ),
 )
-
-try_.builder(
-    name = "win-cr23-rel",
-    mirrors = ["ci/win-cr23-rel"],
-)
