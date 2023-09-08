@@ -137,8 +137,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             //    visibility), or
             // 2. the list is too short, and almost entirely fits on the screen, leaving at most
             //    just a few pixels of content hiding under the keyboard.
-            // There's no need to dismiss the keyboard in any of these cases.
-            if (resultingDeltaY < requestedDeltaY) return resultingDeltaY;
+            // Note that the list may extend below the keyboard and still be non-scrollable:
+            // http://crbug/1479437
+
             // Otherwise decide whether keyboard should be shown or not.
             // We want to call keyboard up only when we know we reached the top of the list.
             // Note: the condition below evaluates `true` only if the scroll direction is "up",
