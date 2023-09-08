@@ -231,8 +231,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_CONIC_CHOP
 
-#define SK_DISABLE_LEGACY_MAKEWITHFILTER
-
 #define SK_ENABLE_SKSL_IN_RASTER_PIPELINE
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
