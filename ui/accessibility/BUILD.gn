@@ -184,8 +184,8 @@ component("accessibility_internal") {
     "ax_tree_update_util.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
-    "single_ax_tree_manager.cc",
-    "single_ax_tree_manager.h",
+    "test_single_ax_tree_manager.cc",
+    "test_single_ax_tree_manager.h",
   ]
 
   deps = [

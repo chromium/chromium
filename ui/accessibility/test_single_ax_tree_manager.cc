@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/single_ax_tree_manager.h"
+#include "ui/accessibility/test_single_ax_tree_manager.h"
 
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -10,12 +10,13 @@
 
 namespace ui {
 
-SingleAXTreeManager::SingleAXTreeManager() = default;
+TestSingleAXTreeManager::TestSingleAXTreeManager() = default;
 
-SingleAXTreeManager::SingleAXTreeManager(std::unique_ptr<AXTree> tree)
+TestSingleAXTreeManager::TestSingleAXTreeManager(std::unique_ptr<AXTree> tree)
     : AXTreeManager(std::move(tree)) {}
 
-SingleAXTreeManager::SingleAXTreeManager(SingleAXTreeManager&& manager)
+TestSingleAXTreeManager::TestSingleAXTreeManager(
+    TestSingleAXTreeManager&& manager)
     : AXTreeManager(std::move(manager.ax_tree_)) {
   if (ax_tree_) {
     GetMap().RemoveTreeManager(GetTreeID());
@@ -23,8 +24,8 @@ SingleAXTreeManager::SingleAXTreeManager(SingleAXTreeManager&& manager)
   }
 }
 
-SingleAXTreeManager& SingleAXTreeManager::operator=(
-    SingleAXTreeManager&& manager) {
+TestSingleAXTreeManager& TestSingleAXTreeManager::operator=(
+    TestSingleAXTreeManager&& manager) {
   if (this == &manager) {
     return *this;
   }
@@ -37,21 +38,21 @@ SingleAXTreeManager& SingleAXTreeManager::operator=(
   return *this;
 }
 
-SingleAXTreeManager::~SingleAXTreeManager() = default;
+TestSingleAXTreeManager::~TestSingleAXTreeManager() = default;
 
-void SingleAXTreeManager::DestroyTree() {
+void TestSingleAXTreeManager::DestroyTree() {
   if (HasValidTreeID()) {
     GetMap().RemoveTreeManager(GetTreeID());
   }
   ax_tree_.reset();
 }
 
-AXTree* SingleAXTreeManager::GetTree() const {
+AXTree* TestSingleAXTreeManager::GetTree() const {
   DCHECK(ax_tree_) << "Did you forget to call SetTree?";
   return ax_tree_.get();
 }
 
-void SingleAXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
+void TestSingleAXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
   if (HasValidTreeID()) {
     GetMap().RemoveTreeManager(GetTreeID());
   }
@@ -62,7 +63,7 @@ void SingleAXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
   }
 }
 
-AXTree* SingleAXTreeManager::Init(AXTreeUpdate tree_update) {
+AXTree* TestSingleAXTreeManager::Init(AXTreeUpdate tree_update) {
   tree_update.has_tree_data = true;
   if (tree_update.tree_data.tree_id == AXTreeIDUnknown()) {
     tree_update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
@@ -71,7 +72,7 @@ AXTree* SingleAXTreeManager::Init(AXTreeUpdate tree_update) {
   return ax_tree_.get();
 }
 
-AXTree* SingleAXTreeManager::Init(
+AXTree* TestSingleAXTreeManager::Init(
     const ui::AXNodeData& node1,
     const ui::AXNodeData& node2 /* = ui::AXNodeData() */,
     const ui::AXNodeData& node3 /* = ui::AXNodeData() */,
@@ -124,13 +125,13 @@ AXTree* SingleAXTreeManager::Init(
   return Init(update);
 }
 
-AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTreePosition(
+AXNodePosition::AXPositionInstance TestSingleAXTreeManager::CreateTreePosition(
     const AXNode& anchor,
     int child_index) const {
   return AXNodePosition::CreateTreePosition(anchor, child_index);
 }
 
-AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTreePosition(
+AXNodePosition::AXPositionInstance TestSingleAXTreeManager::CreateTreePosition(
     const AXTree* tree,
     const AXNodeData& anchor_data,
     int child_index) const {
@@ -138,20 +139,20 @@ AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTreePosition(
   return CreateTreePosition(*anchor, child_index);
 }
 
-AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTreePosition(
+AXNodePosition::AXPositionInstance TestSingleAXTreeManager::CreateTreePosition(
     const AXNodeData& anchor_data,
     int child_index) const {
   return CreateTreePosition(ax_tree(), anchor_data, child_index);
 }
 
-AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTextPosition(
+AXNodePosition::AXPositionInstance TestSingleAXTreeManager::CreateTextPosition(
     const AXNode& anchor,
     int text_offset,
     ax::mojom::TextAffinity affinity) const {
   return AXNodePosition::CreateTextPosition(anchor, text_offset, affinity);
 }
 
-AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTextPosition(
+AXNodePosition::AXPositionInstance TestSingleAXTreeManager::CreateTextPosition(
     const AXTree* tree,
     const AXNodeData& anchor_data,
     int text_offset,
@@ -160,14 +161,14 @@ AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTextPosition(
   return CreateTextPosition(*anchor, text_offset, affinity);
 }
 
-AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTextPosition(
+AXNodePosition::AXPositionInstance TestSingleAXTreeManager::CreateTextPosition(
     const AXNodeData& anchor_data,
     int text_offset,
     ax::mojom::TextAffinity affinity) const {
   return CreateTextPosition(ax_tree(), anchor_data, text_offset, affinity);
 }
 
-AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTextPosition(
+AXNodePosition::AXPositionInstance TestSingleAXTreeManager::CreateTextPosition(
     const AXNodeID& anchor_id,
     int text_offset,
     ax::mojom::TextAffinity affinity) const {
@@ -175,10 +176,11 @@ AXNodePosition::AXPositionInstance SingleAXTreeManager::CreateTextPosition(
   return CreateTextPosition(*anchor, text_offset, affinity);
 }
 
-AXNode* SingleAXTreeManager::GetParentNodeFromParentTree() const {
+AXNode* TestSingleAXTreeManager::GetParentNodeFromParentTree() const {
   AXTreeID parent_tree_id = GetParentTreeID();
-  SingleAXTreeManager* parent_manager =
-      static_cast<SingleAXTreeManager*>(AXTreeManager::FromID(parent_tree_id));
+  TestSingleAXTreeManager* parent_manager =
+      static_cast<TestSingleAXTreeManager*>(
+          AXTreeManager::FromID(parent_tree_id));
   if (!parent_manager) {
     return nullptr;
   }

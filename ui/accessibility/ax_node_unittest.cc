@@ -18,8 +18,8 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/accessibility/single_ax_tree_manager.h"
 #include "ui/accessibility/test_ax_tree_update.h"
+#include "ui/accessibility/test_single_ax_tree_manager.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
@@ -371,9 +371,9 @@ TEST(AXNodeTest, TreeWalkingCrossingTreeBoundary) {
   initial_state_2.tree_data = tree_data_2;
 
   auto tree_1 = std::make_unique<AXTree>(initial_state_1);
-  SingleAXTreeManager tree_manager_1(std::move(tree_1));
+  TestSingleAXTreeManager tree_manager_1(std::move(tree_1));
   auto tree_2 = std::make_unique<AXTree>(initial_state_2);
-  SingleAXTreeManager tree_manager_2(std::move(tree_2));
+  TestSingleAXTreeManager tree_manager_2(std::move(tree_2));
 
   const AXNode* root_node_1 = tree_manager_1.GetRoot();
   ASSERT_EQ(root_1.id, root_node_1->id());
@@ -477,7 +477,7 @@ TEST(AXNodeTest, GetValueForControlTextField) {
                   rich_text_field_line_2};
 
   auto tree = std::make_unique<AXTree>(update);
-  SingleAXTreeManager manager(std::move(tree));
+  TestSingleAXTreeManager manager(std::move(tree));
 
   {
     const AXNode* text_field_node =

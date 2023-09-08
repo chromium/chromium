@@ -191,7 +191,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   static absl::optional<AXTreeID> last_focused_node_tree_id_;
 
  private:
-  friend class SingleAXTreeManager;
+  friend class TestSingleAXTreeManager;
 
   // Automatically stops observing notifications from the AXTree when this class
   // is destructed.

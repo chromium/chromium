@@ -25,7 +25,7 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/single_ax_tree_manager.h"
+#include "ui/accessibility/test_single_ax_tree_manager.h"
 
 namespace ui {
 
@@ -61,7 +61,7 @@ constexpr const wchar_t* kGraphemeClusters[] = {
     L"\x0E01",
 };
 
-class AXPositionTest : public ::testing::Test, public SingleAXTreeManager {
+class AXPositionTest : public ::testing::Test, public TestSingleAXTreeManager {
  public:
   AXPositionTest();
 
@@ -99,7 +99,7 @@ class AXPositionTest : public ::testing::Test, public SingleAXTreeManager {
       AXNodeData& iframe_root,
       AXNodeData& paragraph,
       AXNodeData& address_bar,
-      std::vector<SingleAXTreeManager>& out_managers) const;
+      std::vector<TestSingleAXTreeManager>& out_managers) const;
 
   // Creates a document with three static text objects each containing text in a
   // different language.
@@ -128,7 +128,7 @@ class AXPositionTest : public ::testing::Test, public SingleAXTreeManager {
  private:
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behaviour_;
   // Manages a minimalistic Views tree that is hosting the test webpage.
-  SingleAXTreeManager views_tree_manager_;
+  TestSingleAXTreeManager views_tree_manager_;
 };
 
 // Used by AXPositionExpandToEnclosingTextBoundaryTestWithParam.
@@ -407,15 +407,15 @@ void AXPositionTest::SetUp() {
   initial_state.tree_data.parent_tree_id = views_tree->GetAXTreeID();
   initial_state.tree_data.title = "Dialog title";
 
-  // "SetTree" is defined in "SingleAXTreeManager" and it passes ownership of
-  // the created AXTree to the manager.
+  // "SetTree" is defined in "TestSingleAXTreeManager" and it passes ownership
+  // of the created AXTree to the manager.
   SetTree(std::make_unique<AXTree>(initial_state));
 
   AXTreeUpdate views_tree_update;
   web_view.AddChildTreeId(GetTreeID());
   views_tree_update.nodes = {web_view};
   ASSERT_TRUE(views_tree->Unserialize(views_tree_update));
-  views_tree_manager_ = SingleAXTreeManager(std::move(views_tree));
+  views_tree_manager_ = TestSingleAXTreeManager(std::move(views_tree));
 }
 
 std::unique_ptr<AXTree> AXPositionTest::CreateMultipageDocument(
@@ -478,7 +478,7 @@ void AXPositionTest::CreateBrowserWindow(
     AXNodeData& iframe_root,
     AXNodeData& paragraph,
     AXNodeData& address_bar,
-    std::vector<SingleAXTreeManager>& out_managers) const {
+    std::vector<TestSingleAXTreeManager>& out_managers) const {
   // First tree: Views.
   window.id = 1;
   window.role = ax::mojom::Role::kWindow;
@@ -5946,7 +5946,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithNullPosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -5976,7 +5976,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -6136,7 +6136,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -6308,7 +6308,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithNullPosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -6337,7 +6337,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -6496,7 +6496,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -6666,7 +6666,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithNullPosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -6695,7 +6695,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -6854,7 +6854,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -7025,7 +7025,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithNullPosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -7054,7 +7054,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -7213,7 +7213,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   // ++++TextField (Address bar - part of first tree.)
   AXNodeData window, back_button, web_view, root_web_area, iframe_root,
       paragraph, address_bar;
-  std::vector<SingleAXTreeManager> trees;
+  std::vector<TestSingleAXTreeManager> trees;
   ASSERT_NO_FATAL_FAILURE(CreateBrowserWindow(window, back_button, web_view,
                                               root_web_area, iframe_root,
                                               paragraph, address_bar, trees));
@@ -12167,7 +12167,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
   update.has_tree_data = true;
   update.root_id = child_root.id;
   update.nodes.push_back(child_root);
-  SingleAXTreeManager child_tree_manager(std::make_unique<AXTree>(update));
+  TestSingleAXTreeManager child_tree_manager(std::make_unique<AXTree>(update));
 
   // Verify that kEmbeddedObject node with child tree is not treated as an
   // empty object.

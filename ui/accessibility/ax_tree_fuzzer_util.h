@@ -8,7 +8,7 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/single_ax_tree_manager.h"
+#include "ui/accessibility/test_single_ax_tree_manager.h"
 
 // TODO(janewman): Replace usage with ...FuzzedDataProvider...
 class FuzzerData {
@@ -85,6 +85,6 @@ class AXTreeFuzzerGenerator {
   std::u16string GenerateInterestingText(const unsigned char* data,
                                          size_t size);
   ui::AXNodeID max_assigned_node_id_;
-  ui::SingleAXTreeManager tree_manager_;
+  ui::TestSingleAXTreeManager tree_manager_;
 };
 #endif  //  UI_ACCESSIBILITY_AX_TREE_FUZZER_UTIL_H_
