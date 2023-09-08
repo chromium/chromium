@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,12 +35,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-using InstallResultTuple = std::tuple<ash::HermesResponseStatus,
+namespace ash {
+
+namespace {
+
+using InstallResultTuple = std::tuple<HermesResponseStatus,
                                       absl::optional<dbus::ObjectPath>,
                                       absl::optional<std::string>>;
-
-namespace ash {
-namespace {
 
 const char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
 const char kTestEid[] = "12345678901234567890123456789012";
@@ -80,16 +81,16 @@ base::Value::Dict GetPolicyShillProperties() {
 
 }  // namespace
 
-class CellularESimInstallerTest : public testing::Test {
+class CellularESimInstallerLegacyTest : public testing::Test {
  protected:
-  CellularESimInstallerTest() {
+  CellularESimInstallerLegacyTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                              ash::features::kSmdsSupport,
-                              ash::features::kSmdsSupportEuiccUpload},
-        /*disabled_features=*/{});
+        /*enabled_features=*/{},
+        /*disabled_features=*/{ash::features::kSmdsDbusMigration,
+                               ash::features::kSmdsSupport,
+                               ash::features::kSmdsSupportEuiccUpload});
   }
-  ~CellularESimInstallerTest() override = default;
+  ~CellularESimInstallerLegacyTest() override = default;
 
   // testing::Test
   void SetUp() override {
@@ -243,23 +244,23 @@ class CellularESimInstallerTest : public testing::Test {
       int expected_count,
       HermesResponseStatus expected_hermes_status,
       CellularESimInstaller::InstallESimProfileResult expected_install_result) {
-    histogram_tester()->ExpectBucketCount(
+    HistogramTesterPtr()->ExpectBucketCount(
         kInstallViaQrCodeHistogram, expected_hermes_status, expected_count);
-    histogram_tester()->ExpectBucketCount(
+    HistogramTesterPtr()->ExpectBucketCount(
         kInstallESimResultHistogram, expected_install_result, expected_count);
 
     if (expected_hermes_status == HermesResponseStatus::kSuccess ||
         !base::Contains(kHermesUserErrorCodes, expected_hermes_status)) {
-      histogram_tester()->ExpectBucketCount(kESimInstallNonUserErrorSuccessRate,
-                                            expected_hermes_status,
-                                            expected_count);
+      HistogramTesterPtr()->ExpectBucketCount(
+          kESimInstallNonUserErrorSuccessRate, expected_hermes_status,
+          expected_count);
     } else {
-      histogram_tester()->ExpectBucketCount(kESimInstallNonUserErrorSuccessRate,
-                                            expected_hermes_status, 0);
+      HistogramTesterPtr()->ExpectBucketCount(
+          kESimInstallNonUserErrorSuccessRate, expected_hermes_status, 0);
     }
     if (expected_hermes_status != HermesResponseStatus::kErrorUnknownResponse) {
-      histogram_tester()->ExpectTotalCount(kInstallViaQrCodeDBusResultHistogram,
-                                           0);
+      HistogramTesterPtr()->ExpectTotalCount(
+          kInstallViaQrCodeDBusResultHistogram, 0);
     }
   }
 
@@ -268,10 +269,10 @@ class CellularESimInstallerTest : public testing::Test {
       bool is_managed = false,
       bool is_retry = false,
       bool is_install_via_qr_code = false) {
-    histogram_tester()->ExpectBucketCount(kUserInstallOperationHistogram,
-                                          expected_result,
-                                          /*expected_count=*/1);
-    histogram_tester()->ExpectBucketCount(
+    HistogramTesterPtr()->ExpectBucketCount(kUserInstallOperationHistogram,
+                                            expected_result,
+                                            /*expected_count=*/1);
+    HistogramTesterPtr()->ExpectBucketCount(
         is_install_via_qr_code ? kUserInstallViaQrCodeOperationHistogram
                                : kUserInstallViaCodeInputOperationHistogram,
         expected_result,
@@ -285,13 +286,13 @@ class CellularESimInstallerTest : public testing::Test {
         expected_policy_retry_counts = 1;
       }
     }
-    histogram_tester()->ExpectBucketCount(kInstallViaPolicyOperationHistogram,
-                                          expected_result,
-                                          expected_policy_histogram_counts);
-    histogram_tester()->ExpectBucketCount(
+    HistogramTesterPtr()->ExpectBucketCount(kInstallViaPolicyOperationHistogram,
+                                            expected_result,
+                                            expected_policy_histogram_counts);
+    HistogramTesterPtr()->ExpectBucketCount(
         kInstallViaPolicyInitialOperationHistogram, expected_result,
         expected_policy_histogram_counts);
-    histogram_tester()->ExpectBucketCount(
+    HistogramTesterPtr()->ExpectBucketCount(
         kInstallViaPolicyRetryOperationHistogram, expected_result,
         expected_policy_retry_counts);
   }
@@ -310,7 +311,7 @@ class CellularESimInstallerTest : public testing::Test {
         CellularConnectionHandler::kWaitingForAutoConnectTimeout);
   }
 
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+  base::HistogramTester* HistogramTesterPtr() { return &histogram_tester_; }
 
  private:
   base::HistogramTester histogram_tester_;
@@ -331,7 +332,7 @@ class CellularESimInstallerTest : public testing::Test {
       stub_cellular_networks_provider_;
 };
 
-TEST_F(CellularESimInstallerTest, InstallProfileInvalidActivationCode) {
+TEST_F(CellularESimInstallerLegacyTest, InstallProfileInvalidActivationCode) {
   InstallResultTuple result_tuple = InstallProfileFromActivationCode(
       /*activation_code=*/std::string(), /*confirmation_code=*/std::string(),
       /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
@@ -363,11 +364,11 @@ TEST_F(CellularESimInstallerTest, InstallProfileInvalidActivationCode) {
   CheckDetailedESimInstallHistograms(
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
       /*is_managed=*/true);
-  histogram_tester()->ExpectTotalCount(kInstallViaPolicyRetryOperationHistogram,
-                                       0);
+  HistogramTesterPtr()->ExpectTotalCount(
+      kInstallViaPolicyRetryOperationHistogram, 0);
 }
 
-TEST_F(CellularESimInstallerTest, InstallProfileDBusError) {
+TEST_F(CellularESimInstallerLegacyTest, InstallProfileDBusError) {
   InstallResultTuple result_tuple = InstallProfileFromActivationCode(
       HermesEuiccClient::Get()
           ->GetTestInterface()
@@ -377,15 +378,16 @@ TEST_F(CellularESimInstallerTest, InstallProfileDBusError) {
       /*new_shill_properties=*/base::Value::Dict(),
       /*wait_for_connect=*/false, /*fail_connect=*/false);
 
-  histogram_tester()->ExpectTotalCount(kInstallViaQrCodeDBusResultHistogram, 1);
-  histogram_tester()->ExpectBucketCount(kInstallViaQrCodeDBusResultHistogram,
-                                        dbus::DBusResult::kErrorNoMemory, 1);
-  histogram_tester()->ExpectBucketCount(
+  HistogramTesterPtr()->ExpectTotalCount(kInstallViaQrCodeDBusResultHistogram,
+                                         1);
+  HistogramTesterPtr()->ExpectBucketCount(kInstallViaQrCodeDBusResultHistogram,
+                                          dbus::DBusResult::kErrorNoMemory, 1);
+  HistogramTesterPtr()->ExpectBucketCount(
       kInstallViaQrCodeHistogram, HermesResponseStatus::kErrorUnknownResponse,
       1);
 }
 
-TEST_F(CellularESimInstallerTest, InstallProfileConnectFailure) {
+TEST_F(CellularESimInstallerLegacyTest, InstallProfileConnectFailure) {
   // Verify that connect failures are handled properly.
   InstallResultTuple result_tuple = InstallProfileFromActivationCode(
       HermesEuiccClient::Get()
@@ -420,7 +422,7 @@ TEST_F(CellularESimInstallerTest, InstallProfileConnectFailure) {
       /*is_managed=*/true);
 }
 
-TEST_F(CellularESimInstallerTest, InstallProfileSuccess) {
+TEST_F(CellularESimInstallerLegacyTest, InstallProfileSuccess) {
   // Verify that install succeeds when valid activation code is passed.
   InstallResultTuple result_tuple = InstallProfileFromActivationCode(
       HermesEuiccClient::Get()
@@ -432,7 +434,8 @@ TEST_F(CellularESimInstallerTest, InstallProfileSuccess) {
       /*wait_for_connect=*/true, /*fail_connect=*/false);
   CheckInstallSuccess(result_tuple);
 
-  histogram_tester()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram, 1);
+  HistogramTesterPtr()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram,
+                                         1);
   CheckESimInstallHistograms(
       /*expected_count=*/1, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
@@ -449,7 +452,8 @@ TEST_F(CellularESimInstallerTest, InstallProfileSuccess) {
       GetPolicyShillProperties(),
       /*wait_for_connect=*/true, /*fail_connect=*/false);
   CheckInstallSuccess(result_tuple);
-  histogram_tester()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram, 2);
+  HistogramTesterPtr()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram,
+                                         2);
   CheckESimInstallHistograms(
       /*expected_count=*/2, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
@@ -458,7 +462,7 @@ TEST_F(CellularESimInstallerTest, InstallProfileSuccess) {
       /*is_managed=*/true);
 }
 
-TEST_F(CellularESimInstallerTest, InstallProfileViaQrCodeSuccess) {
+TEST_F(CellularESimInstallerLegacyTest, InstallProfileViaQrCodeSuccess) {
   // Verify that install succeeds when valid activation code is passed.
   InstallResultTuple result_tuple = InstallProfileFromActivationCode(
       HermesEuiccClient::Get()
@@ -471,7 +475,8 @@ TEST_F(CellularESimInstallerTest, InstallProfileViaQrCodeSuccess) {
       /*is_initial_install=*/true, /*is_install_via_qr_code=*/true);
   CheckInstallSuccess(result_tuple);
 
-  histogram_tester()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram, 1);
+  HistogramTesterPtr()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram,
+                                         1);
   CheckESimInstallHistograms(
       /*expected_count=*/1, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
@@ -481,7 +486,7 @@ TEST_F(CellularESimInstallerTest, InstallProfileViaQrCodeSuccess) {
       /*is_install_via_qr_code=*/true);
 }
 
-TEST_F(CellularESimInstallerTest, InstallProfileAutoConnect) {
+TEST_F(CellularESimInstallerLegacyTest, InstallProfileAutoConnect) {
   // Verify that install succeeds when valid activation code is passed.
   InstallResultTuple result_tuple = InstallProfileFromActivationCode(
       HermesEuiccClient::Get()
@@ -495,7 +500,8 @@ TEST_F(CellularESimInstallerTest, InstallProfileAutoConnect) {
       /*auto_connected=*/true);
   CheckInstallSuccess(result_tuple);
 
-  histogram_tester()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram, 1);
+  HistogramTesterPtr()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram,
+                                         1);
   CheckESimInstallHistograms(
       /*expected_count=*/1, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
@@ -505,7 +511,7 @@ TEST_F(CellularESimInstallerTest, InstallProfileAutoConnect) {
       /*is_install_via_qr_code=*/true);
 }
 
-TEST_F(CellularESimInstallerTest, InstallProfileAlreadyConnected) {
+TEST_F(CellularESimInstallerLegacyTest, InstallProfileAlreadyConnected) {
   HermesProfileClient::Get()->GetTestInterface()->SetEnableProfileBehavior(
       HermesProfileClient::TestInterface::EnableProfileBehavior::
           kConnectableAndConnected);
@@ -521,7 +527,8 @@ TEST_F(CellularESimInstallerTest, InstallProfileAlreadyConnected) {
   CheckInstallSuccess(result_tuple);
 }
 
-TEST_F(CellularESimInstallerTest, InstallProfileCreateShillConfigFailure) {
+TEST_F(CellularESimInstallerLegacyTest,
+       InstallProfileCreateShillConfigFailure) {
   ShillManagerClient::Get()->GetTestInterface()->SetSimulateConfigurationResult(
       FakeShillSimulatedResult::kFailure);
   // Verify that install succeeds when valid activation code is passed.
@@ -536,7 +543,7 @@ TEST_F(CellularESimInstallerTest, InstallProfileCreateShillConfigFailure) {
   CheckInstallSuccess(result_tuple);
 }
 
-TEST_F(CellularESimInstallerTest, ConfigureESimService) {
+TEST_F(CellularESimInstallerLegacyTest, ConfigureESimService) {
   dbus::ObjectPath profile_path =
       HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
           dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kInactive,
@@ -568,7 +575,7 @@ TEST_F(CellularESimInstallerTest, ConfigureESimService) {
   EXPECT_EQ(kTestEid, *eid);
 }
 
-TEST_F(CellularESimInstallerTest, ConfigureESimServiceFailure) {
+TEST_F(CellularESimInstallerLegacyTest, ConfigureESimServiceFailure) {
   dbus::ObjectPath profile_path =
       HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
           dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kInactive,

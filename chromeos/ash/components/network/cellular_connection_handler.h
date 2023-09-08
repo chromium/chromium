@@ -116,6 +116,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
 
  private:
   friend class CellularESimInstallerTest;
+  friend class CellularESimInstallerLegacyTest;
   friend class CellularPolicyHandlerLegacyTest;
   friend class CellularPolicyHandlerTest;
   friend class ManagedNetworkConfigurationHandlerTest;
