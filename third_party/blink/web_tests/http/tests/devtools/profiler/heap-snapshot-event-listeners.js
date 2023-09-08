@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
+import * as HeapSnapshotModel from 'devtools/models/heap_snapshot_model/heap_snapshot_model.js';
+
 (async function() {
   TestRunner.addResult(
       `Test that event listeners not user reachable from the root are still present in the class list.\n`);
@@ -40,7 +42,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
   async function snapshotReceived(profile) {
     var snapshotProxy = profile.snapshotProxy;
-    var classNames = await snapshotProxy.aggregatesWithFilter(new HeapSnapshotModel.NodeFilter());
+    var classNames = await snapshotProxy.aggregatesWithFilter(new HeapSnapshotModel.HeapSnapshotModel.NodeFilter());
     var found = Object.keys(classNames).includes('EventListenerWrapperTest');
     if (found)
       TestRunner.addResult('PASS: the class name is found');
