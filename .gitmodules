@@ -623,10 +623,6 @@
 	path = chrome/browser/spellchecker/internal
 	url = https://chrome-internal.googlesource.com/chrome/spellchecker/internal.git
 	gclient-condition = checkout_src_internal
-[submodule "chrome/chrome_cleaner/internal"]
-	path = chrome/chrome_cleaner/internal
-	url = https://chrome-internal.googlesource.com/protector/foil.git
-	gclient-condition = checkout_chrome_cleaner_internal and checkout_src_internal
 [submodule "chrome/installer/mac/internal"]
 	path = chrome/installer/mac/internal
 	url = https://chrome-internal.googlesource.com/chrome/installer/mac/internal.git

@@ -97,10 +97,6 @@ vars = {
   # By default, do not check out Cast3P.
   'checkout_cast3p': False,
 
-  # Check out all Chrome Cleaner deps. Set on the Chrome Cleaner builders.
-  # Requires access to partner-code.googlesource.com.
-  'checkout_chrome_cleaner_internal': False,
-
   # By default, do not check out Chromium autofill captured sites test
   # dependencies. These dependencies include very large numbers of very
   # large web capture files. Captured sites test dependencies are also
@@ -4104,12 +4100,6 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
-  'src/chrome/chrome_cleaner/internal': {
-      'url': Var('chrome_git') + '/protector/foil.git' + '@' +
-        'f7839edf1403546f1ebc5bff62319d32e21529ab',
-      'condition': 'checkout_chrome_cleaner_internal and checkout_src_internal',
-  },
-
   # Installer bits used only by Mac, but mapped for all OSes to ease source
   # grepping.
   'src/chrome/installer/mac/internal': {
@@ -5754,7 +5744,6 @@ recursedeps = [
   # since the roller does not run tests.
   'src/clank',
   'src/chromeos/assistant/internal',
-  'src/chrome/chrome_cleaner/internal',
   'src/components/optimization_guide/internal',
   'src/ios_internal',
 ]
