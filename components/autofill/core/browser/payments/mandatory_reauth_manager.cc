@@ -51,11 +51,8 @@ void MandatoryReauthManager::OnAuthenticationCompleted(
 }
 
 bool MandatoryReauthManager::ShouldOfferOptin(
-    const absl::optional<CreditCard>& card_extracted_from_form,
-    const absl::optional<absl::variant<FormDataImporter::CardGuid,
-                                       FormDataImporter::CardLastFourDigits>>&
-        card_identifier_if_non_interactive_authentication_flow_completed,
-    FormDataImporter::CreditCardImportType import_type) {
+    absl::optional<CreditCard::RecordType>
+        card_record_type_if_non_interactive_authentication_flow_completed) {
   opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::kUnknown;
   // We should not offer to update a user pref in off the record mode.
   if (client_->IsOffTheRecord()) {
@@ -84,17 +81,7 @@ bool MandatoryReauthManager::ShouldOfferOptin(
     return false;
   }
 
-  // If we did not extract any card from the form, then we should not offer
-  // re-auth opt-in, as the user submitted a form without a card. It could be
-  // confusing to offer payments autofill functionalities when there was no card
-  // submitted.
-  if (!card_extracted_from_form.has_value()) {
-    LogMandatoryReauthOfferOptInDecision(
-        MandatoryReauthOfferOptInDecision::kNoCardExtractedFromForm);
-    return false;
-  }
-
-  // If `card_identifier_if_non_interactive_authentication_flow_completed` is
+  // If `card_record_type_if_non_interactive_authentication_flow_completed` is
   // not present, this can mean one of two things: 1) No card was autofilled 2)
   // All autofilled cards went through an interactive authentication flow. In
   // the first case it makes no sense to show a reauth proposal because this is
@@ -102,7 +89,7 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   // prompt because the user never experienced non-interactive authentication,
   // and actually just went through an interactive authentication. Displaying a
   // prompt to enable re-authentication could be confusing.
-  if (!card_identifier_if_non_interactive_authentication_flow_completed
+  if (!card_record_type_if_non_interactive_authentication_flow_completed
            .has_value()) {
     LogMandatoryReauthOfferOptInDecision(
         MandatoryReauthOfferOptInDecision::
@@ -110,151 +97,31 @@ bool MandatoryReauthManager::ShouldOfferOptin(
     return false;
   }
 
-  // We want to offer re-auth if the most recent payments autofill was a
-  // non-interactive authentication.
-  // `card_identifier_if_non_interactive_authentication_flow_completed` is set
-  // when a non-interactive authentication occurs, and
-  // `card_extracted_from_form` contains the card details of the card extracted
-  // from the form. Thus, below contains extra logic to check that
-  // `card_extracted_from_form` matches
-  // `card_identifier_if_non_interactive_authentication_flow_completed` to
-  // ensure they are the same card, which implies that the most recent payments
-  // autofill was a non-interactive authentication.
-  switch (import_type) {
-    case FormDataImporter::CreditCardImportType::kLocalCard: {
-      // From `import_type` we know that the submitted card exists as a local
-      // card in the PersonalDataManager. If
-      // `card_identifier_if_non_interactive_authentication_flow_completed`
-      // holds no card GUID, that means that the card that was most recently
-      // filled with non-interactive authentication was not a local card, so we
-      // should not offer re-auth. This is possible when a user goes through a
-      // non-interactive authentication flow with a card that is not a local
-      // card, then types in a local card manually into the form.
-      if (!absl::holds_alternative<FormDataImporter::CardGuid>(
-              card_identifier_if_non_interactive_authentication_flow_completed
-                  .value())) {
-        LogMandatoryReauthOfferOptInDecision(
-            MandatoryReauthOfferOptInDecision::kManuallyFilledLocalCard);
-        return false;
-      }
+  // At this point, we know the most recent payments autofill had a
+  // non-interactive authentication. Set `opt_in_source_` based on the record
+  // type of the last non-interactive authentication, and return that we should
+  // offer re-auth opt-in.
+  switch (card_record_type_if_non_interactive_authentication_flow_completed
+              .value()) {
+    case CreditCard::RecordType::kLocalCard:
       opt_in_source_ =
           autofill_metrics::MandatoryReauthOptInOrOutSource::kCheckoutLocalCard;
-      bool is_card_match = LastFilledCardMatchesSubmittedCard(
-          absl::get<FormDataImporter::CardGuid>(
-              card_identifier_if_non_interactive_authentication_flow_completed
-                  .value()),
-          card_extracted_from_form.value());
-      LogMandatoryReauthOfferOptInDecision(
-          is_card_match ? MandatoryReauthOfferOptInDecision::kOffered
-                        : MandatoryReauthOfferOptInDecision::
-                              kNoStoredCardForExtractedCard);
-      return is_card_match;
-    }
-    case FormDataImporter::CreditCardImportType::kServerCard: {
-      // From `import_type` we know that the submitted card exists as a server
-      // card in the PersonalDataManager. If
-      // `card_identifier_if_non_interactive_authentication_flow_completed`
-      // holds no card GUID, that means that the card that was most recently
-      // filled with non-interactive authentication was not a server card, so we
-      // should not offer re-auth. This is possible when a user goes through a
-      // non-interactive authentication flow with a card that is not a server
-      // card, then types in a server card manually into the form.
-      if (!absl::holds_alternative<FormDataImporter::CardGuid>(
-              card_identifier_if_non_interactive_authentication_flow_completed
-                  .value())) {
-        LogMandatoryReauthOfferOptInDecision(
-            MandatoryReauthOfferOptInDecision::kManuallyFilledServerCard);
-        return false;
-      }
-
-      for (CreditCard* local_card :
-           client_->GetPersonalDataManager()->GetLocalCreditCards()) {
-        if (local_card->IsLocalOrServerDuplicateOf(
-                card_extracted_from_form.value())) {
-          // We found a matching local card for this server card. We then need
-          // to check that the local card version of this card was the card most
-          // recently filled into the form with non-interactive authentication,
-          // as we should show the opt-in prompt in this case.
-          bool is_local_card_last_filled_card =
-              LastFilledCardMatchesSubmittedCard(
-                  absl::get<FormDataImporter::CardGuid>(
-                      card_identifier_if_non_interactive_authentication_flow_completed
-                          .value()),
-                  *local_card);
-
-          // We should only use local card for metrics if the last filled card
-          // was the local card, otherwise the last filled card is a server card
-          // which is not supported.
-          opt_in_source_ =
-              is_local_card_last_filled_card
-                  ? autofill_metrics::MandatoryReauthOptInOrOutSource::
-                        kCheckoutLocalCard
-                  : autofill_metrics::MandatoryReauthOptInOrOutSource::kUnknown;
-
-          // If `is_local_card_last_filled_card` is true, we should offer
-          // re-auth opt-in, so log that and return true. Otherwise we must have
-          // filled the server card (not local card), which is not supported, so
-          // log that and return false. Returning true implies we should offer
-          // re-auth opt-in, returning false implies we should not.
-          LogMandatoryReauthOfferOptInDecision(
-              is_local_card_last_filled_card
-                  ? MandatoryReauthOfferOptInDecision::kOffered
-                  : MandatoryReauthOfferOptInDecision::kUnsupportedCardType);
-          return is_local_card_last_filled_card;
-        }
-      }
-
-      // We could not find a matching local card for this server card, so we
-      // should not offer re-auth opt-in as there is no re-auth functionality
-      // for server cards.
-      LogMandatoryReauthOfferOptInDecision(
-          MandatoryReauthOfferOptInDecision::kUnsupportedCardType);
-      return false;
-    }
-    case FormDataImporter::CreditCardImportType::kVirtualCard: {
-      // From `import_type` we know that the submitted card exists as a virtual
-      // card in the fetched virtual cards cache. If
-      // `card_identifier_if_non_interactive_authentication_flow_completed`
-      // holds no card last four digits, that means that the card that was most
-      // recently filled with non-interactive authentication was not a virtual
-      // card, so we should not offer re-auth. This is possible when a user goes
-      // through a non-interactive authentication flow with a card that is not a
-      // virtual card, then types in a virtual card manually into the form.
-      if (!absl::holds_alternative<FormDataImporter::CardLastFourDigits>(
-              card_identifier_if_non_interactive_authentication_flow_completed
-                  .value())) {
-        LogMandatoryReauthOfferOptInDecision(
-            MandatoryReauthOfferOptInDecision::kManuallyFilledVirtualCard);
-        return false;
-      }
-
+      break;
+    case CreditCard::RecordType::kVirtualCard:
       opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::
           kCheckoutVirtualCard;
-      // If we have extracted a virtual card, we must check the last four digits
-      // of the virtual card green pathed against the last four digits of the
-      // card extracted from the form, as we do not store virtual cards in the
-      // autofill table, so the card extracted from the form will not have a
-      // GUID.
-      bool is_card_match =
-          base::UTF8ToUTF16(
-              absl::get<FormDataImporter::CardLastFourDigits>(
-                  card_identifier_if_non_interactive_authentication_flow_completed
-                      .value())
-                  .value()) == card_extracted_from_form->LastFourDigits();
-      LogMandatoryReauthOfferOptInDecision(
-          is_card_match ? MandatoryReauthOfferOptInDecision::kOffered
-                        : MandatoryReauthOfferOptInDecision::
-                              kNoStoredCardForExtractedCard);
-      return is_card_match;
-    }
-    case FormDataImporter::CreditCardImportType::kNewCard:
-    case FormDataImporter::CreditCardImportType::kNoCard:
-      // We should not offer mandatory re-auth opt-in for new cards or undefined
-      // cards.
-      LogMandatoryReauthOfferOptInDecision(
-          MandatoryReauthOfferOptInDecision::kUnsupportedCardType);
-      return false;
+      break;
+    case CreditCard::RecordType::kFullServerCard:
+    case CreditCard::RecordType::kMaskedServerCard:
+      NOTREACHED();
+      opt_in_source_ =
+          autofill_metrics::MandatoryReauthOptInOrOutSource::kUnknown;
+      break;
   }
+
+  LogMandatoryReauthOfferOptInDecision(
+      MandatoryReauthOfferOptInDecision::kOffered);
+  return true;
 }
 
 void MandatoryReauthManager::StartOptInFlow() {
@@ -334,23 +201,6 @@ MandatoryReauthManager::GetAuthenticationMethod() {
     return MandatoryReauthAuthenticationMethod::kScreenLock;
   }
   return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
-}
-
-bool MandatoryReauthManager::LastFilledCardMatchesSubmittedCard(
-    FormDataImporter::CardGuid guid_of_last_filled_card,
-    const CreditCard& card_extracted_from_form) {
-  // Get the card stored with the same GUID as the most recent card filled
-  // into the form. If we do not have a card stored, then that means the
-  // user deleted it after filling the form but before submitting. Thus we
-  // should return that we should not offer re-auth opt-in.
-  CreditCard* stored_card =
-      client_->GetPersonalDataManager()->GetCreditCardByGUID(
-          guid_of_last_filled_card.value());
-  if (!stored_card) {
-    return false;
-  }
-
-  return stored_card->MatchingCardDetails(card_extracted_from_form);
 }
 
 }  // namespace autofill::payments

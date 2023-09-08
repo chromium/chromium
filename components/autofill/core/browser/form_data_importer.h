@@ -142,16 +142,14 @@ class FormDataImporter : public PersonalDataManagerObserver {
   }
 
   // This should only set
-  // `card_identifier_if_non_interactive_authentication_flow_completed_` to a
+  // `card_record_type_if_non_interactive_authentication_flow_completed_` to a
   // value when there was an autofill with no interactive authentication,
-  // otherwise it should set to nullopt. If we are in the virtual card case,
-  // this will be set to the last four digits of the virtual card number.
-  // Otherwise, this will be set to the GUID of the card.
-  void SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
-      absl::optional<absl::variant<CardGuid, CardLastFourDigits>>
-          card_identifier_if_non_interactive_authentication_flow_completed);
-  const absl::optional<absl::variant<CardGuid, CardLastFourDigits>>&
-  GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted() const;
+  // otherwise it should set to nullopt.
+  void SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+      absl::optional<CreditCard::RecordType>
+          card_record_type_if_non_interactive_authentication_flow_completed_);
+  absl::optional<CreditCard::RecordType>
+  GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted() const;
 
   bool ProcessExtractedCreditCardForTesting(
       const FormStructure& submitted_form,
@@ -400,15 +398,14 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // Enables associating recently submitted forms with each other.
   FormAssociator form_associator_;
 
-  // Optional that will have a value when the most recent payments autofill flow
-  // had no interactive authentication. It will contain the GUID or last four
-  // digits of the card where the most recent non-interactive authentication has
-  // succeeded. If this is empty upon form submission, it implies that the most
-  // recent autofill had an interactive authentication. Set when
-  // `SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()` is called,
-  // and cleared on page navigation.
-  absl::optional<absl::variant<CardGuid, CardLastFourDigits>>
-      card_identifier_if_non_interactive_authentication_flow_completed_;
+  // If the most recent payments autofill flow had a non-interactive
+  // authentication,
+  // `card_record_type_if_non_interactive_authentication_flow_completed_` will
+  // contain the record type of the card that had the non-interactive
+  // authentication, otherwise it will be nullopt. The reason we store a
+  // `CreditCard::RecordType` here instead of a boolean is for logging purposes.
+  absl::optional<CreditCard::RecordType>
+      card_record_type_if_non_interactive_authentication_flow_completed_;
 
   friend class AutofillMergeTest;
   friend class FormDataImporterTest;

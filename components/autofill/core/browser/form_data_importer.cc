@@ -724,10 +724,8 @@ bool FormDataImporter::ProcessExtractedCreditCard(
           client_->GetOrCreatePaymentsMandatoryReauthManager();
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
-          extracted_credit_card,
-          card_identifier_if_non_interactive_authentication_flow_completed_,
-          credit_card_import_type_)) {
-    card_identifier_if_non_interactive_authentication_flow_completed_.reset();
+          card_record_type_if_non_interactive_authentication_flow_completed_)) {
+    card_record_type_if_non_interactive_authentication_flow_completed_.reset();
     mandatory_reauth_manager->StartOptInFlow();
     return true;
   }
@@ -1081,18 +1079,17 @@ void FormDataImporter::OnBrowsingHistoryCleared(
 }
 
 void FormDataImporter::
-    SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
-        absl::optional<absl::variant<CardGuid, CardLastFourDigits>>
-            card_identifier_if_non_interactive_authentication_flow_completed) {
-  card_identifier_if_non_interactive_authentication_flow_completed_ = std::move(
-      card_identifier_if_non_interactive_authentication_flow_completed);
+    SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+        absl::optional<CreditCard::RecordType>
+            card_record_type_if_non_interactive_authentication_flow_completed) {
+  card_record_type_if_non_interactive_authentication_flow_completed_ =
+      card_record_type_if_non_interactive_authentication_flow_completed;
 }
 
-const absl::optional<absl::variant<FormDataImporter::CardGuid,
-                                   FormDataImporter::CardLastFourDigits>>&
-FormDataImporter::GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
+absl::optional<CreditCard::RecordType>
+FormDataImporter::GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted()
     const {
-  return card_identifier_if_non_interactive_authentication_flow_completed_;
+  return card_record_type_if_non_interactive_authentication_flow_completed_;
 }
 
 }  // namespace autofill

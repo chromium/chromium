@@ -64,27 +64,14 @@ class MandatoryReauthManager {
       bool success);
 
   // Returns true if the user conditions denote that we should offer opt-in for
-  // this user, false otherwise. `card_extracted_from_form` is the card
-  // extracted during form submission, and `import_type` is the type of the card
-  // that was submitted in the form.
-  // `card_identifier_if_non_interactive_authentication_flow_completed` will be
+  // this user, false otherwise.
+  // `card_record_type_if_non_interactive_authentication_flow_completed` will be
   // present if a payments autofill occurred with non-interactive
-  // authentication. `import_type` indicates that the submitted card corresponds
-  // to an already saved local card, server card, etc., or if this is a new
-  // card. `import_type` will be used in conjunction with
-  // `card_extracted_from_form` and
-  // `card_identifier_if_non_interactive_authentication_flow_completed` to help
-  // match the card submitted in the form with the card that was successfully
-  // autofilled with non-interactive authentication. If there is a match, then
-  // we know the most recent card filled with non-interactive authentication was
-  // the card that was submitted in the form, so we should offer re-auth opt-in.
-  // TODO(crbug.com/4555994): Rename this function to ShouldOfferOptIn().
+  // authentication, and will hold the record type of the card that had the most
+  // recent non-interactive authentication.
   virtual bool ShouldOfferOptin(
-      const absl::optional<CreditCard>& card_extracted_from_form,
-      const absl::optional<absl::variant<FormDataImporter::CardGuid,
-                                         FormDataImporter::CardLastFourDigits>>&
-          card_identifier_if_non_interactive_authentication_flow_completed,
-      FormDataImporter::CreditCardImportType import_type);
+      absl::optional<CreditCard::RecordType>
+          card_record_type_if_non_interactive_authentication_flow_completed);
 
   // Starts the opt-in flow. This flow includes an opt-in bubble, an
   // authentication step, and then a confirmation bubble. This function should
@@ -118,15 +105,6 @@ class MandatoryReauthManager {
   }
 
  private:
-  // Returns true if the autofill table contains a CreditCard for
-  // `guid_of_last_filled_card` that matches `card_extracted_from_form`. If the
-  // card is not present anymore when this function is called, it will return
-  // false. This can occur if the user deleted the card from the autofill table
-  // after filling it.
-  bool LastFilledCardMatchesSubmittedCard(
-      FormDataImporter::CardGuid guid_of_last_filled_card,
-      const CreditCard& card_extracted_from_form);
-
   // Raw pointer to the web content's AutofillClient.
   raw_ptr<AutofillClient> client_;
 

@@ -2607,6 +2607,15 @@ TEST_P(FormDataImporterTest,
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
+
+  // Mandatory re-auth opt-in should not be attempted if no card was extracted
+  // from the form.
+  EXPECT_CALL(
+      *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
+          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+      ShouldOfferOptin)
+      .Times(0);
+
   ASSERT_FALSE(extracted_data.extracted_credit_card);
   // |credit_card_import_type_| should be kNoCard because the
   // form doesn't have credit card section.
@@ -4009,9 +4018,8 @@ TEST_F(FormDataImporterNonParameterizedTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
   form_data_importer()
-      .SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
-          FormDataImporter::CardLastFourDigits(
-              base::UTF16ToUTF8(extracted_credit_card.LastFourDigits())));
+      .SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+          CreditCard::RecordType::kVirtualCard);
   form_data_importer().set_credit_card_import_type_for_testing(
       FormDataImporter::CreditCardImportType::kVirtualCard);
 
@@ -4041,8 +4049,8 @@ TEST_F(FormDataImporterNonParameterizedTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
   form_data_importer()
-      .SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
-          FormDataImporter::CardGuid(extracted_credit_card.guid()));
+      .SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+          CreditCard::RecordType::kLocalCard);
   form_data_importer().set_credit_card_import_type_for_testing(
       FormDataImporter::CreditCardImportType::kVirtualCard);
 
@@ -4063,10 +4071,10 @@ TEST_F(FormDataImporterNonParameterizedTest,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
 
-  // Ensure that we reset the card identifier at the end of the flow.
+  // Ensure that we reset the record type at the end of the flow.
   EXPECT_FALSE(
       form_data_importer()
-          .GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
+          .GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted()
           .has_value());
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)

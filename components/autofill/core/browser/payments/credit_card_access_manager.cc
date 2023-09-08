@@ -72,14 +72,14 @@ CreditCardAccessManager::CreditCardAccessManager(
       form_event_logger_(form_event_logger) {}
 
 CreditCardAccessManager::~CreditCardAccessManager() {
-  // This clears the GUID of the most recently autofilled card with no
+  // This clears the record type of the most recently autofilled card with no
   // interactive authentication flow upon page navigation, as page navigation
   // results in us destroying the current CreditCardAccessManager and creating a
   // new one.
   if (client_) {
     if (auto* form_data_importer = client_->GetFormDataImporter()) {
       form_data_importer
-          ->SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
+          ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
               absl::nullopt);
     }
   }
@@ -266,6 +266,13 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 void CreditCardAccessManager::FetchCreditCard(
     const CreditCard* card,
     base::WeakPtr<Accessor> accessor) {
+  // Reset the variable in FormDataImporter that denotes if non-interactive
+  // authentication happened. This variable will be set to a value if a payments
+  // autofill non-interactive flow successfully completes.
+  client_->GetFormDataImporter()
+      ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+          absl::nullopt);
+
   // Return error if authentication is already in progress, but don't reset
   // status.
   if (is_authentication_in_progress_) {
@@ -1146,8 +1153,8 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
     // This local card autofill flow did not have any interactive
     // authentication, so notify the FormDataImporter of this.
     client_->GetFormDataImporter()
-        ->SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
-            FormDataImporter::CardGuid(card_->guid()));
+        ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+            CreditCard::RecordType::kLocalCard);
 
     // `accessor_->OnCreditCardFetched()` makes a copy of `card` and `cvc`
     // before it asynchronously fills them into the form. Thus we can safely
@@ -1214,13 +1221,10 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
         // If the server responded with success and the real pan, no interactive
         // authentication happened. It's also possible that the server does not
         // provide the real pan but requests an authentication which is handled
-        // below. In this case, since the virtual card has a randomly generated
-        // GUID and is not stored in the autofill table, we must set the card
-        // identifier as the last four digits of the virtual card.
+        // below.
         client_->GetFormDataImporter()
-            ->SetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted(
-                FormDataImporter::CardLastFourDigits(
-                    base::UTF16ToUTF8(card_->LastFourDigits())));
+            ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+                CreditCard::RecordType::kVirtualCard);
 
         autofill_metrics::LogServerCardUnmaskResult(
             autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked,
