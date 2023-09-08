@@ -183,7 +183,7 @@ bool API_AVAILABLE(macos(12.3))
 class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
     : public ThumbnailCapturer {
  public:
-  ThumbnailCapturerMac(const gfx::Size& thumbnail_size);
+  ThumbnailCapturerMac();
   ~ThumbnailCapturerMac() override{};
 
   void Start(Consumer* callback) override;
@@ -199,7 +199,8 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 
   bool GetSourceList(SourceList* sources) override;
 
-  void SelectSources(const std::vector<SourceId>& ids) override;
+  void SelectSources(const std::vector<SourceId>& ids,
+                     gfx::Size thumbnail_size) override;
 
  private:
   struct StreamAndDelegate {
@@ -216,7 +217,6 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
   void OnCapturedFrame(CGImageRef image, SourceId source_id);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  const gfx::Size thumbnail_size_;
   int max_frame_rate_;
   const int minimum_window_size_;
   raw_ptr<Consumer> consumer_;
@@ -233,9 +233,8 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
   base::WeakPtrFactory<ThumbnailCapturerMac> weak_factory_{this};
 };
 
-ThumbnailCapturerMac::ThumbnailCapturerMac(const gfx::Size& thumbnail_size)
-    : thumbnail_size_(thumbnail_size),
-      max_frame_rate_(kThumbnailCapturerMacMaxFrameRate.Get()),
+ThumbnailCapturerMac::ThumbnailCapturerMac()
+    : max_frame_rate_(kThumbnailCapturerMacMaxFrameRate.Get()),
       minimum_window_size_(kThumbnailCapturerMacMinWindowSize.Get()),
       shareable_windows_([[NSArray<SCWindow*> alloc] init]) {}
 
@@ -394,13 +393,14 @@ void ThumbnailCapturerMac::RemoveStream(SourceId id) {
   }
 }
 
-void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids) {
+void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids,
+                                         gfx::Size thumbnail_size) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Create SCStreamConfiguration.
   SCStreamConfiguration* __strong config = [[SCStreamConfiguration alloc] init];
-  config.width = thumbnail_size_.width();
-  config.height = thumbnail_size_.height();
+  config.width = thumbnail_size.width();
+  config.height = thumbnail_size.height();
   config.scalesToFit = YES;
   config.showsCursor = NO;
   config.minimumFrameInterval = CMTimeMake(
@@ -506,11 +506,10 @@ bool ShouldUseThumbnailCapturerMac() {
 
 // Creates a ThumbnailCaptureMac object. Must only be called is
 // ShouldUseThumbnailCapturerMac() returns true.
-std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac(
-    const gfx::Size& thumbnail_size) {
+std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac() {
   CHECK(ShouldUseThumbnailCapturerMac());
   if (@available(macOS 13.2, *)) {
-    return std::make_unique<ThumbnailCapturerMac>(thumbnail_size);
+    return std::make_unique<ThumbnailCapturerMac>();
   }
   NOTREACHED_NORETURN();
 }

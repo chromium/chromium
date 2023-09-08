@@ -23,6 +23,7 @@ bool ThumbnailCapturer::SelectSource(SourceId id) {
   NOTREACHED_NORETURN();
 }
 
-void ThumbnailCapturer::SelectSources(const std::vector<SourceId>& ids) {
+void ThumbnailCapturer::SelectSources(const std::vector<SourceId>& ids,
+                                      gfx::Size thumbnail_size) {
   NOTREACHED_NORETURN();
 }

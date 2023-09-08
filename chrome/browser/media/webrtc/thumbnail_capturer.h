@@ -7,6 +7,7 @@
 
 #include "third_party/webrtc/modules/desktop_capture/delegated_source_list_controller.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+#include "ui/gfx/geometry/size.h"
 
 // Class that is used to produces native desktop media thumbnails. Two modes are
 // supported, delivering frames for a selected source on request (compatible
@@ -106,7 +107,8 @@ class ThumbnailCapturer {
 
   // Selects sources to be captured simultaneously. Multiple sources can only be
   // selected if the frame delivery method is kMultipleSourcesRecurrent.
-  virtual void SelectSources(const std::vector<SourceId>& ids);
+  virtual void SelectSources(const std::vector<SourceId>& ids,
+                             gfx::Size thumbnail_size);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_THUMBNAIL_CAPTURER_H_

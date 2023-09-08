@@ -193,6 +193,8 @@ class NativeDesktopMediaList::Worker
   // be ignored by `this`.
   void SetExcludedWindow(DesktopMediaID::Id excluded_window_id);
 
+  void SetThumbnailSize(const gfx::Size& thumbnail_size);
+
  private:
   typedef std::map<DesktopMediaID, size_t> ImageHashesMap;
 
@@ -258,6 +260,8 @@ class NativeDesktopMediaList::Worker
   // dropped because it's not set. If possible set it in the constructor.
   DesktopMediaID::Id excluded_window_id_ = DesktopMediaID::kNullId;
 
+  gfx::Size thumbnail_size_ = kDefaultThumbnailSize;
+
   // Stores hashes of snapshots previously captured.
   ImageHashesMap image_hashes_;
 
@@ -320,7 +324,7 @@ void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
         source_ids.push_back(sources[i].id);
       }
     }
-    capturer_->SelectSources(source_ids);
+    capturer_->SelectSources(source_ids, thumbnail_size_);
   }
 
   std::vector<SourceDescription> source_descriptions =
@@ -574,7 +578,7 @@ void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
   }
 
   gfx::ImageSkia thumbnail =
-      ScaleDesktopFrame(std::move(frame), kDefaultThumbnailSize);
+      ScaleDesktopFrame(std::move(frame), thumbnail_size_);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnailForId,
@@ -601,6 +605,11 @@ void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
 void NativeDesktopMediaList::Worker::SetExcludedWindow(
     DesktopMediaID::Id excluded_window_id) {
   excluded_window_id_ = excluded_window_id;
+}
+
+void NativeDesktopMediaList::Worker::SetThumbnailSize(
+    const gfx::Size& thumbnail_size) {
+  thumbnail_size_ = thumbnail_size;
 }
 
 void NativeDesktopMediaList::Worker::FocusList() {
@@ -712,6 +721,20 @@ void NativeDesktopMediaList::SetViewDialogWindowId(DesktopMediaID dialog_id) {
   thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&Worker::SetExcludedWindow,
                                 base::Unretained(worker_.get()), dialog_id.id));
+}
+
+void NativeDesktopMediaList::SetThumbnailSize(const gfx::Size& thumbnail_size) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  DesktopMediaListBase::SetThumbnailSize(thumbnail_size);
+
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Worker::SetThumbnailSize, base::Unretained(worker_.get()),
+                     thumbnail_size));
 }
 
 bool NativeDesktopMediaList::IsSourceListDelegated() const {
