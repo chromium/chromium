@@ -6,6 +6,8 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
@@ -122,6 +124,13 @@ TEST_F(WebBundleParserFactoryTest, FileDataSource) {
     data_source->IsRandomAccessContext(future.GetCallback());
     EXPECT_TRUE(future.Get());
   }
+
+  // Close the file should just work
+  {
+    base::test::TestFuture<void> future;
+    data_source->Close(future.GetCallback());
+    future.Get();
+  }
 }
 
 TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
@@ -195,6 +204,26 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFileWithRelativeUrls) {
                             {GURL("https://test.example.org/absolute-url"),
                              GURL("https://example.com/relative-url-1"),
                              GURL("https://example.com/foo/relative-url-2")}));
+}
+
+TEST_F(WebBundleParserFactoryTest, DeleteFile) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = tmp_dir.GetPath();
+  base::CreateTemporaryFile(&file_path);
+
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+
+  mojo::Remote<mojom::WebBundleParser> parser;
+  GetParserForFile(parser.BindNewPipeAndPassReceiver(), std::move(file),
+                   absl::nullopt);
+
+  base::test::TestFuture<void> future;
+  parser->Close(future.GetCallback());
+  future.Get();
+
+  EXPECT_TRUE(base::DeleteFile(file_path));
 }
 
 }  // namespace web_package

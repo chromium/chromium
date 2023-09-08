@@ -40,6 +40,12 @@ interface WebBundleParser {
   ParseResponse(uint64 response_offset,
                 uint64 response_length)
       => (BundleResponse? Result, BundleResponseParseError? error);
+
+  // Closes all the resources that the parser is using.
+  // After calling this method the parser becomes unusable and the
+  // client should not call any method of this interface after calling
+  // this method.
+  Close() => ();
 };
 
 // Data source that provides application/webbundle data to the parser.
@@ -54,6 +60,13 @@ interface BundleDataSource {
 
   // Checks whether the stream is backed by a random-access context.
   IsRandomAccessContext() => (bool is_random_access);
+
+  // Closes the resource from which this data source reads the data (e.g.
+  // it closes the Web Bundle file).
+  // After calling this method the data source becomes unusable and the
+  // client should not call any method of this interface after calling
+  // this method.
+  Close() => ();
 };
 
 enum BundleParseErrorType {

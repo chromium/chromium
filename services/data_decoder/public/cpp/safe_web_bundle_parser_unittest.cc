@@ -74,6 +74,8 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
       response_callback_ = std::move(callback);
     }
 
+    void Close(CloseCallback callback) override {}
+
     ParseIntegrityBlockCallback integrity_block_callback_;
     ParseMetadataCallback metadata_callback_;
     ParseResponseCallback response_callback_;
@@ -129,6 +131,8 @@ class MockDataSource final : public web_package::mojom::BundleDataSource {
   void Length(LengthCallback) override {}
 
   void IsRandomAccessContext(IsRandomAccessContextCallback) override {}
+
+  void Close(CloseCallback callback) override {}
 
   mojo::Receiver<web_package::mojom::BundleDataSource> receiver_;
 };

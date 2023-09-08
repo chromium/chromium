@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -447,6 +448,10 @@ class WebBundleURLLoaderFactory::BundleDataSource
 
   void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {
     std::move(callback).Run(false);
+  }
+
+  void Close(CloseCallback callback) override {
+    NOTIMPLEMENTED() << "Close() is not implemented";
   }
 
   // Implements mojo::DataPipeDrainer::Client.

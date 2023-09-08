@@ -48,6 +48,8 @@ class DataSource : public web_package::mojom::BundleDataSource {
     receivers_.Add(this, std::move(receiver));
   }
 
+  void Close(CloseCallback callback) override { std::move(callback).Run(); }
+
  private:
   bool is_random_access_context_;
   const std::string data_;

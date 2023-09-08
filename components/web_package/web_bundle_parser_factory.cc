@@ -45,6 +45,11 @@ class FileDataSource final : public mojom::BundleDataSource {
     std::move(callback).Run(true);
   }
 
+  void Close(CloseCallback callback) override {
+    file_.Close();
+    std::move(callback).Run();
+  }
+
   base::File file_;
 };
 

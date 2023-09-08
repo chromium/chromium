@@ -67,6 +67,7 @@ class MockWebBundleParser final : public mojom::WebBundleParser {
   void ParseResponse(uint64_t response_offset,
                      uint64_t response_length,
                      ParseResponseCallback callback) override;
+  void Close(CloseCallback callback) override;
 
   mojo::Receiver<mojom::WebBundleParser> receiver_;
 

@@ -51,17 +51,21 @@ class WebBundleParser : public mojom::WebBundleParser {
   void ParseResponse(uint64_t response_offset,
                      uint64_t response_length,
                      ParseResponseCallback callback) override;
+  void Close(CloseCallback parser_closed_callback) override;
+  void OnDataSourceClosed(CloseCallback parser_closed_callback);
 
   void ActivateParser(std::unique_ptr<WebBundleSectionParser> parser);
   void OnParsingComplete(WebBundleSectionParser* parser,
                          base::OnceClosure result_callback);
   void OnDisconnect();
+  bool CheckIfClosed();
 
   GURL base_url_;
   base::flat_set<std::unique_ptr<WebBundleSectionParser>,
                  base::UniquePtrComparator>
       active_parsers_;
   mojo::Remote<mojom::BundleDataSource> data_source_;
+  bool is_closed_ = false;
 };
 
 }  // namespace web_package

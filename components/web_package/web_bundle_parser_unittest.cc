@@ -80,10 +80,18 @@ class TestDataSource : public mojom::BundleDataSource {
     receivers_.Add(this, std::move(receiver));
   }
 
+  void Close(CloseCallback callback) override {
+    is_closed_ = true;
+    std::move(callback).Run();
+  }
+
+  bool IsClosed() const { return is_closed_; }
+
  private:
   std::string data_;
   bool is_random_access_context_;
   mojo::ReceiverSet<mojom::BundleDataSource> receivers_;
+  bool is_closed_ = false;
 };
 
 template <typename... T>
@@ -994,6 +1002,7 @@ class BlockingDataSource : public mojom::BundleDataSource {
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {}
   void Length(LengthCallback callback) override {}
   void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {}
+  void Close(CloseCallback callback) override {}
 };
 
 TEST_F(WebBundleParserTest, DestructorWhileParsing) {
@@ -1045,6 +1054,23 @@ TEST_F(WebBundleParserTest, DestructorWhileParsing) {
               mojom::BundleParseErrorType::kParserInternalError);
     EXPECT_EQ(error_integrity_block->message, "Data source disconnected.");
   }
+}
+
+TEST_F(WebBundleParserTest, Close) {
+  auto unsigned_bundle = CreateSmallBundle();
+  TestDataSource data_source(unsigned_bundle);
+  EXPECT_FALSE(data_source.IsClosed());
+
+  mojo::PendingRemote<mojom::BundleDataSource> source_remote;
+  data_source.AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
+
+  WebBundleParser parser_impl(std::move(source_remote), GURL());
+  mojom::WebBundleParser& parser = parser_impl;
+
+  base::test::TestFuture<void> future;
+  parser.Close(future.GetCallback());
+  future.Get();
+  EXPECT_TRUE(data_source.IsClosed());
 }
 
 }  // namespace web_package

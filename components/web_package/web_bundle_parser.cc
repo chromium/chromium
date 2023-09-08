@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -906,6 +907,10 @@ WebBundleParser::~WebBundleParser() {
 
 void WebBundleParser::ParseIntegrityBlock(
     ParseIntegrityBlockCallback callback) {
+  if (CheckIfClosed()) {
+    return;
+  }
+
   std::unique_ptr<WebBundleSectionParser> parser =
       std::make_unique<web_package::IntegrityBlockParser>(data_source_,
                                                           std::move(callback));
@@ -914,6 +919,10 @@ void WebBundleParser::ParseIntegrityBlock(
 
 void WebBundleParser::ParseMetadata(absl::optional<uint64_t> offset,
                                     ParseMetadataCallback callback) {
+  if (CheckIfClosed()) {
+    return;
+  }
+
   std::unique_ptr<WebBundleSectionParser> parser =
       std::make_unique<MetadataParser>(data_source_, base_url_,
                                        std::move(offset), std::move(callback));
@@ -923,6 +932,10 @@ void WebBundleParser::ParseMetadata(absl::optional<uint64_t> offset,
 void WebBundleParser::ParseResponse(uint64_t response_offset,
                                     uint64_t response_length,
                                     ParseResponseCallback callback) {
+  if (CheckIfClosed()) {
+    return;
+  }
+
   std::unique_ptr<WebBundleSectionParser> parser =
       std::make_unique<ResponseParser>(data_source_, response_offset,
                                        response_length, std::move(callback));
@@ -945,6 +958,25 @@ void WebBundleParser::OnParsingComplete(WebBundleSectionParser* parser,
 
 void WebBundleParser::OnDisconnect() {
   active_parsers_.clear();
+}
+
+void WebBundleParser::Close(CloseCallback parser_closed_callback) {
+  is_closed_ = true;
+  active_parsers_.clear();
+  data_source_->Close(base::BindOnce(&WebBundleParser::OnDataSourceClosed,
+                                     base::Unretained(this),
+                                     std::move(parser_closed_callback)));
+}
+
+void WebBundleParser::OnDataSourceClosed(CloseCallback parser_closed_callback) {
+  std::move(parser_closed_callback).Run();
+}
+
+bool WebBundleParser::CheckIfClosed() {
+  if (is_closed_) {
+    mojo::ReportBadMessage("Attempt to access the closed web bundle parser");
+  }
+  return is_closed_;
 }
 
 }  // namespace web_package

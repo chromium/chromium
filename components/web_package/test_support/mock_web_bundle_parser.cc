@@ -173,4 +173,8 @@ void MockWebBundleParser::ParseResponse(uint64_t response_offset,
   }
 }
 
+void MockWebBundleParser::Close(CloseCallback callback) {
+  std::move(callback).Run();
+}
+
 }  // namespace web_package
