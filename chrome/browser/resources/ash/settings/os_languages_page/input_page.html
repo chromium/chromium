@@ -99,6 +99,13 @@
   cr-button[disabled] iron-icon {
     --iron-icon-fill-color: var(--cros-button-icon-color-primary-disabled);
   }
+
+  paper-spinner-lite {
+    /* Pending UX confirmation. */
+    height: 20px;
+    width: 20px;
+    --paper-spinner-stroke-width: 2px;
+  }
 </style>
 
 <template is="dom-if" if="[[shouldShowLanguagePacksNotice_]]">
@@ -152,6 +159,10 @@
             $i18n{inputMethodEnabled}
           </div>
         </div>
+        <template is="dom-if" if="[[shouldShowSpinner_(item)]]">
+          <paper-spinner-lite alt="TO BE TRANSLATED: Loading" active>
+          </paper-spinner-lite>
+        </template>
         <template is="dom-if"
             if="[[hasOptionsPageInSettings_(item.id)]]">
           <div class="internal-wrapper"
