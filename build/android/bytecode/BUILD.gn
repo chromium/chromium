@@ -4,25 +4,6 @@
 
 import("//build/config/android/rules.gni")
 
-java_binary("bytecode_processor") {
-  main_class = "org.chromium.bytecode.ByteCodeProcessor"
-  wrapper_script_name = "helper/bytecode_processor"
-  deps = [ ":bytecode_processor_java" ]
-}
-
-java_library("bytecode_processor_java") {
-  sources = [
-    "java/org/chromium/bytecode/ByteCodeProcessor.java",
-    "java/org/chromium/bytecode/ClassPathValidator.java",
-    "java/org/chromium/bytecode/TypeUtils.java",
-  ]
-  deps = [
-    "//third_party/android_deps:org_ow2_asm_asm_java",
-    "//third_party/android_deps:org_ow2_asm_asm_util_java",
-  ]
-  enable_bytecode_checks = false
-}
-
 # A bytecode rewriter that replaces all calls to
 # `FragmentActivity Fragment.getActivity()` with
 # `Activity Fragment.getActivity()`.
@@ -76,9 +57,9 @@ java_library("trace_event_adder_java") {
     "java/org/chromium/bytecode/TraceEventAdder.java",
     "java/org/chromium/bytecode/TraceEventAdderClassAdapter.java",
     "java/org/chromium/bytecode/TraceEventAdderMethodAdapter.java",
+    "java/org/chromium/bytecode/TypeUtils.java",
   ]
   deps = [
-    ":bytecode_processor_java",
     "//third_party/android_deps:org_ow2_asm_asm_commons_java",
     "//third_party/android_deps:org_ow2_asm_asm_java",
     "//third_party/android_deps:org_ow2_asm_asm_util_java",

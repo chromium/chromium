@@ -25,15 +25,6 @@ sys.path.append(str(_SRC_PATH / 'tools/android/modularization/gn'))
 from dep_operations import NO_VALID_GN_STR
 
 
-# This is a temporary constant to make reverts easier (if necessary).
-# TODO(crbug.com/1099522): Remove this and make jdeps on by default.
-_USE_JDEPS = True
-
-# This is temporary in case another revert & debug session is necessary.
-# TODO(crbug.com/1099522): Remove this when jdeps is on by default.
-_DEBUG = False
-
-
 def _ShouldIgnoreDep(dep_name: str):
   if 'gen.base_module.R' in dep_name:
     return True
@@ -66,7 +57,7 @@ def _ParseDepGraph(jar_path: str):
     dep_from = parsed[0]
     dep_to = parsed[2]
     dep_graph[dep_from].add(dep_to)
-  return dep_graph, output
+  return dep_graph
 
 
 def _GnTargetToBuildFilePath(gn_target: str):
@@ -118,7 +109,7 @@ def _EnsureDirectClasspathIsComplete(
   transitive_deps = full_classpath_deps - direct_classpath_deps
 
   missing_classes: Dict[str, str] = {}
-  dep_graph, output = _ParseDepGraph(input_jar)
+  dep_graph = _ParseDepGraph(input_jar)
   logging.info('Finding missing deps from %d classes', len(dep_graph))
   # dep_graph.keys() is a list of all the classes in the current input_jar. Skip
   # all of these to avoid checking dependencies in the same target (e.g. A
@@ -156,19 +147,6 @@ def _EnsureDirectClasspathIsComplete(
         for dep_to in deps_to:
           dep_from = missing_classes[dep_to]
           print(f'     ** {dep_to} (needed by {dep_from})')
-      if _DEBUG:
-        gn_target_name = gn_target.split(':', 1)[-1]
-        debug_fname = f'/tmp/bytecode_processor_debug_{gn_target_name}.json'
-        with open(debug_fname, 'w') as f:
-          print(gn_target, file=f)
-          print(input_jar, file=f)
-          print(json.dumps(sorted(sdk_classpath_deps), indent=4), file=f)
-          print(json.dumps(sorted(direct_classpath_deps), indent=4), file=f)
-          print(json.dumps(sorted(full_classpath_deps), indent=4), file=f)
-          print(json.dumps(sorted(transitive_deps), indent=4), file=f)
-          print(json.dumps(missing_classes, sort_keys=True, indent=4), file=f)
-          print(output, file=f)
-        print(f'DEBUG FILE: {debug_fname}')
       if warnings_as_errors:
         sys.exit(1)
 
@@ -229,8 +207,6 @@ def main(argv):
   parser.add_argument('--use-build-server',
                       action='store_true',
                       help='Always use the build server.')
-  parser.add_argument('--script', required=True,
-                      help='Path to the java binary wrapper script.')
   parser.add_argument('--gn-target', required=True)
   parser.add_argument('--input-jar', required=True)
   parser.add_argument('--direct-classpath-jars')
@@ -239,8 +215,6 @@ def main(argv):
   parser.add_argument('--full-classpath-gn-targets')
   parser.add_argument('--chromium-output-dir')
   parser.add_argument('--stamp')
-  parser.add_argument('-v', '--verbose', action='store_true')
-  parser.add_argument('--missing-classes-allowlist')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -267,52 +241,21 @@ def main(argv):
       dep_utils.ReplaceGmsPackageIfNeeded(t)
       for t in action_helpers.parse_gn_list(args.full_classpath_gn_targets)
   ]
-  args.missing_classes_allowlist = action_helpers.parse_gn_list(
-      args.missing_classes_allowlist)
 
-  verbose = '--verbose' if args.verbose else '--not-verbose'
-
-  # TODO(https://crbug.com/1099522): Make jdeps the default.
-  if _USE_JDEPS:
-    logging.info('Processed args for %s, starting direct classpath check.',
-                 args.target_name)
-    _EnsureDirectClasspathIsComplete(
-        input_jar=args.input_jar,
-        gn_target=args.gn_target,
-        output_dir=args.chromium_output_dir,
-        sdk_classpath_jars=args.sdk_classpath_jars,
-        direct_classpath_jars=args.direct_classpath_jars,
-        full_classpath_jars=args.full_classpath_jars,
-        full_classpath_gn_targets=args.full_classpath_gn_targets,
-        warnings_as_errors=args.warnings_as_errors,
-        auto_add_deps=args.auto_add_deps,
-    )
-    logging.info('Check completed.')
-  else:
-    cmd = [
-        args.script, args.gn_target, args.input_jar, verbose, '--not-prebuilt'
-    ]
-    cmd += [str(len(args.missing_classes_allowlist))]
-    cmd += args.missing_classes_allowlist
-    cmd += [str(len(args.sdk_classpath_jars))]
-    cmd += args.sdk_classpath_jars
-    cmd += [str(len(args.direct_classpath_jars))]
-    cmd += args.direct_classpath_jars
-    cmd += [str(len(args.full_classpath_jars))]
-    cmd += args.full_classpath_jars
-    cmd += [str(len(args.full_classpath_gn_targets))]
-    cmd += args.full_classpath_gn_targets
-    try:
-      build_utils.CheckOutput(
-          cmd,
-          print_stdout=True,
-          fail_func=None,  # type: ignore
-          fail_on_output=args.warnings_as_errors)
-    except build_utils.CalledProcessError as e:
-      # Do not output command line because it is massive and makes the actual
-      # error message hard to find.
-      sys.stderr.write(e.output)
-      sys.exit(1)
+  logging.info('Processed args for %s, starting direct classpath check.',
+               args.target_name)
+  _EnsureDirectClasspathIsComplete(
+      input_jar=args.input_jar,
+      gn_target=args.gn_target,
+      output_dir=args.chromium_output_dir,
+      sdk_classpath_jars=args.sdk_classpath_jars,
+      direct_classpath_jars=args.direct_classpath_jars,
+      full_classpath_jars=args.full_classpath_jars,
+      full_classpath_gn_targets=args.full_classpath_gn_targets,
+      warnings_as_errors=args.warnings_as_errors,
+      auto_add_deps=args.auto_add_deps,
+  )
+  logging.info('Check completed.')
 
   if args.stamp:
     build_utils.Touch(args.stamp)

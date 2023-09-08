@@ -1899,25 +1899,22 @@ if (enable_java_templates) {
 
   template("bytecode_processor") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "data_deps" ])
-      _bytecode_checker_script = "$root_build_dir/bin/helper/bytecode_processor"
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [
+                                   "data_deps",
+                                   "deps",
+                                 ])
       script = "//build/android/gyp/bytecode_processor.py"
       inputs = [
         java_path_for_inputs,
         invoker.build_config,
         invoker.input_jar,
-        _bytecode_checker_script,
       ]
       outputs = [ "$target_out_dir/$target_name.bytecode.stamp" ]
-      deps =
-          invoker.deps +
-          [ "//build/android/bytecode:bytecode_processor($default_toolchain)" ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       args = [
         "--target-name",
         get_label_info(":${target_name}", "label_no_toolchain"),
-        "--script",
-        rebase_path(_bytecode_checker_script, root_build_dir),
         "--gn-target=${invoker.target_label}",
         "--input-jar",
         rebase_path(invoker.input_jar, root_build_dir),
@@ -1940,11 +1937,6 @@ if (enable_java_templates) {
       }
       if (treat_warnings_as_errors) {
         args += [ "--warnings-as-errors" ]
-      }
-      if (defined(invoker.missing_classes_allowlist)) {
-        args += [
-          "--missing-classes-allowlist=${invoker.missing_classes_allowlist}",
-        ]
       }
     }
   }

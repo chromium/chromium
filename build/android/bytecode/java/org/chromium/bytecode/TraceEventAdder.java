@@ -10,8 +10,12 @@ import org.objectweb.asm.Opcodes;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Java application that modifies all implementations of "draw", "onMeasure" and "onLayout" on all
@@ -20,6 +24,23 @@ import java.util.Arrays;
 public class TraceEventAdder extends ByteCodeRewriter {
     private final ClassLoader mClassPathJarsClassLoader;
     private ArrayList<MethodDescription> mMethodsToTrace;
+
+    /**
+     * Loads a list of jars and returns a ClassLoader capable of loading all classes found in the
+     * given jars.
+     */
+    static ClassLoader loadJars(Collection<String> paths) {
+        URL[] jarUrls = new URL[paths.size()];
+        int i = 0;
+        for (String path : paths) {
+            try {
+                jarUrls[i++] = new File(path).toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return new URLClassLoader(jarUrls);
+    }
 
     public static void main(String[] args) throws IOException {
         // Invoke this script using //build/android/gyp/trace_event_bytecode_rewriter.py
@@ -51,7 +72,7 @@ public class TraceEventAdder extends ByteCodeRewriter {
 
         ArrayList<String> classPathJarsPaths = new ArrayList<>();
         classPathJarsPaths.addAll(Arrays.asList(inputJars));
-        ClassLoader classPathJarsClassLoader = ByteCodeProcessor.loadJars(classPathJarsPaths);
+        ClassLoader classPathJarsClassLoader = loadJars(classPathJarsPaths);
 
         TraceEventAdder adder = new TraceEventAdder(classPathJarsClassLoader);
         for (int i = 0; i < inputJars.length; i++) {
