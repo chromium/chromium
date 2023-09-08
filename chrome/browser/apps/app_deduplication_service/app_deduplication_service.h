@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_deduplication_service/app_deduplication_cache.h"
+#include "chrome/browser/apps/almanac_api_client/proto_file_manager.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 #include "chrome/browser/apps/app_deduplication_service/duplicate_group.h"
 #include "chrome/browser/apps/app_deduplication_service/entry_types.h"
@@ -127,7 +127,7 @@ class AppDeduplicationService : public KeyedService,
 
   std::unique_ptr<AppDeduplicationServerConnector> server_connector_;
   std::unique_ptr<DeviceInfoManager> device_info_manager_;
-  std::unique_ptr<AppDeduplicationCache> cache_;
+  std::unique_ptr<ProtoFileManager<proto::DeduplicateData>> proto_file_manager_;
 
   // For testing
   base::OnceCallback<void(bool)> get_data_complete_callback_for_testing_;

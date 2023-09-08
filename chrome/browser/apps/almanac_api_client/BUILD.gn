@@ -12,6 +12,8 @@ source_set("almanac_api_client") {
     "almanac_api_util.h",
     "device_info_manager.cc",
     "device_info_manager.h",
+    "proto_file_manager.cc",
+    "proto_file_manager.h",
   ]
 
   deps = [
@@ -39,12 +41,14 @@ source_set("unit_tests") {
   sources = [
     "almanac_api_util_unittest.cc",
     "device_info_manager_unittest.cc",
+    "proto_file_manager_unittest.cc",
   ]
 
   deps = [
     ":almanac_api_client",
     "//base",
     "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/app_deduplication_service/proto",
     "//chrome/common:channel_info",
     "//chrome/test:test_support",
     "//components/language/core/browser",

@@ -9,8 +9,6 @@ assert(is_chromeos_ash)
 
 source_set("app_deduplication_service") {
   sources = [
-    "app_deduplication_cache.cc",
-    "app_deduplication_cache.h",
     "app_deduplication_mapper.cc",
     "app_deduplication_mapper.h",
     "app_deduplication_server_connector.cc",
@@ -49,7 +47,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "app_deduplication_cache_unittest.cc",
     "app_deduplication_mapper_unittest.cc",
     "app_deduplication_server_connector_unittest.cc",
     "app_deduplication_service_unittest.cc",
