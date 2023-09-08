@@ -244,8 +244,9 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
     web_app_info->user_display_mode = open_as_window
                                           ? mojom::UserDisplayMode::kStandalone
                                           : mojom::UserDisplayMode::kBrowser;
-    if (display_override_mode)
+    if (display_override_mode) {
       web_app_info->display_override.push_back(*display_override_mode);
+    }
 
     AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
@@ -2157,13 +2158,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Tabbed, TabbedDisplayOverride) {
   EXPECT_EQ(DisplayMode::kTabbed, app_display_mode_override[0]);
   EXPECT_EQ(true,
             provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, RemoveStatusBar) {
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
-  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
-  EXPECT_EQ(nullptr, app_browser->GetStatusBubbleForTesting());
 }
 
 class WebAppBrowserTest_NoDestroyProfile : public WebAppBrowserTest {

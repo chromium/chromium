@@ -2783,10 +2783,16 @@ void Browser::RemoveScheduledUpdatesFor(WebContents* contents) {
 // Browser, Getters for UI (private):
 
 StatusBubble* Browser::GetStatusBubble() {
-  // In web apps, and in kiosk and exclusive app mode we want to always hide the
-  // status bubble.
-  if (chrome::IsRunningInAppMode() ||
-      web_app::AppBrowserController::IsWebApp(this)) {
+  // For kiosk and exclusive app mode we want to always hide the status bubble.
+  if (chrome::IsRunningInAppMode()) {
+    return nullptr;
+  }
+
+  // We hide the status bar for web apps windows as this matches native
+  // experience. However, we include the status bar for 'minimal-ui' display
+  // mode, as the minimal browser UI includes the status bar.
+  if (web_app::AppBrowserController::IsWebApp(this) &&
+      !app_controller()->HasMinimalUiButtons()) {
     return nullptr;
   }
 
