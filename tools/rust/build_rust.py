@@ -79,10 +79,47 @@ EXCLUDED_TESTS = [
     # https://github.com/rust-lang/rust/issues/94322 large output from
     # compiletests is breaking json parsing of the results.
     os.path.join('tests', 'ui', 'numeric', 'numeric-cast.rs'),
+
+    # TODO(crbug.com/1476119): LTO related failures due to an LLVM API change
+    # where the Rust-side fix has too many dependendices to be practical for
+    # cherry-picking.
+    os.path.join('tests', 'codegen', 'lto-removes-invokes.rs'),
+    os.path.join('tests', 'codegen', 'pgo-counter-bias.rs'),
+    os.path.join('tests', 'codegen', 'sanitizer-recover.rs'),
+    os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs'),
+    os.path.join('tests', 'ui', 'dyn-star', 'llvm-old-style-ptrs.rs'),
+    os.path.join('tests', 'ui', 'extern',
+                 'issue-64655-allow-unwind-when-calling-panic-directly.rs'),
+    os.path.join('tests', 'ui', 'extern',
+                 'issue-64655-extern-rust-must-allow-unwind.rs'),
+    os.path.join('tests', 'ui', 'extern',
+                 'issue-64655-extern-rust-must-allow-unwind.rs'),
+    os.path.join('tests', 'ui', 'issues', 'issue-44056.rs'),
+    os.path.join('tests', 'ui', 'lto', 'all-crates.rs'),
+    os.path.join('tests', 'ui', 'lto', 'debuginfo-lto.rs'),
+    os.path.join('tests', 'ui', 'lto', 'fat-lto.rs'),
+    os.path.join('tests', 'ui', 'lto', 'issue-100772.rs'),
+    os.path.join('tests', 'ui', 'lto', 'lto-duplicate-symbols.rs'),
+    os.path.join('tests', 'ui', 'lto', 'lto-many-codegen-units.rs'),
+    os.path.join('tests', 'ui', 'lto', 'lto-rustc-loads-linker-plugin.rs'),
+    os.path.join('tests', 'ui', 'lto', 'lto-still-runs-thread-dtors.rs'),
+    os.path.join('tests', 'ui', 'lto',
+                 'lto-thin-rustc-loads-linker-plugin.rs'),
+    os.path.join('tests', 'ui', 'lto', 'thin-lto-inlines2.rs'),
+    os.path.join('tests', 'ui', 'panic-runtime', 'lto-abort.rs'),
+    os.path.join('tests', 'ui', 'panic-runtime', 'lto-unwind.rs'),
+    os.path.join('tests', 'ui', 'sanitize',
+                 'issue-111184-generator-witness.rs'),
+    os.path.join('tests', 'ui', 'sepcomp', 'sepcomp-lib-lto.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
     os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
+]
+EXCLUDED_TESTS_MAC = [
+    # https://crbug.com/1479875 This fails on Mac. It relates to the large code
+    # model which we don't use, so suppress it for now.
+    os.path.join('tests', 'ui', 'thread-local', 'thread-local-issue-37508.rs'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
@@ -477,6 +514,10 @@ def GetTestArgs():
         for excluded in EXCLUDED_TESTS_WINDOWS:
             args.append('--exclude')
             args.append(excluded)
+    if sys.platform == 'darwin':
+        for excluded in EXCLUDED_TESTS_MAC:
+            args.append('--exclude')
+            args.append(excluded)
     return args
 
 
@@ -739,6 +780,18 @@ def main():
         # TODO(crbug.com/1472655): Remove this cherrypicking after the
         # cherrypicked commit is included in the checkout.
         GitCherryPick(RUST_SRC_DIR, '0081d64e4b8413219ddec5d1013d522edbf132')
+
+        # Cherry-picks: for LLVM API changes:
+        # llvm-wrapper: adapt for LLVM API change
+        GitCherryPick(RUST_SRC_DIR, '71958da4854176c50a8b12470b956d5c7ed11817')
+        # llvm-wrapper: update for LLVM API change
+        GitCherryPick(RUST_SRC_DIR, '6ddf9128b2b55f9def80af57f7353d2521527c6a')
+        # llvm-wrapper: adapt for LLVM API changes
+        GitCherryPick(RUST_SRC_DIR, '9941db45125f03f6f2c2e491b747e66f0f133415')
+        # ArchiveWrapper: handle LLVM API update
+        GitCherryPick(RUST_SRC_DIR, '3977ed1e69e6fc14e76e19bead3d6d725fc2129d')
+        # llvm-wrapper: adapt for LLVM API change
+        GitCherryPick(RUST_SRC_DIR, 'bdfa08a3459870e7abdd5442ac8e9d20e64cc288')
 
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
