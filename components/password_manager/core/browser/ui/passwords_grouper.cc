@@ -76,8 +76,8 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     branding_info.icon_url = GURL(kDefaultAndroidIcon);
     return branding_info;
   }
-  std::string group_name = password_manager_util::GetExtendedTopLevelDomain(
-      credential.GetURL(), psl_extensions);
+  std::string group_name =
+      GetExtendedTopLevelDomain(credential.GetURL(), psl_extensions);
   if (group_name.empty()) {
     group_name =
         credential.GetURL().is_valid()
@@ -138,11 +138,9 @@ void PasswordsGrouper::GroupCredentials(std::vector<PasswordForm> forms,
   // Before grouping passwords merge related groups. After grouping is finished
   // invoke |callback|.
   affiliation_service_->GetGroupingInfo(
-      std::move(facets),
-      base::BindOnce(&password_manager_util::MergeRelatedGroups,
-                     psl_extensions_)
-          .Then(std::move(group_callback))
-          .Then(std::move(callback)));
+      std::move(facets), base::BindOnce(&MergeRelatedGroups, psl_extensions_)
+                             .Then(std::move(group_callback))
+                             .Then(std::move(callback)));
 }
 
 std::vector<AffiliatedGroup>

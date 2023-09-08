@@ -7,11 +7,13 @@
 #include <ostream>
 
 #include "base/base64.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/url_formatter/elide_url.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon_stdstring.h"
 
@@ -196,6 +198,95 @@ std::vector<FacetURI> ExtractAndSortFacetURIs(const AffiliatedFacets& facets) {
   return uris;
 }
 
+// Appends a new level to the |main_domain| from |full_domain|.
+// |main_domain| must be a suffix of |full_domain|.
+void IncreaseDomainLevel(const std::string& full_domain,
+                         std::string& main_domain) {
+  DCHECK_GT(full_domain.size(), main_domain.size());
+  auto starting_pos = full_domain.rbegin() + main_domain.size();
+  // Verify that we are at '.' and move to the next character.
+  DCHECK_EQ(*starting_pos, '.');
+  starting_pos++;
+  // Find next '.' from |starting_pos|
+  auto ending_pos = std::find(starting_pos, full_domain.rend(), '.');
+  main_domain = std::string(ending_pos.base(), full_domain.end());
+}
+
+// An implementation of the disjoint-set data structure
+// (https://en.wikipedia.org/wiki/Disjoint-set_data_structure). This
+// implementation uses the path compression and union by rank optimizations,
+// achieving near-constant runtime on all operations.
+//
+// This data structure allows to keep track of disjoin sets. Constructor accepts
+// number of elements and initially each element represent an individual set.
+// Later by calling MergeSets corresponding sets are merged together.
+// Example usage:
+//   DisjointSet disjoint_set(5);
+//   disjoint_set.GetDisjointSets(); // Returns {{0}, {1}, {2}, {3}, {4}}
+//   disjoint_set.MergeSets(0, 2);
+//   disjoint_set.GetDisjointSets(); // Returns {{0, 2}, {1}, {3}, {4}}
+//   disjoint_set.MergeSets(2, 4);
+//   disjoint_set.GetDisjointSets(); // Returns {{0, 2, 4}, {1}, {3}}
+class DisjointSet {
+ public:
+  explicit DisjointSet(size_t size) : parent_id_(size), ranks_(size, 0) {
+    for (size_t i = 0; i < size; i++) {
+      parent_id_[i] = i;
+    }
+  }
+
+  // Merges two sets based on their rank. Set with higher rank becomes a parent
+  // for another set.
+  void MergeSets(int set1, int set2) {
+    set1 = GetRoot(set1);
+    set2 = GetRoot(set2);
+    if (set1 == set2) {
+      return;
+    }
+
+    // Update parent based on rank.
+    if (ranks_[set1] > ranks_[set2]) {
+      parent_id_[set2] = set1;
+    } else {
+      parent_id_[set1] = set2;
+      // if ranks were equal increment by one new root's rank.
+      if (ranks_[set1] == ranks_[set2]) {
+        ranks_[set2]++;
+      }
+    }
+  }
+
+  // Returns disjoin sets after merging. It's guarantee that the result will
+  // hold all elements.
+  std::vector<std::vector<int>> GetDisjointSets() {
+    std::vector<std::vector<int>> disjoint_sets(parent_id_.size());
+    for (size_t i = 0; i < parent_id_.size(); i++) {
+      // Append all elements to the root.
+      int root = GetRoot(i);
+      disjoint_sets[root].push_back(i);
+    }
+    // Clear empty sets.
+    base::EraseIf(disjoint_sets, [](const auto& set) { return set.empty(); });
+    return disjoint_sets;
+  }
+
+ private:
+  // Returns root for a given element.
+  int GetRoot(int index) {
+    if (index == parent_id_[index]) {
+      return index;
+    }
+    // To speed up future lookups flatten the tree along the way.
+    return parent_id_[index] = GetRoot(parent_id_[index]);
+  }
+
+  // Vector where element at i'th position holds a parent for i.
+  std::vector<int> parent_id_;
+
+  // Upper bound depth of a tree for i'th element.
+  std::vector<size_t> ranks_;
+};
+
 }  // namespace
 
 
@@ -294,6 +385,56 @@ GroupedFacets& GroupedFacets::operator=(const GroupedFacets& other) = default;
 
 GroupedFacets& GroupedFacets::operator=(GroupedFacets&& other) = default;
 
+std::vector<GroupedFacets> MergeRelatedGroups(
+    const base::flat_set<std::string>& psl_extensions,
+    const std::vector<GroupedFacets>& groups) {
+  DisjointSet unions(groups.size());
+  std::map<std::string, int> main_domain_to_group;
+
+  for (size_t i = 0; i < groups.size(); i++) {
+    for (auto& facet : groups[i].facets) {
+      if (facet.uri.IsValidAndroidFacetURI()) {
+        continue;
+      }
+
+      // If domain is empty - compute it manually.
+      std::string main_domain =
+          facet.main_domain.empty()
+              ? GetExtendedTopLevelDomain(
+                    GURL(facet.uri.potentially_invalid_spec()), psl_extensions)
+              : facet.main_domain;
+
+      if (main_domain.empty()) {
+        continue;
+      }
+
+      auto it = main_domain_to_group.find(main_domain);
+      if (it == main_domain_to_group.end()) {
+        main_domain_to_group[main_domain] = i;
+        continue;
+      }
+      unions.MergeSets(i, it->second);
+    }
+  }
+
+  std::vector<GroupedFacets> result;
+  for (const auto& merged_groups : unions.GetDisjointSets()) {
+    GroupedFacets group;
+    for (int group_id : merged_groups) {
+      // Move all the elements into a new vector.
+      group.facets.insert(group.facets.end(), groups[group_id].facets.begin(),
+                          groups[group_id].facets.end());
+      // Use non-empty name for a combined group.
+      if (!groups[group_id].branding_info.icon_url.is_empty()) {
+        group.branding_info = groups[group_id].branding_info;
+      }
+    }
+
+    result.push_back(std::move(group));
+  }
+  return result;
+}
+
 // AffiliatedFacetsWithUpdateTime ---------------------------------------------
 
 AffiliatedFacetsWithUpdateTime::AffiliatedFacetsWithUpdateTime() = default;
@@ -355,6 +496,36 @@ bool AreEquivalenceClassesEqual(const AffiliatedFacets& a,
 bool IsValidAndroidFacetURI(const std::string& url) {
   FacetURI facet = FacetURI::FromPotentiallyInvalidSpec(url);
   return facet.IsValidAndroidFacetURI();
+}
+
+std::string GetExtendedTopLevelDomain(
+    const GURL& url,
+    const base::flat_set<std::string>& psl_extensions) {
+  std::string main_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  if (main_domain.empty()) {
+    return main_domain;
+  }
+
+  std::string full_domain = url.host();
+
+  // Something went wrong, and it shouldn't happen. Return early in this case to
+  // avoid undefined behaviour.
+  if (!base::EndsWith(full_domain, main_domain)) {
+    return main_domain;
+  }
+
+  // If a domain is contained within the PSL extension list, an additional
+  // subdomain is added to that domain. This is done until the domain is not
+  // contained within the PSL extension list or fully shown. For multi-level
+  // extension, this approach only works if all sublevels are included in the
+  // PSL extension list.
+  while (main_domain != full_domain && psl_extensions.contains(main_domain)) {
+    IncreaseDomainLevel(full_domain, main_domain);
+  }
+  return main_domain;
 }
 
 }  // namespace password_manager

@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;

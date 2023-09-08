@@ -20,6 +20,7 @@
 #include "base/parameter_pack.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/sql_table_builder.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"

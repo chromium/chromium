@@ -18,39 +18,21 @@ config("password_reuse_detection_config") {
   }
 }
 
+source_set("sql_builder") {
+  sources = [
+    "sql_table_builder.cc",
+    "sql_table_builder.h",
+  ]
+  deps = [
+    "//base",
+    "//sql",
+  ]
+}
+
 static_library("browser") {
   sources = [
     "affiliation/affiliated_match_helper.cc",
     "affiliation/affiliated_match_helper.h",
-    "affiliation/affiliation_backend.cc",
-    "affiliation/affiliation_backend.h",
-    "affiliation/affiliation_database.cc",
-    "affiliation/affiliation_database.h",
-    "affiliation/affiliation_fetch_throttler.cc",
-    "affiliation/affiliation_fetch_throttler.h",
-    "affiliation/affiliation_fetch_throttler_delegate.h",
-    "affiliation/affiliation_fetcher_base.cc",
-    "affiliation/affiliation_fetcher_base.h",
-    "affiliation/affiliation_fetcher_delegate.cc",
-    "affiliation/affiliation_fetcher_delegate.h",
-    "affiliation/affiliation_fetcher_factory.h",
-    "affiliation/affiliation_fetcher_factory_impl.cc",
-    "affiliation/affiliation_fetcher_factory_impl.h",
-    "affiliation/affiliation_fetcher_interface.h",
-    "affiliation/affiliation_service.h",
-    "affiliation/affiliation_service_impl.cc",
-    "affiliation/affiliation_service_impl.h",
-    "affiliation/affiliations_prefetcher.cc",
-    "affiliation/affiliations_prefetcher.h",
-    "affiliation/asset_link_data.cc",
-    "affiliation/asset_link_data.h",
-    "affiliation/facet_manager.cc",
-    "affiliation/facet_manager.h",
-    "affiliation/facet_manager_host.h",
-    "affiliation/hash_affiliation_fetcher.cc",
-    "affiliation/hash_affiliation_fetcher.h",
-    "affiliation/lookup_affiliation_response_parser.cc",
-    "affiliation/lookup_affiliation_response_parser.h",
     "browser_save_password_progress_logger.cc",
     "browser_save_password_progress_logger.h",
     "bulk_leak_check_service.cc",
@@ -146,8 +128,6 @@ static_library("browser") {
     "password_feature_manager.h",
     "password_feature_manager_impl.cc",
     "password_feature_manager_impl.h",
-    "password_form_digest.cc",
-    "password_form_digest.h",
     "password_form_filling.cc",
     "password_form_filling.h",
     "password_form_manager.cc",
@@ -249,8 +229,6 @@ static_library("browser") {
     "sharing/sharing_invitations.cc",
     "sharing/sharing_invitations.h",
     "smart_bubble_stats_store.h",
-    "sql_table_builder.cc",
-    "sql_table_builder.h",
     "statistics_table.cc",
     "statistics_table.h",
     "store_metrics_reporter.cc",
@@ -297,12 +275,13 @@ static_library("browser") {
 
   public_deps = [
     ":password_form",
+    ":sql_builder",
     "//base",
+    "//components/password_manager/core/browser/affiliation",
     "//components/safe_browsing:buildflags",
     "//components/sync",
   ]
   deps = [
-    ":affiliation",
     ":affiliation_proto",
     ":hash_password_manager",
     ":password_generator",
@@ -448,6 +427,8 @@ source_set("password_form") {
   sources = [
     "password_form.cc",
     "password_form.h",
+    "password_form_digest.cc",
+    "password_form_digest.h",
   ]
   deps = [
     "//base",
@@ -523,24 +504,8 @@ static_library("hash_password_manager") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "affiliation/fake_affiliation_api.cc",
-    "affiliation/fake_affiliation_api.h",
-    "affiliation/fake_affiliation_fetcher.cc",
-    "affiliation/fake_affiliation_fetcher.h",
-    "affiliation/fake_affiliation_service.cc",
-    "affiliation/fake_affiliation_service.h",
     "affiliation/mock_affiliated_match_helper.cc",
     "affiliation/mock_affiliated_match_helper.h",
-    "affiliation/mock_affiliation_consumer.cc",
-    "affiliation/mock_affiliation_consumer.h",
-    "affiliation/mock_affiliation_fetcher.cc",
-    "affiliation/mock_affiliation_fetcher.h",
-    "affiliation/mock_affiliation_fetcher_delegate.cc",
-    "affiliation/mock_affiliation_fetcher_delegate.h",
-    "affiliation/mock_affiliation_fetcher_factory.cc",
-    "affiliation/mock_affiliation_fetcher_factory.h",
-    "affiliation/mock_affiliation_service.cc",
-    "affiliation/mock_affiliation_service.h",
     "fake_form_fetcher.cc",
     "fake_form_fetcher.h",
     "fake_password_store_backend.cc",
@@ -596,6 +561,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/keyed_service/core",
+    "//components/password_manager/core/browser/affiliation:test_support",
     "//components/password_manager/core/browser/leak_detection",
     "//components/safe_browsing:buildflags",
     "//components/signin/public/identity_manager:test_support",
@@ -607,7 +573,6 @@ static_library("test_support") {
     "//url",
   ]
   deps = [
-    ":affiliation",
     "//base",
     "//components/autofill/core/common",
     "//components/version_info:channel",
@@ -620,15 +585,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "affiliation/affiliated_match_helper_unittest.cc",
-    "affiliation/affiliation_backend_unittest.cc",
-    "affiliation/affiliation_database_unittest.cc",
-    "affiliation/affiliation_fetch_throttler_unittest.cc",
-    "affiliation/affiliation_fetcher_factory_impl_unittest.cc",
-    "affiliation/affiliation_service_impl_unittest.cc",
-    "affiliation/affiliations_prefetcher_unittest.cc",
-    "affiliation/asset_link_data_unittest.cc",
-    "affiliation/facet_manager_unittest.cc",
-    "affiliation/hash_affiliation_fetcher_unittest.cc",
     "browser_save_password_progress_logger_unittest.cc",
     "bulk_leak_check_service_unittest.cc",
     "credential_cache_unittest.cc",
@@ -744,8 +700,6 @@ source_set("unit_tests") {
   }
 
   deps = [
-    ":affiliation",
-    ":affiliation_unittests",
     ":hash_password_manager",
     ":password_generator",
     ":password_hash_data",
@@ -763,6 +717,7 @@ source_set("unit_tests") {
     "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",
     "//components/password_manager/core/browser:affiliation_proto",
+    "//components/password_manager/core/browser/affiliation:test_support",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing:form_parsing",
     "//components/password_manager/core/browser/form_parsing:unit_tests",
@@ -851,38 +806,6 @@ if (use_fuzzing_engine_with_lpm) {
       "//third_party/libprotobuf-mutator",
     ]
   }
-}
-
-# TODO(crbug.com/974822): Ideally, all of the "affiliation/"
-# subdirectory would be in a separate BUILD.gn file inside that subdirectory.
-# However, this requires the big "browser" target here to be split in multiple
-# sub-targets to avoid circular dependencies. For now, at least the files from
-# "affiliation" which can be easily separated are made so, to limit the
-# growth of this technical debt.
-static_library("affiliation") {
-  sources = [
-    "affiliation/affiliation_utils.cc",
-    "affiliation/affiliation_utils.h",
-  ]
-  deps = [
-    "//base",
-    "//components/url_formatter",
-    "//net",
-    "//url",
-  ]
-}
-
-source_set("affiliation_unittests") {
-  testonly = true
-  sources = [ "affiliation/affiliation_utils_unittest.cc" ]
-  deps = [
-    ":affiliation",
-    ":password_form",
-    "//base",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//url",
-  ]
 }
 
 if (is_android) {

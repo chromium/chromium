@@ -81,10 +81,10 @@ source_set("backend") {
   deps = [
     ":jni_headers",
     "//components/autofill/core/browser:browser",
-    "//components/password_manager/core/browser:affiliation",
     "//components/password_manager/core/browser:browser",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser:unified_password_manager_proto",
+    "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:common",
     "//components/password_manager/core/common:features",

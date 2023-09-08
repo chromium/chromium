@@ -491,23 +491,6 @@ enum class MoveToAccountStoreTrigger {
   kMaxValue = kUserOptedInAfterSavingLocally,
 };
 
-// Used to record metrics for the usage and timing of the GetChangePasswordUrl
-// call. These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
-enum class GetChangePasswordUrlMetric {
-  // Used when GetChangePasswordUrl is called before the response
-  // arrives.
-  kNotFetchedYet = 0,
-  // Used when a url was used, which corresponds to the requested site.
-  kUrlOverrideUsed = 1,
-  // Used when no override url was available.
-  kNoUrlOverrideAvailable = 2,
-  // Used when a url was used, which corresponds to a site from within same
-  // FacetGroup.
-  kGroupUrlOverrideUsed = 3,
-  kMaxValue = kGroupUrlOverrideUsed,
-};
-
 // Used to record what exactly was updated during password editing flow.
 // Entries should not be renumbered and numeric values should never be reused.
 enum class PasswordEditUpdatedValues {

@@ -201,6 +201,8 @@ test("components_unittests") {
     "//components/os_crypt/sync:unit_tests",
     "//components/page_image_service:unit_tests",
     "//components/password_manager/core/browser:unit_tests",
+    "//components/password_manager/core/browser/affiliation:affiliation_fetching_unittests",
+    "//components/password_manager/core/browser/affiliation:unit_tests",
     "//components/password_manager/core/common:unit_tests",
     "//components/payments/core:unit_tests",
     "//components/plus_addresses:unit_tests",

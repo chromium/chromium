@@ -12,7 +12,7 @@ source_set("manual_fill") {
     "//components/autofill/core/common",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
-    "//components/password_manager/core/browser:affiliation",
+    "//components/password_manager/core/browser/affiliation",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:save_passwords_consumer",
     "//ios/chrome/browser/shared/model/browser_state",

@@ -404,7 +404,7 @@ TEST_F(AffiliationServiceImplTest, NotFetchedYetMetricIfWaitingForResponse) {
 
   histogram_tester().ExpectUniqueSample(
       kGetChangePasswordURLMetricName,
-      metrics_util::GetChangePasswordUrlMetric::kNotFetchedYet, 1);
+      GetChangePasswordUrlMetric::kNotFetchedYet, 1);
 }
 
 TEST_F(AffiliationServiceImplTest, NoUrlOverrideAvailableMetric) {
@@ -412,7 +412,7 @@ TEST_F(AffiliationServiceImplTest, NoUrlOverrideAvailableMetric) {
 
   histogram_tester().ExpectUniqueSample(
       kGetChangePasswordURLMetricName,
-      metrics_util::GetChangePasswordUrlMetric::kNoUrlOverrideAvailable, 1);
+      GetChangePasswordUrlMetric::kNoUrlOverrideAvailable, 1);
 }
 
 TEST_F(AffiliationServiceImplTest, FoundForRequestedFacetMetric) {
@@ -444,7 +444,7 @@ TEST_F(AffiliationServiceImplTest, FoundForRequestedFacetMetric) {
 
   histogram_tester().ExpectUniqueSample(
       kGetChangePasswordURLMetricName,
-      metrics_util::GetChangePasswordUrlMetric::kUrlOverrideUsed, 1);
+      GetChangePasswordUrlMetric::kUrlOverrideUsed, 1);
 }
 
 TEST_F(AffiliationServiceImplTest, FoundForGroupedFacetMetric) {
@@ -474,7 +474,7 @@ TEST_F(AffiliationServiceImplTest, FoundForGroupedFacetMetric) {
 
   histogram_tester().ExpectUniqueSample(
       kGetChangePasswordURLMetricName,
-      metrics_util::GetChangePasswordUrlMetric::kGroupUrlOverrideUsed, 1);
+      GetChangePasswordUrlMetric::kGroupUrlOverrideUsed, 1);
 }
 
 TEST_F(AffiliationServiceImplTest, OnFetchSuccedeedRunsCallback) {
@@ -567,17 +567,6 @@ class AffiliationServiceImplTestWithFetcherFactory
                        base::Unretained(service_->GetBackendForTesting()),
                        std::move(fake_fetcher_factory)));
   }
-
-  void OnFormsCallback(
-      absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
-                    PasswordStoreBackendError> forms_or_error) {
-    if (absl::holds_alternative<PasswordStoreBackendError>(forms_or_error))
-      return;
-    result_forms_.swap(
-        absl::get<std::vector<std::unique_ptr<PasswordForm>>>(forms_or_error));
-  }
-
-  std::vector<std::unique_ptr<PasswordForm>> result_forms_;
 };
 
 TEST_F(AffiliationServiceImplTestWithFetcherFactory,

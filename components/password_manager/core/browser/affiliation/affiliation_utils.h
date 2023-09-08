@@ -50,6 +50,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -206,6 +207,13 @@ struct GroupedFacets {
   FacetBrandingInfo branding_info;
 };
 
+// This functions merges groups together if one of the following applies:
+// * the same facet is present in both groups.
+// * eTLD+1 of a facet in one group matches eTLD+1 of a facet in another group.
+std::vector<GroupedFacets> MergeRelatedGroups(
+    const base::flat_set<std::string>& psl_extensions,
+    const std::vector<GroupedFacets>& groups);
+
 // A collection of facets affiliated with each other, i.e. an equivalence class,
 // plus a timestamp that indicates the last time the data was updated from an
 // authoritative source.
@@ -233,6 +241,16 @@ bool AreEquivalenceClassesEqual(const AffiliatedFacets& a,
 
 // A shorter way to spell FacetURI::IsValidAndroidFacetURI().
 bool IsValidAndroidFacetURI(const std::string& uri);
+
+// Retrieves the extended top level domain for a given |url|
+// ("https://www.facebook.com/" => "facebook.com"). If the calculated top
+// private domain matches an entry from the |psl_extensions| (e.g. "app.link"),
+// the domain is extended by one level ("https://facebook.app.link/" =>
+// "facebook.app.link"). If the |url| is not a valid URI or has an unsupported
+// schema (e.g. "android://"), empty string is returned.
+std::string GetExtendedTopLevelDomain(
+    const GURL& url,
+    const base::flat_set<std::string>& psl_extensions);
 
 // For logging use only.
 std::ostream& operator<<(std::ostream& os, const FacetURI& facet_uri);

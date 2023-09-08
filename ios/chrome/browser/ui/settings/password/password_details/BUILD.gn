@@ -80,8 +80,8 @@ source_set("password_details_ui") {
   deps = [
     "//base",
     "//components/autofill/core/common",
-    "//components/password_manager/core/browser:affiliation",
     "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/strings",

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/sql_table_builder.h"
 
 namespace base {
 class FilePath;
