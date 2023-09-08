@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
 
 namespace blink {
 
@@ -15,14 +14,6 @@ class GeometryBoxClipPathOperation final : public ClipPathOperation {
  public:
   explicit GeometryBoxClipPathOperation(GeometryBox geometry_box)
       : geometry_box_(geometry_box) {}
-
-  Path GetPath(const gfx::RectF& reference_box) const {
-    Path path;
-    // TODO(pdr): Support rounded rects (see:
-    // https://drafts.csswg.org/css-shapes-1/#typedef-shape-box).
-    path.AddRect(reference_box);
-    return path;
-  }
 
   GeometryBox GetGeometryBox() const { return geometry_box_; }
 

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
@@ -65,29 +66,77 @@ LayoutSVGResourceClipper* ResolveElementReference(
   return resource_clipper;
 }
 
-// https://drafts.fxtf.org/css-masking/#typedef-geometry-box
+PhysicalRect BorderBoxRect(const LayoutBoxModelObject& object) {
+  // It is complex to map from an SVG border box to a reference box (for
+  // example, `GeometryBox::kViewBox` is independent of the border box) so we
+  // use `SVGResources::ReferenceBoxForEffects` for SVG reference boxes.
+  CHECK(!object.IsSVGChild());
+
+  if (auto* box = DynamicTo<LayoutBox>(object)) {
+    // If the box is fragment-less return an empty box.
+    if (box->PhysicalFragmentCount() == 0u) {
+      return PhysicalRect();
+    }
+    return box->PhysicalBorderBoxRect();
+  }
+
+  // The spec doesn't say what to do if there are multiple lines. Gecko uses the
+  // first fragment in that case. We'll do the same here.
+  // See: https://crbug.com/641907
+  const LayoutInline& layout_inline = To<LayoutInline>(object);
+  if (layout_inline.IsInLayoutNGInlineFormattingContext()) {
+    NGInlineCursor cursor;
+    cursor.MoveTo(layout_inline);
+    if (cursor) {
+      return cursor.Current().RectInContainerFragment();
+    }
+  }
+  return PhysicalRect();
+}
+
 // TODO(crbug.com/1473440): Convert this to take a NGPhysicalBoxFragment
 // instead of a LayoutBoxModelObject.
-PhysicalRect ComputeReferenceBoxInternal(GeometryBox geometry_box,
-                                         const LayoutBoxModelObject& object,
-                                         PhysicalRect border_box_rect) {
+NGPhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
+    GeometryBox geometry_box,
+    const LayoutBoxModelObject& object) {
+  // It is complex to map from an SVG border box to a reference box (for
+  // example, `GeometryBox::kViewBox` is independent of the border box) so we
+  // use `SVGResources::ReferenceBoxForEffects` for SVG reference boxes.
+  CHECK(!object.IsSVGChild());
+
   switch (geometry_box) {
     case GeometryBox::kPaddingBox:
-      border_box_rect.Contract(object.BorderOutsets());
-      return border_box_rect;
+      return -object.BorderOutsets();
     case GeometryBox::kContentBox:
     case GeometryBox::kFillBox:
-      border_box_rect.Contract(object.BorderOutsets() +
-                               object.PaddingOutsets());
-      return border_box_rect;
+      return -(object.BorderOutsets() + object.PaddingOutsets());
     case GeometryBox::kMarginBox:
-      border_box_rect.Expand(object.MarginOutsets());
-      return border_box_rect;
+      return object.MarginOutsets();
     case GeometryBox::kBorderBox:
     case GeometryBox::kStrokeBox:
     case GeometryBox::kViewBox:
-      return border_box_rect;
+      return NGPhysicalBoxStrut();
   }
+}
+
+FloatRoundedRect RoundedReferenceBox(GeometryBox geometry_box,
+                                     const LayoutObject& object) {
+  if (object.IsSVGChild()) {
+    return FloatRoundedRect(ClipPathClipper::LocalReferenceBox(object));
+  }
+
+  const auto& box = To<LayoutBoxModelObject>(object);
+  PhysicalRect border_box_rect = BorderBoxRect(box);
+  FloatRoundedRect rounded_border_box_rect =
+      RoundedBorderGeometry::RoundedBorder(box.StyleRef(), border_box_rect);
+  if (geometry_box == GeometryBox::kMarginBox) {
+    rounded_border_box_rect.OutsetForMarginOrShadow(
+        gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
+  } else {
+    rounded_border_box_rect.Outset(
+        gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
+  }
+  return rounded_border_box_rect;
 }
 
 }  // namespace
@@ -224,31 +273,10 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
     return SVGResources::ReferenceBoxForEffects(object, geometry_box);
   }
 
-  if (auto* box = DynamicTo<LayoutBox>(object)) {
-    // If the box is fragment-less return an empty reference box.
-    if (box->PhysicalFragmentCount() == 0u) {
-      return gfx::RectF();
-    }
-    return gfx::RectF(ComputeReferenceBoxInternal(
-        geometry_box, *box, box->PhysicalBorderBoxRect()));
-  }
-
-  const LayoutInline& layout_inline = To<LayoutInline>(object);
-  // The spec doesn't say what to do if there are multiple lines. Gecko uses the
-  // first fragment in that case. We'll do the same here.
-  // See: https://crbug.com/641907
-  if (layout_inline.IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
-    cursor.MoveTo(layout_inline);
-    if (cursor) {
-      PhysicalRect border_box = cursor.Current().RectInContainerFragment();
-      if (cursor.Current().BoxFragment()) {
-        return gfx::RectF(ComputeReferenceBoxInternal(
-            geometry_box, layout_inline, border_box));
-      }
-    }
-  }
-  return gfx::RectF();
+  const auto& box = To<LayoutBoxModelObject>(object);
+  PhysicalRect reference_box = BorderBoxRect(box);
+  reference_box.Expand(ReferenceBoxBorderBoxOutsets(geometry_box, box));
+  return gfx::RectF(reference_box);
 }
 
 absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
@@ -286,8 +314,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
   }
 
   if (const auto* box = DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
-    gfx::RectF bounding_box = box->GetPath(reference_box).BoundingRect();
-    bounding_box.Intersect(gfx::RectF(InfiniteIntRect()));
+    reference_box.Intersect(gfx::RectF(InfiniteIntRect()));
     return reference_box;
   }
 
@@ -358,7 +385,11 @@ bool ClipPathClipper::HitTest(const LayoutObject& clip_path_owner,
     return path.Contains(location.TransformedPoint());
   }
   if (const auto* box = DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
-    return box->GetPath(reference_box).Contains(location.TransformedPoint());
+    Path path;
+    FloatRoundedRect rounded_reference_box =
+        RoundedReferenceBox(box->GetGeometryBox(), reference_box_object);
+    path.AddRoundedRect(rounded_reference_box);
+    return path.Contains(location.TransformedPoint());
   }
   const LayoutSVGResourceClipper* clipper = ResolveElementReference(
       clip_path_owner, To<ReferenceClipPathOperation>(clip_path));
@@ -405,7 +436,11 @@ static absl::optional<Path> PathBasedClipInternal(
   const ClipPathOperation& clip_path = *clip_path_owner.StyleRef().ClipPath();
   if (const auto* geometry_box_clip =
           DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
-    return geometry_box_clip->GetPath(reference_box);
+    Path path;
+    FloatRoundedRect rounded_reference_box = RoundedReferenceBox(
+        geometry_box_clip->GetGeometryBox(), reference_box_object);
+    path.AddRoundedRect(rounded_reference_box);
+    return path;
   }
 
   if (const auto* reference_clip =
