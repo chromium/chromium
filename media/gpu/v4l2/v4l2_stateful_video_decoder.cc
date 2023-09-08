@@ -428,10 +428,13 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       TryAndEnqueueOUTPUTQueueBuffers();
     }
 
-    if (!decoder_buffer_and_callbacks_.empty()) {
+    const bool is_pending_work = !decoder_buffer_and_callbacks_.empty();
+    const bool decoding = !!CAPTURE_queue_;
+    if (is_pending_work || !decoding) {
       // We still have |buffer|s that haven't been enqueued in |OUTPUT_queue_|,
-      // and if we were to SendStopCommand(), they would not be processed. So
-      // let's store the end_of_stream() |buffer| for later processing.
+      // or we're not decoding yet; if we were to SendStopCommand(), they would
+      // not be processed. So let's store the end_of_stream() |buffer| for
+      // later processing.
       decoder_buffer_and_callbacks_.emplace(std::move(buffer),
                                             std::move(decode_cb));
       return;
