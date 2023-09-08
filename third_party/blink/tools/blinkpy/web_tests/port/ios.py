@@ -47,10 +47,11 @@ class IOSPort(base.Port):
         return result
 
     def cmd_line(self):
+        flags = self.additional_driver_flags()
         return [
             self._path_to_simulator(), '-d',
             self.device_name(), '-c',
-            '%s -' % self.additional_driver_flags()
+            '%s -' % " ".join(flags)
         ]
 
     def reinstall_cmd_line(self):
@@ -78,12 +79,6 @@ class IOSPort(base.Port):
 
     def operating_system(self):
         return 'ios'
-
-    def additional_driver_flags(self):
-        flags = (
-            '--run-web-tests --ignore-certificate-errors-spki-list=%s,%s,%s --webtransport-developer-mode --user-data-dir') % \
-            (base.WPT_FINGERPRINT, base.SXG_FINGERPRINT, base.SXG_WPT_FINGERPRINT)
-        return flags
 
     def path_to_apache(self):
         import platform
