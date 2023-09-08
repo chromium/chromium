@@ -53,7 +53,6 @@ AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
   if (!node.tree())
     return CreateNullPosition();
 
-  AXTreeID tree_id = node.tree()->GetAXTreeID();
   if (IsTextPositionAnchor(node)) {
     // TODO(accessibility) It is a mistake for the to caller try to create a
     // text position with BEFORE_TEXT as the text offset. Correct the callers
