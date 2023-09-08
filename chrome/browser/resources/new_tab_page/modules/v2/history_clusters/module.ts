@@ -142,8 +142,8 @@ export class HistoryClustersModuleElement extends I18nMixin
     return this.cluster.relatedSearches.length > 1;
   }
 
-  private computeLabel_(): string {
-    return this.cluster.label.replace(/[“”]+/g, '');
+  private computeUnquotedClusterLabel_(): string {
+    return this.cluster.label.substring(1, this.cluster.label.length - 1);
   }
 
   private shouldShowCartTile_(cart: Object): boolean {
@@ -209,7 +209,7 @@ export class HistoryClustersModuleElement extends I18nMixin
   private onShowAllButtonClick_() {
     assert(this.cluster.label.length >= 2, 'Unexpected cluster label length');
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
-        this.cluster.label.substring(1, this.cluster.label.length - 1));
+        this.computeUnquotedClusterLabel_());
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 

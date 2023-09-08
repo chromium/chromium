@@ -126,9 +126,9 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
 
     test('Header element populated with correct data', async () => {
       // Arrange.
-      const sampleClusterLabel = '"Sample Journey"';
+      const clusterLabel = 'Sample Journey';
       const moduleElements = await initializeModule(
-          [createSampleCluster(2, {label: sampleClusterLabel})]);
+          [createSampleCluster(2, {label: `"${clusterLabel}"`})]);
       const moduleElement = moduleElements[0];
 
       // Assert.
@@ -137,7 +137,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       assertTrue(!!headerElement);
       const label = $$(headerElement, '#label');
       assertTrue(!!label);
-      assertModuleHeaderTitle(label as HTMLElement, `${sampleClusterLabel}`);
+      assertModuleHeaderTitle(label as HTMLElement, `${clusterLabel}`);
       assertTrue(!!$$(headerElement, 'ntp-module-header-v2'));
     });
 

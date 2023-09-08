@@ -142,7 +142,7 @@
       on-info-button-click="onInfoButtonClick_"
       on-show-all-button-click="onShowAllButtonClick_"
       on-suggest-click="recordClick_"
-      cluster-label="[[computeLabel_()]]"
+      cluster-label="[[computeUnquotedClusterLabel_(cluster)]]"
       normalized-url="[[cluster.visits.0.normalizedUrl]]"
       format$="[[format]]"
       show-related-searches$="[[showRelatedSearches]]">
