@@ -103,8 +103,12 @@ function maybeDeleteGitLockFile(dir) {
   }
 }
 
+export function gn() {
+  return currentPlatform() == Platform.windows ? "gn.bat" : "gn";
+}
+
 function runGnGen() {
-  spawnChecked("gn", ["gen", "out/Release"], { stdio:"inherit" });
+  spawnChecked(gn(), ["gen", "out/Release"], { stdio: "inherit" });
 }
 
 export function updateRepo() {
@@ -113,7 +117,6 @@ export function updateRepo() {
   if (currentPlatform() == Platform.windows) {
     maybeDeleteGitLockFile(chromium);
   }
-  maybeDeleteGitLockFile(chromium);
 
   const branch = process.env["BUILDKITE_BRANCH"];
 
