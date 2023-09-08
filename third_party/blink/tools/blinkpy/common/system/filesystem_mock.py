@@ -515,6 +515,9 @@ class MockFileSystem(object):
             stack.enter_context(
                 patch('tempfile.TemporaryFile',
                       lambda *args, **kwargs: self.open_text_tempfile()[0]))
+            stack.enter_context(
+                patch('tempfile.NamedTemporaryFile',
+                      lambda *args, **kwargs: self.open_text_tempfile()[0]))
             yield
 
 
