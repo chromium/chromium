@@ -6,6 +6,8 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/ime_info.h"
 #include "ash/shell.h"
+#include "ash/system/ime/ime_detailed_view.h"
+#include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -48,12 +50,9 @@ TEST_F(IMEDetailedViewPixelTest, Basics) {
   ime2.name = u"Spanish";
   ime2.short_name = u"ES";
   available_imes.push_back(ime2);
-  auto* ime_controller = Shell::Get()->ime_controller();
-  ime_controller->RefreshIme(ime1.id, std::move(available_imes),
-                             std::vector<ImeMenuItem>());
 
   // Show the enterprise management icon.
-  ime_controller->SetImesManagedByPolicy(true);
+  Shell::Get()->ime_controller()->SetImesManagedByPolicy(true);
 
   // Show the detailed view.
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
@@ -66,10 +65,17 @@ TEST_F(IMEDetailedViewPixelTest, Basics) {
   // Compare pixels.
   TrayDetailedView* detailed_view =
       system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
+
+  // Show the keyboard toggle with ime list.
+  static_cast<IMEDetailedView*>(detailed_view)
+      ->Update(ime1.id, std::move(available_imes), std::vector<ImeMenuItem>(),
+               /*show_keyboard_toggle=*/true,
+               /*single_ime_behavior=*/ImeListView::SHOW_SINGLE_IME);
+
   ASSERT_TRUE(detailed_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/6, detailed_view));
+      /*revision_number=*/7, detailed_view));
 }
 
 }  // namespace

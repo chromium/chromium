@@ -49,9 +49,9 @@ void IMEDetailedView::Update(const std::string& current_ime_id,
 }
 
 void IMEDetailedView::ResetImeListView() {
-  ImeListView::ResetImeListView();
   settings_button_ = nullptr;
   controlled_setting_icon_ = nullptr;
+  ImeListView::ResetImeListView();
 }
 
 void IMEDetailedView::CreateExtraTitleRowButtons() {

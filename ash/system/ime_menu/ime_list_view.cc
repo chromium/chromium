@@ -238,6 +238,7 @@ class KeyboardStatusRow : public views::View {
       qs_toggle->SetIsOn(keyboard::IsKeyboardEnabled());
       qs_toggle_ = qs_toggle.release();
       tri_view->AddView(TriView::Container::END, qs_toggle_);
+      tri_view->SetInsets(gfx::Insets::TLBR(0, 24, 0, 12));
     }
   }
 
