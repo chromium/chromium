@@ -93,8 +93,14 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
   VideoToolboxSessionMetadata session_metadata_;
 
+  // Tracks NoRaslOutputFlag for the current RAP, used to drop RASL frames.
+  bool no_rasl_output_flag_ = false;
+
   // Accumulated slice data for the current frame.
   std::vector<base::span<const uint8_t>> slice_nalu_data_;
+
+  // Flag to drop the current frame (because it as a non-output RASL frame).
+  bool drop_frame_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

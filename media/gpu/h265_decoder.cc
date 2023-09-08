@@ -154,6 +154,8 @@ void H265Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
 }
 
 void H265Decoder::Reset() {
+  first_picture_ = true;
+
   curr_pic_ = nullptr;
   curr_nalu_ = nullptr;
   curr_slice_hdr_ = nullptr;

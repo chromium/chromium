@@ -85,6 +85,24 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   slice_nalu_data_.clear();
+  drop_frame_ = false;
+
+  // Handle NoRaslOutputFlag.
+  if (slice_hdr->irap_pic) {
+    // H265Decoder computes this flag, we just need to store it for the rest of
+    // this RAP.
+    no_rasl_output_flag_ = pic->no_rasl_output_flag_;
+  } else if (no_rasl_output_flag_ &&
+             (slice_hdr->nal_unit_type == H265NALU::RASL_N ||
+              slice_hdr->nal_unit_type == H265NALU::RASL_R)) {
+    // H265Decoder attempts to compute this flag, but since it doesn't save the
+    // NoRaslOutputFlag it always thinks RASL frames should be output.
+    // TODO(crbug.com/1331597): Migrate this logic into H265Decoder.
+    pic->pic_output_flag_ = false;
+    // Drop this RASL frame, otherwise VideoToolbox will fail to decode it.
+    drop_frame_ = true;
+    return Status::kOk;
+  }
 
   // H265Decoder ignores VPS, so it doesn't check whether a valid one was
   // provided.
@@ -151,7 +169,11 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitSlice(
     const std::vector<SubsampleEntry>& subsamples) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1331597): Implement kMinOutputsBeforeRASL workaround.
+
+  if (drop_frame_) {
+    return Status::kOk;
+  }
+
   slice_nalu_data_.push_back(base::make_span(data, size));
   return Status::kOk;
 }
@@ -160,6 +182,10 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
     scoped_refptr<H265Picture> pic) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (drop_frame_) {
+    return Status::kOk;
+  }
 
   // Determine the final size of the converted bitstream.
   size_t data_size = 0;
