@@ -29,7 +29,10 @@ class FeatureEngagementInitializedObserver
  private:
   void OnTrackerInitialized(bool success);
 
-  raw_ptr<feature_engagement::Tracker> tracker_ = nullptr;
+  // This observer may outlive the browser object slightly; to avoid race
+  // conditions on shutdown, allow it to dangle.
+  raw_ptr<feature_engagement::Tracker, DisableDanglingPtrDetection> tracker_ =
+      nullptr;
   base::WeakPtrFactory<FeatureEngagementInitializedObserver> weak_ptr_factory_{
       this};
 };
