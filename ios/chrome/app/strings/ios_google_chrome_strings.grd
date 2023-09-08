@@ -761,6 +761,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_OPEN_LATEST_TAB_DESCRIPTION" desc="Siri Shortcut description to latest tab in chromium [iOS only]">
         Open My Latest Tab in Chrome.
       </message>
+      <message name="IDS_IOS_INTENTS_OPEN_LENS_TITLE" desc="Siri Shortcut for opening Lens (Visual Search) [iOS only]">
+        Search Visuals in Chrome
+      </message>
+      <message name="IDS_IOS_INTENTS_OPEN_LENS_DESCRIPTION" desc="Siri Shortcut description to open Lens(Visual Search) [iOS only]">
+        Search Visuals in Chrome.
+      </message>
       <message name="IDS_IOS_INTENTS_OPEN_NEW_TAB_TITLE" desc="Siri Shortcut for open new tab title [iOS only]">
         Open New Tab in Chrome
       </message>

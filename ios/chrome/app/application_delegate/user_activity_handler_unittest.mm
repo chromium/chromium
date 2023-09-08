@@ -44,6 +44,7 @@
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/OpenLatestTabIntent.h"
+#import "ios/chrome/common/intents/OpenLensIntent.h"
 #import "ios/chrome/common/intents/OpenNewTabIntent.h"
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
@@ -1271,5 +1272,35 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentOpenLatestTab) {
                                   initStage:InitStageFinal];
 
   EXPECT_EQ(OPEN_LATEST_TAB,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to Open Lens intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentOpenLensFromIntents) {
+  NSUserActivity* userActivity =
+      [[NSUserActivity alloc] initWithActivityType:@"OpenLensIntent"];
+
+  OpenLensIntent* intent = [[OpenLensIntent alloc] init];
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(START_LENS_FROM_INTENTS,
             [connectionInformationMock startupParameters].postOpeningAction);
 }

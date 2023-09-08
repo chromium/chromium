@@ -13,6 +13,7 @@
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/OpenLatestTabIntent.h"
+#import "ios/chrome/common/intents/OpenLensIntent.h"
 #import "ios/chrome/common/intents/OpenNewIncognitoTabIntent.h"
 #import "ios/chrome/common/intents/OpenNewTabIntent.h"
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
@@ -42,7 +43,8 @@
                                     RunSafetyCheckIntentHandling,
                                     ManagePasswordsIntentHandling,
                                     ManageSettingsIntentHandling,
-                                    OpenLatestTabIntentHandling>
+                                    OpenLatestTabIntentHandling,
+                                    OpenLensIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -363,6 +365,20 @@
 
   OpenLatestTabIntentResponse* response = [[OpenLatestTabIntentResponse alloc]
       initWithCode:OpenLatestTabIntentResponseCodeContinueInApp
+      userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - OpenLensIntentHandling
+
+- (void)handleOpenLens:(OpenLensIntent*)intent
+            completion:(void (^)(OpenLensIntentResponse*))completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([OpenLatestTabIntent class])];
+
+  OpenLensIntentResponse* response = [[OpenLensIntentResponse alloc]
+      initWithCode:OpenLensIntentResponseCodeContinueInApp
       userActivity:activity];
 
   completion(response);

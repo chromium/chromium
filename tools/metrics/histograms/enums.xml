@@ -55772,6 +55772,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   </int>
   <int value="9" label="Web Search Bar"/>
   <int value="10" label="Translate Onebox"/>
+  <int value="11" label="Intents"/>
 </enum>
 
 <enum name="IOSLensSupportStatus">

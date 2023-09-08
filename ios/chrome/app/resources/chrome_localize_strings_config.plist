@@ -67,6 +67,30 @@
       <array>
         <dict>
           <key>output</key>
+          <string>O7udUr</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_OPEN_LENS_DESCRIPTION</string>
+        </dict>
+        <dict>
+          <key>output</key>
+          <string>IBwb6d</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_OPEN_LENS_DESCRIPTION</string>
+        </dict>
+        <dict>
+          <key>output</key>
+          <string>pe1BPb</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_OPEN_LENS_TITLE</string>
+        </dict>
+        <dict>
+          <key>output</key>
+          <string>KggFtq</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_OPEN_LENS_TITLE</string>
+        </dict>
+        <dict>
+          <key>output</key>
           <string>k6vkhf</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_OPEN_LATEST_TAB_DESCRIPTION</string>
