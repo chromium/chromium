@@ -91,7 +91,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
   //
   // NOTE: Do not abuse this function.  Let |Invoke| method defined in a
   // subclass do the right thing.  This function is rarely needed.
-  void EvaluateAsPartOfCallback(base::OnceCallback<void()> closure);
+  void EvaluateAsPartOfCallback(base::OnceCallback<void(ScriptState*)> closure);
 
   // Makes the underlying V8 function collectable by V8 Scavenger GC.  Do not
   // use this function unless you really need a hacky performance optimization.

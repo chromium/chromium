@@ -133,7 +133,7 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrThrowException(
 }
 
 void CallbackFunctionBase::EvaluateAsPartOfCallback(
-    base::OnceCallback<void()> closure) {
+    base::OnceCallback<void(ScriptState*)> closure) {
   ScriptState* callback_relevant_script_state =
       CallbackRelevantScriptStateImpl();
   if (!callback_relevant_script_state) {
@@ -148,7 +148,7 @@ void CallbackFunctionBase::EvaluateAsPartOfCallback(
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
 
-  std::move(closure).Run();
+  std::move(closure).Run(callback_relevant_script_state);
 }
 
 }  // namespace blink
