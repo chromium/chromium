@@ -23,7 +23,7 @@ class IOSPort(base.Port):
 
     CONTENT_SHELL_NAME = 'content_shell'
 
-    BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/ios_build_instructions.md'
+    BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/ios/build_instructions.md'
 
     @classmethod
     def determine_full_port_name(cls, host, options, port_name):
