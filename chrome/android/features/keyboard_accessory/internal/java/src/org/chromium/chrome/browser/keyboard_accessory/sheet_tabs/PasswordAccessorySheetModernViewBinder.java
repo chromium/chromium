@@ -31,6 +31,8 @@ import org.chromium.ui.modelutil.ListModel;
 class PasswordAccessorySheetModernViewBinder {
     static ElementViewHolder create(ViewGroup parent, @AccessorySheetDataPiece.Type int viewType) {
         switch (viewType) {
+            case AccessorySheetDataPiece.Type.PASSKEY_SECTION:
+                return new PasskeyChipViewHolder(parent);
             case AccessorySheetDataPiece.Type.PASSWORD_INFO:
                 return new PasswordInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.TITLE:
@@ -42,6 +44,25 @@ class PasswordAccessorySheetModernViewBinder {
         }
         assert false : "Unhandled type of data piece: " + viewType;
         return null;
+    }
+
+    /**
+     * Holds a clickable {@link ChipView} that represents a Passkey.
+     */
+    static class PasskeyChipViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.PasskeySection, ViewGroup> {
+        PasskeyChipViewHolder(ViewGroup parent) {
+            super(parent, R.layout.password_accessory_passkey_chip);
+        }
+
+        @Override
+        protected void bind(KeyboardAccessoryData.PasskeySection passkeySection, ViewGroup view) {
+            ChipView chip = view.findViewById(R.id.keyboard_accessory_sheet_chip);
+            chip.getPrimaryTextView().setText(passkeySection.getDisplayName());
+            chip.getPrimaryTextView().setContentDescription(passkeySection.getDisplayName());
+            chip.getSecondaryTextView().setText(R.string.password_accessory_passkey_label);
+            chip.setOnClickListener((unused) -> passkeySection.triggerSelection());
+        }
     }
 
     /**

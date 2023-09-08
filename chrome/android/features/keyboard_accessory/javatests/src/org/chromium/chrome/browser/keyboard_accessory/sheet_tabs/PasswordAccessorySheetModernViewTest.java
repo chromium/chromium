@@ -23,8 +23,10 @@ import static org.junit.Assert.assertTrue;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
@@ -44,6 +46,8 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
+;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
@@ -150,6 +154,31 @@ public class PasswordAccessorySheetModernViewTest {
         assertThat(clicked.get(), is(true));
         clicked.set(false);
         TestThreadUtils.runOnUiThreadBlocking(getPasswordSuggestion()::performClick);
+        assertThat(clicked.get(), is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddingPasskeySectionToTheModelRendersClickableActions()
+            throws ExecutionException {
+        final AtomicReference<Boolean> clicked = new AtomicReference<>(false);
+        assertThat(mView.get().getChildCount(), is(0));
+
+        final PasskeySection kTestPasskey =
+                new PasskeySection("Passkey User", () -> clicked.set(true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.add(new AccessorySheetDataPiece(
+                    kTestPasskey, AccessorySheetDataPiece.Type.PASSKEY_SECTION));
+        });
+
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
+
+        assertThat(getPasskeyChipAt(0).getPrimaryTextView().getText(),
+                is(kTestPasskey.getDisplayName()));
+        assertThat(getPasskeyChipAt(0).getSecondaryTextView().getText(),
+                is(getString(R.string.password_accessory_passkey_label)));
+
+        TestThreadUtils.runOnUiThreadBlocking(getPasskeyChipAt(0)::performClick);
         assertThat(clicked.get(), is(true));
     }
 
@@ -273,6 +302,17 @@ public class PasswordAccessorySheetModernViewTest {
                 mView.get().findViewById(R.id.option_toggle)::performClick);
 
         assertFalse(toggleEnabled.get());
+    }
+
+    private String getString(@StringRes int strId) {
+        return mView.get().getResources().getString(strId);
+    }
+
+    private ChipView getPasskeyChipAt(int index) {
+        assertThat(mView.get().getChildCount(), is(greaterThan(index)));
+        assertThat(mView.get().getChildAt(index), instanceOf(ViewGroup.class));
+        LinearLayout passkeySection = (LinearLayout) mView.get().getChildAt(index);
+        return passkeySection.findViewById(R.id.keyboard_accessory_sheet_chip);
     }
 
     private PasswordAccessoryInfoView getUserInfoAt(int index) {

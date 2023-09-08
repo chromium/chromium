@@ -97,7 +97,14 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
         toggle.is_enabled(), static_cast<int>(toggle.accessory_action()));
   }
 
-  // TODO(crbug.com/1477267): Send passkeys to java side.
+  for (const autofill::PasskeySection& passkey_section :
+       tab_data.passkey_section_list()) {
+    Java_ManualFillingComponentBridge_addPasskeySectionToAccessorySheetData(
+        env, java_object, j_tab_data,
+        static_cast<int>(tab_data.get_sheet_type()),
+        ConvertUTF8ToJavaString(env, passkey_section.display_name()),
+        base::android::ToJavaByteArray(env, passkey_section.passkey_id()));
+  }
 
   for (const UserInfo& user_info : tab_data.user_info_list()) {
     ScopedJavaLocalRef<jobject> j_user_info =
@@ -149,8 +156,9 @@ ManualFillingViewAndroid::ManualFillingViewAndroid(
     : controller_(controller), web_contents_(web_contents) {}
 
 ManualFillingViewAndroid::~ManualFillingViewAndroid() {
-  if (!java_object_internal_)
+  if (!java_object_internal_) {
     return;  // No work to do.
+  }
   Java_ManualFillingComponentBridge_destroy(
       base::android::AttachCurrentThread(), java_object_internal_);
   java_object_internal_.Reset(nullptr);
@@ -275,8 +283,9 @@ void ManualFillingViewAndroid::OnViewDestroyed(
 
 base::android::ScopedJavaGlobalRef<jobject>
 ManualFillingViewAndroid::GetOrCreateJavaObject() {
-  if (java_object_internal_)
+  if (java_object_internal_) {
     return java_object_internal_;
+  }
   if (controller_->container_view() == nullptr ||
       controller_->container_view()->GetWindowAndroid() == nullptr) {
     return nullptr;  // No window attached (yet or anymore).

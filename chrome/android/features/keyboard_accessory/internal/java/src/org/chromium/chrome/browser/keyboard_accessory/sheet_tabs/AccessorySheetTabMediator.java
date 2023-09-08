@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecord
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
@@ -112,6 +113,9 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         }
         if (!accessorySheetData.getWarning().isEmpty()) {
             items.add(new AccessorySheetDataPiece(accessorySheetData.getWarning(), Type.WARNING));
+        }
+        for (PasskeySection passkey : accessorySheetData.getPasskeySectionList()) {
+            items.add(new AccessorySheetDataPiece(passkey, Type.PASSKEY_SECTION));
         }
         for (UserInfo userInfo : accessorySheetData.getUserInfoList()) {
             items.add(new AccessorySheetDataPiece(userInfo, mUserInfoType));

@@ -223,6 +223,9 @@
       <message name="IDS_PASSWORD_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the password accessory sheet.">
         Show saved passwords and password options
       </message>
+      <message name="IDS_PASSWORD_ACCESSORY_PASSKEY_LABEL" desc="Label for a chip that fills a Passkey on selection.">
+        Passkey
+      </message>
       <message name="IDS_ADDRESS_ACCESSORY_SHEET_TITLE" desc="Text used as title for the address accessory sheet.">
         Addresses
       </message>

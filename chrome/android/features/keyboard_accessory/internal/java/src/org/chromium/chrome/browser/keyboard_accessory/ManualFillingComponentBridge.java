@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
@@ -178,6 +179,18 @@ class ManualFillingComponentBridge {
     }
 
     @CalledByNative
+    private void addPasskeySectionToAccessorySheetData(Object objAccessorySheetData,
+            @AccessoryTabType int sheetType, String displayName, byte[] passkeyId) {
+        ((AccessorySheetData) objAccessorySheetData)
+                .getPasskeySectionList()
+                .add(new PasskeySection(displayName, () -> {
+                    assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                    ManualFillingComponentBridgeJni.get().onPasskeySelected(
+                            mNativeView, ManualFillingComponentBridge.this, sheetType, passkeyId);
+                }));
+    }
+
+    @CalledByNative
     private void addPromoCodeInfoToAccessorySheetData(Object objAccessorySheetData,
             @AccessoryTabType int sheetType, String displayText, String textToFill,
             String a11yDescription, String guid, boolean isObfuscated, String detailsText) {
@@ -321,6 +334,8 @@ class ManualFillingComponentBridge {
     interface Natives {
         void onFillingTriggered(long nativeManualFillingViewAndroid,
                 ManualFillingComponentBridge caller, int tabType, UserInfoField userInfoField);
+        void onPasskeySelected(long nativeManualFillingViewAndroid,
+                ManualFillingComponentBridge caller, int tabType, byte[] passkeyId);
         void onOptionSelected(long nativeManualFillingViewAndroid,
                 ManualFillingComponentBridge caller, int accessoryAction);
         void onToggleChanged(long nativeManualFillingViewAndroid,

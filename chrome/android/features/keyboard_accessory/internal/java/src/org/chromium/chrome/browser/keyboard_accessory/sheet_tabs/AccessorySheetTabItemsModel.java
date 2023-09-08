@@ -27,7 +27,7 @@ class AccessorySheetTabItemsModel
     static class AccessorySheetDataPiece {
         @IntDef({Type.TITLE, Type.PASSWORD_INFO, Type.ADDRESS_INFO, Type.CREDIT_CARD_INFO,
                 Type.TOUCH_TO_FILL_INFO, Type.FOOTER_COMMAND, Type.WARNING, Type.OPTION_TOGGLE,
-                Type.PROMO_CODE_INFO})
+                Type.PROMO_CODE_INFO, Type.PASSKEY_SECTION})
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
             /**
@@ -68,6 +68,10 @@ class AccessorySheetTabItemsModel
              * A section containing a promo code info.
              */
             int PROMO_CODE_INFO = 9;
+            /**
+             * A section containing a passkey.
+             */
+            int PASSKEY_SECTION = 10;
         }
 
         private Object mDataPiece;

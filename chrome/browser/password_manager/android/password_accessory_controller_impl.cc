@@ -153,16 +153,19 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
   // Prevent crashing by returning a nullopt if no field was focused yet or if
   // the frame was (possibly temporarily) unfocused. This signals to the caller
   // that no sheet is available right now.
-  if (GetWebContents().GetFocusedFrame() == nullptr)
+  if (GetWebContents().GetFocusedFrame() == nullptr) {
     return absl::nullopt;
-  if (!last_focused_field_info_)
+  }
+  if (!last_focused_field_info_) {
     return absl::nullopt;
+  }
   url::Origin origin = GetFocusedFrameOrigin();
   // If the focused origin doesn't match the last known origin, it is not safe
   // to provide any suggestions (because e.g. information about field type isn't
   // reliable).
-  if (!last_focused_field_info_->origin.IsSameOriginWith(origin))
+  if (!last_focused_field_info_->origin.IsSameOriginWith(origin)) {
     return absl::nullopt;
+  }
 
   std::vector<PasskeySection> passkeys_to_add;
   std::vector<UserInfo> info_to_add;
@@ -404,11 +407,13 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
   // Prevent crashing by not acting at all if frame became unfocused at any
   // point. The next time a focus event happens, this will be called again and
   // ensure we show correct data.
-  if (GetWebContents().GetFocusedFrame() == nullptr)
+  if (GetWebContents().GetFocusedFrame() == nullptr) {
     return;
+  }
   url::Origin origin = GetFocusedFrameOrigin();
-  if (origin.opaque())
+  if (origin.opaque()) {
     return;  // Don't proceed for invalid origins.
+  }
   TRACE_EVENT0("passwords",
                "PasswordAccessoryControllerImpl::RefreshSuggestionsForField");
   last_focused_field_info_.emplace(origin, focused_field_type,
@@ -510,8 +515,9 @@ void PasswordAccessoryControllerImpl::WebContentsDestroyed() {
 void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
     bool saving_enabled) {
   const url::Origin origin = GetFocusedFrameOrigin();
-  if (origin.opaque())
+  if (origin.opaque()) {
     return;
+  }
 
   const GURL origin_as_gurl = origin.GetURL();
   password_manager::PasswordFormDigest form_digest(
@@ -535,8 +541,9 @@ bool PasswordAccessoryControllerImpl::AppearsInSuggestions(
     const std::u16string& suggestion,
     bool is_password,
     const url::Origin& origin) const {
-  if (origin.opaque())
+  if (origin.opaque()) {
     return false;  // Don't proceed for invalid origins.
+  }
 
   return base::ranges::any_of(
       credential_cache_->GetCredentialStore(origin).GetCredentials(),
@@ -583,8 +590,9 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
   // RenderFrame so that it can use the password manager driver.
   // TODO(https://crbug.com/1286779): Investigate if focused frame really needs
   // to return RenderFrameHosts with non-live RenderFrames.
-  if (!GetWebContents().GetFocusedFrame()->IsRenderFrameLive())
+  if (!GetWebContents().GetFocusedFrame()->IsRenderFrameLive()) {
     return;
+  }
 
   // We can use |base::Unretained| safely because at the time of calling
   // |AllPasswordsSheetDismissed| we are sure that this controller is alive as
@@ -604,8 +612,9 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
 
 bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
     const AccessorySheetField& selection) const {
-  if (!selection.is_obfuscated())
+  if (!selection.is_obfuscated()) {
     return false;
+  }
 
   scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
       password_client_->GetDeviceAuthenticator();
@@ -617,8 +626,9 @@ void PasswordAccessoryControllerImpl::OnReauthCompleted(
     AccessorySheetField selection,
     bool auth_succeeded) {
   authenticator_.reset();
-  if (!auth_succeeded)
+  if (!auth_succeeded) {
     return;
+  }
   FillSelection(selection);
 }
 
@@ -632,8 +642,9 @@ void PasswordAccessoryControllerImpl::FillSelection(
   }
   password_manager::PasswordManagerDriver* driver =
       driver_supplier_.Run(&GetWebContents());
-  if (!driver)
+  if (!driver) {
     return;
+  }
   driver->FillIntoFocusedField(selection.is_obfuscated(),
                                selection.display_text());
   if (base::FeatureList::IsEnabled(

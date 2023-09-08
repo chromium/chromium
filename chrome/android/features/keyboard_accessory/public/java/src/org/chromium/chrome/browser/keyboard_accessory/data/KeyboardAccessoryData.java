@@ -78,6 +78,7 @@ public class KeyboardAccessoryData {
 
         /**
          * Returns the title describing the source of the tab's content.
+         *
          * @return A {@link String}
          */
         public String getTitle() {
@@ -86,6 +87,7 @@ public class KeyboardAccessoryData {
 
         /**
          * Provides the icon that will be displayed in the KeyboardAccessoryCoordinator.
+         *
          * @return The small icon that identifies this tab uniquely.
          */
         public Drawable getIcon() {
@@ -94,6 +96,7 @@ public class KeyboardAccessoryData {
 
         /**
          * The description for this tab. It will become the content description of the icon.
+         *
          * @return A short string describing the name of this tab.
          */
         public String getContentDescription() {
@@ -102,6 +105,7 @@ public class KeyboardAccessoryData {
 
         /**
          * Recording type of this tab. Used to sort it into the correct UMA bucket.
+         *
          * @return A {@link AccessoryTabType}.
          */
         public @AccessoryTabType int getRecordingType() {
@@ -110,6 +114,7 @@ public class KeyboardAccessoryData {
 
         /**
          * Returns the tab layout which allows to create the tab's view on demand.
+         *
          * @return The layout resource that allows to create the view necessary for this tab.
          */
         public @LayoutRes int getTabLayout() {
@@ -118,6 +123,7 @@ public class KeyboardAccessoryData {
 
         /**
          * Returns the listener which might need to react on changes to this tab.
+         *
          * @return A {@link Listener} to be called, e.g. when the tab is created.
          */
         public @Nullable Listener getListener() {
@@ -215,6 +221,41 @@ public class KeyboardAccessoryData {
     }
 
     /**
+     * Represents a Passkey (name and ID), to be shown on the manual fallback UI.
+     */
+    public static final class PasskeySection {
+        private final String mDisplayName;
+        private final Runnable mSelectPasskeyCallback;
+
+        /**
+         * Creates a new PasskeySection.
+         *
+         * @param displayName The text to be displayed on the footer.
+         * @param selectPasskeyCallback Called when the user taps the suggestions.
+         */
+        public PasskeySection(String displayName, Runnable selectPasskeyCallback) {
+            mDisplayName = displayName;
+            mSelectPasskeyCallback = selectPasskeyCallback;
+        }
+
+        /**
+         * This text is used for accessibility.
+         *
+         * @return The formatted username.
+         */
+        public String getDisplayName() {
+            return mDisplayName;
+        }
+
+        /**
+         * Invokes the stored callback. To be called when the user taps on the chip.
+         */
+        public void triggerSelection() {
+            mSelectPasskeyCallback.run();
+        }
+    }
+
+    /**
      * Represents a Profile, or a Credit Card, or the credentials for a website
      * (username + password), to be shown on the manual fallback UI.
      */
@@ -236,6 +277,7 @@ public class KeyboardAccessoryData {
 
         /**
          * Adds a new field to the group.
+         *
          * @param field The field to be added.
          */
         public void addField(UserInfoField field) {
@@ -309,6 +351,7 @@ public class KeyboardAccessoryData {
 
         /**
          * Creates a new FooterCommand.
+         *
          * @param displayText The text to be displayed on the footer.
          * @param callback Called when the user taps the suggestions.
          */
@@ -343,11 +386,13 @@ public class KeyboardAccessoryData {
         private final @AccessoryTabType int mSheetType;
         private OptionToggle mToggle;
         private final List<UserInfo> mUserInfoList = new ArrayList<>();
+        private final List<PasskeySection> mPasskeySectionList = new ArrayList<>();
         private final List<PromoCodeInfo> mPromoCodeInfoList = new ArrayList<>();
         private final List<FooterCommand> mFooterCommands = new ArrayList<>();
 
         /**
          * Creates the AccessorySheetData object.
+         *
          * @param title The title of accessory sheet tab.
          * @param warning An optional warning to be displayed the beginning of the sheet.
          */
@@ -389,6 +434,13 @@ public class KeyboardAccessoryData {
          */
         public List<UserInfo> getUserInfoList() {
             return mUserInfoList;
+        }
+
+        /**
+         * Returns the list of {@link PasskeySection} to be shown on the accessory sheet.
+         */
+        public List<PasskeySection> getPasskeySectionList() {
+            return mPasskeySectionList;
         }
 
         /**
