@@ -8,6 +8,7 @@ permissions: read-all
 
 env:
   DEBUG: 'bidi:server:*,bidi:mapper:*'
+  DEBUG_DEPTH: 10
   FORCE_COLOR: 3
   PIP_DISABLE_PIP_VERSION_CHECK: 1
 
