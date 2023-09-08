@@ -7,11 +7,10 @@ import '../widgets/xf_breadcrumb.js';
 import {metrics} from '../common/js/metrics.js';
 import {SEARCH_RESULTS_KEY} from '../common/js/url_constants.js';
 import {str, util} from '../common/js/util.js';
-import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {FileKey} from '../state/file_key.js';
-import {getStore, Store} from '../state/store.js';
+import {getStore, getVolumeType, Store} from '../state/store.js';
 import {BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
 
 /**
@@ -62,8 +61,8 @@ export class BreadcrumbContainer {
     // In this case, showing current location is confusing, so use the Drive
     // root "My Drive" as the current location.
     if (search && search.query && search.status === PropStatus.SUCCESS) {
-      const entry = state.allEntries[currentDirectory.key];
-      if (entry && entry.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+      const fileData = state.allEntries[currentDirectory.key];
+      if (getVolumeType(state, fileData)) {
         const root = currentDirectory.pathComponents[0];
         if (root) {
           key = root.key;

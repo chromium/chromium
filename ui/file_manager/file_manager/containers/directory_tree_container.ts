@@ -23,7 +23,7 @@ import {convertEntryToFileData, readSubDirectories} from '../state/ducks/all_ent
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots, updateNavigationEntry} from '../state/ducks/navigation.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
-import {getEntry, getFileData, getStore, Store} from '../state/store.js';
+import {getEntry, getFileData, getStore, getVolumeType, Store} from '../state/store.js';
 import {TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
 import {TreeItemCollapsedEvent, TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
 
@@ -482,7 +482,8 @@ export class DirectoryTreeContainer {
       // For SMB shares, avoid prefetching sub directories to delay
       // authentication.
       if (isVolumeEntry(entry) && entry.volumeInfo.providerId !== '@smb' &&
-          fileData.volumeType !== VolumeManagerCommon.VolumeType.SMB) {
+          getVolumeType(this.store_.getState(), fileData) !==
+              VolumeManagerCommon.VolumeType.SMB) {
         this.store_.dispatch(readSubDirectories(entry));
       }
       return;

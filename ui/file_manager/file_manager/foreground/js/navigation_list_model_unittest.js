@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {fakeDriveVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
@@ -109,7 +109,7 @@ export function testModel() {
       (model.item(1)).entry.fullPath);
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(2).label);
   assertEquals(
-      'drive', /** @type {!NavigationModelVolumeItem} */
+      fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(3)).volumeInfo.volumeId);
   assertEquals(
       'android:app1', /** @type {!NavigationModelAndroidAppItem} */
@@ -156,7 +156,7 @@ export function testNoRecentOrLinuxFiles() {
       (model.item(0)).entry.fullPath);
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
   const driveItem = /** @type {!NavigationModelVolumeItem} */ (model.item(2));
-  assertEquals('drive', driveItem.volumeInfo.volumeId);
+  assertEquals(fakeDriveVolumeId, driveItem.volumeInfo.volumeId);
   assertFalse(driveItem.disabled);
 }
 
@@ -184,7 +184,7 @@ export function testDisabledVolumes() {
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
 
   const driveItem = /** @type {!NavigationModelVolumeItem} */ (model.item(2));
-  assertEquals('drive', driveItem.volumeInfo.volumeId);
+  assertEquals(fakeDriveVolumeId, driveItem.volumeInfo.volumeId);
   assertTrue(driveItem.disabled);
 }
 
@@ -286,7 +286,7 @@ export function testAddAndRemoveVolumes() {
       (model.item(0)).entry.fullPath);
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
   assertEquals(
-      'drive', /** @type {!NavigationModelVolumeItem} */
+      fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(2)).volumeInfo.volumeId);
   if (util.isSinglePartitionFormatEnabled()) {
     const drive = model.item(3);
@@ -312,7 +312,7 @@ export function testAddAndRemoveVolumes() {
       (model.item(0)).entry.fullPath);
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
   assertEquals(
-      'drive', /** @type {!NavigationModelVolumeItem} */
+      fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(2)).volumeInfo.volumeId);
   if (util.isSinglePartitionFormatEnabled()) {
     const drive1 = model.item(3);
@@ -346,7 +346,7 @@ export function testAddAndRemoveVolumes() {
       (model.item(1)).entry.fullPath);
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(2).label);
   assertEquals(
-      'drive', /** @type {!NavigationModelVolumeItem} */
+      fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(3)).volumeInfo.volumeId);
   if (util.isSinglePartitionFormatEnabled()) {
     assertEquals('External Drive', model.item(4).label);

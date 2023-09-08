@@ -4,6 +4,7 @@
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {fakeMyFilesVolumeId} from '../../background/js/mock_volume_manager.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {CurrentDirectory, FileTasks, PropStatus} from '../../externs/ts/state.js';
@@ -222,7 +223,7 @@ export function testChangeDirectoryContent() {
   assertStateEquals(want, store.getState().currentDirectory);
   assertEquals(
       1, allEntriesSize(store.getState()), 'only dir-2 should be cached');
-  assertAllEntriesEqual(store, ['filesystem:downloads/dir-2']);
+  assertAllEntriesEqual(store, [`filesystem:${fakeMyFilesVolumeId}/dir-2`]);
 
   // Send the content update:
   updateContent(store, [subDir]);
@@ -232,8 +233,8 @@ export function testChangeDirectoryContent() {
       2, allEntriesSize(store.getState()),
       'dir-2 and dir-2/sub-dir should be cached');
   assertAllEntriesEqual(store, [
-    'filesystem:downloads/dir-2',
-    'filesystem:downloads/dir-2/sub-dir',
+    `filesystem:${fakeMyFilesVolumeId}/dir-2`,
+    `filesystem:${fakeMyFilesVolumeId}/dir-2/sub-dir`,
   ]);
 
   // Send another content update - it should replace the original:
@@ -244,9 +245,9 @@ export function testChangeDirectoryContent() {
       3, allEntriesSize(store.getState()),
       'dir-2, dir-2/sub-dir and dir-2/file should be cached');
   assertAllEntriesEqual(store, [
-    'filesystem:downloads/dir-2',
-    'filesystem:downloads/dir-2/file.txt',
-    'filesystem:downloads/dir-2/sub-dir',
+    `filesystem:${fakeMyFilesVolumeId}/dir-2`,
+    `filesystem:${fakeMyFilesVolumeId}/dir-2/file.txt`,
+    `filesystem:${fakeMyFilesVolumeId}/dir-2/sub-dir`,
   ]);
 
   // Clear cached entries: only dir2 and file should be kept.
@@ -254,9 +255,10 @@ export function testChangeDirectoryContent() {
   assertEquals(
       2, allEntriesSize(store.getState()),
       'only dir-2 and dir-2/file should still be cached');
-  assertAllEntriesEqual(
-      store,
-      ['filesystem:downloads/dir-2', 'filesystem:downloads/dir-2/file.txt']);
+  assertAllEntriesEqual(store, [
+    `filesystem:${fakeMyFilesVolumeId}/dir-2`,
+    `filesystem:${fakeMyFilesVolumeId}/dir-2/file.txt`,
+  ]);
 }
 
 export function testComputeHasDlpDisabledFiles() {

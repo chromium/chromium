@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../externs/files_app_entry_interfaces.js';
-import {FileData, FileKey, State} from '../externs/ts/state.js';
+import {FileData, FileKey, State, Volume} from '../externs/ts/state.js';
 import {BaseStore} from '../lib/base_store.js';
 
 import {allEntriesSlice} from './ducks/all_entries.js';
@@ -151,6 +152,16 @@ export function getFilesData(state: State, keys: FileKey[]): FileData[] {
 export function getEntry(state: State, key: FileKey): Entry|FilesAppEntry|null {
   const fileData = state.allEntries[key];
   return fileData?.entry ?? null;
+}
+
+export function getVolume(state: State, fileData?: FileData|null): Volume|null {
+  const volumeId = fileData?.volumeId;
+  return (volumeId && state.volumes[volumeId]) || null;
+}
+
+export function getVolumeType(state: State, fileData?: FileData|null):
+    VolumeManagerCommon.VolumeType|null {
+  return getVolume(state, fileData)?.volumeType ?? null;
 }
 
 /**

@@ -4,7 +4,7 @@
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {fakeMyFilesVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {EntryList, FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
@@ -27,6 +27,7 @@ let fileSystem: MockFileSystem;
 
 export function setUp() {
   // changeDirectory() reducer uses the VolumeManager.
+  // sortEntries() requires the directoryModel on the window.fileManager.
   setUpFileManagerOnWindow();
 
   store = setupStore();
@@ -43,8 +44,6 @@ export function setUp() {
     '/dir-3/',
   ]);
 
-  // sortEntries() requires the directoryModel on the window.fileManager.
-  setUpFileManagerOnWindow();
   // Mock metrics.recordSmallCount.
   metrics.recordSmallCount = function() {};
   metrics.startInterval = function() {};
@@ -93,6 +92,7 @@ export async function testClearStaleEntries(done: () => void) {
   const dir2 = fileSystem.entries['/dir-2'];
   const dir3 = fileSystem.entries['/dir-3'];
   const dir2SubDir = fileSystem.entries['/dir-2/sub-dir'];
+  const myFilesRootURL = `filesystem:${fakeMyFilesVolumeId}`;
 
   cd(store, dir1);
   cd(store, dir2);
@@ -111,8 +111,7 @@ export async function testClearStaleEntries(done: () => void) {
       2, allEntriesSize(store.getState()),
       'only dir-2 and dir-2/sub-dir should be cached');
   assertAllEntriesEqual(
-      store,
-      ['filesystem:downloads/dir-2', 'filesystem:downloads/dir-2/sub-dir']);
+      store, [`${myFilesRootURL}/dir-2`, `${myFilesRootURL}/dir-2/sub-dir`]);
 
   // Running the clear multiple times should not change:
   store.dispatch(clearCachedEntries());
@@ -137,8 +136,7 @@ export function testCacheEntries() {
   assertEquals(resultEntry.entry, dir1);
   assertTrue(resultEntry.isDirectory);
   assertEquals(resultEntry.label, dir1.name);
-  assertEquals(
-      resultEntry.volumeType, VolumeManagerCommon.VolumeType.DOWNLOADS);
+  assertEquals(resultEntry.volumeId, fakeMyFilesVolumeId);
   assertEquals(resultEntry.type, EntryType.FS_API);
   assertFalse(!!resultEntry.metadata.isRestrictedForDestination);
 
@@ -149,8 +147,7 @@ export function testCacheEntries() {
   assertEquals(resultEntry.entry, file1);
   assertFalse(resultEntry.isDirectory);
   assertEquals(resultEntry.label, file1.name);
-  assertEquals(
-      resultEntry.volumeType, VolumeManagerCommon.VolumeType.DOWNLOADS);
+  assertEquals(resultEntry.volumeId, fakeMyFilesVolumeId);
   assertEquals(resultEntry.type, EntryType.FS_API);
   assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
   const recentRoot =
@@ -161,7 +158,7 @@ export function testCacheEntries() {
   assertEquals(resultEntry.entry, recentRoot);
   assertTrue(resultEntry.isDirectory);
   assertEquals(resultEntry.label, recentRoot.name);
-  assertEquals(resultEntry.volumeType, null);
+  assertEquals(resultEntry.volumeId, null);
   assertEquals(resultEntry.type, EntryType.RECENT);
 
   const volumeInfo =
@@ -174,8 +171,7 @@ export function testCacheEntries() {
   assertEquals(resultEntry.entry, volumeEntry);
   assertTrue(resultEntry.isDirectory);
   assertEquals(resultEntry.label, volumeEntry.name);
-  assertEquals(
-      resultEntry.volumeType, VolumeManagerCommon.VolumeType.DOWNLOADS);
+  assertEquals(resultEntry.volumeId, fakeMyFilesVolumeId);
   assertEquals(resultEntry.type, EntryType.VOLUME_ROOT);
   assertFalse(!!resultEntry.metadata.isRestrictedForDestination);
 }
@@ -360,7 +356,7 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
     type: EntryType.VOLUME_ROOT,
     isDirectory: true,
     label: 'Downloads',
-    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    volumeId: fakeMyFilesVolumeId,
     rootType: VolumeManagerCommon.RootType.DOWNLOADS,
     metadata: {} as MetadataItem,
     expanded: false,
@@ -392,8 +388,8 @@ export async function testConvertEntryListToFileData(done: () => void) {
     type: EntryType.ENTRY_LIST,
     isDirectory: true,
     label: 'My files',
-    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
-    rootType: VolumeManagerCommon.VolumeType.MY_FILES,
+    volumeId: null,  // No volume info for the entry list.
+    rootType: VolumeManagerCommon.RootType.MY_FILES,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -418,7 +414,7 @@ export async function testConvertFakeEntryToFileData(done: () => void) {
     type: EntryType.PLACEHOLDER,
     isDirectory: true,
     label: 'Android files',
-    volumeType: VolumeManagerCommon.VolumeType.ANDROID_FILES,
+    volumeId: null,  // No volume info for the placeholder entry.
     rootType: VolumeManagerCommon.RootType.GUEST_OS,
     metadata: {} as MetadataItem,
     expanded: false,
@@ -443,7 +439,7 @@ export async function testConvertNativeFileEntryToFileData(done: () => void) {
     type: EntryType.FS_API,
     isDirectory: false,
     label: 'file-1.txt',
-    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    volumeId: fakeMyFilesVolumeId,
     rootType: VolumeManagerCommon.RootType.DOWNLOADS,
     metadata: {} as MetadataItem,
     expanded: false,
@@ -469,7 +465,7 @@ export async function testConvertNativeDirectoryEntryToFileData(
     type: EntryType.FS_API,
     isDirectory: true,
     label: 'dir-1',
-    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    volumeId: fakeMyFilesVolumeId,
     rootType: VolumeManagerCommon.RootType.DOWNLOADS,
     metadata: {} as MetadataItem,
     expanded: false,

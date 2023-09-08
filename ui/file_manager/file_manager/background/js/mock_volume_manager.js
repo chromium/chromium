@@ -19,6 +19,11 @@ import {VolumeInfoListImpl} from './volume_info_list_impl.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 import {VolumeManagerImpl} from './volume_manager_impl.js';
 
+export const fakeMyFilesVolumeId =
+    VolumeManagerCommon.VolumeType.DOWNLOADS + ':test_mount_path';
+export const fakeDriveVolumeId =
+    VolumeManagerCommon.VolumeType.DRIVE + ':test_mount_path';
+
 /**
  * Mock class for VolumeManager.
  * @final
@@ -40,14 +45,14 @@ export class MockVolumeManager {
     // filesystem with those entries now, and mock
     // webkitResolveLocalFileSystemURL.
     const driveFs = new MockFileSystem(
-        VolumeManagerCommon.VolumeType.DRIVE,
-        'filesystem:' + VolumeManagerCommon.VolumeType.DRIVE);
+        fakeDriveVolumeId, 'filesystem:' + fakeDriveVolumeId);
     driveFs.populate(['/root/', '/team_drives/', '/Computers/']);
 
     // Mock window.webkitResolve to return entries.
     const orig = window.webkitResolveLocalFileSystemURL;
     window.webkitResolveLocalFileSystemURL = (url, success) => {
-      const match = url.match(/^filesystem:drive(\/.*)/);
+      const rootURL = `filesystem:${fakeDriveVolumeId}`;
+      const match = url.match(new RegExp(`^${rootURL}(\/.*)`));
       if (match) {
         const path = match[1];
         const entry = driveFs.entries[path];
@@ -60,16 +65,15 @@ export class MockVolumeManager {
 
     // Create Drive, swap entries back in, revert window.webkitResolve.
     const drive = this.createVolumeInfo(
-        VolumeManagerCommon.VolumeType.DRIVE,
-        VolumeManagerCommon.RootType.DRIVE, str('DRIVE_DIRECTORY_LABEL'));
+        VolumeManagerCommon.VolumeType.DRIVE, fakeDriveVolumeId,
+        str('DRIVE_DIRECTORY_LABEL'));
     /** @type {MockFileSystem} */ (drive.fileSystem)
         .populate(Object.values(driveFs.entries));
     window.webkitResolveLocalFileSystemURL = orig;
 
     // Create Downloads.
     this.createVolumeInfo(
-        VolumeManagerCommon.VolumeType.DOWNLOADS,
-        VolumeManagerCommon.RootType.DOWNLOADS,
+        VolumeManagerCommon.VolumeType.DOWNLOADS, fakeMyFilesVolumeId,
         str('DOWNLOADS_DIRECTORY_LABEL'));
   }
 
@@ -131,7 +135,7 @@ export class MockVolumeManager {
           isReadOnly);
     }
 
-    if (entry.filesystem.name === VolumeManagerCommon.VolumeType.DRIVE) {
+    if (entry.filesystem.name === fakeDriveVolumeId) {
       const volumeInfo = this.volumeInfoList.item(0);
       let rootType = VolumeManagerCommon.RootType.DRIVE;
       let isRootEntry = entry.fullPath === '/root';
@@ -313,8 +317,9 @@ MockVolumeManager.prototype.whenVolumeInfoReady =
 /**
  * Used to override window.webkitResolveLocalFileSystemURL for testing. This
  * emulates the real function by parsing `url` and finding the matching entry
- * in `volumeManager`. E.g. filesystem:downloads/dir/file.txt will look up the
- * 'downloads' volume for /dir/file.txt.
+ * in `volumeManager`. E.g. filesystem:downloads:test_mount_path/dir/file.txt
+ * will look up the volume with ID 'downloads:test_mount_path' for
+ * /dir/file.txt.
  *
  * @param {VolumeManager} volumeManager VolumeManager to resolve URLs with.
  * @param {string} url URL to resolve.
@@ -323,7 +328,7 @@ MockVolumeManager.prototype.whenVolumeInfoReady =
  */
 MockVolumeManager.resolveLocalFileSystemURL =
     (volumeManager, url, successCallback, errorCallback) => {
-      const match = url.match(/^filesystem:(\w+)(\/.*)/);
+      const match = url.match(/^filesystem:(\w+):\w+(\/.*)/);
       if (match) {
         const volumeType =
             /** @type {VolumeManagerCommon.VolumeType} */ (match[1]);

@@ -236,6 +236,7 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
   const volumeType = 'volumeType' in entry && entry.volumeType ?
       entry.volumeType as VolumeManagerCommon.VolumeType :
       (volumeInfo?.volumeType || null);
+  const volumeId = volumeInfo?.volumeId || null;
   const icon = getEntryIcon(entry, locationInfo, volumeType);
 
   /**
@@ -256,7 +257,7 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
     type: getEntryType(entry),
     isDirectory: entry.isDirectory,
     label,
-    volumeType,
+    volumeId,
     rootType: locationInfo?.rootType ?? null,
     metadata,
     expanded: false,
