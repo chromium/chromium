@@ -204,13 +204,6 @@ void MergeUpdateIntoExistingModelAnnotations(
   }
 }
 
-// Killswitch for the logic to start deleting foreign history on startup (if a
-// previous foreign-history-deletion operation didn't finish before browser
-// shutdown).
-BASE_FEATURE(kDeleteForeignVisitsOnStartup,
-             "DeleteForeignVisitsOnStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 int GetForeignVisitsToDeletePerBatch() {
   return syncer::kSyncHistoryForeignVisitsToDeletePerBatch.Get();
 }
@@ -436,7 +429,7 @@ void HistoryBackend::Init(
                                 history_database_params.channel)));
   }
 
-  if (base::FeatureList::IsEnabled(kDeleteForeignVisitsOnStartup) && db_) {
+  if (db_) {
     if (!base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType) &&
         db_->MayContainForeignVisits()) {
       // If the History Sync data type is disabled, but there are foreign visits
