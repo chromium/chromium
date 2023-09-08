@@ -5374,6 +5374,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "legacy-tech-report-top-level-url",
+    "owners": ["zmin", "parastoog"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "legacy-tls-interstitial",
     "owners": [ "cthomp" ],
     "expiry_milestone": 92

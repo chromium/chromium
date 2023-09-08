@@ -8381,8 +8381,11 @@ void RenderFrameHostImpl::SendLegacyTechEvent(
     const std::string& type,
     blink::mojom::LegacyTechEventCodeLocationPtr code_location) {
   GetContentClient()->browser()->ReportLegacyTechEvent(
-      this, type, GetLastCommittedURL(), code_location->filename,
-      code_location->line, code_location->column);
+      this, type,
+      base::FeatureList::IsEnabled(features::kLegacyTechReportTopLevelUrl)
+          ? GetOutermostMainFrameOrEmbedder()->GetLastCommittedURL()
+          : GetLastCommittedURL(),
+      code_location->filename, code_location->line, code_location->column);
 }
 
 void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
