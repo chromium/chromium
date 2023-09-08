@@ -666,22 +666,6 @@
       },
     },
   },
-  'mac_13.4_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-13.4',
-      },
-    },
-  },
-  'mac_13.4_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-13.4',
-      },
-    },
-  },
   'mac_13_arm64': {
     'swarming': {
       'dimensions': {
