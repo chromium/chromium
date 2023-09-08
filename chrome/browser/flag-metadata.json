@@ -1252,7 +1252,7 @@
       "snianu@microsoft.com",
       "chrome-owp-storage@google.com"
     ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "cloud-ap-auth-attach-as-header",
