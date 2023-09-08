@@ -980,8 +980,6 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
   auto AddCaptionResult = [&](const CaptionResult& caption,
                               LayoutUnit* block_offset) -> void {
-    NGBlockNode node = caption.node;
-
     *block_offset += caption.margins.block_start;
     container_builder_.AddResult(
         *caption.layout_result,
