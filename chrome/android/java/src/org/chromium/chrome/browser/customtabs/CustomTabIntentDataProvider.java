@@ -43,6 +43,7 @@ import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
@@ -1053,11 +1054,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean isPartialHeightCustomTab() {
+        if (BuildInfo.getInstance().isAutomotive) return false;
         return getInitialActivityHeight() > 0;
     }
 
     @Override
     public boolean isPartialWidthCustomTab() {
+        if (BuildInfo.getInstance().isAutomotive) return false;
         return getInitialActivityWidth() > 0;
     }
 
