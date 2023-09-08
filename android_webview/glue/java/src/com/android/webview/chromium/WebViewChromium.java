@@ -27,6 +27,7 @@ import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
@@ -3099,6 +3100,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             recordWebViewSystemApiCall(SystemApiCall.ON_CHECK_IS_TEXT_EDITOR);
             return mAwContents.onCheckIsTextEditor();
         }
+    }
+
+    // TODO(crbug.com/1479496): Add override annotation when SDK includes this method.
+    public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
+        return mAwContents.onResolvePointerIcon(event, pointerIndex);
     }
 
     // WebViewProvider.ScrollDelegate implementation ----------------------------------------------

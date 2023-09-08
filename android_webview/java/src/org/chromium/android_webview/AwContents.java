@@ -34,6 +34,7 @@ import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
@@ -3347,6 +3348,13 @@ public class AwContents implements SmartClipProvider {
      */
     public void onWindowVisibilityChanged(int visibility) {
         mAwViewMethods.onWindowVisibilityChanged(visibility);
+    }
+
+    /**
+     * @see android.view.View#onResolvePointerIcon(MotionEvent, int)
+     */
+    public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
+        return mStylusWritingController.resolvePointerIcon();
     }
 
     private void setViewVisibilityInternal(boolean visible) {
