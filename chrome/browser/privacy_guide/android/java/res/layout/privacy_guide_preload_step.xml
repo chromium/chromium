@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_marginHorizontal="@dimen/standard_illustration_marginHorizontal"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:maxHeight="@dimen/illustration_maxHeight"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/privacy_guide_preload_image"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:drawablePadding="16dp"
+            android:layout_marginHorizontal="@dimen/all_content_marginHorizontal"
+            android:layout_marginVertical="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/preload_pages_privacy_guide_summary"
+            style="@style/TextAppearance.TextLarge.Primary" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+            android:id="@+id/preload_radio_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false">
+
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
+                android:id="@+id/standard_option"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:primaryText="@string/preload_pages_standard_preloading_title"
+                app:descriptionText="@string/preload_pages_standard_preloading_summary" />
+
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                android:id="@+id/disabled_option"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:primaryText="@string/preload_pages_no_preloading_title"
+                app:descriptionText="@string/preload_pages_no_preloading_summary" />
+
+        </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+    </LinearLayout>
+
+</ScrollView>

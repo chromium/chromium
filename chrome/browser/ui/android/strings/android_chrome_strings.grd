@@ -347,6 +347,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_PRELOAD_PAGES_TITLE" desc="Title for the Preload Pages section. This section allows the user to control whether Chrome will preload pages that it thinks the user is likely to load in the future. [CHAR_LIMIT=32]">
         Preload Pages
       </message>
+      <message name="IDS_PRELOAD_PAGES_PRIVACY_GUIDE_SUMMARY" desc="Title for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
+        Choose whether to preload pages
+      </message>
       <message name="IDS_PRELOAD_PAGES_TITLE" desc="Title for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
         Preload pages
       </message>
