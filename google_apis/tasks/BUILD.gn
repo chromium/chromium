@@ -10,10 +10,14 @@ assert(is_chromeos)
 
 static_library("tasks") {
   sources = [
+    "tasks_api_request_types.cc",
+    "tasks_api_request_types.h",
     "tasks_api_requests.cc",
     "tasks_api_requests.h",
     "tasks_api_response_types.cc",
     "tasks_api_response_types.h",
+    "tasks_api_task_status.cc",
+    "tasks_api_task_status.h",
     "tasks_api_url_generator_utils.cc",
     "tasks_api_url_generator_utils.h",
   ]
@@ -31,8 +35,10 @@ source_set("tasks_unittests") {
   testonly = true
 
   sources = [
+    "tasks_api_request_types_unittest.cc",
     "tasks_api_requests_unittest.cc",
     "tasks_api_response_types_unittest.cc",
+    "tasks_api_task_status_unittest.cc",
     "tasks_api_url_generator_utils_unittest.cc",
   ]
 

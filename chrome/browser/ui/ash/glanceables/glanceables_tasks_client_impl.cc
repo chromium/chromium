@@ -23,8 +23,10 @@
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/tasks/tasks_api_request_types.h"
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
+#include "google_apis/tasks/tasks_api_task_status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/models/list_model.h"
 
@@ -39,7 +41,9 @@ using ::google_apis::tasks::Task;
 using ::google_apis::tasks::TaskLink;
 using ::google_apis::tasks::TaskList;
 using ::google_apis::tasks::TaskLists;
+using ::google_apis::tasks::TaskRequestPayload;
 using ::google_apis::tasks::Tasks;
+using ::google_apis::tasks::TaskStatus;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("glanceables_tasks_integration", R"(
@@ -105,7 +109,7 @@ std::vector<std::unique_ptr<GlanceablesTask>> ConvertTasks(
   std::vector<std::unique_ptr<GlanceablesTask>> converted_tasks;
   converted_tasks.reserve(root_tasks.size());
   for (const auto* const root_task : root_tasks) {
-    const bool completed = root_task->status() == Task::Status::kCompleted;
+    const bool completed = root_task->status() == TaskStatus::kCompleted;
     const bool has_subtasks = tasks_with_subtasks.contains(root_task->id());
     const bool has_email_link =
         std::find_if(root_task->links().begin(), root_task->links().end(),
@@ -224,7 +228,8 @@ void GlanceablesTasksClientImpl::OnGlanceablesBubbleClosed(
                              weak_factory_.GetWeakPtr(), base::Time::Now(),
                              barrier_closure),
               /*task_list_id=*/task_list_ids,
-              /*task_id=*/task_id, Task::Status::kCompleted));
+              /*task_id=*/task_id,
+              TaskRequestPayload{.status = TaskStatus::kCompleted}));
     }
   }
 

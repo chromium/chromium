@@ -7,15 +7,13 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/json/json_value_converter.h"
 #include "base/logging.h"
-#include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
+#include "google_apis/tasks/tasks_api_task_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis::tasks {
@@ -38,16 +36,8 @@ constexpr char kApiResponseUpdatedKey[] = "updated";
 
 constexpr char kLinkTypeEmail[] = "email";
 
-constexpr char kTaskStatusCompleted[] = "completed";
-constexpr char kTaskStatusNeedsAction[] = "needsAction";
-constexpr auto kTaskStatuses =
-    base::MakeFixedFlatMap<base::StringPiece, Task::Status>(
-        {{kTaskStatusNeedsAction, Task::Status::kNeedsAction},
-         {kTaskStatusCompleted, Task::Status::kCompleted}});
-
-bool ConvertTaskStatus(base::StringPiece input, Task::Status* output) {
-  *output = kTaskStatuses.contains(input) ? kTaskStatuses.at(input)
-                                          : Task::Status::kUnknown;
+bool ConvertTaskStatus(base::StringPiece input, TaskStatus* output) {
+  *output = TaskStatusFromString(input);
   return true;
 }
 
@@ -125,8 +115,8 @@ Task::~Task() = default;
 void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterStringField(kApiResponseIdKey, &Task::id_);
   converter->RegisterStringField(kApiResponseTitleKey, &Task::title_);
-  converter->RegisterCustomField<Status>(kApiResponseStatusKey, &Task::status_,
-                                         &ConvertTaskStatus);
+  converter->RegisterCustomField<TaskStatus>(
+      kApiResponseStatusKey, &Task::status_, &ConvertTaskStatus);
   converter->RegisterStringField(kApiResponseParentKey, &Task::parent_id_);
   converter->RegisterStringField(kApiResponsePositionKey, &Task::position_);
   converter->RegisterCustomField<absl::optional<base::Time>>(
@@ -134,18 +124,6 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterRepeatedMessage<TaskLink>(kApiResponseLinksKey,
                                                &Task::links_);
   converter->RegisterStringField(kApiResponseNotesKey, &Task::notes_);
-}
-
-// static
-std::string Task::StatusToString(Status status) {
-  switch (status) {
-    case Status::kCompleted:
-      return kTaskStatusCompleted;
-    case Status::kNeedsAction:
-      return kTaskStatusNeedsAction;
-    default:
-      NOTREACHED_NORETURN();
-  }
 }
 
 // ----- Tasks -----

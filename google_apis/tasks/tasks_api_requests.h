@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "google_apis/common/base_requests.h"
+#include "google_apis/tasks/tasks_api_request_types.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
 
 class GURL;
@@ -30,6 +31,8 @@ enum ApiErrorCode;
 class RequestSender;
 
 namespace tasks {
+
+enum class TaskStatus;
 
 // Fetches all the authenticated user's task lists and invokes `callback_` when
 // done.
@@ -110,7 +113,7 @@ class ListTasksRequest : public UrlFetchRequestBase {
 };
 
 // Partially updates the specified task.
-// `status` - the only one currently supported field to update.
+// `payload` - the request body with the fields to update.
 // https://developers.google.com/tasks/reference/rest/v1/tasks/patch
 class PatchTaskRequest : public UrlFetchRequestBase {
  public:
@@ -120,7 +123,7 @@ class PatchTaskRequest : public UrlFetchRequestBase {
                    Callback callback,
                    const std::string& task_list_id,
                    const std::string& task_id,
-                   Task::Status status);
+                   const TaskRequestPayload& payload);
   PatchTaskRequest(const PatchTaskRequest&) = delete;
   PatchTaskRequest& operator=(const PatchTaskRequest&) = delete;
   ~PatchTaskRequest() override;
@@ -144,7 +147,7 @@ class PatchTaskRequest : public UrlFetchRequestBase {
   Callback callback_;
   const std::string task_list_id_;
   const std::string task_id_;
-  const Task::Status status_;
+  const TaskRequestPayload payload_;
 
   base::WeakPtrFactory<PatchTaskRequest> weak_ptr_factory_{this};
 };

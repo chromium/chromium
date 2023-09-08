@@ -18,7 +18,9 @@
 #include "google_apis/common/test_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
+#include "google_apis/tasks/tasks_api_request_types.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
+#include "google_apis/tasks/tasks_api_task_status.h"
 #include "google_apis/tasks/tasks_api_url_generator_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -197,7 +199,7 @@ TEST_F(TasksApiRequestsTest, PatchTaskRequest) {
   base::test::TestFuture<ApiErrorCode> future;
   auto request = std::make_unique<PatchTaskRequest>(
       request_sender(), future.GetCallback(), kTaskListId, kTaskId,
-      Task::Status::kCompleted);
+      TaskRequestPayload{.status = TaskStatus::kCompleted});
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
@@ -215,7 +217,7 @@ TEST_F(TasksApiRequestsTest, PatchTaskRequestHandlesError) {
   base::test::TestFuture<ApiErrorCode> future;
   auto request = std::make_unique<PatchTaskRequest>(
       request_sender(), future.GetCallback(), kTaskListId, kTaskId,
-      Task::Status::kCompleted);
+      TaskRequestPayload{.status = TaskStatus::kCompleted});
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 

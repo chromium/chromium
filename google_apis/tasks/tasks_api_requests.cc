@@ -10,13 +10,13 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/tasks/tasks_api_request_types.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
 #include "google_apis/tasks/tasks_api_url_generator_utils.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -26,7 +26,6 @@ namespace google_apis::tasks {
 namespace {
 
 constexpr char kContentTypeJson[] = "application/json; charset=utf-8";
-constexpr char kApiRequestBodyTaskStatusKey[] = "status";
 constexpr int kMaxAllowedMaxResults = 100;
 
 }
@@ -170,12 +169,12 @@ PatchTaskRequest::PatchTaskRequest(RequestSender* sender,
                                    Callback callback,
                                    const std::string& task_list_id,
                                    const std::string& task_id,
-                                   Task::Status status)
+                                   const TaskRequestPayload& payload)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
       callback_(std::move(callback)),
       task_list_id_(task_list_id),
       task_id_(task_id),
-      status_(status) {
+      payload_(payload) {
   CHECK(!callback_.is_null());
   CHECK(!task_list_id_.empty());
   CHECK(!task_id_.empty());
@@ -203,11 +202,7 @@ HttpRequestMethod PatchTaskRequest::GetRequestType() const {
 bool PatchTaskRequest::GetContentData(std::string* upload_content_type,
                                       std::string* upload_content) {
   *upload_content_type = kContentTypeJson;
-
-  base::Value::Dict root;
-  root.Set(kApiRequestBodyTaskStatusKey, Task::StatusToString(status_));
-
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = payload_.ToJson();
   return true;
 }
 

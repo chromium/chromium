@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "google_apis/tasks/tasks_api_task_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -105,13 +106,6 @@ class TaskLink {
 // https://developers.google.com/tasks/reference/rest/v1/tasks
 class Task {
  public:
-  // Status of the task.
-  enum class Status {
-    kUnknown,
-    kNeedsAction,
-    kCompleted,
-  };
-
   Task();
   Task(const Task&) = delete;
   Task& operator=(const Task&) = delete;
@@ -121,12 +115,9 @@ class Task {
   // class.
   static void RegisterJSONConverter(base::JSONValueConverter<Task>* converter);
 
-  // Stringifies `Status` enum value.
-  static std::string StatusToString(Status);
-
   const std::string& id() const { return id_; }
   const std::string& title() const { return title_; }
-  Status status() const { return status_; }
+  TaskStatus status() const { return status_; }
   const std::string& parent_id() const { return parent_id_; }
   const std::string& position() const { return position_; }
   const absl::optional<base::Time>& due() const { return due_; }
@@ -141,7 +132,7 @@ class Task {
   std::string title_;
 
   // Status of the task.
-  Status status_ = Status::kUnknown;
+  TaskStatus status_ = TaskStatus::kUnknown;
 
   // Parent task identifier.
   std::string parent_id_;

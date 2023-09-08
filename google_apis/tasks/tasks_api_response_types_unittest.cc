@@ -8,6 +8,7 @@
 
 #include "base/json/json_reader.h"
 #include "google_apis/common/time_util.h"
+#include "google_apis/tasks/tasks_api_task_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace google_apis::tasks {
@@ -108,7 +109,7 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
 
   EXPECT_EQ(tasks->items()[0]->id(), "qwe");
   EXPECT_EQ(tasks->items()[0]->title(), "Completed child task");
-  EXPECT_EQ(tasks->items()[0]->status(), Task::Status::kCompleted);
+  EXPECT_EQ(tasks->items()[0]->status(), TaskStatus::kCompleted);
   EXPECT_EQ(tasks->items()[0]->parent_id(), "asd");
   EXPECT_EQ(tasks->items()[0]->position(), "00000000000000000000");
   EXPECT_FALSE(tasks->items()[0]->due());
@@ -116,7 +117,7 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
 
   EXPECT_EQ(tasks->items()[1]->id(), "asd");
   EXPECT_EQ(tasks->items()[1]->title(), "Parent task");
-  EXPECT_EQ(tasks->items()[1]->status(), Task::Status::kNeedsAction);
+  EXPECT_EQ(tasks->items()[1]->status(), TaskStatus::kNeedsAction);
   EXPECT_TRUE(tasks->items()[1]->parent_id().empty());
   EXPECT_EQ(tasks->items()[1]->position(), "00000000000000000001");
   EXPECT_EQ(util::FormatTimeAsString(tasks->items()[1]->due().value()),
@@ -136,11 +137,6 @@ TEST(TasksApiResponseTypesTest, CreatesTasksWithNextPageTokenFromResponse) {
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
   ASSERT_TRUE(tasks);
   EXPECT_EQ(tasks->next_page_token(), "qwerty");
-}
-
-TEST(TasksApiResponseTypesTest, ConvertsTaskStatusToString) {
-  EXPECT_EQ(Task::StatusToString(Task::Status::kCompleted), "completed");
-  EXPECT_EQ(Task::StatusToString(Task::Status::kNeedsAction), "needsAction");
 }
 
 TEST(TasksApiResponseTypesTest, ConvertsTaskLinks) {
