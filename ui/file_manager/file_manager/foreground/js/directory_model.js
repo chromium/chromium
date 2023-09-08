@@ -7,20 +7,21 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
-import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
+import {EntryList, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {EntriesChangedEvent} from '../../externs/entries_changed_event.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {PropStatus, SearchLocation, SearchOptions, State} from '../../externs/ts/state.js';
+import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {updateSearch} from '../../state/ducks/search.js';
-import {getStore} from '../../state/store.js';
+import {getFileData, getStore, getVolume} from '../../state/store.js';
 
 import {constants} from './constants.js';
 import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, GuestOsMounter, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
@@ -176,6 +177,9 @@ export class DirectoryModel extends EventTarget {
     /** @private {FilesAppDirEntry} */
     this.myFilesEntry_ = null;
 
+    /** @private {?Object<!VolumeId, !Volume>} */
+    this.volumes_ = null;
+
     /** @private {!Store} */
     this.store_ = getStore();
     this.store_.subscribe(this);
@@ -186,6 +190,12 @@ export class DirectoryModel extends EventTarget {
     const currentEntry = this.getCurrentDirEntry();
     const currentURL = currentEntry ? currentEntry.toURL() : null;
     let newURL = state.currentDirectory ? state.currentDirectory.key : null;
+
+    // Observe volume changes.
+    if (this.volumes_ !== state.volumes) {
+      this.onStateVolumeChanged_(state);
+      this.volumes_ = state.volumes;
+    }
 
     // If the directory is the same, ignore it.
     if (currentURL === newURL) {
@@ -503,6 +513,35 @@ export class DirectoryModel extends EventTarget {
       }
     } else {
       this.rescanSoon(false);
+    }
+  }
+
+  /**
+   * Invoked when volumes have been modified in the state.
+   * @param {!State} state latest state from the store.
+   * @private
+   */
+  onStateVolumeChanged_(state) {
+    for (const volume of Object.values(state.volumes)) {
+      // Navigate out of ODFS if it got disabled and the current directory is
+      // under ODFS.
+      const isOdfs = util.isOneDriveId(volume.providerId);
+      if (!(isOdfs && volume.isDisabled)) {
+        continue;
+      }
+      const currentDirectoryFileData =
+          getFileData(state, state.currentDirectory.key);
+      const currentDirectoryOnOdfs = util.isOneDriveId(
+          getVolume(state, currentDirectoryFileData)?.providerId);
+      if (currentDirectoryOnOdfs) {
+        const {myFilesEntry} = /**
+                                  @type {{myFilesVolume: (Volume|null),
+                                      myFilesEntry: (VolumeEntry|EntryList)}}
+                                */
+            (getMyFiles(state));
+        const myFilesRootKey = myFilesEntry.toURL();
+        this.store_.dispatch(changeDirectory({toKey: myFilesRootKey}));
+      }
     }
   }
 

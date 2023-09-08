@@ -9,7 +9,7 @@ import {maybeShowTooltip} from '../common/js/dom_utils.js';
 import {isEntryInsideComputers, isEntryInsideDrive, isEntryInsideMyDrive, isGrandRootEntryInDrives, isMyFilesEntry, isTrashEntry, isVolumeEntry} from '../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
 import {metrics} from '../common/js/metrics.js';
-import {str, strf} from '../common/js/util.js';
+import {str, strf, util} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
@@ -23,7 +23,7 @@ import {convertEntryToFileData, readSubDirectories} from '../state/ducks/all_ent
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots, updateNavigationEntry} from '../state/ducks/navigation.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
-import {getEntry, getFileData, getStore, getVolumeType, type Store} from '../state/store.js';
+import {getEntry, getFileData, getStore, getVolume, getVolumeType, type Store} from '../state/store.js';
 import {type TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
 import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
 
@@ -366,6 +366,14 @@ export class DirectoryTreeContainer {
     if (this.entryKeyToRename === navigationKey) {
       this.entryKeyToRename = null;
       this.attachRename_(element);
+    }
+
+    const isOdfs = util.isOneDriveId(
+        getVolume(this.store_.getState(), fileData)?.providerId);
+    if (isOdfs && fileData?.disabled) {
+      // The entries under ODFS are not disabled recursively. Collapse ODFS when
+      // it is disabled.
+      element.expanded = false;
     }
 
     // Update new data to the map.

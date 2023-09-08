@@ -2126,13 +2126,6 @@ export class DirectoryTree extends Tree {
       this.isODFSVolumeDisabled_ = !this.isODFSVolumeDisabled_;
       // Refresh data model.
       this.dataModel.refreshNavigationItems();
-      // Navigate away from ODFS if the current directory is on ODFS and
-      // ODFS just got disabled.
-      if (util.isOneDrive(this.directoryModel_.getCurrentVolumeInfo())) {
-        this.volumeManager.getDefaultDisplayRoot((displayRoot) => {
-          this.directoryModel_.changeDirectoryEntry(displayRoot);
-        });
-      }
       // Remove ODFS volumes from the directoryTree so that they get redrawn
       // with the right attributes.
       for (let i = 0; i < this.items.length; ++i) {
