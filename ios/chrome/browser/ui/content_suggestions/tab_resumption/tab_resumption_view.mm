@@ -206,7 +206,10 @@ const CGFloat kLabelStackSpacing = 6.0;
 // Configures and returns the UILabel that contains the session name.
 - (UILabel*)configuredTabTitleLabel {
   UILabel* label = [[UILabel alloc] init];
-  label.text = _item.tabTitle;
+  label.text = [_item.tabTitle length]
+                   ? _item.tabTitle
+                   : l10n_util::GetNSString(
+                         IDS_IOS_TAB_RESUMPTION_TAB_TITLE_PLACEHOLDER);
   label.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   label.numberOfLines = 1;

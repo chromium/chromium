@@ -4509,6 +4509,10 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu of the module that presents the last opened tab, on the new tab page.">
           This card shows your last used open tab across all your synced devices within the last 24 hours.
       </message>
+      <message name="IDS_IOS_TAB_RESUMPTION_TAB_TITLE_PLACEHOLDER" desc="Label displayed when the last opened tab title is empty. This module presents the last open tab, on the new tab page.">
+        Your Last Open Tab
+      </message>
+
       <message name="IDS_IOS_TAB_RESUMPTION_TITLE" desc="Title for the module that presents the last opened tab, on the new tab page.">
         Continue Browsing
       </message>
