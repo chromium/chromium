@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -40,9 +41,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Tests contacts Web API functionality.
+ * Tests Contacts Web API functionality.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class ContactsProviderTest {
     private static final String TEST_URL = "/content/test/data/android/title1.html";
     private static final String FENCED_FRAME_URL =
