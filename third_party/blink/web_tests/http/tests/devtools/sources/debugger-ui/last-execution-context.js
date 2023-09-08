@@ -10,7 +10,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests how execution context and target are selected.\n`);
-  await TestRunner.loadLegacyModule('main');
   await TestRunner.showPanel('sources');
 
   var context = new UI.Context();
