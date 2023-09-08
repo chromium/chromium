@@ -80,6 +80,9 @@ void DeleteFiles(std::vector<base::FilePath> paths) {
 
 bool IsValidProfile(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!profile) {
+    return false;
+  }
   // No profile manager in unit tests.
   if (!g_browser_process->profile_manager())
     return true;
@@ -820,6 +823,7 @@ void FileSelectHelper::RenderFrameDeleted(
 void FileSelectHelper::WebContentsDestroyed() {
   render_frame_host_ = nullptr;
   web_contents_ = nullptr;
+  profile_ = nullptr;
   CleanUp();
 }
 

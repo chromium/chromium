@@ -291,7 +291,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       const base::FilePath& suggested_path);
 
   // Profile used to set/retrieve the last used directory.
-  raw_ptr<Profile, LeakedDanglingUntriaged> profile_;
+  raw_ptr<Profile> profile_;
 
   // The RenderFrameHost and WebContents for the page showing a file dialog
   // (may only be one such dialog).
