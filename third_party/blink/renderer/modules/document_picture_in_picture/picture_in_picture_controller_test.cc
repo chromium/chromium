@@ -852,6 +852,23 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   EXPECT_NE(nullptr, pictureInPictureWindow1);
   EXPECT_NE(nullptr, pictureInPictureWindow2);
 }
+
+TEST_F(PictureInPictureControllerTestWithChromeClient, CopiesAutoplayFlags) {
+  V8TestingScope v8_scope;
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  // Set the autoplay flags to something recognizable.
+  auto* page = GetDocument().GetPage();
+  page->ClearAutoplayFlags();
+  const int flags = 0x1234;  // Spoiler alert: this is made up.
+  page->AddAutoplayFlags(flags);
+
+  auto* pictureInPictureWindow =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
+  EXPECT_EQ(pictureInPictureWindow->document()->GetPage()->AutoplayFlags(),
+            flags);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

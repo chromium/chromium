@@ -2314,6 +2314,15 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
       To<LocalDOMWindow>(result.frame->DomWindow());
   pip_dom_window->SetIsPictureInPictureWindow();
 
+  // Also copy any autoplay flags, since these are set on navigation commit.
+  // The pip window should match whatever the opener has.
+  auto* opener_page = entered_window->document()->GetPage();
+  auto* pip_page = pip_dom_window->document()->GetPage();
+  CHECK(opener_page);
+  CHECK(pip_page);
+  pip_page->ClearAutoplayFlags();
+  pip_page->AddAutoplayFlags(opener_page->AutoplayFlags());
+
   return pip_dom_window;
 }
 
