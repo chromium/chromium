@@ -406,7 +406,7 @@ BASE_FEATURE(kCameraPrivacySwitchNotifications,
 // Controls whether the capture mode advanced audio settings are enabled.
 BASE_FEATURE(kCaptureModeAudioMixing,
              "CaptureModeAudioMixing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the capture mode demo tools feature is enabled for Capture
 // Mode.

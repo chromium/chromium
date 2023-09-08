@@ -6772,9 +6772,13 @@ TEST_F(CaptureModeSettingsTest, SwitchWhichFolderToUserFromOptions) {
 TEST_F(CaptureModeSettingsTest, CaptureLabelViewNotOverlapsWithSettingsView) {
   // Update the display size to make sure capture label widget will not
   // overlap with settings widget
-  UpdateDisplay("1200x1000");
+  UpdateDisplay("800x600");
 
-  auto* controller = StartImageRegionCapture();
+  auto* controller = CaptureModeController::Get();
+  // Set the region at an area far away from where the settings menu shows.
+  controller->SetUserCaptureRegion(gfx::Rect(200, 200), /*by_user=*/true);
+
+  StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
 
   // Tests that the capture label widget doesn't overlap with settings widget.
@@ -6873,12 +6877,19 @@ TEST_F(CaptureModeSettingsTest, PressingEnterSelectsFocusedItem) {
   EXPECT_EQ(FocusGroup::kPendingSettings,
             session_test_api.GetCurrentFocusGroup());
 
+  // Tab once to enter focus into the settings menu.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
+
+  // Tab until focus reaches the `kAudioMicrophone` option.
   CaptureModeSettingsTestApi settings_test_api;
+  auto* mic_option = settings_test_api.GetMicrophoneOption();
+  while (session_test_api.GetCurrentFocusedView()->GetView() != mic_option) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
+
   CaptureModeMenuGroup* audio_input_menu_group =
       settings_test_api.GetAudioInputMenuGroup();
-
-  // Tab 3 times to reach the `kAudioMicrophone` option.
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/3);
   EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioOff));
   EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
 
@@ -6921,37 +6932,50 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForSettingsMenu) {
   EXPECT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, session_test_api.GetCurrentFocusIndex());
 
-  // Tab once to focus on the `Off` option on the settings menu. Check `Off`
-  // option is the checked option not the `Microphone`.
-  SendKey(ui::VKEY_TAB, event_generator);
+  // Tab once to enter focus into the settings menu.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
+
+  // Check that the `Off` option is the checked option not the `Microphone`.
   EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioOff));
   EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
 
-  // Now tab once to focus on the `Microphone` option and enter space to enable
-  // it. Check now `Microphone` option is the checked option.
-  SendKey(ui::VKEY_TAB, event_generator);
+  // Tab until focus reaches the `kAudioMicrophone` option.
+  auto* mic_option = settings_test_api.GetMicrophoneOption();
+  while (session_test_api.GetCurrentFocusedView()->GetView() != mic_option) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
+
+  // Enter space, and check that now the `Microphone` option is checked.
   SendKey(ui::VKEY_SPACE, event_generator);
   EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioOff));
   EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
 
-  Switch* toggle_button = CaptureModeSettingsTestApi()
-                              .GetDemoToolsMenuToggleButton()
-                              ->toggle_button();
+  Switch* toggle_button =
+      settings_test_api.GetDemoToolsMenuToggleButton()->toggle_button();
 
   if (demo_tools_enabled()) {
     // The demo tools toggle button will be disabled by default.
     EXPECT_FALSE(toggle_button->GetIsOn());
 
-    // Tab once to focus on the demo tools toggle button and enter space to
-    // enable the toggle button.
-    SendKey(ui::VKEY_TAB, event_generator);
+    // Tab until focus reaches the demo tools toggle button and enter space to
+    // enable it.
+    while (session_test_api.GetCurrentFocusedView()->GetView() !=
+           toggle_button) {
+      SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+    }
     SendKey(ui::VKEY_SPACE, event_generator);
     EXPECT_TRUE(toggle_button->GetIsOn());
   }
 
-  // Tab three times to focus on the `Select folder...` menu item and enter
-  // space to open the folder selection window.
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/3);
+  // Tab until focus reaches the `Select folder...` menu item.
+  auto* select_folder_option = settings_test_api.GetSelectFolderMenuItem();
+  while (session_test_api.GetCurrentFocusedView()->GetView() !=
+         select_folder_option) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
+
+  // Enter space to open the folder selection window.
   SendKey(ui::VKEY_SPACE, event_generator);
   auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
   EXPECT_TRUE(IsFolderSelectionDialogShown());
@@ -7008,11 +7032,17 @@ TEST_F(CaptureModeSettingsTest,
       highlightable_items, custom_folder_view,
       &CaptureModeSessionFocusCycler::HighlightableView::GetView));
 
-  // Tab `count` times to focus on the default `Downloads` option.
-  const int count = demo_tools_enabled() ? 6 : 5;
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, count);
-  EXPECT_EQ(session_test_api.GetCurrentFocusedView()->GetView(),
-            settings_test_api.GetDefaultDownloadsOption());
+  // Tab once to enter focus into the settings menu.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
+
+  // Tab until the focus is on the default `Downloads` option.
+  auto* downloads_option = settings_test_api.GetDefaultDownloadsOption();
+  ASSERT_TRUE(downloads_option);
+  while (session_test_api.GetCurrentFocusedView()->GetView() !=
+         downloads_option) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
 
   // Tab once to check the disabled `kCustomFolder` option is skipped and now
   // the `Select folder...` menu item gets focused.
@@ -7046,15 +7076,20 @@ TEST_F(CaptureModeSettingsTest,
   CaptureModeSettingsView* settings_menu = GetCaptureModeSettingsView();
   ASSERT_TRUE(settings_menu);
 
-  // Tab `count` times to focus on the `Select folder...` menu item and enter
-  // space to open the folder selection window.
-  const int count = demo_tools_enabled() ? 8 : 7;
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, count);
+  // Tab once to enter focus into the settings menu.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(FocusGroup::kSettingsMenu, test_api.GetCurrentFocusGroup());
+
+  // Tab until focus reaches the `Select folder...` menu item.
+  CaptureModeSettingsTestApi settings_test_api;
+  auto* select_folder_option = settings_test_api.GetSelectFolderMenuItem();
+  while (test_api.GetCurrentFocusedView()->GetView() != select_folder_option) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
+
+  // Enter space to open the folder selection window.
   SendKey(ui::VKEY_SPACE, event_generator);
   EXPECT_TRUE(IsFolderSelectionDialogShown());
-
-  EXPECT_EQ(FocusGroup::kSettingsMenu, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(demo_tools_enabled() ? 7u : 6u, test_api.GetCurrentFocusIndex());
 
   // Select the default `Downloads` folder as the custom folder which will
   // have custom folder option get removed.
@@ -7098,16 +7133,21 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForAddingCustomFolderOption) {
   CaptureModeSettingsView* settings_menu = GetCaptureModeSettingsView();
   ASSERT_TRUE(settings_menu);
 
-  // Tab `count` times to focus on the `Select folder...` menu item and enter
-  // space to open the folder selection window.
-  const int count = demo_tools_enabled() ? 7 : 6;
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, count);
+  // Tab once to enter focus into the settings menu.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
+
+  // Tab until focus reaches the `Select folder...` menu item.
+  CaptureModeSettingsTestApi settings_test_api;
+  auto* select_folder_option = settings_test_api.GetSelectFolderMenuItem();
+  while (session_test_api.GetCurrentFocusedView()->GetView() !=
+         select_folder_option) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
+
+  // Enter space to open the folder selection window.
   SendKey(ui::VKEY_SPACE, event_generator);
   EXPECT_TRUE(IsFolderSelectionDialogShown());
-
-  EXPECT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(demo_tools_enabled() ? 6u : 5u,
-            session_test_api.GetCurrentFocusIndex());
 
   // Select the custom folder and wait for the settings menu to be refreshed.
   // The custom folder option should be added to the settings menu and checked.
@@ -7117,7 +7157,6 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForAddingCustomFolderOption) {
   auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
   dialog_factory->AcceptPath(custom_folder);
   WaitForSettingsMenuToBeRefreshed();
-  CaptureModeSettingsTestApi settings_test_api;
   EXPECT_TRUE(settings_test_api.GetCustomFolderOptionIfAny());
 
   // Press space to ensure the folder selection window can be opened after the

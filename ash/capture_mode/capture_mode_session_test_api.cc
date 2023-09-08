@@ -95,8 +95,10 @@ CaptureModeSessionTestApi::GetHighlightableWindow(aura::Window* window) {
 
 CaptureModeSessionFocusCycler::HighlightableView*
 CaptureModeSessionTestApi::GetCurrentFocusedView() {
-  return session_->focus_cycler_->GetGroupItems(
-      GetCurrentFocusGroup())[GetCurrentFocusIndex()];
+  const auto items =
+      session_->focus_cycler_->GetGroupItems(GetCurrentFocusGroup());
+  CHECK(!items.empty());
+  return items[GetCurrentFocusIndex()];
 }
 
 bool CaptureModeSessionTestApi::HasFocus() {

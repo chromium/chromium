@@ -377,13 +377,17 @@ TEST_F(CaptureModeDemoToolsTest, EntryPointFocusCyclerTest) {
   EXPECT_EQ(FocusGroup::kPendingSettings,
             session_test_api.GetCurrentFocusGroup());
 
-  // Tab 4 times to reach the demo tools toggle button.
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/4);
-  EXPECT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
+  // Tab once to enter focus into the settings menu.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
 
+  // Tab until focus reaches the demo tools toggle button.
   Switch* toggle_button = CaptureModeSettingsTestApi()
                               .GetDemoToolsMenuToggleButton()
                               ->toggle_button();
+  while (session_test_api.GetCurrentFocusedView()->GetView() != toggle_button) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
 
   // The demo tools toggle button will be disabled by default.
   EXPECT_FALSE(toggle_button->GetIsOn());
