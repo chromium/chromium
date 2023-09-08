@@ -85,6 +85,7 @@
 }
 
 - (void)stop {
+  [_mediator disconnect];
   _mediator = nil;
   _incognitoAuthMediator = nil;
 

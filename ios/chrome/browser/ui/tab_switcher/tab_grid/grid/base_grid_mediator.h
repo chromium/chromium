@@ -54,6 +54,9 @@ class WebStateList;
 
 @interface BaseGridMediator (Subclassing)
 
+// Disconnects the mediator.
+- (void)disconnect NS_REQUIRES_SUPER;
+
 // Called when toolbars should be updated. This function should be implemented
 // in a subclass.
 - (void)configureToolbarsButtons;

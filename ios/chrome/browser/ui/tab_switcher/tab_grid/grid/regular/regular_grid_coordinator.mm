@@ -86,6 +86,7 @@
 }
 
 - (void)stop {
+  [_mediator disconnect];
   _mediator = nil;
 }
 
