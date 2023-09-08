@@ -1279,17 +1279,15 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isDemoSession", DemoSession::IsDeviceInDemoMode());
 
-  html_source->AddBoolean(
-      "enableInputDeviceSettingsSplit",
-      base::FeatureList::IsEnabled(ash::features::kInputDeviceSettingsSplit));
+  html_source->AddBoolean("enableInputDeviceSettingsSplit",
+                          ash::features::IsInputDeviceSettingsSplitEnabled());
+
+  html_source->AddBoolean("enablePeripheralCustomization",
+                          ash::features::IsPeripheralCustomizationEnabled());
 
   html_source->AddBoolean(
-      "enablePeripheralCustomization",
-      base::FeatureList::IsEnabled(ash::features::kPeripheralCustomization));
-
-  html_source->AddBoolean("enableAltClickAndSixPackCustomization",
-                          base::FeatureList::IsEnabled(
-                              ash::features::kAltClickAndSixPackCustomization));
+      "enableAltClickAndSixPackCustomization",
+      ash::features::IsAltClickAndSixPackCustomizationEnabled());
 
   html_source->AddBoolean(
       "enableF11AndF12KeyShortcuts",
@@ -1439,7 +1437,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
         mojom::kPerDevicePointingStickSubpagePath);
   }
 
-  if (base::FeatureList::IsEnabled(ash::features::kPeripheralCustomization)) {
+  if (ash::features::IsPeripheralCustomizationEnabled()) {
     // TODO(yyhyyh@): Add icon for graphics tablet to replace the temporary
     // stylus icon.
     generator->RegisterTopLevelSubpage(IDS_SETTINGS_GRAPHICS_TABLET_TITLE,
