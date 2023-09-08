@@ -171,12 +171,13 @@ gfx::Rect PaintedScrollbarLayerImpl::ComputeThumbQuadRect() const {
   // Position composited Fluent scrollbar thumb in the center of the track.
   if (IsFluentScrollbarEnabled()) {
     const int track_thickness =
-        orientation() == ScrollbarOrientation::HORIZONTAL ? track_rect_.height()
-                                                          : track_rect_.width();
+        orientation() == ScrollbarOrientation::kHorizontal
+            ? track_rect_.height()
+            : track_rect_.width();
     const int thumb_offset =
         static_cast<int>((track_thickness - ThumbThickness()) / 2.0f);
 
-    if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+    if (orientation() == ScrollbarOrientation::kHorizontal) {
       thumb_rect.Offset(0, thumb_offset);
     } else {
       thumb_rect.Offset(
@@ -195,7 +196,7 @@ gfx::Rect PaintedScrollbarLayerImpl::ComputeHitTestableThumbQuadRect() const {
   // the thumb across the entire width of the track rect.
   gfx::Rect thumb_rect = ComputeThumbQuadRect();
   const gfx::Rect back_track_rect = BackTrackRect();
-  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
     thumb_rect.set_y(back_track_rect.y());
     thumb_rect.set_height(back_track_rect.height());
     return thumb_rect;
@@ -252,8 +253,8 @@ int PaintedScrollbarLayerImpl::ThumbLength() const {
 }
 
 int PaintedScrollbarLayerImpl::TrackStart() const {
-  return orientation() == ScrollbarOrientation::VERTICAL ? track_rect_.y()
-                                                         : track_rect_.x();
+  return orientation() == ScrollbarOrientation::kVertical ? track_rect_.y()
+                                                          : track_rect_.x();
 }
 
 void PaintedScrollbarLayerImpl::SetBackButtonRect(gfx::Rect back_button_rect) {
@@ -283,7 +284,7 @@ gfx::Rect PaintedScrollbarLayerImpl::BackTrackRect() const {
   const gfx::Rect thumb_rect = ComputeThumbQuadRect();
   const int rect_x = track_rect_.x();
   const int rect_y = track_rect_.y();
-  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
     int width = thumb_rect.x() - rect_x;
     int height = track_rect_.height();
     return gfx::Rect(rect_x, rect_y, width, height);
@@ -297,7 +298,7 @@ gfx::Rect PaintedScrollbarLayerImpl::BackTrackRect() const {
 gfx::Rect PaintedScrollbarLayerImpl::ForwardTrackRect() const {
   const gfx::Rect thumb_rect = ComputeThumbQuadRect();
   const int track_end = TrackStart() + TrackLength();
-  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
     int rect_x = thumb_rect.right();
     int rect_y = track_rect_.y();
     int width = track_end - rect_x;
@@ -327,10 +328,11 @@ void PaintedScrollbarLayerImpl::SetScrollbarPaintedOpacity(float opacity) {
 }
 
 float PaintedScrollbarLayerImpl::TrackLength() const {
-  if (orientation() == ScrollbarOrientation::VERTICAL)
+  if (orientation() == ScrollbarOrientation::kVertical) {
     return track_rect_.height() + vertical_adjust();
-  else
+  } else {
     return track_rect_.width();
+  }
 }
 
 bool PaintedScrollbarLayerImpl::IsThumbResizable() const {

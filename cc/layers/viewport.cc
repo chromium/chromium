@@ -128,10 +128,10 @@ gfx::SizeF Viewport::GetInnerViewportSizeExcludingScrollbars() const {
   ScrollbarSet scrollbars = host_impl_->ScrollbarsFor(outer_node->element_id);
   gfx::SizeF scrollbars_size;
   for (const auto* scrollbar : scrollbars) {
-    if (scrollbar->orientation() == ScrollbarOrientation::VERTICAL) {
+    if (scrollbar->orientation() == ScrollbarOrientation::kVertical) {
       scrollbars_size.set_width(scrollbar->bounds().width());
     } else {
-      DCHECK(scrollbar->orientation() == ScrollbarOrientation::HORIZONTAL);
+      DCHECK(scrollbar->orientation() == ScrollbarOrientation::kHorizontal);
       scrollbars_size.set_height(scrollbar->bounds().height());
     }
   }

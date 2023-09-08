@@ -4927,7 +4927,7 @@ void PictureLayerImplTest::TestQuadsForSolidColor(bool test_for_solid,
   scoped_refptr<PictureLayer> layer = PictureLayer::Create(&client);
   FakeLayerTreeHostClient host_client;
   TestTaskGraphRunner task_graph_runner;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get());
   host->SetRootLayer(layer);
@@ -5016,7 +5016,7 @@ TEST_F(LegacySWPictureLayerImplTest, NonSolidToSolidNoTilings) {
   scoped_refptr<PictureLayer> layer = PictureLayer::Create(&client);
   FakeLayerTreeHostClient host_client;
   TestTaskGraphRunner task_graph_runner;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get());
   host->SetRootLayer(layer);

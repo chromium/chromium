@@ -33,7 +33,7 @@ class LayerPerfTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
     layer_tree_host_ = FakeLayerTreeHost::Create(
         &fake_client_, &task_graph_runner_, animation_host_.get());
     layer_tree_host_->InitializeSingleThreaded(

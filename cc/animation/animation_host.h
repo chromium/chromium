@@ -33,7 +33,7 @@ class ScrollOffsetAnimations;
 class ScrollOffsetAnimationsImpl;
 class WorkletAnimation;
 
-enum class ThreadInstance { MAIN, IMPL };
+enum class ThreadInstance { kMain, kImpl };
 
 // An AnimationHost contains all the state required to play animations.
 // Specifically, it owns all the AnimationTimelines objects.

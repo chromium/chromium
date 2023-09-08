@@ -192,13 +192,13 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // Note these are used in a histogram. Do not reorder or delete existing
   // entries.
   enum class ScrollThread {
-    SCROLL_ON_MAIN_THREAD = 0,
-    SCROLL_ON_IMPL_THREAD,
-    SCROLL_IGNORED,
-    // SCROLL_UNKOWN is not used anymore. However we'll keep this entry as per
+    kScrollOnMainThread = 0,
+    kScrollOnImplThread,
+    kScrollIgnored,
+    // kScrollUnknown is not used anymore. However we'll keep this entry as per
     // the comment above.
-    SCROLL_UNKNOWN,
-    LAST_SCROLL_STATUS = SCROLL_UNKNOWN
+    kScrollUnknown,
+    kLastScrollStatus = kScrollUnknown
   };
 
   explicit InputHandler(CompositorDelegateForInput& compositor_delegate);
@@ -208,7 +208,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   InputHandler& operator=(const InputHandler&) = delete;
 
   struct ScrollStatus {
-    ScrollThread thread = ScrollThread::SCROLL_ON_IMPL_THREAD;
+    ScrollThread thread = ScrollThread::kScrollOnImplThread;
     // This should be set to nonzero iff `thread` is SCROLL_ON_MAIN_THREAD.
     uint32_t main_thread_scrolling_reasons =
         MainThreadScrollingReason::kNotScrollingOnMain;
@@ -239,9 +239,9 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   };
 
   enum class TouchStartOrMoveEventListenerType {
-    NO_HANDLER,
-    HANDLER,
-    HANDLER_ON_SCROLLING_LAYER
+    kNoHandler,
+    kHandler,
+    kHandlerOnScrollingLayer
   };
 
   virtual base::WeakPtr<InputHandler> AsWeakPtr();
@@ -256,7 +256,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // gesture is ended by a call to ScrollEnd.  Returns SCROLL_STARTED if a node
   // at the coordinates can be scrolled and was latched, SCROLL_ON_MAIN_THREAD
   // if the scroll event should instead be delegated to the main thread, or
-  // SCROLL_IGNORED if there is nothing to be scrolled at the given
+  // kScrollUnknown if there is nothing to be scrolled at the given
   // coordinates.
   virtual ScrollStatus ScrollBegin(ScrollState* scroll_state,
                                    ui::ScrollInputType type);

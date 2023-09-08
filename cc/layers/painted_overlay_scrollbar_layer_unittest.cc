@@ -24,8 +24,9 @@ class MockScrollbar : public FakeScrollbar {
   }
 
   void PaintPart(PaintCanvas*, ScrollbarPart part, const gfx::Rect&) override {
-    if (part == ScrollbarPart::TRACK_BUTTONS_TICKMARKS)
+    if (part == ScrollbarPart::kTrackButtonsTickmarks) {
       paint_tickmarks_called_ = true;
+    }
   }
 
   bool UsesNinePatchThumbResource() const override { return true; }
@@ -50,7 +51,7 @@ TEST(PaintedOverlayScrollbarLayerTest, PaintTickmarks) {
   FakeLayerTreeHostClient fake_client_;
   TestTaskGraphRunner task_graph_runner_;
 
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   auto layer_tree_host = FakeLayerTreeHost::Create(
       &fake_client_, &task_graph_runner_, animation_host.get());
 

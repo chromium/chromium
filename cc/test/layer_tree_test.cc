@@ -181,16 +181,17 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
       TaskGraphRunner* task_graph_runner,
       RenderingStatsInstrumentation* stats_instrumentation,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner)
-      : LayerTreeHostImpl(settings,
-                          host_impl_client,
-                          task_runner_provider,
-                          stats_instrumentation,
-                          task_graph_runner,
-                          AnimationHost::CreateForTesting(ThreadInstance::IMPL),
-                          nullptr,
-                          0,
-                          std::move(image_worker_task_runner),
-                          scheduling_client),
+      : LayerTreeHostImpl(
+            settings,
+            host_impl_client,
+            task_runner_provider,
+            stats_instrumentation,
+            task_graph_runner,
+            AnimationHost::CreateForTesting(ThreadInstance::kImpl),
+            nullptr,
+            0,
+            std::move(image_worker_task_runner),
+            scheduling_client),
         test_hooks_(test_hooks) {}
 
   std::unique_ptr<RasterBufferProvider> CreateRasterBufferProvider() override {
@@ -937,7 +938,7 @@ void LayerTreeTest::DoBeginTest() {
   LayerTreeHostSchedulingClient* scheduling_client =
       impl_thread_ ? client_.get() : nullptr;
 
-  animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
 
   layer_tree_host_ = LayerTreeHostForTesting::Create(
       this, mode_, client_.get(), scheduling_client, client_.get(),

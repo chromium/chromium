@@ -33,7 +33,7 @@ class MicroBenchmarkControllerTest : public testing::Test {
     layer_tree_host_impl_ = std::make_unique<FakeLayerTreeHostImpl>(
         impl_task_runner_provider_.get(), &task_graph_runner_);
 
-    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
     layer_tree_host_ = FakeLayerTreeHost::Create(
         &layer_tree_host_client_, &task_graph_runner_, animation_host_.get());
     layer_tree_host_->SetRootLayer(Layer::Create());

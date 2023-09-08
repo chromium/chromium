@@ -1485,9 +1485,9 @@ TEST_P(ScrollingTest, overflowScrolling) {
   EXPECT_TRUE(scroll_node->user_scrollable_vertical);
 
   EXPECT_TRUE(ScrollbarLayerForScrollNode(
-      scroll_node, cc::ScrollbarOrientation::HORIZONTAL));
+      scroll_node, cc::ScrollbarOrientation::kHorizontal));
   EXPECT_TRUE(ScrollbarLayerForScrollNode(scroll_node,
-                                          cc::ScrollbarOrientation::VERTICAL));
+                                          cc::ScrollbarOrientation::kVertical));
 }
 
 TEST_P(ScrollingTest, overflowHidden) {
@@ -1531,9 +1531,9 @@ TEST_P(ScrollingTest, iframeScrolling) {
       ScrollNodeForScrollableArea(inner_frame_view->LayoutViewport());
   ASSERT_TRUE(scroll_node);
   EXPECT_TRUE(ScrollbarLayerForScrollNode(
-      scroll_node, cc::ScrollbarOrientation::HORIZONTAL));
+      scroll_node, cc::ScrollbarOrientation::kHorizontal));
   EXPECT_TRUE(ScrollbarLayerForScrollNode(scroll_node,
-                                          cc::ScrollbarOrientation::VERTICAL));
+                                          cc::ScrollbarOrientation::kVertical));
 }
 
 TEST_P(ScrollingTest, rtlIframe) {
@@ -1593,15 +1593,15 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
   ASSERT_TRUE(scroll_node);
 
   auto* horizontal_scrollbar_layer = ScrollbarLayerForScrollNode(
-      scroll_node, cc::ScrollbarOrientation::HORIZONTAL);
+      scroll_node, cc::ScrollbarOrientation::kHorizontal);
   ASSERT_TRUE(horizontal_scrollbar_layer);
   EXPECT_EQ(!frame_view->LayoutViewport()
                  ->HorizontalScrollbar()
                  ->IsOverlayScrollbar(),
             horizontal_scrollbar_layer->contents_opaque());
 
-  EXPECT_FALSE(ScrollbarLayerForScrollNode(scroll_node,
-                                           cc::ScrollbarOrientation::VERTICAL));
+  EXPECT_FALSE(ScrollbarLayerForScrollNode(
+      scroll_node, cc::ScrollbarOrientation::kVertical));
 }
 
 TEST_P(ScrollingTest, NestedIFramesMainThreadScrollingRegion) {
@@ -2081,8 +2081,8 @@ TEST_P(ScrollingTest, ThumbInvalidatesLayer) {
   ForceFullCompositingUpdate();
 
   auto* scroll_node = ScrollNodeByDOMElementId("scroller");
-  auto* layer = ScrollbarLayerForScrollNode(scroll_node,
-                                            cc::ScrollbarOrientation::VERTICAL);
+  auto* layer = ScrollbarLayerForScrollNode(
+      scroll_node, cc::ScrollbarOrientation::kVertical);
   // Solid color scrollbars do not repaint (see:
   // |SolidColorScrollbarLayer::SetNeedsDisplayRect|).
   if (layer->GetScrollbarLayerType() != cc::ScrollbarLayerBase::kSolidColor) {

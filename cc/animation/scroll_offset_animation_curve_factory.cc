@@ -15,14 +15,14 @@ ScrollOffsetAnimationCurve::DurationBehavior GetDurationBehaviorFromScrollType(
     ScrollOffsetAnimationCurveFactory::ScrollType scroll_type) {
   switch (scroll_type) {
     case ScrollOffsetAnimationCurveFactory::ScrollType::kProgrammatic:
-      return ScrollOffsetAnimationCurve::DurationBehavior::DELTA_BASED;
+      return ScrollOffsetAnimationCurve::DurationBehavior::kDeltaBased;
     case ScrollOffsetAnimationCurveFactory::ScrollType::kKeyboard:
-      return ScrollOffsetAnimationCurve::DurationBehavior::CONSTANT;
+      return ScrollOffsetAnimationCurve::DurationBehavior::kConstant;
     case ScrollOffsetAnimationCurveFactory::ScrollType::kMouseWheel:
-      return ScrollOffsetAnimationCurve::DurationBehavior::INVERSE_DELTA;
+      return ScrollOffsetAnimationCurve::DurationBehavior::kInverseDelta;
     case ScrollOffsetAnimationCurveFactory::ScrollType::kAutoScroll:
       NOTREACHED();
-      return ScrollOffsetAnimationCurve::DurationBehavior::DELTA_BASED;
+      return ScrollOffsetAnimationCurve::DurationBehavior::kDeltaBased;
   }
 }
 }  // namespace

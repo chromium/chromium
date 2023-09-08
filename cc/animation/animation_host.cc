@@ -53,7 +53,7 @@ AnimationWorkletMutationState ToAnimationWorkletMutationState(
 }  // namespace
 
 std::unique_ptr<AnimationHost> AnimationHost::CreateMainInstance() {
-  return base::WrapUnique(new AnimationHost(ThreadInstance::MAIN));
+  return base::WrapUnique(new AnimationHost(ThreadInstance::kMain));
 }
 
 std::unique_ptr<AnimationHost> AnimationHost::CreateForTesting(
@@ -72,9 +72,9 @@ AnimationHost::~AnimationHost() {
 }
 
 std::unique_ptr<MutatorHost> AnimationHost::CreateImplInstance() const {
-  DCHECK_EQ(thread_instance_, ThreadInstance::MAIN);
+  DCHECK_EQ(thread_instance_, ThreadInstance::kMain);
   auto mutator_host_impl =
-      base::WrapUnique<MutatorHost>(new AnimationHost(ThreadInstance::IMPL));
+      base::WrapUnique<MutatorHost>(new AnimationHost(ThreadInstance::kImpl));
   return mutator_host_impl;
 }
 
@@ -211,7 +211,7 @@ void AnimationHost::RegisterAnimationForElement(ElementId element_id,
            mutator_host_client()->IsElementInPropertyTrees(
                model_element_id, ElementListType::ACTIVE));
     // Test thread_instance_ because LayerTreeHost has no pending tree.
-    DCHECK(thread_instance_ == ThreadInstance::MAIN ||
+    DCHECK(thread_instance_ == ThreadInstance::kMain ||
            !cc_keyframe_model->affects_pending_elements() ||
            mutator_host_client()->IsElementInPropertyTrees(
                model_element_id, ElementListType::PENDING));
@@ -283,7 +283,7 @@ void AnimationHost::SetMutatorHostClient(MutatorHostClient* client) {
   // DCHECKs that are easier to verify once `mutator_host_client_` has been
   // set.
   if (mutator_host_client() && !scroll_offset_animations_impl_.Read(*this)) {
-    if (thread_instance_ == ThreadInstance::IMPL) {
+    if (thread_instance_ == ThreadInstance::kImpl) {
       scroll_offset_animations_impl_.Write(*this) =
           std::make_unique<ScrollOffsetAnimationsImpl>(this);
     } else {
@@ -642,7 +642,7 @@ std::unique_ptr<MutatorEvents> AnimationHost::CreateEvents() {
 
 void AnimationHost::SetAnimationEvents(
     std::unique_ptr<MutatorEvents> mutator_events) {
-  DCHECK_EQ(thread_instance_, ThreadInstance::MAIN);
+  DCHECK_EQ(thread_instance_, ThreadInstance::kMain);
   auto events =
       base::WrapUnique(static_cast<AnimationEvents*>(mutator_events.release()));
 

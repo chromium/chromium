@@ -179,15 +179,15 @@ base::TimeDelta ScrollOffsetAnimationCurve::EaseInOutSegmentDuration(
   double duration = kConstantDuration;
   if (!animation_duration_for_testing_) {
     switch (duration_behavior) {
-      case DurationBehavior::CONSTANT:
+      case DurationBehavior::kConstant:
         duration = kConstantDuration;
         break;
-      case DurationBehavior::DELTA_BASED:
+      case DurationBehavior::kDeltaBased:
         duration =
             std::min<double>(std::sqrt(std::abs(MaximumDimension(delta))),
                              kDeltaBasedMaxDuration);
         break;
-      case DurationBehavior::INVERSE_DELTA:
+      case DurationBehavior::kInverseDelta:
         duration = kInverseDeltaOffset +
                    std::abs(MaximumDimension(delta)) * kInverseDeltaSlope;
         duration = std::clamp(duration, kInverseDeltaMinDuration,

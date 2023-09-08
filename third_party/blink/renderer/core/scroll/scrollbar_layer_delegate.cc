@@ -50,8 +50,8 @@ bool ScrollbarLayerDelegate::IsSame(const cc::Scrollbar& other) const {
 
 cc::ScrollbarOrientation ScrollbarLayerDelegate::Orientation() const {
   if (scrollbar_->Orientation() == kHorizontalScrollbar)
-    return cc::ScrollbarOrientation::HORIZONTAL;
-  return cc::ScrollbarOrientation::VERTICAL;
+    return cc::ScrollbarOrientation::kHorizontal;
+  return cc::ScrollbarOrientation::kVertical;
 }
 
 bool ScrollbarLayerDelegate::IsLeftSideVerticalScrollbar() const {
@@ -111,8 +111,9 @@ float ScrollbarLayerDelegate::Opacity() const {
 }
 
 bool ScrollbarLayerDelegate::NeedsRepaintPart(cc::ScrollbarPart part) const {
-  if (part == cc::ScrollbarPart::THUMB)
+  if (part == cc::ScrollbarPart::kThumb) {
     return scrollbar_->ThumbNeedsRepaint();
+  }
   return scrollbar_->TrackNeedsRepaint();
 }
 
@@ -167,11 +168,11 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
   ScopedScrollbarPainter painter(*canvas);
   // The canvas coordinate space is relative to the part's origin.
   switch (part) {
-    case cc::ScrollbarPart::THUMB:
+    case cc::ScrollbarPart::kThumb:
       theme.PaintThumb(painter.Context(), *scrollbar_, gfx::Rect(rect));
       scrollbar_->ClearThumbNeedsRepaint();
       break;
-    case cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS: {
+    case cc::ScrollbarPart::kTrackButtonsTickmarks: {
       DCHECK_EQ(rect.size(), scrollbar_->FrameRect().size());
       gfx::Vector2d offset = rect.origin() - scrollbar_->FrameRect().origin();
       theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, offset);

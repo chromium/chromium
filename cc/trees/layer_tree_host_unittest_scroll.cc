@@ -688,7 +688,7 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
         InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
             BeginState(scroll_point, scroll_amount_).get(),
             ui::ScrollInputType::kTouchscreen);
-        EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+        EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
         impl->GetInputHandler().ScrollUpdate(
             UpdateState(gfx::Point(), scroll_amount_).get());
         auto* scrolling_node = impl->CurrentlyScrollingNode();
@@ -713,7 +713,7 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
         InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
             BeginState(scroll_point, scroll_amount_).get(),
             ui::ScrollInputType::kWheel);
-        EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+        EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
         impl->GetInputHandler().ScrollUpdate(
             UpdateState(gfx::Point(), scroll_amount_).get());
         impl->GetInputHandler().ScrollEnd();
@@ -1114,7 +1114,7 @@ class SmoothScrollAnimationEndNotification : public LayerTreeHostScrollTest {
       InputHandler::ScrollStatus status =
           host_impl->GetInputHandler().ScrollBegin(scroll_state.get(),
                                                    ui::ScrollInputType::kWheel);
-      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
       scroll_state = UpdateState(scroll_point, scroll_amount);
       scroll_state->data()->delta_granularity =
           ui::ScrollGranularity::kScrollByPixel;
@@ -1176,7 +1176,7 @@ void DoGestureScroll(LayerTreeHostImpl* host_impl,
       new ScrollState(begin_scroll_state_data));
   auto scroll_status = host_impl->GetInputHandler().ScrollBegin(
       begin_scroll_state.get(), ui::ScrollInputType::kTouchscreen);
-  EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, scroll_status.thread);
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, scroll_status.thread);
   auto* scrolling_node = host_impl->CurrentlyScrollingNode();
   EXPECT_TRUE(scrolling_node);
   EXPECT_EQ(scrolling_node->element_id, scroller_element_id);
@@ -1545,7 +1545,7 @@ class LayerTreeHostScrollTestScrollZeroMaxScrollOffset
     ScrollState scroll_state(scroll_state_data);
     InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
         &scroll_state, ui::ScrollInputType::kTouchscreen);
-    EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread)
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread)
         << "In Frame " << impl->active_tree()->source_frame_number();
 
     switch (cur_step_) {
@@ -1612,7 +1612,7 @@ class LayerTreeHostScrollTestScrollNonDrawnLayer
     InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(0, 0), gfx::Vector2dF(0, 1)).get(),
         ui::ScrollInputType::kTouchscreen);
-    EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
               status.main_thread_hit_test_reasons);
     impl->GetInputHandler().ScrollEnd();
@@ -1620,7 +1620,7 @@ class LayerTreeHostScrollTestScrollNonDrawnLayer
     status = impl->GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(21, 21), gfx::Vector2dF(0, 1)).get(),
         ui::ScrollInputType::kTouchscreen);
-    EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_hit_test_reasons);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
@@ -1696,7 +1696,7 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
 
       InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
           &scroll_state, ui::ScrollInputType::kTouchscreen);
-      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_hit_test_reasons);
       EXPECT_EQ(impl->CurrentlyScrollingNode(),
@@ -2786,7 +2786,7 @@ class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
           ui::ScrollInputType::kTouchscreen);
       // Hitting a non fast region should request a hit test from the main
       // thread.
-      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
                 status.main_thread_hit_test_reasons);
       impl->GetInputHandler().ScrollEnd();
@@ -2798,7 +2798,7 @@ class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
       InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
           BeginState(gfx::Point(80, 20), gfx::Vector2dF(0, 1)).get(),
           ui::ScrollInputType::kTouchscreen);
-      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_hit_test_reasons);
       EXPECT_EQ(scroll_node, impl->CurrentlyScrollingNode());
@@ -2813,7 +2813,7 @@ class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
       // Even though the point intersects a non-fast region, the first hit
       // layer is scrollable from the compositor thread so no need to involve
       // the main thread.
-      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_hit_test_reasons);
       EXPECT_EQ(scroll_node, impl->CurrentlyScrollingNode());
@@ -2874,7 +2874,7 @@ class UnifiedScrollingRepaintOnScroll : public LayerTreeTest {
           BeginState(gfx::Point(0, 0), gfx::Vector2dF(0, 10)).get(),
           ui::ScrollInputType::kTouchscreen);
 
-      ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
       ASSERT_EQ(scroll_tree_index_, impl->CurrentlyScrollingNode()->id);
 
       impl->GetInputHandler().ScrollUpdate(

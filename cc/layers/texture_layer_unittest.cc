@@ -185,7 +185,7 @@ class TextureLayerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
     layer_tree_host_ = MockLayerTreeHost::Create(
         &fake_client_, &task_graph_runner_, animation_host_.get());
     EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AnyNumber());

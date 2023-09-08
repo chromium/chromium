@@ -21,7 +21,7 @@ float DistanceToScrollbarPart(const gfx::PointF& device_viewport_point,
                               const ScrollbarLayerImplBase& scrollbar,
                               const ScrollbarPart part) {
   gfx::RectF rect;
-  if (part == ScrollbarPart::THUMB) {
+  if (part == ScrollbarPart::kThumb) {
     rect = gfx::RectF(gfx::Rect(scrollbar.ComputeExpandedThumbQuadRect()));
   } else {
     rect = gfx::RectF(gfx::Rect(scrollbar.bounds()));
@@ -60,7 +60,7 @@ SingleScrollbarAnimationControllerThinning::
       mouse_is_over_scrollbar_thumb_(false),
       mouse_is_near_scrollbar_thumb_(false),
       mouse_is_near_scrollbar_track_(false),
-      thickness_change_(AnimationChange::NONE),
+      thickness_change_(AnimationChange::kNone),
       thinning_duration_(thinning_duration) {
   ApplyThumbThicknessScale(kIdleThicknessScale);
 }
@@ -111,7 +111,7 @@ void SingleScrollbarAnimationControllerThinning::RunAnimationFrame(
   client_->SetNeedsRedrawForScrollbarAnimation();
   if (progress == 1.f) {
     StopAnimation();
-    thickness_change_ = AnimationChange::NONE;
+    thickness_change_ = AnimationChange::kNone;
   }
 }
 
@@ -152,10 +152,10 @@ void SingleScrollbarAnimationControllerThinning::DidMouseUp() {
                                              ? !mouse_is_near_scrollbar_track_
                                              : !mouse_is_near_scrollbar_thumb_;
   if (thickness_should_decrease) {
-    thickness_change_ = AnimationChange::DECREASE;
+    thickness_change_ = AnimationChange::kDecrease;
     StartAnimation();
   } else {
-    thickness_change_ = AnimationChange::NONE;
+    thickness_change_ = AnimationChange::kNone;
   }
 }
 
@@ -174,7 +174,7 @@ void SingleScrollbarAnimationControllerThinning::DidMouseLeave() {
   if (captured_)
     return;
 
-  thickness_change_ = AnimationChange::DECREASE;
+  thickness_change_ = AnimationChange::kDecrease;
   StartAnimation();
 }
 
@@ -191,11 +191,10 @@ void SingleScrollbarAnimationControllerThinning::CalculateThicknessShouldChange(
   if (!scrollbar)
     return;
 
-  const float distance_to_scrollbar_track =
-      DistanceToScrollbarPart(device_viewport_point, *scrollbar,
-                              ScrollbarPart::TRACK_BUTTONS_TICKMARKS);
+  const float distance_to_scrollbar_track = DistanceToScrollbarPart(
+      device_viewport_point, *scrollbar, ScrollbarPart::kTrackButtonsTickmarks);
   const float distance_to_scrollbar_thumb = DistanceToScrollbarPart(
-      device_viewport_point, *scrollbar, ScrollbarPart::THUMB);
+      device_viewport_point, *scrollbar, ScrollbarPart::kThumb);
 
   const bool mouse_is_near_scrollbar_track =
       distance_to_scrollbar_track <= MouseMoveDistanceToTriggerFadeIn();
@@ -213,8 +212,8 @@ void SingleScrollbarAnimationControllerThinning::CalculateThicknessShouldChange(
     const bool thickness_should_increase = client_->IsFluentScrollbar()
                                                ? mouse_is_near_scrollbar_track
                                                : mouse_is_near_scrollbar_thumb;
-    thickness_change_ = thickness_should_increase ? AnimationChange::INCREASE
-                                                  : AnimationChange::DECREASE;
+    thickness_change_ = thickness_should_increase ? AnimationChange::kIncrease
+                                                  : AnimationChange::kDecrease;
     StartAnimation();
   }
 
@@ -233,9 +232,10 @@ float SingleScrollbarAnimationControllerThinning::
 
 float SingleScrollbarAnimationControllerThinning::ThumbThicknessScaleAt(
     float progress) const {
-  if (thickness_change_ == AnimationChange::NONE)
+  if (thickness_change_ == AnimationChange::kNone) {
     return ThumbThicknessScaleByMouseDistanceToScrollbar();
-  float factor = thickness_change_ == AnimationChange::INCREASE
+  }
+  float factor = thickness_change_ == AnimationChange::kIncrease
                      ? progress
                      : (1.f - progress);
   return ((1.f - kIdleThicknessScale) * factor) + kIdleThicknessScale;
@@ -248,14 +248,15 @@ float SingleScrollbarAnimationControllerThinning::AdjustScale(
     float min_value,
     float max_value) {
   float result;
-  if (animation_change == AnimationChange::INCREASE &&
-      current_value > new_value)
+  if (animation_change == AnimationChange::kIncrease &&
+      current_value > new_value) {
     result = current_value;
-  else if (animation_change == AnimationChange::DECREASE &&
-           current_value < new_value)
+  } else if (animation_change == AnimationChange::kDecrease &&
+             current_value < new_value) {
     result = current_value;
-  else
+  } else {
     result = new_value;
+  }
   if (result > max_value)
     return max_value;
   if (result < min_value)

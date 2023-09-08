@@ -324,7 +324,7 @@ void LayerTreeImpl::UpdateScrollbarGeometries() {
     }
 
     for (auto* scrollbar : ScrollbarsFor(scrolling_element_id)) {
-      if (scrollbar->orientation() == ScrollbarOrientation::HORIZONTAL) {
+      if (scrollbar->orientation() == ScrollbarOrientation::kHorizontal) {
         scrollbar->SetCurrentPos(current_offset.x());
         scrollbar->SetClipLayerLength(bounds_size.width());
         scrollbar->SetScrollLayerLength(scrolling_size.width());
@@ -892,8 +892,9 @@ void LayerTreeImpl::HandleTickmarksVisibilityChange() {
     return;
 
   for (ScrollbarLayerImplBase* scrollbar : controller->Scrollbars()) {
-    if (scrollbar->orientation() != ScrollbarOrientation::VERTICAL)
+    if (scrollbar->orientation() != ScrollbarOrientation::kVertical) {
       continue;
+    }
 
     // Android Overlay Scrollbar don't have FindInPage Tickmarks.
     if (scrollbar->GetScrollbarAnimator() != LayerTreeSettings::AURA_OVERLAY)
@@ -2162,7 +2163,7 @@ void LayerTreeImpl::RegisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer) {
 
   auto* scrollbar_ids = &element_id_to_scrollbar_layer_ids_[scroll_element_id];
   int* scrollbar_layer_id =
-      scrollbar_layer->orientation() == ScrollbarOrientation::HORIZONTAL
+      scrollbar_layer->orientation() == ScrollbarOrientation::kHorizontal
           ? &scrollbar_ids->horizontal
           : &scrollbar_ids->vertical;
 
@@ -2178,7 +2179,7 @@ void LayerTreeImpl::RegisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer) {
     // The scrollbar_ids could have been erased above so get it again.
     scrollbar_ids = &element_id_to_scrollbar_layer_ids_[scroll_element_id];
     scrollbar_layer_id =
-        scrollbar_layer->orientation() == ScrollbarOrientation::HORIZONTAL
+        scrollbar_layer->orientation() == ScrollbarOrientation::kHorizontal
             ? &scrollbar_ids->horizontal
             : &scrollbar_ids->vertical;
   }
@@ -2208,10 +2209,11 @@ void LayerTreeImpl::UnregisterScrollbar(
     return;
 
   auto& scrollbar_ids = element_id_to_scrollbar_layer_ids_[scroll_element_id];
-  if (scrollbar_layer->orientation() == ScrollbarOrientation::HORIZONTAL)
+  if (scrollbar_layer->orientation() == ScrollbarOrientation::kHorizontal) {
     scrollbar_ids.horizontal = Layer::INVALID_ID;
-  else
+  } else {
     scrollbar_ids.vertical = Layer::INVALID_ID;
+  }
 
   if (scrollbar_ids.horizontal == Layer::INVALID_ID &&
       scrollbar_ids.vertical == Layer::INVALID_ID) {

@@ -94,7 +94,7 @@ bool ScrollbarLayerImplBase::CanScrollOrientation() const {
   if (!scroll_node)
     return false;
 
-  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
     if (!scroll_node->user_scrollable_horizontal)
       return false;
   } else {
@@ -230,7 +230,7 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
       thumb_thickness * (1.f - thumb_thickness_scale_factor);
 
   gfx::RectF thumb_rect;
-  if (orientation_ == ScrollbarOrientation::HORIZONTAL) {
+  if (orientation_ == ScrollbarOrientation::kHorizontal) {
     thumb_rect = gfx::RectF(thumb_offset,
                             vertical_adjust_ + thumb_thickness_adjustment,
                             thumb_length,
@@ -330,24 +330,24 @@ ScrollbarPart ScrollbarLayerImplBase::IdentifyScrollbarPart(
   const gfx::Point pointer_location(position_in_widget.x(),
                                     position_in_widget.y());
   if (BackButtonRect().Contains(pointer_location))
-    return ScrollbarPart::BACK_BUTTON;
+    return ScrollbarPart::kBackButton;
 
   if (ForwardButtonRect().Contains(pointer_location))
-    return ScrollbarPart::FORWARD_BUTTON;
+    return ScrollbarPart::kForwardButton;
 
   if (ComputeHitTestableThumbQuadRect().Contains(pointer_location))
-    return ScrollbarPart::THUMB;
+    return ScrollbarPart::kThumb;
 
   if (BackTrackRect().Contains(pointer_location))
-    return ScrollbarPart::BACK_TRACK;
+    return ScrollbarPart::kBackTrack;
 
   if (ForwardTrackRect().Contains(pointer_location))
-    return ScrollbarPart::FORWARD_TRACK;
+    return ScrollbarPart::kForwardTrack;
 
   // TODO(arakeri): Once crbug.com/952314 is fixed, add a DCHECK to verify that
   // the point that is passed in is within the TrackRect. Also, please note that
   // hit testing other scrollbar parts is not yet implemented.
-  return ScrollbarPart::NO_PART;
+  return ScrollbarPart::kNoPart;
 }
 
 }  // namespace cc

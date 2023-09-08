@@ -79,9 +79,9 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   float AnimationProgressAtTime(base::TimeTicks now);
   void RunAnimationFrame(float progress);
 
-  // Describes whether the current animation should INCREASE (thicken)
-  // a bar or DECREASE it (thin).
-  enum class AnimationChange { NONE, INCREASE, DECREASE };
+  // Describes whether the current animation should kIncrease (thicken)
+  // a bar or kDecrease it (thin).
+  enum class AnimationChange { kNone, kIncrease, kDecrease };
   float ThumbThicknessScaleAt(float progress) const;
   float ThumbThicknessScaleByMouseDistanceToScrollbar() const;
   void CalculateThicknessShouldChange(const gfx::PointF& device_viewport_point);

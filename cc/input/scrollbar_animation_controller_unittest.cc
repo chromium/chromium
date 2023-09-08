@@ -81,10 +81,10 @@ class ScrollbarAnimationControllerAuraOverlayTest
 
     scroll_layer_ = AddLayer<LayerImpl>();
     h_scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        ScrollbarOrientation::HORIZONTAL, kThumbThickness, kTrackStart,
+        ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
         kIsLeftSideVerticalScrollbar);
     v_scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        ScrollbarOrientation::VERTICAL, kThumbThickness, kTrackStart,
+        ScrollbarOrientation::kVertical, kThumbThickness, kTrackStart,
         kIsLeftSideVerticalScrollbar);
     SetElementIdsForTesting();
 
@@ -122,11 +122,11 @@ class ScrollbarAnimationControllerAuraOverlayTest
     h_scrollbar_layer_->SetCurrentPos(0);
     mouse_move_distance_to_trigger_fade_in_ =
         scrollbar_controller_
-            ->GetScrollbarAnimationController(ScrollbarOrientation::VERTICAL)
+            ->GetScrollbarAnimationController(ScrollbarOrientation::kVertical)
             .MouseMoveDistanceToTriggerFadeIn();
     mouse_move_distance_to_trigger_expand_ =
         scrollbar_controller_
-            ->GetScrollbarAnimationController(ScrollbarOrientation::VERTICAL)
+            ->GetScrollbarAnimationController(ScrollbarOrientation::kVertical)
             .MouseMoveDistanceToTriggerExpand();
   }
 
@@ -1416,7 +1416,7 @@ class ScrollbarAnimationControllerAndroidTest
   }
 
   virtual ScrollbarOrientation orientation() const {
-    return ScrollbarOrientation::HORIZONTAL;
+    return ScrollbarOrientation::kHorizontal;
   }
 
   std::unique_ptr<ScrollbarAnimationController> scrollbar_controller_;
@@ -1433,7 +1433,7 @@ class VerticalScrollbarAnimationControllerAndroidTest
     : public ScrollbarAnimationControllerAndroidTest {
  protected:
   ScrollbarOrientation orientation() const override {
-    return ScrollbarOrientation::VERTICAL;
+    return ScrollbarOrientation::kVertical;
   }
 };
 
@@ -1481,7 +1481,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
 TEST_F(ScrollbarAnimationControllerAndroidTest, HideOnResize) {
   EXPECT_EQ(gfx::Size(200, 200), scroll_layer_->bounds());
 
-  EXPECT_EQ(ScrollbarOrientation::HORIZONTAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::kHorizontal, scrollbar_layer_->orientation());
 
   // Shrink along X axis, horizontal scrollbar should appear.
   GetScrollNode(scroll_layer_.get())->container_bounds = gfx::Size(100, 200);
@@ -1504,7 +1504,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, HideOnResize) {
 TEST_F(VerticalScrollbarAnimationControllerAndroidTest, HideOnResize) {
   EXPECT_EQ(gfx::Size(200, 200), scroll_layer_->bounds());
 
-  EXPECT_EQ(ScrollbarOrientation::VERTICAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::kVertical, scrollbar_layer_->orientation());
 
   // Shrink along X axis, vertical scrollbar should remain invisible.
   GetScrollNode(scroll_layer_.get())->container_bounds = gfx::Size(100, 200);
@@ -1524,7 +1524,7 @@ TEST_F(VerticalScrollbarAnimationControllerAndroidTest, HideOnResize) {
 }
 
 TEST_F(ScrollbarAnimationControllerAndroidTest, HideOnUserNonScrollableHorz) {
-  EXPECT_EQ(ScrollbarOrientation::HORIZONTAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::kHorizontal, scrollbar_layer_->orientation());
 
   GetScrollNode(scroll_layer_.get())->user_scrollable_horizontal = false;
   UpdateActiveTreeDrawProperties();
@@ -1534,7 +1534,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, HideOnUserNonScrollableHorz) {
 }
 
 TEST_F(ScrollbarAnimationControllerAndroidTest, ShowOnUserNonScrollableVert) {
-  EXPECT_EQ(ScrollbarOrientation::HORIZONTAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::kHorizontal, scrollbar_layer_->orientation());
 
   GetScrollNode(scroll_layer_.get())->user_scrollable_vertical = false;
   UpdateActiveTreeDrawProperties();
@@ -1545,7 +1545,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, ShowOnUserNonScrollableVert) {
 
 TEST_F(VerticalScrollbarAnimationControllerAndroidTest,
        HideOnUserNonScrollableVert) {
-  EXPECT_EQ(ScrollbarOrientation::VERTICAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::kVertical, scrollbar_layer_->orientation());
 
   GetScrollNode(scroll_layer_.get())->user_scrollable_vertical = false;
   UpdateActiveTreeDrawProperties();
@@ -1556,7 +1556,7 @@ TEST_F(VerticalScrollbarAnimationControllerAndroidTest,
 
 TEST_F(VerticalScrollbarAnimationControllerAndroidTest,
        ShowOnUserNonScrollableHorz) {
-  EXPECT_EQ(ScrollbarOrientation::VERTICAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::kVertical, scrollbar_layer_->orientation());
 
   GetScrollNode(scroll_layer_.get())->user_scrollable_horizontal = false;
   UpdateActiveTreeDrawProperties();

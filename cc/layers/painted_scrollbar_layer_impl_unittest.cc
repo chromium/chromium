@@ -38,7 +38,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   UIResourceBitmap track_bitmap(track_sk_bitmap);
   impl.host_impl()->CreateUIResource(track_uid, track_bitmap);
 
-  ScrollbarOrientation orientation = ScrollbarOrientation::VERTICAL;
+  ScrollbarOrientation orientation = ScrollbarOrientation::kVertical;
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl =
       impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
@@ -136,7 +136,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
 
 TEST(PaintedScrollbarLayerImplTest, PaintedOpacityChangesInvalidate) {
   LayerTreeImplTestBase impl;
-  ScrollbarOrientation orientation = ScrollbarOrientation::VERTICAL;
+  ScrollbarOrientation orientation = ScrollbarOrientation::kVertical;
   PaintedScrollbarLayerImpl* scrollbar_layer_impl =
       impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
   EXPECT_FALSE(
@@ -173,20 +173,20 @@ class PaintedScrollbarLayerImplFluentTest : public ::testing::Test {
 
 TEST_F(PaintedScrollbarLayerImplFluentTest, ComputeThumbQuadRect) {
   const PaintedScrollbarLayerImpl* scrollbar_layer_impl_vertical =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::VERTICAL, false,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical, false,
                               gfx::Rect(0, 0, 14, 100), 6, 30);
   EXPECT_EQ(scrollbar_layer_impl_vertical->ComputeThumbQuadRect(),
             gfx::Rect(4, 0, 6, 30));
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl_vertical_left =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::VERTICAL, true,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical, true,
                               gfx::Rect(0, 0, 14, 100), 6, 30);
   scrollbar_layer_impl_vertical_left->SetBounds(gfx::Size(14, 100));
   EXPECT_EQ(scrollbar_layer_impl_vertical_left->ComputeThumbQuadRect(),
             gfx::Rect(4, 0, 6, 30));
 
   const PaintedScrollbarLayerImpl* scrollbar_layer_impl_horizontal =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::HORIZONTAL, false,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kHorizontal, false,
                               gfx::Rect(0, 0, 100, 14), 6, 30);
   EXPECT_EQ(scrollbar_layer_impl_horizontal->ComputeThumbQuadRect(),
             gfx::Rect(0, 4, 30, 6));
@@ -194,13 +194,13 @@ TEST_F(PaintedScrollbarLayerImplFluentTest, ComputeThumbQuadRect) {
 
 TEST_F(PaintedScrollbarLayerImplFluentTest, ComputeHitTestableThumbQuadRect) {
   const PaintedScrollbarLayerImpl* scrollbar_layer_impl_vertical =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::VERTICAL, false,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical, false,
                               gfx::Rect(0, 0, 14, 100), 6, 30);
   EXPECT_EQ(scrollbar_layer_impl_vertical->ComputeHitTestableThumbQuadRect(),
             gfx::Rect(0, 0, 14, 30));
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl_vertical_left =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::VERTICAL, true,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical, true,
                               gfx::Rect(0, 0, 14, 100), 6, 30);
   scrollbar_layer_impl_vertical_left->SetBounds(gfx::Size(14, 100));
   EXPECT_EQ(
@@ -208,7 +208,7 @@ TEST_F(PaintedScrollbarLayerImplFluentTest, ComputeHitTestableThumbQuadRect) {
       gfx::Rect(0, 0, 14, 30));
 
   const PaintedScrollbarLayerImpl* scrollbar_layer_impl_horizontal =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::HORIZONTAL, false,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kHorizontal, false,
                               gfx::Rect(0, 0, 100, 14), 6, 30);
   EXPECT_EQ(scrollbar_layer_impl_horizontal->ComputeHitTestableThumbQuadRect(),
             gfx::Rect(0, 0, 30, 14));

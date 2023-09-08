@@ -74,7 +74,7 @@ void PaintedScrollbarLayer::PushPropertiesTo(
   scrollbar_layer->SetBackButtonRect(back_button_rect_.Read(*this));
   scrollbar_layer->SetForwardButtonRect(forward_button_rect_.Read(*this));
   scrollbar_layer->SetTrackRect(track_rect_.Read(*this));
-  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
     scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).height());
     scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).width());
   } else {
@@ -199,11 +199,11 @@ bool PaintedScrollbarLayer::Update() {
 
   if (!track_resource_.Read(*this) ||
       scrollbar_.Read(*this)->NeedsRepaintPart(
-          ScrollbarPart::TRACK_BUTTONS_TICKMARKS)) {
+          ScrollbarPart::kTrackButtonsTickmarks)) {
     track_resource_.Write(*this) = ScopedUIResource::Create(
         layer_tree_host()->GetUIResourceManager(),
         RasterizeScrollbarPart(size, scaled_size,
-                               ScrollbarPart::TRACK_BUTTONS_TICKMARKS));
+                               ScrollbarPart::kTrackButtonsTickmarks));
     SetNeedsPushProperties();
     updated = true;
   }
@@ -211,13 +211,13 @@ bool PaintedScrollbarLayer::Update() {
   gfx::Size scaled_thumb_size = LayerSizeToContentSize(thumb_size_.Read(*this));
   if (has_thumb_.Read(*this) && !scaled_thumb_size.IsEmpty()) {
     if (!thumb_resource_.Read(*this) ||
-        scrollbar_.Read(*this)->NeedsRepaintPart(ScrollbarPart::THUMB) ||
+        scrollbar_.Read(*this)->NeedsRepaintPart(ScrollbarPart::kThumb) ||
         scaled_thumb_size !=
             thumb_resource_.Write(*this)->GetBitmap(0, false).GetSize()) {
       thumb_resource_.Write(*this) = ScopedUIResource::Create(
           layer_tree_host()->GetUIResourceManager(),
           RasterizeScrollbarPart(thumb_size_.Read(*this), scaled_thumb_size,
-                                 ScrollbarPart::THUMB));
+                                 ScrollbarPart::kThumb));
       SetNeedsPushProperties();
       updated = true;
     }

@@ -41,7 +41,7 @@ FakeLayerTreeHostImpl::FakeLayerTreeHostImpl(
                         task_runner_provider,
                         &stats_instrumentation_,
                         task_graph_runner,
-                        AnimationHost::CreateForTesting(ThreadInstance::IMPL),
+                        AnimationHost::CreateForTesting(ThreadInstance::kImpl),
                         nullptr,
                         0,
                         std::move(image_worker_task_runner),

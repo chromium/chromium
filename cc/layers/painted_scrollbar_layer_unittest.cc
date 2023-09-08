@@ -25,7 +25,7 @@ namespace {
 class PaintedScrollbarLayerTest : public testing::Test {
  protected:
   void SetUp() override {
-    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
     layer_tree_host_ = FakeLayerTreeHost::Create(
         &fake_client_, &task_graph_runner_, animation_host_.get());
   }
@@ -69,25 +69,25 @@ TEST_F(PaintedScrollbarLayerTest, NeedsPaint) {
   // yet been initialized.
   scrollbar->set_needs_repaint_thumb(false);
   scrollbar->set_needs_repaint_track(false);
-  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::THUMB, _)).Times(1);
+  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::kThumb, _)).Times(1);
   EXPECT_CALL(*scrollbar,
-              PaintPart(_, ScrollbarPart::TRACK_BUTTONS_TICKMARKS, _))
+              PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
       .Times(1);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
 
   // The next update will paint nothing because the first update caused a paint.
-  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::THUMB, _)).Times(0);
+  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::kThumb, _)).Times(0);
   EXPECT_CALL(*scrollbar,
-              PaintPart(_, ScrollbarPart::TRACK_BUTTONS_TICKMARKS, _))
+              PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
       .Times(0);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
 
   // Enable the thumb.
-  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::THUMB, _)).Times(1);
+  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::kThumb, _)).Times(1);
   EXPECT_CALL(*scrollbar,
-              PaintPart(_, ScrollbarPart::TRACK_BUTTONS_TICKMARKS, _))
+              PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
       .Times(0);
   scrollbar->set_needs_repaint_thumb(true);
   scrollbar->set_needs_repaint_track(false);
@@ -95,9 +95,9 @@ TEST_F(PaintedScrollbarLayerTest, NeedsPaint) {
   Mock::VerifyAndClearExpectations(scrollbar.get());
 
   // Enable the track.
-  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::THUMB, _)).Times(0);
+  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::kThumb, _)).Times(0);
   EXPECT_CALL(*scrollbar,
-              PaintPart(_, ScrollbarPart::TRACK_BUTTONS_TICKMARKS, _))
+              PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
       .Times(1);
   scrollbar->set_needs_repaint_thumb(false);
   scrollbar->set_needs_repaint_track(true);

@@ -169,24 +169,24 @@ class CC_EXPORT ScrollbarController {
   // "Autoscroll" here means the continuous scrolling that occurs when the
   // pointer is held down on a hit-testable area of the scrollbar such as an
   // arrows of the track itself.
-  enum class AutoScrollDirection { AUTOSCROLL_FORWARD, AUTOSCROLL_BACKWARD };
+  enum class AutoScrollDirection { kAutoscrollForward, kAutoscrollBackward };
 
   enum class AutoScrollStatus {
     // For when the 250ms delay before an autoscroll starts animating has not
     // yet elapsed
-    AUTOSCROLL_WAITING,
+    kAutoscrollWaiting,
     // For when the delay has elapsed, but the autoscroll cannot animate for
     // some reason (the scrollbar being unregistered)
-    AUTOSCROLL_READY,
+    kAutoscrollReady,
     // For when the autoscroll is animating
-    AUTOSCROLL_SCROLLING
+    kAutoscrollScrolling
   };
 
   struct CC_EXPORT AutoScrollState {
-    // Can only be either AUTOSCROLL_FORWARD or AUTOSCROLL_BACKWARD.
-    AutoScrollDirection direction = AutoScrollDirection::AUTOSCROLL_FORWARD;
+    // Can only be either kAutoscrollForward or kAutoscrollBackward.
+    AutoScrollDirection direction = AutoScrollDirection::kAutoscrollForward;
 
-    AutoScrollStatus status = AutoScrollStatus::AUTOSCROLL_WAITING;
+    AutoScrollStatus status = AutoScrollStatus::kAutoscrollWaiting;
 
     // Stores the autoscroll velocity. The sign is used to set the "direction".
     float velocity = 0.f;

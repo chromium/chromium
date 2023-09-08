@@ -44,7 +44,7 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
 
   FakeLayerTreeHostClient host_client;
   TestTaskGraphRunner task_graph_runner;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get());
   host->SetRootLayer(layer);
@@ -93,7 +93,7 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
 
   FakeLayerTreeHostClient host_client;
   TestTaskGraphRunner task_graph_runner;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get());
   host->SetRootLayer(layer);
@@ -134,7 +134,7 @@ TEST(PictureLayerTest, InvalidateRasterWithoutUpdate) {
 
   FakeLayerTreeHostClient host_client;
   TestTaskGraphRunner task_graph_runner;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get());
   host->SetRootLayer(layer);
@@ -175,7 +175,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
 
   FakeLayerTreeHostClient host_client;
   TestTaskGraphRunner task_graph_runner;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get());
   host->SetRootLayer(layer);
@@ -260,7 +260,7 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   client.set_bounds(gfx::Size());
   scoped_refptr<FakePictureLayer> layer = FakePictureLayer::Create(&client);
 
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
 
   LayerTreeHost::InitParams params;
   params.client = &host_client1;
@@ -273,7 +273,7 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   host1->SetVisible(true);
   host_client1.SetLayerTreeHost(host1.get());
 
-  auto animation_host2 = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host2 = AnimationHost::CreateForTesting(ThreadInstance::kMain);
 
   LayerTreeHost::InitParams params2;
   params2.client = &host_client1;
@@ -332,7 +332,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   client.set_bounds(gfx::Size());
   scoped_refptr<FakePictureLayer> layer = FakePictureLayer::Create(&client);
 
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
 
   LayerTreeHost::InitParams params;
   params.client = &host_client1;
@@ -345,7 +345,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   host1->SetVisible(true);
   host_client1.SetLayerTreeHost(host1.get());
 
-  auto animation_host2 = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host2 = AnimationHost::CreateForTesting(ThreadInstance::kMain);
 
   LayerTreeHost::InitParams params2;
   params2.client = &host_client1;
@@ -425,7 +425,7 @@ TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {
 
   FakeLayerTreeHostClient host_client;
   TestTaskGraphRunner task_graph_runner;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get());
   host->SetRootLayer(layer);

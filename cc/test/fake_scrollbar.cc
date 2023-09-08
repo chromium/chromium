@@ -62,8 +62,9 @@ float FakeScrollbar::Opacity() const {
 }
 
 bool FakeScrollbar::NeedsRepaintPart(ScrollbarPart part) const {
-  if (part == ScrollbarPart::THUMB)
+  if (part == ScrollbarPart::kThumb) {
     return needs_repaint_thumb_;
+  }
   return needs_repaint_track_;
 }
 

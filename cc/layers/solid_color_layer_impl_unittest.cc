@@ -178,7 +178,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
 
   FakeLayerTreeHostClient client;
   TestTaskGraphRunner task_graph_runner;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &client, &task_graph_runner, animation_host.get());
   host->CreateFakeLayerTreeHostImpl();

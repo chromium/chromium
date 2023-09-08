@@ -117,7 +117,7 @@ void WorkletAnimation::UpdateInputState(MutatorInputState* input_state,
   if (!NeedsUpdate(monotonic_time, scroll_tree, is_active_tree))
     return;
 
-  DCHECK(is_timeline_active || state_.Read(*this) == State::REMOVED);
+  DCHECK(is_timeline_active || state_.Read(*this) == State::kRemoved);
 
   // TODO(https://crbug.com/1011138): Initialize current_time to null if the
   // timeline is inactive. It might be inactive here when state is
@@ -144,20 +144,20 @@ void WorkletAnimation::UpdateInputState(MutatorInputState* input_state,
       !is_active_tree && animation_timeline()->IsScrollTimeline();
 
   switch (state_.Read(*this)) {
-    case State::PENDING:
+    case State::kPending:
       input_state->Add({worklet_animation_id(), name(),
                         current_time->InMillisecondsF(), CloneOptions(),
                         CloneEffectTimings()});
-      state_.Write(*this) = State::RUNNING;
+      state_.Write(*this) = State::kRunning;
       break;
-    case State::RUNNING:
+    case State::kRunning:
       // TODO(jortaylo): EffectTimings need to be sent to the worklet during
       // updates, otherwise the timing info will become outdated.
       // https://crbug.com/915344.
       input_state->Update(
           {worklet_animation_id(), current_time->InMillisecondsF()});
       break;
-    case State::REMOVED:
+    case State::kRemoved:
       input_state->Remove(worklet_animation_id());
       break;
   }
@@ -221,8 +221,9 @@ absl::optional<base::TimeDelta> WorkletAnimation::CurrentTime(
 bool WorkletAnimation::NeedsUpdate(base::TimeTicks monotonic_time,
                                    const ScrollTree& scroll_tree,
                                    bool is_active_tree) {
-  if (state_.Read(*this) == State::REMOVED)
+  if (state_.Read(*this) == State::kRemoved) {
     return true;
+  }
 
   // When the timeline is inactive we apply the last current time to the
   // animation.
@@ -245,7 +246,7 @@ bool WorkletAnimation::IsTimelineActive(const ScrollTree& scroll_tree,
 }
 
 void WorkletAnimation::RemoveKeyframeModel(int keyframe_model_id) {
-  state_.Write(*this) = State::REMOVED;
+  state_.Write(*this) = State::kRemoved;
   Animation::RemoveKeyframeModel(keyframe_model_id);
 }
 

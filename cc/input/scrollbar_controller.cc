@@ -118,7 +118,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
   // Initialize drag state if either the scrollbar thumb is being dragged OR the
   // user has initiated a jump click (since the thumb would have jumped under
   // the pointer).
-  if (scrollbar_part == ScrollbarPart::THUMB || perform_jump_click_on_track) {
+  if (scrollbar_part == ScrollbarPart::kThumb || perform_jump_click_on_track) {
     drag_state_ = DragState();
     bool clipped = false;
 
@@ -144,7 +144,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
     // autoscroll. All other interactions like clicking on arrows/trackparts
     // have the potential of initiating an autoscroll (if held down for long
     // enough).
-    DCHECK(scrollbar_part != ScrollbarPart::THUMB);
+    DCHECK(scrollbar_part != ScrollbarPart::kThumb);
     autoscroll_state_ = AutoScrollState();
     autoscroll_state_->velocity =
         InitialDeltaToAutoscrollVelocity(scroll_result.scroll_delta);
@@ -171,7 +171,7 @@ gfx::PointF ScrollbarController::DragOriginForJumpClick(
   // scroll_position_at_start_ which is used both to calculate scroll positions
   // as well as for snapping back to origin if the user moves their mouse away.
   gfx::Rect thumb = scrollbar->ComputeThumbQuadRect();
-  return scrollbar->orientation() == ScrollbarOrientation::HORIZONTAL
+  return scrollbar->orientation() == ScrollbarOrientation::kHorizontal
              ? gfx::PointF(thumb.x() + thumb.width() / 2, 0)
              : gfx::PointF(0, thumb.y() + thumb.height() / 2);
 }
@@ -202,7 +202,7 @@ bool ScrollbarController::SnapToDragOrigin(
   // The moment the pointer moves outside the bounds, the scroller needs to snap
   // back to the drag_origin (aka the scroll offset of the parent scroller
   // before the thumb drag initiated).
-  int track_thickness = orientation == ScrollbarOrientation::VERTICAL
+  int track_thickness = orientation == ScrollbarOrientation::kVertical
                             ? forward_track_rect.width()
                             : forward_track_rect.height();
 
@@ -221,15 +221,15 @@ bool ScrollbarController::SnapToDragOrigin(
 
   const float gutter_thickness = kOffSideMultiplier * track_thickness;
   const float gutter_min_bound =
-      orientation == ScrollbarOrientation::VERTICAL
+      orientation == ScrollbarOrientation::kVertical
           ? (forward_track_rect.x() - gutter_thickness)
           : (forward_track_rect.y() - gutter_thickness);
   const float gutter_max_bound =
-      orientation == ScrollbarOrientation::VERTICAL
+      orientation == ScrollbarOrientation::kVertical
           ? (forward_track_rect.x() + track_thickness + gutter_thickness)
           : (forward_track_rect.y() + track_thickness + gutter_thickness);
 
-  const float pointer_location = orientation == ScrollbarOrientation::VERTICAL
+  const float pointer_location = orientation == ScrollbarOrientation::kVertical
                                      ? pointer_position_in_layer.x()
                                      : pointer_position_in_layer.y();
 
@@ -241,10 +241,12 @@ ui::ScrollGranularity ScrollbarController::Granularity(
     const ScrollbarPart scrollbar_part,
     const bool jump_key_modifier) const {
   const bool shift_click_on_scrollbar_track =
-      jump_key_modifier && (scrollbar_part == ScrollbarPart::FORWARD_TRACK ||
-                            scrollbar_part == ScrollbarPart::BACK_TRACK);
-  if (shift_click_on_scrollbar_track || scrollbar_part == ScrollbarPart::THUMB)
+      jump_key_modifier && (scrollbar_part == ScrollbarPart::kForwardTrack ||
+                            scrollbar_part == ScrollbarPart::kBackTrack);
+  if (shift_click_on_scrollbar_track ||
+      scrollbar_part == ScrollbarPart::kThumb) {
     return ui::ScrollGranularity::kScrollByPrecisePixel;
+  }
 
   // TODO(arakeri): This needs to be updated to kLine once cc implements
   // handling it. crbug.com/959441
@@ -263,7 +265,7 @@ float ScrollbarController::GetScrollDistanceForAbsoluteJump() const {
 
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
   const float pointer_location =
-      scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+      scrollbar->orientation() == ScrollbarOrientation::kVertical
           ? pointer_position_in_layer.y()
           : pointer_position_in_layer.x();
 
@@ -276,7 +278,7 @@ float ScrollbarController::GetScrollDistanceForAbsoluteJump() const {
 
   const gfx::Rect thumb_rect(scrollbar->ComputeThumbQuadRect());
   const float current_thumb_origin =
-      scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+      scrollbar->orientation() == ScrollbarOrientation::kVertical
           ? thumb_rect.y()
           : thumb_rect.x();
 
@@ -297,7 +299,7 @@ float ScrollbarController::GetScrollDistanceForDragPosition(
   const gfx::PointF scrollbar_relative_position(
       GetScrollbarRelativePosition(pointer_position_in_widget, &clipped));
   float pointer_delta =
-      scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+      scrollbar->orientation() == ScrollbarOrientation::kVertical
           ? scrollbar_relative_position.y() - drag_state_->drag_origin.y()
           : scrollbar_relative_position.x() - drag_state_->drag_origin.x();
 
@@ -341,7 +343,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
         scrollbar->current_pos() - drag_state_->scroll_position_at_start_;
     scroll_result.scroll_units = ui::ScrollGranularity::kScrollByPrecisePixel;
     scroll_result.scroll_delta =
-        scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+        scrollbar->orientation() == ScrollbarOrientation::kVertical
             ? gfx::Vector2dF(0, -delta)
             : gfx::Vector2dF(-delta, 0);
     drag_processed_for_current_frame_ = true;
@@ -381,7 +383,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
 
   // If scroll_offset can't be consumed, there's no point in continuing on.
   const gfx::Vector2dF scroll_delta =
-      scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+      scrollbar->orientation() == ScrollbarOrientation::kVertical
           ? gfx::Vector2dF(0, distance)
           : gfx::Vector2dF(distance, 0);
   const gfx::Vector2dF clamped_scroll_delta =
@@ -463,7 +465,7 @@ float ScrollbarController::GetScrollerToScrollbarRatio() const {
   float scrollbar_track_length = scrollbar->TrackLength();
   gfx::Rect thumb_rect(scrollbar->ComputeThumbQuadRect());
   float scrollbar_thumb_length =
-      scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+      scrollbar->orientation() == ScrollbarOrientation::kVertical
           ? thumb_rect.height()
           : thumb_rect.width();
   float viewport_length = GetViewportLength();
@@ -492,7 +494,7 @@ void ScrollbarController::DidRegisterScrollbar(
   if (autoscroll_state_.has_value() &&
       captured_scrollbar_metadata_->scroll_element_id == element_id &&
       captured_scrollbar_metadata_->orientation == orientation &&
-      autoscroll_state_->status == AutoScrollStatus::AUTOSCROLL_READY) {
+      autoscroll_state_->status == AutoScrollStatus::kAutoscrollReady) {
     // This is necessary, as when the scrollbar is being registered the layer
     // tree will not yet have synced its layer properties and cannot update
     // scrollbar geometries yet. We need to wait until the sync is over
@@ -506,17 +508,18 @@ void ScrollbarController::DidUnregisterScrollbar(
   if (autoscroll_state_.has_value() &&
       captured_scrollbar_metadata_->scroll_element_id == element_id &&
       captured_scrollbar_metadata_->orientation == orientation &&
-      autoscroll_state_->status == AutoScrollStatus::AUTOSCROLL_SCROLLING) {
+      autoscroll_state_->status == AutoScrollStatus::kAutoscrollScrolling) {
     layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
-    autoscroll_state_->status = AutoScrollStatus::AUTOSCROLL_READY;
+    autoscroll_state_->status = AutoScrollStatus::kAutoscrollReady;
   }
 }
 
 void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
   if (!autoscroll_state_.has_value() ||
       !captured_scrollbar_metadata_.has_value() ||
-      autoscroll_state_->status != AutoScrollStatus::AUTOSCROLL_SCROLLING)
+      autoscroll_state_->status != AutoScrollStatus::kAutoscrollScrolling) {
     return;
+  }
 
   layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
 
@@ -535,7 +538,7 @@ void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
   int pointer_position = 0;
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
   const gfx::Rect thumb_quad = scrollbar->ComputeThumbQuadRect();
-  if (scrollbar->orientation() == ScrollbarOrientation::VERTICAL) {
+  if (scrollbar->orientation() == ScrollbarOrientation::kVertical) {
     thumb_start = thumb_quad.y();
     thumb_end = thumb_quad.y() + thumb_quad.height();
     pointer_position = scroller_relative_position.y();
@@ -547,12 +550,13 @@ void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
 
   // If the thumb reaches the pointer while autoscrolling, abort.
   if ((autoscroll_state_->direction ==
-           AutoScrollDirection::AUTOSCROLL_FORWARD &&
+           AutoScrollDirection::kAutoscrollForward &&
        thumb_end > pointer_position) ||
       (autoscroll_state_->direction ==
-           AutoScrollDirection::AUTOSCROLL_BACKWARD &&
-       thumb_start < pointer_position))
+           AutoScrollDirection::kAutoscrollBackward &&
+       thumb_start < pointer_position)) {
     layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
+  }
 
   // When the scroller is autoscrolling forward, its dimensions need to be
   // monitored. If the length of the scroller layer increases, the old one needs
@@ -560,7 +564,7 @@ void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
   // be done only for the "autoscroll forward" case. Autoscrolling backward
   // always has a constant value to animate to (which is '0'. See the function
   // ScrollbarController::StartAutoScrollAnimation).
-  if (autoscroll_state_->direction == AutoScrollDirection::AUTOSCROLL_FORWARD) {
+  if (autoscroll_state_->direction == AutoScrollDirection::kAutoscrollForward) {
     const float scroll_layer_length = scrollbar->scroll_layer_length();
     if (autoscroll_state_->scroll_layer_length != scroll_layer_length) {
       layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
@@ -589,7 +593,7 @@ float ScrollbarController::InitialDeltaToAutoscrollVelocity(
     gfx::Vector2dF scroll_delta) const {
   DCHECK(captured_scrollbar_metadata_.has_value());
   const float delta =
-      ScrollbarLayer()->orientation() == ScrollbarOrientation::VERTICAL
+      ScrollbarLayer()->orientation() == ScrollbarOrientation::kVertical
           ? scroll_delta.y()
           : scroll_delta.x();
   return delta * kAutoscrollMultiplier;
@@ -599,10 +603,10 @@ void ScrollbarController::StartAutoScroll() {
   DCHECK(autoscroll_state_.has_value());
 
   if (ScrollbarLayer()) {
-    autoscroll_state_->status = AutoScrollStatus::AUTOSCROLL_SCROLLING;
+    autoscroll_state_->status = AutoScrollStatus::kAutoscrollScrolling;
     StartAutoScrollAnimation();
   } else {
-    autoscroll_state_->status = AutoScrollStatus::AUTOSCROLL_READY;
+    autoscroll_state_->status = AutoScrollStatus::kAutoscrollReady;
   }
 }
 
@@ -613,7 +617,7 @@ void ScrollbarController::StartAutoScrollAnimation() {
   DCHECK(captured_scrollbar_metadata_.has_value());
   DCHECK(autoscroll_state_.has_value());
   DCHECK(ScrollbarLayer());
-  DCHECK_EQ(autoscroll_state_->status, AutoScrollStatus::AUTOSCROLL_SCROLLING);
+  DCHECK_EQ(autoscroll_state_->status, AutoScrollStatus::kAutoscrollScrolling);
   DCHECK_NE(autoscroll_state_->velocity, 0);
 
   // scroll_node is set up while handling GSB. If there's no node to scroll, we
@@ -639,14 +643,14 @@ void ScrollbarController::StartAutoScrollAnimation() {
   const float target_offset_in_orientation =
       autoscroll_state_->velocity < 0 ? 0 : scroll_layer_length;
   const gfx::PointF target_offset_2d =
-      scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+      scrollbar->orientation() == ScrollbarOrientation::kVertical
           ? gfx::PointF(current_offset.x(), target_offset_in_orientation)
           : gfx::PointF(target_offset_in_orientation, current_offset.y());
 
   autoscroll_state_->scroll_layer_length = scroll_layer_length;
   autoscroll_state_->direction = autoscroll_state_->velocity < 0
-                                     ? AutoScrollDirection::AUTOSCROLL_BACKWARD
-                                     : AutoScrollDirection::AUTOSCROLL_FORWARD;
+                                     ? AutoScrollDirection::kAutoscrollBackward
+                                     : AutoScrollDirection::kAutoscrollForward;
 
   layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
   layer_tree_host_impl_->AutoScrollAnimationCreate(
@@ -666,8 +670,9 @@ InputHandlerPointerResult ScrollbarController::HandlePointerUp(
   // has knowledge about what type of animation is running. crbug.com/976353
   // Only abort the animation if it is an "autoscroll" animation.
   if (autoscroll_state_.has_value() &&
-      autoscroll_state_->status == AutoScrollStatus::AUTOSCROLL_SCROLLING)
+      autoscroll_state_->status == AutoScrollStatus::kAutoscrollScrolling) {
     layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
+  }
 
   ResetState();
   return scroll_result;
@@ -696,7 +701,7 @@ float ScrollbarController::GetViewportLength() const {
           .FindNodeFromElementId(scrollbar->scroll_element_id());
   DCHECK(scroll_node);
   if (!scroll_node->scrolls_outer_viewport) {
-    float length = scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+    float length = scrollbar->orientation() == ScrollbarOrientation::kVertical
                        ? scroll_node->container_bounds.height()
                        : scroll_node->container_bounds.width();
     return length;
@@ -704,7 +709,7 @@ float ScrollbarController::GetViewportLength() const {
 
   gfx::SizeF viewport_size = layer_tree_host_impl_->viewport()
                                  .GetInnerViewportSizeExcludingScrollbars();
-  float length = scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+  float length = scrollbar->orientation() == ScrollbarOrientation::kVertical
                      ? viewport_size.height()
                      : viewport_size.width();
   return length / GetPageScaleFactorForScroll();
@@ -721,7 +726,7 @@ float ScrollbarController::GetScrollDistanceForPercentBasedScroll() const {
   DCHECK(scroll_node);
 
   const gfx::Vector2dF scroll_delta =
-      scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+      scrollbar->orientation() == ScrollbarOrientation::kVertical
           ? gfx::Vector2dF(0, kPercentDeltaForDirectionalScroll)
           : gfx::Vector2dF(kPercentDeltaForDirectionalScroll, 0);
 
@@ -730,7 +735,7 @@ float ScrollbarController::GetScrollDistanceForPercentBasedScroll() const {
           *scroll_node, scroll_delta,
           ui::ScrollGranularity::kScrollByPercentage);
 
-  return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+  return scrollbar->orientation() == ScrollbarOrientation::kVertical
              ? pixel_delta.y()
              : pixel_delta.x();
 }
@@ -745,16 +750,16 @@ float ScrollbarController::GetScrollDistanceForScrollbarPart(
   float scroll_delta = 0;
 
   switch (scrollbar_part) {
-    case ScrollbarPart::BACK_BUTTON:
-    case ScrollbarPart::FORWARD_BUTTON:
+    case ScrollbarPart::kBackButton:
+    case ScrollbarPart::kForwardButton:
       if (layer_tree_host_impl_->settings().percent_based_scrolling) {
         scroll_delta = GetScrollDistanceForPercentBasedScroll();
       } else {
         scroll_delta = kPixelsPerLineStep * ScreenSpaceScaleFactor();
       }
       break;
-    case ScrollbarPart::BACK_TRACK:
-    case ScrollbarPart::FORWARD_TRACK: {
+    case ScrollbarPart::kBackTrack:
+    case ScrollbarPart::kForwardTrack: {
       if (jump_key_modifier) {
         scroll_delta = GetScrollDistanceForAbsoluteJump();
         break;
@@ -813,7 +818,7 @@ ScrollbarPart ScrollbarController::GetScrollbarPartFromPointerDown(
       GetScrollbarRelativePosition(position_in_widget, &clipped));
 
   if (clipped)
-    return ScrollbarPart::NO_PART;
+    return ScrollbarPart::kNoPart;
 
   return scrollbar->IdentifyScrollbarPart(scroller_relative_position);
 }
@@ -822,14 +827,18 @@ ScrollbarPart ScrollbarController::GetScrollbarPartFromPointerDown(
 gfx::Rect ScrollbarController::GetRectForScrollbarPart(
     const ScrollbarPart scrollbar_part) const {
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
-  if (scrollbar_part == ScrollbarPart::BACK_BUTTON)
+  if (scrollbar_part == ScrollbarPart::kBackButton) {
     return scrollbar->BackButtonRect();
-  if (scrollbar_part == ScrollbarPart::FORWARD_BUTTON)
+  }
+  if (scrollbar_part == ScrollbarPart::kForwardButton) {
     return scrollbar->ForwardButtonRect();
-  if (scrollbar_part == ScrollbarPart::BACK_TRACK)
+  }
+  if (scrollbar_part == ScrollbarPart::kBackTrack) {
     return scrollbar->BackTrackRect();
-  if (scrollbar_part == ScrollbarPart::FORWARD_TRACK)
+  }
+  if (scrollbar_part == ScrollbarPart::kForwardTrack) {
     return scrollbar->ForwardTrackRect();
+  }
   return gfx::Rect(0, 0);
 }
 
@@ -844,20 +853,20 @@ gfx::Vector2dF ScrollbarController::GetScrollDeltaForScrollbarPart(
 
   // See CreateScrollStateForGesture for more information on how these values
   // will be interpreted.
-  if (scrollbar_part == ScrollbarPart::BACK_BUTTON) {
-    return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+  if (scrollbar_part == ScrollbarPart::kBackButton) {
+    return scrollbar->orientation() == ScrollbarOrientation::kVertical
                ? gfx::Vector2dF(0, -distance)   // Up arrow
                : gfx::Vector2dF(-distance, 0);  // Left arrow
-  } else if (scrollbar_part == ScrollbarPart::FORWARD_BUTTON) {
-    return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+  } else if (scrollbar_part == ScrollbarPart::kForwardButton) {
+    return scrollbar->orientation() == ScrollbarOrientation::kVertical
                ? gfx::Vector2dF(0, distance)   // Down arrow
                : gfx::Vector2dF(distance, 0);  // Right arrow
-  } else if (scrollbar_part == ScrollbarPart::BACK_TRACK) {
-    return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+  } else if (scrollbar_part == ScrollbarPart::kBackTrack) {
+    return scrollbar->orientation() == ScrollbarOrientation::kVertical
                ? gfx::Vector2dF(0, -distance)   // Track click up
                : gfx::Vector2dF(-distance, 0);  // Track click left
-  } else if (scrollbar_part == ScrollbarPart::FORWARD_TRACK) {
-    return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+  } else if (scrollbar_part == ScrollbarPart::kForwardTrack) {
+    return scrollbar->orientation() == ScrollbarOrientation::kVertical
                ? gfx::Vector2dF(0, distance)   // Track click down
                : gfx::Vector2dF(distance, 0);  // Track click right
   }

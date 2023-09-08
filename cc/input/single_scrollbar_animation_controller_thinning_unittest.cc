@@ -73,7 +73,7 @@ class SingleScrollbarAnimationControllerThinningTest
     const bool kIsLeftSideVerticalScrollbar = false;
 
     scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        ScrollbarOrientation::VERTICAL, kThumbThickness, kTrackStart,
+        ScrollbarOrientation::kVertical, kThumbThickness, kTrackStart,
         kIsLeftSideVerticalScrollbar);
 
     scrollbar_layer_->SetBounds(gfx::Size(kThumbThickness, kTrackLength));
@@ -89,7 +89,7 @@ class SingleScrollbarAnimationControllerThinningTest
     UpdateActiveTreeDrawProperties();
 
     scrollbar_controller_ = SingleScrollbarAnimationControllerThinning::Create(
-        scroll_layer->element_id(), ScrollbarOrientation::VERTICAL, &client_,
+        scroll_layer->element_id(), ScrollbarOrientation::kVertical, &client_,
         kThinningDuration);
     mouse_move_distance_to_trigger_fade_in_ =
         scrollbar_controller_->MouseMoveDistanceToTriggerFadeIn();
