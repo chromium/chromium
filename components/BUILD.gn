@@ -344,6 +344,8 @@ test("components_unittests") {
       "//components/autofill/content/renderer:unit_tests",
       "//components/autofill/core/common/mojom:unit_tests",
       "//components/browsing_data/content:unit_tests",
+      "//components/browsing_topics:unit_tests",
+      "//components/browsing_topics/common:unit_tests",
       "//components/captive_portal/content:unit_tests",
       "//components/cast_receiver:unit_tests",
       "//components/cast_streaming:unit_tests",
@@ -455,8 +457,6 @@ test("components_unittests") {
     deps += [
       "//components/background_sync:unit_tests",
       "//components/blocked_content:unit_tests",
-      "//components/browsing_topics:unit_tests",
-      "//components/browsing_topics/common:unit_tests",
       "//components/certificate_transparency:unit_tests",
       "//components/content_settings/browser:unit_tests",
       "//components/content_settings/browser/ui:unit_tests",
