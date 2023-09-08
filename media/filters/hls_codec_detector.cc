@@ -10,46 +10,54 @@
 namespace media {
 
 HlsCodecDetector::~HlsCodecDetector() = default;
-HlsCodecDetector::HlsCodecDetector(MediaLog* log) : log_(log->Clone()) {}
-
-void HlsCodecDetector::DetermineContainerOnly(HlsDataSourceStream stream,
-                                              CodecCallback cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!callback_);
-  // We bind `callback_` to the current thread so that we don't have to
-  // deal posting later when we have to make a network request.
-  callback_ = std::move(cb);
-  parser_ = nullptr;
-  std::move(stream).ReadChunk(base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&HlsCodecDetector::ReadStream, weak_factory_.GetWeakPtr(),
-                     /*container_only=*/true)));
+HlsCodecDetector::HlsCodecDetector(MediaLog* log, HlsRenditionHost* host)
+    : log_(log->Clone()), rendition_host_(host) {
+  CHECK(host);
 }
 
-void HlsCodecDetector::DetermineContainerAndCodec(HlsDataSourceStream stream,
-                                                  CodecCallback cb) {
+void HlsCodecDetector::DetermineContainerOnly(
+    std::unique_ptr<HlsDataSourceStream> stream,
+    CodecCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!callback_);
   callback_ = std::move(cb);
   parser_ = nullptr;
-  std::move(stream).ReadChunk(base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&HlsCodecDetector::ReadStream, weak_factory_.GetWeakPtr(),
-                     /*container_only=*/false)));
+  rendition_host_->ReadStream(
+      std::move(stream),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &HlsCodecDetector::OnStreamFetched, weak_factory_.GetWeakPtr(),
+          /*container_only=*/true)));
 }
 
-void HlsCodecDetector::ReadStream(bool container_only,
-                                  HlsDataSourceStream::ReadResult stream) {
+void HlsCodecDetector::DetermineContainerAndCodec(
+    std::unique_ptr<HlsDataSourceStream> stream,
+    CodecCallback cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!callback_);
+  callback_ = std::move(cb);
+  parser_ = nullptr;
+  rendition_host_->ReadStream(
+      std::move(stream),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &HlsCodecDetector::OnStreamFetched, weak_factory_.GetWeakPtr(),
+          /*container_only=*/false)));
+}
+
+void HlsCodecDetector::OnStreamFetched(
+    bool container_only,
+    HlsDataSourceStreamManager::ReadResult maybe_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback_);
 
-  if (!stream.has_value()) {
+  if (!maybe_stream.has_value()) {
     HlsDemuxerStatus status = {HlsDemuxerStatus::Codes::kPlaylistUrlInvalid,
-                               std::move(stream).error()};
+                               std::move(maybe_stream).error()};
     std::move(callback_).Run(std::move(status));
     return;
   }
 
-  auto data_source = std::move(stream).value();
-  auto data_size = data_source.BytesInBuffer();
+  auto stream = std::move(maybe_stream).value();
+  auto data_size = stream->BytesInBuffer();
   if (!data_size) {
     // If no data came back, then the data source has been exhausted and we
     // have failed to determine a codec.
@@ -57,11 +65,12 @@ void HlsCodecDetector::ReadStream(bool container_only,
     return;
   }
 
-  // If this is the first call to `ReadStream`, then `parser_` should be null,
-  // and needs to be created. If `DetermineContainer` fails to determine the
-  // container being used, then it will call `callback_` and not set `parser_`.
+  // If this is the first call to `OnStreamFetched`, then `parser_` should be
+  // null, and needs to be created. If `DetermineContainer` fails to determine
+  // the container being used, then it will call `callback_` and not set
+  // `parser_`.
   if (!parser_) {
-    DetermineContainer(container_only, data_source.AsRawData(), data_size);
+    DetermineContainer(container_only, stream->AsRawData(), data_size);
   }
 
   if (!parser_) {
@@ -84,7 +93,7 @@ void HlsCodecDetector::ReadStream(bool container_only,
     return;
   }
 
-  if (!parser_->AppendToParseBuffer(data_source.AsRawData(), data_size)) {
+  if (!parser_->AppendToParseBuffer(stream->AsRawData(), data_size)) {
     std::move(callback_).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
     return;
   }
@@ -106,7 +115,7 @@ void HlsCodecDetector::ReadStream(bool container_only,
   }
 
   CHECK_EQ(StreamParser::ParseStatus::kSuccess, parse_result);
-  if (!data_source.CanReadMore()) {
+  if (!stream->CanReadMore()) {
     std::move(callback_).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
     return;
   }
@@ -116,11 +125,11 @@ void HlsCodecDetector::ReadStream(bool container_only,
   // HLS chunks are usually not too large, and playback will need to read this
   // chunk initially anyway, so fetching the whole thing isn't going to be an
   // issue.
-  data_source.Flush();
-  std::move(data_source)
-      .ReadChunk(base::BindPostTaskToCurrentDefault(
-          base::BindOnce(&HlsCodecDetector::ReadStream,
-                         weak_factory_.GetWeakPtr(), container_only)));
+  stream->Flush();
+  rendition_host_->ReadStream(std::move(stream),
+                              base::BindPostTaskToCurrentDefault(base::BindOnce(
+                                  &HlsCodecDetector::OnStreamFetched,
+                                  weak_factory_.GetWeakPtr(), container_only)));
 }
 
 void HlsCodecDetector::DetermineContainer(bool container_only,

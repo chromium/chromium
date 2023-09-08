@@ -39,6 +39,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                            MediaLog* media_log);
   ~HlsManifestDemuxerEngine() override;
 
+  // HlsRenditionHost implementation
   std::string GetName() const override;
   void Initialize(ManifestDemuxerEngineHost* host,
                   PipelineStatusCallback status_cb) override;
@@ -54,13 +55,18 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void ReadFromUrl(GURL uri,
                    bool read_chunked,
                    absl::optional<hls::types::ByteRange> range,
-                   HlsDataSourceStream::ReadCb cb) override;
+                   HlsDataSourceStreamManager::ReadCb cb) override;
 
   // Parses a playlist using the multivariant playlist, if it's being used.
   hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
-  ParseMediaPlaylistFromStream(HlsDataSourceStream stream,
-                               GURL uri,
-                               hls::types::DecimalInteger version) override;
+  ParseMediaPlaylistFromStringSource(
+      base::StringPiece source,
+      GURL uri,
+      hls::types::DecimalInteger version) override;
+
+  // HlsDataSourceStreamManager implementation
+  void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,
+                  HlsDataSourceStreamManager::ReadCb cb) override;
 
   // Test helpers.
   void AddRenditionForTesting(std::unique_ptr<HlsRendition> test_rendition);
@@ -125,13 +131,23 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void Abort(HlsDataSource::ReadStatus status);
 
   // ReadFromUrl needs a helper to abort in case of failure.
-  void ReadDataSource(bool read_chunked,
-                      HlsDataSourceStream::ReadCb cb,
+  void ReadDataSource(HlsDataSourceStreamManager::ReadCb cb,
                       std::unique_ptr<HlsDataSource> source);
+
+  // Trampoline allows converting a non-active HlsDataSourceStream::StreamId
+  // into a HlsDataSourceStream so that the pending callback can use it's
+  // internal data.
+  void ExchangeStreamId(HlsDataSourceStream::StreamId ticket,
+                        HlsDataSourceStreamManager::ReadCb cb,
+                        HlsDataSource::ReadStatus::Or<size_t> result);
+
+  // Read the entire contents of a data source stream before calling cb.
+  void ReadUntilExhausted(HlsDataSourceStreamManager::ReadCb cb,
+                          HlsDataSourceStreamManager::ReadResult result);
 
   void ParsePlaylist(PipelineStatusCallback parse_complete_cb,
                      PlaylistParseInfo parse_info,
-                     HlsDataSourceStream::ReadResult m_stream);
+                     HlsDataSourceStreamManager::ReadResult m_stream);
 
   void OnMultivariantPlaylist(
       PipelineStatusCallback parse_complete_cb,
@@ -189,6 +205,11 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       absl::nullopt, absl::nullopt};
   hls::RenditionSelector::AudioPlaybackPreferences audio_preferences_ = {
       absl::nullopt, absl::nullopt};
+
+  HlsDataSourceStream::StreamId::Generator stream_ticket_generator_;
+  base::flat_map<HlsDataSourceStream::StreamId,
+                 std::unique_ptr<HlsDataSourceStream>>
+      stream_map_;
 
   base::WeakPtrFactory<HlsManifestDemuxerEngine> weak_factory_{this};
 };

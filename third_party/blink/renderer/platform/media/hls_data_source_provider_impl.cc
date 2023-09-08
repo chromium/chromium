@@ -89,6 +89,11 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
     return mb_data_source_->GetMimeType();
   }
 
+  void Stop() override {
+    mb_data_source_->Abort();
+    mb_data_source_->Stop();
+  }
+
  private:
   static absl::optional<size_t> DetermineSize(
       MultiBufferDataSource& source,

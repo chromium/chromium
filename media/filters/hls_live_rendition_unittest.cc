@@ -107,12 +107,12 @@ class HlsLiveRenditionUnittest : public testing::Test {
                     std::string content,
                     bool batching = true) {
     EXPECT_CALL(*mock_hrh_, ReadFromUrl(GURL(uri), batching, _, _))
-        .WillOnce([content = std::move(content)](
+        .WillOnce([content = std::move(content), host = mock_hrh_.get()](
                       GURL url, bool, absl::optional<hls::types::ByteRange>,
-                      HlsDataSourceStream::ReadCb cb) {
+                      HlsDataSourceStreamManager::ReadCb cb) {
           auto ds = std::make_unique<StringHlsDataSource>(content);
-          HlsDataSourceStream dss(std::move(ds));
-          std::move(dss).ReadAll(std::move(cb));
+          auto stream = std::make_unique<HlsDataSourceStream>(std::move(ds));
+          host->ReadStream(std::move(stream), std::move(cb));
         });
   }
 
@@ -235,11 +235,10 @@ TEST_F(HlsLiveRenditionUnittest, TestRenditionHasEnoughDataFetchNewManifest) {
   task_environment_.FastForwardBy(base::Seconds(23));
   RespondToUrl("http://example.com", kSecondFetchLivePlaylist, false);
 
-  EXPECT_CALL(*mock_hrh_, ParseMediaPlaylistFromStream(_, _, _))
-      .WillOnce([](HlsDataSourceStream stream, GURL uri,
+  EXPECT_CALL(*mock_hrh_, ParseMediaPlaylistFromStringSource(_, _, _))
+      .WillOnce([](base::StringPiece source, GURL uri,
                    hls::types::DecimalInteger version) {
-        return hls::MediaPlaylist::Parse(stream.AsStringPiece(), uri, version,
-                                         nullptr);
+        return hls::MediaPlaylist::Parse(source, uri, version, nullptr);
       });
 
   // CheckState should in this case respond with a delay of 10 / 1.5 seconds.
@@ -312,11 +311,10 @@ TEST_F(HlsLiveRenditionUnittest, TestPauseAndUnpause) {
   EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
       .WillRepeatedly(Return(post_seek_ranges));
   RespondToUrl("http://example.com", kSecondFetchLivePlaylist, false);
-  EXPECT_CALL(*mock_hrh_, ParseMediaPlaylistFromStream(_, _, _))
-      .WillOnce([](HlsDataSourceStream stream, GURL uri,
+  EXPECT_CALL(*mock_hrh_, ParseMediaPlaylistFromStringSource(_, _, _))
+      .WillOnce([](base::StringPiece source, GURL uri,
                    hls::types::DecimalInteger version) {
-        return hls::MediaPlaylist::Parse(stream.AsStringPiece(), uri, version,
-                                         nullptr);
+        return hls::MediaPlaylist::Parse(source, uri, version, nullptr);
       });
   rendition->CheckState(base::Seconds(4), 1.0,
                         BindCheckState(base::Seconds(0)));

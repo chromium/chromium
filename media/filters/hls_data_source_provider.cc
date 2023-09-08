@@ -9,12 +9,15 @@ namespace media {
 HlsDataSource::~HlsDataSource() = default;
 
 HlsDataSourceProvider::~HlsDataSourceProvider() = default;
+HlsDataSourceStreamManager::~HlsDataSourceStreamManager() = default;
 
-HlsDataSourceStream::HlsDataSourceStream(HlsDataSourceStream&&) = default;
-HlsDataSourceStream::~HlsDataSourceStream() = default;
+HlsDataSourceStream::~HlsDataSourceStream() {
+  data_source_->Stop();
+}
+
 HlsDataSourceStream::HlsDataSourceStream(
     std::unique_ptr<HlsDataSource> data_source)
-    : data_source_(std::move(data_source)) {}
+    : data_source_(std::move(data_source)), weak_factory_(this) {}
 
 bool HlsDataSourceStream::CanReadMore() const {
   auto ds_size = data_source_->GetSize();
@@ -42,45 +45,43 @@ void HlsDataSourceStream::Flush() {
   buffer_.resize(0);
 }
 
-void HlsDataSourceStream::ReadAll(ReadCb read_cb) && {
-  std::move(*this).ReadChunk(base::BindOnce(
-      [](ReadCb cb, ReadResult m_stream) {
-        if (!m_stream.has_value()) {
-          std::move(cb).Run(std::move(m_stream).error().AddHere());
-          return;
-        }
-        auto stream = std::move(m_stream).value();
-        if (stream.data_source_->GetSize().has_value() &&
-            stream.CanReadMore()) {
-          std::move(stream).ReadAll(std::move(cb));
-          return;
-        }
-        std::move(cb).Run(std::move(stream));
-      },
-      std::move(read_cb)));
+void HlsDataSourceStream::DataSourceReadComplete(
+    HlsDataSource::ReadCb cb,
+    size_t original_size,
+    HlsDataSource::ReadStatus::Or<size_t> result) {
+  if (!result.has_value()) {
+    std::move(cb).Run(std::move(result).error().AddHere());
+    return;
+  }
+  // TODO(crbug/1266991): Consider swapping out the vector with a more
+  // size-flexible data structure to avoid resizing.
+  size_t bytes_read = std::move(result).value();
+  buffer_.resize(original_size + bytes_read);
+  total_bytes_read_ += bytes_read;
+  std::move(cb).Run(bytes_read);
 }
 
-void HlsDataSourceStream::ReadChunk(ReadCb cb, size_t read_size) && {
+void HlsDataSourceStream::ReadChunkForTesting(HlsDataSource::ReadCb cb,
+                                              size_t size) {
+  ReadChunkInternal(std::move(cb), size);
+}
+
+void HlsDataSourceStream::ReadChunk(base::PassKey<HlsManifestDemuxerEngine>,
+                                    HlsDataSource::ReadCb cb) {
+  ReadChunkInternal(std::move(cb), kDefaultReadSize);
+}
+
+void HlsDataSourceStream::ReadChunkInternal(HlsDataSource::ReadCb cb,
+                                            size_t read_size) {
   size_t original_buffer_size = BytesInBuffer();
   buffer_.insert(buffer_.end(), read_size, 0);
   uint8_t* destination = buffer_.data() + original_buffer_size;
 
   data_source_->Read(
       total_bytes_read_, read_size, destination,
-      base::BindOnce(
-          [](ReadCb cb, size_t original_size,
-             HlsDataSourceStream captured_stream,
-             HlsDataSource::ReadStatus::Or<size_t> result) {
-            if (!result.has_value()) {
-              std::move(cb).Run(std::move(result).error());
-              return;
-            }
-            size_t bytes_read = std::move(result).value();
-            captured_stream.buffer_.resize(original_size + bytes_read);
-            captured_stream.total_bytes_read_ += bytes_read;
-            std::move(cb).Run(std::move(captured_stream));
-          },
-          std::move(cb), original_buffer_size, std::move(*this)));
+      base::BindOnce(&HlsDataSourceStream::DataSourceReadComplete,
+                     weak_factory_.GetWeakPtr(), std::move(cb),
+                     original_buffer_size));
 }
 
 }  // namespace media

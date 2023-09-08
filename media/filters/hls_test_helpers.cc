@@ -9,6 +9,7 @@
 #include "media/filters/hls_data_source_provider.h"
 
 namespace media {
+using testing::_;
 
 namespace {
 
@@ -37,8 +38,33 @@ MockManifestDemuxerEngineHost::~MockManifestDemuxerEngineHost() = default;
 MockHlsRenditionHost::MockHlsRenditionHost() {}
 MockHlsRenditionHost::~MockHlsRenditionHost() {}
 
-MockHlsRendition::MockHlsRendition() {}
-MockHlsRendition::~MockHlsRendition() {}
+void MockHlsRenditionHost::ExchangeStreamId(
+    HlsDataSourceStream::StreamId ticket,
+    HlsDataSourceStreamManager::ReadCb cb,
+    HlsDataSource::ReadStatus::Or<size_t> result) {
+  auto it = stream_map_.find(ticket);
+  CHECK(it != stream_map_.end());
+  auto stream = std::move(it->second);
+  stream_map_.erase(it);
+  if (result.has_value()) {
+    std::move(cb).Run(std::move(stream));
+    return;
+  }
+  std::move(cb).Run(std::move(result).error());
+}
+
+void MockHlsRenditionHost::ReadStream(
+    std::unique_ptr<HlsDataSourceStream> stream,
+    HlsDataSourceStreamManager::ReadCb cb) {
+  auto ticket = stream_ticket_generator_.GenerateNextId();
+  stream_map_[ticket] = std::move(stream);
+  stream_map_[ticket]->ReadChunkForTesting(
+      base::BindOnce(&MockHlsRenditionHost::ExchangeStreamId,
+                     base::Unretained(this), ticket, std::move(cb)));
+}
+
+MockHlsRendition::MockHlsRendition() = default;
+MockHlsRendition::~MockHlsRendition() = default;
 
 FakeHlsDataSource::FakeHlsDataSource(std::vector<uint8_t> data)
     : HlsDataSource(data.size()), data_(std::move(data)) {}
@@ -56,6 +82,8 @@ void FakeHlsDataSource::Read(uint64_t pos,
   memcpy(buf, &data_[pos], len);
   std::move(cb).Run(len);
 }
+
+void FakeHlsDataSource::Stop() {}
 
 base::StringPiece FakeHlsDataSource::GetMimeType() const {
   return "";

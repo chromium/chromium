@@ -34,221 +34,157 @@ class FakeHlsDataSource : public HlsDataSource {
     std::move(cb).Run(bytes);
   }
   base::StringPiece GetMimeType() const override { return "INVALID"; }
+  void Stop() override {}
 
  private:
   absl::optional<size_t> remaining_ = absl::nullopt;
   std::string pattern_;
 };
 
-HlsDataSourceStream GetUnlimitedStream() {
-  return HlsDataSourceStream(std::make_unique<FakeHlsDataSource>(
-      absl::nullopt, "The Quick Brown Fox Jumped Over The Lazy Dog"));
+std::unique_ptr<HlsDataSourceStream> GetUnlimitedStream() {
+  return std::make_unique<HlsDataSourceStream>(
+      std::make_unique<FakeHlsDataSource>(
+          absl::nullopt, "The Quick Brown Fox Jumped Over The Lazy Dog"));
 }
 
-HlsDataSourceStream GetLimitedStream() {
-  return HlsDataSourceStream(std::make_unique<FakeHlsDataSource>(
-      44, "The Quick Brown Fox Jumped Over The Lazy Dog"));
-}
-
-HlsDataSourceStream GetMassiveStream(bool limited) {
-  std::stringstream ss;
-  for (int i = 0; i < 1000; i++) {
-    ss << "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-       << "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
-       << "ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-       << "aliquip ex ea commodo consequat. Duis aute irure dolor in "
-       << "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-       << "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-       << "culpa qui officia deserunt mollit anim id est laborum.\n";
-  }
-  std::string content = ss.str();
-  absl::optional<uint64_t> size = absl::nullopt;
-  if (limited) {
-    size = content.size();
-  }
-  return HlsDataSourceStream(
-      std::make_unique<FakeHlsDataSource>(size, content));
+std::unique_ptr<HlsDataSourceStream> GetLimitedStream() {
+  return std::make_unique<HlsDataSourceStream>(
+      std::make_unique<FakeHlsDataSource>(
+          44, "The Quick Brown Fox Jumped Over The Lazy Dog"));
 }
 
 }  // namespace
 
-TEST(HlsDataSourceStreamUnittest, TestReadAllFromLimitedStream) {
-  GetLimitedStream().ReadAll(
-      base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-        ASSERT_TRUE(result.has_value());
-        auto stream = std::move(result).value();
-        ASSERT_FALSE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), 44u);
-        ASSERT_EQ(std::string(stream.AsStringPiece()),
-                  "The Quick Brown Fox Jumped Over The Lazy Dog");
-      }));
-}
-
-TEST(HlsDataSourceStreamUnittest, TestReadAllFromUnlimitedStream) {
-  GetUnlimitedStream().ReadAll(
-      base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-        ASSERT_TRUE(result.has_value());
-        auto stream = std::move(result).value();
-        ASSERT_TRUE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), 0x4000u);
-        // make sure it's repeating.
-        for (int i = 0; i < 4; i++) {
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 0], 'T');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 1], 'h');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 2], 'e');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 4], 'Q');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 5], 'u');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 6], 'i');
-        }
-      }));
-}
-
 TEST(HlsDataSourceStreamUnittest, TestReadDefaultChunkFromLimitedStream) {
   // Read the default size chunk (0xFFFF). Should be pretty much the same
   // as reading all from a limited stream.
-  GetLimitedStream().ReadChunk(
-      base::BindOnce([](HlsDataSourceStream::ReadResult result) {
+  auto stream = GetLimitedStream();
+  stream->ReadChunkForTesting(base::BindOnce(
+      [](HlsDataSourceStream* stream_ptr,
+         HlsDataSource::ReadStatus::Or<size_t> result) {
         ASSERT_TRUE(result.has_value());
-        auto stream = std::move(result).value();
-        ASSERT_FALSE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), 44u);
-        ASSERT_EQ(std::string(stream.AsStringPiece()),
+        ASSERT_FALSE(stream_ptr->CanReadMore());
+        ASSERT_EQ(stream_ptr->BytesInBuffer(), 44u);
+        ASSERT_EQ(std::string(stream_ptr->AsStringPiece()),
                   "The Quick Brown Fox Jumped Over The Lazy Dog");
-      }));
+      },
+      stream.get()));
 }
 
 TEST(HlsDataSourceStreamUnittest, TestReadDefaultChunkFromUnlimitedStream) {
   // Read the default size chunk (0xFFFF). Should be pretty much the same
   // as reading all from an unlimited stream, which just reverts to chunks.
-  GetUnlimitedStream().ReadChunk(
-      base::BindOnce([](HlsDataSourceStream::ReadResult result) {
+  auto stream = GetUnlimitedStream();
+  stream->ReadChunkForTesting(base::BindOnce(
+      [](HlsDataSourceStream* stream_ptr,
+         HlsDataSource::ReadStatus::Or<size_t> result) {
         ASSERT_TRUE(result.has_value());
-        auto stream = std::move(result).value();
-        ASSERT_TRUE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), 0x4000u);
+        ASSERT_TRUE(stream_ptr->CanReadMore());
+        ASSERT_EQ(stream_ptr->BytesInBuffer(), 0x4000u);
         // make sure it's repeating.
         for (int i = 0; i < 4; i++) {
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 0], 'T');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 1], 'h');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 2], 'e');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 4], 'Q');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 5], 'u');
-          ASSERT_EQ(stream.AsStringPiece()[i * 44 + 6], 'i');
+          ASSERT_EQ(stream_ptr->AsStringPiece()[i * 44 + 0], 'T');
+          ASSERT_EQ(stream_ptr->AsStringPiece()[i * 44 + 1], 'h');
+          ASSERT_EQ(stream_ptr->AsStringPiece()[i * 44 + 2], 'e');
+          ASSERT_EQ(stream_ptr->AsStringPiece()[i * 44 + 4], 'Q');
+          ASSERT_EQ(stream_ptr->AsStringPiece()[i * 44 + 5], 'u');
+          ASSERT_EQ(stream_ptr->AsStringPiece()[i * 44 + 6], 'i');
         }
-      }));
+      },
+      stream.get()));
 }
 
 TEST(HlsDataSourceStreamUnittest, TestReadSmallSizeFromLimitedStream) {
-  GetLimitedStream().ReadChunk(
-      base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-        ASSERT_TRUE(result.has_value());
-        auto stream = std::move(result).value();
-        ASSERT_TRUE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), 14u);
-        ASSERT_EQ(std::string(stream.AsStringPiece()), "The Quick Brow");
+  auto stream = GetLimitedStream();
+  stream->ReadChunkForTesting(
+      base::BindOnce(
+          [](HlsDataSourceStream* stream_ptr,
+             HlsDataSource::ReadStatus::Or<size_t> result) {
+            ASSERT_TRUE(result.has_value());
+            ASSERT_TRUE(stream_ptr->CanReadMore());
+            ASSERT_EQ(stream_ptr->BytesInBuffer(), 14u);
+            ASSERT_EQ(std::string(stream_ptr->AsStringPiece()),
+                      "The Quick Brow");
 
-        // Read it again!
-        std::move(stream).ReadChunk(
-            base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-              ASSERT_TRUE(result.has_value());
-              auto stream = std::move(result).value();
-              ASSERT_TRUE(stream.CanReadMore());
-              ASSERT_EQ(stream.BytesInBuffer(), 28u);
-              ASSERT_EQ(std::string(stream.AsStringPiece()),
-                        "The Quick Brown Fox Jumped O");
-            }),
-            14);
-      }),
+            // Read it again!
+            stream_ptr->ReadChunkForTesting(
+                base::BindOnce(
+                    [](HlsDataSourceStream* stream_ptr,
+                       HlsDataSource::ReadStatus::Or<size_t> result) {
+                      ASSERT_TRUE(result.has_value());
+                      ASSERT_TRUE(stream_ptr->CanReadMore());
+                      ASSERT_EQ(stream_ptr->BytesInBuffer(), 28u);
+                      ASSERT_EQ(std::string(stream_ptr->AsStringPiece()),
+                                "The Quick Brown Fox Jumped O");
+                    },
+                    stream_ptr),
+                14);
+          },
+          stream.get()),
       14);
 }
 
 TEST(HlsDataSourceStreamUnittest, TestReadSmallSizeFromUnlimitedStream) {
-  GetUnlimitedStream().ReadChunk(
-      base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-        ASSERT_TRUE(result.has_value());
-        auto stream = std::move(result).value();
-        ASSERT_TRUE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), 14u);
-        ASSERT_EQ(std::string(stream.AsStringPiece()), "The Quick Brow");
+  auto stream = GetUnlimitedStream();
+  stream->ReadChunkForTesting(
+      base::BindOnce(
+          [](HlsDataSourceStream* stream_ptr,
+             HlsDataSource::ReadStatus::Or<size_t> result) {
+            ASSERT_TRUE(result.has_value());
+            ASSERT_TRUE(stream_ptr->CanReadMore());
+            ASSERT_EQ(stream_ptr->BytesInBuffer(), 14u);
+            ASSERT_EQ(std::string(stream_ptr->AsStringPiece()),
+                      "The Quick Brow");
 
-        // Read it again!
-        std::move(stream).ReadChunk(
-            base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-              ASSERT_TRUE(result.has_value());
-              auto stream = std::move(result).value();
-              ASSERT_TRUE(stream.CanReadMore());
-              ASSERT_EQ(stream.BytesInBuffer(), 28u);
-              ASSERT_EQ(std::string(stream.AsStringPiece()),
-                        "The Quick Brown Fox Jumped O");
-            }),
-            14);
-      }),
+            // Read it again!
+            stream_ptr->ReadChunkForTesting(
+                base::BindOnce(
+                    [](HlsDataSourceStream* stream_ptr,
+                       HlsDataSource::ReadStatus::Or<size_t> result) {
+                      ASSERT_TRUE(result.has_value());
+                      ASSERT_TRUE(stream_ptr->CanReadMore());
+                      ASSERT_EQ(stream_ptr->BytesInBuffer(), 28u);
+                      ASSERT_EQ(std::string(stream_ptr->AsStringPiece()),
+                                "The Quick Brown Fox Jumped O");
+                    },
+                    stream_ptr),
+                14);
+          },
+          stream.get()),
       14);
 }
 
 TEST(HlsDataSourceStreamUnittest, TestReadSmallSizeWithFlush) {
-  GetUnlimitedStream().ReadChunk(
-      base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-        ASSERT_TRUE(result.has_value());
-        auto stream = std::move(result).value();
-        ASSERT_TRUE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), 14u);
-        ASSERT_EQ(std::string(stream.AsStringPiece()), "The Quick Brow");
+  auto stream = GetUnlimitedStream();
+  stream->ReadChunkForTesting(
+      base::BindOnce(
+          [](HlsDataSourceStream* stream_ptr,
+             HlsDataSource::ReadStatus::Or<size_t> result) {
+            ASSERT_TRUE(result.has_value());
+            ASSERT_TRUE(stream_ptr->CanReadMore());
+            ASSERT_EQ(stream_ptr->BytesInBuffer(), 14u);
+            ASSERT_EQ(std::string(stream_ptr->AsStringPiece()),
+                      "The Quick Brow");
 
-        // clear the buffer
-        stream.Flush();
+            // clear the buffer
+            stream_ptr->Flush();
 
-        // Read it again!
-        std::move(stream).ReadChunk(
-            base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-              ASSERT_TRUE(result.has_value());
-              auto stream = std::move(result).value();
-              ASSERT_TRUE(stream.CanReadMore());
-              ASSERT_EQ(stream.BytesInBuffer(), 14u);
-              ASSERT_EQ(std::string(stream.AsStringPiece()), "n Fox Jumped O");
-            }),
-            14);
-      }),
+            // Read it again!
+            stream_ptr->ReadChunkForTesting(
+                base::BindOnce(
+                    [](HlsDataSourceStream* stream_ptr,
+                       HlsDataSource::ReadStatus::Or<size_t> result) {
+                      ASSERT_TRUE(result.has_value());
+                      ASSERT_TRUE(stream_ptr->CanReadMore());
+                      ASSERT_EQ(stream_ptr->BytesInBuffer(), 14u);
+                      ASSERT_EQ(std::string(stream_ptr->AsStringPiece()),
+                                "n Fox Jumped O");
+                    },
+                    stream_ptr),
+                14);
+          },
+          stream.get()),
       14);
-}
-
-TEST(HlsDataSourceStreamUnittest, ReadAllFromMultiChunkStream) {
-  // Read from a stream longer than 0xFFFF bytes, to assert that |ReadAll|
-  // really does read all the data from a size-limited stream.
-  GetMassiveStream(/*limited=*/true)
-      .ReadAll(base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-        ASSERT_TRUE(result.has_value());
-        auto stream = std::move(result).value();
-        ASSERT_FALSE(stream.CanReadMore());
-        // 0xFFFF   =  65535
-        // readsize = 446000
-        ASSERT_EQ(stream.BytesInBuffer(), 446000u);
-      }));
-}
-
-TEST(HlsDataSourceStreamUnittest, ReadAllFromMultiChunkStreamUnknownLength) {
-  // Read from a stream longer than 0xFFFF bytes, to assert that |ReadAll|
-  // really does read all the data from a size-limited stream.
-  GetMassiveStream(/*limited=*/false)
-      .ReadAll(base::BindOnce([](HlsDataSourceStream::ReadResult result) {
-        ASSERT_TRUE(result.has_value());
-        auto stream = std::move(result).value();
-        ASSERT_TRUE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), 0x4000u);
-
-        // clear the buffer
-        stream.Flush();
-        ASSERT_EQ(stream.BytesInBuffer(), 0u);
-
-        std::move(stream).ReadAll(
-            base::BindOnce([](HlsDataSourceStream::ReadResult res) {
-              ASSERT_TRUE(res.has_value());
-              auto stream = std::move(res).value();
-              // 0xFFFF * 2 is still less than stream size.
-              ASSERT_TRUE(stream.CanReadMore());
-              ASSERT_EQ(stream.BytesInBuffer(), 0x4000u);
-            }));
-      }));
 }
 
 }  // namespace media::hls

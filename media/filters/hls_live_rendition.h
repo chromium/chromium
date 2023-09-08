@@ -39,7 +39,7 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   void FetchMoreDataFromPendingStream(base::OnceClosure cb);
   void OnSegmentData(base::OnceClosure cb,
                      base::TimeTicks net_req_start,
-                     HlsDataSourceStream::ReadResult result);
+                     HlsDataSourceStreamManager::ReadResult result);
 
   // Manifest fetching.
   void AppendSegments(hls::MediaPlaylist* playlist);
@@ -50,7 +50,7 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   void OnManifestUpdates(base::TimeTicks download_start_time,
                          base::TimeDelta delay_time,
                          ManifestDemuxer::DelayCallback cb,
-                         HlsDataSourceStream::ReadResult result);
+                         HlsDataSourceStreamManager::ReadResult result);
   void ClearOldData(base::TimeDelta time);
   void ResetForPause();
   void ContinuePartialFetching(base::OnceClosure cb);
@@ -85,7 +85,7 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
 
   // If this is set, then use it to get more data. Otherwise, fetch another
   // segment.
-  absl::optional<HlsDataSourceStream> partial_stream_ = absl::nullopt;
+  std::unique_ptr<HlsDataSourceStream> partial_stream_;
 
   // Record the time it takes to download content.
   MovingAverage fetch_time_{32};

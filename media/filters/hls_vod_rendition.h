@@ -49,11 +49,11 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
   };
 
   struct PendingSegment {
-    HlsDataSourceStream stream;
+    ~PendingSegment();
+    std::unique_ptr<HlsDataSourceStream> stream;
     size_t index = 0;
-    PendingSegment(HlsDataSourceStream&& stream, size_t index);
+    PendingSegment(std::unique_ptr<HlsDataSourceStream> stream, size_t index);
     PendingSegment(const PendingSegment&) = delete;
-    PendingSegment(PendingSegment&&) = default;
   };
 
   // Clears old data and returns the amount of time taken to do so, in order to
@@ -71,7 +71,7 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
                      base::TimeDelta fetch_required_time,
                      size_t segment_index,
                      base::TimeTicks net_req_start,
-                     HlsDataSourceStream::ReadResult result);
+                     HlsDataSourceStreamManager::ReadResult result);
 
   // `ManifestDemuxerEngineHost` owns the `HlsRenditionHost` which in
   // turn owns |this|, so it's safe to keep these as raw ptrs. |host_| is needed

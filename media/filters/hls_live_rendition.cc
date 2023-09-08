@@ -115,7 +115,7 @@ void HlsLiveRendition::CheckState(
     return;
   }
 
-  if (partial_stream_ == absl::nullopt && segments_.empty()) {
+  if (!partial_stream_ && segments_.empty()) {
     // TODO(crbug/1266991) We've run out of segments, and will demuxer
     // underflow shortly. This implies that the rendition should be
     // reselected.
@@ -128,7 +128,7 @@ void HlsLiveRendition::CheckState(
 }
 
 void HlsLiveRendition::ContinuePartialFetching(base::OnceClosure cb) {
-  if (partial_stream_ != absl::nullopt) {
+  if (partial_stream_) {
     FetchMoreDataFromPendingStream(std::move(cb));
     return;
   }
@@ -169,18 +169,19 @@ void HlsLiveRendition::LoadSegment(const hls::MediaSegment& segment,
 
 void HlsLiveRendition::FetchMoreDataFromPendingStream(base::OnceClosure cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(partial_stream_ != absl::nullopt);
-  auto partial = std::move(*partial_stream_);
-  partial_stream_ = absl::nullopt;
-  std::move(partial).ReadChunk(
+  CHECK(partial_stream_);
+  auto stream = std::move(partial_stream_);
+  rendition_host_->ReadStream(
+      std::move(stream),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &HlsLiveRendition::OnSegmentData, weak_factory_.GetWeakPtr(),
           std::move(cb), base::TimeTicks::Now())));
 }
 
-void HlsLiveRendition::OnSegmentData(base::OnceClosure cb,
-                                     base::TimeTicks net_req_start,
-                                     HlsDataSourceStream::ReadResult result) {
+void HlsLiveRendition::OnSegmentData(
+    base::OnceClosure cb,
+    base::TimeTicks net_req_start,
+    HlsDataSourceStreamManager::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.has_value()) {
     engine_host_->OnError(
@@ -191,22 +192,23 @@ void HlsLiveRendition::OnSegmentData(base::OnceClosure cb,
   // Always ensure we are parsing the entirety of the data chunk received.
   auto sequences_seen = last_sequence_number_ - first_sequence_number_;
   auto parse_end = segment_duration_upper_limit_ * (sequences_seen + 1);
-  auto source = std::move(result).value();
+  auto stream = std::move(result).value();
+
   if (!engine_host_->AppendAndParseData(role_, base::TimeDelta(), parse_end,
-                                        &parse_offset_, source.AsRawData(),
-                                        source.BytesInBuffer())) {
+                                        &parse_offset_, stream->AsRawData(),
+                                        stream->BytesInBuffer())) {
     engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
     return;
   }
 
   auto fetch_duration = base::TimeTicks::Now() - net_req_start;
   // Adjust time based on a standard 4k download chunk.
-  auto scaled = (fetch_duration * source.BytesInBuffer()) / 4096;
+  auto scaled = (fetch_duration * stream->BytesInBuffer()) / 4096;
   fetch_time_.AddSample(scaled);
 
-  if (source.CanReadMore()) {
-    source.Flush();
-    partial_stream_.emplace(std::move(source));
+  if (stream->CanReadMore()) {
+    stream->Flush();
+    partial_stream_ = std::move(stream);
   }
 
   std::move(cb).Run();
@@ -258,7 +260,7 @@ void HlsLiveRendition::OnManifestUpdates(
     base::TimeTicks download_start_time,
     base::TimeDelta delay_time,
     ManifestDemuxer::DelayCallback cb,
-    HlsDataSourceStream::ReadResult result) {
+    HlsDataSourceStreamManager::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.has_value()) {
     engine_host_->OnError(
@@ -266,24 +268,25 @@ void HlsLiveRendition::OnManifestUpdates(
     return;
   }
 
-  auto source = std::move(result).value();
-  if (source.CanReadMore()) {
+  auto stream = std::move(result).value();
+  if (stream->CanReadMore()) {
     // TODO(crbug/1266991): Log a large manifest warning.
-    std::move(source).ReadAll(base::BindPostTaskToCurrentDefault(base::BindOnce(
-        &HlsLiveRendition::OnManifestUpdates, weak_factory_.GetWeakPtr(),
-        download_start_time, delay_time, std::move(cb))));
+    rendition_host_->ReadStream(
+        std::move(stream),
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &HlsLiveRendition::OnManifestUpdates, weak_factory_.GetWeakPtr(),
+            download_start_time, delay_time, std::move(cb))));
     return;
   }
-
-  auto info = hls::Playlist::IdentifyPlaylist(source.AsStringPiece());
+  auto info = hls::Playlist::IdentifyPlaylist(stream->AsStringPiece());
   if (!info.has_value()) {
     engine_host_->OnError(
         {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(info).error()});
     return;
   }
 
-  auto playlist = rendition_host_->ParseMediaPlaylistFromStream(
-      std::move(source), media_playlist_uri_, (*info).version);
+  auto playlist = rendition_host_->ParseMediaPlaylistFromStringSource(
+      stream->AsStringPiece(), media_playlist_uri_, (*info).version);
   if (!playlist.has_value()) {
     engine_host_->OnError(
         {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(playlist).error()});
@@ -310,7 +313,7 @@ void HlsLiveRendition::ClearOldData(base::TimeDelta time) {
 void HlsLiveRendition::ResetForPause() {
   segments_ = {};
   last_sequence_number_ = first_sequence_number_;
-  partial_stream_ = absl::nullopt;
+  partial_stream_ = nullptr;
   auto loaded_ranges = engine_host_->GetBufferedRanges(role_);
   if (!loaded_ranges.empty()) {
     auto end_time = std::get<1>(loaded_ranges.back());

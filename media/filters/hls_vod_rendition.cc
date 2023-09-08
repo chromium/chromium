@@ -23,11 +23,14 @@ HlsVodRendition::SegmentInfo::SegmentInfo(const HlsVodRendition::SegmentInfo&) =
     default;
 HlsVodRendition::SegmentInfo::~SegmentInfo() {}
 
-HlsVodRendition::PendingSegment::PendingSegment(HlsDataSourceStream&& stream,
-                                                size_t index)
+HlsVodRendition::PendingSegment::~PendingSegment() = default;
+HlsVodRendition::PendingSegment::PendingSegment(
+    std::unique_ptr<HlsDataSourceStream> stream,
+    size_t index)
     : stream(std::move(stream)), index(index) {}
 
 HlsVodRendition::~HlsVodRendition() {
+  pending_stream_fetch_ = absl::nullopt;
   engine_host_->RemoveRole(role_);
 }
 
@@ -231,22 +234,23 @@ void HlsVodRendition::FetchMoreDataFromPendingStream(
     base::TimeDelta fetch_required_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(pending_stream_fetch_.has_value());
-  auto stream = std::move(pending_stream_fetch_->stream);
   const SegmentInfo& segment = segments_[pending_stream_fetch_->index];
+  auto stream = std::move(pending_stream_fetch_->stream);
   pending_stream_fetch_.reset();
-  std::move(stream).ReadChunk(
+  rendition_host_->ReadStream(
+      std::move(stream),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &HlsVodRendition::OnSegmentData, weak_factory_.GetWeakPtr(),
           std::move(cb), std::move(fetch_required_time), segment.index,
-          base::TimeTicks::Now())),
-      kChunkSize);
+          base::TimeTicks::Now())));
 }
 
-void HlsVodRendition::OnSegmentData(base::OnceClosure cb,
-                                    base::TimeDelta required_time,
-                                    size_t segment_index,
-                                    base::TimeTicks net_req_start,
-                                    HlsDataSourceStream::ReadResult result) {
+void HlsVodRendition::OnSegmentData(
+    base::OnceClosure cb,
+    base::TimeDelta required_time,
+    size_t segment_index,
+    base::TimeTicks net_req_start,
+    HlsDataSourceStreamManager::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.has_value()) {
     // Drop |cb| here, and let the abort handler pick up the pieces.
@@ -258,23 +262,23 @@ void HlsVodRendition::OnSegmentData(base::OnceClosure cb,
   base::TimeDelta end =
       segments_[segment_index].absolute_start + segment_duration_upper_limit_;
 
-  auto source = std::move(result).value();
+  std::unique_ptr<HlsDataSourceStream> stream = std::move(result).value();
 
   if (!engine_host_->AppendAndParseData(
           role_, base::TimeDelta(), end + base::Seconds(1), &parse_offset_,
-          source.AsRawData(), source.BytesInBuffer())) {
+          stream->AsRawData(), stream->BytesInBuffer())) {
     return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
   }
 
   auto fetch_duration = base::TimeTicks::Now() - net_req_start;
   // Store the time it took to download this chunk. The time should be scaled
   // for situations where we only have a few bytes left to download.
-  auto scaled = (fetch_duration * source.BytesInBuffer()) / kChunkSize;
+  auto scaled = (fetch_duration * stream->BytesInBuffer()) / kChunkSize;
   fetch_time_.AddSample(scaled);
 
-  if (source.CanReadMore()) {
-    source.Flush();
-    pending_stream_fetch_.emplace(std::move(source), segment_index);
+  if (stream->CanReadMore()) {
+    stream->Flush();
+    pending_stream_fetch_.emplace(std::move(stream), segment_index);
   }
 
   // After a seek especially, we will start loading content that comes

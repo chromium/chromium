@@ -12,6 +12,7 @@
 #include "media/base/stream_parser.h"
 #include "media/filters/hls_data_source_provider.h"
 #include "media/filters/hls_demuxer_status.h"
+#include "media/filters/hls_rendition.h"
 
 namespace media {
 
@@ -27,13 +28,20 @@ class MEDIA_EXPORT HlsCodecDetector {
   using CodecCallback = HlsDemuxerStatusCb<ContainerAndCodecs>;
 
   ~HlsCodecDetector();
-  explicit HlsCodecDetector(MediaLog* media_log);
 
-  void DetermineContainerAndCodec(HlsDataSourceStream stream, CodecCallback cb);
-  void DetermineContainerOnly(HlsDataSourceStream stream, CodecCallback cb);
+  // The HlsRenditionHost owns the only implementation of HlsCodecDetector
+  // and uses it only on a single thread, where it is also deleted. Keeping
+  // a raw pointer to that HlsRenditionHost is therefore safe.
+  HlsCodecDetector(MediaLog* media_log, HlsRenditionHost* rendition_host_);
+
+  void DetermineContainerAndCodec(std::unique_ptr<HlsDataSourceStream> stream,
+                                  CodecCallback cb);
+  void DetermineContainerOnly(std::unique_ptr<HlsDataSourceStream> stream,
+                              CodecCallback cb);
 
  private:
-  void ReadStream(bool container_only, HlsDataSourceStream::ReadResult stream);
+  void OnStreamFetched(bool container_only,
+                       HlsDataSourceStreamManager::ReadResult stream);
   void DetermineContainer(bool container_only,
                           const uint8_t* data,
                           size_t size);
@@ -49,6 +57,7 @@ class MEDIA_EXPORT HlsCodecDetector {
   std::unique_ptr<media::StreamParser> parser_;
   std::string codec_response_;
   std::string container_;
+  raw_ptr<HlsRenditionHost> rendition_host_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<HlsCodecDetector> weak_factory_{this};

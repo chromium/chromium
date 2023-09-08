@@ -167,7 +167,10 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
                        base::Unretained(this)));
   }
 
-  ~HlsManifestDemuxerEngineTest() override { base::RunLoop().RunUntilIdle(); }
+  ~HlsManifestDemuxerEngineTest() override {
+    engine_->Stop();
+    base::RunLoop().RunUntilIdle();
+  }
 };
 
 TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {

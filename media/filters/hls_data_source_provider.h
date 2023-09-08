@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/types/id_type.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 #include "media/formats/hls/types.h"
@@ -61,6 +62,11 @@ class MEDIA_EXPORT HlsDataSource {
   // Returns the MIME type of the underlying data source.
   virtual base::StringPiece GetMimeType() const = 0;
 
+  // Aborts and stops the underlying multibuffer data source. After aborting,
+  // All calls to `::Read` should respond with kAborted. Accessing previously
+  // fetched data is ok.
+  virtual void Stop() = 0;
+
   // Returns the size of the underlying data source. If the size is unknown,
   // returns `absl::nullopt`.
   absl::optional<size_t> GetSize() const { return size_; }
@@ -81,20 +87,20 @@ class MEDIA_EXPORT HlsDataSourceProvider {
                                  RequestCb) = 0;
 };
 
+// Forward Declare manager.
+class HlsManifestDemuxerEngine;
+
 // A buffer-owning wrapper for an HlsDataSource which can be instructed to
 // read an entire data source, or to retrieve it in chunks.
 class MEDIA_EXPORT HlsDataSourceStream {
  public:
-  using Self = HlsDataSourceStream;
-  using ReadResult = HlsDataSource::ReadStatus::Or<Self>;
-
-  // Callback fired when attempting to read the entire datasource at once.
-  using ReadCb = base::OnceCallback<void(ReadResult)>;
+  // The response to a stream read includes a raw pointer back to the stream
+  // which allows accessing the data from a read as well as caching a partially
+  // read stream handle for continued downloading.
+  using StreamId = base::IdType32<HlsDataSourceStream>;
 
   HlsDataSourceStream(std::unique_ptr<HlsDataSource> data_source);
   ~HlsDataSourceStream();
-  HlsDataSourceStream(const HlsDataSourceStream&) = delete;
-  HlsDataSourceStream(HlsDataSourceStream&&);
 
   // Helpers for checking the internal state of the stream.
   bool CanReadMore() const;
@@ -107,15 +113,20 @@ class MEDIA_EXPORT HlsDataSourceStream {
   // Reset the internal buffer.
   void Flush();
 
-  // Read the entire data source at once, unless the data source has an
-  // undetermined size. In the case of undetermined size, ReadAll's behavior
-  // will default to chunk-by-chunk reading.
-  void ReadAll(ReadCb cb) &&;
-
-  // Read just one chunk of data of a given size.
-  void ReadChunk(ReadCb cb, size_t read_size = kDefaultReadSize) &&;
+  void ReadChunkForTesting(HlsDataSource::ReadCb cb,
+                           size_t read_size = kDefaultReadSize);
+  void ReadChunk(base::PassKey<HlsManifestDemuxerEngine>,
+                 HlsDataSource::ReadCb cb);
 
  private:
+  // Read data in chunks.
+  void ReadChunkInternal(HlsDataSource::ReadCb cb,
+                         size_t read_size = kDefaultReadSize);
+
+  void DataSourceReadComplete(HlsDataSource::ReadCb cb,
+                              size_t original_size,
+                              HlsDataSource::ReadStatus::Or<size_t> result);
+
   // The data source to read from.
   std::unique_ptr<HlsDataSource> data_source_;
 
@@ -124,6 +135,21 @@ class MEDIA_EXPORT HlsDataSourceStream {
 
   // The total number of bytes read. Not affected by |Flush|.
   size_t total_bytes_read_ = 0;
+
+  base::WeakPtrFactory<HlsDataSourceStream> weak_factory_;
+};
+
+// A HlsDataSourceStreamManager must own all instances of HlsDataSourceStream
+// while those streams have pending network requests, so that they can be
+// canceled as part of deletion.
+class MEDIA_EXPORT HlsDataSourceStreamManager {
+ public:
+  using ReadResult =
+      HlsDataSource::ReadStatus::Or<std::unique_ptr<HlsDataSourceStream>>;
+  using ReadCb = base::OnceCallback<void(ReadResult)>;
+
+  virtual ~HlsDataSourceStreamManager() = 0;
+  virtual void ReadStream(std::unique_ptr<HlsDataSourceStream>, ReadCb) = 0;
 };
 
 }  // namespace media
