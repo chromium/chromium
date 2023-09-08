@@ -254,6 +254,7 @@
     "onselectionchange",
     "onshow",
     "onslotchange",
+    "onsnapchanged",
     "onstalled",
     "onstorage",
     "onsuspend",

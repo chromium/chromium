@@ -286,6 +286,7 @@
     "signalingstatechange",
     "sinkchange",
     "slotchange",
+    "snapchanged",
     "soundend",
     "soundstart",
     "sourceclose",
