@@ -1225,13 +1225,12 @@ void PaymentRequest::OnUpdatePaymentDetails(
 
   update_payment_details_timer_.Stop();
 
-  ExceptionState exception_state(v8::Isolate::GetCurrent(),
-                                 ExceptionState::kConstructionContext,
+  v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "PaymentDetailsUpdate");
   PaymentDetailsUpdate* details =
       NativeValueTraits<PaymentDetailsUpdate>::NativeValue(
-          resolver->GetScriptState()->GetIsolate(),
-          details_script_value.V8Value(), exception_state);
+          isolate, details_script_value.V8Value(), exception_state);
   if (exception_state.HadException()) {
     resolver->Reject(exception_state.GetException());
     ClearResolversAndCloseMojoConnection();
