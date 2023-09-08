@@ -517,7 +517,8 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             'INFO: Processing wptrunner report (1/1)\n',
             'INFO: Updating expectations for up to 1 test file.\n',
             "ERROR: Failed to parse 'external/wpt/crash.html.ini': "
-            'EOL in list value (comment):  line 2\n',
+            'EOL in list value (comment): /mock-checkout/third_party/blink/'
+            'web_tests/external/wpt/crash.html.ini line 2\n',
             'INFO: Staged 0 metadata files.\n',
         ])
 

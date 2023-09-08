@@ -34,7 +34,7 @@ class TestResultSinkTestBase(unittest.TestCase):
         f, fname = host.filesystem.open_text_tempfile()
         json.dump(section_values, f)
         f.close()
-        host.environ['LUCI_CONTEXT'] = f.path
+        host.environ['LUCI_CONTEXT'] = f.name
 
 
 class TestCreateTestResultSink(TestResultSinkTestBase):

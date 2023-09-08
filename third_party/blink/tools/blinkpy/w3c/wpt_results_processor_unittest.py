@@ -584,7 +584,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'test-expected.txt')))
         self.assertLog([
             'WARNING: Unable to parse metadata for external/wpt/test.html:'
-            ' EOL in heading:  line 1\n',
+            ' EOL in heading: /mock-checkout/third_party/blink/web_tests/'
+            'external/wpt/test.html.ini line 1\n',
         ])
 
     def test_extract_screenshots(self):

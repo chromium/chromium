@@ -522,7 +522,6 @@ class BufferedReader(io.BufferedReader):
     def __init__(self, raw, **options):
         super().__init__(raw, **options)
         self.fs = raw.fs
-        self.path = raw.path
 
 
 class TextIOWrapper(io.TextIOWrapper):
@@ -538,30 +537,29 @@ class TextIOWrapper(io.TextIOWrapper):
                          newline=newline,
                          **options)
         self.fs = raw.fs
-        self.path = raw.path
 
 
 class WriteThroughBinaryFile(io.BytesIO):
-    def __init__(self, fs, path):
+    def __init__(self, fs, name: str):
         self.fs = fs
-        self.path = path
-        super().__init__(self.fs.files[self.path])
+        self.name = name
+        super().__init__(self.fs.files[self.name])
 
     def write(self, buf):
         amount_written = super().write(buf)
-        self.fs.files[self.path] += buf
-        self.fs.written_files[self.path] = self.fs.files[self.path]
+        self.fs.files[self.name] += buf
+        self.fs.written_files[self.name] = self.fs.files[self.name]
         return amount_written
 
     def writelines(self, lines):
         super().writelines(lines)
         contents = b''.join(lines)
-        self.fs.files[self.path] = contents
-        self.fs.written_files[self.path] = contents
+        self.fs.files[self.name] = contents
+        self.fs.written_files[self.name] = contents
 
     def truncate(self, size=None):
         new_size = super().truncate(size)
-        self.fs.files[self.path] = self.getvalue()
+        self.fs.files[self.name] = self.getvalue()
         return new_size
 
 
