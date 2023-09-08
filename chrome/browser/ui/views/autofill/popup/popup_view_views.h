@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
@@ -42,7 +43,12 @@ class ExpandablePopupParentView {
  private:
   friend class PopupViewViews;
 
-  // TODO(crbug.com/1466116): Add parent's methods.
+  // Callbacks to notify the parent of the children about hover state changes.
+  // The calls are also propagated to grandparents, so that, no matter how
+  // long the chain of sub-popups is, lower level popups know the hover
+  // status in (grand)children.
+  virtual void OnMouseEnteredInChildren() = 0;
+  virtual void OnMouseExitedInChildren() = 0;
 };
 
 // Views implementation for the autofill and password suggestion.
@@ -58,6 +64,11 @@ class PopupViewViews : public PopupBaseView,
 
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kOpenSubPopupDelay = base::Milliseconds(250);
+
+  // The delay for closing the sub-popup after having no cell selected,
+  // sub-popup cells are also taken into account.
+  static constexpr base::TimeDelta kNoSelectionHideSubPopupDelay =
+      base::Milliseconds(2500);
 
   PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
                  base::WeakPtr<ExpandablePopupParentView> parent,
@@ -75,6 +86,8 @@ class PopupViewViews : public PopupBaseView,
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
 
   // AutofillPopupView:
   bool Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
@@ -148,6 +161,10 @@ class PopupViewViews : public PopupBaseView,
   // PopupBaseView:
   bool DoUpdateBoundsAndRedrawPopup() override;
 
+  // ExpandablePopupParentView:
+  void OnMouseEnteredInChildren() override;
+  void OnMouseExitedInChildren() override;
+
   bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
 
   // Opens a sub-popup on a new cell (and closes the open one if any), or just
@@ -173,6 +190,7 @@ class PopupViewViews : public PopupBaseView,
   raw_ptr<views::BoxLayoutView> footer_container_ = nullptr;
 
   base::OneShotTimer open_sub_popup_timer_;
+  base::OneShotTimer no_selection_sub_popup_close_timer_;
 
   base::WeakPtrFactory<PopupViewViews> weak_ptr_factory_{this};
 };

@@ -45,6 +45,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -216,6 +218,23 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   ui::test::EventGenerator& generator() { return *generator_; }
   PopupViewViews& view() { return *view_; }
   views::Widget& widget() { return *widget_; }
+
+  std::pair<std::unique_ptr<NiceMock<MockAutofillPopupController>>,
+            PopupViewViews*>
+  OpenSubView(PopupViewViews& view,
+              const std::vector<Suggestion>& suggestions = {
+                  Suggestion(u"Suggestion")}) {
+    auto sub_controller =
+        std::make_unique<NiceMock<MockAutofillPopupController>>();
+    sub_controller->set_suggestions(suggestions);
+    ON_CALL(*sub_controller, OpenSubPopup)
+        .WillByDefault(Return(autofill_popup_sub_controller_.GetWeakPtr()));
+    base::WeakPtr<AutofillPopupView> sub_view_ptr =
+        view.CreateSubPopupView(sub_controller->GetWeakPtr());
+    auto* sub_view = static_cast<PopupViewViews*>(sub_view_ptr.get());
+    sub_view->Show(AutoselectFirstSuggestion(false));
+    return {std::move(sub_controller), sub_view};
+  }
 
  private:
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
@@ -679,14 +698,35 @@ TEST_F(PopupViewViewsTest, UpdateSuggestionsNoCrash) {
 
 TEST_F(PopupViewViewsTest, SubViewIsShownInChildWidget) {
   CreateAndShowView({PopupItemId::kAddressEntry});
-  NiceMock<MockAutofillPopupController> sub_controller;
-  base::WeakPtr<AutofillPopupView> sub_view =
-      view().CreateSubPopupView(sub_controller.GetWeakPtr());
-  sub_view->Show(AutoselectFirstSuggestion(false));
-  views::Widget* sub_widget =
-      static_cast<PopupViewViews*>(sub_view.get())->GetWidget();
+  auto [sub_controller, sub_view] = OpenSubView(view());
+  views::Widget* sub_widget = sub_view->GetWidget();
 
   EXPECT_EQ(view().GetWidget(), sub_widget->parent());
+}
+
+// Tests the event retriggering trick from `PopupBaseView::Widget`,
+// see `PopupBaseView::Widget::OnMouseEvent()` for details.
+TEST_F(PopupViewViewsTest, ChildWidgetRetriggersMouseMovesToParent) {
+  // The synthetic events further down originate directly inside the view
+  // bounds, this flag prevents ignoring them.
+  ON_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck)
+      .WillByDefault(Return(true));
+
+  CreateAndShowView({PopupItemId::kAddressEntry});
+  auto [sub_controller, sub_view] = OpenSubView(view());
+
+  ASSERT_EQ(view().GetSelectedCell(), absl::nullopt);
+
+  PopupRowView* row = absl::get<PopupRowView*>(test_api(view()).rows()[0]);
+
+  // Mouse move inside parent, selection by MOUSE_ENTERED is expected.
+  generator().MoveMouseTo(row->GetBoundsInScreen().CenterPoint());
+  EXPECT_NE(view().GetSelectedCell(), absl::nullopt);
+
+  // Mouse move outside parent, unselection by MOUSE_EXITED is expected.
+  generator().MoveMouseTo(row->GetBoundsInScreen().origin() -
+                          gfx::Vector2d(100, 100));
+  EXPECT_EQ(view().GetSelectedCell(), absl::nullopt);
 }
 
 TEST_F(PopupViewViewsTest, SubViewIsClosedWithParent) {
@@ -695,12 +735,8 @@ TEST_F(PopupViewViewsTest, SubViewIsClosedWithParent) {
   views::Widget* widget = CreateTestWidget().release();
   ShowView(view, *widget);
 
-  NiceMock<MockAutofillPopupController> sub_controller;
-  base::WeakPtr<AutofillPopupView> sub_view =
-      view.CreateSubPopupView(sub_controller.GetWeakPtr());
-  sub_view->Show(AutoselectFirstSuggestion(false));
-  base::WeakPtr<views::Widget> sub_widget =
-      static_cast<PopupViewViews*>(sub_view.get())->GetWidget()->GetWeakPtr();
+  auto [sub_controller, sub_view] = OpenSubView(view);
+  base::WeakPtr<views::Widget> sub_widget = sub_view->GetWidget()->GetWeakPtr();
 
   ASSERT_FALSE(sub_widget->IsClosed());
 
@@ -764,6 +800,83 @@ TEST_F(PopupViewViewsTest, NoSubPopupOpenIfNotEligible) {
   task_environment()->FastForwardBy(PopupViewViews::kOpenSubPopupDelay);
   EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), absl::nullopt)
       << "Opening a sub-popup should happen.";
+}
+
+TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
+  ui::MouseEvent fake_event(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
+                            ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED, 0);
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+      Suggestion(u"Suggestion #2"),
+  });
+  CreateAndShowView();
+  CellIndex cell{0, CellType::kControl};
+
+  view().SetSelectedCell(cell);
+  task_environment()->FastForwardBy(PopupViewViews::kOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupCell(), cell);
+
+  auto [sub_controller, sub_view] = OpenSubView(
+      view(), {CreateSuggestionWithChildren({Suggestion(u"Sub Child #1")})});
+  view().SetSelectedCell(absl::nullopt);
+  sub_view->SetSelectedCell(cell);
+  task_environment()->FastForwardBy(PopupViewViews::kOpenSubPopupDelay);
+  ASSERT_EQ(test_api(*sub_view).GetOpenSubPopupCell(), cell);
+
+  auto [sub_sub_controller, sub_sub_view] = OpenSubView(
+      *sub_view,
+      {CreateSuggestionWithChildren({Suggestion(u"Sub Sub Child #1")})});
+  sub_view->SetSelectedCell(absl::nullopt);
+  sub_sub_view->SetSelectedCell(cell);
+  sub_sub_view->SetSelectedCell(absl::nullopt);
+  sub_sub_view->OnMouseExited(fake_event);
+
+  task_environment()->FastForwardBy(
+      PopupViewViews::kNoSelectionHideSubPopupDelay);
+
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), absl::nullopt);
+  EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupCell(), absl::nullopt);
+}
+
+TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
+  ui::MouseEvent fake_event(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
+                            ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED, 0);
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+      Suggestion(u"Suggestion #2"),
+  });
+  CreateAndShowView();
+  CellIndex cell{0, CellType::kControl};
+
+  view().SetSelectedCell(cell);
+  task_environment()->FastForwardBy(PopupViewViews::kOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupCell(), cell);
+
+  auto [sub_controller, sub_view] = OpenSubView(
+      view(), {CreateSuggestionWithChildren({Suggestion(u"Sub Child #1")})});
+  view().SetSelectedCell(absl::nullopt);
+  sub_view->SetSelectedCell(cell);
+  task_environment()->FastForwardBy(PopupViewViews::kOpenSubPopupDelay);
+  ASSERT_EQ(test_api(*sub_view).GetOpenSubPopupCell(), cell);
+
+  auto [sub_sub_controller, sub_sub_view] = OpenSubView(
+      *sub_view,
+      {CreateSuggestionWithChildren({Suggestion(u"Sub Sub Child #1")})});
+  sub_view->SetSelectedCell(absl::nullopt);
+  sub_sub_view->SetSelectedCell(cell);
+  sub_sub_view->SetSelectedCell(absl::nullopt);
+  sub_sub_view->OnMouseExited(fake_event);
+
+  // The interrupting selection in the root popup, should prevent
+  // its sub-popup from closing, but not the middle one's sub-popup.
+  task_environment()->FastForwardBy(base::Milliseconds(1));
+  view().OnMouseEntered(fake_event);
+
+  task_environment()->FastForwardBy(
+      PopupViewViews::kNoSelectionHideSubPopupDelay);
+
+  EXPECT_NE(test_api(view()).GetOpenSubPopupCell(), absl::nullopt);
+  EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupCell(), absl::nullopt);
 }
 
 #if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)

@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -165,6 +166,14 @@ void PopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   node_data->SetNameChecked(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
+}
+
+void PopupViewViews::OnMouseEntered(const ui::MouseEvent& event) {
+  OnMouseEnteredInChildren();
+}
+
+void PopupViewViews::OnMouseExited(const ui::MouseEvent& event) {
+  OnMouseExitedInChildren();
 }
 
 bool PopupViewViews::Show(
@@ -442,6 +451,8 @@ bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
 }
 
 void PopupViewViews::InitViews() {
+  SetNotifyEnterExitOnChild(true);
+
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
@@ -702,6 +713,31 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
 
   SchedulePaint();
   return true;
+}
+
+void PopupViewViews::OnMouseEnteredInChildren() {
+  if (parent_ && parent_->get()) {
+    parent_->get()->OnMouseEnteredInChildren();
+  }
+
+  // Cancel scheluled sub-popup closing.
+  no_selection_sub_popup_close_timer_.Stop();
+}
+
+void PopupViewViews::OnMouseExitedInChildren() {
+  if (GetSelectedCell()) {
+    return;
+  }
+
+  if (parent_ && parent_->get()) {
+    parent_->get()->OnMouseExitedInChildren();
+  }
+
+  // Schedule sub-popup closing.
+  no_selection_sub_popup_close_timer_.Start(
+      FROM_HERE, kNoSelectionHideSubPopupDelay,
+      base::BindRepeating(&PopupViewViews::SetCellWithOpenSubPopup,
+                          weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
 }
 
 bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
