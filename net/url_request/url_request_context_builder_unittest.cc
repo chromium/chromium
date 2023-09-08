@@ -411,7 +411,7 @@ TEST_F(URLRequestContextBuilderTest, MigrateSessionsOnNetworkChangeV2Default) {
 
   const QuicParams* quic_params = context->quic_context()->params();
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(quic_params->migrate_sessions_on_network_change_v2);
+  EXPECT_FALSE(quic_params->migrate_sessions_on_network_change_v2);
 #else   // !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(quic_params->migrate_sessions_on_network_change_v2);
 #endif  // BUILDFLAG(IS_ANDROID)
