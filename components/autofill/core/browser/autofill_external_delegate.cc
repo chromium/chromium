@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -51,6 +52,22 @@ namespace {
 bool IsAutofillWarningEntry(PopupItemId popup_item_id) {
   return popup_item_id == PopupItemId::kInsecureContextPaymentDisabledMessage ||
          popup_item_id == PopupItemId::kMixedFormMessage;
+}
+
+// Returns true if any of the `suggestions` is an Autofill suggestion.
+bool HasAutofillSuggestions(const std::vector<Suggestion>& suggestions) {
+  // Virtual cards can appear on their own when filling the CVC for a card
+  // that a merchant has saved. This indicates there could be Autofill
+  // suggestions related to standalone CVC fields.
+  static constexpr auto kAutofillSuggestions =
+      base::MakeFixedFlatSet<PopupItemId>(
+          {PopupItemId::kCreditCardEntry, PopupItemId::kVirtualCreditCardEntry,
+           PopupItemId::kAddressEntry, PopupItemId::kFieldByFieldFilling,
+           PopupItemId::kFillFullAddress, PopupItemId::kFillFullPhoneNumber,
+           PopupItemId::kFillFullName});
+  return base::ranges::any_of(suggestions, [&](const Suggestion& suggestion) {
+    return kAutofillSuggestions.contains(suggestion.popup_item_id);
+  });
 }
 
 // The `AutofillTriggerSource` indicates what caused an Autofill fill or preview
@@ -144,18 +161,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 
   // Only include "Autofill Options" special menu item if we have Autofill
   // suggestions.
-  has_autofill_suggestions_ = false;
-  for (auto& suggestion : suggestions) {
-    // Virtual cards can appear on their own when filling the CVC for a card
-    // that a merchant has saved. This indicates there could be Autofill
-    // suggestions related to standalone CVC fields.
-    if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
-        suggestion.popup_item_id == PopupItemId::kCreditCardEntry ||
-        suggestion.popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
-      has_autofill_suggestions_ = true;
-      break;
-    }
-  }
+  has_autofill_suggestions_ = HasAutofillSuggestions(suggestions);
 
   if (should_show_cards_from_account_option_) {
     suggestions.emplace_back(
