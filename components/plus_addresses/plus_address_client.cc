@@ -5,10 +5,14 @@
 #include "components/plus_addresses/plus_address_client.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/sequence_checker.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "components/plus_addresses/features.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/signin/public/identity_manager/scope_set.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -117,10 +121,10 @@ absl::optional<std::string> ParsePlusAddressFromV1CreateResponse(
 PlusAddressClient::PlusAddressClient(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)),
-      auth_token_provider_(identity_manager,
-                           {kEnterprisePlusAddressOAuthScope.Get()}),
-      server_url_(ValidateAndGetUrl()) {}
+    : identity_manager_(identity_manager),
+      url_loader_factory_(std::move(url_loader_factory)),
+      server_url_(ValidateAndGetUrl()),
+      scopes_({kEnterprisePlusAddressOAuthScope.Get()}) {}
 
 PlusAddressClient::~PlusAddressClient() = default;
 
@@ -130,29 +134,21 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
     return;
   }
 
-  auth_token_provider_.GetAuthToken(
-      base::BindOnce(&PlusAddressClient::CreatePlusAddressWithToken,
-                     // base::Unretained is safe here since this owns the
-                     // auth_token_provider_ and they have the same lifetime.
-                     base::Unretained(this), site, std::move(callback)));
-}
+  // Refresh the OAuth token if it's expired.
+  if (access_token_info_.expiration_time < clock_->Now()) {
+    GetAuthToken(base::BindOnce(&PlusAddressClient::CreatePlusAddress,
+                                base::Unretained(this), site,
+                                std::move(callback)));
+    return;
+  }
 
-// static
-absl::optional<std::string>
-PlusAddressClient::ParsePlusAddressFromV1CreateForTesting(
-    data_decoder::DataDecoder::ValueOrError response) {
-  return ParsePlusAddressFromV1CreateResponse(std::move(response));
-}
-
-void PlusAddressClient::CreatePlusAddressWithToken(const std::string& site,
-                                                   PlusAddressCallback callback,
-                                                   const std::string& token) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = net::HttpRequestHeaders::kPutMethod;
   resource_request->url =
       server_url_.value().Resolve(kServerPlusProfileEndpoint);
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                      base::StrCat({"Bearer ", token}));
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StrCat({"Bearer ", access_token_info_.token}));
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   base::Value::Dict payload;
@@ -192,6 +188,63 @@ void PlusAddressClient::CreatePlusAddressWithToken(const std::string& site,
           },
           std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+// TODO (kaklilu): Handle requests when token is nearing expiration.
+void PlusAddressClient::GetAuthToken(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(access_token_info_.expiration_time < clock_->Now());
+  // Enqueue `callback` to be run after the token is fetched.
+  pending_callbacks_.emplace(std::move(callback));
+  if (!access_token_fetcher_) {
+    // Only request an auth token if it's not yet pending.
+    RequestAuthToken();
+  }
+}
+
+// static
+absl::optional<std::string>
+PlusAddressClient::ParsePlusAddressFromV1CreateForTesting(
+    data_decoder::DataDecoder::ValueOrError response) {
+  return ParsePlusAddressFromV1CreateResponse(std::move(response));
+}
+
+void PlusAddressClient::RequestAuthToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  access_token_fetcher_ =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          /*consumer_name=*/"PlusAddressClient", identity_manager_, scopes_,
+          base::BindOnce(&PlusAddressClient::OnTokenFetched,
+                         // It is safe to use base::Unretained as
+                         // |this| owns |access_token_fetcher_|.
+                         base::Unretained(this)),
+          // Use WaitUntilAvailable to defer getting an OAuth token until
+          // the user is signed in. We can switch to kImmediate once we
+          // have a sign in observer that guarantees we're already signed in
+          // by this point.
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+          // Sync doesn't need to be enabled for us to use PlusAddresses.
+          signin::ConsentLevel::kSignin);
+}
+
+void PlusAddressClient::OnTokenFetched(
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  access_token_fetcher_.reset();
+  if (error.state() == GoogleServiceAuthError::NONE) {
+    access_token_info_ = access_token_info;
+    // Run stored callbacks.
+    while (!pending_callbacks_.empty()) {
+      std::move(pending_callbacks_.front()).Run();
+      pending_callbacks_.pop();
+    }
+  } else {
+    access_token_request_error_ = error;
+    // TODO (kaklilu): Replace this log with Histogram of OAuth errors.
+    VLOG(1) << "PlusAddressClient failed to get OAuth token:"
+            << error.ToString();
+  }
 }
 
 }  // namespace plus_addresses

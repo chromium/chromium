@@ -4,8 +4,6 @@
 
 source_set("plus_addresses") {
   sources = [
-    "plus_address_auth_token_provider.cc",
-    "plus_address_auth_token_provider.h",
     "plus_address_client.cc",
     "plus_address_client.h",
     "plus_address_service.cc",
@@ -42,7 +40,6 @@ component("features") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "plus_address_auth_token_provider_unittest.cc",
     "plus_address_client_unittest.cc",
     "plus_address_service_unittest.cc",
   ]

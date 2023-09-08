@@ -4,13 +4,6 @@
 
 #include "components/plus_addresses/plus_address_client.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "components/plus_addresses/features.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -18,10 +11,17 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/plus_addresses/features.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/scope_set.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
@@ -151,6 +151,9 @@ class PlusAddressClientRequests : public ::testing::Test {
   std::string server_base_url = "https://enterprise.foo/";
   std::string fullProfileEndpoint =
       base::StrCat({server_base_url, kServerPlusProfileEndpoint});
+  std::string token = "myToken";
+  signin::AccessTokenInfo eternal_token_info =
+      signin::AccessTokenInfo(token, base::Time::Max(), "");
 
   network::TestURLLoaderFactory test_url_loader_factory;
   network::ResourceRequest last_request;
@@ -169,8 +172,8 @@ class PlusAddressClientRequests : public ::testing::Test {
 TEST_F(PlusAddressClientRequests, CreatePlusProfileV1_IssuesCorrectRequest) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   std::string site = "https://foobar.com";
-  std::string token = "myToken";
-  client.CreatePlusAddressWithToken(site, base::DoNothing(), token);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  client.CreatePlusAddress(site, base::DoNothing());
 
   // Validate that the V1 Create request uses the right url and requests method.
   EXPECT_EQ(last_request.url, fullProfileEndpoint);
@@ -198,12 +201,12 @@ TEST_F(PlusAddressClientRequests, CreatePlusProfileV1_IssuesCorrectRequest) {
 // PlusAddressParsing.FromV1Create tests.
 TEST_F(PlusAddressClientRequests, CreatePlusProfileV1_RunsCallbackOnSuccess) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
   std::string site = "https://foobar.com";
-  std::string token = "myToken";
 
   base::MockOnceCallback<void(const std::string&)> on_response_parsed;
   // Initiate a request...
-  client.CreatePlusAddressWithToken(site, on_response_parsed.Get(), token);
+  client.CreatePlusAddress(site, on_response_parsed.Get());
   // Fulfill the request and the callback should be run
   EXPECT_CALL(on_response_parsed, Run("plusone@plus.plus")).Times(1);
   test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
@@ -227,12 +230,12 @@ TEST_F(PlusAddressClientRequests, CreatePlusProfileV1_RunsCallbackOnSuccess) {
 TEST_F(PlusAddressClientRequests,
        CreatePlusProfileV1_FailedRequestDoesntRunCallback) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
   std::string site = "https://foobar.com";
-  std::string token = "myToken";
 
   base::MockOnceCallback<void(const std::string&)> on_response_parsed;
   // Initiate a request...
-  client.CreatePlusAddressWithToken(site, on_response_parsed.Get(), token);
+  client.CreatePlusAddress(site, on_response_parsed.Get());
 
   // The request fails and the callback is never run
   EXPECT_CALL(on_response_parsed, Run(testing::_)).Times(0);
@@ -266,6 +269,112 @@ TEST(PlusAddressClient, RejectsNonUrlStrings) {
       identity_test_env.identity_manager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
+}
+
+class PlusAddressAuthToken : public ::testing::Test {
+ public:
+  PlusAddressAuthToken() {
+    // Init the feature param to add `test_scope_` to GetUnconsentedOAuth2Scopes
+    features_.InitAndEnableFeatureWithParameters(
+        kFeature, {{kEnterprisePlusAddressOAuthScope.name, test_scope_}});
+
+    // Time-travel back to 1970 so that we can test with base::Time::FromDoubleT
+    clock_.SetNow(base::Time::FromDoubleT(1));
+  }
+
+ protected:
+  // A blocking helper that signs the user in and gets an OAuth token with our
+  // test scope.
+  // Note: this blocks indefinitely if there are no listeners for token
+  // creation. This means it must be called after GetAuthToken.
+  void WaitForSignInAndToken() {
+    identity_test_env_.MakePrimaryAccountAvailable(
+        test_email_address_, signin::ConsentLevel::kSignin);
+    identity_test_env_
+        .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+            test_token_, test_token_expiration_time_, "id", test_scopes_);
+  }
+
+  // A blocking helper that gets an OAuth token for our test scope that expires
+  // at `expiration_time`.
+  void WaitForToken(base::Time expiration_time) {
+    identity_test_env_
+        .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+            test_token_, expiration_time, "id", test_scopes_);
+  }
+
+  signin::IdentityManager* identity_manager() {
+    return identity_test_env_.identity_manager();
+  }
+
+  void AdvanceTimeTo(base::Time now) {
+    ASSERT_GE(now, clock_.Now());
+    clock_.SetNow(now);
+  }
+
+  base::Clock* test_clock() { return &clock_; }
+
+  std::string test_token_ = "access_token";
+  std::string test_scope_ = "https://googleapis.com/test.scope";
+  signin::ScopeSet test_scopes_ = {test_scope_};
+  base::Time test_token_expiration_time_ = base::Time::FromDoubleT(1000);
+
+ private:
+  // Required by `signin::IdentityTestEnvironment`.
+  base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
+
+  base::test::ScopedFeatureList features_;
+  base::SimpleTestClock clock_;
+  std::string test_email_address_ = "foo@gmail.com";
+};
+
+TEST_F(PlusAddressAuthToken, RequestedBeforeSignin) {
+  PlusAddressClient client(
+      identity_manager(),
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+
+  bool ran_callback = false;
+  client.GetAuthToken(
+      base::BindLambdaForTesting([&]() { ran_callback = true; }));
+
+  // The callback is run only after signin.
+  EXPECT_FALSE(ran_callback);
+  WaitForSignInAndToken();
+  EXPECT_TRUE(ran_callback);
+}
+
+TEST_F(PlusAddressAuthToken, RequestedUserNeverSignsIn) {
+  PlusAddressClient client(
+      identity_manager(),
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+
+  base::MockOnceClosure callback;
+  EXPECT_CALL(callback, Run).Times(0);
+  client.GetAuthToken(callback.Get());
+}
+
+TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
+  PlusAddressClient client(
+      identity_manager(),
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  // Make an initial OAuth token request.
+  base::MockOnceClosure first_callback;
+  client.GetAuthToken(first_callback.Get());
+  EXPECT_CALL(first_callback, Run).Times(1);
+
+  // Sign in, get a token, and fast-forward to after it is expired.
+  WaitForSignInAndToken();
+  base::Time now = test_token_expiration_time_ + base::Seconds(1);
+  AdvanceTimeTo(now);
+
+  // Issue another request for an OAuth token.
+  base::MockOnceClosure second_callback;
+  client.GetAuthToken(second_callback.Get());
+
+  // Callback is only run once the new OAuth token request has completed.
+  EXPECT_CALL(second_callback, Run).Times(1);
+  WaitForToken(/*expiration_time=*/now + base::Hours(1));
 }
 
 }  // namespace plus_addresses
