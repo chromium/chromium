@@ -58,8 +58,6 @@ TEST_F(AccessibilityObjectModelTest, SetAccessibleNodeRole) {
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
 
-  cache->UpdateAXForAllDocuments();
-
   auto* button = GetDocument().getElementById(AtomicString("button"));
   ASSERT_NE(nullptr, button);
 
@@ -93,7 +91,6 @@ TEST_F(AccessibilityObjectModelTest, AOMDoesNotReflectARIA) {
   // Assert that the ARIA attributes affect the AX object.
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
-  cache->UpdateAXForAllDocuments();
   auto* axTextBox = cache->GetOrCreate(textbox);
   EXPECT_EQ(ax::mojom::Role::kTextFieldWithComboBox, axTextBox->RoleValue());
   ax::mojom::NameFrom name_from;
@@ -123,7 +120,8 @@ TEST_F(AccessibilityObjectModelTest, AOMPropertiesCanBeCleared) {
   // Assert that the AX object was affected by ARIA attributes.
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
-  cache->UpdateAXForAllDocuments();
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
   auto* axButton = cache->GetOrCreate(button);
   EXPECT_EQ(ax::mojom::Role::kCheckBox, axButton->RoleValue());
   ax::mojom::NameFrom name_from;
@@ -172,7 +170,8 @@ TEST_F(AccessibilityObjectModelTest, RangeProperties) {
 
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
-  cache->UpdateAXForAllDocuments();
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
   auto* ax_slider = cache->GetOrCreate(slider);
   float value = 0.0f;
   EXPECT_TRUE(ax_slider->MinValueForRange(&value));
@@ -195,7 +194,6 @@ TEST_F(AccessibilityObjectModelTest, Level) {
 
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
-  cache->UpdateAXForAllDocuments();
   auto* ax_heading = cache->GetOrCreate(heading);
   EXPECT_EQ(2, ax_heading->HeadingLevel());
 }
@@ -214,7 +212,6 @@ TEST_F(AccessibilityObjectModelTest, ListItem) {
 
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
-  cache->UpdateAXForAllDocuments();
   auto* ax_listitem = cache->GetOrCreate(listitem);
   EXPECT_EQ(0, ax_listitem->PosInSet());
   EXPECT_EQ(0, ax_listitem->SetSize());
@@ -252,7 +249,6 @@ TEST_F(AccessibilityObjectModelTest, Grid) {
 
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
-  cache->UpdateAXForAllDocuments();
 
   auto* ax_grid = cache->GetOrCreate(grid);
   EXPECT_EQ(0, ax_grid->AriaColumnCount());
@@ -293,7 +289,6 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
   auto* target = GetDocument().getElementById(AtomicString("target"));
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
-  cache->UpdateAXForAllDocuments();
   auto* ax_target = cache->GetOrCreate(target);
   ui::AXNodeData node_data;
   ax_target->Serialize(&node_data, ui::kAXModeComplete);

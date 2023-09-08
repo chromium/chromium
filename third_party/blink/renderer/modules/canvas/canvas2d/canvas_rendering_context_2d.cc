@@ -775,18 +775,14 @@ void CanvasRenderingContext2D::DrawFocusRing(const Path& path,
 
 void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,
                                                           Element* element) {
-  LayoutBoxModelObject* lbmo = canvas()->GetLayoutBoxModelObject();
-  LayoutObject* renderer = canvas()->GetLayoutObject();
-  if (!lbmo || !renderer) {
-    return;
-  }
-
+  element->GetDocument().UpdateStyleAndLayout(
+      DocumentUpdateReason::kAccessibility);
   AXObjectCache* ax_object_cache =
       element->GetDocument().ExistingAXObjectCache();
-  if (!ax_object_cache) {
+  LayoutBoxModelObject* lbmo = canvas()->GetLayoutBoxModelObject();
+  LayoutObject* renderer = canvas()->GetLayoutObject();
+  if (!ax_object_cache || !lbmo || !renderer)
     return;
-  }
-  ax_object_cache->UpdateAXForAllDocuments();
 
   // Get the transformed path.
   Path transformed_path = path;

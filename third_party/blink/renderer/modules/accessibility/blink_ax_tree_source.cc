@@ -209,31 +209,27 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
 void BlinkAXTreeSource::Freeze() {
   CHECK(!frozen_);
   frozen_ = true;
-
-  // The root cannot be null.
-  root_ = ax_object_cache_->Root();
-  CHECK(root_);
+  root_ = GetRoot();
   focus_ = ax_object_cache_->FocusedObject();
-  CHECK(focus_);
 }
 
 void BlinkAXTreeSource::Thaw() {
   CHECK(frozen_);
-  frozen_ = false;
   root_ = nullptr;
   focus_ = nullptr;
+  frozen_ = false;
 }
 
 AXObject* BlinkAXTreeSource::GetRoot() const {
-  CHECK(frozen_);
-  CHECK(root_);
-  return root_;
+  if (root_)
+    return root_;
+  return ax_object_cache_->Root();
 }
 
 AXObject* BlinkAXTreeSource::GetFocusedObject() const {
-  CHECK(frozen_);
-  CHECK(focus_);
-  return focus_;
+  if (focus_)
+    return focus_;
+  return ax_object_cache_->FocusedObject();
 }
 
 AXObject* BlinkAXTreeSource::GetFromId(int32_t id) const {

@@ -3499,27 +3499,21 @@ bool AXObject::IsModal() const {
 
 bool AXObject::IsBlockedByAriaModalDialog(
     IgnoredReasons* ignored_reasons) const {
-  Element* active_aria_modal_dialog =
+  AXObject* active_aria_modal_dialog =
       AXObjectCache().GetActiveAriaModalDialog();
 
   // On platforms that don't require manual pruning of the accessibility tree,
   // the active aria modal dialog should never be set, so has no effect.
-  if (!active_aria_modal_dialog) {
+  if (!active_aria_modal_dialog)
     return false;
-  }
 
-  if (!GetNode() || GetNode()->IsPseudoElement()) {
-    return ParentObject()->IsBlockedByAriaModalDialog();
-  }
-
-  if (FlatTreeTraversal::Contains(*active_aria_modal_dialog, *GetNode())) {
+  if (this == active_aria_modal_dialog ||
+      IsDescendantOf(*active_aria_modal_dialog))
     return false;
-  }
 
   if (ignored_reasons) {
     ignored_reasons->push_back(
-        IgnoredReason(kAXAriaModalDialog,
-                      AXObjectCache().GetOrCreate(active_aria_modal_dialog)));
+        IgnoredReason(kAXAriaModalDialog, active_aria_modal_dialog));
   }
   return true;
 }
@@ -5382,6 +5376,17 @@ AXObject* AXObject::DeepestLastChildIncludingIgnored() const {
   return deepest_child;
 }
 
+bool AXObject::IsAncestorOf(const AXObject& descendant) const {
+  return descendant.IsDescendantOf(*this);
+}
+
+bool AXObject::IsDescendantOf(const AXObject& ancestor) const {
+  const AXObject* parent = ParentObject();
+  while (parent && parent != &ancestor)
+    parent = parent->ParentObject();
+  return !!parent;
+}
+
 AXObject* AXObject::NextSiblingIncludingIgnored() const {
   if (!AccessibilityIsIncludedInTree()) {
     NOTREACHED() << "We don't support iterating children of objects excluded "
@@ -6544,7 +6549,8 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
   // UpdateStyleAndLayoutTreeForNode() is also necessary.
   document->UpdateStyleAndLayoutTreeForNode(
       node, DocumentUpdateReason::kAccessibility);
-  cache.UpdateAXForAllDocuments();
+  document->View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kAccessibility);
 
   // Updating style and layout for the node can cause it to gain layout,
   // detaching an AXNodeObject to make room for an AXLayoutObject.
@@ -7043,7 +7049,6 @@ bool AXObject::HasARIAOwns(Element* element) {
                                    html_names::kAriaOwnsAttr);
 }
 
-// static
 ax::mojom::blink::Role AXObject::AriaRoleStringToRoleEnum(const String& value) {
   DCHECK(!value.empty());
 
