@@ -259,6 +259,30 @@ TEST(LocalBookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
   EXPECT_THAT(nodes, IsEmpty());
 }
 
+TEST(LocalBookmarkModelMergerTest, ShouldUploadLocalUuid) {
+  const std::string kUrl1Title = "url1";
+  const GURL kUrl1("http://www.url1.com/");
+  const base::Uuid kUrl1Uuid = base::Uuid::GenerateRandomV4();
+
+  // -------- The local model --------
+  // bookmark_bar
+  //  | - bookmark(kUuid/kLocalTitle)
+  std::unique_ptr<bookmarks::BookmarkModel> local_model =
+      BuildModel({UrlBuilder(kUrl1Title, kUrl1).SetUuid(kUrl1Uuid)});
+
+  // -------- The account model --------
+  // bookmark_bar
+  std::unique_ptr<bookmarks::BookmarkModel> account_model = BuildModel({});
+
+  // -------- Exercise the merge logic --------
+  LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
+
+  // -------- The expected merge outcome --------
+  // Same as the local model described above, including the UUID.
+  EXPECT_THAT(account_model->bookmark_bar_node()->children(),
+              ElementsAre(MatchesUrlWithUuid(kUrl1Title, kUrl1, kUrl1Uuid)));
+}
+
 TEST(LocalBookmarkModelMergerTest, ShouldNotUploadDuplicateBySemantics) {
   const std::string kFolder1Title = "folder1";
 
@@ -570,13 +594,104 @@ TEST(LocalBookmarkModelMergerTest, ShouldMergeFolderByUuidAndNotSemantics) {
   // -------- The merged model --------
   // bookmark_bar
   //  | - folder 2 (kUuid2/kTitle2)
-  //  | - folder 1 (kTitle1)
+  //  | - folder 1 (kUuid1/kTitle1)
   //
   // The node should have been merged with its UUID match, even if the other
   // candidate matches by semantics.
   EXPECT_THAT(account_model->bookmark_bar_node()->children(),
               ElementsAre(MatchesFolderWithUuid(kTitle2, kUuid2, IsEmpty()),
-                          MatchesFolder(kTitle1, IsEmpty())));
+                          MatchesFolderWithUuid(kTitle1, kUuid1, IsEmpty())));
+}
+
+TEST(
+    LocalBookmarkModelMergerTest,
+    ShouldIgnoreFolderSemanticsMatchAndLaterMatchByUuidWithSemanticsNodeFirst) {
+  const std::string kLocalOnlyTitle = "LocalOnlyTitle";
+  const std::string kMatchingTitle = "MatchingTitle";
+  const base::Uuid kUuid1 = base::Uuid::GenerateRandomV4();
+  const base::Uuid kUuid2 = base::Uuid::GenerateRandomV4();
+  const GURL kUrl("http://foo.com/");
+  const std::string kUrlTitle = "Bookmark Title";
+
+  // -------- The local model --------
+  // bookmark_bar
+  //  | - folder (kUuid1/kMatchingTitle)
+  //  | - folder (kUuid2/kLocalOnlyTitle)
+  //    | - bookmark
+  std::unique_ptr<bookmarks::BookmarkModel> local_model =
+      BuildModel({FolderBuilder(kMatchingTitle).SetUuid(kUuid1),
+                  FolderBuilder(kLocalOnlyTitle)
+                      .SetUuid(kUuid2)
+                      .SetChildren({UrlBuilder(kUrlTitle, kUrl)})});
+
+  // -------- The account model --------
+  // bookmark_bar
+  //  | - folder (kUuid2/kMatchingTitle)
+  std::unique_ptr<bookmarks::BookmarkModel> account_model =
+      BuildModel({FolderBuilder(kMatchingTitle).SetUuid(kUuid2)});
+
+  // -------- Exercise the merge logic --------
+  LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
+
+  // -------- The merged model --------
+  // bookmark_bar
+  //  | - folder (kUuid2/kLocalOnlyTitle)
+  //    | - bookmark
+  //  | - folder (kUuid1/kMatchingTitle)
+  //
+  // The node should have been merged with its UUID match, even if the other
+  // candidate matches by semantics.
+  EXPECT_THAT(
+      account_model->bookmark_bar_node()->children(),
+      ElementsAre(
+          MatchesFolderWithUuid(kLocalOnlyTitle, kUuid2,
+                                ElementsAre(MatchesUrl(kUrlTitle, kUrl))),
+          MatchesFolderWithUuid(kMatchingTitle, kUuid1, IsEmpty())));
+}
+
+TEST(LocalBookmarkModelMergerTest,
+     ShouldIgnoreFolderSemanticsMatchAndLaterMatchByUuidWithUuidNodeFirst) {
+  const std::string kLocalOnlyTitle = "LocalOnlyTitle";
+  const std::string kMatchingTitle = "MatchingTitle";
+  const base::Uuid kUuid1 = base::Uuid::GenerateRandomV4();
+  const base::Uuid kUuid2 = base::Uuid::GenerateRandomV4();
+  const GURL kUrl("http://foo.com/");
+  const std::string kUrlTitle = "Bookmark Title";
+
+  // -------- The local model --------
+  // bookmark_bar
+  //  | - folder (kUuid2/kLocalOnlyTitle)
+  //    | - bookmark
+  //  | - folder (kUuid1/kMatchingTitle)
+  std::unique_ptr<bookmarks::BookmarkModel> local_model =
+      BuildModel({FolderBuilder(kLocalOnlyTitle)
+                      .SetUuid(kUuid2)
+                      .SetChildren({UrlBuilder(kUrlTitle, kUrl)}),
+                  FolderBuilder(kMatchingTitle).SetUuid(kUuid1)});
+
+  // -------- The account model --------
+  // bookmark_bar
+  //  | - folder (kUuid2/kMatchingTitle)
+  std::unique_ptr<bookmarks::BookmarkModel> account_model =
+      BuildModel({FolderBuilder(kMatchingTitle).SetUuid(kUuid2)});
+
+  // -------- Exercise the merge logic --------
+  LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
+
+  // -------- The merged model --------
+  // bookmark_bar
+  //  | - folder (kUuid2/kLocalOnlyTitle)
+  //    | - bookmark
+  //  | - folder (kUuid1/kMatchingTitle)
+  //
+  // The node should have been merged with its UUID match, even if the other
+  // candidate matches by semantics.
+  EXPECT_THAT(
+      account_model->bookmark_bar_node()->children(),
+      ElementsAre(
+          MatchesFolderWithUuid(kLocalOnlyTitle, kUuid2,
+                                ElementsAre(MatchesUrl(kUrlTitle, kUrl))),
+          MatchesFolderWithUuid(kMatchingTitle, kUuid1, IsEmpty())));
 }
 
 TEST(LocalBookmarkModelMergerTest,

@@ -1,3 +1,4 @@
+
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -8,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -37,8 +39,10 @@ struct SiblingSemanticMatchKey {
 
 struct SiblingSemanticMatchKeyHash {
   size_t operator()(const SiblingSemanticMatchKey& key) const {
-    // TODO(crbug.com/1451511): Mix in `url` into the hash.
-    return base::FastHash(key.canonicalized_sync_title);
+    return base::FastHash(key.canonicalized_sync_title) ^
+           (key.url.has_value()
+                ? base::FastHash(key.url->possibly_invalid_spec())
+                : size_t(1));
   }
 };
 
@@ -79,6 +83,24 @@ bool NodesCompatibleForMatchByUuid(const bookmarks::BookmarkNode* node1,
   return true;
 }
 
+std::unordered_map<base::Uuid, const bookmarks::BookmarkNode*, base::UuidHash>
+BuildAccountUuidLookupTable(const bookmarks::BookmarkModel* model) {
+  std::unordered_map<base::Uuid, const bookmarks::BookmarkNode*, base::UuidHash>
+      nodes_per_uuid;
+  ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
+      model->root_node());
+  while (iterator.has_next()) {
+    const bookmarks::BookmarkNode* const node = iterator.Next();
+    CHECK(node->uuid().is_valid());
+    // Managed nodes are not expected to exist in the account BookmarkModel
+    // instance.
+    CHECK(model->client()->CanSyncNode(node));
+    const bool success = nodes_per_uuid.emplace(node->uuid(), node).second;
+    CHECK(success);
+  }
+  return nodes_per_uuid;
+}
+
 }  // namespace
 
 LocalBookmarkModelMerger::LocalBookmarkModelMerger(
@@ -86,7 +108,11 @@ LocalBookmarkModelMerger::LocalBookmarkModelMerger(
     bookmarks::BookmarkModel* account_model)
     : local_model_(local_model),
       account_model_(account_model),
-      uuid_to_match_map_(FindGuidMatches(local_model, account_model)) {}
+      initial_uuid_to_account_node_map_(
+          BuildAccountUuidLookupTable(account_model)),
+      uuid_to_match_map_(FindGuidMatches(local_model,
+                                         account_model,
+                                         initial_uuid_to_account_node_map_)) {}
 
 LocalBookmarkModelMerger::~LocalBookmarkModelMerger() = default;
 
@@ -117,53 +143,37 @@ std::unordered_map<base::Uuid,
                    base::UuidHash>
 LocalBookmarkModelMerger::FindGuidMatches(
     const bookmarks::BookmarkModel* local_model,
-    const bookmarks::BookmarkModel* account_model) {
+    const bookmarks::BookmarkModel* account_model,
+    const std::unordered_map<base::Uuid,
+                             const bookmarks::BookmarkNode*,
+                             base::UuidHash>& uuid_to_account_node_map) {
   CHECK(local_model);
   CHECK(account_model);
 
-  // Build a temporary lookup table for account UUIDs.
-  std::unordered_map<base::Uuid, const bookmarks::BookmarkNode*, base::UuidHash>
-      uuid_to_local_node_map;
-  ui::TreeNodeIterator<const bookmarks::BookmarkNode> local_iterator(
-      local_model->root_node());
-  while (local_iterator.has_next()) {
-    const bookmarks::BookmarkNode* const node = local_iterator.Next();
-    CHECK(node->uuid().is_valid());
-    // Exclude managed nodes.
-    if (!node->is_permanent_node() &&
-        !local_model->client()->CanSyncNode(node)) {
-      continue;
-    }
-
-    const bool success =
-        uuid_to_local_node_map.emplace(node->uuid(), node).second;
-    CHECK(success);
-  }
-
-  // Iterate through all account bookmarks to find matches by UUID.
   std::unordered_map<base::Uuid, LocalBookmarkModelMerger::GuidMatch,
                      base::UuidHash>
       uuid_to_match_map;
-  ui::TreeNodeIterator<const bookmarks::BookmarkNode> account_iterator(
-      account_model->root_node());
-  while (account_iterator.has_next()) {
-    const bookmarks::BookmarkNode* const account_node = account_iterator.Next();
-    CHECK(account_node->uuid().is_valid());
 
-    // Exclude managed nodes (although the account model is not expected to have
-    // them).
-    if (!account_node->is_permanent_node() &&
-        !account_model->client()->CanSyncNode(account_node)) {
+  // Iterate through all local bookmarks to find matches by UUID.
+  ui::TreeNodeIterator<const bookmarks::BookmarkNode> local_iterator(
+      local_model->root_node());
+  while (local_iterator.has_next()) {
+    const bookmarks::BookmarkNode* const local_node = local_iterator.Next();
+    CHECK(local_node->uuid().is_valid());
+
+    // Exclude managed nodes.
+    if (!local_node->is_permanent_node() &&
+        !local_model->client()->CanSyncNode(local_node)) {
       continue;
     }
 
-    const auto local_it = uuid_to_local_node_map.find(account_node->uuid());
-    if (local_it == uuid_to_local_node_map.end()) {
+    const auto account_it = uuid_to_account_node_map.find(local_node->uuid());
+    if (account_it == uuid_to_account_node_map.end()) {
       // No match found by UUID.
       continue;
     }
 
-    const bookmarks::BookmarkNode* const local_node = local_it->second;
+    const bookmarks::BookmarkNode* const account_node = account_it->second;
     if (NodesCompatibleForMatchByUuid(account_node, local_node)) {
       const bool success = uuid_to_match_map
                                .emplace(account_node->uuid(),
@@ -195,11 +205,9 @@ void LocalBookmarkModelMerger::MergeSubtree(
     const bookmarks::BookmarkNode* const account_child =
         account_child_ptr.get();
 
-    // Special-case managed bookmarks, which don't need merging into the account
-    // model.
-    if (!account_model_->client()->CanSyncNode(account_child)) {
-      continue;
-    }
+    // Managed nodes are not expected to exist in the account BookmarkModel
+    // instance.
+    CHECK(account_model_->client()->CanSyncNode(account_child));
 
     // If a UUID match exists, it takes precedence over semantic matching.
     if (FindMatchingLocalNodeByUuid(account_child)) {
@@ -257,8 +265,8 @@ void LocalBookmarkModelMerger::MergeSubtree(
     } else {
       // If no match found, create a corresponding account node, which gets
       // appended last.
-      matching_account_node = CopyLocalNodeToAccountModelWithNewUuid(
-          local_child, account_subtree_root);
+      matching_account_node =
+          CopyLocalNodeToAccountModel(local_child, account_subtree_root);
       CHECK(matching_account_node);
     }
 
@@ -289,26 +297,36 @@ void LocalBookmarkModelMerger::UpdateAccountNodeFromMatchingLocalNode(
 }
 
 const bookmarks::BookmarkNode*
-LocalBookmarkModelMerger::CopyLocalNodeToAccountModelWithNewUuid(
+LocalBookmarkModelMerger::CopyLocalNodeToAccountModel(
     const bookmarks::BookmarkNode* local_node,
     const bookmarks::BookmarkNode* account_parent) {
   CHECK(local_node);
   CHECK(!local_node->is_permanent_node());
   CHECK(account_parent);
 
-  // TODO(crbug.com/1451511): Reuse local UUID when possible.
   const size_t account_index = account_parent->children().size();
+
+  // See if the same UUID can be carried over or a random one generated.
+  const base::Uuid new_node_uuid =
+      base::Contains(initial_uuid_to_account_node_map_, local_node->uuid())
+          ? base::Uuid::GenerateRandomV4()
+          : local_node->uuid();
+
+  // `initial_uuid_to_account_node_map_` could be updated to make sure the new
+  // UUID is included, but random UUID collisions are practically impossible and
+  // equivalent safeguards don't exist elsewhere in the codebase.
 
   // Note that this function is not expected to copy children recursively. The
   // caller is responsible for dealing with children.
   return local_node->is_folder()
              ? account_model_->AddFolder(
                    account_parent, account_index, local_node->GetTitle(),
-                   local_node->GetMetaInfoMap(), local_node->date_added())
+                   local_node->GetMetaInfoMap(), local_node->date_added(),
+                   new_node_uuid)
              : account_model_->AddURL(account_parent, account_index,
                                       local_node->GetTitle(), local_node->url(),
                                       local_node->GetMetaInfoMap(),
-                                      local_node->date_added());
+                                      local_node->date_added(), new_node_uuid);
 }
 
 const bookmarks::BookmarkNode*
