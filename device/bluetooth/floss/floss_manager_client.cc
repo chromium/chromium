@@ -368,15 +368,15 @@ void FlossManagerClient::OnHciDeviceChanged(int32_t adapter, bool present) {
 }
 
 void FlossManagerClient::OnHciEnabledChanged(int32_t adapter, bool enabled) {
-  if (adapter == GetDefaultAdapter() && adapter_enabled_callback_) {
-    adapter_enabled_callback_->Run(Void{});
-    adapter_enabled_callback_.reset();
-  }
-
   adapter_to_enabled_[adapter] = enabled;
 
   for (auto& observer : observers_) {
     observer.AdapterEnabledChanged(adapter, enabled);
+  }
+
+  if (adapter == GetDefaultAdapter() && adapter_enabled_callback_) {
+    adapter_enabled_callback_->Run(Void{});
+    adapter_enabled_callback_.reset();
   }
 }
 
