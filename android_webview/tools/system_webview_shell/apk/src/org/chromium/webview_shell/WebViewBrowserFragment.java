@@ -110,7 +110,7 @@ public class WebViewBrowserFragment extends Fragment {
     private EditText mUrlBar;
     private WebView mWebView;
     private View mFullscreenView;
-    private final ActivityResultRegistry mRegistry;
+    private ActivityResultRegistry mActivityResultRegistry;
     private final OnBackInvokedCallback mOnBackInvokedCallback =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? ()
             -> mWebView.goBack()
@@ -132,11 +132,11 @@ public class WebViewBrowserFragment extends Fragment {
     public void setFilePathCallback(ValueCallback<Uri[]> inCallback) {
         mFilePathCallback = inCallback;
     }
-
-    public WebViewBrowserFragment(ActivityResultRegistry registry) {
-        super();
-        mRegistry = registry;
+    public void setActivityResultRegistry(ActivityResultRegistry activityResultRegistry) {
+        mActivityResultRegistry = activityResultRegistry;
     }
+
+    public WebViewBrowserFragment() {}
     // Work around our wonky API by wrapping a geo permission prompt inside a regular
     // PermissionRequest.
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP) // GeoPermissionRequest class requires API level 21.
@@ -270,6 +270,9 @@ public class WebViewBrowserFragment extends Fragment {
         enableStrictMode();
 
         createAndInitializeWebView();
+        mFileContents = registerForActivityResult(mMultiFileSelector, mActivityResultRegistry,
+                result -> mFilePathCallback.onReceiveValue(result));
+
         String url = getUrlFromIntent(requireActivity().getIntent());
         if (url == null) {
             mWebView.restoreState(savedInstanceState);
@@ -296,8 +299,6 @@ public class WebViewBrowserFragment extends Fragment {
         setUrlBarText(url);
         setUrlFail(false);
         loadUrlFromUrlBar(mUrlBar);
-        mFileContents = registerForActivityResult(
-                mMultiFileSelector, mRegistry, result -> mFilePathCallback.onReceiveValue(result));
     }
 
     @Override

@@ -15,9 +15,10 @@
       android:layout_width="match_parent"
       android:layout_height="?attr/actionBarSize"
       android:elevation="4dp" />
-  <FrameLayout
+  <androidx.fragment.app.FragmentContainerView
       android:id="@+id/container"
       android:layout_width="match_parent"
+      android:name="org.chromium.webview_shell.WebViewBrowserFragment"
       android:layout_height="0dp"
       android:layout_weight="1" />
 

@@ -65,15 +65,14 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         ContextUtils.initApplicationContext(getApplicationContext());
         setContentView(R.layout.activity_webview_browser);
         setSupportActionBar((Toolbar) findViewById(R.id.browser_toolbar));
-        mFragment = new WebViewBrowserFragment(getActivityResultRegistry());
         mWebViewVersion = WebViewCompat.getCurrentWebViewPackage(this).versionName;
         getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_browser));
         getSupportActionBar().setSubtitle(mWebViewVersion);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.container, mFragment)
-                .disallowAddToBackStack()
-                .commit();
+
+        mFragment = (WebViewBrowserFragment) getSupportFragmentManager().findFragmentById(
+                R.id.container);
+        assert mFragment != null;
+        mFragment.setActivityResultRegistry(getActivityResultRegistry());
     }
 
     @Override
