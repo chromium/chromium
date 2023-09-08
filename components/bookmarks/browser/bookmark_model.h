@@ -27,6 +27,7 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
+#include "components/bookmarks/browser/uuid_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/storage_type.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -227,6 +228,10 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Returns the set of nodes with the `url`.
   void GetNodesByURL(const GURL& url, std::vector<const BookmarkNode*>* nodes);
 
+  // Returns the node with the given UUID or null if no node exists with this
+  // UUID.
+  const BookmarkNode* GetNodeByUuid(const base::Uuid& uuid) const;
+
   // Returns the most recently added user node for the `url`; urls from any
   // nodes that are not editable by the user are never returned by this call.
   // Returns NULL if `url` is not bookmarked.
@@ -405,7 +410,7 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // the node is a url, its url is added to removed_urls.
   //
   // This does NOT delete the node.
-  void RemoveNodeFromIndexRecursive(BookmarkNode* node);
+  void RemoveNodeFromIndicesRecursive(BookmarkNode* node);
 
   // Clones `node` and all its descendants (if any) for adding it in
   // `dest_model`. Doesn't add it to `dest_model` - this is the responsibility
@@ -426,9 +431,9 @@ class BookmarkModel final : public BookmarkUndoProvider,
                         std::unique_ptr<BookmarkNode> node,
                         bool added_by_user = false);
 
-  // Adds `node` to `titled_url_index_` and recursively invokes this for all
+  // Adds `node` to all lookups indices and recursively invokes this for all
   // children.
-  void AddNodeToIndexRecursive(const BookmarkNode* node);
+  void AddNodeToIndicesRecursive(const BookmarkNode* node);
 
   // Returns true if the parent and index are valid.
   bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);
@@ -512,7 +517,9 @@ class BookmarkModel final : public BookmarkUndoProvider,
 
   std::unique_ptr<TitledUrlIndex> titled_url_index_;
 
-  // Owned by `model_loader_`.
+  // All nodes indexed by UUID.
+  UuidIndex uuid_index_;
+
   // WARNING: in some tests this does *not* refer to
   // `ModelLoader::history_bookmark_model_`. This is because some tests
   // directly call DoneLoading().

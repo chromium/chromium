@@ -244,7 +244,7 @@ void BookmarkModel::Remove(const BookmarkNode* node,
   std::set<GURL> removed_urls;
   std::unique_ptr<BookmarkNode> owned_node =
       url_index_->Remove(AsMutable(node), &removed_urls);
-  RemoveNodeFromIndexRecursive(owned_node.get());
+  RemoveNodeFromIndicesRecursive(owned_node.get());
 
   if (store_) {
     store_->ScheduleSave();
@@ -295,7 +295,7 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   std::set<GURL> removed_urls;
   std::unique_ptr<BookmarkNode> owned_node =
       url_index_->Remove(AsMutable(node), &removed_urls);
-  RemoveNodeFromIndexRecursive(owned_node.get());
+  RemoveNodeFromIndicesRecursive(owned_node.get());
 
   std::unique_ptr<BookmarkNode> subtree_copy =
       CloneSubtreeForOtherModelWithNewNodeIdsAndUuids(owned_node.get(),
@@ -378,7 +378,7 @@ void BookmarkModel::RemoveAllUserBookmarks() {
            j >= 0; --j) {
         std::unique_ptr<BookmarkNode> node = url_index_->Remove(
             permanent_node->children()[j].get(), &removed_urls);
-        RemoveNodeFromIndexRecursive(node.get());
+        RemoveNodeFromIndicesRecursive(node.get());
         removed_node_data_list.push_back(
             {permanent_node.get(), j, std::move(node)});
       }
@@ -800,6 +800,23 @@ void BookmarkModel::GetNodesByURL(const GURL& url,
   }
 }
 
+const BookmarkNode* BookmarkModel::GetNodeByUuid(const base::Uuid& uuid) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Because of having to create a dummy node, the invalid-UUID case needs
+  // special handling.
+  if (!uuid.is_valid()) {
+    return nullptr;
+  }
+
+  // TODO(mastiz): When C++20 is supported in Chromium, this map lookup should
+  // be possible without having to use a BookmarkNode instance.
+  BookmarkNode dummy_node_for_lookup(/*id=*/0, uuid, GURL());
+
+  auto it = uuid_index_.find(&dummy_node_for_lookup);
+  return it == uuid_index_.end() ? nullptr : *it;
+}
+
 const BookmarkNode* BookmarkModel::GetMostRecentlyAddedUserNodeForURL(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1085,7 +1102,7 @@ void BookmarkModel::NotifyNodeAddedForAllDescendants(const BookmarkNode* node,
   }
 }
 
-void BookmarkModel::RemoveNodeFromIndexRecursive(BookmarkNode* node) {
+void BookmarkModel::RemoveNodeFromIndicesRecursive(BookmarkNode* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(!is_permanent_node(node));
@@ -1096,13 +1113,15 @@ void BookmarkModel::RemoveNodeFromIndexRecursive(BookmarkNode* node) {
     titled_url_index_->RemovePath(node);
   }
 
+  uuid_index_.erase(node);
+
   // Reset favicon state for the case when the `node` is restored.
   CancelPendingFaviconLoadRequests(node);
   node->InvalidateFavicon();
 
   // Recurse through children.
   for (size_t i = node->children().size(); i > 0; --i) {
-    RemoveNodeFromIndexRecursive(node->children()[i - 1].get());
+    RemoveNodeFromIndicesRecursive(node->children()[i - 1].get());
   }
 }
 
@@ -1125,6 +1144,7 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   }
 
   titled_url_index_ = details->owned_titled_url_index();
+  uuid_index_ = details->owned_uuid_index();
   url_index_ = details->url_index();
   root_ = details->root_node();
   // See declaration for details on why `owned_root_` is reset.
@@ -1172,7 +1192,7 @@ BookmarkNode* BookmarkModel::AddNode(BookmarkNode* parent,
     store_->ScheduleSave();
   }
 
-  AddNodeToIndexRecursive(node_ptr);
+  AddNodeToIndicesRecursive(node_ptr);
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkNodeAdded(this, parent, index, added_by_user);
@@ -1181,11 +1201,11 @@ BookmarkNode* BookmarkModel::AddNode(BookmarkNode* parent,
   return node_ptr;
 }
 
-void BookmarkModel::AddNodeToIndexRecursive(const BookmarkNode* node) {
+void BookmarkModel::AddNodeToIndicesRecursive(const BookmarkNode* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1143246): add a DCHECK to validate that all nodes have
-  // unique UUID when it is guaranteed.
+  bool uuid_is_unique = uuid_index_.insert(node).second;
+  DUMP_WILL_BE_CHECK(uuid_is_unique);
 
   if (node->is_url()) {
     titled_url_index_->Add(node);
@@ -1194,7 +1214,7 @@ void BookmarkModel::AddNodeToIndexRecursive(const BookmarkNode* node) {
   }
 
   for (const auto& child : node->children()) {
-    AddNodeToIndexRecursive(child.get());
+    AddNodeToIndicesRecursive(child.get());
   }
 }
 

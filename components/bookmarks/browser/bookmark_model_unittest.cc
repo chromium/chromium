@@ -34,6 +34,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
@@ -1852,6 +1853,112 @@ TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnChangeURL) {
                     ->GetBookmarksMatching(
                         u"new", 1, query_parser::MatchingAlgorithm::DEFAULT)
                     .size());
+}
+
+TEST_F(BookmarkModelTest, GetNodeByUuid) {
+  const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
+  const base::Uuid explicit_uuid1 = base::Uuid::GenerateRandomV4();
+  const base::Uuid explicit_uuid2 = base::Uuid::GenerateRandomV4();
+
+  // Create two nodes (URL and folder) without specifying a UUID, which means
+  // a random one is used.
+  const BookmarkNode* url_node_with_implicit_uuid =
+      model_->AddURL(bookmark_bar_node, 0, u"title", GURL("http://foo.com"));
+  const BookmarkNode* folder_node_with_implicit_uuid =
+      model_->AddFolder(bookmark_bar_node, 0, u"title");
+
+  // Create two more with an explicit UUID provided.
+  const BookmarkNode* url_node_with_explicit_uuid = model_->AddURL(
+      bookmark_bar_node, 0, u"title", GURL("http://foo.com"),
+      /*meta_info=*/nullptr, /*creation_time=*/absl::nullopt, explicit_uuid1);
+  const BookmarkNode* folder_node_with_explicit_uuid = model_->AddFolder(
+      bookmark_bar_node, 0, u"title",
+      /*meta_info=*/nullptr, /*creation_time=*/absl::nullopt, explicit_uuid2);
+
+  ASSERT_TRUE(url_node_with_implicit_uuid);
+  ASSERT_TRUE(folder_node_with_implicit_uuid);
+  ASSERT_TRUE(url_node_with_explicit_uuid);
+  ASSERT_TRUE(folder_node_with_explicit_uuid);
+
+  EXPECT_EQ(url_node_with_implicit_uuid,
+            model_->GetNodeByUuid(url_node_with_implicit_uuid->uuid()));
+  EXPECT_EQ(folder_node_with_implicit_uuid,
+            model_->GetNodeByUuid(folder_node_with_implicit_uuid->uuid()));
+  EXPECT_EQ(url_node_with_explicit_uuid, model_->GetNodeByUuid(explicit_uuid1));
+  EXPECT_EQ(folder_node_with_explicit_uuid,
+            model_->GetNodeByUuid(explicit_uuid2));
+
+  // Verify cases that should return nullptr.
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(base::Uuid()));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(base::Uuid::GenerateRandomV4()));
+}
+
+TEST_F(BookmarkModelTest, GetPermanentNodeByUuid) {
+  // Permanent nodes should be returned by UUID.
+  EXPECT_EQ(model_->root_node(),
+            model_->GetNodeByUuid(base::Uuid::ParseLowercase(kRootNodeUuid)));
+  EXPECT_EQ(
+      model_->bookmark_bar_node(),
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kBookmarkBarNodeUuid)));
+  EXPECT_EQ(model_->mobile_node(),
+            model_->GetNodeByUuid(
+                base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid)));
+  EXPECT_EQ(model_->other_node(),
+            model_->GetNodeByUuid(
+                base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid)));
+
+  // Managed bookmarks don't exist by default.
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         base::Uuid::ParseLowercase(kManagedNodeUuid)));
+
+  BookmarkPermanentNode* managed_node = ReloadModelWithManagedNode();
+  EXPECT_EQ(managed_node, model_->GetNodeByUuid(
+                              base::Uuid::ParseLowercase(kManagedNodeUuid)));
+}
+
+TEST_F(BookmarkModelTest, GetNodeByUuidAfterRemove) {
+  const BookmarkNode* folder1 =
+      model_->AddFolder(model_->bookmark_bar_node(), 0, u"title1");
+  const BookmarkNode* folder2 =
+      model_->AddFolder(model_->bookmark_bar_node(), 0, u"title2");
+
+  const base::Uuid uuid1 = folder1->uuid();
+  const base::Uuid uuid2 = folder2->uuid();
+
+  ASSERT_EQ(folder1, model_->GetNodeByUuid(uuid1));
+  ASSERT_EQ(folder2, model_->GetNodeByUuid(uuid2));
+
+  model_->Remove(folder1, bookmarks::metrics::BookmarkEditSource::kOther);
+
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(uuid1));
+  EXPECT_EQ(folder2, model_->GetNodeByUuid(uuid2));
+
+  model_->Remove(folder2, bookmarks::metrics::BookmarkEditSource::kOther);
+
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(uuid2));
+}
+
+TEST_F(BookmarkModelTest, GetNodeByUuidAfterRemoveAllUserBookmarks) {
+  const BookmarkNode* folder1 =
+      model_->AddFolder(model_->bookmark_bar_node(), 0, u"title1");
+  const BookmarkNode* folder2 =
+      model_->AddFolder(model_->bookmark_bar_node(), 0, u"title2");
+
+  const base::Uuid uuid1 = folder1->uuid();
+  const base::Uuid uuid2 = folder2->uuid();
+
+  ASSERT_EQ(folder1, model_->GetNodeByUuid(uuid1));
+  ASSERT_EQ(folder2, model_->GetNodeByUuid(uuid2));
+
+  model_->RemoveAllUserBookmarks();
+
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(uuid1));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(uuid2));
+
+  // Permanent nodes should continue to exist and be returned by UUID.
+  EXPECT_EQ(
+      model_->bookmark_bar_node(),
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kBookmarkBarNodeUuid)));
 }
 
 // Verifies the TitledUrlIndex is probably loaded.

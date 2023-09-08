@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/uuid_index.h"
 
 namespace base {
 class TimeTicks;
@@ -50,6 +51,8 @@ class BookmarkLoadDetails {
   std::unique_ptr<TitledUrlIndex> owned_titled_url_index() {
     return std::move(titled_url_index_);
   }
+
+  UuidIndex owned_uuid_index() { return std::move(uuid_index_); }
 
   const BookmarkNode::MetaInfoMap& model_meta_info_map() const {
     return model_meta_info_map_;
@@ -118,6 +121,7 @@ class BookmarkLoadDetails {
       nullptr;
   LoadManagedNodeCallback load_managed_node_callback_;
   std::unique_ptr<TitledUrlIndex> titled_url_index_;
+  UuidIndex uuid_index_;
   BookmarkNode::MetaInfoMap model_meta_info_map_;
   BookmarkNode::MetaInfoMap model_unsynced_meta_info_map_;
   int64_t max_id_ = 1;

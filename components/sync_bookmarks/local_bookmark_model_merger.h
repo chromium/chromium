@@ -47,12 +47,8 @@ class LocalBookmarkModelMerger {
   // Computes bookmark pairs that should be matched by UUID. Note that matches
   // may be incompatible, that is, if only one of the two is a folder.
   static std::unordered_map<base::Uuid, GuidMatch, base::UuidHash>
-  FindGuidMatches(
-      const bookmarks::BookmarkModel* local_model,
-      const bookmarks::BookmarkModel* account_model,
-      const std::unordered_map<base::Uuid,
-                               const bookmarks::BookmarkNode*,
-                               base::UuidHash>& uuid_to_account_node_map);
+  FindGuidMatches(const bookmarks::BookmarkModel* local_model,
+                  const bookmarks::BookmarkModel* account_model);
 
   // Merges a local and a account subtrees. The input nodes are two equivalent
   // local and remote nodes. This method tries to recursively match their
@@ -88,9 +84,6 @@ class LocalBookmarkModelMerger {
 
   const raw_ptr<const bookmarks::BookmarkModel> local_model_;
   const raw_ptr<bookmarks::BookmarkModel> account_model_;
-  const std::
-      unordered_map<base::Uuid, const bookmarks::BookmarkNode*, base::UuidHash>
-          initial_uuid_to_account_node_map_;
   const std::unordered_map<base::Uuid, GuidMatch, base::UuidHash>
       uuid_to_match_map_;
 };

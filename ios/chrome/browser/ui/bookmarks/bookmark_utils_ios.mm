@@ -120,14 +120,7 @@ const BookmarkNode* FindNodeById(bookmarks::BookmarkModel* model, int64_t id) {
 const bookmarks::BookmarkNode* FindNodeByUuid(bookmarks::BookmarkModel* model,
                                               const base::Uuid& uuid) {
   CHECK(model);
-  ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
-  while (iterator.has_next()) {
-    const BookmarkNode* node = iterator.Next();
-    if (node->uuid() == uuid) {
-      return node;
-    }
-  }
-  return nullptr;
+  return model->GetNodeByUuid(uuid);
 }
 
 const BookmarkNode* FindFolderById(bookmarks::BookmarkModel* model,

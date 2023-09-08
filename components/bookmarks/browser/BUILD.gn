@@ -50,6 +50,7 @@ static_library("browser") {
     "typed_count_sorter.h",
     "url_index.cc",
     "url_index.h",
+    "uuid_index.h",
   ]
 
   public_deps = [ "//components/bookmarks/common" ]

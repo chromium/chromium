@@ -60,6 +60,7 @@ void BookmarkLoadDetails::CreateIndices() {
 }
 
 void BookmarkLoadDetails::AddNodeToIndexRecursive(BookmarkNode* node) {
+  uuid_index_.insert(node);
   if (node->is_url()) {
     if (node->url().is_valid()) {
       titled_url_index_->Add(node);
