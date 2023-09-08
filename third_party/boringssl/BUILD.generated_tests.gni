@@ -2388,6 +2388,7 @@ pki_test_sources = [
   "src/pki/fillins/path_service.cc",
   "src/pki/general_names_unittest.cc",
   "src/pki/input_unittest.cc",
+  "src/pki/ip_util_unittest.cc",
   "src/pki/mock_signature_verify_cache.cc",
   "src/pki/name_constraints_unittest.cc",
   "src/pki/nist_pkits_unittest.cc",
