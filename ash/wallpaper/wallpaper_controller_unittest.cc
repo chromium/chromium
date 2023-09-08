@@ -1693,6 +1693,37 @@ TEST_P(WallpaperControllerTest,
                                       1);
 }
 
+TEST_P(
+    WallpaperControllerTest,
+    ActiveUserPrefServiceChanged_OOBEForSecondUser_SetPolicyWallpaper_TimeOfDayEnabled) {
+  if (!IsTimeOfDayEnabled()) {
+    return;
+  }
+  auto images = TimeOfDayImageSet();
+  client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+                        images);
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kDefault);
+  pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
+  SetSessionState(SessionState::LOGIN_PRIMARY);
+  LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
+      OobeDialogState::GAIA_SIGNIN);
+  // Log in and trigger `OnActiveUserPrefServiceChange`.
+  SimulateUserLogin(kAccountId1);
+  controller_->SetPolicyWallpaper(kAccountId1, user_manager::USER_TYPE_REGULAR,
+                                  "some-image-data");
+  RunAllTasksUntilIdle();
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
+  WallpaperInfo policy_wallpaper_info(base::FilePath(kWallpaperFilesId1)
+                                          .Append("policy-controlled.jpeg")
+                                          .value(),
+                                      WALLPAPER_LAYOUT_CENTER_CROPPED,
+                                      WallpaperType::kPolicy,
+                                      base::Time::Now().LocalMidnight());
+  EXPECT_TRUE(actual_info.MatchesSelection(policy_wallpaper_info));
+  EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(kAccountId1));
+}
+
 TEST_P(WallpaperControllerTest,
        ActiveUserPrefServiceChanged_NonOOBE_SetTimeOfDayWallpaper) {
   if (!IsTimeOfDayEnabled()) {

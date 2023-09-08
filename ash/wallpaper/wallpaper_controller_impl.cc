@@ -78,7 +78,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_util.h"
 #include "url/gurl.h"
-#include "wallpaper_metrics_manager.h"
 
 using color_utils::ColorProfile;
 
@@ -1007,6 +1006,9 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
                              CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
+
+  // Invalidate weak ptrs to cancel prior requests to set wallpaper.
+  set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   image_util::DecodeImageData(
       base::BindOnce(&WallpaperControllerImpl::OnPolicyWallpaperDecoded,
                      weak_factory_.GetWeakPtr(), account_id, user_type,
