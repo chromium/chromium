@@ -363,6 +363,15 @@ class ObliterateStoragePartitionHelper
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+void SendError(
+    base::OnceCallback<void(mojom::InstallIsolatedWebAppResultPtr)> callback,
+    const std::string& error_message) {
+  auto result = mojom::InstallIsolatedWebAppResult::New();
+  result->success = false;
+  result->error = std::string("could not get web app provider");
+  std::move(callback).Run(std::move(result));
+}
+
 }  // namespace
 
 class WebAppInternalsHandler::IsolatedWebAppDevBundleSelectListener
@@ -470,19 +479,13 @@ void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
     const GURL& url,
     InstallIsolatedWebAppFromDevProxyCallback callback) {
   if (!web_app::AreWebAppsEnabled(&profile_.get())) {
-    auto result = mojom::InstallIsolatedWebAppResult::New();
-    result->success = false;
-    result->error = std::string("web apps not enabled");
-    std::move(callback).Run(std::move(result));
+    SendError(std::move(callback), "web apps not enabled");
     return;
   }
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
   if (!provider) {
-    auto result = mojom::InstallIsolatedWebAppResult::New();
-    result->success = false;
-    result->error = std::string("could not get web app provider");
-    std::move(callback).Run(std::move(result));
+    SendError(std::move(callback), "could not get web app provider");
     return;
   }
 
@@ -497,20 +500,14 @@ void WebAppInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
     SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback) {
   content::RenderFrameHost* render_frame_host = web_ui_->GetRenderFrameHost();
   if (!render_frame_host) {
-    auto result = mojom::InstallIsolatedWebAppResult::New();
-    result->success = false;
-    result->error = "could not get render frame host";
-    std::move(callback).Run(std::move(result));
+    SendError(std::move(callback), "could not get render frame host");
     return;
   }
 
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
   if (!browser) {
-    auto result = mojom::InstallIsolatedWebAppResult::New();
-    result->success = false;
-    result->error = "could not get browser";
-    std::move(callback).Run(std::move(result));
+    SendError(std::move(callback), "could not get browser");
     return;
   }
 
@@ -525,27 +522,18 @@ void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
     SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback,
     absl::optional<base::FilePath> path) {
   if (!path) {
-    auto result = mojom::InstallIsolatedWebAppResult::New();
-    result->success = false;
-    result->error = "no file selected";
-    std::move(callback).Run(std::move(result));
+    SendError(std::move(callback), "no file selected");
     return;
   }
 
   if (!web_app::AreWebAppsEnabled(&profile_.get())) {
-    auto result = mojom::InstallIsolatedWebAppResult::New();
-    result->success = false;
-    result->error = std::string("web apps not enabled");
-    std::move(callback).Run(std::move(result));
+    SendError(std::move(callback), "web apps not enabled");
     return;
   }
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
   if (!provider) {
-    auto result = mojom::InstallIsolatedWebAppResult::New();
-    result->success = false;
-    result->error = std::string("could not get web app provider");
-    std::move(callback).Run(std::move(result));
+    SendError(std::move(callback), "could not get web app provider");
     return;
   }
 
@@ -561,14 +549,14 @@ void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
     WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxyCallback callback,
     web_app::IsolatedWebAppInstallationManager::
         MaybeInstallIsolatedWebAppCommandSuccess result) {
-  ::mojom::InstallIsolatedWebAppResult mojo_result;
+  auto mojo_result = mojom::InstallIsolatedWebAppResult::New();
   if (result.has_value()) {
-    mojo_result.success = true;
+    mojo_result->success = true;
   } else {
-    mojo_result.success = false;
-    mojo_result.error = result.error();
+    mojo_result->success = false;
+    mojo_result->error = result.error();
   }
-  std::move(callback).Run(mojo_result.Clone());
+  std::move(callback).Run(std::move(mojo_result));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
