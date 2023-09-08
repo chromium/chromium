@@ -7,7 +7,14 @@
 load("@builtin//struct.star", "module")
 
 __KNOWN_CONFIG_OPTIONS = [
-    "remote_all",
+    # Indicates that the build runs on a builder.
+    # Siso wants to run all actions remotely, excepts actions disabled by
+    # local_* configs.
+    "builder",
+
+    # Runs typescript actions locally.
+    # This is used to avoid remote typescript on production before verification.
+    "local_typescript",
 ]
 
 def __check(ctx):

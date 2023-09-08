@@ -53,7 +53,7 @@ def __step_config(ctx, step_config):
                 "./obj/chrome/android/chrome_test_java.turbine.jar": {"platform_ref": "large"},
             },
             # TODO(b/284252142): Run turbine actions locally by default because it slows down developer builds.
-            "remote": config.get(ctx, "remote_all"),
+            "remote": config.get(ctx, "builder"),
             "platform_ref": "large",
             "canonicalize_dir": True,
             "timeout": "2m",
@@ -118,7 +118,7 @@ def __step_config(ctx, step_config):
             "ignore_extra_input_pattern": ".*\\.dex",
             "ignore_extra_output_pattern": ".*\\.dex",
             # TODO(b/284252142): Run dex actions locally by default because it slows down developer builds.
-            "remote": config.get(ctx, "remote_all"),
+            "remote": config.get(ctx, "builder"),
             "platform_ref": "large",
             "canonicalize_dir": True,
             "timeout": "2m",
@@ -227,10 +227,11 @@ def __android_compile_java_handler(ctx, cmd):
 
     inputs = []
     for i, arg in enumerate(cmd.args):
-        if arg == '--enable-errorprone':
-          # errorprone requires the plugin directory to detect src dir.
-          # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
-          inputs.append(ctx.fs.canonpath("../../tools/android/errorprone_plugin"))
+        if arg == "--enable-errorprone":
+            # errorprone requires the plugin directory to detect src dir.
+            # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
+            inputs.append(ctx.fs.canonpath("../../tools/android/errorprone_plugin"))
+
         # read .sources file.
         if arg.startswith("@"):
             sources = str(ctx.fs.read(ctx.fs.canonpath(arg.removeprefix("@")))).splitlines()

@@ -1286,7 +1286,7 @@ def build_perf_builder(description_html, **kwargs):
     kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
     kwargs.setdefault("reclient_jobs", reclient.jobs.HIGH_JOBS_FOR_CQ)
     kwargs.setdefault("use_clang_coverage", True)
-    kwargs.setdefault("siso_configs", [])
+    kwargs.setdefault("siso_configs", ["builder"])
 
     return ci.builder(
         service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
@@ -1368,7 +1368,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "andss",
     ),
-    siso_configs = ["remote_all"],
 )
 
 build_perf_builder(
@@ -1406,6 +1405,7 @@ This builder measures build performance for Android developer builds, by simulat
     reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 5120,
     shadow_reclient_instance = None,
+    siso_configs = [],  # disable builder mode.
     use_clang_coverage = None,
 )
 
@@ -1459,7 +1459,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "lnxss",
     ),
-    siso_configs = ["remote_all"],
 )
 
 build_perf_builder(
@@ -1490,6 +1489,7 @@ This builder measures build performance for Linux developer builds, by simulatin
     reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 5120,
     shadow_reclient_instance = None,
+    siso_configs = [],  # disable builder mode.
     use_clang_coverage = None,
 )
 
@@ -1543,7 +1543,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "winss",
     ),
-    siso_configs = ["remote_all"],
 )
 
 build_perf_builder(
@@ -1574,6 +1573,7 @@ This builder measures build performance for Windows developer builds, by simulat
     reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 1000,
     shadow_reclient_instance = None,
+    siso_configs = [],  # disable builder mode.
     use_clang_coverage = None,
 )
 
@@ -1633,7 +1633,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "crosss",
     ),
-    siso_configs = ["remote_all"],
 )
 
 ci.builder(
