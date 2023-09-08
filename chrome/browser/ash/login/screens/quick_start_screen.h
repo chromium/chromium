@@ -32,12 +32,6 @@ class QuickStartScreen
     UNKNOWN,
   };
 
-  enum class EntryPoint {
-    WELCOME_SCREEN,
-    NETWORK_SCREEN,
-    SIGNIN_SCREEN,
-  };
-
   enum class Result {
     // leaving this till the new approach works
     CANCEL_AND_RETURN_TO_WELCOME,
@@ -63,10 +57,6 @@ class QuickStartScreen
   // the screen is shown.
   void SetFlowState(FlowState flow_state);
 
-  // Sets the entry point of quick start screen, this is to determine which
-  // screen to return to if quick start screen is cancelled.
-  void SetEntryPoint(EntryPoint entry_point);
-
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
@@ -90,7 +80,6 @@ class QuickStartScreen
   void SavePhoneInstanceID();
 
   FlowState flow_state_ = FlowState::UNKNOWN;
-  EntryPoint entry_point_ = EntryPoint::WELCOME_SCREEN;
   std::string discoverable_name_;
   base::WeakPtr<TView> view_;
   raw_ptr<QuickStartController> controller_;

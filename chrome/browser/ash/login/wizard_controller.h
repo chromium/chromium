@@ -287,8 +287,7 @@ class WizardController : public OobeUI::Observer {
 
   // Show specific screen.
   void ShowWelcomeScreen();
-  void ShowQuickStartScreen(
-      QuickStartScreen::EntryPoint quick_start_entry_point);
+  void ShowQuickStartScreen();
   void ShowNetworkScreen();
   void ShowEnrollmentScreen();
   void ShowDemoModeSetupScreen();

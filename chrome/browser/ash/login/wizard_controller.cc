@@ -912,10 +912,8 @@ void WizardController::ShowWelcomeScreen() {
   SetCurrentScreen(GetScreen(WelcomeView::kScreenId));
 }
 
-void WizardController::ShowQuickStartScreen(
-    QuickStartScreen::EntryPoint quick_start_entry_point) {
+void WizardController::ShowQuickStartScreen() {
   CHECK(wizard_context_->quick_start_enabled);
-  GetScreen<QuickStartScreen>()->SetEntryPoint(quick_start_entry_point);
   GetScreen<QuickStartScreen>()->SetFlowState(
       QuickStartScreen::FlowState::INITIAL);
   SetCurrentScreen(GetScreen(QuickStartView::kScreenId));
@@ -1392,7 +1390,7 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
       break;
     case GaiaScreen::Result::QUICK_START:
-      ShowQuickStartScreen(QuickStartScreen::EntryPoint::SIGNIN_SCREEN);
+      ShowQuickStartScreen();
       break;
   }
 }
@@ -1807,7 +1805,7 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
       ShowNetworkScreen();
       return;
     case WelcomeScreen::Result::QUICK_START:
-      ShowQuickStartScreen(QuickStartScreen::EntryPoint::WELCOME_SCREEN);
+      ShowQuickStartScreen();
       return;
   }
 }
@@ -1888,7 +1886,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       ShowWelcomeScreen();
       break;
     case NetworkScreen::Result::QUICK_START:
-      ShowQuickStartScreen(QuickStartScreen::EntryPoint::NETWORK_SCREEN);
+      ShowQuickStartScreen();
       break;
   }
 }

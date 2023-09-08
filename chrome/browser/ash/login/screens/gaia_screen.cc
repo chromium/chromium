@@ -207,8 +207,9 @@ void GaiaScreen::ShowImpl() {
     // Determine the QuickStart button visibility
     WizardController::default_controller()
         ->quick_start_controller()
-        ->IsSupported(base::BindOnce(&GaiaScreen::SetQuickStartButtonVisibility,
-                                     weak_ptr_factory_.GetWeakPtr()));
+        ->DetermineEntryPointVisibility(
+            base::BindOnce(&GaiaScreen::SetQuickStartButtonVisibility,
+                           weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

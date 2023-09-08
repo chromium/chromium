@@ -75,7 +75,7 @@ void NetworkScreen::ShowImpl() {
     // Determine the QuickStart button visibility
     WizardController::default_controller()
         ->quick_start_controller()
-        ->IsSupported(
+        ->DetermineEntryPointVisibility(
             base::BindOnce(&NetworkScreen::SetQuickStartButtonVisibility,
                            weak_ptr_factory_.GetWeakPtr()));
   }

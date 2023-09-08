@@ -17,6 +17,13 @@ namespace ash {
 // Main orchestrator of the QuickStart flow in OOBE
 class QuickStartController : public OobeUI::Observer {
  public:
+  // QuickStart flow entry point locations.
+  enum class EntryPoint {
+    WELCOME_SCREEN,
+    NETWORK_SCREEN,
+    GAIA_SCREEN,
+  };
+
   using EntryPointButtonVisibilityCallback = base::OnceCallback<void(bool)>;
 
   QuickStartController();
@@ -32,7 +39,11 @@ class QuickStartController : public OobeUI::Observer {
 
   // Whether QuickStart is supported. Used for determining whether the entry
   // point buttons are shown.
-  void IsSupported(EntryPointButtonVisibilityCallback callback);
+  void DetermineEntryPointVisibility(
+      EntryPointButtonVisibilityCallback callback);
+
+  // Exit point to be used when the flow is cancelled.
+  EntryPoint GetExitPoint();
 
  private:
   void InitTargetDeviceBootstrapController();
@@ -67,6 +78,9 @@ class QuickStartController : public OobeUI::Observer {
 
   // Source of truth of OOBE's current state via OobeUI::Observer
   absl::optional<OobeScreenId> current_screen_, previous_screen_;
+
+  // Bookkeeping where the quick start flow started.
+  absl::optional<EntryPoint> entry_point_;
 
   base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};

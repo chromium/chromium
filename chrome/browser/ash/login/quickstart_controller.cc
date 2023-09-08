@@ -8,10 +8,31 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 
 namespace ash {
+
+namespace {
+
+absl::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
+    OobeScreenId screen) {
+  if (screen.name == WelcomeScreenHandler::kScreenId.name) {
+    return QuickStartController::EntryPoint::WELCOME_SCREEN;
+  } else if (screen.name == NetworkScreenHandler::kScreenId.name) {
+    return QuickStartController::EntryPoint::NETWORK_SCREEN;
+  } else if (screen.name == GaiaScreenHandler::kScreenId.name) {
+    return QuickStartController::EntryPoint::GAIA_SCREEN;
+  }
+  return absl::nullopt;
+}
+
+}  // namespace
 
 QuickStartController::QuickStartController() {
   if (features::IsOobeQuickStartEnabled()) {
@@ -29,7 +50,7 @@ void QuickStartController::ForceEnableQuickStart() {
   InitTargetDeviceBootstrapController();
 }
 
-void QuickStartController::IsSupported(
+void QuickStartController::DetermineEntryPointVisibility(
     EntryPointButtonVisibilityCallback callback) {
   // Bootstrap controller is only instantiated when the feature is enabled (also
   // via the keyboard shortcut. See |ForceEnableQuickStart|.)
@@ -46,6 +67,10 @@ void QuickStartController::IsSupported(
   bootstrap_controller_->GetFeatureSupportStatusAsync(
       base::BindOnce(&QuickStartController::OnGetQuickStartFeatureSupportStatus,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+QuickStartController::EntryPoint QuickStartController::GetExitPoint() {
+  return entry_point_.value();
 }
 
 void QuickStartController::InitTargetDeviceBootstrapController() {
@@ -73,6 +98,16 @@ void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
                                                   OobeScreenId current_screen) {
   current_screen_ = current_screen;
   previous_screen_ = previous_screen;
+
+  // Switched into the QuickStart screen.
+  if (current_screen_ == QuickStartScreenHandler::kScreenId) {
+    // Keep track of where the flow originated.
+    if (!entry_point_.has_value()) {
+      const auto entry_point = EntryPointFromScreen(previous_screen_.value());
+      CHECK(entry_point.has_value()) << "Unknown entry point!";
+      entry_point_ = entry_point;
+    }
+  }
 }
 
 void QuickStartController::OnDestroyingOobeUI() {

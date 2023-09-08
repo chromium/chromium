@@ -86,10 +86,6 @@ void QuickStartScreen::SetFlowState(FlowState flow_state) {
   flow_state_ = flow_state;
 }
 
-void QuickStartScreen::SetEntryPoint(EntryPoint entry_point) {
-  entry_point_ = entry_point;
-}
-
 void QuickStartScreen::HideImpl() {
   DCHECK(controller_->bootstrap_controller());
   controller_->bootstrap_controller()->RemoveObserver(this);
@@ -101,14 +97,15 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
     DCHECK(controller_->bootstrap_controller());
     controller_->bootstrap_controller()->CloseOpenConnections();
     controller_->bootstrap_controller()->StopAdvertising();
-    switch (entry_point_) {
-      case EntryPoint::WELCOME_SCREEN:
+    const auto return_entry_point = controller_->GetExitPoint();
+    switch (return_entry_point) {
+      case ash::QuickStartController::EntryPoint::WELCOME_SCREEN:
         exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_WELCOME);
         return;
-      case EntryPoint::NETWORK_SCREEN:
+      case ash::QuickStartController::EntryPoint::NETWORK_SCREEN:
         exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_NETWORK);
         return;
-      case EntryPoint::SIGNIN_SCREEN:
+      case ash::QuickStartController::EntryPoint::GAIA_SCREEN:
         exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_SIGNIN);
         return;
     }
