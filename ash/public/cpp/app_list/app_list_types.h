@@ -465,7 +465,9 @@ enum class SystemInfoAnswerCardDisplayType {
 
 // The categories for launcher search controls.
 enum class AppListSearchControlCategory {
-  kCannotToggle = 0,  // default value to indicate it is non-toggleable
+  kMinValue = 0,
+
+  kCannotToggle = kMinValue,  // default value to indicate it is non-toggleable
   kApps = 1,
   kAppShortcuts = 2,
   kFiles = 3,
@@ -474,6 +476,8 @@ enum class AppListSearchControlCategory {
   kImages = 6,
   kPlayStore = 7,
   kWeb = 8,
+
+  kMaxValue = kWeb
 };
 
 // Gets the pref name strings used for the app list control category preference

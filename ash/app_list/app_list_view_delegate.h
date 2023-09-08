@@ -195,6 +195,13 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Sets whether the user wants to hide the continue section and recent apps.
   // Used by productivity launcher only.
   virtual void SetHideContinueSection(bool hide) = 0;
+
+  // Returns whether the search category `category` is enabled.
+  virtual bool IsCategoryEnabled(AppListSearchControlCategory category) = 0;
+
+  // Sets the preference of displaying `category` to users to `enabled`.
+  virtual void SetCategoryEnabled(AppListSearchControlCategory category,
+                                  bool enabled) = 0;
 };
 
 }  // namespace ash

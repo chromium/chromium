@@ -102,6 +102,8 @@ AppListSearchView::AppListSearchView(
       result_selection_controller_.get());
 
   if (features::IsProductivityLauncherImageSearchEnabled()) {
+    // TODO(crbug.com/1352636): Only create `search_notifier_` if it is not yet
+    // accepted.
     // TODO(crbug.com/1352636): Update the strings with the l10n translated
     // ones.
     AppListToastView::Builder toast_view_builder(
@@ -154,8 +156,6 @@ AppListSearchView::AppListSearchView(
     image_search_container_ = scroll_contents->AddChildView(
         std::make_unique<SearchResultImageListView>(view_delegate));
     add_result_container(image_search_container_);
-    image_search_container_->SetVisible(
-        search_notifier_controller_->ShouldShowPrivacyNotice());
   }
 
   // SearchResultListViews are aware of their relative position in the

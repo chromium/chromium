@@ -4,10 +4,10 @@
 
 #include "ash/app_list/views/search_box_view.h"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
@@ -26,6 +26,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
@@ -52,6 +53,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -69,6 +71,9 @@
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -130,6 +135,27 @@ constexpr gfx::RoundedCornersF kAssistantButtonBackgroundRadiiRTL = {
     4,
 };
 
+// List of all categories with their corresponding string id that would be shown
+// in the menu.
+constexpr auto kCategories =
+    base::MakeFixedFlatMap<AppListSearchControlCategory, int>(
+        {{AppListSearchControlCategory::kApps,
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_APPS},
+         {AppListSearchControlCategory::kAppShortcuts,
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_APP_SHORTCUTS},
+         {AppListSearchControlCategory::kFiles,
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_FILES},
+         {AppListSearchControlCategory::kGames,
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_GAMES},
+         {AppListSearchControlCategory::kHelp,
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_HELP},
+         {AppListSearchControlCategory::kImages,
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_IMAGES},
+         {AppListSearchControlCategory::kPlayStore,
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_PLAY_STORE},
+         {AppListSearchControlCategory::kWeb,
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_WEB}});
+
 bool IsTrimmedQueryEmpty(const std::u16string& query) {
   std::u16string trimmed_query;
   base::TrimWhitespace(query, base::TrimPositions::TRIM_ALL, &trimmed_query);
@@ -170,6 +196,14 @@ std::u16string GetCategoryName(SearchResult* search_result) {
   }
 }
 
+// Returns the check box icon that is shown on the category filter menu item.
+ui::ImageModel GetCheckboxImage(bool checked) {
+  return ui::ImageModel::FromVectorIcon(
+      checked ? views::kCheckboxActiveIcon : views::kCheckboxNormalIcon,
+      checked ? cros_tokens::kCrosSysPrimary : cros_tokens::kCrosSysSecondary,
+      kAppContextMenuIconSize);
+}
+
 bool IsSubstringCaseInsensitive(std::u16string haystack_expr,
                                 std::u16string needle_expr) {
   // Convert complete given String to lower case
@@ -192,6 +226,99 @@ ui::ColorId GetFocusColorId(bool use_jelly_colors) {
 }
 
 }  // namespace
+
+class FilterMenuAdapter : public views::MenuModelAdapter {
+ public:
+  FilterMenuAdapter(ui::SimpleMenuModel* menu_model,
+                    base::RepeatingClosure on_menu_closed,
+                    AppListViewDelegate* view_delegate)
+      : views::MenuModelAdapter(menu_model, std::move(on_menu_closed)),
+        view_delegate_(view_delegate) {}
+
+  FilterMenuAdapter(const FilterMenuAdapter&) = delete;
+  FilterMenuAdapter& operator=(const FilterMenuAdapter&) = delete;
+
+  ~FilterMenuAdapter() override = default;
+
+  // views::MenuDelegate
+  bool ShouldExecuteCommandWithoutClosingMenu(int id,
+                                              const ui::Event& e) override {
+    // Keep the menu open if the user toggles the checkboxes in the menu.
+    return true;
+  }
+  void ExecuteCommand(int id) override { ExecuteCommand(id, 0); }
+  void ExecuteCommand(int id, int mouse_event_flags) override {
+    CHECK(id >= static_cast<int>(AppListSearchControlCategory::kMinValue) &&
+          id <= static_cast<int>(AppListSearchControlCategory::kMaxValue));
+    const auto category = static_cast<AppListSearchControlCategory>(id);
+    switch (category) {
+      case AppListSearchControlCategory::kApps:
+      case AppListSearchControlCategory::kAppShortcuts:
+      case AppListSearchControlCategory::kFiles:
+      case AppListSearchControlCategory::kGames:
+      case AppListSearchControlCategory::kHelp:
+      case AppListSearchControlCategory::kImages:
+      case AppListSearchControlCategory::kPlayStore:
+      case AppListSearchControlCategory::kWeb:
+        view_delegate_->SetCategoryEnabled(
+            category, !view_delegate_->IsCategoryEnabled(category));
+        break;
+      case AppListSearchControlCategory::kCannotToggle:
+        // There shouldn't be a "Cannot toggle" option.
+        NOTREACHED_NORETURN();
+    }
+
+    // Toggle the checkbox icon.
+    GetFilterMenuItemByCategory(category)->SetIcon(
+        GetCheckboxImage(view_delegate_->IsCategoryEnabled(category)));
+  }
+
+  void ShowFilterMenu(SearchBoxView* search_box) {
+    int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
+                    views::MenuRunner::FIXED_ANCHOR;
+    filter_menu_root_ = CreateMenu();
+    filter_menu_runner_ =
+        std::make_unique<views::MenuRunner>(filter_menu_root_, run_types);
+    filter_menu_runner_->RunMenuAt(
+        search_box->GetWidget(), nullptr /*button_controller*/,
+        search_box->filter_button()->GetBoundsInScreen(),
+        views::MenuAnchorPosition::kBubbleBottomRight,
+        ui::MenuSourceType::MENU_SOURCE_NONE);
+  }
+
+  // Returns true if the category filter menu is opened.
+  bool IsFilterMenuOpen() const {
+    return filter_menu_runner_ && filter_menu_runner_->IsRunning();
+  }
+
+  // Returns the menu item view in the category filter menu that indicates the
+  // `category` button. This should only be called when the menu is opened.
+  views::MenuItemView* GetFilterMenuItemByCategory(
+      AppListSearchControlCategory category) {
+    return GetFilterMenuItemByIdx(GetMenuIndexByCategory(category));
+  }
+
+ private:
+  // Returns the menu item view at `index` in the category filter menu. This
+  // should only be called when the menu is opened.
+  views::MenuItemView* GetFilterMenuItemByIdx(int index) {
+    CHECK(IsFilterMenuOpen());
+    return filter_menu_root_->GetSubmenu()->GetMenuItemAt(index);
+  }
+
+  // Returns the index of the MenuItemView that can toggle `category` in the
+  // category filter menu.
+  int GetMenuIndexByCategory(AppListSearchControlCategory category) const {
+    // The index aligns to the corresponding command id value.
+    // TODO(crbug.com/1352636): Update this when not all categories are listed.
+    return static_cast<int>(category);
+  }
+
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+
+  std::unique_ptr<views::MenuRunner> filter_menu_runner_;
+  raw_ptr<views::MenuItemView> filter_menu_root_;
+};
 
 class SearchBoxView::FocusRingLayer : public ui::LayerOwner, ui::LayerDelegate {
  public:
@@ -272,7 +399,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
 
   if (features::IsProductivityLauncherImageSearchEnabled()) {
     views::ImageButton* filter_button = CreateFilterButton(base::BindRepeating(
-        &SearchBoxView::FilterButtonPressed, base::Unretained(this)));
+        &SearchBoxView::ShowFilterMenu, weak_ptr_factory_.GetWeakPtr()));
     filter_button->SetFlipCanvasOnPaintForRTLUI(false);
     // TODO(crbug.com/1352636): Replace this with the l10n string.
     std::u16string filter_button_label(u"Filter search categories");
@@ -590,6 +717,44 @@ void SearchBoxView::OpenSearchBoxIphUrl() {
   view_delegate_->OpenSearchBoxIphUrl();
 }
 
+ui::SimpleMenuModel* SearchBoxView::BuildFilterMenuModel() {
+  filter_menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
+  // TODO(crbug.com/1352636): Use l10n string when the text is finalized.
+  filter_menu_model_->AddTitle(u"Search categories");
+  for (auto category : kCategories) {
+    filter_menu_model_->AddItemWithIcon(
+        static_cast<int>(category.first),
+        l10n_util::GetStringUTF16(category.second),
+        GetCheckboxImage(view_delegate_->IsCategoryEnabled(category.first)));
+  }
+  return filter_menu_model_.get();
+}
+
+void SearchBoxView::ShowFilterMenu() {
+  filter_menu_adapter_ = std::make_unique<FilterMenuAdapter>(
+      BuildFilterMenuModel(),
+      base::BindRepeating(&SearchBoxView::OnFilterMenuClosed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      view_delegate_);
+
+  filter_menu_adapter_->ShowFilterMenu(this);
+}
+
+void SearchBoxView::OnFilterMenuClosed() {
+  // Trigger the search while keeping the same query text.
+  TriggerSearch();
+}
+
+views::MenuItemView* SearchBoxView::GetFilterMenuItemByCategory(
+    AppListSearchControlCategory category) {
+  return filter_menu_adapter_->GetFilterMenuItemByCategory(category);
+}
+
+bool SearchBoxView::IsFilterMenuOpen() {
+  CHECK(filter_button());
+  return filter_menu_adapter_->IsFilterMenuOpen();
+}
+
 // static
 int SearchBoxView::GetFocusRingSpacing() {
   return kSearchBoxFocusRingWidth + kSearchBoxFocusRingPadding;
@@ -892,11 +1057,6 @@ void SearchBoxView::CloseButtonPressed() {
 
 void SearchBoxView::AssistantButtonPressed() {
   delegate_->AssistantButtonPressed();
-}
-
-// TODO(crbug.com/1352636): Implement opening the category filter bubble.
-void SearchBoxView::FilterButtonPressed() {
-  return;
 }
 
 void SearchBoxView::UpdateSearchIcon() {

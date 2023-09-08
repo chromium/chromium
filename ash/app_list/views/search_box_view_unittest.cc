@@ -694,12 +694,12 @@ class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
   ~SearchBoxViewFilterButtonTest() override = default;
 };
 
-// Tests that the close button is invisible by default.
+// Tests that the filter button is invisible by default.
 TEST_F(SearchBoxViewFilterButtonTest, FilterButtonInvisibleByDefault) {
   EXPECT_FALSE(view()->filter_button()->GetVisible());
 }
 
-// Tests that the close button becomes visible after typing in the search box.
+// Tests that the filter button becomes visible after typing in the search box.
 TEST_F(SearchBoxViewFilterButtonTest, FilterButtonVisibleAfterTyping) {
   KeyPress(ui::VKEY_A);
   EXPECT_TRUE(view()->filter_button()->GetVisible());

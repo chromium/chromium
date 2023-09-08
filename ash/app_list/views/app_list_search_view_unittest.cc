@@ -29,6 +29,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
@@ -39,6 +40,7 @@
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/table_layout_view.h"
@@ -660,6 +662,56 @@ TEST_P(SearchResultImageViewTest, AcceptingPrivacyNoticeRemovesIt) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   EXPECT_TRUE(IsImageSearchEnabled(prefs));
+}
+
+TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
+  GetAppListTestHelper()->ShowAppList();
+
+  // Press a character key to open the search.
+  PressAndReleaseKey(ui::VKEY_A);
+  GetSearchBoxView()->GetWidget()->LayoutRootViewIfNecessary();
+  views::ImageButton* filter_button = GetSearchBoxView()->filter_button();
+  EXPECT_TRUE(filter_button->GetVisible());
+  LeftClickOn(filter_button);
+  EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
+
+  // Set up the search callback to notify that the search is triggered.
+  bool is_search_triggered = false;
+  GetAppListTestHelper()->app_list_client()->set_search_callback(
+      base::BindLambdaForTesting(
+          [&](const std::u16string& query) { is_search_triggered = true; }));
+
+  // Toggleable categories are on by default.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  EXPECT_TRUE(prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
+                  .FindBool(GetAppListControlCategoryName(
+                      AppListSearchControlCategory::kApps))
+                  .value_or(true));
+
+  // Clicking on a menu item doesn't close the menu.
+  LeftClickOn(GetSearchBoxView()->GetFilterMenuItemByCategory(
+      AppListSearchControlCategory::kApps));
+  EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
+  ASSERT_TRUE(prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
+                  .FindBool(GetAppListControlCategoryName(
+                      AppListSearchControlCategory::kApps))
+                  .has_value());
+  EXPECT_FALSE(prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
+                   .FindBool(GetAppListControlCategoryName(
+                       AppListSearchControlCategory::kApps))
+                   .value());
+  // Clicking on a menu item won't trigger the search.
+  EXPECT_FALSE(is_search_triggered);
+
+  // Closing the menu triggers the search.
+  LeftClickOn(filter_button);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetSearchBoxView()->IsFilterMenuOpen());
+  EXPECT_TRUE(is_search_triggered);
+
+  GetAppListTestHelper()->app_list_client()->set_search_callback(
+      TestAppListClient::SearchCallback());
 }
 
 TEST_P(SearchViewClamshellAndTabletTest, AnimateSearchResultView) {

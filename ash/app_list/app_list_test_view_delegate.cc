@@ -139,6 +139,11 @@ bool AppListTestViewDelegate::ShouldHideContinueSection() const {
 
 void AppListTestViewDelegate::SetHideContinueSection(bool hide) {}
 
+bool AppListTestViewDelegate::IsCategoryEnabled(
+    AppListSearchControlCategory category) {
+  return true;
+}
+
 ash::AssistantViewDelegate*
 AppListTestViewDelegate::GetAssistantViewDelegate() {
   return nullptr;

@@ -1426,6 +1426,25 @@ void AppListControllerImpl::SetHideContinueSection(bool hide) {
   bubble_presenter_->UpdateContinueSectionVisibility();
 }
 
+bool AppListControllerImpl::IsCategoryEnabled(
+    AppListSearchControlCategory category) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  return prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
+      .FindBool(GetAppListControlCategoryName(category))
+      .value_or(true);
+}
+
+void AppListControllerImpl::SetCategoryEnabled(
+    AppListSearchControlCategory category,
+    bool enabled) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  ScopedDictPrefUpdate pref_update(prefs,
+                                   prefs::kLauncherSearchCategoryControlStatus);
+  pref_update->Set(GetAppListControlCategoryName(category), enabled);
+}
+
 void AppListControllerImpl::GetAppLaunchedMetricParams(
     AppLaunchedMetricParams* metric_params) {
   metric_params->app_list_view_state = GetAppListViewState();
