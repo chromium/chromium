@@ -200,7 +200,6 @@ MATCHER_P(EqualsUploadProto, expected_const, "") {
 }
 
 // Regression test for http://crbug.com/177419
-// TODO(crbug.com/1479078): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(AutofillServerTest,
                        QueryAndUploadBothIncludeFieldsWithAutocompleteOff) {
   // Seed some test Autofill profile data, as upload requests are only made when
