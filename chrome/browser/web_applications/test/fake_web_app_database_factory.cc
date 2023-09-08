@@ -77,7 +77,8 @@ void FakeWebAppDatabaseFactory::WriteProtos(
     GURL start_url(proto->sync_data().start_url());
     DCHECK(!start_url.is_empty());
     DCHECK(start_url.is_valid());
-    AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+    AppId app_id =
+        GenerateAppId(proto->sync_data().relative_manifest_id(), start_url);
     write_batch->WriteData(app_id, proto->SerializeAsString());
   }
 

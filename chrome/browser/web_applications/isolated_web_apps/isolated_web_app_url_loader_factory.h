@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -110,6 +111,7 @@ class IsolatedWebAppURLLoaderFactory
   // via `profile_observation_` when the `Profile` is destroyed.
   const raw_ptr<Profile> profile_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  base::WeakPtrFactory<IsolatedWebAppURLLoaderFactory> weak_factory_{this};
 };
 
 }  // namespace web_app

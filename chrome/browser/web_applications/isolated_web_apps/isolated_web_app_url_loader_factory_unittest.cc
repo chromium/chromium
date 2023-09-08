@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -21,7 +22,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
+#include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -56,6 +59,7 @@
 namespace web_app {
 namespace {
 
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::IsFalse;
@@ -85,8 +89,10 @@ MATCHER_P(IsHttpStatusCode, err, net::GetHttpReasonPhrase(err)) {
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
   AppId app_id = GenerateAppId(/*manifest_id=*/"", start_url);
   auto web_app = std::make_unique<WebApp>(app_id);
+  web_app->SetName("iwa name");
   web_app->SetStartUrl(start_url);
   web_app->SetScope(start_url.DeprecatedGetOriginAsURL());
+  web_app->SetManifestId(start_url.DeprecatedGetOriginAsURL());
   web_app->AddSource(WebAppManagement::Type::kCommandLine);
   web_app->SetIsLocallyInstalled(true);
   return web_app;
@@ -129,31 +135,19 @@ class ScopedUrlHandler {
 
 }  // namespace
 
-class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
+class IsolatedWebAppURLLoaderFactoryTestBase : public WebAppTest {
  public:
-  explicit IsolatedWebAppURLLoaderFactoryTest(
-      bool enable_isolated_web_apps_feature_flag = true,
-      bool enable_dev_mode_feature_flag = true)
-      : enable_isolated_web_apps_feature_flag_(
-            enable_isolated_web_apps_feature_flag),
-        enable_dev_mode_feature_flag_(enable_dev_mode_feature_flag) {}
+  explicit IsolatedWebAppURLLoaderFactoryTestBase(
+      const base::flat_map<base::test::FeatureRef, bool>& feature_states = {
+          {features::kIsolatedWebApps, true},
+          {features::kIsolatedWebAppDevMode, true}}) {
+    scoped_feature_list_.InitWithFeatureStates(feature_states);
+  }
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> features;
-    if (enable_isolated_web_apps_feature_flag_) {
-      features.push_back(features::kIsolatedWebApps);
-    }
-    if (enable_dev_mode_feature_flag_) {
-      features.push_back(features::kIsolatedWebAppDevMode);
-    }
-    scoped_feature_list_.InitWithFeatures(features, {});
-
     WebAppTest::SetUp();
 
     url_handler_ = std::make_unique<ScopedUrlHandler>();
-
-    provider_ = FakeWebAppProvider::Get(profile());
-    provider_->Start();
   }
 
   void TearDown() override {
@@ -163,16 +157,67 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
   }
 
  protected:
-  FakeWebAppProvider* provider() { return provider_; }
+  void CreateStoragePartitionForUrl(const GURL& url) {
+    base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+        IsolatedWebAppUrlInfo::Create(url);
+    CHECK(url_info.has_value()) << "Can't create url info for url " << url
+                                << ", error: " << url_info.error();
 
+    content::StoragePartition* current_storage_partition =
+        profile()->GetStoragePartition(
+            url_info->storage_partition_config(profile()),
+            /*can_create=*/false);
+
+    CHECK(current_storage_partition == nullptr)
+        << "Partition already exists for url: " << url;
+
+    content::StoragePartition* new_storage_partition =
+        profile()->GetStoragePartition(
+            url_info->storage_partition_config(profile()),
+            /*can_create=*/true);
+
+    CHECK(new_storage_partition != nullptr);
+  }
+
+  const ScopedUrlHandler& url_handler() {
+    CHECK(url_handler_);
+    return *url_handler_;
+  }
+
+  const std::string kDevWebBundleId =
+      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac";
+  const GURL kDevAppOriginUrl = GURL("isolated-app://" + kDevWebBundleId);
+  const GURL kDevAppStartUrl = kDevAppOriginUrl.Resolve("/ix.html");
+  const url::Origin kProxyOrigin =
+      url::Origin::Create(GURL("https://proxy.example.com"));
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  std::unique_ptr<ScopedUrlHandler> url_handler_;
+};
+
+class IsolatedWebAppURLLoaderFactoryTest
+    : public IsolatedWebAppURLLoaderFactoryTestBase {
+ public:
+  using IsolatedWebAppURLLoaderFactoryTestBase::
+      IsolatedWebAppURLLoaderFactoryTestBase;
+
+  void SetUp() override {
+    IsolatedWebAppURLLoaderFactoryTestBase::SetUp();
+
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+
+ protected:
   void RegisterWebApp(std::unique_ptr<WebApp> web_app,
                       bool create_storage_partition = true) {
     if (create_storage_partition) {
       CreateStoragePartitionForUrl(web_app->scope());
     }
 
-    provider()->GetRegistrarMutable().registry().emplace(web_app->app_id(),
-                                                         std::move(web_app));
+    fake_provider().GetRegistrarMutable().registry().emplace(
+        web_app->app_id(), std::move(web_app));
   }
 
   void CreateFactory() {
@@ -208,33 +253,6 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
     return loader->NetError();
   }
 
-  void CreateStoragePartitionForUrl(const GURL& url) {
-    base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-        IsolatedWebAppUrlInfo::Create(url);
-    CHECK(url_info.has_value()) << "Can't create url info for url " << url
-                                << ", error: " << url_info.error();
-
-    content::StoragePartition* current_storage_partition =
-        profile()->GetStoragePartition(
-            url_info->storage_partition_config(profile()),
-            /*can_create=*/false);
-
-    CHECK(current_storage_partition == nullptr)
-        << "Partition already exists for url: " << url;
-
-    content::StoragePartition* new_storage_partition =
-        profile()->GetStoragePartition(
-            url_info->storage_partition_config(profile()),
-            /*can_create=*/true);
-
-    CHECK(new_storage_partition != nullptr);
-  }
-
-  const ScopedUrlHandler& url_handler() {
-    CHECK(url_handler_);
-    return *url_handler_;
-  }
-
   const network::URLLoaderCompletionStatus& CompletionStatus() {
     return completion_status_;
   }
@@ -245,22 +263,7 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
 
   std::string ResponseBody() { return response_body_; }
 
-  const std::string kDevWebBundleId =
-      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac";
-  const GURL kDevAppOriginUrl = GURL("isolated-app://" + kDevWebBundleId);
-  const GURL kDevAppStartUrl = kDevAppOriginUrl.Resolve("/ix.html");
-  const url::Origin kProxyOrigin =
-      url::Origin::Create(GURL("https://proxy.example.com"));
-
  private:
-  bool enable_isolated_web_apps_feature_flag_;
-  bool enable_dev_mode_feature_flag_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  std::unique_ptr<ScopedUrlHandler> url_handler_;
-
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   mojo::Remote<network::mojom::URLLoaderFactory> factory_;
   network::URLLoaderCompletionStatus completion_status_;
   network::mojom::URLResponseHeadPtr response_info_;
@@ -284,7 +287,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
   // Verify that a PWA is installed at kAppStartUrl's origin.
   absl::optional<AppId> installed_app =
-      provider()->registrar_unsafe().FindInstalledAppWithUrlInScope(
+      fake_provider().registrar_unsafe().FindInstalledAppWithUrlInScope(
           kDevAppStartUrl);
   EXPECT_THAT(installed_app.has_value(), IsTrue());
 
@@ -308,7 +311,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
   // Verify that a PWA is installed at kAppStartUrl's origin.
   absl::optional<AppId> installed_app =
-      provider()->registrar_unsafe().FindAppWithUrlInScope(kDevAppStartUrl);
+      fake_provider().registrar_unsafe().FindAppWithUrlInScope(kDevAppStartUrl);
   EXPECT_THAT(installed_app.has_value(), IsTrue());
 
   CreateFactory();
@@ -730,6 +733,55 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   EXPECT_THAT(ResponseInfo(), IsNull());
 }
 
+using IsolatedWebAppURLLoaderFactoryWebAppProviderReadyTest =
+    IsolatedWebAppURLLoaderFactoryTestBase;
+
+TEST_F(IsolatedWebAppURLLoaderFactoryWebAppProviderReadyTest, Waits) {
+  WebApp::IsolationData isolation_data = WebApp::IsolationData{
+      DevModeProxy{.proxy_url = kProxyOrigin}, base::Version("1.0.0")};
+  ASSERT_OK_AND_ASSIGN(auto url_info,
+                       IsolatedWebAppUrlInfo::Create(kDevAppStartUrl));
+
+  // Seed the `WebAppProvider` with an IWA before it is started.
+  EXPECT_THAT(fake_provider().is_registry_ready(), IsFalse());
+  {
+    std::unique_ptr<WebApp> iwa =
+        CreateIsolatedWebApp(kDevAppStartUrl, isolation_data);
+    CreateStoragePartitionForUrl(iwa->scope());
+
+    Registry registry;
+    registry.emplace(iwa->app_id(), std::move(iwa));
+    auto& database_factory = static_cast<FakeWebAppDatabaseFactory&>(
+        fake_provider().database_factory());
+    database_factory.WriteRegistry(registry);
+  }
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory;
+  factory.Bind(IsolatedWebAppURLLoaderFactory::Create(
+      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(), profile()));
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->method = net::HttpRequestHeaders::kGetMethod;
+  request->url = kDevAppStartUrl;
+  auto loader = network::SimpleURLLoader::Create(std::move(request),
+                                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+  loader->SetAllowHttpErrorResults(true);
+
+  content::SimpleURLLoaderTestHelper helper;
+  loader->DownloadToString(
+      factory.get(), helper.GetCallback(),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(fake_provider().is_registry_ready(), IsFalse());
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(url_info.app_id()),
+              test::IwaIs("iwa name", isolation_data));
+  helper.WaitForCallback();
+
+  EXPECT_THAT(loader->NetError(), IsNetError(net::OK));
+}
+
 using IsolatedWebAppURLLoaderFactoryForServiceWorkerTest =
     IsolatedWebAppURLLoaderFactoryTest;
 
@@ -756,11 +808,10 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
                      /*relative_urls=*/bool>> {
  public:
   explicit IsolatedWebAppURLLoaderFactorySignedWebBundleTest(
-      bool enable_isolated_web_apps_feature_flag = true,
-      bool enable_dev_mode_feature_flag = std::get<0>(GetParam()))
-      : IsolatedWebAppURLLoaderFactoryTest(
-            enable_isolated_web_apps_feature_flag,
-            enable_dev_mode_feature_flag),
+      const base::flat_map<base::test::FeatureRef, bool>& feature_states =
+          {{features::kIsolatedWebApps, true},
+           {features::kIsolatedWebAppDevMode, std::get<0>(GetParam())}})
+      : IsolatedWebAppURLLoaderFactoryTest(feature_states),
         is_dev_mode_bundle_(std::get<0>(GetParam())) {}
 
  protected:
@@ -939,8 +990,8 @@ class IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest
  public:
   IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest()
       : IsolatedWebAppURLLoaderFactorySignedWebBundleTest(
-            /*enable_isolated_web_apps_feature_flag=*/false,
-            /*enable_dev_mode_feature_flag=*/true) {}
+            {{features::kIsolatedWebApps, false},
+             {features::kIsolatedWebAppDevMode, true}}) {}
 };
 
 TEST_P(IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest,
@@ -969,8 +1020,8 @@ class IsolatedWebAppURLLoaderFactoryDevModeDisabledTest
  public:
   IsolatedWebAppURLLoaderFactoryDevModeDisabledTest()
       : IsolatedWebAppURLLoaderFactorySignedWebBundleTest(
-            /*enable_isolated_web_apps_feature_flag=*/true,
-            /*enable_dev_mode_feature_flag=*/false) {}
+            {{features::kIsolatedWebApps, true},
+             {features::kIsolatedWebAppDevMode, false}}) {}
 };
 
 TEST_P(IsolatedWebAppURLLoaderFactoryDevModeDisabledTest,
