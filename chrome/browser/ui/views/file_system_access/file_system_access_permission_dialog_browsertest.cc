@@ -17,50 +17,61 @@
 
 using AccessType = FileSystemAccessPermissionRequestManager::Access;
 using RequestData = FileSystemAccessPermissionRequestManager::RequestData;
+using RequestType = FileSystemAccessPermissionRequestManager::RequestType;
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
 class FileSystemAccessPermissionDialogTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    RequestData request(kTestOrigin, base::FilePath(), HandleType::kFile,
-                        AccessType::kWrite);
+    RequestData request(
+        RequestType::kNewPermission, kTestOrigin,
+        {{base::FilePath(), HandleType::kFile, AccessType::kWrite}});
     if (name == "LongFileName") {
-      request.path = base::FilePath(FILE_PATH_LITERAL(
+      request.file_request_data[0].path = base::FilePath(FILE_PATH_LITERAL(
           "/foo/bar/Some Really Really Really Really Long File Name.txt"));
     } else if (name == "Folder") {
-      request.path = base::FilePath(FILE_PATH_LITERAL("/bar/MyProject"));
-      request.handle_type = HandleType::kDirectory;
+      request.file_request_data[0].path =
+          base::FilePath(FILE_PATH_LITERAL("/bar/MyProject"));
+      request.file_request_data[0].handle_type = HandleType::kDirectory;
     } else if (name == "LongOrigin") {
-      request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path =
+          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
       request.origin =
           url::Origin::Create(GURL("https://"
                                    "longextendedsubdomainnamewithoutdashesinord"
                                    "ertotestwordwrapping.appspot.com"));
     } else if (name == "FileOrigin") {
-      request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path =
+          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
       request.origin = url::Origin::Create(GURL("file:///foo/bar/bla"));
     } else if (name == "ExtensionOrigin") {
-      request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path =
+          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
       request.origin = url::Origin::Create(GURL(
           "chrome-extension://ehoadneljpdggcbbknedodolkkjodefl/capture.html"));
     } else if (name == "FolderRead") {
-      request.path = base::FilePath(FILE_PATH_LITERAL("/bar/MyProject"));
-      request.handle_type = HandleType::kDirectory;
-      request.access = AccessType::kRead;
+      request.file_request_data[0].path =
+          base::FilePath(FILE_PATH_LITERAL("/bar/MyProject"));
+      request.file_request_data[0].handle_type = HandleType::kDirectory;
+      request.file_request_data[0].access = AccessType::kRead;
     } else if (name == "FolderReadWrite") {
-      request.path = base::FilePath(FILE_PATH_LITERAL("/bar/MyProject"));
-      request.handle_type = HandleType::kDirectory;
-      request.access = AccessType::kReadWrite;
+      request.file_request_data[0].path =
+          base::FilePath(FILE_PATH_LITERAL("/bar/MyProject"));
+      request.file_request_data[0].handle_type = HandleType::kDirectory;
+      request.file_request_data[0].access = AccessType::kReadWrite;
     } else if (name == "FileRead") {
-      request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
-      request.access = AccessType::kRead;
+      request.file_request_data[0].path =
+          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].access = AccessType::kRead;
     } else if (name == "FileReadWrite") {
-      request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
-      request.access = AccessType::kReadWrite;
+      request.file_request_data[0].path =
+          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].access = AccessType::kReadWrite;
     } else {
       CHECK_EQ(name, "default");
-      request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path =
+          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
     }
     ShowFileSystemAccessPermissionDialog(
         request,

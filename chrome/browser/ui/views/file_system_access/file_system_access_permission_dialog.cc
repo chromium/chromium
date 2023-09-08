@@ -23,19 +23,22 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCancelButtonId);
 namespace {
 
 using AccessType = FileSystemAccessPermissionRequestManager::Access;
+using FileRequestData =
+    FileSystemAccessPermissionRequestManager::FileRequestData;
 using RequestData = FileSystemAccessPermissionRequestManager::RequestData;
+using RequestType = FileSystemAccessPermissionRequestManager::RequestType;
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
-int GetMessageText(const RequestData& request) {
-  switch (request.access) {
+int GetMessageText(const FileRequestData& file_request_data) {
+  switch (file_request_data.access) {
     case AccessType::kRead:
       if (base::FeatureList::IsEnabled(
               features::kFileSystemAccessPersistentPermissions)) {
-        return request.handle_type == HandleType::kDirectory
+        return file_request_data.handle_type == HandleType::kDirectory
                    ? IDS_FILE_SYSTEM_ACCESS_READ_PERMISSION_DIRECTORY_TEXT
                    : IDS_FILE_SYSTEM_ACCESS_READ_PERMISSION_FILE_TEXT;
       } else {
-        return request.handle_type == HandleType::kDirectory
+        return file_request_data.handle_type == HandleType::kDirectory
                    ? IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_DIRECTORY_TEXT
                    : IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_FILE_TEXT;
       }
@@ -45,11 +48,11 @@ int GetMessageText(const RequestData& request) {
       // label and dialog title.
       if (base::FeatureList::IsEnabled(
               features::kFileSystemAccessPersistentPermissions)) {
-        return request.handle_type == HandleType::kDirectory
+        return file_request_data.handle_type == HandleType::kDirectory
                    ? IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_DIRECTORY_TEXT
                    : IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_FILE_TEXT;
       } else {
-        return request.handle_type == HandleType::kDirectory
+        return file_request_data.handle_type == HandleType::kDirectory
                    ? IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_DIRECTORY_TEXT
                    : IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_FILE_TEXT;
       }
@@ -57,48 +60,48 @@ int GetMessageText(const RequestData& request) {
   NOTREACHED_NORETURN();
 }
 
-int GetButtonLabel(const RequestData& request) {
-  switch (request.access) {
+int GetButtonLabel(const FileRequestData& file_request_data) {
+  switch (file_request_data.access) {
     case AccessType::kRead:
-      return request.handle_type == HandleType::kDirectory
+      return file_request_data.handle_type == HandleType::kDirectory
                  ? IDS_FILE_SYSTEM_ACCESS_VIEW_DIRECTORY_PERMISSION_ALLOW_TEXT
                  : IDS_FILE_SYSTEM_ACCESS_VIEW_FILE_PERMISSION_ALLOW_TEXT;
     case AccessType::kWrite:
       return IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_ALLOW_TEXT;
     case AccessType::kReadWrite:
-      return request.handle_type == HandleType::kDirectory
+      return file_request_data.handle_type == HandleType::kDirectory
                  ? IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_ALLOW_TEXT
                  : IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_ALLOW_TEXT;
   }
   NOTREACHED_NORETURN();
 }
 
-std::u16string GetWindowTitle(const RequestData& request) {
-  switch (request.access) {
+std::u16string GetWindowTitle(const FileRequestData& file_request_data) {
+  switch (file_request_data.access) {
     case AccessType::kRead:
-      if (request.handle_type == HandleType::kDirectory) {
+      if (file_request_data.handle_type == HandleType::kDirectory) {
         return l10n_util::GetStringUTF16(
             IDS_FILE_SYSTEM_ACCESS_READ_DIRECTORY_PERMISSION_TITLE);
       } else {
         return l10n_util::GetStringFUTF16(
             IDS_FILE_SYSTEM_ACCESS_READ_FILE_PERMISSION_TITLE,
             file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(
-                request.path));
+                file_request_data.path));
       }
     case AccessType::kWrite:
       return l10n_util::GetStringFUTF16(
           IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_TITLE,
           file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(
-              request.path));
+              file_request_data.path));
     case AccessType::kReadWrite:
-      if (request.handle_type == HandleType::kDirectory) {
+      if (file_request_data.handle_type == HandleType::kDirectory) {
         return l10n_util::GetStringUTF16(
             IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_TITLE);
       } else {
         return l10n_util::GetStringFUTF16(
             IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_TITLE,
             file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(
-                request.path));
+                file_request_data.path));
       }
   }
   NOTREACHED_NORETURN();
@@ -108,6 +111,9 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessPermissionDialog(
     content::WebContents* web_contents,
     const RequestData& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback) {
+  DCHECK(request.request_type == RequestType::kNewPermission);
+  DCHECK(request.file_request_data.size() == 1);
+
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   auto accept_callback = base::BindOnce(std::move(split_callback.first),
                                         permissions::PermissionAction::GRANTED);
@@ -123,18 +129,20 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessPermissionDialog(
   std::u16string origin_identity_name =
       file_system_access_ui_helper::GetUrlIdentityName(profile,
                                                        request.origin.GetURL());
+  auto file_request_data = request.file_request_data[0];
 
   ui::DialogModel::Builder dialog_builder;
-  dialog_builder.SetTitle(GetWindowTitle(request))
+  dialog_builder.SetTitle(GetWindowTitle(file_request_data))
       .AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
-          GetMessageText(request),
+          GetMessageText(file_request_data),
           {ui::DialogModelLabel::CreateEmphasizedText(origin_identity_name),
            ui::DialogModelLabel::CreateEmphasizedText(
                file_system_access_ui_helper::GetPathForDisplayAsParagraph(
-                   request.path))}))
-      .AddOkButton(std::move(accept_callback),
-                   ui::DialogModelButton::Params().SetLabel(
-                       l10n_util::GetStringUTF16(GetButtonLabel(request))))
+                   file_request_data.path))}))
+      .AddOkButton(
+          std::move(accept_callback),
+          ui::DialogModelButton::Params().SetLabel(
+              l10n_util::GetStringUTF16(GetButtonLabel(file_request_data))))
       .AddCancelButton(std::move(cancel_callbacks.first),
                        ui::DialogModelButton::Params().SetId(kCancelButtonId))
       .SetCloseActionCallback(std::move(cancel_callbacks.second))

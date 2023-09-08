@@ -28,12 +28,22 @@ enum class PermissionAction;
 // be supported by PermissionRequestManager.
 //
 // The FileSystemAccessPermissionRequestManager should be used on the UI thread.
+//
+// TODO(crbug.com/1011533): Add test for this class.
 class FileSystemAccessPermissionRequestManager
     : public content::WebContentsObserver,
       public content::WebContentsUserData<
           FileSystemAccessPermissionRequestManager> {
  public:
   ~FileSystemAccessPermissionRequestManager() override;
+
+  enum class RequestType {
+    // Requests to get new permission for single file or directory handle.
+    kNewPermission,
+
+    // Requests to restore permission for multiple file or directory handles.
+    kRestorePermissions,
+  };
 
   enum class Access {
     // Only ask for read access.
@@ -44,25 +54,36 @@ class FileSystemAccessPermissionRequestManager
     kReadWrite
   };
 
-  struct RequestData {
-    RequestData(
-        const url::Origin& origin,
+  struct FileRequestData {
+    FileRequestData(
         const base::FilePath& path,
         content::FileSystemAccessPermissionContext::HandleType handle_type,
         Access access)
-        : origin(origin),
-          path(path),
-          handle_type(handle_type),
-          access(access) {}
-    RequestData(RequestData&&) = default;
-    RequestData(const RequestData&) = default;
-    RequestData& operator=(RequestData&&) = default;
-    RequestData& operator=(const RequestData&) = default;
+        : path(path), handle_type(handle_type), access(access) {}
+    ~FileRequestData() = default;
+    FileRequestData(FileRequestData&&) = default;
+    FileRequestData(const FileRequestData&) = default;
+    FileRequestData& operator=(FileRequestData&&) = default;
+    FileRequestData& operator=(const FileRequestData&) = default;
 
-    url::Origin origin;
     base::FilePath path;
     content::FileSystemAccessPermissionContext::HandleType handle_type;
     Access access;
+  };
+
+  struct RequestData {
+    RequestData(RequestType request_type,
+                const url::Origin& origin,
+                const std::vector<FileRequestData>& file_request_data);
+    ~RequestData();
+    RequestData(RequestData&&);
+    RequestData(const RequestData&);
+    RequestData& operator=(RequestData&&) = default;
+    RequestData& operator=(const RequestData&) = default;
+
+    RequestType request_type;
+    url::Origin origin;
+    std::vector<FileRequestData> file_request_data;
   };
 
   void AddRequest(

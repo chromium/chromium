@@ -684,9 +684,12 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     // request those as two separate requests. The |request_manager| will then
     // detect this and combine the two requests into one prompt. As such this
     // code does not have to have any way to request Access::kReadWrite.
-
+    FileSystemAccessPermissionRequestManager::FileRequestData
+        file_request_data = {path_, handle_type_, access};
     request_manager->AddRequest(
-        {origin_, path_, handle_type_, access},
+        {FileSystemAccessPermissionRequestManager::RequestType::kNewPermission,
+         origin_,
+         {file_request_data}},
         base::BindOnce(&PermissionGrantImpl::OnPermissionRequestResult, this,
                        std::move(callback)),
         std::move(fullscreen_block));

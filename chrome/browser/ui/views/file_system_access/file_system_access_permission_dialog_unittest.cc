@@ -17,14 +17,15 @@
 using AccessType = FileSystemAccessPermissionRequestManager::Access;
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 using RequestData = FileSystemAccessPermissionRequestManager::RequestData;
+using RequestType = FileSystemAccessPermissionRequestManager::RequestType;
 
 using FileSystemAccessPermissionDialogTest = BrowserWithTestWindowTest;
 
 class TestFileSystemAccessPermissionDialog {
  public:
   std::unique_ptr<ui::TestDialogModelHost> CreateDialogModelHost() {
-    RequestData request(kTestOrigin, kTestPath, HandleType::kFile,
-                        AccessType::kRead);
+    RequestData request(RequestType::kNewPermission, kTestOrigin,
+                        {{kTestPath, HandleType::kFile, AccessType::kRead}});
     return std::make_unique<ui::TestDialogModelHost>(
         CreateFileSystemAccessPermissionDialogForTesting(
             request, base::BindLambdaForTesting(
