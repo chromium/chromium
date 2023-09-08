@@ -41,27 +41,77 @@ TEST(EventReportWindowsTest, CreateWindow) {
 
 TEST(EventReportWindowsTest, CreateWindows) {
   const struct {
+    const char* name;
     base::TimeDelta start_time;
     std::vector<base::TimeDelta> end_times;
     absl::optional<EventReportWindows> expected;
   } kTestCases[] = {
-      {.start_time = base::Seconds(0),
-       .end_times = {base::Seconds(0), base::Seconds(1)},
-       .expected = absl::nullopt},
-      {.start_time = base::Seconds(-1),
-       .end_times = {base::Seconds(1)},
-       .expected = absl::nullopt},
-      {.start_time = base::Seconds(0),
-       .end_times = {},
-       .expected = absl::nullopt},
       {
+          .name = "end_time-eq-start_time",
+          .start_time = base::Seconds(1),
+          .end_times = {base::Seconds(1)},
+          .expected = absl::nullopt,
+      },
+      {
+          .name = "end_time-lt-start_time",
+          .start_time = base::Seconds(2),
+          .end_times = {base::Seconds(1)},
+          .expected = absl::nullopt,
+      },
+      {
+          .name = "end_time-eq-prev-end_time",
           .start_time = base::Seconds(0),
-          .end_times = {base::Seconds(1), base::Seconds(2)},
-          .expected = EventReportWindows::CreateWindows(
-              base::Seconds(0), {base::Seconds(1), base::Seconds(2)}),
+          .end_times = {base::Seconds(1), base::Seconds(1)},
+          .expected = absl::nullopt,
+      },
+      {
+          .name = "end_time-lt-prev-end_time",
+          .start_time = base::Seconds(0),
+          .end_times = {base::Seconds(2), base::Seconds(1)},
+          .expected = absl::nullopt,
+      },
+      {
+          .name = "negative-start_time",
+          .start_time = base::Seconds(-1),
+          .end_times = {base::Seconds(1)},
+          .expected = absl::nullopt,
+      },
+      {
+          .name = "empty-end_times",
+          .start_time = base::Seconds(0),
+          .end_times = {},
+          .expected = absl::nullopt,
+      },
+      {
+          .name = "too-many-end_times",
+          .start_time = base::Seconds(0),
+          .end_times = {base::Seconds(1), base::Seconds(2), base::Seconds(3),
+                        base::Seconds(4), base::Seconds(5), base::Seconds(6)},
+          .expected = absl::nullopt,
+      },
+      {
+          .name = "valid",
+          .start_time = base::Seconds(0),
+          .end_times = {base::Seconds(1), base::Seconds(2), base::Seconds(3),
+                        base::Seconds(4), base::Seconds(5)},
+          .expected = *EventReportWindows::CreateWindows(
+              base::Seconds(0),
+              {base::Seconds(1), base::Seconds(2), base::Seconds(3),
+               base::Seconds(4), base::Seconds(5)}),
+      },
+      {
+          .name = "valid-non-zero_start_time",
+          .start_time = base::Seconds(1),
+          .end_times = {base::Seconds(2), base::Seconds(3), base::Seconds(4),
+                        base::Seconds(5), base::Seconds(6)},
+          .expected = *EventReportWindows::CreateWindows(
+              base::Seconds(1),
+              {base::Seconds(2), base::Seconds(3), base::Seconds(4),
+               base::Seconds(5), base::Seconds(6)}),
       },
   };
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
     auto windows = EventReportWindows::CreateWindows(test_case.start_time,
                                                      test_case.end_times);
     EXPECT_EQ(windows, test_case.expected);
