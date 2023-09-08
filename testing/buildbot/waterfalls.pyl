@@ -4348,6 +4348,7 @@
           'walleye',
         ],
         'test_suites': {
+          'gtest_tests': 'gpu_fyi_android_gtests',
           # We currently only want to run the WebGL 2.0 conformance tests on
           # this until additional Pixel 2 capacity is added.
           'gpu_telemetry_tests': 'gpu_fyi_android_webgl2_and_gold_telemetry_tests',
@@ -4364,6 +4365,7 @@
           'gpu-swarming-pool',
         ],
         'test_suites': {
+          'gtest_tests': 'gpu_fyi_android_gtests',
           'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
@@ -4379,6 +4381,7 @@
           'gpu-swarming-pool',
         ],
         'test_suites': {
+          'gtest_tests': 'gpu_fyi_android_gtests',
           'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
         },
       },

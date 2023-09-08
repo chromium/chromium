@@ -2874,9 +2874,6 @@
     },
   },
   'gl_tests_validating': {
-   'remove_from': [
-      'Android FYI Release (Nexus 5X)',
-    ],
     'modifications': {
       'Android FYI Release (Samsung A13)': {
         'args': [

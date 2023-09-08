@@ -6690,12 +6690,14 @@
 
     'gpu_fyi_android_gtests': [
       'gpu_angle_unit_gtests',
+      'gpu_common_gtests_passthrough',
       'gpu_common_gtests_validating',
       'gpu_fyi_and_optional_non_linux_gtests',
     ],
 
     'gpu_fyi_android_shieldtv_gtests': [
       'gpu_angle_unit_gtests',
+      'gpu_common_gtests_passthrough',
       'gpu_common_gtests_validating',
       'gpu_fyi_and_optional_non_linux_gtests',
     ],
