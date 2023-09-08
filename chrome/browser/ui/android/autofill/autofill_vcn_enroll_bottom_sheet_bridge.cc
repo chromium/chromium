@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/AutofillVcnEnrollBottomSheetBridge_jni.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
+#include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/strings/grit/components_strings.h"
@@ -84,6 +85,12 @@ void AutofillVCNEnrollBottomSheetBridge::OnCancel(JNIEnv* env) {
 
 void AutofillVCNEnrollBottomSheetBridge::OnDismiss(JNIEnv* env) {
   delegate_->InfoBarDismissed();
+}
+void AutofillVCNEnrollBottomSheetBridge::RecordLinkClickMetric(JNIEnv* env,
+                                                               int link_type) {
+  LogVirtualCardEnrollmentLinkClickedMetric(
+      static_cast<VirtualCardEnrollmentLinkType>(link_type),
+      delegate_->GetVirtualCardEnrollmentBubbleSource());
 }
 
 }  // namespace autofill

@@ -14,6 +14,7 @@
 namespace autofill {
 
 class AutofillBubbleBase;
+enum class VirtualCardEnrollmentBubbleSource;
 enum class VirtualCardEnrollmentState;
 
 // Interface that exposes controller functionality to virtual card enrollment
@@ -49,6 +50,11 @@ class VirtualCardEnrollBubbleController {
   // Returns the enrollment fields for the virtual card.
   virtual const VirtualCardEnrollmentFields GetVirtualCardEnrollmentFields()
       const = 0;
+
+  // Returns the "source" of the virtual card number enrollment flow, e.g.,
+  // "upstream", "downstream", "settings".
+  virtual VirtualCardEnrollmentBubbleSource
+  GetVirtualCardEnrollmentBubbleSource() const = 0;
 
   // Returns the currently active virtual card enroll bubble view. Can be
   // nullptr if no bubble is visible.

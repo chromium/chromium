@@ -61,6 +61,10 @@ class AutofillVirtualCardEnrollmentInfoBarDelegateMobile
   virtual void OnInfobarLinkClicked(GURL url,
                                     VirtualCardEnrollmentLinkType link_type);
 
+  // Returns the "source" of the virtual card number enrollment flow, e.g.,
+  // "upstream", "downstream", "settings".
+  VirtualCardEnrollmentBubbleSource GetVirtualCardEnrollmentBubbleSource();
+
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetIconId() const override;

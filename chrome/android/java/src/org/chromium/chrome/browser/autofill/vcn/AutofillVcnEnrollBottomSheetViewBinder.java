@@ -13,35 +13,15 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.components.autofill.payments.LegalMessageLine;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-
 /** The view-binder of the autofill virtual card enrollment bottom sheet UI. */
 /*package*/ class AutofillVcnEnrollBottomSheetViewBinder {
-    private final Callback<String> mUrlLauncher;
-    private final int mIssuerIconWidth;
-    private final int mIssuerIconHeight;
-
-    /**
-     * Creates the view-binder of the autofill virtual card enrollment bottom sheet UI.
-     *
-     * @param urlLauncher The callback to invoke when a link is tapped.
-     * @param issuerIconWidth The width of the card image.
-     * @param issuerIconHeight The height of the card image.
-     */
-    /*package*/ AutofillVcnEnrollBottomSheetViewBinder(
-            Callback<String> urlLauncher, int issuerIconWidth, int issuerIconHeight) {
-        mUrlLauncher = urlLauncher;
-        mIssuerIconWidth = issuerIconWidth;
-        mIssuerIconHeight = issuerIconHeight;
-    }
-
     /**
      * Updates the view based on changes in the model.
      *
@@ -49,15 +29,15 @@ import java.util.LinkedList;
      * @param view The view to update.
      * @param propertyKey The property of the model that has changed.
      */
-    /*package*/ void bind(
+    static void bind(
             PropertyModel model, AutofillVcnEnrollBottomSheetView view, PropertyKey propertyKey) {
         if (AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT == propertyKey) {
             view.mDialogTitle.setText(
                     model.get(AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT));
 
-        } else if (AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT == propertyKey) {
+        } else if (AutofillVcnEnrollBottomSheetProperties.DESCRIPTION == propertyKey) {
             view.mVirtualCardDescription.setText(getDescriptionSpan(
-                    model.get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT)));
+                    model.get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION)));
             view.mVirtualCardDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
         } else if (AutofillVcnEnrollBottomSheetProperties.CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION
@@ -98,45 +78,49 @@ import java.util.LinkedList;
     }
 
     // Returns the virtual card description text with a "learn more" link.
-    private SpannableString getDescriptionSpan(ArrayList<String> descriptionTextComponents) {
+    private static SpannableString getDescriptionSpan(Description description) {
         SpannableString result = new SpannableString(new String());
-        if (descriptionTextComponents == null || descriptionTextComponents.size() != 3) {
+        if (description == null || description.mText == null || description.mText.isEmpty()
+                || description.mLearnMoreLinkText == null
+                || description.mLearnMoreLinkText.isEmpty() || description.mLearnMoreLinkUrl == null
+                || description.mLearnMoreLinkUrl.isEmpty() || description.mLinkOpener == null) {
             return result;
         }
 
-        String descriptionText = descriptionTextComponents.get(0);
-        String learnMoreLinkText = descriptionTextComponents.get(1);
-        String learnMoreLinkUrl = descriptionTextComponents.get(2);
-
-        if (learnMoreLinkText.isEmpty()) return result;
-
-        int learnMoreStart = descriptionText.indexOf(learnMoreLinkText);
+        int learnMoreStart = description.mText.indexOf(description.mLearnMoreLinkText);
         if (learnMoreStart < 0) return result;
 
-        int learnMoreEnd = learnMoreStart + learnMoreLinkText.length();
-        result = new SpannableString(descriptionText);
+        int learnMoreEnd = learnMoreStart + description.mLearnMoreLinkText.length();
+        result = new SpannableString(description.mText);
         result.setSpan(new ClickableSpan() {
             @Override
             public void onClick(View view) {
-                mUrlLauncher.onResult(learnMoreLinkUrl);
+                description.mLinkOpener.openLink(
+                        description.mLearnMoreLinkUrl, description.mLearnMoreLinkType);
             }
         }, learnMoreStart, learnMoreEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         return result;
     }
 
     // Returns a scaled bitmap.
-    private Bitmap scaleBitmap(Bitmap bitmap) {
-        return bitmap != null ? Bitmap.createScaledBitmap(
-                       bitmap, mIssuerIconWidth, mIssuerIconHeight, /*filter=*/true)
-                              : null;
+    private static Bitmap scaleBitmap(IssuerIcon issuerIcon) {
+        return issuerIcon != null && issuerIcon.mBitmap != null && issuerIcon.mWidth > 0
+                        && issuerIcon.mHeight > 0
+                ? Bitmap.createScaledBitmap(
+                        issuerIcon.mBitmap, issuerIcon.mWidth, issuerIcon.mHeight, /*filter=*/true)
+                : null;
     }
 
     // Returns the legal message text formatted with links.
-    private SpannableStringBuilder getLegalMessageSpan(
-            Context context, LinkedList<LegalMessageLine> lines) {
-        return lines != null && !lines.isEmpty()
-                ? AutofillUiUtils.getSpannableStringForLegalMessageLines(
-                        context, lines, /*underlineLinks=*/true, mUrlLauncher::onResult)
+    private static SpannableStringBuilder getLegalMessageSpan(
+            Context context, LegalMessages legalMessages) {
+        return legalMessages != null && legalMessages.mLines != null
+                        && !legalMessages.mLines.isEmpty() && legalMessages.mLinkOpener != null
+                ? AutofillUiUtils.getSpannableStringForLegalMessageLines(context,
+                        legalMessages.mLines, /*underlineLinks=*/true,
+                        (String url) -> {
+                            legalMessages.mLinkOpener.openLink(url, legalMessages.mLinkType);
+                        })
                 : new SpannableStringBuilder();
     }
 }

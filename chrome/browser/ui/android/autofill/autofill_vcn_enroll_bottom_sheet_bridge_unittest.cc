@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -112,6 +113,21 @@ TEST_F(AutofillVCNEnrollBottomSheetBridgeTest, CancelCallback) {
   EXPECT_CALL(delegate_reference, Cancel());
 
   bridge.OnCancel(/*env=*/nullptr);
+}
+
+TEST_F(AutofillVCNEnrollBottomSheetBridgeTest, RecordLinkClickMetric) {
+  base::HistogramTester histogram_tester;
+  auto delegate = std::make_unique<MockDelegate>(BuildController());
+  AutofillVCNEnrollBottomSheetBridge bridge;
+  bridge.RequestShowContent(web_contents(), std::move(delegate));
+
+  bridge.RecordLinkClickMetric(
+      /*env=*/nullptr,
+      static_cast<int>(VirtualCardEnrollmentLinkType::
+                           VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK));
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.VirtualCardEnroll.LinkClicked.Upstream.LearnMoreLink", 1);
 }
 
 }  // namespace
