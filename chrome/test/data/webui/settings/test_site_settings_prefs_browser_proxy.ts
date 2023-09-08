@@ -326,6 +326,9 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     // Defer |methodCalled| call so that |then| callback for the promise
     // returned from this method runs before the one for the promise returned
     // from |whenCalled| calls in tests.
+    // TODO(b/297567461): Remove once the flaky test fixes in
+    // https://chromium-review.googlesource.com/c/chromium/src/+/4124308 are
+    // confirmed to no longer be needed.
     window.setTimeout(
         () => this.methodCalled('getExceptionList', contentType), 0);
     let pref = this.prefs_.exceptions[contentType];

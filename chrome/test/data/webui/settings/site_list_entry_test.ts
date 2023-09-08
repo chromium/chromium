@@ -61,28 +61,6 @@ suite('SiteListEntry', function() {
     });
   });
 
-  // <if expr="chromeos_ash">
-  test('shows androidSms note', function() {
-    testElement.model = {
-      category: ContentSettingsTypes.NOTIFICATIONS,
-      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
-      displayName: '',
-      embeddingOrigin: '',
-      description: '',
-      enforcement: null,
-      incognito: false,
-      isEmbargoed: false,
-      origin: 'http://example.com',
-      setting: ContentSetting.DEFAULT,
-      showAndroidSmsNote: true,
-    };
-    flush();
-    const siteDescription = testElement.$$('#siteDescription')!;
-    assertEquals(
-        loadTimeData.getString('androidSmsNote'), siteDescription.textContent);
-  });
-  // </if>
-
   // Verify that with GEOLOCATION, the "embedded on any host" text is shown.
   // Regression test for crbug.com/1205103
   test('location embedded on any host', function() {

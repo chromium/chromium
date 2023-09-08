@@ -3698,11 +3698,6 @@
   <message name="IDS_SETTINGS_ADD_SITE" desc="The label for the input box for adding a site">
     Site
   </message>
-  <if expr="chromeos_ash">
-    <message name="IDS_SETTINGS_ANDROID_SMS_NOTE" desc="Special note shown below Messages for Android entry in notification permissions to indicate use in ChromeOS Multidevice features.">
-      Allows Android Messages to relay texts from your phone to your Chromebook
-    </message>
-  </if>
 
   <!-- Cookies Window -->
   <message name="IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES" desc="A label showing the number of cookies set on a site.">

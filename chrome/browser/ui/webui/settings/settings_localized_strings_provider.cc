@@ -2439,9 +2439,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
     {"addSite", IDS_SETTINGS_ADD_SITE},
     {"addSiteTitle", IDS_SETTINGS_ADD_SITE_TITLE},
     {"addSitesTitle", IDS_SETTINGS_ADD_SITES_TITLE},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"androidSmsNote", IDS_SETTINGS_ANDROID_SMS_NOTE},
-#endif
     {"embeddedOnAnyHost", IDS_SETTINGS_EXCEPTIONS_EMBEDDED_ON_ANY_HOST},
     {"embeddedOnHost", IDS_SETTINGS_EXCEPTIONS_EMBEDDED_ON_HOST},
     {"editSiteTitle", IDS_SETTINGS_EDIT_SITE_TITLE},

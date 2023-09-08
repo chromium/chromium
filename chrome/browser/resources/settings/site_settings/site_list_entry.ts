@@ -240,13 +240,6 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
       description = loadTimeData.getString('embeddedOnAnyHost');
     }
 
-    // <if expr="chromeos_ash">
-    if (this.model.category === ContentSettingsTypes.NOTIFICATIONS &&
-        this.model.showAndroidSmsNote) {
-      description = loadTimeData.getString('androidSmsNote');
-    }
-    // </if>
-
     try {
       const url = new URL(this.model.origin);
       if (url.protocol === 'chrome-extension:') {

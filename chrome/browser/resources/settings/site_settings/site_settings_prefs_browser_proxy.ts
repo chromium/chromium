@@ -103,9 +103,6 @@ export interface SiteException {
   description?: string;
   enforcement: chrome.settingsPrivate.Enforcement|null;
   controlledBy: chrome.settingsPrivate.ControlledBy;
-  // <if expr="chromeos_ash">
-  showAndroidSmsNote?: boolean;
-  // </if>
 }
 
 /**

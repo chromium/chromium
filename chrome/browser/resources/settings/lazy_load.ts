@@ -207,9 +207,6 @@ export {SettingsSearchEnginesPageElement} from './search_engines_page/search_eng
 export {SettingsSimpleConfirmationDialogElement} from './simple_confirmation_dialog.js';
 export {AddSiteDialogElement} from './site_settings/add_site_dialog.js';
 export {AllSitesElement} from './site_settings/all_sites.js';
-// <if expr="chromeos_ash">
-export {AndroidInfoBrowserProxy, AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './site_settings/android_info_browser_proxy.js';
-// </if>
 export {CategorySettingExceptionsElement} from './site_settings/category_setting_exceptions.js';
 export {ChooserExceptionListElement} from './site_settings/chooser_exception_list.js';
 export {ChooserExceptionListEntryElement} from './site_settings/chooser_exception_list_entry.js';

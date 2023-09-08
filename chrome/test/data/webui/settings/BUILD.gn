@@ -144,11 +144,7 @@ build_webui_tests("build") {
   ]
 
   if (is_chromeos_ash) {
-    files += [
-      "people_page_test_cros.ts",
-      "site_list_tests_cros.ts",
-      "test_android_info_browser_proxy.ts",
-    ]
+    files += [ "people_page_test_cros.ts" ]
   } else {
     files += [
       "fake_language_settings_private.ts",

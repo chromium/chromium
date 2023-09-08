@@ -316,10 +316,8 @@ build_webui("build") {
   ]
 
   if (is_chromeos_ash) {
-    non_web_component_files += [
-      "people_page/account_manager_browser_proxy.ts",
-      "site_settings/android_info_browser_proxy.ts",
-    ]
+    non_web_component_files +=
+        [ "people_page/account_manager_browser_proxy.ts" ]
   } else {
     if (!is_chromeos_lacros) {
       non_web_component_files += [
