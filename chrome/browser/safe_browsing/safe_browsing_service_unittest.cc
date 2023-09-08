@@ -253,16 +253,6 @@ TEST_F(
       /*show_download_in_folder=*/true));
 }
 
-TEST_F(SafeBrowsingServiceTest, SendPhishyInteractionsReport_Disabled) {
-  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
-  GURL test_url("http://phishing.com");
-  GURL test_page_url("http://page_url.com");
-  PhishySiteInteractionMap test_map = PhishySiteInteractionMap();
-
-  EXPECT_FALSE(sb_service_->SendPhishyInteractionsReport(
-      profile(), test_url, test_page_url, test_map));
-}
-
 class SafeBrowsingServiceTestWithCsbrrNewTriggerDisabled
     : public SafeBrowsingServiceTest {
  public:

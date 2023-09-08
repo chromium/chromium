@@ -143,6 +143,9 @@ void PhishyInteractionTracker::ResetLoggingHelpers() {
 }
 
 bool PhishyInteractionTracker::IsSitePhishy() {
+  if (!ui_manager_for_testing_ && !g_browser_process->safe_browsing_service()) {
+    return false;
+  }
   safe_browsing::SafeBrowsingUIManager* ui_manager_ =
       ui_manager_for_testing_
           ? ui_manager_for_testing_.get()
