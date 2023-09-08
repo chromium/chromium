@@ -1259,7 +1259,8 @@ void InjectNTP(Browser* browser) {
   // `self.signinCoordinator.signinCompletion()` was called in the interrupt
   // method. Therefore now `self.signinCoordinator` is now stopped, and
   // `self.signinCoordinator` is now nil.
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator)
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
 
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
