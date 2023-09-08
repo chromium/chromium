@@ -53,12 +53,15 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
       [](GetProxyListCallback callback,
          absl::StatusOr<ip_protection::GetProxyConfigResponse> response) {
         if (!response.ok()) {
+          VLOG(2) << "IPATP::GetProxyList failed: " << response.status();
           std::move(callback).Run(absl::nullopt);
           return;
         }
         std::vector<std::string> proxy_list(
             response->first_hop_hostnames().begin(),
             response->first_hop_hostnames().end());
+        VLOG(2) << "IPATP::GetProxyList got proxy list of length "
+                << proxy_list.size();
         std::move(callback).Run(std::move(proxy_list));
       },
       std::move(callback)));
