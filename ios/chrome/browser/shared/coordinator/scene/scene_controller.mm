@@ -1817,7 +1817,8 @@ void InjectNTP(Browser* browser) {
           instantSigninCoordinatorWithBaseViewController:baseViewController
                                                  browser:mainBrowser
                                                 identity:command.identity
-                                             accessPoint:command.accessPoint];
+                                             accessPoint:command.accessPoint
+                                             promoAction:command.promoAction];
       break;
     case AuthenticationOperation::kSheetSigninAndHistorySync:
       self.signinCoordinator = [SigninCoordinator

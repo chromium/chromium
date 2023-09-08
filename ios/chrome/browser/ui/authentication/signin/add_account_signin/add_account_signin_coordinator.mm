@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 
+#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -33,8 +35,9 @@ using signin_metrics::PromoAction;
 
 // Coordinator to display modal alerts to the user.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
-// Coordinator that handles the sign-in UI flow.
-@property(nonatomic, strong) SigninCoordinator* userSigninCoordinator;
+// Coordinator to handle additional steps after the identity is added, i.e.
+// after `addAccountSigninManager` does its job.
+@property(nonatomic, strong) SigninCoordinator* postSigninManagerCoordinator;
 // Manager that handles sign-in add account UI.
 @property(nonatomic, strong) AddAccountSigninManager* addAccountSigninManager;
 // View where the sign-in button was displayed.
@@ -71,14 +74,14 @@ using signin_metrics::PromoAction;
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
-  if (self.userSigninCoordinator) {
+  if (self.postSigninManagerCoordinator) {
     DCHECK(!self.addAccountSigninManager);
-    // When interrupting `self.userSigninCoordinator`,
-    // `self.userSigninCoordinator.signinCompletion` is called. This callback
-    // is in charge to call `[self runCompletionCallbackWithSigninResult:
-    // completionInfo:]`.
-    [self.userSigninCoordinator interruptWithAction:action
-                                         completion:completion];
+    // When interrupting `self.postSigninManagerCoordinator`,
+    // `self.postSigninManagerCoordinator.signinCompletion` is called. This
+    // callback is in charge to call `[self
+    // runCompletionCallbackWithSigninResult: completionInfo:]`.
+    [self.postSigninManagerCoordinator interruptWithAction:action
+                                                completion:completion];
     return;
   }
 
@@ -139,7 +142,7 @@ using signin_metrics::PromoAction;
   // runCompletionCallbackWithSigninResult] has not been called.
   DCHECK(!self.addAccountSigninManager);
   DCHECK(!self.alertCoordinator);
-  DCHECK(!self.userSigninCoordinator);
+  DCHECK(!self.postSigninManagerCoordinator);
 }
 
 #pragma mark - AddAccountSigninManagerDelegate
@@ -202,7 +205,7 @@ using signin_metrics::PromoAction;
   switch (self.signinIntent) {
     case AddAccountSigninIntent::kSigninAndSyncReauth:
       if (signinResult == SigninCoordinatorResultSuccess) {
-        [self presentUserConsentWithIdentity:identity];
+        [self presentPostSigninManagerCoordinatorWithIdentity:identity];
       } else {
         [self addAccountDoneWithSigninResult:signinResult identity:identity];
       }
@@ -244,7 +247,7 @@ using signin_metrics::PromoAction;
 - (void)addAccountDoneWithSigninResult:(SigninCoordinatorResult)signinResult
                               identity:(id<SystemIdentity>)identity {
   DCHECK(!self.alertCoordinator);
-  DCHECK(!self.userSigninCoordinator);
+  DCHECK(!self.postSigninManagerCoordinator);
   // `identity` is set, only and only if the sign-in is successful.
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) && identity) ||
          ((signinResult != SigninCoordinatorResultSuccess) && !identity));
@@ -254,41 +257,51 @@ using signin_metrics::PromoAction;
                                completionInfo:completionInfo];
 }
 
-// Presents the user consent screen with `identity` pre-selected.
-- (void)presentUserConsentWithIdentity:(id<SystemIdentity>)identity {
-  // The UserSigninViewController is presented on top of the currently displayed
+// Presents the extra screen with `identity` pre-selected.
+- (void)presentPostSigninManagerCoordinatorWithIdentity:
+    (id<SystemIdentity>)identity {
+  // The new UIViewController is presented on top of the currently displayed
   // view controller.
-  self.userSigninCoordinator = [SigninCoordinator
-      userSigninCoordinatorWithBaseViewController:self.baseViewController
-                                          browser:self.browser
-                                         identity:identity
-                                      accessPoint:self.accessPoint
-                                      promoAction:self.promoAction];
+  self.postSigninManagerCoordinator =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? [SigninCoordinator
+                instantSigninCoordinatorWithBaseViewController:
+                    self.baseViewController
+                                                       browser:self.browser
+                                                      identity:identity
+                                                   accessPoint:self.accessPoint
+                                                   promoAction:self.promoAction]
+          : [SigninCoordinator
+                userSigninCoordinatorWithBaseViewController:
+                    self.baseViewController
+                                                    browser:self.browser
+                                                   identity:identity
+                                                accessPoint:self.accessPoint
+                                                promoAction:self.promoAction];
 
   __weak AddAccountSigninCoordinator* weakSelf = self;
-  self.userSigninCoordinator.signinCompletion =
+  self.postSigninManagerCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
         SigninCompletionInfo* signinCompletionInfo) {
-        [weakSelf.userSigninCoordinator stop];
-        weakSelf.userSigninCoordinator = nil;
+        [weakSelf.postSigninManagerCoordinator stop];
+        weakSelf.postSigninManagerCoordinator = nil;
         [weakSelf addAccountDoneWithSigninResult:signinResult
                                         identity:signinCompletionInfo.identity];
       };
-  [self.userSigninCoordinator start];
+  [self.postSigninManagerCoordinator start];
 }
 
 #pragma mark - NSObject
 
 - (NSString*)description {
   return [NSString
-      stringWithFormat:@"<%@: %p, signinIntent: %d, accessPoint: %d, "
-                       @"userSigninCoordinator: %p, addAccountSigninManager: "
-                       @"%p, alertCoordinator: %p>",
-                       self.class.description, self,
-                       static_cast<int>(self.signinIntent),
-                       static_cast<int>(self.accessPoint),
-                       self.userSigninCoordinator, self.addAccountSigninManager,
-                       self.alertCoordinator];
+      stringWithFormat:
+          @"<%@: %p, signinIntent: %d, accessPoint: %d, "
+          @"postSigninManagerCoordinator: %p, addAccountSigninManager: "
+          @"%p, alertCoordinator: %p>",
+          self.class.description, self, static_cast<int>(self.signinIntent),
+          static_cast<int>(self.accessPoint), self.postSigninManagerCoordinator,
+          self.addAccountSigninManager, self.alertCoordinator];
 }
 
 @end
