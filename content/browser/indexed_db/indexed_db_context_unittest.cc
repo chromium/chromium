@@ -124,10 +124,14 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,
                          blink::mojom::IDBErrorPtr>
       info_future;
-  auto example_bucket_locator = storage::BucketLocator();
-  example_bucket_locator.storage_key = example_storage_key_;
+
+  auto example_bucket_info = storage::BucketInfo();
+  example_bucket_info.storage_key = example_storage_key_;
+  example_bucket_info.name = storage::kDefaultBucketName;
+  auto example_bucket_locator = example_bucket_info.ToBucketLocator();
+
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      example_bucket_locator,
+      example_bucket_info,
       indexed_db_context_->GetDataPath(example_bucket_locator),
       info_future.GetCallback());
   ASSERT_TRUE(info_future.Wait());
@@ -135,10 +139,12 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,
                          blink::mojom::IDBErrorPtr>
       info_future2;
-  auto google_bucket_locator = storage::BucketLocator();
-  google_bucket_locator.storage_key = google_storage_key_;
+  auto google_bucket_info = storage::BucketInfo();
+  google_bucket_info.storage_key = google_storage_key_;
+  google_bucket_info.name = storage::kDefaultBucketName;
+  auto google_bucket_locator = google_bucket_info.ToBucketLocator();
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      google_bucket_locator,
+      google_bucket_info,
       indexed_db_context_->GetDataPath(google_bucket_locator),
       info_future2.GetCallback());
   ASSERT_TRUE(info_future2.Wait());

@@ -217,20 +217,21 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
     GetDatabaseInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const absl::optional<storage::BucketInfo>& bucket =
+      receivers_.current_context().bucket;
+
   // Return error if failed to retrieve bucket from the QuotaManager.
-  if (!receivers_.current_context().bucket.has_value()) {
+  if (!bucket) {
     std::move(callback).Run(
         {}, blink::mojom::IDBError::New(
                 blink::mojom::IDBException::kUnknownError, u"Internal error."));
     return;
   }
 
-  const auto& bucket = *receivers_.current_context().bucket;
-  storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   base::FilePath indexed_db_path =
-      indexed_db_context_->GetDataPath(bucket_locator);
+      indexed_db_context_->GetDataPath(bucket->ToBucketLocator());
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      bucket_locator, indexed_db_path, std::move(callback));
+      *bucket, indexed_db_path, std::move(callback));
 }
 
 void IndexedDBDispatcherHost::Open(
@@ -245,25 +246,25 @@ void IndexedDBDispatcherHost::Open(
     int64_t transaction_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const absl::optional<storage::BucketInfo>& bucket =
+      receivers_.current_context().bucket;
+
   // Return error if failed to retrieve bucket from the QuotaManager.
-  if (!receivers_.current_context().bucket.has_value()) {
-    auto callbacks = std::make_unique<IndexedDBFactoryClient>(
-        this->AsWeakPtr(), absl::nullopt, std::move(pending_factory_client),
-        IDBTaskRunner());
-    IndexedDBDatabaseError error = IndexedDBDatabaseError(
-        blink::mojom::IDBException::kUnknownError, u"Internal error.");
-    callbacks->OnError(error);
+  if (!bucket) {
+    IndexedDBFactoryClient(AsWeakPtr(), std::move(pending_factory_client),
+                           IDBTaskRunner())
+        .OnError(IndexedDBDatabaseError(
+            blink::mojom::IDBException::kUnknownError, u"Internal error."));
     return;
   }
 
-  const auto& bucket = *receivers_.current_context().bucket;
   auto callbacks = std::make_unique<IndexedDBFactoryClient>(
-      this->AsWeakPtr(), bucket, std::move(pending_factory_client),
-      IDBTaskRunner());
+      AsWeakPtr(), std::move(pending_factory_client), IDBTaskRunner());
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
       indexed_db_context_, std::move(database_callbacks_remote),
       IDBTaskRunner());
-  storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
+
+  storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
 
@@ -279,7 +280,7 @@ void IndexedDBDispatcherHost::Open(
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
   indexed_db_context_->GetIDBFactory()->Open(
-      name, std::move(connection), bucket_locator, indexed_db_path,
+      name, std::move(connection), *bucket, indexed_db_path,
       receivers_.current_context().client_state_checker);
 }
 
@@ -290,28 +291,24 @@ void IndexedDBDispatcherHost::DeleteDatabase(
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const absl::optional<storage::BucketInfo>& bucket =
+      receivers_.current_context().bucket;
+
   // Return error if failed to retrieve bucket from the QuotaManager.
-  if (!receivers_.current_context().bucket.has_value()) {
-    IndexedDBFactoryClient factory_client(this->AsWeakPtr(), absl::nullopt,
-                                          std::move(pending_factory_client),
-                                          IDBTaskRunner());
-    IndexedDBDatabaseError error = IndexedDBDatabaseError(
-        blink::mojom::IDBException::kUnknownError, u"Internal error.");
-    factory_client.OnError(error);
+  if (!bucket) {
+    IndexedDBFactoryClient(AsWeakPtr(), std::move(pending_factory_client),
+                           IDBTaskRunner())
+        .OnError(IndexedDBDatabaseError(
+            blink::mojom::IDBException::kUnknownError, u"Internal error."));
     return;
   }
 
-  const auto& bucket = *receivers_.current_context().bucket;
   auto factory_client = std::make_unique<IndexedDBFactoryClient>(
-      this->AsWeakPtr(), bucket, std::move(pending_factory_client),
-      IDBTaskRunner());
-
-  storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
+      AsWeakPtr(), std::move(pending_factory_client), IDBTaskRunner());
   base::FilePath indexed_db_path =
-      indexed_db_context_->GetDataPath(bucket_locator);
+      indexed_db_context_->GetDataPath(bucket->ToBucketLocator());
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
-      name, std::move(factory_client), bucket_locator, indexed_db_path,
-      force_close);
+      name, std::move(factory_client), *bucket, indexed_db_path, force_close);
 }
 
 void IndexedDBDispatcherHost::BindFileReader(

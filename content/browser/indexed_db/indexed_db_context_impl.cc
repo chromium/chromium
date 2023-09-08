@@ -89,6 +89,15 @@ bool IsAllowedPath(const std::vector<base::FilePath>& allowed_paths,
   return false;
 }
 
+storage::BucketInfo ToBucketInfoForTesting(
+    const storage::BucketLocator& bucket_locator) {
+  storage::BucketInfo bucket_info;
+  bucket_info.id = bucket_locator.id;
+  bucket_info.storage_key = bucket_locator.storage_key;
+  bucket_info.name = storage::kDefaultBucketName;
+  return bucket_info;
+}
+
 }  // namespace
 
 // static
@@ -707,9 +716,9 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
   IndexedDBBucketContextHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrCreateBucketContext(bucket_locator,
-                                                GetDataPath(bucket_locator),
-                                                /*create_if_missing=*/true);
+      GetIDBFactory()->GetOrCreateBucketContext(
+          ToBucketInfoForTesting(bucket_locator), GetDataPath(bucket_locator),
+          /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
 
@@ -735,9 +744,9 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
   IndexedDBBucketContextHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrCreateBucketContext(bucket_locator,
-                                                GetDataPath(bucket_locator),
-                                                /*create_if_missing=*/true);
+      GetIDBFactory()->GetOrCreateBucketContext(
+          ToBucketInfoForTesting(bucket_locator), GetDataPath(bucket_locator),
+          /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
 
@@ -766,9 +775,9 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
   IndexedDBBucketContextHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrCreateBucketContext(bucket_locator,
-                                                GetDataPath(bucket_locator),
-                                                /*create_if_missing=*/true);
+      GetIDBFactory()->GetOrCreateBucketContext(
+          ToBucketInfoForTesting(bucket_locator), GetDataPath(bucket_locator),
+          /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
 

@@ -192,7 +192,7 @@ IndexedDBFactory::~IndexedDBFactory() {
 }
 
 void IndexedDBFactory::GetDatabaseInfo(
-    const storage::BucketLocator& bucket_locator,
+    const storage::BucketInfo& bucket,
     const base::FilePath& data_directory,
     blink::mojom::IDBFactory::GetDatabaseInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -204,8 +204,9 @@ void IndexedDBFactory::GetDatabaseInfo(
   // Note: Any data loss information here is not piped up to the renderer, and
   // will be lost.
   std::tie(bucket_context_handle, s, error, std::ignore, std::ignore) =
-      GetOrCreateBucketContext(bucket_locator, data_directory,
+      GetOrCreateBucketContext(bucket, data_directory,
                                /*create_if_missing=*/false);
+  const storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
     if (s.IsNotFound()) {
@@ -240,18 +241,19 @@ void IndexedDBFactory::GetDatabaseInfo(
 void IndexedDBFactory::Open(
     const std::u16string& name,
     std::unique_ptr<IndexedDBPendingConnection> connection,
-    const storage::BucketLocator& bucket_locator,
+    const storage::BucketInfo& bucket,
     const base::FilePath& data_directory,
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::Open");
+  const storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketContextHandle bucket_context_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
   std::tie(bucket_context_handle, s, error, connection->data_loss_info,
            connection->was_cold_open) =
-      GetOrCreateBucketContext(bucket_locator, data_directory,
+      GetOrCreateBucketContext(bucket, data_directory,
                                /*create_if_missing=*/true);
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
@@ -290,11 +292,12 @@ void IndexedDBFactory::Open(
 void IndexedDBFactory::DeleteDatabase(
     const std::u16string& name,
     std::unique_ptr<IndexedDBFactoryClient> factory_client,
-    const storage::BucketLocator& bucket_locator,
+    const storage::BucketInfo& bucket,
     const base::FilePath& data_directory,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::DeleteDatabase");
+  const storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketContextHandle bucket_context_handle;
   leveldb::Status s;
@@ -302,7 +305,7 @@ void IndexedDBFactory::DeleteDatabase(
   // Note: Any data loss information here is not piped up to the renderer, and
   // will be lost.
   std::tie(bucket_context_handle, s, error, std::ignore, std::ignore) =
-      GetOrCreateBucketContext(bucket_locator, data_directory,
+      GetOrCreateBucketContext(bucket, data_directory,
                                /*create_if_missing=*/true);
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
@@ -388,21 +391,18 @@ void IndexedDBFactory::HandleBackingStoreFailure(
 }
 
 void IndexedDBFactory::HandleBackingStoreCorruption(
-    const storage::BucketLocator& bucket_locator,
+    storage::BucketLocator bucket_locator,
     const IndexedDBDatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Make a copy of `bucket_locator` as this is likely a reference to a member
-  // of a backing store which this function will be deleting.
-  storage::BucketLocator saved_bucket_locator(bucket_locator);
   DCHECK(context_);
-  base::FilePath path_base = context_->GetDataPath(saved_bucket_locator);
+  base::FilePath path_base = context_->GetDataPath(bucket_locator);
 
   // The message may contain the database path, which may be considered
   // sensitive data, and those strings are passed to the extension, so strip it.
   std::string sanitized_message = base::UTF16ToUTF8(error.message());
   base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                      path_base.AsUTF8Unsafe(), "...");
-  IndexedDBBackingStore::RecordCorruptionInfo(path_base, saved_bucket_locator,
+  IndexedDBBackingStore::RecordCorruptionInfo(path_base, bucket_locator,
                                               sanitized_message);
   HandleBackingStoreFailure(bucket_locator);
   // Note: DestroyLevelDB only deletes LevelDB files, leaving all others,
@@ -410,7 +410,7 @@ void IndexedDBFactory::HandleBackingStoreCorruption(
   //       The blob directory will be deleted when the database is recreated
   //       the next time it is opened.
   const base::FilePath file_path =
-      path_base.Append(indexed_db::GetLevelDBFileName(saved_bucket_locator));
+      path_base.Append(indexed_db::GetLevelDBFileName(bucket_locator));
   leveldb::Status s =
       class_factory_->leveldb_factory().DestroyLevelDB(file_path);
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
@@ -605,10 +605,9 @@ std::tuple<IndexedDBBucketContextHandle,
            IndexedDBDatabaseError,
            IndexedDBDataLossInfo,
            /*is_cold_open=*/bool>
-IndexedDBFactory::GetOrCreateBucketContext(
-    const storage::BucketLocator& bucket_locator,
-    const base::FilePath& data_directory,
-    bool create_if_missing) {
+IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
+                                           const base::FilePath& data_directory,
+                                           bool create_if_missing) {
   TRACE_EVENT0("IndexedDB", "indexed_db::GetOrCreateBucketContext");
   // Please see docs/open_and_verify_leveldb_database.code2flow, and the
   // generated pdf (from https://code2flow.com).
@@ -616,7 +615,7 @@ IndexedDBFactory::GetOrCreateBucketContext(
   // where the flowchart should be seen as the 'master' logic template. Please
   // check the git history of both to make sure they are in sync.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = bucket_contexts_.find(bucket_locator.id);
+  auto it = bucket_contexts_.find(bucket.id);
   if (it != bucket_contexts_.end()) {
     return {IndexedDBBucketContextHandle(*it->second), leveldb::Status::OK(),
             IndexedDBDatabaseError(), IndexedDBDataLossInfo(),
@@ -630,6 +629,7 @@ IndexedDBFactory::GetOrCreateBucketContext(
   base::FilePath blob_path;
   base::FilePath database_path;
   leveldb::Status s = leveldb::Status::OK();
+  const storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   if (!is_incognito_and_in_memory) {
     // The database will be on-disk and not in-memory.
     auto filesystem_proxy = storage::CreateFilesystemProxy();
@@ -752,7 +752,7 @@ IndexedDBFactory::GetOrCreateBucketContext(
       &IndexedDBFactory::ForEachBucketContext, weak_factory_.GetWeakPtr());
 
   auto bucket_context = std::make_unique<IndexedDBBucketContext>(
-      bucket_locator,
+      bucket,
       /*persist_for_incognito=*/is_incognito_and_in_memory, clock_,
       &class_factory_->transactional_leveldb_factory(), std::move(lock_manager),
       std::move(bucket_delegate), std::move(backing_store),

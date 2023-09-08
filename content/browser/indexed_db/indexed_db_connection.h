@@ -99,6 +99,10 @@ class CONTENT_EXPORT IndexedDBConnection {
     return transactions_;
   }
 
+  IndexedDBBucketContext* bucket_context() {
+    return bucket_context_handle_.bucket_context();
+  }
+
  private:
   const int32_t id_;
 

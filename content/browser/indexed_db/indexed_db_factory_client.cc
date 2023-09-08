@@ -85,13 +85,11 @@ class SafeCursorWrapper {
 
 IndexedDBFactoryClient::IndexedDBFactoryClient(
     base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-    const absl::optional<storage::BucketInfo>& bucket,
     mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
         pending_client,
     scoped_refptr<base::SequencedTaskRunner> idb_runner)
     : data_loss_(blink::mojom::IDBDataLoss::None),
       dispatcher_host_(std::move(dispatcher_host)),
-      bucket_info_(bucket),
       idb_runner_(std::move(idb_runner)) {
   DCHECK(idb_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -166,7 +164,7 @@ void IndexedDBFactoryClient::OnUpgradeNeeded(
   }
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending =
-      DatabaseImpl::CreateAndBind(std::move(wrapper.connection_), *bucket_info_,
+      DatabaseImpl::CreateAndBind(std::move(wrapper.connection_),
                                   dispatcher_host_.get());
   remote_->UpgradeNeeded(std::move(pending), old_version, data_loss_info.status,
                          data_loss_info.message, metadata);
@@ -198,8 +196,8 @@ void IndexedDBFactoryClient::OnOpenSuccess(
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   if (wrapper.connection_) {
-    pending_remote = DatabaseImpl::CreateAndBind(
-        std::move(wrapper.connection_), *bucket_info_, dispatcher_host_.get());
+    pending_remote = DatabaseImpl::CreateAndBind(std::move(wrapper.connection_),
+                                                 dispatcher_host_.get());
   }
   remote_->OpenSuccess(std::move(pending_remote), metadata);
   complete_ = true;

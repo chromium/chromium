@@ -124,7 +124,7 @@ IndexedDBBucketContext::Delegate::Delegate(Delegate&& other) = default;
 IndexedDBBucketContext::Delegate::~Delegate() = default;
 
 IndexedDBBucketContext::IndexedDBBucketContext(
-    storage::BucketLocator bucket_locator,
+    storage::BucketInfo bucket_info,
     bool persist_for_incognito,
     base::Clock* clock,
     TransactionalLevelDBFactory* transactional_leveldb_factory,
@@ -132,7 +132,7 @@ IndexedDBBucketContext::IndexedDBBucketContext(
     Delegate&& delegate,
     std::unique_ptr<IndexedDBBackingStore> backing_store,
     InstanceClosure initialize_closure)
-    : bucket_locator_(std::move(bucket_locator)),
+    : bucket_info_(std::move(bucket_info)),
       persist_for_incognito_(persist_for_incognito),
       clock_(clock),
       transactional_leveldb_factory_(transactional_leveldb_factory),

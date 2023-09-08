@@ -77,7 +77,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
                             weak_factory_.GetWeakPtr(), true);
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketLocator(), false, base::DefaultClock::GetInstance(),
+        storage::BucketInfo(), false, base::DefaultClock::GetInstance(),
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
         std::make_unique<IndexedDBFakeBackingStore>(), base::DoNothing());
@@ -200,18 +200,17 @@ TEST_F(IndexedDBDatabaseTest, ForcedClose) {
 
 namespace {
 
-class MockCallbacks : public IndexedDBFactoryClient {
+class MockFactoryClient : public IndexedDBFactoryClient {
  public:
-  MockCallbacks()
+  MockFactoryClient()
       : IndexedDBFactoryClient(
             nullptr,
-            absl::nullopt,
             mojo::NullAssociatedRemote(),
             base::SingleThreadTaskRunner::GetCurrentDefault()) {}
-  ~MockCallbacks() override = default;
+  ~MockFactoryClient() override = default;
 
-  MockCallbacks(const MockCallbacks&) = delete;
-  MockCallbacks& operator=(const MockCallbacks&) = delete;
+  MockFactoryClient(const MockFactoryClient&) = delete;
+  MockFactoryClient& operator=(const MockFactoryClient&) = delete;
 
   void OnBlocked(int64_t existing_version) override { blocked_called_ = true; }
   void OnDeleteSuccess(int64_t old_version) override { success_called_ = true; }
@@ -248,7 +247,7 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
   bool deleted = false;
-  MockCallbacks request2;
+  MockFactoryClient request2;
   db_->ScheduleDeleteDatabase(
       std::make_unique<ThunkFactoryClient>(request2),
       base::BindLambdaForTesting([&]() { deleted = true; }));
@@ -352,7 +351,7 @@ TEST_F(IndexedDBDatabaseTest, ForceDelete) {
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
   bool deleted = false;
-  MockCallbacks request2;
+  MockFactoryClient request2;
   db_->ScheduleDeleteDatabase(
       std::make_unique<ThunkFactoryClient>(request2),
       base::BindLambdaForTesting([&]() { deleted = true; }));
@@ -433,7 +432,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   RunPostedTasks();
 
   bool deleted = false;
-  auto request3 = std::make_unique<MockCallbacks>();
+  auto request3 = std::make_unique<MockFactoryClient>();
   db_->ScheduleDeleteDatabase(
       std::move(request3),
       base::BindLambdaForTesting([&]() { deleted = true; }));
@@ -484,7 +483,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         base::Unretained(this), true);
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketLocator(), false, base::DefaultClock::GetInstance(),
+        storage::BucketInfo(), false, base::DefaultClock::GetInstance(),
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
         std::make_unique<IndexedDBFakeBackingStore>(), base::DoNothing());

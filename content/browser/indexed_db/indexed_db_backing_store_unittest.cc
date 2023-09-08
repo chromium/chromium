@@ -342,9 +342,12 @@ class IndexedDBBackingStoreTest : public testing::Test {
   void CreateFactoryAndBackingStore() {
     const blink::StorageKey storage_key =
         blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-    auto bucket_locator = storage::BucketLocator();
-    bucket_locator.storage_key = storage_key;
-    bucket_locator.is_default = true;
+    auto bucket_info = storage::BucketInfo();
+    bucket_info.id = storage::BucketId::FromUnsafeValue(1);
+    bucket_info.storage_key = storage_key;
+    bucket_info.name = storage::kDefaultBucketName;
+    auto bucket_locator = bucket_info.ToBucketLocator();
+
     idb_factory_ = std::make_unique<TestIDBFactory>(
         idb_context_.get(), blob_context_.get(),
         file_system_access_context_.get());
@@ -353,7 +356,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
     std::tie(bucket_context_handle_, s, std::ignore, data_loss_info_,
              std::ignore) =
         idb_factory_->GetOrCreateBucketContext(
-            bucket_locator, idb_context_->GetDataPath(bucket_locator),
+            bucket_info, idb_context_->GetDataPath(bucket_locator),
             /*create_if_missing=*/true);
     if (!bucket_context_handle_.IsHeld()) {
       backing_store_ = nullptr;

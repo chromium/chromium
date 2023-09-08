@@ -25,6 +25,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
@@ -65,26 +66,24 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
   ~IndexedDBFactory() override;
 
   void GetDatabaseInfo(
-      const storage::BucketLocator& bucket_locator,
+      const storage::BucketInfo& bucket,
       const base::FilePath& data_directory,
       blink::mojom::IDBFactory::GetDatabaseInfoCallback callback);
-  void Open(const std::u16string& name,
-            std::unique_ptr<IndexedDBPendingConnection> connection,
-            const storage::BucketLocator& bucket_locator,
-            const base::FilePath& data_directory,
-            scoped_refptr<IndexedDBClientStateCheckerWrapper>
-                client_state_checker);
-
+  void Open(
+      const std::u16string& name,
+      std::unique_ptr<IndexedDBPendingConnection> connection,
+      const storage::BucketInfo& bucket,
+      const base::FilePath& data_directory,
+      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
   void DeleteDatabase(const std::u16string& name,
                       std::unique_ptr<IndexedDBFactoryClient> factory_client,
-                      const storage::BucketLocator& bucket_locator,
+                      const storage::BucketInfo& bucket,
                       const base::FilePath& data_directory,
                       bool force_close);
 
   void HandleBackingStoreFailure(const storage::BucketLocator& bucket_locator);
-  void HandleBackingStoreCorruption(
-      const storage::BucketLocator& bucket_locator,
-      const IndexedDBDatabaseError& error);
+  void HandleBackingStoreCorruption(storage::BucketLocator bucket_locator,
+                                    const IndexedDBDatabaseError& error);
 
   std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
       const storage::BucketLocator& bucket_locator) const;
@@ -128,7 +127,7 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
              IndexedDBDatabaseError,
              IndexedDBDataLossInfo,
              /*was_cold_open=*/bool>
-  GetOrCreateBucketContext(const storage::BucketLocator& bucket_locator,
+  GetOrCreateBucketContext(const storage::BucketInfo& bucket,
                            const base::FilePath& data_directory,
                            bool create_if_missing);
 

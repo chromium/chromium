@@ -84,7 +84,7 @@ class IndexedDBTransactionTest : public testing::Test {
     delegate.on_tasks_available = CreateRunTasksCallback();
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketLocator(), false, base::DefaultClock::GetInstance(),
+        storage::BucketInfo(), false, base::DefaultClock::GetInstance(),
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
         std::make_unique<IndexedDBFakeBackingStore>(), base::DoNothing());

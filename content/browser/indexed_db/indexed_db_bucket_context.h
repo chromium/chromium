@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
@@ -138,7 +138,7 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // `IDBFactory`, will pass a null `InstanceClosure` to the first
   // `IndexedDBBucketContext` it creates.
   IndexedDBBucketContext(
-      storage::BucketLocator bucket_locator,
+      storage::BucketInfo bucket_info,
       bool persist_for_incognito,
       base::Clock* clock,
       TransactionalLevelDBFactory* transactional_leveldb_factory,
@@ -172,7 +172,10 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // the correct sequence.
   void RunInstanceClosure(InstanceClosure method);
 
-  const storage::BucketLocator& bucket_locator() { return bucket_locator_; }
+  const storage::BucketInfo& bucket_info() { return bucket_info_; }
+  storage::BucketLocator bucket_locator() {
+    return bucket_info_.ToBucketLocator();
+  }
   IndexedDBBackingStore* backing_store() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return backing_store_.get();
@@ -260,7 +263,7 @@ class CONTENT_EXPORT IndexedDBBucketContext {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  storage::BucketLocator bucket_locator_;
+  storage::BucketInfo bucket_info_;
 
   // True if this factory should be remain alive due to the storage partition
   // being for incognito mode, and our backing store being in-memory. This is

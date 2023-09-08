@@ -47,38 +47,40 @@ const char kTransactionAlreadyExists[] = "Transaction already exists";
 // static
 mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase>
 DatabaseImpl::CreateAndBind(std::unique_ptr<IndexedDBConnection> connection,
-                            const storage::BucketInfo& bucket,
                             IndexedDBDispatcherHost* dispatcher_host) {
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   mojo::MakeSelfOwnedAssociatedReceiver(
       base::WrapUnique(
-          new DatabaseImpl(std::move(connection), bucket, dispatcher_host)),
+          new DatabaseImpl(std::move(connection), dispatcher_host)),
       pending_remote.InitWithNewEndpointAndPassReceiver());
   return pending_remote;
 }
 
 DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
-                           const storage::BucketInfo& bucket,
                            IndexedDBDispatcherHost* dispatcher_host)
     : dispatcher_host_(dispatcher_host),
       indexed_db_context_(dispatcher_host->context()),
-      connection_(std::move(connection)),
-      bucket_info_(bucket) {
+      connection_(std::move(connection)) {
   DCHECK(connection_);
-  indexed_db_context_->ConnectionOpened(bucket_locator());
+  indexed_db_context_->ConnectionOpened(GetBucketLocator());
 }
 
 DatabaseImpl::~DatabaseImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   leveldb::Status status;
-  if (connection_->IsConnected()) {
-    status = connection_->AbortTransactionsAndClose(
-        IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
+  if (!connection_->IsConnected()) {
+    return;
   }
-  indexed_db_context_->ConnectionClosed(bucket_locator());
+
+  // Calling `GetBucketLocator` after aborting the transaction would be an
+  // error.
+  const storage::BucketLocator bucket_locator = GetBucketLocator();
+  status = connection_->AbortTransactionsAndClose(
+      IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
+  indexed_db_context_->ConnectionClosed(bucket_locator);
   if (!status.ok()) {
     indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        bucket_locator(), status, "Error during rollbacks.");
+        bucket_locator, status, "Error during rollbacks.");
   }
 }
 
@@ -139,7 +141,7 @@ void DatabaseImpl::CreateTransaction(
   }
 
   if (durability == blink::mojom::IDBTransactionDurability::Default) {
-    switch (bucket_info_.durability) {
+    switch (GetBucketInfo().durability) {
       case blink::mojom::BucketDurability::kStrict:
         durability = blink::mojom::IDBTransactionDurability::Strict;
         break;
@@ -157,7 +159,7 @@ void DatabaseImpl::CreateTransaction(
           ->CreateTransaction(durability, mode)
           .release());
   connection_->database()->RegisterAndScheduleTransaction(transaction);
-  TransactionImpl::CreateAndBind(bucket_locator(), indexed_db_context_,
+  TransactionImpl::CreateAndBind(GetBucketLocator(), indexed_db_context_,
                                  std::move(transaction_receiver),
                                  transaction->AsWeakPtr());
 }
@@ -167,12 +169,15 @@ void DatabaseImpl::Close() {
   if (!connection_->IsConnected())
     return;
 
+  // Calling `GetBucketLocator` after aborting the transaction would be an
+  // error.
+  const storage::BucketLocator bucket_locator = GetBucketLocator();
   leveldb::Status status = connection_->AbortTransactionsAndClose(
       IndexedDBConnection::CloseErrorHandling::kReturnOnFirstError);
 
   if (!status.ok()) {
     indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        bucket_locator(), status, "Error during rollbacks.");
+        bucket_locator, status, "Error during rollbacks.");
   }
 }
 
@@ -438,7 +443,7 @@ void DatabaseImpl::OpenCursor(
   transaction->ScheduleTask(
       BindWeakOperation(&IndexedDBDatabase::OpenCursorOperation,
                         connection_->database()->AsWeakPtr(), std::move(params),
-                        bucket_locator(), dispatcher_host_->AsWeakPtr()));
+                        GetBucketLocator(), dispatcher_host_->AsWeakPtr()));
 }
 
 void DatabaseImpl::Count(int64_t transaction_id,
@@ -724,6 +729,16 @@ void DatabaseImpl::DidBecomeInactive() {
         break;
     }
   }
+}
+
+const storage::BucketInfo& DatabaseImpl::GetBucketInfo() {
+  CHECK(connection_->bucket_context());
+  return connection_->bucket_context()->bucket_info();
+}
+
+storage::BucketLocator DatabaseImpl::GetBucketLocator() {
+  CHECK(connection_->bucket_context());
+  return connection_->bucket_context()->bucket_locator();
 }
 
 }  // namespace content
