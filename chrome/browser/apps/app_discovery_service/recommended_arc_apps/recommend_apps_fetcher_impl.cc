@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_impl.h"
 
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -206,9 +207,16 @@ const std::string& GetAndroidSdkVersion(const arc::ArcFeatures& arc_features) {
 }
 
 std::vector<std::string> GetCpuAbiList(const arc::ArcFeatures& arc_features) {
-  const std::string& abi_list_str =
-      arc_features.build_props.at("ro.product.cpu.abilist");
-  return base::SplitString(abi_list_str, ",", base::TRIM_WHITESPACE,
+  auto abi_list = arc_features.build_props.find("ro.product.cpu.abilist");
+  // ARC T+ uses a different property for the ABI List.
+  if (abi_list == arc_features.build_props.end()) {
+    abi_list = arc_features.build_props.find("ro.system.product.cpu.abilist");
+  }
+
+  CHECK(abi_list != arc_features.build_props.end()) << "ARC must have an ABI";
+
+  // The property value will be a comma separated list, e.g. "x86_64,x86".
+  return base::SplitString(abi_list->second, ",", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_ALL);
 }
 
