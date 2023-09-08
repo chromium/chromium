@@ -310,26 +310,13 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
 }
 
 static void WriteTextFragment(WTF::TextStream& ts,
-                              const LayoutObject* layout_object,
                               PhysicalRect rect,
-                              const ComputedStyle& style,
                               StringView text,
                               LayoutUnit inline_size) {
-  // TODO(layout-dev): Dump physical coordinates when removing the legacy inline
-  // layout code.
-  PhysicalOffset offset_to_container_box = rect.offset;
-  if (UNLIKELY(style.IsFlippedBlocksWritingMode())) {
-    if (layout_object) {
-      const LayoutBlock* containing_block = layout_object->ContainingBlock();
-      LayoutRect layout_rect = containing_block->FlipForWritingMode(rect);
-      offset_to_container_box.left = layout_rect.X();
-    }
-  }
-
   // See WriteTextRun() for why we convert to int.
-  int x = offset_to_container_box.left.ToInt();
-  int y = offset_to_container_box.top.ToInt();
-  int logical_width = (offset_to_container_box.left + inline_size).Ceil() - x;
+  int x = rect.offset.left.ToInt();
+  int y = rect.offset.top.ToInt();
+  int logical_width = (rect.offset.left + inline_size).Ceil() - x;
   ts << "text run at (" << x << "," << y << ") width " << logical_width;
   ts << ": " << QuoteAndEscapeNonPrintables(text.ToString());
   ts << "\n";
@@ -343,8 +330,8 @@ static void WriteTextFragment(WTF::TextStream& ts,
          item.Type() == NGFragmentItem::kGeneratedText);
   const LayoutUnit inline_size =
       item.IsHorizontal() ? item.Size().width : item.Size().height;
-  WriteTextFragment(ts, item.GetLayoutObject(), item.RectInContainerFragment(),
-                    item.Style(), item.Text(cursor.Items()), inline_size);
+  WriteTextFragment(ts, item.RectInContainerFragment(),
+                    item.Text(cursor.Items()), inline_size);
 }
 
 static void WritePaintProperties(WTF::TextStream& ts,
