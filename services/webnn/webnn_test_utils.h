@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/public/mojom/webnn_service.mojom.h"
 
 namespace webnn {
 

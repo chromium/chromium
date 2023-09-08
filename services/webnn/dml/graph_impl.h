@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/public/mojom/webnn_service.mojom.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::dml {

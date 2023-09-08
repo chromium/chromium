@@ -10,8 +10,8 @@
 
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/public/mojom/webnn_service.mojom.h"
 
 namespace webnn {
 

@@ -44,6 +44,7 @@ blink_modules_sources("ml") {
     ":buildflags",
     "//components/ml/mojom:mojom_blink",
     "//components/ml/webnn",
+    "//components/ml/webnn:features",
     "//services/webnn/public/mojom:mojom_blink",
   ]
 
@@ -98,6 +99,7 @@ source_set("unit_tests") {
 
   deps = [
     "//components/ml/mojom:mojom_blink",
+    "//components/ml/webnn:features",
     "//services/webnn/public/mojom:mojom_blink",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",

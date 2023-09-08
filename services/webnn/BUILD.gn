@@ -12,8 +12,6 @@ source_set("webnn") {
     "webnn_context_provider_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
-    "webnn_service.cc",
-    "webnn_service.h",
   ]
 
   if (is_win) {

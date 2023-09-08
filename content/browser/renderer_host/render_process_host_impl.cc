@@ -4129,6 +4129,10 @@ base::TimeDelta RenderProcessHostImpl::GetChildProcessIdleTime() {
   return base::TimeTicks::Now() - child_process_activity_time_;
 }
 
+viz::GpuClient* RenderProcessHostImpl::GetGpuClient() {
+  return gpu_client_.get();
+}
+
 RenderProcessHost::FilterURLResult RenderProcessHostImpl::FilterURL(
     bool empty_allowed,
     GURL* url) {

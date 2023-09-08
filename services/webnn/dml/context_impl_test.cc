@@ -9,8 +9,8 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/dml/test_base.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/public/mojom/webnn_service.mojom.h"
 #include "services/webnn/webnn_test_utils.h"
 
 namespace webnn::dml {

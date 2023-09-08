@@ -2,6 +2,7 @@
 
 include_rules = [
   "+components/discardable_memory/public/mojom",
+  "+components/ml/webnn",
   "+gpu/command_buffer/client",
   "+gpu/command_buffer/common",
   "+gpu/config",
@@ -16,6 +17,7 @@ include_rules = [
   "+services/viz/privileged/mojom",
   "+services/viz/public/mojom",
   "+services/viz/public/mojom/hit_test",
+  "+services/webnn/public/mojom",
   "+skia",
   "+third_party/skia",
   "+ui/accelerated_widget_mac",

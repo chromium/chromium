@@ -9,7 +9,8 @@
 #include <vector>
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/webnn/public/mojom/webnn_service.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 
 namespace webnn {
 

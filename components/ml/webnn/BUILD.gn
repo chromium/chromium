@@ -2,6 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+component("features") {
+  defines = [ "IS_WEBNN_FEATURES_IMPL" ]
+
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 static_library("webnn") {
   sources = [
     "graph_validation_utils.cc",

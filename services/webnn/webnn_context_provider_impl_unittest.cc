@@ -8,7 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/webnn/public/mojom/webnn_service.mojom.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webnn {

@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "components/ml/webnn/features.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
-#include "services/webnn/public/mojom/webnn_service.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -238,7 +238,7 @@ TEST_P(MLGraphTestMojo, CreateWebNNGraphTest) {
     // resoveld with an MLGraphMojo object.
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(
-        blink::features::kEnableMachineLearningNeuralNetworkService);
+        webnn::features::kEnableMachineLearningNeuralNetworkService);
 
     ScriptPromiseTester tester(script_state, BuildSimpleGraph(scope, options));
     tester.WaitUntilSettled();
@@ -303,7 +303,7 @@ TEST_P(MLGraphTestMojo, ClampTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
@@ -529,7 +529,7 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
@@ -723,7 +723,7 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
@@ -872,7 +872,7 @@ TEST_P(MLGraphTestMojo, GemmTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
@@ -1078,7 +1078,7 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
@@ -1273,7 +1273,7 @@ TEST_P(MLGraphTestMojo, ReluTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
@@ -1350,7 +1350,7 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
@@ -1430,7 +1430,7 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
@@ -1504,7 +1504,7 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
@@ -1583,7 +1583,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);

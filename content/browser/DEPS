@@ -137,6 +137,9 @@ specific_include_rules = {
   ".*test_utils\.(h|cc)": [
     "+services/network/test",
   ],
+  "browser_interface_binders\.cc": [
+    "+components/ml/webnn/features.h",
+  ],
   "browser_main_loop\.cc": [
     # TODO(crbug.com/1049894): Remove.
     "+services/network/transitional_url_loader_factory_owner.h",

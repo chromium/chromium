@@ -265,6 +265,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void AddFilter(BrowserMessageFilter* filter) override;
   bool FastShutdownStarted() override;
   base::TimeDelta GetChildProcessIdleTime() override;
+  viz::GpuClient* GetGpuClient();
   FilterURLResult FilterURL(bool empty_allowed, GURL* url) override;
   void EnableAudioDebugRecordings(const base::FilePath& file) override;
   void DisableAudioDebugRecordings() override;

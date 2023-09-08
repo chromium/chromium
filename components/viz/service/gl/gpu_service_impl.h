@@ -56,7 +56,12 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gl/direct_composition_support.h"
-#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace arc {
@@ -196,6 +201,13 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_receiver) override;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  void BindWebNNContextProvider(
+      mojo::PendingReceiver<webnn::mojom::WebNNContextProvider>
+          pending_receiver,
+      int client_id) override;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   void BindClientGmbInterface(
       mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> pending_receiver,

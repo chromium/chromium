@@ -1939,7 +1939,16 @@ _CONFIG = [
         'allowed': [
             'media::.+',
         ]
-    }
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/ml/webnn/ml_graph_test_mojo.cc',
+            'third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.cc',
+        ],
+        'allowed': [
+            'webnn::features::.+',
+        ]
+    },
 ]
 
 

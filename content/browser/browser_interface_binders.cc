@@ -232,7 +232,9 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "services/webnn/public/mojom/webnn_service.mojom.h"
+#include "components/ml/webnn/features.h"
+#include "components/viz/host/gpu_client.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #endif
 
 namespace blink {
@@ -284,22 +286,11 @@ void BindTextDetection(
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-webnn::mojom::WebNNService* GetWebNNService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  static base::NoDestructor<mojo::Remote<webnn::mojom::WebNNService>> remote;
-  if (!*remote) {
-    auto* gpu = GpuProcessHost::Get();
-    if (gpu) {
-      gpu->RunService(remote->BindNewPipeAndPassReceiver());
-    }
-  }
-
-  return remote->get();
-}
-
 void BindWebNNContextProvider(
+    RenderFrameHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
-  GetWebNNService()->BindWebNNContextProvider(std::move(receiver));
+  auto* process_host = static_cast<RenderProcessHostImpl*>(host->GetProcess());
+  process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
 }
 #endif
 
@@ -923,9 +914,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
-          blink::features::kEnableMachineLearningNeuralNetworkService)) {
+          webnn::features::kEnableMachineLearningNeuralNetworkService)) {
     map->Add<webnn::mojom::WebNNContextProvider>(
-        base::BindRepeating(&BindWebNNContextProvider));
+        base::BindRepeating(&BindWebNNContextProvider, base::Unretained(host)));
   }
 #endif
 

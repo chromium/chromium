@@ -5,7 +5,6 @@
 module webnn.mojom;
 
 import "services/webnn/public/mojom/webnn_graph.mojom";
-import "sandbox/policy/mojom/sandbox.mojom";
 
 enum PowerPreference {
   // Let the user agent select the most suitable behavior.
@@ -42,23 +41,13 @@ interface WebNNContext {
 };
 
 // This interface runs in the GPU process and is called from the renderer
-// process to create `WebNNContext` interface.
+// process to create `WebNNContext` interface. The renderer requests this
+// interface from the frame's BrowserInterfaceBroker, which requests it
+// from the GpuService via the GpuClient.
 interface WebNNContextProvider {
   // Called by the renderer process to create a message pipe for `MLContext`,
-  // the `CreatContextResult::kNotSupported` with `mojo::NullRemote` will be
+  // the `CreateContextResult::kNotSupported` with `mojo::NullRemote` will be
   // thrown if the configuration of options isn't supported.
   CreateWebNNContext(CreateContextOptions options)
       => (CreateContextResult result, pending_remote<WebNNContext>? remote);
-};
-
-// Represents the WebNN service to infer computational graph. There is only
-// one service running in GPU process to access the hardware accelerated OS
-// machine learning API (e.g. Direct Machine Learning (DirectML) on Windows).
-[ServiceSandbox=sandbox.mojom.Sandbox.kGpu,
- RequireContext=sandbox.mojom.Context.kBrowser]
-interface WebNNService {
-  // Bind `WebNNContextProvider` interface for every `navigator.ml` object which
-  // is called by the renderer with `BrowserInterfaceBroker's GetInterface()`
-  // method to create a `WebNNContext` interface.
-  BindWebNNContextProvider(pending_receiver<WebNNContextProvider> receiver);
 };

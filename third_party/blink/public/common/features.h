@@ -354,12 +354,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEarlyExitOnNoopClassOrStyleChange);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEditingNG);
 
-// Enables the Web Machine Learning Neural Network Service to access hardware
-// acceleration out of renderer process. Explainer:
-// https://github.com/webmachinelearning/webnn/blob/main/explainer.md
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kEnableMachineLearningNeuralNetworkService);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnablePenetratingImageSelection);
 
 // Enables establishing the GPU channel asnchronously when requesting a new

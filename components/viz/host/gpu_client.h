@@ -22,6 +22,10 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 namespace viz {
 
 class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
@@ -58,6 +62,10 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
       ConnectionErrorHandlerClosure connection_error_handler);
 
   base::WeakPtr<GpuClient> GetWeakPtr();
+#if !BUILDFLAG(IS_CHROMEOS)
+  void BindWebNNContextProvider(
+      mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // mojom::GpuMemoryBufferFactory overrides:
   void CreateGpuMemoryBuffer(
