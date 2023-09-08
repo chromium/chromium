@@ -312,8 +312,9 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private computePageContentRowSublabel_() {
-    // TODO(crbug/1476887): Return label based on pref state.
-    return this.i18n('pageContentLinkRowSublabelOff');
+    return this.getPref('page_content_collection.enabled').value ?
+        this.i18n('pageContentLinkRowSublabelOn') :
+        this.i18n('pageContentLinkRowSublabelOff');
   }
 }
 
