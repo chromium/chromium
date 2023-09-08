@@ -84,6 +84,11 @@ EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
     os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
 ]
+EXCLUDED_TESTS_MAC = [
+    # https://crbug.com/1479875 This fails on Mac. It relates to the large code
+    # model which we don't use, so suppress it for now.
+    os.path.join('tests', 'ui', 'thread-local', 'thread-local-issue-37508.rs'),
+]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
 
@@ -477,6 +482,10 @@ def GetTestArgs():
         for excluded in EXCLUDED_TESTS_WINDOWS:
             args.append('--exclude')
             args.append(excluded)
+    if sys.platform == 'darwin':
+        for excluded in EXCLUDED_TESTS_MAC:
+            args.append('--exclude')
+            args.append(excluded)
     return args
 
 
@@ -739,6 +748,32 @@ def main():
         # TODO(crbug.com/1472655): Remove this cherrypicking after the
         # cherrypicked commit is included in the checkout.
         GitCherryPick(RUST_SRC_DIR, '0081d64e4b8413219ddec5d1013d522edbf132')
+
+        if not sys.platform == 'darwin':
+            # TODO(crbug.com/1476119): Cherry-pick https://github.com/rust-lang/rust/pull/115136/commits
+            RunCommand([
+                'git', '-C', RUST_SRC_DIR, 'remote', 'add', 'gh',
+                'https://github.com/rust-lang/rust'
+            ],
+                       fail_hard=False)
+            RunCommand(
+                ['git', '-C', RUST_SRC_DIR, 'fetch', 'gh', 'pull/115136/head'])
+            GitCherryPick(RUST_SRC_DIR,
+                          'cca23880de2277bedd68b3b31855270b272b55ff')
+            GitCherryPick(RUST_SRC_DIR,
+                          'bdf78359980ea06f0254eb8a07e813ca4eb1b112')
+            GitCherryPick(RUST_SRC_DIR,
+                          '0ae0f3a981f73f56ccd0e757661dac79e185e4be')
+            GitCherryPick(RUST_SRC_DIR,
+                          'fb4ee7d19b67960046c1446a4f442b662dac380d')
+            GitCherryPick(RUST_SRC_DIR,
+                          'ee81e0d1e4cbbd88f716e1f9ddfc7a065c9963a7')
+            GitCherryPick(RUST_SRC_DIR,
+                          'e97776b9116b54bd5a5bb652c8cba32eec8bef7f')
+            GitCherryPick(RUST_SRC_DIR,
+                          '1745bc592a92ae53b60216e3a9754edaa2bff9ad')
+            GitCherryPick(RUST_SRC_DIR,
+                          '32594581001ebe6a4bf4802d55391644ac1a6af2')
 
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
