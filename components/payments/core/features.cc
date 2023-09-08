@@ -57,6 +57,10 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
 #endif
 );
 
+BASE_FEATURE(kSecurePaymentConfirmationExtensions,
+             "SecurePaymentConfirmationExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
 // The blink-side feature of the same name is disabled by default, and can be
 // enabled directly or via origin trial.

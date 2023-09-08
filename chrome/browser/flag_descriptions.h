@@ -1759,6 +1759,9 @@ extern const char kDynamicSearchUpdateAnimationDescription[];
 extern const char kSecurePaymentConfirmationDebugName[];
 extern const char kSecurePaymentConfirmationDebugDescription[];
 
+extern const char kSecurePaymentConfirmationExtensionsName[];
+extern const char kSecurePaymentConfirmationExtensionsDescription[];
+
 extern const char kSendTabToSelfSigninPromoName[];
 extern const char kSendTabToSelfSigninPromoDescription[];
 
