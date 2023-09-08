@@ -9833,55 +9833,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Report an issue
       </message>
 
-      <!-- Chrome Cleanup prompt and web UI -->
-      <if expr="is_win">
-        <message name="IDS_CHROME_CLEANUP_PROMPT_DETAILS_BUTTON_LABEL" desc="The button in the Chrome Cleanup dialog that lets users see more details, such as what files will be deleted from their computer. Chrome browser shows the dialog when unwanted software, like ad injectors or software that changes the user's settings without their knowledge, is found on the user's computer. Noun; verb 'See' is omitted.">
-          Details
-        </message>
-        <message name="IDS_CHROME_CLEANUP_PROMPT_REMOVE_BUTTON_LABEL" desc="A button in the Chrome Cleanup dialog. When clicked, Chrome will begin to remove unwanted software and restore browser settings to default values. Appears next to a 'Cancel' button and a 'Details' button that opens a page that shows which unwanted software will be deleted. 'Remove' is imperative.">
-          Remove
-        </message>
-        <message name="IDS_CHROME_CLEANUP_PROMPT_TITLE" desc="Title of the Chrome Cleanup dialog. Chrome browser shows the dialog when unwanted software, like ad injectors or software that changes the user's settings without their knowledge, is found on the user's computer. Appears above a description of what the cleanup dialog does, along with a 'Remove', 'Cancel', and 'Details' button. 'Remove' is imperative, asking the user, do you want Chrome to remove harmful software?">
-          Remove harmful software?
-        </message>
-        <message name="IDS_CHROME_CLEANUP_REBOOT_PROMPT_TITLE" desc="Title of the Chrome Cleanup reboot prompt dialog. Chrome browser shows the dialog when the user runs the Chrome Cleanup tool and computer restart is required to finish the cleanup. User must take additional action to finish the cleanup. 'Restart' is imperative.">
-          To finish removing harmful software, restart your computer
-        </message>
-        <message name="IDS_CHROME_CLEANUP_REBOOT_PROMPT_RESTART_BUTTON_LABEL" desc="A button in the Chrome Cleanup reboot prompt dialog. Clicking this button causes the user's computer to turn off (shut down) and turn back on again. Imperative.">
-          Restart computer
-        </message>
-        <message name="IDS_CHROME_CLEANUP_LOGS_PERMISSION" desc="A checkbox label, appearing on the Chrome Cleanup modal dialog, asking the user for permission to send details about the cleanup operation to Google.">
-          Report details to Google
-        </message>
-      </if>
-
-      <!-- Settings reset prompt dialog messages -->
-      <message name="IDS_SETTINGS_RESET_PROMPT_TITLE_SEARCH_ENGINE" desc="The title for the settings reset dialog when the user's search engine setting has been modified. The dialog will ask users if they want to restore their modified setting to its original default value.">
-        Restore default search engine?
-      </message>
-      <message name="IDS_SETTINGS_RESET_PROMPT_TITLE_STARTUP_PAGE" desc="The title for the settings reset dialog when the user's startup page setting has been modified. The dialog will ask users if they want to restore their modified setting to its original default value.">
-        Restore default startup page?
-      </message>
-      <message name="IDS_SETTINGS_RESET_PROMPT_TITLE_HOMEPAGE" desc="The title for the settings reset dialog when the user's homepage setting has been modified by. The dialog will ask users if they want to restore their modified setting to its original default value.">
-        Restore default homepage?
-      </message>
-      <message name="IDS_SETTINGS_RESET_PROMPT_ACCEPT_BUTTON_LABEL" desc="The settings reset dialog asks users if they want to restore a Chrome setting that has been modified by an unwanted software or extension to its original default value. This text is displayed on the main button in the dialog that, when clicked, will restore the setting.">
-        Restore
-      </message>
-
-      <message name="IDS_SETTINGS_RESET_PROMPT_EXPLANATION_FOR_SEARCH_ENGINE_NO_EXTENSIONS" desc="This text is shown in the settings reset dialog to inform the user that their search engine has been modified, for example by unwanted software or extension, to something that they might not want. The value of the setting that is shown in the text is the possibly unwanted setting that will be reset to its original default if the user clicks the Restore button.">
-        Your search engine was changed to <ph name="URL">$1<ex>www.some-domain.com</ex></ph>.
-      </message>
-      <message name="IDS_SETTINGS_RESET_PROMPT_EXPLANATION_FOR_STARTUP_PAGE_SINGLE_NO_EXTENSIONS" desc="This text is shown in the settings reset dialog to inform the user that their startup page setting has been modified, for example by unwanted software or extension, to something that they might not want. The value of the setting that is shown in the text is the possibly unwanted setting that will be reset to its original default value if the user clicks the Restore button.">
-        Your startup page was changed to <ph name="URL">$1<ex>www.some-domain.com</ex></ph>.
-      </message>
-      <message name="IDS_SETTINGS_RESET_PROMPT_EXPLANATION_FOR_STARTUP_PAGE_MULTIPLE_NO_EXTENSIONS" desc="This text is shown in the settings reset dialog to inform the user that their startup page setting has been modified, for example by unwanted software or extension, to something that they might not want. The value of the setting that is shown in the text is the possibly unwanted setting that will be reset to its original default if the user clicks the Restore button.">
-        Your startup pages were changed to include <ph name="URL">$1<ex>www.some-domain.com</ex></ph>.
-      </message>
-      <message name="IDS_SETTINGS_RESET_PROMPT_EXPLANATION_FOR_HOMEPAGE_NO_EXTENSIONS" desc="This text is shown in the settings reset dialog to inform the user that their homepage setting has been modified, for example by unwanted software or extension, to something that they might not want. The value of the setting that is shown in the text is the possibly unwanted setting that will be reset to its original default value if the user clicks the Restore button.">
-        Your homepage was changed to <ph name="URL">$1<ex>www.some-domain.com</ex></ph>.
-      </message>
-
       <!-- Upgrade bubble messages -->
       <message name="IDS_REENABLE_UPDATES" desc="Text for the button the user clicks to re-enable automatic updates.">
         Turn on autoupdate
