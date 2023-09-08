@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -114,6 +115,10 @@ public class PageInsightsCoordinatorTest {
     private ScrimCoordinator mScrimCoordinator;
     private BottomSheetTestSupport mTestSupport;
 
+    private View mBottomSheetContainer;
+
+    private GradientDrawable mBackgroundDrawable;
+
     @BeforeClass
     public static void setupSuite() {
         sTestRule.launchActivity(null);
@@ -158,7 +163,10 @@ public class PageInsightsCoordinatorTest {
 
         mPageInsightsController = TestThreadUtils.runOnUiThreadBlocking(() -> {
             Supplier<ScrimCoordinator> scrimSupplier = () -> mScrimCoordinator;
-            Callback<View> initializedCallback = (v) -> mPageInsightsCoordinator.initView(v);
+            Callback<View> initializedCallback = (v) -> {
+                mPageInsightsCoordinator.initView(v);
+                mBottomSheetContainer = v;
+            };
             return BottomSheetControllerFactory.createFullWidthBottomSheetController(scrimSupplier,
                     initializedCallback, activity.getWindow(),
                     KeyboardVisibilityDelegate.getInstance(), () -> rootView());
@@ -250,6 +258,36 @@ public class PageInsightsCoordinatorTest {
                 R.dimen.bottom_sheet_corner_radius);
         assertEquals(maxCornerRadiusPx, mPageInsightsCoordinator.getCornerRadiusForTesting(),
                 ASSERTION_DELTA);
+    }
+
+    @Test
+    @MediumTest
+    public void testBackgroundColorAtExpandedStateAfterPeekState() throws Exception {
+        createPageInsightsCoordinator();
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+        setAutoTriggerReady();
+
+        hideTopBar(); // Signal for auto triggering the PIH in Peek state
+        View view = mBottomSheetContainer.findViewById(R.id.background);
+        mBackgroundDrawable = (GradientDrawable) view.getBackground();
+        assertEquals(sTestRule.getActivity().getColor(R.color.gm3_baseline_surface_container),
+                mBackgroundDrawable.getColor().getDefaultColor());
+
+        expandSheet();
+        assertEquals(sTestRule.getActivity().getColor(R.color.gm3_baseline_surface),
+                mBackgroundDrawable.getColor().getDefaultColor());
+    }
+
+    @Test
+    @MediumTest
+    public void testBackgroundColorAtFirstExpandedState() throws Exception {
+        createAndLaunchPageInsightsCoordinator();
+
+        View view = mBottomSheetContainer.findViewById(R.id.background);
+        mBackgroundDrawable = (GradientDrawable) view.getBackground();
+
+        assertEquals(sTestRule.getActivity().getColor(R.color.gm3_baseline_surface),
+                mBackgroundDrawable.getColor().getDefaultColor());
     }
 
     @Test

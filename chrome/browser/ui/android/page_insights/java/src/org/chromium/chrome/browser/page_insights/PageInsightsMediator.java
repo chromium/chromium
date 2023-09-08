@@ -38,6 +38,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -280,6 +281,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         if (newState == SheetState.HIDDEN || newState == SheetState.PEEK) {
             setBottomControlsHeight(mSheetController.getCurrentOffset());
         }
+        if (newState == SheetState.PEEK) {
+            setDrawableBackgroundColor(/* ratioOfCompletionFromPeekToExpanded */ .0f);
+        } else if (newState == SheetState.FULL) {
+            setDrawableBackgroundColor(/* ratioOfCompletionFromPeekToExpanded */ 1.0f);
+        }
     }
 
     private void setBottomControlsHeight(int height) {
@@ -310,8 +316,13 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             setBottomControlsHeight(0);
         }
 
-        float ratio = (heightFraction - peekHeightRatio) / (1.f - peekHeightRatio);
-        if (0 <= ratio && ratio <= 1.f) setCornerRadiusPx((int) (ratio * mMaxCornerRadiusPx));
+        float ratioOfCompletionFromPeekToExpanded =
+                (heightFraction - peekHeightRatio) / (1.f - peekHeightRatio);
+        setDrawableBackgroundColor(ratioOfCompletionFromPeekToExpanded);
+        if (0 <= ratioOfCompletionFromPeekToExpanded
+                && ratioOfCompletionFromPeekToExpanded <= 1.f) {
+            setCornerRadiusPx((int) (ratioOfCompletionFromPeekToExpanded * mMaxCornerRadiusPx));
+        }
     }
 
     private float getPeekHeightRatio() {
@@ -323,6 +334,20 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mBackgroundDrawable.mutate();
         mBackgroundDrawable.setCornerRadii(
                 new float[] {radius, radius, radius, radius, 0, 0, 0, 0});
+    }
+
+    void setDrawableBackgroundColor(float ratioOfCompletionFromPeekToExpanded) {
+        float colorRatio = 1.0f;
+        if (0 <= ratioOfCompletionFromPeekToExpanded
+                && ratioOfCompletionFromPeekToExpanded <= 0.5f) {
+            colorRatio = 2 * ratioOfCompletionFromPeekToExpanded;
+        } else if (ratioOfCompletionFromPeekToExpanded <= 0) {
+            colorRatio = 0;
+        }
+        int toolbarRenderingColor = ColorUtils.getColorWithOverlay(
+                mContext.getColor(R.color.gm3_baseline_surface_container),
+                mContext.getColor(R.color.gm3_baseline_surface), colorRatio, false);
+        mBackgroundDrawable.setColor(toolbarRenderingColor);
     }
 
     @Override

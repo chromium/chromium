@@ -116,4 +116,6 @@ found in the LICENSE file.
     <color name="price_drop_annotation_text_green">@color/price_drop_annotation_text_green_light</color>
     <color name="signed_out_avatar_color">@color/signed_out_avatar_color_light</color>
     <color name="drag_shadow_outline_color">@color/baseline_neutral_variant_90_alpha_20</color>
+    <color name="gm3_baseline_surface_container">@color/gm3_baseline_surface_container_light</color>
+    <color name="gm3_baseline_surface">@color/gm3_baseline_surface_light</color>
 </resources>

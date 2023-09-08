@@ -83,6 +83,10 @@ found in the LICENSE file.
     <!-- GM3 Baseline colors. See https://crbug.com/1410537. -->
     <color name="gm3_baseline_surface_tint_light">#6991D6</color>
     <color name="gm3_baseline_surface_tint_dark">#D1E1FF</color>
+    <color name="gm3_baseline_surface_container_light">#F0F4F9</color>
+    <color name="gm3_baseline_surface_container_dark">#1E1F20</color>
+    <color name="gm3_baseline_surface_light">#FFFFFF</color>
+    <color name="gm3_baseline_surface_dark">#131314</color>
 
     <!-- System colors that point to the baseline palette for below Android S.-->
     <color name="system_neutral1_10">@color/baseline_neutral_99</color>
