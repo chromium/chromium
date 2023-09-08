@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 #include "chrome/browser/ui/webui/settings/ash/search_section.h"
+#include "chrome/browser/ui/webui/settings/ash/storage_section.h"
 
 namespace content {
 class WebUIDataSource;
@@ -45,6 +46,7 @@ class SystemPreferencesSection : public OsSettingsSection {
   LanguagesSection languages_subsection_;
   ResetSection reset_subsection_;
   SearchSection search_subsection_;
+  StorageSection storage_subsection_;
 };
 
 }  // namespace ash::settings

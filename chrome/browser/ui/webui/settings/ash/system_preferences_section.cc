@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/webui/settings/ash/languages_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 #include "chrome/browser/ui/webui/settings/ash/search_section.h"
+#include "chrome/browser/ui/webui/settings/ash/storage_section.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -29,7 +30,12 @@ SystemPreferencesSection::SystemPreferencesSection(
       date_time_subsection_(profile, search_tag_registry),
       languages_subsection_(profile, search_tag_registry, pref_service),
       reset_subsection_(profile, search_tag_registry),
-      search_subsection_(profile, search_tag_registry) {}
+      search_subsection_(profile, search_tag_registry),
+      storage_subsection_(profile, search_tag_registry) {
+  CHECK(profile);
+  CHECK(search_tag_registry);
+  CHECK(pref_service);
+}
 
 SystemPreferencesSection::~SystemPreferencesSection() = default;
 
@@ -39,6 +45,7 @@ void SystemPreferencesSection::AddLoadTimeData(
   languages_subsection_.AddLoadTimeData(html_source);
   reset_subsection_.AddLoadTimeData(html_source);
   search_subsection_.AddLoadTimeData(html_source);
+  storage_subsection_.AddLoadTimeData(html_source);
 
   webui::LocalizedString kLocalizedStrings[] = {
       {"storageAndPowerTitle",
@@ -53,6 +60,7 @@ void SystemPreferencesSection::AddHandlers(content::WebUI* web_ui) {
   languages_subsection_.AddHandlers(web_ui);
   reset_subsection_.AddHandlers(web_ui);
   search_subsection_.AddHandlers(web_ui);
+  storage_subsection_.AddHandlers(web_ui);
 }
 
 int SystemPreferencesSection::GetSectionNameMessageId() const {
@@ -76,7 +84,8 @@ bool SystemPreferencesSection::LogMetric(mojom::Setting setting,
   return date_time_subsection_.LogMetric(setting, value) ||
          languages_subsection_.LogMetric(setting, value) ||
          reset_subsection_.LogMetric(setting, value) ||
-         search_subsection_.LogMetric(setting, value);
+         search_subsection_.LogMetric(setting, value) ||
+         storage_subsection_.LogMetric(setting, value);
 }
 
 void SystemPreferencesSection::RegisterHierarchy(
@@ -85,6 +94,7 @@ void SystemPreferencesSection::RegisterHierarchy(
   languages_subsection_.RegisterHierarchy(generator);
   reset_subsection_.RegisterHierarchy(generator);
   search_subsection_.RegisterHierarchy(generator);
+  storage_subsection_.RegisterHierarchy(generator);
 }
 
 }  // namespace ash::settings

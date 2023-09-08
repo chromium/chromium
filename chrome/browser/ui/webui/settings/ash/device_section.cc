@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/ui/webui/settings/ash/device_pointer_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_power_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_stylus_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -36,7 +34,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "media/base/media_switches.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
@@ -54,7 +51,6 @@ using ::chromeos::settings::mojom::kCustomizePenButtonsSubpagePath;
 using ::chromeos::settings::mojom::kCustomizeTabletButtonsSubpagePath;
 using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kDisplaySubpagePath;
-using ::chromeos::settings::mojom::kExternalStorageSubpagePath;
 using ::chromeos::settings::mojom::kGraphicsTabletSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceKeyboardRemapKeysSubpagePath;
@@ -64,7 +60,6 @@ using ::chromeos::settings::mojom::kPerDevicePointingStickSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath;
 using ::chromeos::settings::mojom::kPointersSubpagePath;
 using ::chromeos::settings::mojom::kPowerSubpagePath;
-using ::chromeos::settings::mojom::kStorageSubpagePath;
 using ::chromeos::settings::mojom::kStylusSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
@@ -94,14 +89,6 @@ const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
            IDS_OS_SETTINGS_TAG_DISPLAY_SIZE_ALT4,
            IDS_OS_SETTINGS_TAG_DISPLAY_SIZE_ALT5,
        }},
-      {IDS_OS_SETTINGS_TAG_STORAGE,
-       mojom::kStorageSubpagePath,
-       mojom::SearchResultIcon::kHardDrive,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kStorage},
-       {IDS_OS_SETTINGS_TAG_STORAGE_ALT1, IDS_OS_SETTINGS_TAG_STORAGE_ALT2,
-        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_DISPLAY_NIGHT_LIGHT,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -695,18 +682,6 @@ const std::vector<SearchConcept>& GetDisplayNightLightOnSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetExternalStorageSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_EXTERNAL_STORAGE,
-       mojom::kExternalStorageSubpagePath,
-       mojom::SearchResultIcon::kHardDrive,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kExternalStorage}},
-  });
-  return *tags;
-}
-
 const std::vector<SearchConcept>& GetPowerWithBatterySearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_POWER_SOURCE,
@@ -999,52 +974,6 @@ void AddDeviceStylusStrings(content::WebUIDataSource* html_source) {
                           stylus_utils::HasInternalStylus());
 }
 
-void AddDeviceStorageStrings(content::WebUIDataSource* html_source,
-                             bool is_external_storage_enabled) {
-  static constexpr webui::LocalizedString kStorageStrings[] = {
-      {"storageExternal", IDS_SETTINGS_STORAGE_EXTERNAL},
-      {"storageExternalStorageEmptyListHeader",
-       IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_EMPTY_LIST_HEADER},
-      {"storageExternalStorageListHeader",
-       IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_LIST_HEADER},
-      {"storageItemApps", IDS_SETTINGS_STORAGE_ITEM_APPS},
-      {"storageItemOffline", IDS_SETTINGS_STORAGE_ITEM_OFFLINE},
-      {"storageItemAvailable", IDS_SETTINGS_STORAGE_ITEM_AVAILABLE},
-      {"storageItemBrowsingData", IDS_SETTINGS_STORAGE_ITEM_BROWSING_DATA},
-      {"storageItemCrostini", IDS_SETTINGS_STORAGE_ITEM_CROSTINI},
-      {"storageItemInUse", IDS_SETTINGS_STORAGE_ITEM_IN_USE},
-      {"storageItemMyFiles", IDS_SETTINGS_STORAGE_ITEM_MY_FILES},
-      {"storageItemOtherUsers", IDS_SETTINGS_STORAGE_ITEM_OTHER_USERS},
-      {"storageItemSystem", IDS_SETTINGS_STORAGE_ITEM_SYSTEM},
-      {"storageOverviewAriaLabel", IDS_SETTINGS_STORAGE_OVERVIEW_ARIA_LABEL},
-      {"storageSizeComputing", IDS_SETTINGS_STORAGE_SIZE_CALCULATING},
-      {"storageSizeUnknown", IDS_SETTINGS_STORAGE_SIZE_UNKNOWN},
-      {"storageSpaceCriticallyLowMessageLine1",
-       IDS_SETTINGS_STORAGE_SPACE_CRITICALLY_LOW_MESSAGE_LINE_1},
-      {"storageSpaceCriticallyLowMessageLine2",
-       IDS_SETTINGS_STORAGE_SPACE_CRITICALLY_LOW_MESSAGE_LINE_2},
-      {"storageSpaceCriticallyLowMessageTitle",
-       IDS_SETTINGS_STORAGE_SPACE_CRITICALLY_LOW_MESSAGE_TITLE},
-      {"storageSpaceLowMessageLine1",
-       IDS_SETTINGS_STORAGE_SPACE_LOW_MESSAGE_LINE_1},
-      {"storageSpaceLowMessageLine2",
-       IDS_SETTINGS_STORAGE_SPACE_LOW_MESSAGE_LINE_2},
-      {"storageSpaceLowMessageTitle",
-       IDS_SETTINGS_STORAGE_SPACE_LOW_MESSAGE_TITLE},
-      {"storageTitle", IDS_SETTINGS_STORAGE_TITLE},
-  };
-  html_source->AddLocalizedStrings(kStorageStrings);
-
-  html_source->AddBoolean("isExternalStorageEnabled",
-                          is_external_storage_enabled);
-
-  html_source->AddString(
-      "storageAndroidAppsExternalDrivesNote",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_STORAGE_ANDROID_APPS_ACCESS_EXTERNAL_DRIVES_NOTE,
-          base::ASCIIToUTF16(chrome::kArcExternalStorageLearnMoreURL)));
-}
-
 void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kAudioStrings[] = {
       {"audioDeviceBluetoothLabel", IDS_SETTINGS_AUDIO_DEVICE_BLUETOOTH_LABEL},
@@ -1166,7 +1095,12 @@ DeviceSection::DeviceSection(Profile* profile,
                              SearchTagRegistry* search_tag_registry,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      storage_subsection_(profile, search_tag_registry) {
+  CHECK(profile);
+  CHECK(search_tag_registry);
+  CHECK(pref_service);
+
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDeviceSearchConcepts());
 
@@ -1174,9 +1108,6 @@ DeviceSection::DeviceSection(Profile* profile,
     updater.AddSearchTags(GetPerDeviceKeyboardSearchConcepts());
   } else {
     updater.AddSearchTags(GetKeyboardSearchConcepts());
-  }
-  if (IsExternalStorageEnabled(profile)) {
-    updater.AddSearchTags(GetExternalStorageSearchConcepts());
   }
 
   // Only when the feature is enabled, the toggle buttons for charging sounds
@@ -1300,7 +1231,6 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDeviceStylusStrings(html_source);
   AddDeviceDisplayStrings(html_source);
   AddDeviceAudioStrings(html_source);
-  AddDeviceStorageStrings(html_source, IsExternalStorageEnabled(profile()));
   AddDevicePowerStrings(html_source);
 
   html_source->AddBoolean("isAdaptiveChargingEnabled",
@@ -1308,6 +1238,10 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                               Shell::Get()
                                   ->adaptive_charging_controller()
                                   ->IsAdaptiveChargingSupported());
+
+  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    storage_subsection_.AddLoadTimeData(html_source);
+  }
 }
 
 void DeviceSection::AddHandlers(content::WebUI* web_ui) {
@@ -1316,6 +1250,10 @@ void DeviceSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PointerHandler>());
   web_ui->AddMessageHandler(std::make_unique<PowerHandler>(pref_service_));
   web_ui->AddMessageHandler(std::make_unique<StylusHandler>());
+
+  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    storage_subsection_.AddHandlers(web_ui);
+  }
 }
 
 int DeviceSection::GetSectionNameMessageId() const {
@@ -1522,16 +1460,9 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                             generator);
 
   // Storage.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_STORAGE_TITLE, mojom::Subpage::kStorage,
-      mojom::SearchResultIcon::kHardDrive,
-      mojom::SearchResultDefaultRank::kMedium, mojom::kStorageSubpagePath);
-  generator->RegisterNestedSubpage(
-      IDS_SETTINGS_STORAGE_EXTERNAL, mojom::Subpage::kExternalStorage,
-      mojom::Subpage::kStorage, mojom::SearchResultIcon::kHardDrive,
-      mojom::SearchResultDefaultRank::kMedium,
-      mojom::kExternalStorageSubpagePath);
-
+  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    storage_subsection_.RegisterHierarchy(generator);
+  }
   // Audio.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_AUDIO_TITLE, mojom::Subpage::kAudio,

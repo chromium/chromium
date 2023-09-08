@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/settings/ash/storage_section.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -95,6 +96,7 @@ class DeviceSection : public OsSettingsSection,
   system::PointerDeviceObserver pointer_device_observer_;
   mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
       cros_display_config_;
+  StorageSection storage_subsection_;
   mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver>
       cros_display_config_observer_receiver_{this};
   base::WeakPtrFactory<DeviceSection> weak_ptr_factory_{this};
