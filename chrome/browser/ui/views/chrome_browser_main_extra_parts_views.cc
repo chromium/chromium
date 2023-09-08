@@ -39,9 +39,7 @@
 #include "ui/wm/core/wm_state.h"
 #endif  // defined(USE_AURA)
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -51,7 +49,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/content_switches.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 namespace {
 
@@ -134,9 +132,7 @@ void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
         return controller;
       }));
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // On the Linux desktop, we want to prevent the user from logging in as root,
   // so that we don't destroy the profile. Now that we have some minimal ui
   // initialized, check to see if we're running as root and bail if we are.
@@ -167,7 +163,7 @@ void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
   base::RunLoop().RunUntilIdle();
 
   exit(EXIT_FAILURE);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 void ChromeBrowserMainExtraPartsViews::PostBrowserStart() {
