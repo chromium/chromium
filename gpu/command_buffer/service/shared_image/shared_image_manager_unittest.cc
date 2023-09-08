@@ -89,7 +89,7 @@ TEST(SharedImageManagerTest, MemoryDumps) {
       manager.Register(CreateImageBacking(kSizeBytes2), tracker.get());
 
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground};
   base::trace_event::ProcessMemoryDump pmd(args);
 
   manager.OnMemoryDump(args, &pmd);

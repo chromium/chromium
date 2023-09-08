@@ -665,12 +665,12 @@ TEST(TraceConfigTest, TraceConfigFromMemoryConfigString) {
 
   EXPECT_EQ(200u,
             tc1.memory_dump_config().triggers[0].min_time_between_dumps_ms);
-  EXPECT_EQ(MemoryDumpLevelOfDetail::LIGHT,
+  EXPECT_EQ(MemoryDumpLevelOfDetail::kLight,
             tc1.memory_dump_config().triggers[0].level_of_detail);
 
   EXPECT_EQ(2000u,
             tc1.memory_dump_config().triggers[1].min_time_between_dumps_ms);
-  EXPECT_EQ(MemoryDumpLevelOfDetail::DETAILED,
+  EXPECT_EQ(MemoryDumpLevelOfDetail::kDetailed,
             tc1.memory_dump_config().triggers[1].level_of_detail);
   EXPECT_EQ(
       2048u,
@@ -684,7 +684,7 @@ TEST(TraceConfigTest, TraceConfigFromMemoryConfigString) {
   EXPECT_TRUE(tc3.IsCategoryGroupEnabled(MemoryDumpManager::kTraceCategory));
   ASSERT_EQ(1u, tc3.memory_dump_config().triggers.size());
   EXPECT_EQ(1u, tc3.memory_dump_config().triggers[0].min_time_between_dumps_ms);
-  EXPECT_EQ(MemoryDumpLevelOfDetail::BACKGROUND,
+  EXPECT_EQ(MemoryDumpLevelOfDetail::kBackground,
             tc3.memory_dump_config().triggers[0].level_of_detail);
 }
 

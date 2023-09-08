@@ -41,7 +41,7 @@ class V8MemoryDumpProviderWorkerTest : public V8MemoryDumpProviderTest {
 // Checks if the dump provider runs without crashing and dumps root objects.
 TEST_F(V8MemoryDumpProviderTest, DumpStatistics) {
   base::trace_event::MemoryDumpArgs dump_args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
       new base::trace_event::ProcessMemoryDump(dump_args));
   instance_->isolate_memory_dump_provider_for_testing()->OnMemoryDump(
@@ -72,7 +72,7 @@ TEST_F(V8MemoryDumpProviderTest, DumpStatistics) {
 
 TEST_F(V8MemoryDumpProviderTest, DumpGlobalHandlesSize) {
   base::trace_event::MemoryDumpArgs dump_args = {
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
       new base::trace_event::ProcessMemoryDump(dump_args));
   instance_->isolate_memory_dump_provider_for_testing()->OnMemoryDump(
@@ -93,7 +93,7 @@ TEST_F(V8MemoryDumpProviderTest, DumpGlobalHandlesSize) {
 
 TEST_F(V8MemoryDumpProviderTest, DumpContextStatistics) {
   base::trace_event::MemoryDumpArgs dump_args = {
-      base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
+      base::trace_event::MemoryDumpLevelOfDetail::kLight};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
       new base::trace_event::ProcessMemoryDump(dump_args));
   instance_->isolate_memory_dump_provider_for_testing()->OnMemoryDump(
@@ -119,7 +119,7 @@ TEST_F(V8MemoryDumpProviderTest, DumpContextStatistics) {
 
 TEST_F(V8MemoryDumpProviderWorkerTest, DumpContextStatistics) {
   base::trace_event::MemoryDumpArgs dump_args = {
-      base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
+      base::trace_event::MemoryDumpLevelOfDetail::kLight};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
       new base::trace_event::ProcessMemoryDump(dump_args));
   instance_->isolate_memory_dump_provider_for_testing()->OnMemoryDump(
@@ -151,7 +151,7 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
       base::trace_event::TraceLog::RECORDING_MODE);
 
   base::trace_event::MemoryDumpArgs dump_args = {
-      base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
+      base::trace_event::MemoryDumpLevelOfDetail::kLight};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
       new base::trace_event::ProcessMemoryDump(dump_args));
   instance_->isolate_memory_dump_provider_for_testing()->OnMemoryDump(
@@ -192,8 +192,8 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
 // Tests that a deterministic memory dump request performs a GC.
 TEST_F(V8MemoryDumpProviderTest, Deterministic) {
   base::trace_event::MemoryDumpArgs dump_args = {
-      base::trace_event::MemoryDumpLevelOfDetail::LIGHT,
-      base::trace_event::MemoryDumpDeterminism::FORCE_GC};
+      base::trace_event::MemoryDumpLevelOfDetail::kLight,
+      base::trace_event::MemoryDumpDeterminism::kForceGc};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
       new base::trace_event::ProcessMemoryDump(dump_args));
 

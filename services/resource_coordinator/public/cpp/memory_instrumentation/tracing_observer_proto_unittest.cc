@@ -65,16 +65,17 @@ class TracingObserverProtoTest : public testing::Test {
   base::trace_event::MemoryDumpRequestArgs FillMemoryDumpRequestArgs() {
     base::trace_event::MemoryDumpRequestArgs args;
     args.dump_guid = 1;
-    args.dump_type = base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED;
-    args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::DETAILED;
-    args.determinism = base::trace_event::MemoryDumpDeterminism::FORCE_GC;
+    args.dump_type = base::trace_event::MemoryDumpType::kExplicitlyTriggered;
+    args.level_of_detail =
+        base::trace_event::MemoryDumpLevelOfDetail::kDetailed;
+    args.determinism = base::trace_event::MemoryDumpDeterminism::kForceGc;
 
     return args;
   }
 
   base::trace_event::ProcessMemoryDump FillSamplePmd() {
     base::trace_event::MemoryDumpArgs dump_args = {
-        base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+        base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
     base::trace_event::ProcessMemoryDump pmd =
         base::trace_event::ProcessMemoryDump(dump_args);
     pmd.CreateAllocatorDump("mad1",
@@ -350,7 +351,7 @@ TEST_F(TracingObserverProtoTest, AsProtoInto) {
   data_source_tester.BeginTrace(GetTraceConfig());
 
   base::trace_event::MemoryDumpArgs dump_args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   base::trace_event::ProcessMemoryDump pmd =
       base::trace_event::ProcessMemoryDump(dump_args);
 

@@ -54,7 +54,7 @@ bool PassthroughDiscardableManager::OnMemoryDump(
   using base::trace_event::MemoryAllocatorDump;
   using base::trace_event::MemoryDumpLevelOfDetail;
 
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     std::string dump_name =
         base::StringPrintf("gpu/discardable_cache/cache_0x%" PRIXPTR,
                            reinterpret_cast<uintptr_t>(this));

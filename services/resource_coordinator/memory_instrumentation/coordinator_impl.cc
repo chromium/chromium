@@ -152,9 +152,9 @@ void CoordinatorImpl::RequestGlobalMemoryDumpForPid(
   };
 
   QueuedRequest::Args args(
-      base::trace_event::MemoryDumpType::SUMMARY_ONLY,
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
-      base::trace_event::MemoryDumpDeterminism::NONE, allocator_dump_names,
+      base::trace_event::MemoryDumpType::kSummaryOnly,
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground,
+      base::trace_event::MemoryDumpDeterminism::kNone, allocator_dump_names,
       false /* add_to_trace */, pid,
       /*memory_footprint_only=*/false);
   RequestGlobalMemoryDumpInternal(args,
@@ -173,9 +173,9 @@ void CoordinatorImpl::RequestPrivateMemoryFootprint(
   };
 
   QueuedRequest::Args args(
-      base::trace_event::MemoryDumpType::SUMMARY_ONLY,
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
-      base::trace_event::MemoryDumpDeterminism::NONE, {},
+      base::trace_event::MemoryDumpType::kSummaryOnly,
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground,
+      base::trace_event::MemoryDumpDeterminism::kNone, {},
       false /* add_to_trace */, pid, /*memory_footprint_only=*/true);
   RequestGlobalMemoryDumpInternal(args,
                                   base::BindOnce(adapter, std::move(callback)));
@@ -286,7 +286,7 @@ void CoordinatorImpl::RequestGlobalMemoryDumpInternal(
   // another request in the queue with the same level of detail, there's no
   // point in enqueuing this request.
   if (another_dump_is_queued &&
-      args.dump_type == MemoryDumpType::PERIODIC_INTERVAL) {
+      args.dump_type == MemoryDumpType::kPeriodicInterval) {
     for (const auto& request : queued_memory_dump_requests_) {
       if (request.args.level_of_detail == args.level_of_detail) {
         VLOG(1) << "RequestGlobalMemoryDump("

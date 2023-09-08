@@ -330,7 +330,7 @@ bool RenderbufferManager::OnMemoryDump(
   const uint64_t context_group_tracing_id =
       memory_tracker_->ContextGroupTracingId();
 
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     std::string dump_name =
         base::StringPrintf("gpu/gl/renderbuffers/context_group_0x%" PRIX64,
                            context_group_tracing_id);

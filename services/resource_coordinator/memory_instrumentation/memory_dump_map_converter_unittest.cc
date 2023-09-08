@@ -17,7 +17,7 @@ using base::trace_event::ProcessMemoryDump;
 TEST(MemoryDumpMapConverter, Convert) {
   MemoryDumpMapConverter::MemoryDumpMap process_dumps;
 
-  MemoryDumpArgs dump_args1 = {MemoryDumpLevelOfDetail::DETAILED};
+  MemoryDumpArgs dump_args1 = {MemoryDumpLevelOfDetail::kDetailed};
   ProcessMemoryDump pmd1(dump_args1);
 
   auto* source1 = pmd1.CreateAllocatorDump("test1/test2/test3");
@@ -31,7 +31,7 @@ TEST(MemoryDumpMapConverter, Convert) {
 
   process_dumps.emplace(1, &pmd1);
 
-  MemoryDumpArgs dump_args2 = {MemoryDumpLevelOfDetail::LIGHT};
+  MemoryDumpArgs dump_args2 = {MemoryDumpLevelOfDetail::kLight};
   ProcessMemoryDump pmd2(dump_args2);
 
   auto* source2 = pmd2.CreateAllocatorDump("test1/test4/test5");

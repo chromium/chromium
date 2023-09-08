@@ -220,11 +220,11 @@ void FillFrameData(base::trace_event::TracedValue* data,
 absl::optional<base::trace_event::MemoryDumpLevelOfDetail>
 StringToMemoryDumpLevelOfDetail(const std::string& str) {
   if (str == Tracing::MemoryDumpLevelOfDetailEnum::Detailed)
-    return {base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+    return {base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   if (str == Tracing::MemoryDumpLevelOfDetailEnum::Background)
-    return {base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
+    return {base::trace_event::MemoryDumpLevelOfDetail::kBackground};
   if (str == Tracing::MemoryDumpLevelOfDetailEnum::Light)
-    return {base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
+    return {base::trace_event::MemoryDumpLevelOfDetail::kLight};
   return {};
 }
 
@@ -1017,8 +1017,8 @@ void TracingHandler::RequestMemoryDump(
   }
 
   auto determinism = deterministic.value_or(false)
-                         ? base::trace_event::MemoryDumpDeterminism::FORCE_GC
-                         : base::trace_event::MemoryDumpDeterminism::NONE;
+                         ? base::trace_event::MemoryDumpDeterminism::kForceGc
+                         : base::trace_event::MemoryDumpDeterminism::kNone;
 
   auto on_memory_dump_finished =
       base::BindOnce(&TracingHandler::OnMemoryDumpFinished,
@@ -1026,7 +1026,7 @@ void TracingHandler::RequestMemoryDump(
 
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
-          base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
+          base::trace_event::MemoryDumpType::kExplicitlyTriggered,
           *memory_detail, determinism, std::move(on_memory_dump_finished));
 }
 

@@ -475,7 +475,7 @@ TEST_F(ChromiumEnvDBTrackerTest, MemoryDumpCreation) {
   DBTracker::GetInstance()->VisitDatabases(base::BindRepeating(db_visitor));
   ASSERT_EQ(browser_cache->TotalCharge() * 2, web_cache->TotalCharge());
 
-  MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::BACKGROUND};
+  MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kBackground};
   base::trace_event::ProcessMemoryDump pmd(dump_args);
   auto* mad1 = DBTracker::GetOrCreateAllocatorDump(&pmd, db1.get());
   auto* mad2 = DBTracker::GetOrCreateAllocatorDump(&pmd, db2.get());
@@ -500,7 +500,7 @@ TEST_F(ChromiumEnvDBTrackerTest, MemEnvMemoryDumpCreation) {
   writable_file->Append(Slice(kValue));
   delete writable_file;
 
-  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::BACKGROUND};
+  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kBackground};
   base::trace_event::ProcessMemoryDump dump1(dump_args);
   auto* mad = DBTracker::GetOrCreateAllocatorDump(&dump1, memenv.get());
 

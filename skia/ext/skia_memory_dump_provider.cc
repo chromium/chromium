@@ -27,7 +27,7 @@ bool SkiaMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* process_memory_dump) {
   if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     auto* glyph_cache_dump =
         process_memory_dump->CreateAllocatorDump("skia/sk_glyph_cache");
     glyph_cache_dump->AddScalar(

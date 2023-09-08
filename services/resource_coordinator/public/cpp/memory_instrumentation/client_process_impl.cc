@@ -136,7 +136,7 @@ void ClientProcessImpl::RequestGlobalMemoryDump_NoCallback(
     coordinator = MemoryInstrumentation::GetInstance()->GetCoordinator();
   coordinator->RequestGlobalMemoryDumpAndAppendToTrace(
       dump_type, level_of_detail,
-      base::trace_event::MemoryDumpDeterminism::NONE,
+      base::trace_event::MemoryDumpDeterminism::kNone,
       mojom::Coordinator::RequestGlobalMemoryDumpAndAppendToTraceCallback());
 }
 

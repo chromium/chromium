@@ -21,7 +21,7 @@ TEST(PartitionAllocMemoryDumpProviderTest, Simple) {
 
   base::HistogramTester histogram_tester;
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   base::trace_event::ProcessMemoryDump pmd(args);
   PartitionAllocMemoryDumpProvider::Instance()->OnMemoryDump(args, &pmd);
 

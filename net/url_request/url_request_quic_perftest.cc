@@ -247,8 +247,8 @@ TEST_F(URLRequestQuicPerfTest, MAYBE_TestGetRequest) {
 
   base::RunLoop run_loop;
   base::trace_event::MemoryDumpRequestArgs args{
-      1 /* dump_guid*/, base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
-      base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
+      1 /* dump_guid*/, base::trace_event::MemoryDumpType::kExplicitlyTriggered,
+      base::trace_event::MemoryDumpLevelOfDetail::kLight};
 
   auto on_memory_dump_done =
       [](base::OnceClosure quit_closure, const URLRequestContext* context,

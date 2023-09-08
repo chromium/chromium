@@ -1583,7 +1583,7 @@ TEST_P(SQLDatabaseTest, FullIntegrityCheck) {
 
 TEST_P(SQLDatabaseTest, OnMemoryDump) {
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   base::trace_event::ProcessMemoryDump pmd(args);
   ASSERT_TRUE(db_->memory_dump_provider_->OnMemoryDump(args, &pmd));
   EXPECT_GE(pmd.allocator_dumps().size(), 1u);

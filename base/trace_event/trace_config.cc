@@ -87,8 +87,8 @@ class ConvertableTraceConfigToTraceFormat
 
 std::set<MemoryDumpLevelOfDetail> GetDefaultAllowedMemoryDumpModes() {
   std::set<MemoryDumpLevelOfDetail> all_modes;
-  for (uint32_t mode = static_cast<uint32_t>(MemoryDumpLevelOfDetail::FIRST);
-       mode <= static_cast<uint32_t>(MemoryDumpLevelOfDetail::LAST); mode++) {
+  for (uint32_t mode = static_cast<uint32_t>(MemoryDumpLevelOfDetail::kFirst);
+       mode <= static_cast<uint32_t>(MemoryDumpLevelOfDetail::kLast); mode++) {
     all_modes.insert(static_cast<MemoryDumpLevelOfDetail>(mode));
   }
   return all_modes;
@@ -576,7 +576,7 @@ void TraceConfig::SetMemoryDumpConfigFromConfigDict(
         // If "min_time_between_dumps_ms" param was not given, then the trace
         // config uses old format where only periodic dumps are supported.
         interval = trigger_dict.FindInt(kPeriodicIntervalLegacyParam);
-        dump_config.trigger_type = MemoryDumpType::PERIODIC_INTERVAL;
+        dump_config.trigger_type = MemoryDumpType::kPeriodicInterval;
       } else {
         const std::string* trigger_type_str =
             trigger_dict.FindString(kTriggerTypeParam);

@@ -314,7 +314,7 @@ void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
   if (TraceLog::GetInstance()
           ->GetCurrentTraceConfig()
           .IsArgumentFilterEnabled()) {
-    CHECK_EQ(MemoryDumpLevelOfDetail::BACKGROUND, args.level_of_detail);
+    CHECK_EQ(MemoryDumpLevelOfDetail::kBackground, args.level_of_detail);
   }
 
   std::unique_ptr<ProcessMemoryDumpAsyncState> pmd_async_state;
@@ -363,7 +363,7 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
     // If we are in background mode, we should invoke only the allowed
     // providers. Ignore other providers and continue.
     if (pmd_async_state->req_args.level_of_detail ==
-            MemoryDumpLevelOfDetail::BACKGROUND &&
+            MemoryDumpLevelOfDetail::kBackground &&
         !mdpinfo->allowed_in_background_mode) {
       pmd_async_state->pending_dump_providers.pop_back();
       continue;
@@ -507,11 +507,11 @@ void MemoryDumpManager::SetupForTracing(
 
   MemoryDumpScheduler::Config periodic_config;
   for (const auto& trigger : memory_dump_config.triggers) {
-    if (trigger.trigger_type == MemoryDumpType::PERIODIC_INTERVAL) {
+    if (trigger.trigger_type == MemoryDumpType::kPeriodicInterval) {
       if (periodic_config.triggers.empty()) {
         periodic_config.callback =
             BindRepeating(&DoGlobalDumpWithoutCallback, request_dump_function_,
-                          MemoryDumpType::PERIODIC_INTERVAL);
+                          MemoryDumpType::kPeriodicInterval);
       }
       periodic_config.triggers.push_back(
           {trigger.level_of_detail, trigger.min_time_between_dumps_ms});

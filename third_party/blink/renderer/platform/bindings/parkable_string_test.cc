@@ -944,7 +944,7 @@ TEST_P(ParkableStringTest, ReportMemoryDump) {
   parkable1.ToString();
 
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   base::trace_event::ProcessMemoryDump pmd(args);
   manager.OnMemoryDump(&pmd);
   base::trace_event::MemoryAllocatorDump* dump =

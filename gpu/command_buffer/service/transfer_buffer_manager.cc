@@ -102,7 +102,7 @@ bool TransferBufferManager::OnMemoryDump(
   using base::trace_event::MemoryAllocatorDump;
   using base::trace_event::MemoryDumpLevelOfDetail;
 
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     std::string dump_name = base::StringPrintf("gpu/transfer_memory/client_%d",
                                                memory_tracker_->ClientId());
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);

@@ -12,7 +12,7 @@ namespace trace_event {
 
 TEST(JavaHeapDumpProviderTest, JavaHeapDump) {
   auto* jhdp = JavaHeapDumpProvider::GetInstance();
-  MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::DETAILED};
+  MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
   std::unique_ptr<ProcessMemoryDump> pmd(new ProcessMemoryDump(dump_args));
 
   jhdp->OnMemoryDump(dump_args, pmd.get());

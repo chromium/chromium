@@ -39,7 +39,7 @@ bool PartitionAllocMemoryDumpProvider::OnMemoryDump(
   // This method calls memoryStats.partitionsDumpBucketStats with memory
   // statistics.
   WTF::Partitions::DumpMemoryStats(
-      level_of_detail != MemoryDumpLevelOfDetail::DETAILED,
+      level_of_detail != MemoryDumpLevelOfDetail::kDetailed,
       &partition_stats_dumper);
 
   base::trace_event::MemoryAllocatorDump* allocated_objects_dump =

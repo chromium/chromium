@@ -54,7 +54,7 @@ bool MadvFreeDiscardableMemoryAllocatorPosix::OnMemoryDump(
     trace_event::ProcessMemoryDump* pmd) {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
   if (args.level_of_detail !=
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     return true;
   }
 

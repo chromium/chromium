@@ -134,9 +134,9 @@ WebEngineMemoryInspector::ResolveMemoryDumpPromise(fpromise::context& context) {
   DCHECK(coordinator);
 
   coordinator->RequestGlobalMemoryDump(
-      base::trace_event::MemoryDumpType::SUMMARY_ONLY,
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
-      base::trace_event::MemoryDumpDeterminism::NONE, AllocatorDumpNames(),
+      base::trace_event::MemoryDumpType::kSummaryOnly,
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground,
+      base::trace_event::MemoryDumpDeterminism::kNone, AllocatorDumpNames(),
       base::BindOnce(&WebEngineMemoryInspector::OnMemoryDumpComplete,
                      weak_this_.GetMutableWeakPtr(), base::TimeTicks::Now(),
                      context.suspend_task()));

@@ -164,7 +164,7 @@ bool CanHaveMultipleIsolates(IsolateHolder::IsolateType isolate_type) {
 void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* process_memory_dump) {
-  if (args.determinism == base::trace_event::MemoryDumpDeterminism::FORCE_GC) {
+  if (args.determinism == base::trace_event::MemoryDumpDeterminism::kForceGc) {
     // Force GC in V8 using the same API as DevTools uses in "collectGarbage".
     isolate_holder_->isolate()->LowMemoryNotification();
   }
@@ -282,7 +282,7 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
 
   // Dump object statistics only for detailed dumps.
   if (args.level_of_detail !=
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
     return;
   }
 

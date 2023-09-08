@@ -386,7 +386,7 @@ bool CommandBufferHelper::OnMemoryDump(
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, ring_buffer_size_);
 
-  if (args.level_of_detail != MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail != MemoryDumpLevelOfDetail::kBackground) {
     dump->AddScalar(
         "free_size", MemoryAllocatorDump::kUnitsBytes,
         GetTotalFreeEntriesNoWaiting() * sizeof(CommandBufferEntry));

@@ -45,7 +45,7 @@ class HeapProfilerScopedTaskExecutionTracker {
       : context_(task_context) {
     using base::trace_event::AllocationContextTracker;
     if (UNLIKELY(AllocationContextTracker::capture_mode() !=
-                 AllocationContextTracker::CaptureMode::DISABLED)) {
+                 AllocationContextTracker::CaptureMode::kDisabled)) {
       AllocationContextTracker::GetInstanceForCurrentThread()
           ->PushCurrentTaskContext(context_);
     }
@@ -54,7 +54,7 @@ class HeapProfilerScopedTaskExecutionTracker {
   inline ~HeapProfilerScopedTaskExecutionTracker() {
     using base::trace_event::AllocationContextTracker;
     if (UNLIKELY(AllocationContextTracker::capture_mode() !=
-                 AllocationContextTracker::CaptureMode::DISABLED)) {
+                 AllocationContextTracker::CaptureMode::kDisabled)) {
       AllocationContextTracker::GetInstanceForCurrentThread()
           ->PopCurrentTaskContext(context_);
     }

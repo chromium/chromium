@@ -336,7 +336,7 @@ bool DiscardableSharedMemoryManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     base::trace_event::MemoryAllocatorDump* total_dump =
         pmd->CreateAllocatorDump("discardable");
     total_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,

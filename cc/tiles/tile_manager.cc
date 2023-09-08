@@ -2035,7 +2035,7 @@ void TileManager::SetOverridesForTesting(
 bool TileManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                                base::trace_event::ProcessMemoryDump* pmd) {
   if (args.level_of_detail !=
-          base::trace_event::MemoryDumpLevelOfDetail::DETAILED ||
+          base::trace_event::MemoryDumpLevelOfDetail::kDetailed ||
       !resource_pool_) {
     return true;
   }

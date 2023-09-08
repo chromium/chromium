@@ -3288,7 +3288,7 @@ void WebMediaPlayerImpl::OnMainThreadMemoryDump(
       base::trace_event::MemoryAllocatorDump::kUnitsObjects, 1);
 
   if (args.level_of_detail !=
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     bool suspended = pipeline_controller_->IsPipelineSuspended();
     auto player_state =
         base::StringPrintf("Paused: %d Ended: %d ReadyState: %d Suspended: %d",

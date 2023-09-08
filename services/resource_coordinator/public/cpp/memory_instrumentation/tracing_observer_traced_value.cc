@@ -45,7 +45,7 @@ void TracingObserverTracedValue::AddToTrace(
     const base::trace_event::MemoryDumpRequestArgs& args,
     const base::ProcessId pid,
     std::unique_ptr<TracedValue> traced_value) {
-  CHECK_NE(base::trace_event::MemoryDumpType::SUMMARY_ONLY, args.dump_type);
+  CHECK_NE(base::trace_event::MemoryDumpType::kSummaryOnly, args.dump_type);
 
   traced_value->SetString(
       "level_of_detail",

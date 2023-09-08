@@ -20,9 +20,9 @@ namespace blink {
 
 WebProcessMemoryDump::WebProcessMemoryDump()
     : owned_process_memory_dump_(new base::trace_event::ProcessMemoryDump(
-          {base::trace_event::MemoryDumpLevelOfDetail::DETAILED})),
+          {base::trace_event::MemoryDumpLevelOfDetail::kDetailed})),
       process_memory_dump_(owned_process_memory_dump_.get()),
-      level_of_detail_(base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {}
+      level_of_detail_(base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {}
 
 WebProcessMemoryDump::WebProcessMemoryDump(
     base::trace_event::MemoryDumpLevelOfDetail level_of_detail,

@@ -289,7 +289,7 @@ MemoryAllocatorDump* ProcessMemoryDump::AddAllocatorDumpInternal(
     std::unique_ptr<MemoryAllocatorDump> mad) {
   // In background mode return the black hole dump, if invalid dump name is
   // given.
-  if (dump_args_.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND &&
+  if (dump_args_.level_of_detail == MemoryDumpLevelOfDetail::kBackground &&
       !IsMemoryAllocatorDumpNameInAllowlist(mad->absolute_name())) {
     return GetBlackHoleMad(mad->absolute_name());
   }
@@ -532,8 +532,9 @@ void ProcessMemoryDump::CreateSharedMemoryOwnershipEdgeInternal(
 void ProcessMemoryDump::AddSuballocation(const MemoryAllocatorDumpGuid& source,
                                          const std::string& target_node_name) {
   // Do not create new dumps for suballocations in background mode.
-  if (dump_args_.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND)
+  if (dump_args_.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     return;
+  }
 
   std::string child_mad_name = target_node_name + "/__" + source.ToString();
   MemoryAllocatorDump* target_child_mad = CreateAllocatorDump(child_mad_name);

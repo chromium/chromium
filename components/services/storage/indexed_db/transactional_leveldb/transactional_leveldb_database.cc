@@ -259,7 +259,7 @@ bool TransactionalLevelDBDatabase::OnMemoryDump(
   // Dumps in BACKGROUND mode can only have whitelisted strings (and there are
   // currently none) so return early.
   if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     return true;
   }
 

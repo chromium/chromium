@@ -465,7 +465,7 @@ bool LocalStorageImpl::OnMemoryDump(
   pmd->AddOwnershipEdge(leveldb_mad->guid(), global_dump->guid(), kImportance);
 
   if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     size_t total_cache_size, unused_area_count;
     GetStatistics(&total_cache_size, &unused_area_count);
     auto* mad = pmd->CreateAllocatorDump(context_name + "/cache_size");

@@ -30,7 +30,7 @@ TEST(MeminfoDumpProviderTest, Simple) {
   auto& instance = MeminfoDumpProvider::Initialize();
 
   base::trace_event::MemoryDumpArgs args{};
-  args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::DETAILED;
+  args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::kDetailed;
   base::trace_event::ProcessMemoryDump first_pmd{args};
 
   bool success = instance.OnMemoryDump(args, &first_pmd);
@@ -80,7 +80,8 @@ TEST(MeminfoDumpProviderTest, NoStaleReportsInBackgroundDumps) {
   // First dump, data may or may not be stale.
   {
     base::trace_event::MemoryDumpArgs args{};
-    args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::DETAILED;
+    args.level_of_detail =
+        base::trace_event::MemoryDumpLevelOfDetail::kDetailed;
     base::trace_event::ProcessMemoryDump pmd{args};
     ASSERT_TRUE(instance.OnMemoryDump(args, &pmd));
   }
@@ -89,7 +90,7 @@ TEST(MeminfoDumpProviderTest, NoStaleReportsInBackgroundDumps) {
   {
     base::trace_event::MemoryDumpArgs args{};
     args.level_of_detail =
-        base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND;
+        base::trace_event::MemoryDumpLevelOfDetail::kBackground;
     base::trace_event::ProcessMemoryDump pmd{args};
     ASSERT_TRUE(instance.OnMemoryDump(args, &pmd));
     base::trace_event::MemoryAllocatorDump* dump =

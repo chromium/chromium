@@ -94,7 +94,7 @@ bool BlinkGCMemoryDumpProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* process_memory_dump) {
   ::cppgc::HeapStatistics::DetailLevel detail_level =
       args.level_of_detail ==
-              base::trace_event::MemoryDumpLevelOfDetail::DETAILED
+              base::trace_event::MemoryDumpLevelOfDetail::kDetailed
           ? ::cppgc::HeapStatistics::kDetailed
           : ::cppgc::HeapStatistics::kBrief;
 

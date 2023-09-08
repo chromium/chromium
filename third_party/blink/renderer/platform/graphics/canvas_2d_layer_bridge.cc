@@ -300,7 +300,7 @@ bool HibernatedCanvasMemoryDumpProvider::OnMemoryDump(
       total_hibernated_size += handler->memory_size();
 
       if (args.level_of_detail ==
-          base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
+          base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
         auto* canvas_dump = pmd->CreateAllocatorDump(
             base::StringPrintf("canvas/hibernated/canvas_%d", index));
         canvas_dump->AddScalar("memory_size", "bytes", handler->memory_size());

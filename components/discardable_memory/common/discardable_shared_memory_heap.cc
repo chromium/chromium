@@ -341,7 +341,7 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                         dirty_freed_memory_page_count_ * base::GetPageSize());
   if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     // These metrics (size and virtual size) are also reported by each
     // individual segment. If we report both, then the counts are artificially
     // inflated in detailed dumps, depending on aggregation (for instance, in

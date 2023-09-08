@@ -33,7 +33,7 @@ namespace trace_event {
 
 namespace {
 
-const MemoryDumpArgs kDetailedDumpArgs = {MemoryDumpLevelOfDetail::DETAILED};
+const MemoryDumpArgs kDetailedDumpArgs = {MemoryDumpLevelOfDetail::kDetailed};
 const char* const kTestDumpNameAllowlist[] = {
     "Allowlisted/TestName", "Allowlisted/TestName_0x?",
     "Allowlisted/0x?/TestName", "Allowlisted/0x?", nullptr};
@@ -71,7 +71,7 @@ TEST(ProcessMemoryDumpTest, MoveConstructor) {
 
   EXPECT_EQ(1u, pmd2.allocator_dumps().count("mad1"));
   EXPECT_EQ(1u, pmd2.allocator_dumps().count("mad2"));
-  EXPECT_EQ(MemoryDumpLevelOfDetail::DETAILED,
+  EXPECT_EQ(MemoryDumpLevelOfDetail::kDetailed,
             pmd2.dump_args().level_of_detail);
   EXPECT_EQ(1u, pmd2.allocator_dumps_edges().size());
 
@@ -87,14 +87,14 @@ TEST(ProcessMemoryDumpTest, MoveAssignment) {
   pmd1.AddOwnershipEdge(MemoryAllocatorDumpGuid(42),
                         MemoryAllocatorDumpGuid(4242));
 
-  ProcessMemoryDump pmd2({MemoryDumpLevelOfDetail::BACKGROUND});
+  ProcessMemoryDump pmd2({MemoryDumpLevelOfDetail::kBackground});
   pmd2.CreateAllocatorDump("malloc");
 
   pmd2 = std::move(pmd1);
   EXPECT_EQ(1u, pmd2.allocator_dumps().count("mad1"));
   EXPECT_EQ(1u, pmd2.allocator_dumps().count("mad2"));
   EXPECT_EQ(0u, pmd2.allocator_dumps().count("mad3"));
-  EXPECT_EQ(MemoryDumpLevelOfDetail::DETAILED,
+  EXPECT_EQ(MemoryDumpLevelOfDetail::kDetailed,
             pmd2.dump_args().level_of_detail);
   EXPECT_EQ(1u, pmd2.allocator_dumps_edges().size());
 
@@ -379,7 +379,7 @@ TEST(ProcessMemoryDumpTest, SharedMemoryOwnershipTest) {
 }
 
 TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
-  MemoryDumpArgs background_args = {MemoryDumpLevelOfDetail::BACKGROUND};
+  MemoryDumpArgs background_args = {MemoryDumpLevelOfDetail::kBackground};
   std::unique_ptr<ProcessMemoryDump> pmd(
       new ProcessMemoryDump(background_args));
   ProcessMemoryDump::is_black_hole_non_fatal_for_testing_ = true;
@@ -443,7 +443,7 @@ TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
 }
 
 TEST(ProcessMemoryDumpTest, GuidsTest) {
-  MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::DETAILED};
+  MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
 
   const auto process_token_one = UnguessableToken::Create();
   const auto process_token_two = UnguessableToken::Create();

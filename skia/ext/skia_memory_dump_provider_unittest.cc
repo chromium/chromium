@@ -14,7 +14,7 @@ namespace skia {
 // Tests if the skia dump provider dumps without crashing.
 TEST(SkiaMemoryDumpProviderTest, OnMemoryDump) {
   base::trace_event::MemoryDumpArgs dump_args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
       new base::trace_event::ProcessMemoryDump(dump_args));
   SkiaMemoryDumpProvider::GetInstance()->OnMemoryDump(

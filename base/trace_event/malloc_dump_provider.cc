@@ -86,7 +86,7 @@ void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
                         size_t* allocated_objects_size,
                         size_t* allocated_objects_count) {
   // This is too expensive on Windows, crbug.com/780735.
-  if (level_of_detail == MemoryDumpLevelOfDetail::DETAILED) {
+  if (level_of_detail == MemoryDumpLevelOfDetail::kDetailed) {
     WinHeapInfo main_heap_info = {};
     WinHeapMemoryDumpImpl(&main_heap_info);
     *total_virtual_size +=
@@ -122,7 +122,7 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                size_t* cumulative_brp_quarantined_count) {
   MemoryDumpPartitionStatsDumper partition_stats_dumper("malloc", pmd,
                                                         level_of_detail);
-  bool is_light_dump = level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND;
+  bool is_light_dump = level_of_detail == MemoryDumpLevelOfDetail::kBackground;
 
   auto* allocator = allocator_shim::internal::PartitionAllocMalloc::Allocator();
   allocator->DumpStats("allocator", is_light_dump, &partition_stats_dumper);
@@ -477,7 +477,7 @@ MemoryDumpPartitionStatsDumper::MemoryDumpPartitionStatsDumper(
     MemoryDumpLevelOfDetail level_of_detail)
     : root_name_(root_name),
       memory_dump_(memory_dump),
-      detailed_(level_of_detail != MemoryDumpLevelOfDetail::BACKGROUND) {}
+      detailed_(level_of_detail != MemoryDumpLevelOfDetail::kBackground) {}
 
 void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
     const char* partition_name,

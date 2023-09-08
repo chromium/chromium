@@ -48,7 +48,7 @@ class MemoryDumpSchedulerTest : public testing::Test {
 
 TEST_F(MemoryDumpSchedulerTest, SingleTrigger) {
   const uint32_t kPeriodMs = 1;
-  const auto kLevelOfDetail = MemoryDumpLevelOfDetail::DETAILED;
+  const auto kLevelOfDetail = MemoryDumpLevelOfDetail::kDetailed;
   const uint32_t kTicks = 5;
   MemoryDumpScheduler::Config config;
   config.triggers.push_back({kLevelOfDetail, kPeriodMs});
@@ -84,8 +84,8 @@ TEST_F(MemoryDumpSchedulerTest, MultipleTriggers) {
   const uint32_t kPeriodLightMs = 3;
   const uint32_t kPeriodDetailedMs = 9;
   MemoryDumpScheduler::Config config;
-  const MemoryDumpLevelOfDetail kLight = MemoryDumpLevelOfDetail::LIGHT;
-  const MemoryDumpLevelOfDetail kDetailed = MemoryDumpLevelOfDetail::DETAILED;
+  const MemoryDumpLevelOfDetail kLight = MemoryDumpLevelOfDetail::kLight;
+  const MemoryDumpLevelOfDetail kDetailed = MemoryDumpLevelOfDetail::kDetailed;
   config.triggers.push_back({kLight, kPeriodLightMs});
   config.triggers.push_back({kDetailed, kPeriodDetailedMs});
   config.callback =
@@ -126,22 +126,22 @@ TEST_F(MemoryDumpSchedulerTest, StartStopQuickly) {
   const uint32_t kDetailedTicks = 10;
 
   MemoryDumpScheduler::Config light_config;
-  light_config.triggers.push_back({MemoryDumpLevelOfDetail::LIGHT, kPeriodMs});
+  light_config.triggers.push_back({MemoryDumpLevelOfDetail::kLight, kPeriodMs});
   light_config.callback =
       BindRepeating(&CallbackWrapper::OnTick, Unretained(&on_tick_));
 
   MemoryDumpScheduler::Config detailed_config;
   detailed_config.triggers.push_back(
-      {MemoryDumpLevelOfDetail::DETAILED, kPeriodMs});
+      {MemoryDumpLevelOfDetail::kDetailed, kPeriodMs});
   detailed_config.callback =
       BindRepeating(&CallbackWrapper::OnTick, Unretained(&on_tick_));
 
   testing::InSequence sequence;
-  EXPECT_CALL(on_tick_, OnTick(MemoryDumpLevelOfDetail::LIGHT))
+  EXPECT_CALL(on_tick_, OnTick(MemoryDumpLevelOfDetail::kLight))
       .Times(AtMost(kQuickIterations));
-  EXPECT_CALL(on_tick_, OnTick(MemoryDumpLevelOfDetail::DETAILED))
+  EXPECT_CALL(on_tick_, OnTick(MemoryDumpLevelOfDetail::kDetailed))
       .Times(kDetailedTicks - 1);
-  EXPECT_CALL(on_tick_, OnTick(MemoryDumpLevelOfDetail::DETAILED))
+  EXPECT_CALL(on_tick_, OnTick(MemoryDumpLevelOfDetail::kDetailed))
       .WillRepeatedly(
           Invoke([this](MemoryDumpLevelOfDetail) { this->evt_.Signal(); }));
 
@@ -165,7 +165,7 @@ TEST_F(MemoryDumpSchedulerTest, StopAndStartOnAnotherThread) {
   const uint32_t kPeriodMs = 1;
   const uint32_t kTicks = 3;
   MemoryDumpScheduler::Config config;
-  config.triggers.push_back({MemoryDumpLevelOfDetail::DETAILED, kPeriodMs});
+  config.triggers.push_back({MemoryDumpLevelOfDetail::kDetailed, kPeriodMs});
   config.callback =
       BindRepeating(&CallbackWrapper::OnTick, Unretained(&on_tick_));
 

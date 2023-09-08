@@ -121,7 +121,7 @@ void InitAllocationRecorder(mojom::ProfilingParamsPtr params) {
     case mojom::StackMode::NATIVE_WITH_THREAD_NAMES:
     case mojom::StackMode::NATIVE_WITHOUT_THREAD_NAMES:
       // This would track task contexts only.
-      AllocationContextTracker::SetCaptureMode(CaptureMode::NATIVE_STACK);
+      AllocationContextTracker::SetCaptureMode(CaptureMode::kNativeStack);
       break;
   }
 }

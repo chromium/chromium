@@ -209,7 +209,7 @@ bool ImplementationBase::OnMemoryDump(
                   MemoryAllocatorDump::kUnitsBytes,
                   transfer_buffer_->GetSize());
 
-  if (args.level_of_detail != MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail != MemoryDumpLevelOfDetail::kBackground) {
     dump->AddScalar("free_size", MemoryAllocatorDump::kUnitsBytes,
                     transfer_buffer_->GetFragmentedFreeSize());
     auto shared_memory_guid = transfer_buffer_->shared_memory_guid();

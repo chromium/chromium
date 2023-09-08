@@ -63,7 +63,7 @@ void CheckSpacesInDump(base::trace_event::ProcessMemoryDump& dump,
 
 TEST_F(BlinkGCMemoryDumpProviderTest, MainThreadLightDump) {
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
+      base::trace_event::MemoryDumpLevelOfDetail::kLight};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> dump(
       new base::trace_event::ProcessMemoryDump(args));
   std::unique_ptr<BlinkGCMemoryDumpProvider> dump_provider(
@@ -79,7 +79,7 @@ TEST_F(BlinkGCMemoryDumpProviderTest, MainThreadLightDump) {
 
 TEST_F(BlinkGCMemoryDumpProviderTest, MainThreadDetailedDump) {
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> dump(
       new base::trace_event::ProcessMemoryDump(args));
   std::unique_ptr<BlinkGCMemoryDumpProvider> dump_provider(
@@ -95,7 +95,7 @@ TEST_F(BlinkGCMemoryDumpProviderTest, MainThreadDetailedDump) {
 
 TEST_F(BlinkGCMemoryDumpProviderTest, WorkerLightDump) {
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
+      base::trace_event::MemoryDumpLevelOfDetail::kLight};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> dump(
       new base::trace_event::ProcessMemoryDump(args));
   std::unique_ptr<BlinkGCMemoryDumpProvider> dump_provider(
@@ -120,7 +120,7 @@ TEST_F(BlinkGCMemoryDumpProviderTest, WorkerLightDump) {
 
 TEST_F(BlinkGCMemoryDumpProviderTest, WorkerDetailedDump) {
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> dump(
       new base::trace_event::ProcessMemoryDump(args));
   std::unique_ptr<BlinkGCMemoryDumpProvider> dump_provider(

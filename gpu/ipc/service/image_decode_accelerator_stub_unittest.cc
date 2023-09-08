@@ -569,9 +569,9 @@ class ImageDecodeAcceleratorStubTest
     base::trace_event::MemoryDumpRequestArgs dump_args{};
     dump_args.dump_guid = 1234u;
     dump_args.dump_type =
-        base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED;
+        base::trace_event::MemoryDumpType::kExplicitlyTriggered;
     dump_args.level_of_detail = detail_level;
-    dump_args.determinism = base::trace_event::MemoryDumpDeterminism::FORCE_GC;
+    dump_args.determinism = base::trace_event::MemoryDumpDeterminism::kForceGc;
     std::unique_ptr<base::trace_event::ProcessMemoryDump> dump;
     base::RunLoop run_loop;
     base::trace_event::MemoryDumpManager::GetInstance()->CreateProcessDump(
@@ -604,7 +604,7 @@ class ImageDecodeAcceleratorStubTest
         base::StringPrintf("gpu/transfer_cache/cache_0x%" PRIXPTR,
                            reinterpret_cast<uintptr_t>(cache));
     if (detail_level ==
-        base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+        base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
       auto transfer_cache_dump_it =
           dump->allocator_dumps().find(transfer_cache_dump_name);
       ASSERT_NE(dump->allocator_dumps().end(), transfer_cache_dump_it);
@@ -622,7 +622,7 @@ class ImageDecodeAcceleratorStubTest
                 GetMemoryDumpByteSize(avg_image_size_dump_it->second.get(),
                                       "average_size"));
     } else {
-      DCHECK_EQ(base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+      DCHECK_EQ(base::trace_event::MemoryDumpLevelOfDetail::kDetailed,
                 detail_level);
       base::CheckedNumeric<uint64_t> safe_actual_transfer_cache_total_size(0u);
       std::string entry_dump_prefix =
@@ -1008,7 +1008,7 @@ TEST_P(ImageDecodeAcceleratorStubTest, MemoryReportDetailedForUnmippedDecode) {
       RunSimpleDecode(false /* needs_mips */);
   ASSERT_TRUE(decode_entry);
   ExpectProcessMemoryDump(
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed,
       base::strict_cast<uint64_t>(
           kDecodedBufferByteSize) /* expected_total_transfer_cache_size */,
       0u /* expected_total_skia_gpu_resources_size */,
@@ -1021,7 +1021,7 @@ TEST_P(ImageDecodeAcceleratorStubTest,
       RunSimpleDecode(false /* needs_mips */);
   ASSERT_TRUE(decode_entry);
   ExpectProcessMemoryDump(
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground,
       base::strict_cast<uint64_t>(
           kDecodedBufferByteSize) /* expected_total_transfer_cache_size */,
       0u /* expected_total_skia_gpu_resources_size */,
@@ -1039,7 +1039,7 @@ TEST_P(ImageDecodeAcceleratorStubTest, MemoryReportDetailedForMippedDecode) {
       GetExpectedTotalMippedSizeForPlanarImage(decode_entry);
   ASSERT_TRUE(safe_expected_total_transfer_cache_size.IsValid());
   ExpectProcessMemoryDump(
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed,
       safe_expected_total_transfer_cache_size.ValueOrDie(),
       kSkiaBufferObjectSize /* expected_total_skia_gpu_resources_size */,
       0u /* expected_avg_image_size */);
@@ -1055,7 +1055,7 @@ TEST_P(ImageDecodeAcceleratorStubTest, MemoryReportBackgroundForMippedDecode) {
       GetExpectedTotalMippedSizeForPlanarImage(decode_entry);
   ASSERT_TRUE(safe_expected_total_transfer_cache_size.IsValid());
   ExpectProcessMemoryDump(
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground,
       safe_expected_total_transfer_cache_size.ValueOrDie(),
       kSkiaBufferObjectSize,
       safe_expected_total_transfer_cache_size
@@ -1074,7 +1074,7 @@ TEST_P(ImageDecodeAcceleratorStubTest,
       GetExpectedTotalMippedSizeForPlanarImage(decode_entry);
   ASSERT_TRUE(safe_expected_total_transfer_cache_size.IsValid());
   ExpectProcessMemoryDump(
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed,
       safe_expected_total_transfer_cache_size.ValueOrDie(),
       kSkiaBufferObjectSize /* expected_total_skia_gpu_resources_size */,
       0u /* expected_avg_image_size */);
@@ -1091,7 +1091,7 @@ TEST_P(ImageDecodeAcceleratorStubTest,
   // For a deferred mip request, the transfer cache doesn't update its size
   // computation, so it reports memory as if no mips had been generated.
   ExpectProcessMemoryDump(
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground,
       base::strict_cast<uint64_t>(
           kDecodedBufferByteSize) /* expected_total_transfer_cache_size */,
       kSkiaBufferObjectSize,

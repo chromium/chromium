@@ -1418,7 +1418,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationMemoryMetrics) {
   SetIsInHiddenPage(bridge.get(), platform, true);
 
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   {
     base::trace_event::ProcessMemoryDump pmd(args);
     EXPECT_TRUE(HibernatedCanvasMemoryDumpProvider::GetInstance().OnMemoryDump(

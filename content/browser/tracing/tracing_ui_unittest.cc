@@ -69,7 +69,7 @@ TEST_F(TracingUITest, ConfigParsing) {
   EXPECT_EQ(config.memory_dump_config().triggers[0].min_time_between_dumps_ms,
             10000u);
   EXPECT_EQ(config.memory_dump_config().triggers[0].level_of_detail,
-            base::trace_event::MemoryDumpLevelOfDetail::DETAILED);
+            base::trace_event::MemoryDumpLevelOfDetail::kDetailed);
 }
 
 }  // namespace content

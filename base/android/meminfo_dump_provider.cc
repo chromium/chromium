@@ -53,7 +53,7 @@ bool MeminfoDumpProvider::OnMemoryDump(
   // would confuse data in UMA. In particular, the background/foreground session
   // filter would no longer be accurate.
   if (stale_data && args.level_of_detail !=
-                        base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
+                        base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
     return true;
   }
 

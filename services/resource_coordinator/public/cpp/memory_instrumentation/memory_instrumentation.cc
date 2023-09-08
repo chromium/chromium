@@ -48,8 +48,8 @@ void MemoryInstrumentation::RequestGlobalDump(
     RequestGlobalDumpCallback callback) {
   CHECK(is_browser_process_);
   coordinator_->RequestGlobalMemoryDump(
-      MemoryDumpType::SUMMARY_ONLY, MemoryDumpLevelOfDetail::BACKGROUND,
-      MemoryDumpDeterminism::NONE, allocator_dump_names,
+      MemoryDumpType::kSummaryOnly, MemoryDumpLevelOfDetail::kBackground,
+      MemoryDumpDeterminism::kNone, allocator_dump_names,
       base::BindOnce(&WrapGlobalMemoryDump, std::move(callback)));
 }
 

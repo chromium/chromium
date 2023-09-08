@@ -1872,7 +1872,7 @@ bool GpuImageDecodeCache::OnMemoryDump(
   std::string dump_name = base::StringPrintf(
       "cc/image_memory/cache_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(this));
 
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes, working_set_bytes_);

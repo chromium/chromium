@@ -3552,7 +3552,7 @@ bool TextureManager::CombineAdjacentRects(const gfx::Rect& rect1,
 
 bool TextureManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                                   base::trace_event::ProcessMemoryDump* pmd) {
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     std::string dump_name =
         base::StringPrintf("gpu/gl/textures/context_group_0x%" PRIX64,
                            memory_tracker_->ContextGroupTracingId());

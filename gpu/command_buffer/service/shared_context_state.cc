@@ -682,7 +682,7 @@ bool SharedContextState::OnMemoryDump(
     return true;
 
   if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     raster::DumpBackgroundGrMemoryStatistics(gr_context_, pmd);
   } else {
     raster::DumpGrMemoryStatistics(gr_context_, pmd, absl::nullopt);

@@ -2420,8 +2420,8 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
   CycleThreads();
 
   base::trace_event::MemoryDumpRequestArgs args = {
-      1 /* dump_guid*/, base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      1 /* dump_guid*/, base::trace_event::MemoryDumpType::kExplicitlyTriggered,
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
 
   int32_t id = media::GetNextMediaPlayerLoggingID() - 1;
   int dump_count = 0;
@@ -2454,7 +2454,7 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
         }));
 
         if (args.level_of_detail ==
-            base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
+            base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
           ASSERT_TRUE(base::ranges::any_of(entries, [](const auto& e) {
             return e.name == "player_state" && !e.value_string.empty();
           }));
@@ -2466,11 +2466,12 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
 
   dump_manager->CreateProcessDump(args, on_memory_dump_done);
 
-  args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND;
+  args.level_of_detail =
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground;
   args.dump_guid++;
   dump_manager->CreateProcessDump(args, on_memory_dump_done);
 
-  args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::LIGHT;
+  args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::kLight;
   args.dump_guid++;
   dump_manager->CreateProcessDump(args, on_memory_dump_done);
 

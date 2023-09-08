@@ -1279,7 +1279,7 @@ void DBTracker::MemoryDumpProvider::DumpVisitor(ProcessMemoryDump* pmd,
                      total_usage - cache_usage + cache_usage_pss);
 
   if (pmd->dump_args().level_of_detail !=
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     db_dump->AddString("name", "", db->name());
   }
 }

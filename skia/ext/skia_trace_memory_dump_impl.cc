@@ -27,7 +27,7 @@ SkiaTraceMemoryDumpImpl::SkiaTraceMemoryDumpImpl(
     : dump_name_prefix_(dump_name_prefix),
       process_memory_dump_(process_memory_dump),
       request_level_(
-          level_of_detail == base::trace_event::MemoryDumpLevelOfDetail::LIGHT
+          level_of_detail == base::trace_event::MemoryDumpLevelOfDetail::kLight
               ? SkTraceMemoryDump::kLight_LevelOfDetail
               : SkTraceMemoryDump::kObjectsBreakdowns_LevelOfDetail) {}
 

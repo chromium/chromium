@@ -447,7 +447,7 @@ bool SharedImageManager::OnMemoryDump(
   const char* base_dump_name = "gpu/shared_images";
 
   if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     size_t total_size = 0;
     size_t total_purgeable_size = 0;
     for (auto& backing : images_) {

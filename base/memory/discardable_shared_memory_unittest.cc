@@ -462,7 +462,7 @@ TEST(DiscardableSharedMemoryTest, TracingOwnershipEdges) {
   ASSERT_TRUE(rv);
 
   base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   trace_event::ProcessMemoryDump pmd(args);
   trace_event::MemoryAllocatorDump* client_dump =
       pmd.CreateAllocatorDump("discardable_manager/map1");
