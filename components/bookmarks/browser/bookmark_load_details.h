@@ -39,17 +39,17 @@ class BookmarkLoadDetails {
   BookmarkLoadDetails(const BookmarkLoadDetails&) = delete;
   BookmarkLoadDetails& operator=(const BookmarkLoadDetails&) = delete;
 
-  // Loads the managed node and adds it to |root_|. Returns true if the added
-  // node has children.
-  bool LoadManagedNode();
+  // Loads the managed node and adds it to |root_|.
+  void LoadManagedNode();
 
   BookmarkNode* root_node() { return root_node_ptr_; }
   BookmarkPermanentNode* bb_node() { return bb_node_; }
   BookmarkPermanentNode* mobile_folder_node() { return mobile_folder_node_; }
   BookmarkPermanentNode* other_folder_node() { return other_folder_node_; }
 
-  TitledUrlIndex* index() { return index_.get(); }
-  std::unique_ptr<TitledUrlIndex> owned_index() { return std::move(index_); }
+  std::unique_ptr<TitledUrlIndex> owned_titled_url_index() {
+    return std::move(titled_url_index_);
+  }
 
   const BookmarkNode::MetaInfoMap& model_meta_info_map() const {
     return model_meta_info_map_;
@@ -99,12 +99,16 @@ class BookmarkLoadDetails {
   }
   const std::string& sync_metadata_str() const { return sync_metadata_str_; }
 
-  void CreateUrlIndex();
-  UrlIndex* url_index() { return url_index_.get(); }
+  void CreateIndices();
+
+  const scoped_refptr<UrlIndex>& url_index() { return url_index_; }
 
   base::TimeTicks load_start() { return load_start_; }
 
  private:
+  // Adds node to the various indices, recursing through all children as well.
+  void AddNodeToIndexRecursive(BookmarkNode* node);
+
   std::unique_ptr<BookmarkNode> root_node_;
   raw_ptr<BookmarkNode, DanglingUntriaged> root_node_ptr_;
   raw_ptr<BookmarkPermanentNode, DanglingUntriaged> bb_node_ = nullptr;
@@ -113,7 +117,7 @@ class BookmarkLoadDetails {
   raw_ptr<BookmarkPermanentNode, DanglingUntriaged> mobile_folder_node_ =
       nullptr;
   LoadManagedNodeCallback load_managed_node_callback_;
-  std::unique_ptr<TitledUrlIndex> index_;
+  std::unique_ptr<TitledUrlIndex> titled_url_index_;
   BookmarkNode::MetaInfoMap model_meta_info_map_;
   BookmarkNode::MetaInfoMap model_unsynced_meta_info_map_;
   int64_t max_id_ = 1;

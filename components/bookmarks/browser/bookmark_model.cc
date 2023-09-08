@@ -62,7 +62,7 @@ class VisibilityComparator {
  public:
   explicit VisibilityComparator(BookmarkClient* client) : client_(client) {}
 
-  // Returns true if |n1| precedes |n2|.
+  // Returns true if `n1` precedes `n2`.
   bool operator()(const std::unique_ptr<BookmarkNode>& n1,
                   const std::unique_ptr<BookmarkNode>& n2) {
     DCHECK(n1->is_permanent_node());
@@ -82,7 +82,7 @@ class SortComparator {
  public:
   explicit SortComparator(icu::Collator* collator) : collator_(collator) {}
 
-  // Returns true if |n1| precedes |n2|.
+  // Returns true if `n1` precedes `n2`.
   bool operator()(const std::unique_ptr<BookmarkNode>& n1,
                   const std::unique_ptr<BookmarkNode>& n2) {
     if (n1->type() == n2->type()) {
@@ -755,7 +755,7 @@ void BookmarkModel::OnFaviconsChanged(const std::set<GURL>& page_urls,
   }
 
   if (!icon_url.is_empty()) {
-    // TODO(pkotwicz): Do something more efficient if |icon_url| is non-empty
+    // TODO(pkotwicz): Do something more efficient if `icon_url` is non-empty
     // many times a day for each user.
     url_index_->GetNodesWithIconUrl(icon_url, &to_update);
   }
@@ -975,7 +975,7 @@ void BookmarkModel::ReorderChildren(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_->CanBeEditedByUser(parent));
 
-  // Ensure that all children in |parent| are in |ordered_nodes|.
+  // Ensure that all children in `parent` are in `ordered_nodes`.
   DCHECK_EQ(parent->children().size(), ordered_nodes.size());
   for (const BookmarkNode* node : ordered_nodes) {
     DCHECK_EQ(parent, node->parent());
@@ -1096,7 +1096,7 @@ void BookmarkModel::RemoveNodeFromIndexRecursive(BookmarkNode* node) {
     titled_url_index_->RemovePath(node);
   }
 
-  // Reset favicon state for the case when the |node| is restored.
+  // Reset favicon state for the case when the `node` is restored.
   CancelPendingFaviconLoadRequests(node);
   node->InvalidateFavicon();
 
@@ -1124,10 +1124,10 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
     }
   }
 
-  titled_url_index_ = details->owned_index();
+  titled_url_index_ = details->owned_titled_url_index();
   url_index_ = details->url_index();
   root_ = details->root_node();
-  // See declaration for details on why |owned_root_| is reset.
+  // See declaration for details on why `owned_root_` is reset.
   owned_root_.reset();
   bookmark_bar_node_ = details->bb_node();
   other_node_ = details->other_folder_node();

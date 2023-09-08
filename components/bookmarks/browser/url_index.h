@@ -80,11 +80,20 @@ class UrlIndex : public HistoryBookmarkModel {
 
   ~UrlIndex() override;
 
-  // Used to order BookmarkNodes by URL.
+  // Used to order BookmarkNodes by URL as well as lookups using GURL.
   class NodeUrlComparator {
    public:
+    // Required by std::set to support GURL-based lookups.
+    using is_transparent = void;
+
     bool operator()(const BookmarkNode* n1, const BookmarkNode* n2) const {
       return n1->url() < n2->url();
+    }
+    bool operator()(const BookmarkNode* n1, const GURL& url2) const {
+      return n1->url() < url2;
+    }
+    bool operator()(const GURL& url1, const BookmarkNode* n2) const {
+      return url1 < n2->url();
     }
   };
 

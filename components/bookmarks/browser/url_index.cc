@@ -91,8 +91,7 @@ void UrlIndex::GetNodesWithIconUrl(const GURL& icon_url,
 void UrlIndex::GetNodesByUrl(const GURL& url,
                              std::vector<const BookmarkNode*>* nodes) {
   base::AutoLock url_lock(url_lock_);
-  BookmarkNode tmp_node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
-  auto i = nodes_ordered_by_url_set_.find(&tmp_node);
+  auto i = nodes_ordered_by_url_set_.find<GURL>(url);
   while (i != nodes_ordered_by_url_set_.end() && (*i)->url() == url) {
     nodes->push_back(*i);
     ++i;
