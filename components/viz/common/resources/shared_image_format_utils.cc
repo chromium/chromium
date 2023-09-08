@@ -128,9 +128,8 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
     return kA16_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_1616) {
     return kR16G16_unorm_SkColorType;
-    // Use kN32_SkColorType if there is no corresponding SkColorType.
   } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
-    return kN32_SkColorType;
+    return kA16_float_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_88) {
     return kR8G8_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kRGBA_F16) {

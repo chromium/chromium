@@ -589,6 +589,11 @@ BASE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo,
 #endif
 );
 
+// Enables using RasterInterface in VideoResourceUpdater.
+BASE_FEATURE(kRasterInterfaceInVideoResourceUpdater,
+             "RasterInterfaceInVideoResourceUpdater",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables binding software video NV12/P010 GMBs as separate shared images.
 BASE_FEATURE(kMultiPlaneSoftwareVideoSharedImages,
              "MultiPlaneSoftwareVideoSharedImages",

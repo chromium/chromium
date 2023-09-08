@@ -20,6 +20,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
 #include "ui/gfx/buffer_types.h"
@@ -189,6 +190,8 @@ class MEDIA_EXPORT VideoResourceUpdater
       scoped_refptr<VideoFrame> video_frame);
 
   gpu::gles2::GLES2Interface* ContextGL();
+  gpu::raster::RasterInterface* RasterInterface();
+  gpu::InterfaceBase* InterfaceBase();
 
   void RecycleResource(uint32_t plane_resource_id,
                        const gpu::SyncToken& sync_token,
