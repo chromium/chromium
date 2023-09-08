@@ -14,10 +14,20 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
     base::Uuid saved_tab_group_id) {
+  // in order to protect from filesystem access or chrome settings page use,
+  // replace the URL with the new tab page, when creating from sync or an
+  // unsaved group.
+  if (!IsURLValidForSavedTabGroups(contents->GetVisibleURL())) {
+    return SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"Unsavable tab",
+                            saved_tab_group_id,
+                            /*position=*/absl::nullopt);
+  }
+
   SavedTabGroupTab tab(contents->GetVisibleURL(), contents->GetTitle(),
                        saved_tab_group_id, /*position=*/absl::nullopt);
   tab.SetFavicon(favicon::TabFaviconFromWebContents(contents));
@@ -85,4 +95,9 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
     contentses.push_back(browser->tab_strip_model()->GetWebContentsAt(index));
   }
   return contentses;
+}
+
+// static
+bool SavedTabGroupUtils::IsURLValidForSavedTabGroups(const GURL& gurl) {
+  return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(chrome::kChromeUINewTabURL);
 }

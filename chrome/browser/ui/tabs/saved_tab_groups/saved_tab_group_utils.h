@@ -46,6 +46,9 @@ class SavedTabGroupUtils {
   // Returns the list of WebContentses in the local group `group_id` in order.
   static std::vector<content::WebContents*> GetWebContentsesInGroup(
       tab_groups::TabGroupId group_id);
+
+  // Returns whether the tab's URL is viable for saving in a saved tab group.
+  static bool IsURLValidForSavedTabGroups(const GURL& gurl);
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_

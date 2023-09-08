@@ -14,10 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
-
-namespace content {
-class WebContents;
-}
+#include "content/public/browser/web_contents.h"
 
 LocalTabGroupListener::LocalTabGroupListener(
     const tab_groups::TabGroupId local_id,
@@ -118,6 +115,9 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   SavedTabGroupTab tab =
       SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(web_contents,
                                                                 saved_guid_);
+  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(tab.url())) {
+    tab.SetURL(GURL(chrome::kChromeUINewTabURL));
+  }
   tab.SetLocalTabID(token);
   tab.SetPosition(relative_index_of_tab_in_group);
   model_->AddTabToGroupLocally(saved_guid_, std::move(tab));
@@ -282,8 +282,13 @@ void LocalTabGroupListener::MatchLocalTabToSavedTab(
 void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
                                                     Browser* browser,
                                                     int index_in_tabstrip) {
+  GURL url_to_open = tab.url();
+  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(url_to_open)) {
+    url_to_open = GURL(chrome::kChromeUINewTabURL);
+  }
+
   content::WebContents* opened_contents = SavedTabGroupUtils::OpenTabInBrowser(
-      tab.url(), browser, browser->profile(),
+      url_to_open, browser, browser->profile(),
       WindowOpenDisposition::NEW_BACKGROUND_TAB, index_in_tabstrip, local_id_);
 
   // Listen to navigations.

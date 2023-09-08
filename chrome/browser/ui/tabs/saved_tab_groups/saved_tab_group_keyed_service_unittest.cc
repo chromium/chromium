@@ -261,7 +261,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AlreadyOpenedGroupIsFocused) {
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading in persisted data on startup.
   std::vector<SavedTabGroupTab> group_1_tabs = {SavedTabGroupTab(
-      GURL("chrome://newtab"), u"New Tab", guid_1, /*position=*/0)};
+      GURL(chrome::kChromeUINewTabURL), u"New Tab", guid_1, /*position=*/0)};
 
   SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
                               std::move(group_1_tabs), absl::nullopt, guid_1);
@@ -344,11 +344,11 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading in persisted data on startup.
   std::vector<SavedTabGroupTab> group_1_tabs = {SavedTabGroupTab(
-      GURL("chrome://newtab"), u"New Tab", guid_1, /*position=*/0)};
+      GURL(chrome::kChromeUINewTabURL), u"New Tab", guid_1, /*position=*/0)};
   std::vector<SavedTabGroupTab> group_2_tabs = {
-      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_2,
+      SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"New Tab", guid_2,
                        /*position=*/0),
-      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_2,
+      SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"New Tab", guid_2,
                        /*position=*/1)};
 
   SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
@@ -402,7 +402,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading persisted data on startup.
   std::vector<SavedTabGroupTab> group_tabs = {SavedTabGroupTab(
-      GURL("chrome://newtab"), u"New Tab", guid, /*position=*/0)};
+      GURL(chrome::kChromeUINewTabURL), u"New Tab", guid, /*position=*/0)};
 
   SavedTabGroup saved_group(u"Group", tab_groups::TabGroupColorId::kGrey,
                             std::move(group_tabs), absl::nullopt, guid);
@@ -563,7 +563,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, NewTabFromSyncOpensInLocalGroup) {
       service()->model()->Get(group_id)->saved_guid();
 
   // Add a tab to the saved group.
-  const SavedTabGroupTab added_tab(GURL("chrome://newtab"), u"New Tab",
+  const SavedTabGroupTab added_tab(GURL(chrome::kChromeUINewTabURL), u"New Tab",
                                    saved_group_id, /*position=*/0);
   service()->model()->AddTabToGroupFromSync(saved_group_id, added_tab);
 
@@ -766,4 +766,111 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
             group->saved_tabs()[0].local_tab_id().value());
   EXPECT_EQ(web_contents_0_token,
             group->saved_tabs()[1].local_tab_id().value());
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       NewBadTabFromSyncOpensInLocalGroupOnNewTabPage) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with one tab.
+  ASSERT_EQ(0, tabstrip->count());
+  AddTabToBrowser(browser, 0);
+  ASSERT_EQ(1, tabstrip->count());
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+  const base::Uuid saved_group_id =
+      service()->model()->Get(group_id)->saved_guid();
+
+  // Add a tab to the saved group.
+  const SavedTabGroupTab added_tab(GURL("chrome://settings"), u"New Tab",
+                                   saved_group_id, /*position=*/0);
+  service()->model()->AddTabToGroupFromSync(saved_group_id, added_tab);
+
+  // Tab should have opened in local group too.
+  EXPECT_EQ(2, tabstrip->count());
+
+  const gfx::Range grouped_tabs =
+      tabstrip->group_model()->GetTabGroup(group_id)->ListTabs();
+  EXPECT_EQ(2u, grouped_tabs.length());
+  for (auto index = grouped_tabs.start(); index < grouped_tabs.end(); ++index) {
+    EXPECT_TRUE(SavedTabGroupUtils::IsURLValidForSavedTabGroups(
+        tabstrip->GetWebContentsAt(index)->GetURL()));
+  }
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       NavigateTabFromSyncWithBadURLDoesntNavigateLocalTab) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with one tab.
+  ASSERT_EQ(0, tabstrip->count());
+  AddTabToBrowser(browser, 0);
+  ASSERT_EQ(1, tabstrip->count());
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+  const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
+  const base::Uuid saved_tab_id =
+      saved_group->saved_tabs().at(0).saved_tab_guid();
+
+  // Navigate the saved tab.
+  const GURL url = GURL("chrome://settings");
+  SavedTabGroupTab navigated_tab = *saved_group->GetTab(saved_tab_id);
+  navigated_tab.SetURL(url);
+  navigated_tab.SetTitle(u"Example Page");
+  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specific =
+      navigated_tab.ToSpecifics();
+  service()->model()->MergeTab(*specific);
+
+  // The local tab should not navigate to the new URL.
+  EXPECT_NE(tabstrip->GetWebContentsAt(0)->GetURL(), url);
+}
+
+// Local
+// Creation of Bad tab is NTP
+// Navigation of Bad tab doesnt update
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedBadTabIsNTPInstead) {
+  Browser* browser_1 = AddBrowser();
+
+  // Create a saved tab group with one tab.
+  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
+  content::WebContents* added_tab = AddTabToBrowser(browser_1, 0);
+  added_tab->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(GURL("file://1")));
+  tab_groups::TabGroupId group_id =
+      browser_1->tab_strip_model()->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+
+  const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
+
+  // The SavedTabGroups should be at the new tab page instead of the settings
+  // page.
+  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), chrome::kChromeUINewTabURL);
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       TabLocalNavigationToBadURLDoesntUpdateModel) {
+  Browser* browser_1 = AddBrowser();
+
+  // Create a saved tab group with one good tab.
+  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
+  content::WebContents* added_tab = AddTabToBrowser(browser_1, 0);
+  GURL good_gurl = GURL("http://www.google.com");
+  GURL bad_gurl = GURL("file://1");
+
+  auto* tester = content::WebContentsTester::For(added_tab);
+  tester->NavigateAndCommit(good_gurl);
+
+  tab_groups::TabGroupId group_id =
+      browser_1->tab_strip_model()->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+  const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
+
+  // Navigate to a bad tab.
+  tester->NavigateAndCommit(bad_gurl);
+
+  // The SavedTabGroupTab should still be at the good URL not the bad one.
+  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), good_gurl);
 }
