@@ -96,6 +96,10 @@ export class AddressComponentUi {
     return !isValueEmpty(this.value);
   }
 
+  get fieldType(): chrome.autofillPrivate.ServerFieldType {
+    return this.fieldType_;
+  }
+
   makeValidatable(): void {
     this.isValidatable_ = true;
   }

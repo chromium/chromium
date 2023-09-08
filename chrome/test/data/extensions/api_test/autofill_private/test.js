@@ -158,16 +158,14 @@ var availableTests = [
   },
 
   function addNewAddress() {
-    function filterAddressProperties(addresses) {
-      return addresses.map(address => {
-        const fieldMap = {};
-        address.fields.forEach(entry => {
-          if (!!entry.value) {
-            fieldMap[entry.type] = entry.value;
-          }
-        });
-        return fieldMap;
+    function filterAddressProperties(address) {
+      const fieldMap = {};
+      address.fields.forEach(entry => {
+        if (!!entry.value) {
+          fieldMap[entry.type] = entry.value;
+        }
       });
+      return fieldMap;
     }
 
     chrome.autofillPrivate.getAddressList(
@@ -179,19 +177,23 @@ var availableTests = [
           chrome.test.listenOnce(
               chrome.autofillPrivate.onPersonalDataChanged,
               chrome.test.callbackPass(function(addressList, cardList) {
-                chrome.test.assertEq(
-                    [{
-                      NAME_FULL: NAME,
-                      ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
-                      ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
-                      ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
-                      ADDRESS_HOME_ZIP: POSTAL_CODE,
-                      ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
-                      ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
-                      PHONE_HOME_WHOLE_NUMBER: PHONE,
-                      EMAIL_ADDRESS: EMAIL,
-                    }],
-                    filterAddressProperties(addressList));
+                chrome.test.assertEq(1, addressList.length);
+                const expectedAddress = {
+                  NAME_FULL: NAME,
+                  ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
+                  ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
+                  ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
+                  ADDRESS_HOME_ZIP: POSTAL_CODE,
+                  ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
+                  ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
+                  PHONE_HOME_WHOLE_NUMBER: PHONE,
+                  EMAIL_ADDRESS: EMAIL,
+                };
+                const actualAddress = filterAddressProperties(addressList[0]);
+                Object.keys(expectedAddress).forEach(key => {
+                  chrome.test.assertEq(
+                      expectedAddress[key], actualAddress[key]);
+                })
               }));
 
           chrome.autofillPrivate.saveAddress({
@@ -247,16 +249,14 @@ var availableTests = [
     var UPDATED_NAME = 'UpdatedName';
     var UPDATED_PHONE = '1 987-987-9876'
 
-    function filterAddressProperties(addresses) {
-      return addresses.map(address => {
-        const filteredAddress = {guid: address.guid};
-        address.fields.map(entry => {
-          if (!!entry.value) {
-            filteredAddress[entry.type] = entry.value
-          }
-        });
-        return filteredAddress;
+    function filterAddressProperties(address) {
+      const filteredAddress = {guid: address.guid};
+      address.fields.map(entry => {
+        if (!!entry.value) {
+          filteredAddress[entry.type] = entry.value
+        }
       });
+      return filteredAddress;
     }
 
     chrome.autofillPrivate.getAddressList(
@@ -270,20 +270,24 @@ var availableTests = [
           chrome.test.listenOnce(
               chrome.autofillPrivate.onPersonalDataChanged,
               chrome.test.callbackPass(function(addressList, cardList) {
-                chrome.test.assertEq(
-                    [{
-                      guid: addressGuid,
-                      NAME_FULL: UPDATED_NAME,
-                      ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
-                      ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
-                      ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
-                      ADDRESS_HOME_ZIP: POSTAL_CODE,
-                      ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
-                      ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
-                      PHONE_HOME_WHOLE_NUMBER: UPDATED_PHONE,
-                      EMAIL_ADDRESS: EMAIL,
-                    }],
-                    filterAddressProperties(addressList));
+                chrome.test.assertEq(1, addressList.length);
+                const expectedAddress = {
+                  guid: addressGuid,
+                  NAME_FULL: UPDATED_NAME,
+                  ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
+                  ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
+                  ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
+                  ADDRESS_HOME_ZIP: POSTAL_CODE,
+                  ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
+                  ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
+                  PHONE_HOME_WHOLE_NUMBER: UPDATED_PHONE,
+                  EMAIL_ADDRESS: EMAIL,
+                };
+                const actualAddress = filterAddressProperties(addressList[0]);
+                Object.keys(expectedAddress).forEach(prop => {
+                  chrome.test.assertEq(
+                      expectedAddress[prop], actualAddress[prop]);
+                })
               }));
 
           // Update the address by saving an address with the same guid and

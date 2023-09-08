@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
+#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -94,24 +95,9 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   // Add all address fields to the entry.
   address.guid = profile.guid();
 
-  // TODO(crbug.com/1441904): provide all available fields instead of the hard
-  // coded list of fields.
-  std::vector<autofill::ServerFieldType> field_types = {
-      autofill::NAME_FULL,
-      autofill::NAME_HONORIFIC_PREFIX,
-      autofill::COMPANY_NAME,
-      autofill::ADDRESS_HOME_STREET_ADDRESS,
-      autofill::ADDRESS_HOME_STATE,
-      autofill::ADDRESS_HOME_CITY,
-      autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
-      autofill::ADDRESS_HOME_ZIP,
-      autofill::ADDRESS_HOME_SORTING_CODE,
-      autofill::ADDRESS_HOME_COUNTRY,
-      autofill::PHONE_HOME_WHOLE_NUMBER,
-      autofill::EMAIL_ADDRESS};
-
   base::ranges::transform(
-      field_types, back_inserter(address.fields), [&profile](auto field_type) {
+      autofill::AutofillTable::GetStoredTypesForAutofillProfile(),
+      back_inserter(address.fields), [&profile](auto field_type) {
         autofill_private::AddressField field;
         field.type = autofill_private::ParseServerFieldType(
             FieldTypeToStringPiece(field_type));
