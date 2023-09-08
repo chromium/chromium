@@ -5,6 +5,8 @@
 
 import typing
 
+from gpu_tests import gpu_integration_test
+
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import queries as queries_module
@@ -192,25 +194,15 @@ ACTIVE_INTERNAL_BUILDER_SUBQUERY = """\
 {all_builders_from_table_subquery}""".format(
     all_builders_from_table_subquery=ALL_BUILDERS_FROM_TABLE_SUBQUERY)
 
-# The suite reported to Telemetry for selecting which suite to run is not
-# necessarily the same one that is reported to typ/ResultDB, so map any special
-# cases here.
-TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP = {
-    'info_collection': 'info_collection_test',
-    'power': 'power_measurement_integration_test',
-    'trace_test': 'trace_integration_test',
-}
-
 
 class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
 
-    # Most test names are |suite|_integration_test, but there are several that
-    # are not reported that way in typ, and by extension ResultDB, so adjust
-    # that here.
-    self._suite = TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP.get(
-        self._suite, self._suite + '_integration_test')
+    name_mapping = gpu_integration_test.GenerateTestNameMapping()
+    # The suite name we use for identification (return value of Name()) is not
+    # the same as the one used by ResultDB (Python module), so convert here.
+    self._suite = name_mapping[self._suite].__module__.split('.')[-1]
 
   def _GetQueryGeneratorForBuilder(
       self, builder: data_types.BuilderEntry

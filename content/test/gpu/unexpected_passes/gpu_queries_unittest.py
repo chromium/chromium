@@ -29,44 +29,45 @@ class QueryBuilderUnittest(unittest.TestCase):
     uu.RegisterGenericBuildersImplementation()
     uu.RegisterGenericExpectationsImplementation()
 
-  def testSuiteExceptionMap(self) -> None:
-    """Tests that the suite passed to the query changes for some suites."""
+  def testSuiteNameTranslation(self) -> None:
+    """Tests that the suite passed to the query is auto-translated."""
+    # The key is the return value of Name() for a test suite, while the value is
+    # the last part of the Python module for the test file (i.e. the name of the
+    # file without .py). The former is used when running the tests, while the
+    # latter is used by ResultDB for reporting.
+    suites_to_modules = {
+        'cast_streaming': 'cast_streaming_integration_test',
+        'context_lost': 'context_lost_integration_test',
+        'expected_color': 'expected_color_test',
+        'gpu_process': 'gpu_process_integration_test',
+        'hardware_accelerated_feature':
+        'hardware_accelerated_feature_integration_test',
+        'info_collection': 'info_collection_test',
+        'mediapipe': 'mediapipe_integration_test',
+        'noop_sleep': 'noop_sleep_integration_test',
+        'pixel': 'pixel_integration_test',
+        'power': 'power_measurement_integration_test',
+        'screenshot_sync': 'screenshot_sync_integration_test',
+        'trace_test': 'trace_integration_test',
+        'webcodecs': 'webcodecs_integration_test',
+        'webgl1_conformance': 'webgl1_conformance_integration_test',
+        'webgl2_conformance': 'webgl2_conformance_integration_test',
+        'webgpu_cts': 'webgpu_cts_integration_test',
+    }
 
     def assertSuiteInQuery(suite: str, call_args: tuple) -> None:
       query = call_args[0][0][0]
       s = 'r"gpu_tests\\.%s\\."' % suite
       self.assertIn(s, query)
 
-    # Non-special cased suite.
-    querier = gpu_uu.CreateGenericGpuQuerier()
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder(
-          data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
-      assertSuiteInQuery('pixel_integration_test', query_mock.call_args)
-
-    # Special-cased suites.
-    querier = gpu_uu.CreateGenericGpuQuerier(suite='info_collection')
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder(
-          data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
-      assertSuiteInQuery('info_collection_test', query_mock.call_args)
-
-    querier = gpu_uu.CreateGenericGpuQuerier(suite='power')
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder(
-          data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
-      assertSuiteInQuery('power_measurement_integration_test',
-                         query_mock.call_args)
-
-    querier = gpu_uu.CreateGenericGpuQuerier(suite='trace_test')
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder(
-          data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
-      assertSuiteInQuery('trace_integration_test', query_mock.call_args)
+    for suite, module in suites_to_modules.items():
+      querier = gpu_uu.CreateGenericGpuQuerier(suite=suite)
+      with mock.patch.object(querier,
+                             '_RunBigQueryCommandsForJsonOutput') as query_mock:
+        _ = querier.QueryBuilder(
+            data_types.BuilderEntry('builder', constants.BuilderTypes.CI,
+                                    False))
+        assertSuiteInQuery(module, query_mock.call_args)
 
 
 class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
