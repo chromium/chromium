@@ -85,6 +85,8 @@ BASE_DECLARE_FEATURE(kSidePanelWebView);
 
 #if !defined(ANDROID)
 BASE_DECLARE_FEATURE(kSidePanelCompanionDefaultPinned);
+
+BASE_DECLARE_FEATURE(kSidePanelPinning);
 #endif
 
 BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);

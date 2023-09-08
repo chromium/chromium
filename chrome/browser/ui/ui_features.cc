@@ -157,6 +157,10 @@ BASE_FEATURE(kSidePanelJourneysQueryless,
 BASE_FEATURE(kSidePanelCompanionDefaultPinned,
              "SidePanelCompanionDefaultPinned",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSidePanelPinning,
+             "SidePanelPinning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
