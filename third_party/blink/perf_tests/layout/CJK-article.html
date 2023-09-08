@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <style>
 body {
-  font-family: 'MS Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-family: 'Meiryo', 'MS Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
 }
 
 #main_content_wrapper {
@@ -56,25 +56,37 @@ body {
 <script>
 const target = document.querySelector("#main_content_wrapper");
 
+// Make the content longer by duplicating, so that a run takes more than 100ms,
+// to reduce noises.
+const children = Array.from(target.childNodes);
+for (let i = 0; i < 20; ++i) {
+  for (const child of children) {
+    target.appendChild(child.cloneNode(true));
+  }
+}
+
 function setupAndMeasure() {
   // Unblock onload event by scheduling with zero delay,
   // in order to avoid perf bot flakiness where the bot checks
   // for timeouts reaching onload event, see crbug.com/457194
   window.setTimeout(() => {
-    PerfTestRunner.measureRunsPerSecond({
+    PerfTestRunner.measureTime({
       description: "Measures performance of processing CJK text with Western text",
       run: runTest
     });
   }, 0);
 }
 
+let fontSize = 8;
+
 function runTest() {
+  // Change the font slightly between runs to force a re-layout and minimize the
+  // the effect of caching.
+  target.style.fontSize = fontSize + 'px';
+  fontSize += 0.25;
+
   target.style.display = 'block';
   target.style.width = '800px';
-  PerfTestRunner.forceLayout();
-  target.style.width = '128px';
-  PerfTestRunner.forceLayout();
-  target.style.width = '2000px';
   PerfTestRunner.forceLayout();
   target.style.display = 'none';
 }
