@@ -21,6 +21,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -124,8 +125,12 @@ class CookiesTreeModelBrowserTest : public InProcessBrowserTest {
   }
 
   virtual void InitFeatures() {
-    feature_list()->InitAndDisableFeature(
-        net::features::kThirdPartyStoragePartitioning);
+    feature_list()->InitWithFeatures(
+        // WebSQL is disabled by default as of M119 (crbug/695592).
+        // Enable feature in tests during deprecation trial and enterprise
+        // policy support.
+        {blink::features::kWebSQLAccess},
+        {net::features::kThirdPartyStoragePartitioning});
   }
 
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }

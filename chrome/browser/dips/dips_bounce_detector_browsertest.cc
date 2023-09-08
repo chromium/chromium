@@ -48,6 +48,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 #include "url/gurl.h"
@@ -374,7 +375,13 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
             &DIPSBounceDetectorBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/
+        {
+            // WebSQL is disabled by default as of M119 (crbug/695592).
+            // Enable feature in tests during deprecation trial and enterprise
+            // policy support.
+            blink::features::kWebSQLAccess,
+        },
         /*disabled_features=*/{
             // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having
             // to disable this feature.

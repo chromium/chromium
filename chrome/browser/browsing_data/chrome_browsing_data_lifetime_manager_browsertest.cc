@@ -59,6 +59,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -99,7 +100,11 @@ class ChromeBrowsingDataLifetimeManagerTest
  protected:
   ChromeBrowsingDataLifetimeManagerTest() {
     std::vector<base::test::FeatureRef> features{
-        browsing_data::features::kEnableBrowsingDataLifetimeManager};
+        browsing_data::features::kEnableBrowsingDataLifetimeManager,
+        // WebSQL is disabled by default as of M119 (crbug/695592).
+        // Enable feature in tests during deprecation trial and enterprise
+        // policy support.
+        blink::features::kWebSQLAccess};
     if (GetParam().feature_enabled) {
       features.push_back(browsing_data::features::
                              kDataRetentionPoliciesDisableSyncTypesNeeded);

@@ -262,6 +262,10 @@ class BrowsingDataModelBrowserTest
         {blink::features::kFledge, {}},
         {blink::features::kFencedFrames, {}},
         {blink::features::kBrowsingTopics, {}},
+        // WebSQL is disabled by default as of M119 (crbug/695592).
+        // Enable feature in tests during deprecation trial and enterprise
+        // policy support.
+        {blink::features::kWebSQLAccess, {}},
         {net::features::kThirdPartyStoragePartitioning, {}},
         {network::features::kCompressionDictionaryTransportBackend, {}},
         {network::features::kCompressionDictionaryTransport, {}}};

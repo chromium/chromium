@@ -31,6 +31,7 @@
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -71,7 +72,12 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
 
  protected:
   CookiePolicyBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // WebSQL is disabled by default as of M119 (crbug/695592).
+    // Enable feature in tests during deprecation trial and enterprise
+    // policy support.
+    feature_list_.InitAndEnableFeature(blink::features::kWebSQLAccess);
+  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -152,6 +158,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
   }
 
   net::test_server::EmbeddedTestServer https_server_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Visits a page that sets a first-party cookie.
@@ -928,10 +935,8 @@ class ThirdPartyCookiePhaseoutPolicyStorageBrowserTest
  protected:
   ThirdPartyCookiePhaseoutPolicyStorageBrowserTest() {
     feature_list_.InitWithFeatures(
-        {
-            net::features::kForceThirdPartyCookieBlocking,
-            net::features::kThirdPartyStoragePartitioning,
-        },
+        {net::features::kForceThirdPartyCookieBlocking,
+         net::features::kThirdPartyStoragePartitioning},
         {});
   }
 
