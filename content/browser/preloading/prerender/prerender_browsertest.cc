@@ -2442,10 +2442,13 @@ class PrerenderMainFrameNavigationBrowserTest
     // URL of the given navigation URLs will separately be handled later as that
     // could cancel prerendering and never finish.
     for (auto it = urls.begin(); it != urls.end() - 1; ++it) {
+      RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
       TestNavigationManager navigation_observer(web_contents(), *it);
       NavigatePrerenderedPage(host_id, *it);
       ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
       EXPECT_TRUE(navigation_observer.was_successful());
+      // Make sure that RenderFrameHost swap didn't happen during navigation.
+      EXPECT_EQ(prerender_rfh, GetPrerenderedMainFrameHost(host_id));
     }
 
     // The last navigation URL. This should cancel prerendering if the
@@ -2455,10 +2458,14 @@ class PrerenderMainFrameNavigationBrowserTest
     switch (expected_status) {
       case PrerenderFinalStatus::kActivated: {
         // Navigation to the last URL should succeed.
+        RenderFrameHostImpl* prerender_rfh =
+            GetPrerenderedMainFrameHost(host_id);
         TestNavigationManager navigation_observer(web_contents(), last_url);
         NavigatePrerenderedPage(host_id, last_url);
         ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
         EXPECT_TRUE(navigation_observer.was_successful());
+        // Make sure that RenderFrameHost swap didn't happen during navigation.
+        EXPECT_EQ(prerender_rfh, GetPrerenderedMainFrameHost(host_id));
 
         // Activation should succeed.
         switch (trigger_type) {
@@ -2544,6 +2551,7 @@ class PrerenderMainFrameNavigationBrowserTest
     test::PrerenderHostObserver observer(*web_contents_impl(), host_id);
 
     // Run redirections in the main frame of the prerendered page.
+    RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
     TestNavigationManager navigation_observer(web_contents(), url);
     NavigatePrerenderedPage(host_id, url);
     ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
@@ -2552,6 +2560,8 @@ class PrerenderMainFrameNavigationBrowserTest
       case PrerenderFinalStatus::kActivated: {
         // Redirections should succeed.
         EXPECT_TRUE(navigation_observer.was_successful());
+        // Make sure that RenderFrameHost swap didn't happen during navigation.
+        EXPECT_EQ(prerender_rfh, GetPrerenderedMainFrameHost(host_id));
 
         // Activation should succeed.
         switch (trigger_type) {
