@@ -16,10 +16,10 @@
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/password_counter.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
-#import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -41,10 +41,40 @@
 
 using base::UmaHistogramEnumeration;
 
+// Protocol to be notified when number of passwords in the store changes.
+@protocol PasswordCounterObserver <NSObject>
+
+- (void)passwordCounterChanged:(size_t)totalPasswords;
+
+@end
+
+class PasswordCounterDelegateBridge
+    : public password_manager::PasswordCounter::Delegate {
+ public:
+  explicit PasswordCounterDelegateBridge(
+      id<PasswordCounterObserver> observer,
+      password_manager::PasswordStoreInterface* profile_store,
+      password_manager::PasswordStoreInterface* account_store)
+      : observer_(observer), counter_(profile_store, account_store, this) {}
+  PasswordCounterDelegateBridge(const PasswordCounterDelegateBridge&) = delete;
+  PasswordCounterDelegateBridge& operator=(
+      const PasswordCounterDelegateBridge&) = delete;
+
+  // PasswordCounter::Delegate:
+  void OnPasswordCounterChanged() override {
+    [observer_ passwordCounterChanged:(counter_.profile_passwords() +
+                                       counter_.account_passwords())];
+  }
+
+ private:
+  __weak id<PasswordCounterObserver> observer_ = nil;
+  password_manager::PasswordCounter counter_;
+};
+
 @interface FormInputAccessoryMediator () <FormActivityObserver,
                                           FormInputAccessoryViewDelegate,
                                           CRWWebStateObserver,
-                                          PasswordFetcherDelegate,
+                                          PasswordCounterObserver,
                                           PersonalDataManagerObserver,
                                           WebStateListObserving>
 
@@ -63,10 +93,6 @@ using base::UmaHistogramEnumeration;
 
 // The object that provides suggestions while filling forms.
 @property(nonatomic, weak) id<FormInputSuggestionsProvider> provider;
-
-// The password fetcher used to know if passwords are available and update the
-// consumer accordingly.
-@property(nonatomic, strong) PasswordFetcher* passwordFetcher;
 
 // Whether suggestions are disabled.
 @property(nonatomic, assign) BOOL suggestionsDisabled;
@@ -103,6 +129,9 @@ using base::UmaHistogramEnumeration;
 
   // Bridge to observe the web state from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+
+  // The observer for number of passwords in the stores.
+  std::unique_ptr<PasswordCounterDelegateBridge> _passwordCounter;
 
   // Bridge to observe form activity in `_webState`.
   std::unique_ptr<autofill::FormActivityObserverBridge>
@@ -172,14 +201,11 @@ using base::UmaHistogramEnumeration;
                         object:nil];
 
     // In BVC unit tests the password store doesn't exist. Skip creating the
-    // fetcher.
+    // counter.
     // TODO:(crbug.com/878388) Remove this workaround.
     if (profilePasswordStore) {
-      _passwordFetcher = [[PasswordFetcher alloc]
-          initWithProfilePasswordStore:profilePasswordStore
-                  accountPasswordStore:accountPasswordStore
-                              delegate:self
-                                   URL:GURL::EmptyGURL()];
+      _passwordCounter = std::make_unique<PasswordCounterDelegateBridge>(
+          self, profilePasswordStore.get(), accountPasswordStore.get());
     }
     if (personalDataManager) {
       _personalDataManager = personalDataManager;
@@ -585,13 +611,10 @@ using base::UmaHistogramEnumeration;
   [self didSelectSuggestion:formSuggestion];
 }
 
-#pragma mark - PasswordFetcherDelegate
+#pragma mark - PasswordCounterObserver
 
-- (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
-      didFetchPasswords:
-          (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
-              passwords {
-  self.consumer.passwordButtonHidden = passwords.empty();
+- (void)passwordCounterChanged:(size_t)totalPasswords {
+  self.consumer.passwordButtonHidden = !totalPasswords;
 }
 
 #pragma mark - PersonalDataManagerObserver
