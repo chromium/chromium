@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_ROUTINES_DIAGNOSTIC_ROUTINE_OBSERVATION_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_ROUTINES_DIAGNOSTIC_ROUTINE_OBSERVATION_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension_id.h"
@@ -18,10 +20,11 @@ namespace chromeos {
 class DiagnosticRoutineObservation
     : public crosapi::mojom::TelemetryDiagnosticRoutineObserver {
  public:
+  using OnRoutineFinished = base::OnceCallback<void(DiagnosticRoutineInfo)>;
+
   explicit DiagnosticRoutineObservation(
-      extensions::ExtensionId extension_id,
-      base::Uuid uuid,
-      content::BrowserContext* context,
+      DiagnosticRoutineInfo info,
+      OnRoutineFinished on_routine_finished,
       mojo::PendingReceiver<crosapi::mojom::TelemetryDiagnosticRoutineObserver>
           pending_receiver);
 
@@ -37,10 +40,8 @@ class DiagnosticRoutineObservation
 
  private:
   // `ExtensionId` associated with this observation.
-  const extensions::ExtensionId extension_id_;
-  const base::Uuid uuid_;
-  raw_ptr<content::BrowserContext, DanglingUntriaged | ExperimentalAsh>
-      browser_context_;
+  DiagnosticRoutineInfo info_;
+  OnRoutineFinished on_routine_finished_;
   mojo::Receiver<crosapi::mojom::TelemetryDiagnosticRoutineObserver> receiver_;
 };
 

@@ -9,6 +9,7 @@ source_set("routines") {
     "diagnostic_routine.h",
     "diagnostic_routine_converters.cc",
     "diagnostic_routine_converters.h",
+    "diagnostic_routine_info.h",
     "diagnostic_routine_observation.cc",
     "diagnostic_routine_observation.h",
     "remote_diagnostic_routines_service_strategy.cc",

@@ -11,10 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_observation.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
-#include "content/public/browser/browser_context.h"
-#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,21 +30,16 @@ namespace chromeos {
 // `onRoutineException` callback.
 class DiagnosticRoutine {
  public:
-  struct RoutineInfo {
-    extensions::ExtensionId extension_id;
-    base::Uuid uuid;
-    raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context;
-  };
-
-  using DeleterCallback = base::OnceCallback<void(DiagnosticRoutine*)>;
+  using OnRoutineFinishedOrException =
+      base::OnceCallback<void(DiagnosticRoutineInfo)>;
 
   explicit DiagnosticRoutine(
       mojo::PendingRemote<crosapi::mojom::TelemetryDiagnosticRoutineControl>
           control_remote,
       mojo::PendingReceiver<crosapi::mojom::TelemetryDiagnosticRoutineObserver>
           observer_receiver,
-      RoutineInfo info,
-      DeleterCallback deleter_callback);
+      DiagnosticRoutineInfo info,
+      OnRoutineFinishedOrException on_routine_finished_or_exception);
 
   DiagnosticRoutine(const DiagnosticRoutine&) = delete;
   DiagnosticRoutine& operator=(const DiagnosticRoutine&) = delete;
@@ -71,9 +65,9 @@ class DiagnosticRoutine {
   mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutineControl>
       routine_control_;
   DiagnosticRoutineObservation observation_;
-  RoutineInfo info_;
+  DiagnosticRoutineInfo info_;
 
-  DeleterCallback deleter_callback_;
+  OnRoutineFinishedOrException on_routine_finished_or_exception_;
   base::WeakPtrFactory<DiagnosticRoutine> weak_factory{this};
 };
 

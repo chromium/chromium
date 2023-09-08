@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/remote_diagnostic_routines_service_strategy.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -87,8 +88,7 @@ DiagnosticRoutineManager::CreateRoutine(
       observer_receiver.InitWithNewPipeAndPassRemote());
 
   auto uuid = base::Uuid::GenerateRandomV4();
-  DiagnosticRoutine::RoutineInfo routine_info(extension_id, uuid,
-                                              browser_context_);
+  DiagnosticRoutineInfo routine_info(extension_id, uuid, browser_context_);
 
   auto it = routines_per_extension_.find(extension_id);
   if (it == routines_per_extension_.end()) {
@@ -100,7 +100,7 @@ DiagnosticRoutineManager::CreateRoutine(
   // of `this`.
   it->second.push_back(std::make_unique<DiagnosticRoutine>(
       std::move(control_remote), std::move(observer_receiver), routine_info,
-      base::BindOnce(&DiagnosticRoutineManager::OnDiagnosticRoutineFinished,
+      base::BindOnce(&DiagnosticRoutineManager::OnRoutineExceptionOrFinished,
                      base::Unretained(this))));
 
   return base::ok(uuid);
@@ -202,14 +202,17 @@ DiagnosticRoutineManager::CreateAppUiObserver(
       base::NullCallback());
 }
 
-void DiagnosticRoutineManager::OnDiagnosticRoutineFinished(
-    DiagnosticRoutine* routine) {
-  for (auto& [_, routines] : routines_per_extension_) {
-    base::EraseIf(routines,
-                  [routine](const std::unique_ptr<DiagnosticRoutine>& ptr) {
-                    return ptr.get() == routine;
-                  });
+void DiagnosticRoutineManager::OnRoutineExceptionOrFinished(
+    DiagnosticRoutineInfo info) {
+  auto it = routines_per_extension_.find(info.extension_id);
+  if (it == routines_per_extension_.end()) {
+    return;
   }
+
+  base::EraseIf(it->second,
+                [info](const std::unique_ptr<DiagnosticRoutine>& ptr) {
+                  return ptr->uuid() == info.uuid;
+                });
 }
 
 }  // namespace chromeos

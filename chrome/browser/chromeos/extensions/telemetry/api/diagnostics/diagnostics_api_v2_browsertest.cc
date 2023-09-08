@@ -224,6 +224,77 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    FinishedRoutineIsRemovedWithFeatureFlagSuccess) {
+  fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
+    auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
+        crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
+    ASSERT_TRUE(control);
+
+    auto mem_detail = crosapi::TelemetryDiagnosticMemoryRoutineDetail::New();
+    mem_detail->result = crosapi::TelemetryDiagnosticMemtesterResult::New();
+
+    auto finished_state =
+        crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+    finished_state->detail =
+        crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
+            std::move(mem_detail));
+    finished_state->has_passed = true;
+
+    auto state = crosapi::TelemetryDiagnosticRoutineState::New();
+    state->state_union =
+        crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+            std::move(finished_state));
+
+    control->SetState(std::move(state));
+  }));
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+       async function createMemoryRoutine() {
+        let uuid_resolver;
+        let finished_resolver;
+
+        // Set later once the routine was created.
+        var uuid = new Promise((resolve) => {
+          uuid_resolver = resolve;
+        });
+
+        var on_finished = new Promise((resolve) => {
+          finished_resolver = resolve;
+        });
+
+        // Only resolve the test once we got the final event.
+        chrome.os.diagnostics.onMemoryRoutineFinished.addListener(
+          async (status) => {
+          chrome.test.assertEq(status.uuid, await uuid);
+          finished_resolver();
+        });
+
+        const response = await chrome.os.diagnostics.createMemoryRoutine({
+          maxTestingMemKib: 42,
+        });
+        chrome.test.assertTrue(response !== undefined);
+        uuid_resolver(response.uuid);
+
+        await on_finished;
+        // Test that we were successful by starting again and failing.
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.startRoutine({
+              uuid: response.uuid,
+            }),
+            'Error: Unknown routine id.'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
     CreateMemoryRoutineWithFeatureFlagSuccess) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(

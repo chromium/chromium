@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/remote_diagnostic_routines_service_strategy.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -86,8 +87,9 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
                  DiagnosticRoutineManager::Error>
   CreateAppUiObserver(extensions::ExtensionId extension_id);
 
-  // Called once a specific `DiagnosticRoutine` signals its destruction.
-  void OnDiagnosticRoutineFinished(DiagnosticRoutine* routine);
+  // Called once a specific `DiagnosticRoutine` signals a cut connection or
+  // enters the finished state. We are removing the routine in that case.
+  void OnRoutineExceptionOrFinished(DiagnosticRoutineInfo info);
 
   mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutinesService>&
   GetRemoteService();

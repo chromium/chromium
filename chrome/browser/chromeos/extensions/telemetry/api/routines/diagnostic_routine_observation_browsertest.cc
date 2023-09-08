@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -14,14 +15,17 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -66,8 +70,16 @@ class TelemetryExtensionDiagnosticRoutineObserverBrowserTest
   void SetUpOnMainThread() override {
     BaseTelemetryExtensionBrowserTest::SetUpOnMainThread();
 
+    DiagnosticRoutineInfo info(extension_id(), uuid_, profile());
     observation_ = std::make_unique<DiagnosticRoutineObservation>(
-        extension_id(), uuid_, profile(), remote_.BindNewPipeAndPassReceiver());
+        info, on_finished_future_.GetCallback(),
+        remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDownOnMainThread() override {
+    registration_observer_.reset();
+    observation_.reset();
+    BaseTelemetryExtensionBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -80,10 +92,15 @@ class TelemetryExtensionDiagnosticRoutineObserverBrowserTest
         registration_observer_.get(), event_name);
   }
 
+  DiagnosticRoutineInfo WaitForFinishedReport() {
+    return on_finished_future_.Take();
+  }
+
   base::Uuid uuid_{base::Uuid::GenerateRandomV4()};
   mojo::Remote<crosapi::TelemetryDiagnosticRoutineObserver> remote_;
 
  private:
+  base::test::TestFuture<DiagnosticRoutineInfo> on_finished_future_;
   std::unique_ptr<EventRegistrationObserver> registration_observer_;
   std::unique_ptr<DiagnosticRoutineObservation> observation_;
 };
@@ -343,6 +360,10 @@ IN_PROC_BROWSER_TEST_F(
     ]);
   )",
                          uuid_.AsLowercaseString().c_str()));
+
+  auto info = WaitForFinishedReport();
+  EXPECT_EQ(info.extension_id, extension_id());
+  EXPECT_EQ(info.uuid, uuid_);
 }
 
 }  // namespace chromeos

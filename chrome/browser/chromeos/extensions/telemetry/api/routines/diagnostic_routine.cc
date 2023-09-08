@@ -10,7 +10,9 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_converters.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_observation.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
@@ -34,15 +36,17 @@ DiagnosticRoutine::DiagnosticRoutine(
         control_remote,
     mojo::PendingReceiver<crosapi::TelemetryDiagnosticRoutineObserver>
         observer_receiver,
-    RoutineInfo info,
-    DeleterCallback deleter_callback)
+    DiagnosticRoutineInfo info,
+    OnRoutineFinishedOrException on_routine_finished_or_exception)
     : routine_control_(std::move(control_remote)),
-      observation_(info.extension_id,
-                   info.uuid,
-                   info.browser_context,
+      observation_(info,
+                   base::IgnoreArgs<DiagnosticRoutineInfo>(
+                       base::BindOnce(&DiagnosticRoutine::CallDeleter,
+                                      base::Unretained(this))),
                    std::move(observer_receiver)),
       info_(info),
-      deleter_callback_(std::move(deleter_callback)) {
+      on_routine_finished_or_exception_(
+          std::move(on_routine_finished_or_exception)) {
   routine_control_.set_disconnect_with_reason_handler(
       base::BindOnce(&DiagnosticRoutine::OnRoutineControlDisconnect,
                      weak_factory.GetWeakPtr()));
@@ -79,7 +83,9 @@ DiagnosticRoutine::GetRemote() {
 }
 
 void DiagnosticRoutine::CallDeleter() {
-  std::move(deleter_callback_).Run(this);
+  if (on_routine_finished_or_exception_) {
+    std::move(on_routine_finished_or_exception_).Run(info_);
+  }
 }
 
 }  // namespace chromeos
