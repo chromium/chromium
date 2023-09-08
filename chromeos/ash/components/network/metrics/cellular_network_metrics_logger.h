@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
@@ -48,6 +49,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
     kMatchesSelectedApn = 0,
     kDoesNotMatchSelectedApn = 1,
     kMaxValue = kDoesNotMatchSelectedApn
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ESimInstallResult {
+    kSuccess = 0,
+    kInhibitFailed = 1,
+    kHermesFailed = 2,
+    kMaxValue = kHermesFailed,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -114,6 +124,34 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       "Network.Ash.Cellular.ESim.UserInstall.Method";
   static constexpr char kESimPolicyInstallMethod[] =
       "Network.Ash.Cellular.ESim.PolicyInstall.Method";
+  static constexpr char kESimPolicyInstallUserErrorsFilteredAll[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsFiltered.All";
+  static constexpr char kESimPolicyInstallUserErrorsFilteredViaSmdpInitial[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsFiltered."
+      "ViaSmdpInitial";
+  static constexpr char kESimPolicyInstallUserErrorsFilteredViaSmdpRetry[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsFiltered."
+      "ViaSmdpRetry";
+  static constexpr char kESimPolicyInstallUserErrorsFilteredViaSmdsInitial[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsFiltered."
+      "ViaSmdsInitial";
+  static constexpr char kESimPolicyInstallUserErrorsFilteredViaSmdsRetry[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsFiltered."
+      "ViaSmdsRetry";
+  static constexpr char kESimPolicyInstallUserErrorsIncludedAll[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsIncluded.All";
+  static constexpr char kESimPolicyInstallUserErrorsIncludedViaSmdpInitial[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsIncluded."
+      "ViaSmdpInitial";
+  static constexpr char kESimPolicyInstallUserErrorsIncludedViaSmdpRetry[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsIncluded."
+      "ViaSmdpRetry";
+  static constexpr char kESimPolicyInstallUserErrorsIncludedViaSmdsInitial[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsIncluded."
+      "ViaSmdsInitial";
+  static constexpr char kESimPolicyInstallUserErrorsIncludedViaSmdsRetry[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsIncluded."
+      "ViaSmdsRetry";
 
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,
@@ -142,8 +180,25 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   // Logs results from attempting operations related to eSIM.
   static void LogSmdsScanProfileCount(size_t count);
-  static void LogESimUserInstallMethod(ESimUserInstallMethod type);
-  static void LogESimPolicyInstallMethod(ESimPolicyInstallMethod type);
+  static void LogESimUserInstallMethod(ESimUserInstallMethod method);
+  static void LogESimPolicyInstallMethod(ESimPolicyInstallMethod method);
+  static void LogESimPolicyInstallResult(ESimPolicyInstallMethod method,
+                                         ESimInstallResult result,
+                                         bool is_initial,
+                                         bool should_filter);
+
+  // Returns the eSIM installation result for the provided Hermes response
+  // status. When the status is unavailable, assume that we failed to inhibit
+  // the cellular device.
+  static ESimInstallResult ComputeESimInstallResult(
+      absl::optional<HermesResponseStatus> status);
+
+  // Returns whether |status| is considered a "user error" and should be
+  // filtered when emitting to eSIM installation result histograms. An Hermes
+  // response status is considered a "user error" when we believe the result is
+  // due to an error or situation outside the control of ChromeOS, e.g. an
+  // invalid activation code.
+  static bool HermesResponseStatusIsUserError(HermesResponseStatus status);
 
  private:
   // ConnectionInfoMetricsLogger::Observer:

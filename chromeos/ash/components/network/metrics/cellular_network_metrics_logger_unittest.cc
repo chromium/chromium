@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_test_helper.h"
 #include "chromeos/ash/components/network/metrics/connection_results.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
@@ -56,7 +57,6 @@ class CellularNetworkMetricsLoggerTest : public testing::Test {
 
   void SetUp() override {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     shill_service_client_ = ShillServiceClient::Get()->GetTestInterface();
     shill_service_client_->ClearServices();
@@ -104,21 +104,21 @@ class CellularNetworkMetricsLoggerTest : public testing::Test {
   }
 
   void AssertHistogramsTotalCount(const ApnHistogramCounts& counts) {
-    histogram_tester_->ExpectTotalCount(
+    histogram_tester_.ExpectTotalCount(
         CellularNetworkMetricsLogger::kCustomApnsCountHistogram,
         counts.custom_apns_total_hist_count);
-    histogram_tester_->ExpectTotalCount(
+    histogram_tester_.ExpectTotalCount(
         CellularNetworkMetricsLogger::kCustomApnsEnabledCountHistogram,
         counts.enabled_custom_apns_total_hist_count);
-    histogram_tester_->ExpectTotalCount(
+    histogram_tester_.ExpectTotalCount(
         CellularNetworkMetricsLogger::kCustomApnsDisabledCountHistogram,
         counts.disabled_custom_apns_total_hist_count);
 
-    histogram_tester_->ExpectTotalCount(
+    histogram_tester_.ExpectTotalCount(
         CellularNetworkMetricsLogger::
             kConnectResultNoEnabledCustomApnsAllHistogram,
         counts.no_enabled_custom_apns);
-    histogram_tester_->ExpectTotalCount(
+    histogram_tester_.ExpectTotalCount(
         CellularNetworkMetricsLogger::
             kConnectResultHasEnabledCustomApnsAllHistogram,
         counts.has_enabled_custom_apns);
@@ -129,20 +129,21 @@ class CellularNetworkMetricsLoggerTest : public testing::Test {
       size_t no_enabled_bucket_count,
       ash::ShillConnectResult has_enabled_custom_apns_bucket,
       size_t has_enabled_bucket_count) {
-    histogram_tester_->ExpectBucketCount(
+    histogram_tester_.ExpectBucketCount(
         CellularNetworkMetricsLogger::
             kConnectResultNoEnabledCustomApnsAllHistogram,
         no_enabled_custom_apns_bucket, no_enabled_bucket_count);
-    histogram_tester_->ExpectBucketCount(
+    histogram_tester_.ExpectBucketCount(
         CellularNetworkMetricsLogger::
             kConnectResultHasEnabledCustomApnsAllHistogram,
         has_enabled_custom_apns_bucket, has_enabled_bucket_count);
   }
 
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   raw_ptr<ShillServiceClient::TestInterface,
           DanglingUntriaged | ExperimentalAsh>
@@ -166,7 +167,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampEnabled) {
   AssertCustomApnsStatusBucketCount(
       ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
       ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/0);
-  histogram_tester_->ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsCountHistogram,
       /*sample=*/0, /*expected_count=*/1);
 
@@ -191,10 +192,10 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampEnabled) {
   AssertCustomApnsStatusBucketCount(
       ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
       ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/1);
-  histogram_tester_->ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsEnabledCountHistogram,
       /*sample=*/1, /*expected_count=*/1);
-  histogram_tester_->ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsDisabledCountHistogram,
       /*sample=*/0,
       /*expected_count=*/1);
@@ -219,10 +220,10 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampEnabled) {
   AssertCustomApnsStatusBucketCount(
       ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
       ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/2);
-  histogram_tester_->ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsEnabledCountHistogram,
       /*sample=*/1, /*expected_count=*/2);
-  histogram_tester_->ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsDisabledCountHistogram,
       /*sample=*/1,
       /*expected_count=*/1);
@@ -257,7 +258,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampDisabled) {
   AssertCustomApnsStatusBucketCount(
       ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
       ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/0);
-  histogram_tester_->ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsCountHistogram, 0, 1);
 
   // Add an APN to the network.
@@ -281,7 +282,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampDisabled) {
   AssertCustomApnsStatusBucketCount(
       ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
       ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/1);
-  histogram_tester_->ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsCountHistogram, 1, 1);
 
   // Successful connect from connecting to connected again.
@@ -295,7 +296,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampDisabled) {
   AssertCustomApnsStatusBucketCount(
       ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
       ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/2);
-  histogram_tester_->ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsCountHistogram, 1, 2);
 
   // Fail to connect from connecting to disconnecting, no valid shill error.
@@ -330,7 +331,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, OnlyCellularNetworksStatusRecorded) {
   AssertCustomApnsStatusBucketCount(
       ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
       ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/0);
-  histogram_tester_->ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsCountHistogram, 0, 1);
 
   SetShillState(kWifiServicePath, shill::kStateIdle);
@@ -338,6 +339,120 @@ TEST_F(CellularNetworkMetricsLoggerTest, OnlyCellularNetworksStatusRecorded) {
 
   SetShillState(kWifiServicePath, shill::kStateOnline);
   AssertHistogramsTotalCount(counts);
+}
+
+TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
+  using ESimInstallResult = CellularNetworkMetricsLogger::ESimInstallResult;
+  using ESimPolicyInstallMethod =
+      CellularNetworkMetricsLogger::ESimPolicyInstallMethod;
+
+  ash::cellular_metrics::ESimInstallHistogramState state;
+  state.Check(histogram_tester());
+
+  auto do_increment =
+      [](ash::cellular_metrics::ESimInstallHistogramState::HistogramState*
+             state,
+         ESimInstallResult result) {
+        if (result == ESimInstallResult::kSuccess) {
+          state->success_count++;
+        } else if (result == ESimInstallResult::kInhibitFailed) {
+          state->inhibit_failed_count++;
+        } else if (result == ESimInstallResult::kHermesFailed) {
+          state->hermes_failed_count++;
+        }
+      };
+
+  auto increment_user_errors_filtered_smdp = [&](ESimInstallResult result,
+                                                 bool is_initial) {
+    if (is_initial) {
+      do_increment(&state.policy_install_user_errors_filtered_smdp_initial,
+                   result);
+    } else {
+      do_increment(&state.policy_install_user_errors_filtered_smdp_retry,
+                   result);
+    }
+  };
+
+  auto increment_user_errors_filtered_smds = [&](ESimInstallResult result,
+                                                 bool is_initial) {
+    if (is_initial) {
+      do_increment(&state.policy_install_user_errors_filtered_smds_initial,
+                   result);
+    } else {
+      do_increment(&state.policy_install_user_errors_filtered_smds_retry,
+                   result);
+    }
+  };
+
+  auto increment_user_errors_filtered = [&](ESimPolicyInstallMethod method,
+                                            ESimInstallResult result,
+                                            bool is_initial) {
+    do_increment(&state.policy_install_user_errors_filtered_all, result);
+    if (method == ESimPolicyInstallMethod::kViaSmdp) {
+      increment_user_errors_filtered_smdp(result, is_initial);
+    } else if (method == ESimPolicyInstallMethod::kViaSmds) {
+      increment_user_errors_filtered_smds(result, is_initial);
+    }
+  };
+
+  auto increment_user_errors_included_smdp = [&](ESimInstallResult result,
+                                                 bool is_initial) {
+    if (is_initial) {
+      do_increment(&state.policy_install_user_errors_included_smdp_initial,
+                   result);
+    } else {
+      do_increment(&state.policy_install_user_errors_included_smdp_retry,
+                   result);
+    }
+  };
+
+  auto increment_user_errors_included_smds = [&](ESimInstallResult result,
+                                                 bool is_initial) {
+    if (is_initial) {
+      do_increment(&state.policy_install_user_errors_included_smds_initial,
+                   result);
+    } else {
+      do_increment(&state.policy_install_user_errors_included_smds_retry,
+                   result);
+    }
+  };
+
+  auto increment_user_errors_included = [&](ESimPolicyInstallMethod method,
+                                            ESimInstallResult result,
+                                            bool is_initial) {
+    do_increment(&state.policy_install_user_errors_included_all, result);
+    if (method == ESimPolicyInstallMethod::kViaSmdp) {
+      increment_user_errors_included_smdp(result, is_initial);
+    } else if (method == ESimPolicyInstallMethod::kViaSmds) {
+      increment_user_errors_included_smds(result, is_initial);
+    }
+  };
+
+  auto emit_and_check =
+      [this, &increment_user_errors_filtered, &increment_user_errors_included,
+       &state](ESimPolicyInstallMethod method, ESimInstallResult result,
+               bool is_initial, bool should_filter) {
+        CellularNetworkMetricsLogger::LogESimPolicyInstallResult(
+            method, result, is_initial, should_filter);
+        if (!should_filter) {
+          increment_user_errors_filtered(method, result, is_initial);
+        }
+        increment_user_errors_included(method, result, is_initial);
+        state.Check(histogram_tester());
+      };
+
+  for (auto method :
+       {ESimPolicyInstallMethod::kViaSmdp, ESimPolicyInstallMethod::kViaSmds}) {
+    for (auto result :
+         {ESimInstallResult::kSuccess, ESimInstallResult::kInhibitFailed,
+          ESimInstallResult::kHermesFailed}) {
+      for (auto is_initial : {true, false}) {
+        for (auto should_filter : {true, false}) {
+          emit_and_check(method, result, is_initial, should_filter);
+        }
+      }
+    }
+  }
 }
 
 }  // namespace ash
