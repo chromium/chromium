@@ -57,6 +57,9 @@ std::string GetGuid() {
   return base::StringPrintf("BD85DBA2-8C29-49F9-84AE-48E1E%05dE0", currentGuid);
 }
 
+// Don't add more shortcuts here. It's difficult to reuse shortcuts for
+// different tests, so each test ends up adding new shortcuts, and this list
+// keeps growing with no reuse benefit. Add shortcuts locally in each test.
 struct TestShortcutData shortcut_test_db[] = {
     {GetGuid(), "goog", "www.google.com", "http://www.google.com/",
      AutocompleteMatch::DocumentType::NONE, "Google", "0,1,4,0", "Google",
@@ -184,47 +187,6 @@ struct TestShortcutData shortcut_test_db[] = {
      "Trailing2 - Space in Shortcut", "0,1", "Trailing2 - Space in Shortcut",
      "0,1", ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "",
      1, 100},
-
-    // 4 shortcuts to verify aggregating shortcuts.
-    {GetGuid(), "wikipedia", "", "https://wikipedia.org/wilson7",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 1},
-    {GetGuid(), "wilson7", "", "https://wikipedia.org/wilson7",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 2, 2},
-    {GetGuid(), "winston", "", "https://wikipedia.org/winston",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 3},
-    {GetGuid(), "wilson7", "", "https://wikipedia.org/wilson7-other",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 2, 2},
-
-    // 8 shortcuts to verify the interaction of the provider limit and
-    // aggregating shortcuts.
-    {GetGuid(), "zebra1", "", "https://wikipedia.org/zebra-a",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 1},
-    {GetGuid(), "zebra2", "", "https://wikipedia.org/zebra-a",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 2},
-    {GetGuid(), "zebra3", "", "https://wikipedia.org/zebra-a",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 3},
-    {GetGuid(), "zebra4", "", "https://wikipedia.org/zebra-a",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 4},
-    {GetGuid(), "zebra5", "", "https://wikipedia.org/zebra-b",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 6},
-    {GetGuid(), "zebra6", "", "https://wikipedia.org/zebra-b",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 4},
-    {GetGuid(), "zebra7", "", "https://wikipedia.org/zebra-c",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 10},
-    {GetGuid(), "zebra8", "", "https://wikipedia.org/zebra-d",
-     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
-     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 10},
 };
 
 ShortcutsDatabase::Shortcut MakeShortcut(
@@ -238,6 +200,47 @@ ShortcutsDatabase::Shortcut MakeShortcut(
               "0,1,4,3,8,1", u"A test", "0,0,2,2", ui::PAGE_TRANSITION_TYPED,
               AutocompleteMatchType::HISTORY_URL, std::u16string()),
           last_access_time, number_of_hits};
+}
+
+// Helpers to create `TestShortcutData`.
+TestShortcutData MakeShortcutData(std::string text,
+                                  std::string destination_url = "",
+                                  int days_from_now = 0,
+                                  int number_of_hits = 0) {
+  if (destination_url.empty())
+    destination_url =
+        "https://" + text + ".com/" + base::NumberToString(number_of_hits);
+  return {GetGuid(),
+          text,
+          text,
+          destination_url,
+          AutocompleteMatch::DocumentType::NONE,
+          "",
+          "",
+          "",
+          "",
+          ui::PageTransition::PAGE_TRANSITION_TYPED,
+          AutocompleteMatchType::HISTORY_URL,
+          "",
+          days_from_now,
+          number_of_hits};
+}
+
+TestShortcutData MakeShortcutData(std::string text, int number_of_hits) {
+  return MakeShortcutData(text, "", 0, number_of_hits);
+}
+
+// Verifies the values and order of match `destination_url`s.
+void VerifyMatches(ACMatches matches,
+                   std::vector<std::string> expected_destination_urls) {
+  std::string debug = "matches: \n";
+  for (auto match : matches)
+    debug += base::StringPrintf("  %s\n", match.destination_url.spec().c_str());
+
+  ASSERT_EQ(matches.size(), expected_destination_urls.size()) << debug;
+  for (size_t i = 0; i < matches.size(); ++i)
+    EXPECT_EQ(matches[i].destination_url.spec(), expected_destination_urls[i])
+        << debug;
 }
 
 }  // namespace
@@ -579,20 +582,31 @@ TEST_F(ShortcutsProviderTest, SimpleSingleMatchKeyword) {
 }
 
 TEST_F(ShortcutsProviderTest, MultiMatch) {
-  std::u16string text(u"NEWS");
-  ExpectedURLs expected_urls;
-  // Scores high because of completion length.
-  expected_urls.push_back(
-      ExpectedURLAndAllowedToBeDefault("http://slashdot.org/", true));
-  // Scores high because of visit count.
-  expected_urls.push_back(
-      ExpectedURLAndAllowedToBeDefault("http://sports.yahoo.com/", true));
-  // Scores high because of visit count but less match span,
-  // which is more important.
-  expected_urls.push_back(
-      ExpectedURLAndAllowedToBeDefault("http://www.cnn.com/index.html", true));
-  RunShortcutsProviderTest(provider_, text, false, expected_urls,
-                           "http://slashdot.org/", std::u16string());
+  TestShortcutData shortcut_data[] = {
+      MakeShortcutData("not-prefix", 10),
+      MakeShortcutData("prefix-short", 1),
+      MakeShortcutData("prefix-medium-length", 1),
+      MakeShortcutData("prefix-long-shortcut-text-length", 2),
+  };
+  PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
+                                       shortcut_data, std::size(shortcut_data));
+
+  AutocompleteInput input(u"prefix", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->Start(input, false);
+  const auto matches = provider_->matches();
+
+  VerifyMatches(matches, {
+                             // The shortcut with the most hits should be 1st
+                             // even though it has less % of
+                             // text matched.
+                             "https://prefix-long-shortcut-text-length.com/2",
+                             // Given equal hits, shorter texts have higher %
+                             // matched and should score
+                             // higher.
+                             "https://prefix-short.com/1",
+                             "https://prefix-medium-length.com/1",
+                         });
 }
 
 TEST_F(ShortcutsProviderTest, RemoveDuplicates) {
@@ -715,8 +729,30 @@ TEST_F(ShortcutsProviderTest, DoesNotProvideOnFocus) {
   EXPECT_TRUE(provider_->matches().empty());
 }
 
-TEST_F(ShortcutsProviderTest, DoAutocomplete) {
+TEST_F(ShortcutsProviderTest, DoAutocompleteAggregateShortcuts) {
+  TestShortcutData shortcut_data[] = {
+      MakeShortcutData("wi", "https://wikipedia.org/wilson7", 1, 1),
+      MakeShortcutData("wilson7", "https://wikipedia.org/wilson7", 2, 2),
+      MakeShortcutData("wilson8", "https://wikipedia.org/wilson8", 1, 3),
+      // A 'sacrificial' shortcut that will be boosted so that the shortcuts we
+      // care about won't be boosted and we can verify their relevance scores.
+      MakeShortcutData("wilsonBoosted", "https://wikipedia.org/boosted", 0, 4),
+
+      // To verify the interaction with the provider limit.
+      MakeShortcutData("zebra1", "https://wikipedia.org/zebra-a", 1, 1),
+      MakeShortcutData("zebra2", "https://wikipedia.org/zebra-a", 1, 2),
+      MakeShortcutData("zebra3", "https://wikipedia.org/zebra-a", 1, 3),
+      MakeShortcutData("zebra4", "https://wikipedia.org/zebra-a", 1, 4),
+      MakeShortcutData("zebra5", "https://wikipedia.org/zebra-b", 1, 6),
+      MakeShortcutData("zebra6", "https://wikipedia.org/zebra-b", 1, 4),
+      MakeShortcutData("zebra7", "https://wikipedia.org/zebra-c", 1, 10),
+      MakeShortcutData("zebra8", "https://wikipedia.org/zebra-d", 1, 10),
+  };
+  PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
+                                       shortcut_data, std::size(shortcut_data));
+
   {
+    SCOPED_TRACE("Input 'wi'");
     // When multiple shortcuts with the same destination URL match the input,
     // they should be scored together (i.e. their visit counts summed, the most
     // recent visit date and shortest text considered).
@@ -724,38 +760,42 @@ TEST_F(ShortcutsProviderTest, DoAutocomplete) {
                             TestSchemeClassifier());
     provider_->Start(input, false);
     const auto& matches = provider_->matches();
-    EXPECT_EQ(matches.size(), 3u);
+    VerifyMatches(matches, {
+                               "https://wikipedia.org/boosted",
+                               "https://wikipedia.org/wilson8",
+                               "https://wikipedia.org/wilson7",
+                           });
+    EXPECT_EQ(matches[0].relevance, 1414);
     // There are 2 shortcuts with the wilson7 url which have the same aggregate
-    // text length, visit count, and last visit as the 1 winston shortcut.
-    EXPECT_EQ(matches[0].destination_url.spec(),
-              "https://wikipedia.org/winston");
-    EXPECT_EQ(matches[1].destination_url.spec(),
-              "https://wikipedia.org/wilson7");
-    // Matches with the same score otherwise, are demoted by 1, hence the `+ 1`.
-    EXPECT_EQ(matches[0].relevance, matches[1].relevance + 1);
-    EXPECT_EQ(matches[2].destination_url.spec(),
-              "https://wikipedia.org/wilson7-other");
-    EXPECT_GT(matches[0].relevance, matches[2].relevance + 1);
+    // text length, visit count, and last visit as the 1 winston shortcut; so
+    // they should be scored the same. Matches with the same score otherwise,
+    // are demoted by 1, hence the `+ 1`.
+    EXPECT_EQ(matches[1].relevance, matches[2].relevance + 1);
     EXPECT_GT(matches[2].relevance, 0);
   }
 
   {
+    SCOPED_TRACE("Input 'wilson'");
     // When multiple shortcuts have the same destination URL but only 1 matches
     // the input, they should not be scored together.
     AutocompleteInput input(u"wilson", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, false);
     const auto& matches = provider_->matches();
-    EXPECT_EQ(matches.size(), 2u);
-    EXPECT_EQ(matches[0].destination_url.spec(),
-              "https://wikipedia.org/wilson7");
-    EXPECT_EQ(matches[1].destination_url.spec(),
-              "https://wikipedia.org/wilson7-other");
-    EXPECT_EQ(matches[0].relevance, matches[1].relevance + 1);
-    EXPECT_GT(matches[1].relevance, 0);
+    VerifyMatches(matches, {
+                               "https://wikipedia.org/boosted",
+                               "https://wikipedia.org/wilson8",
+                               "https://wikipedia.org/wilson7",
+                           });
+    EXPECT_EQ(matches[0].relevance, 1414);
+    // _GT instead _EQ since the un-aggregated wilson7 has less hits than the
+    // un-aggregated wilson8.
+    EXPECT_GT(matches[1].relevance, matches[2].relevance + 1);
+    EXPECT_GT(matches[2].relevance, 0);
   }
 
   {
+    SCOPED_TRACE("Input 'zebra'");
     // The provider limit should not affect number of shortcuts aggregated, only
     // the matches returned, i.e. the number of aggregate shortcuts. There are
     // 8 shortcuts matching the input with 4 unique URLs. The top 3 aggregate
@@ -766,19 +806,18 @@ TEST_F(ShortcutsProviderTest, DoAutocomplete) {
                             TestSchemeClassifier());
     provider_->Start(input, false);
     const auto& matches = provider_->matches();
-    EXPECT_EQ(matches.size(), 3u);
-    EXPECT_EQ(matches[0].destination_url.spec(),
-              "https://wikipedia.org/zebra-c");
-    EXPECT_EQ(matches[1].destination_url.spec(),
-              "https://wikipedia.org/zebra-a");
-    EXPECT_EQ(matches[2].destination_url.spec(),
-              "https://wikipedia.org/zebra-b");
-    EXPECT_EQ(matches[0].relevance, matches[1].relevance + 1);
+    VerifyMatches(matches, {
+                               "https://wikipedia.org/zebra-a",
+                               "https://wikipedia.org/zebra-c",
+                               "https://wikipedia.org/zebra-b",
+                           });
+    EXPECT_GT(matches[0].relevance, matches[1].relevance + 1);
     EXPECT_EQ(matches[1].relevance, matches[2].relevance + 1);
     EXPECT_GT(matches[2].relevance, 0);
   }
 
   {
+    SCOPED_TRACE("ML Signals");
     // The provider should not limit the number of suggestions when ML scoring
     // w/increased candidates is enabled. Any matches beyond the limit should be
     // marked as culled_by_provider and have a relevance of 0.
@@ -818,6 +857,15 @@ TEST_F(ShortcutsProviderTest, DoAutocomplete) {
 }
 
 TEST_F(ShortcutsProviderTest, DoAutocompleteWithScoringSignals) {
+  TestShortcutData shortcut_data[] = {
+      MakeShortcutData("wikipedia", "https://wikipedia.org/wilson7", 1, 1),
+      MakeShortcutData("wilson7", "https://wikipedia.org/wilson7", 2, 2),
+      MakeShortcutData("winston", "https://wikipedia.org/winston", 1, 3),
+      MakeShortcutData("wilson7", "https://wikipedia.org/wilson7-other", 2, 2),
+  };
+  PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
+                                       shortcut_data, std::size(shortcut_data));
+
   // When multiple shortcuts with the same destination URL match the input,
   // they should be scored together (i.e. their visit counts summed, the most
   // recent visit date and shortest text considered).
@@ -907,12 +955,12 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
 
   auto create_shortcut_data = [](std::string text, bool is_search,
                                  int visit_count) -> TestShortcutData {
-    std::string desitnation_string =
+    std::string destination_string =
         "https://" + text + ".com/" + base::NumberToString(visit_count);
     return {GetGuid(),
             text,
             text,
-            desitnation_string,
+            destination_string,
             AutocompleteMatch::DocumentType::NONE,
             "",
             "",
@@ -923,7 +971,7 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
                       : AutocompleteMatchType::HISTORY_URL,
             is_search ? "google" : "",
             1,
-            visit_count * 1};
+            visit_count};
   };
 
   TestShortcutData shortcut_data[] = {
@@ -1161,12 +1209,16 @@ TEST_F(ShortcutsProviderTest, HistoryClusterSuggestions) {
   EXPECT_EQ(matches[6].allowed_to_be_default_match, false);
 
   // Expect only non-cluster matches to have capped decrementing scores.
-  EXPECT_EQ(matches[1].relevance, matches[0].relevance - 1);
-  EXPECT_EQ(matches[2].relevance, matches[0].relevance - 2);
-  EXPECT_EQ(matches[3].relevance, matches[0].relevance);
-  EXPECT_EQ(matches[4].relevance, matches[0].relevance);
-  EXPECT_EQ(matches[5].relevance, matches[0].relevance);
-  EXPECT_EQ(matches[6].relevance, matches[0].relevance);
+  // Approximate scores should be 1414, 900, 900-1, 900, 900, 900, 900. I.e. the
+  // 1st shortcut is boosted to 1414. The rest are scored traditionally. The 3rd
+  // is decremented by 1 to avoid equal scores. The cluster shortcuts are not
+  // decremented.
+  EXPECT_LT(matches[1].relevance, matches[0].relevance - 1);
+  EXPECT_EQ(matches[2].relevance, matches[1].relevance - 1);
+  EXPECT_EQ(matches[3].relevance, matches[1].relevance);
+  EXPECT_EQ(matches[4].relevance, matches[1].relevance);
+  EXPECT_EQ(matches[5].relevance, matches[1].relevance);
+  EXPECT_EQ(matches[6].relevance, matches[1].relevance);
 
   // Expect cluster matches to not have grouping.
   EXPECT_EQ(matches[0].suggestion_group_id, absl::nullopt);

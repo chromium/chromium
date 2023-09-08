@@ -39,14 +39,14 @@ DocumentProvider::DocumentProvider() {
 // static
 BASE_FEATURE(ShortcutBoosting::kShortcutBoost,
              "OmniboxShortcutBoost",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 ShortcutBoosting::ShortcutBoosting() {
   enabled = base::FeatureList::IsEnabled(kShortcutBoost);
   search_score =
       base::FeatureParam<int>(&kShortcutBoost, "ShortcutBoostSearchScore", 0)
           .Get();
   url_score =
-      base::FeatureParam<int>(&kShortcutBoost, "ShortcutBoostUrlScore", 0)
+      base::FeatureParam<int>(&kShortcutBoost, "ShortcutBoostUrlScore", 1414)
           .Get();
   counterfactual = base::FeatureParam<bool>(
                        &kShortcutBoost, "ShortcutBoostCounterfactual", false)
