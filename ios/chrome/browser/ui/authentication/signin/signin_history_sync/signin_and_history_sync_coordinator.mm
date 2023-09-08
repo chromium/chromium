@@ -184,7 +184,8 @@ enum class SignInHistorySyncStep {
           [[HistorySyncPopupCoordinator alloc]
               initWithBaseViewController:self.baseViewController
                                  browser:self.browser
-                     dedicatedSignInDone:YES
+                           showUserEmail:NO
+                       signOutIfDeclined:NO
                              accessPoint:_accessPoint];
       coordinator.delegate = self;
       return coordinator;
