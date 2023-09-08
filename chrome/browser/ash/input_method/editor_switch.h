@@ -38,6 +38,8 @@ class EditorSwitch {
 
   void OnActivateIme(std::string_view engine_id);
 
+  void OnTabletModeUpdated(bool tablet_mode_enabled);
+
  private:
   raw_ptr<Profile> profile_;
 
@@ -45,6 +47,7 @@ class EditorSwitch {
   std::string active_engine_id_;
   ui::TextInputType input_type_ = ui::TEXT_INPUT_TYPE_NONE;
   ash::AppType app_type_ = ash::AppType::NON_APP;
+  bool tablet_mode_enabled_ = false;
 };
 
 }  // namespace ash::input_method

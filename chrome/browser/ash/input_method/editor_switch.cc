@@ -89,6 +89,7 @@ bool EditorSwitch::CanBeTriggered() {
   return IsAllowedForUse() && IsInputMethodEngineAllowed(active_engine_id_) &&
          IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
          IsTriggerableFromConsentStatus(current_consent_status) &&
+         !tablet_mode_enabled_ &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled);
   ;
@@ -103,6 +104,10 @@ void EditorSwitch::OnInputContextUpdated(
 
 void EditorSwitch::OnActivateIme(std::string_view engine_id) {
   active_engine_id_ = engine_id;
+}
+
+void EditorSwitch::OnTabletModeUpdated(bool is_enabled) {
+  tablet_mode_enabled_ = is_enabled;
 }
 
 }  // namespace ash::input_method
