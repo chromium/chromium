@@ -201,12 +201,6 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 // Opens the MyGoogleUI for the primary account, and then the primary account
 // is removed while MyGoogle UI is still opened.
 - (void)testRemoveAccountWithMyGoogleUIOpened {
-  // TODO(crbug.com/1477304): This test fails with ReplaceSyncWithSignin.
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"crbug.com/1477304: Fix test with ReplaceSyncWithSignin.");
-  }
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`, then open the Account Settings.
