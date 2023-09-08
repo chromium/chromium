@@ -34,7 +34,6 @@ namespace content {
 
 class AttributionReport;
 class AttributionTrigger;
-class CommonSourceInfo;
 class StoredSource;
 
 // Storage delegate that can supplied to extend basic attribution storage
@@ -159,26 +158,26 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // by`GetRandomizedResponse()`.Must be in the range [0, 1] and remain constant
   // for the lifetime of the delegate for calls with identical inputs.
   virtual double GetRandomizedResponseRate(
-      const attribution_reporting::EventReportWindows& event_report_windows,
       attribution_reporting::mojom::SourceType,
+      const attribution_reporting::EventReportWindows&,
       int max_event_level_reports) const = 0;
 
   // Returns a randomized response for the given source, consisting of zero or
   // more fake reports. Returns `absl::nullopt` to indicate that the response
   // should not be randomized.
   virtual RandomizedResponse GetRandomizedResponse(
-      const CommonSourceInfo& source,
-      const attribution_reporting::EventReportWindows& event_report_windows,
-      base::Time source_time,
+      attribution_reporting::mojom::SourceType,
+      const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,
-      double randomized_response_rate) = 0;
+      double randomized_response_rate,
+      base::Time source_time) const = 0;
 
   // Computes the capacity of the q-ary symmetric channel.
   virtual double ComputeChannelCapacity(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,
-      double randomized_response_rate) = 0;
+      double randomized_response_rate) const = 0;
 
   virtual base::Time GetExpiryTime(
       absl::optional<base::TimeDelta> declared_expiry,

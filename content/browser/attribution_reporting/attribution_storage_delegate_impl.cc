@@ -34,7 +34,6 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/combinatorics.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -217,8 +216,8 @@ void AttributionStorageDelegateImpl::ShuffleTriggerVerifications(
 }
 
 double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
-    const EventReportWindows& event_report_windows,
     SourceType source_type,
+    const EventReportWindows& event_report_windows,
     int max_event_level_reports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -234,19 +233,19 @@ double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
 
 AttributionStorageDelegate::RandomizedResponse
 AttributionStorageDelegateImpl::GetRandomizedResponse(
-    const CommonSourceInfo& source,
+    SourceType source_type,
     const EventReportWindows& event_report_windows,
-    base::Time source_time,
     int max_event_level_reports,
-    double randomized_response_rate) {
+    double randomized_response_rate,
+    base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault: {
       return GenerateWithRate(randomized_response_rate)
                  ? absl::make_optional(GetRandomFakeReports(
-                       source, event_report_windows, source_time,
-                       max_event_level_reports))
+                       source_type, event_report_windows,
+                       max_event_level_reports, source_time))
                  : absl::nullopt;
     }
     case AttributionNoiseMode::kNone:
@@ -256,16 +255,16 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
 
 std::vector<AttributionStorageDelegate::FakeReport>
 AttributionStorageDelegateImpl::GetRandomFakeReports(
-    const CommonSourceInfo& source,
+    SourceType source_type,
     const EventReportWindows& event_report_windows,
-    base::Time source_time,
-    int max_event_level_reports) {
+    int max_event_level_reports,
+    base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
   const int64_t num_combinations = GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/max_event_level_reports,
-      /*num_bars=*/TriggerDataCardinality(source.source_type()) *
+      /*num_bars=*/TriggerDataCardinality(source_type) *
           event_report_windows.end_times().size());
 
   const int64_t sequence_index =
@@ -273,23 +272,22 @@ AttributionStorageDelegateImpl::GetRandomFakeReports(
   DCHECK_GE(sequence_index, 0);
   DCHECK_LE(sequence_index, kMaxNumCombinations);
 
-  return GetFakeReportsForSequenceIndex(
-      source, source_time, event_report_windows, max_event_level_reports,
-      sequence_index);
+  return GetFakeReportsForSequenceIndex(source_type, event_report_windows,
+                                        max_event_level_reports, source_time,
+                                        sequence_index);
 }
 
 std::vector<AttributionStorageDelegate::FakeReport>
 AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
-    const CommonSourceInfo& source,
-    base::Time source_time,
+    SourceType source_type,
     const EventReportWindows& event_report_windows,
     int max_event_level_reports,
+    base::Time source_time,
     int64_t random_stars_and_bars_sequence_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
-  const int trigger_data_cardinality =
-      TriggerDataCardinality(source.source_type());
+  const int trigger_data_cardinality = TriggerDataCardinality(source_type);
 
   const std::vector<int> bars_preceding_each_star =
       GetBarsPrecedingEachStar(GetStarIndices(
@@ -339,7 +337,7 @@ double AttributionStorageDelegateImpl::ComputeChannelCapacity(
     SourceType source_type,
     const EventReportWindows& event_report_windows,
     int max_event_level_reports,
-    double randomized_response_rate) {
+    double randomized_response_rate) const {
   const int64_t num_states = GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/max_event_level_reports,
       /*num_bars=*/TriggerDataCardinality(source_type) *

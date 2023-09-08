@@ -602,7 +602,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       read_only_source_data_msg->has_randomized_response_rate()
           ? read_only_source_data_msg->randomized_response_rate()
           : delegate_->GetRandomizedResponseRate(
-                *event_report_windows, *source_type, max_event_level_reports);
+                *source_type, *event_report_windows, max_event_level_reports);
   if (randomized_response_rate < 0 || randomized_response_rate > 1) {
     return absl::nullopt;
   }
@@ -854,7 +854,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       delegate_->GetDefaultAttributionsPerSource(common_info.source_type()));
 
   const double randomized_response_rate = delegate_->GetRandomizedResponseRate(
-      event_report_windows, common_info.source_type(), max_event_level_reports);
+      common_info.source_type(), event_report_windows, max_event_level_reports);
 
   double channel_capacity = delegate_->ComputeChannelCapacity(
       common_info.source_type(), event_report_windows, max_event_level_reports,
@@ -866,9 +866,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   }
 
   AttributionStorageDelegate::RandomizedResponse randomized_response =
-      delegate_->GetRandomizedResponse(common_info, event_report_windows,
-                                       source_time, max_event_level_reports,
-                                       randomized_response_rate);
+      delegate_->GetRandomizedResponse(
+          common_info.source_type(), event_report_windows,
+          max_event_level_reports, randomized_response_rate, source_time);
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;
   bool event_level_active = true;
