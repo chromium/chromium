@@ -153,7 +153,38 @@ $ gn gen out/Default
 This section contains some things you can change to speed up your builds,
 sorted so that the things that make the biggest difference are first.
 
-#### Use Goma
+#### Use reclient
+
+If you are a Google employee, see
+[go/chrome-linux-build#using-reclient-for-build](http://go/chrome-linux-build#using-reclient-for-build)
+instead.
+
+Google developed the
+[Remote Execution API](https://github.com/bazelbuild/remote-apis)
+client called [reclient](https://github.com/bazelbuild/reclient).
+
+If you would like to use `reclient`, specify your `rbe_instance` in .gclient
+like
+```
+solutions = [
+  {
+    ...,
+    "custom_vars": {
+      # e.g. <your instance> can be something like
+      # "projects/rbe-chromium-untrusted/instances/default_instance"
+      # if you are allowed to use Google's RBE backend.
+      "rbe_instance": <your instance>,
+    },
+  },
+]
+```
+and run `gclient sync`. Then, add the following GN args to your `args.gn`.
+```
+use_remoteexec=true
+rbe_cfg_dir="../../buildtools/reclient_cfgs/linux"
+```
+
+#### Use Goma (deprecated)
 
 Google developed the distributed compiler called
 [Goma](https://chromium.googlesource.com/infra/goma/client).
