@@ -30,11 +30,9 @@ using DelegateMode =
     syncer::SyncableServiceBasedModelTypeController::DelegateMode;
 
 DelegateMode GetDelegateMode() {
-  // Transport mode is only supported with Full History Sync
-  // (`kSyncEnableHistoryDataType`), and Full History Sync itself only supports
-  // transport mode if `kReplaceSyncPromosWithSignInPromos` is also enabled.
-  if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType) &&
-      base::FeatureList::IsEnabled(
+  // Transport mode is only supported if if `kReplaceSyncPromosWithSignInPromos`
+  // is enabled.
+  if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     return DelegateMode::kTransportModeWithSingleModel;
   }

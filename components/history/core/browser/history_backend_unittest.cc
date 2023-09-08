@@ -4843,8 +4843,7 @@ TEST_F(HistoryBackendTest, AddSyncedVisitWritesIsKnownToSync) {
 class HistoryBackendWithSyncSegmentsDataTest : public HistoryBackendTest {
  public:
   HistoryBackendWithSyncSegmentsDataTest() {
-    override_features_.InitWithFeatures(
-        {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+    override_features_.InitAndEnableFeature(history::kSyncSegmentsData);
   }
 
  private:

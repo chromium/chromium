@@ -92,8 +92,7 @@ const base::FeatureParam<int> kMaxNumNewTabPageDisplays(
     5);
 
 bool IsSyncSegmentsDataEnabled() {
-  return base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType) &&
-         base::FeatureList::IsEnabled(kSyncSegmentsData);
+  return base::FeatureList::IsEnabled(kSyncSegmentsData);
 }
 
 }  // namespace history

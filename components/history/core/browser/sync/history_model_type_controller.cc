@@ -35,7 +35,6 @@ GetDelegateFromHistoryService(syncer::ModelType model_type,
       return history_service->GetTypedURLSyncControllerDelegate();
 
     case syncer::HISTORY:
-      CHECK(base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType));
       // Transport-mode support for HISTORY requires
       // `kReplaceSyncPromosWithSignInPromos`.
       if (for_transport_mode &&
@@ -124,8 +123,6 @@ HistoryModelTypeController::HistoryModelTypeController(
       identity_manager_(identity_manager),
       history_service_(history_service) {
   CHECK(model_type == syncer::TYPED_URLS || model_type == syncer::HISTORY);
-  CHECK(model_type == syncer::TYPED_URLS ||
-        base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType));
 
   if (type() == syncer::HISTORY) {
     sync_observation_.Observe(helper_.sync_service());
@@ -145,12 +142,8 @@ HistoryModelTypeController::~HistoryModelTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
 HistoryModelTypeController::GetPreconditionState() const {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
-    DCHECK_EQ(type(), syncer::TYPED_URLS);
-    return helper_.GetPreconditionState();
-  }
-
-  // If the History feature flag is enabled, HISTORY replaces TYPED_URLS.
+  // TODO(crbug.com/1365291): HISTORY has replaced TYPED_URLS; clean up the
+  // remaining code.
   if (type() == syncer::TYPED_URLS) {
     return PreconditionState::kMustStopAndClearData;
   }

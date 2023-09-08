@@ -420,26 +420,17 @@ void HistoryBackend::Init(
                               history_database_params.channel)));
   typed_url_sync_bridge_->Init();
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
-    history_sync_bridge_ = std::make_unique<HistorySyncBridge>(
-        this, db_ ? db_->GetHistoryMetadataDB() : nullptr,
-        std::make_unique<ClientTagBasedModelTypeProcessor>(
-            syncer::HISTORY,
-            base::BindRepeating(&syncer::ReportUnrecoverableError,
-                                history_database_params.channel)));
-  }
+  history_sync_bridge_ = std::make_unique<HistorySyncBridge>(
+      this, db_ ? db_->GetHistoryMetadataDB() : nullptr,
+      std::make_unique<ClientTagBasedModelTypeProcessor>(
+          syncer::HISTORY,
+          base::BindRepeating(&syncer::ReportUnrecoverableError,
+                              history_database_params.channel)));
 
-  if (db_) {
-    if (!base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType) &&
-        db_->MayContainForeignVisits()) {
-      // If the History Sync data type is disabled, but there are foreign visits
-      // left (because it was previously enabled), then clean them up now.
-      DeleteAllForeignVisitsAndResetIsKnownToSync();
-    } else if (db_->GetDeleteForeignVisitsUntilId() != kInvalidVisitID) {
-      // A deletion of foreign visits was still ongoing during the previous
-      // browser shutdown. Continue it.
-      StartDeletingForeignVisits();
-    }
+  if (db_ && db_->GetDeleteForeignVisitsUntilId() != kInvalidVisitID) {
+    // A deletion of foreign visits was still ongoing during the previous
+    // browser shutdown. Continue it.
+    StartDeletingForeignVisits();
   }
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
