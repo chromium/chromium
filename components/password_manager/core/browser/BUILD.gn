@@ -892,6 +892,7 @@ if (is_android) {
     sources = [
       "protos/list_affiliated_passwords_result.proto",
       "protos/list_passwords_result.proto",
+      "protos/password_info.proto",
       "protos/password_with_local_data.proto",
     ]
     deps = [ "//components/sync/protocol" ]
@@ -903,6 +904,7 @@ if (is_android) {
     sources = [
       "protos/list_affiliated_passwords_result.proto",
       "protos/list_passwords_result.proto",
+      "protos/password_info.proto",
       "protos/password_with_local_data.proto",
     ]
     deps = [ "//components/sync/protocol:protocol_java" ]
