@@ -25,7 +25,7 @@ constexpr base::StringPiece kTestManifest = R"({
       "version": "$2",
       "id": "/",
       "scope": "/",
-      "start_url": "/",
+      "start_url": "/index.html",
       "display": "standalone",
       "icons": [
         {

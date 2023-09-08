@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -405,8 +406,27 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                      LogErrorAndFail(std::move(error),
                                      std::move(loader_client));
                    });
+  const IsolatedWebAppLocation& location = iwa.isolation_data()->location;
 
-  HandleRequest(url_info, iwa.isolation_data()->location,
+// TODO(crbug.com/1444407): Make this work on all platform as soon as we support
+// updates (be it production or dev mode updates) on platforms other than
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+  IsolatedWebAppUpdateManager& update_manager = provider->iwa_update_manager();
+  auto pass_key = base::PassKey<IsolatedWebAppURLLoaderFactory>();
+  if (update_manager.IsUpdateBeingApplied(pass_key, url_info.app_id())) {
+    update_manager.PrioritizeUpdateAndWait(
+        pass_key, url_info.app_id(),
+        base::BindOnce(&IsolatedWebAppURLLoaderFactory::HandleRequest,
+                       weak_factory_.GetWeakPtr(), url_info, location,
+                       /*is_pending_install=*/false, std::move(loader_receiver),
+                       resource_request, std::move(loader_client),
+                       traffic_annotation));
+    return;
+  }
+#endif
+
+  HandleRequest(url_info, location,
                 /*is_pending_install=*/false, std::move(loader_receiver),
                 resource_request, std::move(loader_client), traffic_annotation);
 }

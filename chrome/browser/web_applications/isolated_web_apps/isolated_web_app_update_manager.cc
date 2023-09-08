@@ -7,20 +7,24 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/cxx20_erase_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
@@ -38,6 +42,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -94,7 +99,26 @@ void IsolatedWebAppUpdateManager::Start() {
                  << web_app.start_url();
       continue;
     }
-    CreateUpdateApplyWaiter(*url_info);
+    // During startup of the `IsolatedWebAppUpdateManager`, we do not use
+    // `IsolatedWebAppUpdateApplyWaiter`s to wait for all windows to close
+    // before applying the update. Instead, we schedule the update apply tasks
+    // directly (but do not start them yet). These tasks will be started one
+    // after the other eventually (see the `BEST_EFFORT` call below), or via
+    // `MaybeWaitUntilPendingUpdateIsApplied` if a window for an to-be-updated
+    // app is opened.
+    //
+    // At this point, it is guaranteed that no IWA window has loaded, since the
+    // `IsolatedWebAppURLLoaderFactory` can only create `URLLoader`s for IWAs
+    // after the `WebAppProvider` has fully started, and this code runs as part
+    // of the startup process of the `WebAppProvider`.
+    task_queue_.Push(std::make_unique<IsolatedWebAppUpdateApplyTask>(
+        *url_info,
+        std::make_unique<ScopedKeepAlive>(
+            KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
+            KeepAliveRestartOption::DISABLED),
+        std::make_unique<ScopedProfileKeepAlive>(
+            &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate),
+        provider_->scheduler()));
   }
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
@@ -147,6 +171,28 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
                         next_update_check_in_minutes))
           .Set("task_queue", task_queue_.AsDebugValue())
           .Set("update_apply_waiters", std::move(update_apply_waiters)));
+}
+
+bool IsolatedWebAppUpdateManager::IsUpdateBeingApplied(
+    base::PassKey<IsolatedWebAppURLLoaderFactory>,
+    const AppId app_id) const {
+  return task_queue_.IsUpdateApplyTaskQueued(app_id);
+}
+
+void IsolatedWebAppUpdateManager::PrioritizeUpdateAndWait(
+    base::PassKey<IsolatedWebAppURLLoaderFactory>,
+    const AppId& app_id,
+    base::OnceClosure callback) {
+  bool task_has_started =
+      task_queue_.EnsureQueuedUpdateApplyTaskHasStarted(app_id);
+  if (task_has_started) {
+    on_update_finished_callbacks_
+        .try_emplace(app_id, std::make_unique<base::OnceCallbackList<void()>>())
+        .first->second->AddUnsafe(std::move(callback));
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+  }
 }
 
 void IsolatedWebAppUpdateManager::SetEnableAutomaticUpdatesForTesting(
@@ -302,6 +348,15 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
 void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
     std::unique_ptr<IsolatedWebAppUpdateApplyTask> task,
     IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+  auto callbacks_it =
+      on_update_finished_callbacks_.find(task->url_info().app_id());
+  if (callbacks_it != on_update_finished_callbacks_.end()) {
+    callbacks_it->second->Notify();
+    if (callbacks_it->second->empty()) {
+      on_update_finished_callbacks_.erase(callbacks_it);
+    }
+  }
+
   task_queue_.MaybeStartNextTask();
 }
 
@@ -349,6 +404,22 @@ void IsolatedWebAppUpdateManager::TaskQueue::Clear() {
   update_apply_tasks_.clear();
 }
 
+bool IsolatedWebAppUpdateManager::TaskQueue::
+    EnsureQueuedUpdateApplyTaskHasStarted(const AppId& app_id) {
+  auto task_it =
+      base::ranges::find_if(update_apply_tasks_, [&app_id](const auto& task) {
+        return task->url_info().app_id() == app_id;
+      });
+  if (task_it == update_apply_tasks_.end()) {
+    return false;
+  }
+
+  if (!task_it->get()->has_started()) {
+    StartUpdateApplyTask(task_it->get());
+  }
+  return true;
+}
+
 void IsolatedWebAppUpdateManager::TaskQueue::ClearNonStartedTasksOfApp(
     const AppId& app_id) {
   base::EraseIf(update_discovery_tasks_, [&app_id](const auto& task) {
@@ -375,6 +446,13 @@ void IsolatedWebAppUpdateManager::TaskQueue::MaybeStartNextTask() {
     StartUpdateDiscoveryTask(next_update_discovery_task_it->get());
     return;
   }
+}
+
+bool IsolatedWebAppUpdateManager::TaskQueue::IsUpdateApplyTaskQueued(
+    const AppId& app_id) const {
+  return base::ranges::any_of(update_apply_tasks_, [&app_id](const auto& task) {
+    return task->url_info().app_id() == app_id;
+  });
 }
 
 void IsolatedWebAppUpdateManager::TaskQueue::StartUpdateDiscoveryTask(

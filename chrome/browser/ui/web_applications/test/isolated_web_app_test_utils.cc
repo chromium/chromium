@@ -67,8 +67,9 @@ Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
 }
 
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
-    const AppId& app_id) {
-  return OpenIsolatedWebApp(profile(), app_id);
+    const AppId& app_id,
+    base::StringPiece path) {
+  return OpenIsolatedWebApp(profile(), app_id, path);
 }
 
 content::RenderFrameHost*
@@ -116,13 +117,14 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
 }
 
 content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
-                                             const AppId& app_id) {
+                                             const AppId& app_id,
+                                             base::StringPiece path) {
   WebAppRegistrar& registrar =
       WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
   const WebApp* app = registrar.GetAppById(app_id);
   EXPECT_TRUE(app);
 
-  NavigateParams params(profile, app->start_url(),
+  NavigateParams params(profile, app->start_url().Resolve(path),
                         ui::PAGE_TRANSITION_GENERATED);
   params.app_id = app->app_id();
   params.window_action = NavigateParams::SHOW_WINDOW;

@@ -51,7 +51,8 @@ class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
       const base::FilePath::StringPieceType& chrome_test_data_relative_root);
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
-  content::RenderFrameHost* OpenApp(const AppId& app_id);
+  content::RenderFrameHost* OpenApp(const AppId& app_id,
+                                    base::StringPiece path = "");
   content::RenderFrameHost* NavigateToURLInNewTab(
       Browser* window,
       const GURL& url,
@@ -71,7 +72,8 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
     const url::Origin& proxy_origin);
 
 content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
-                                             const AppId& app_id);
+                                             const AppId& app_id,
+                                             base::StringPiece path = "");
 
 void CreateIframe(content::RenderFrameHost* parent_frame,
                   const std::string& iframe_id,
