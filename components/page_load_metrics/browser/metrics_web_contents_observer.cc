@@ -50,7 +50,7 @@ namespace {
 // Returns the HTTP status code for the current page, or -1 if no status code
 // is available. Can only be called if the `navigation_handle` has committed.
 int GetHttpStatusCode(content::NavigationHandle* navigation_handle) {
-  DCHECK(navigation_handle->HasCommitted());
+  CHECK(navigation_handle->HasCommitted());
   const net::HttpResponseHeaders* response_headers =
       navigation_handle->GetResponseHeaders();
   if (!response_headers)
@@ -82,7 +82,7 @@ void MetricsWebContentsObserver::RecordFeatureUsage(
   if (observer) {
     std::vector<blink::UseCounterFeature> features;
     for (auto web_feature : web_features) {
-      DCHECK_NE(web_feature, blink::mojom::WebFeature::kPageVisits)
+      CHECK_NE(web_feature, blink::mojom::WebFeature::kPageVisits)
           << "WebFeature::kPageVisits is a reserved feature.";
       if (web_feature == blink::mojom::WebFeature::kPageVisits)
         continue;
@@ -106,7 +106,7 @@ void MetricsWebContentsObserver::RecordFeatureUsage(
 MetricsWebContentsObserver* MetricsWebContentsObserver::CreateForWebContents(
     content::WebContents* web_contents,
     std::unique_ptr<PageLoadMetricsEmbedderInterface> embedder_interface) {
-  DCHECK(web_contents);
+  CHECK(web_contents);
 
   MetricsWebContentsObserver* metrics = FromWebContents(web_contents);
   if (!metrics) {
@@ -145,7 +145,7 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
   NotifyPageEndAllLoads(END_CLOSE, UserInitiatedInfo::NotUserInitiated());
 
   // Do this before clearing `primary_page_`, so that the observers don't hit
-  // the DCHECK in MetricsWebContentsObserver::GetDelegateForCommittedLoad.
+  // the CHECK in MetricsWebContentsObserver::GetDelegateForCommittedLoad.
   for (auto& observer : lifecycle_observers_)
     observer.OnGoingAway();
 
@@ -241,7 +241,7 @@ void MetricsWebContentsObserver::WillStartNavigationRequest(
     content::NavigationHandle* navigation_handle) {
   // Same-document navigations should never go through
   // WillStartNavigationRequest.
-  DCHECK(!navigation_handle->IsSameDocument());
+  CHECK(!navigation_handle->IsSameDocument());
 
   if (!navigation_handle->IsInMainFrame())
     return;
@@ -305,7 +305,7 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
     // Prerendering pages should not record UKM until its activation. So, we
     // start with ukm::kInvalidSourceId and set a correct ukm::SourceId on
     // activation.
-    DCHECK_EQ(ukm::kInvalidSourceId, source_id);
+    CHECK_EQ(ukm::kInvalidSourceId, source_id);
   } else if (navigation_handle->GetNavigatingFrameType() ==
              content::FrameType::kFencedFrameRoot) {
     // For FencedFrames, use the primary page's ukm::SourceId. `primary_page_`
@@ -341,7 +341,7 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
           in_foreground, embedder_interface_.get(), currently_committed_url,
           !has_navigated_, navigation_handle, user_initiated_info, source_id,
           parent_tracker)));
-  DCHECK(insertion_result.second)
+  CHECK(insertion_result.second)
       << "provisional_loads_ already contains NavigationHandle.";
   for (auto& observer : lifecycle_observers_)
     observer.OnTrackerCreated(insertion_result.first->second.get());
@@ -361,7 +361,7 @@ PageLoadTracker* MetricsWebContentsObserver::GetTrackerOrNullForRequest(
     network::mojom::RequestDestination request_destination,
     base::TimeTicks creation_time) {
   if (request_destination == network::mojom::RequestDestination::kDocument) {
-    DCHECK(request_id != content::GlobalRequestID());
+    CHECK(request_id != content::GlobalRequestID());
     // The main frame request can complete either before or after commit, so we
     // look at both provisional loads and the committed load to find a
     // PageLoadTracker with a matching request id. See https://goo.gl/6TzCYN for
@@ -399,7 +399,7 @@ PageLoadTracker* MetricsWebContentsObserver::GetTrackerOrNullForRequest(
     if (blink::IsRequestDestinationFrame(request_destination))
       return primary_page_.get();
 
-    // This was originally a DCHECK but it fails when the document load happened
+    // This was originally a CHECK but it fails when the document load happened
     // after client certificate selection.
     if (!render_frame_host_or_null)
       return nullptr;
@@ -546,7 +546,7 @@ void MetricsWebContentsObserver::OnStorageAccessed(
 
 const PageLoadMetricsObserverDelegate&
 MetricsWebContentsObserver::GetDelegateForCommittedLoad() {
-  DCHECK(primary_page_);
+  CHECK(primary_page_);
   return *primary_page_.get();
 }
 
@@ -598,7 +598,7 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   provisional_loads_.erase(navigation_handle);
 
   // Ignore same-document navigations.
-  DCHECK(navigation_handle->IsInMainFrame());
+  CHECK(navigation_handle->IsInMainFrame());
   if (navigation_handle->HasCommitted() &&
       navigation_handle->IsSameDocument()) {
     if (navigation_handle_tracker)
@@ -705,8 +705,6 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
     if (auto existing_tracker_iter =
             inactive_pages_.find(navigation_handle->GetRenderFrameHost());
         existing_tracker_iter != inactive_pages_.end()) {
-      DCHECK(base::FeatureList::IsEnabled(
-          blink::features::kPrerender2MainFrameNavigation));
       inactive_pages_.erase(existing_tracker_iter);
     }
     inactive_pages_.emplace(navigation_handle->GetRenderFrameHost(),
@@ -715,8 +713,8 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
     primary_page_ = std::move(tracker);
     active_pages_.clear();
   } else {
-    DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
-              content::FrameType::kFencedFrameRoot);
+    CHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+             content::FrameType::kFencedFrameRoot);
     // There may be an active tracker in the map if navigation happens on the
     // non-primary page. `emplace` operation below doesn't overwrite it, but
     // just fails. It results in destructing the moved tracker unexpectedly.
@@ -729,7 +727,7 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
                           std::move(tracker));
   }
   raw_tracker->Commit(navigation_handle);
-  DCHECK(raw_tracker->did_commit());
+  CHECK(raw_tracker->did_commit());
 
   for (auto& observer : lifecycle_observers_)
     observer.OnCommit(raw_tracker);
@@ -815,8 +813,8 @@ bool MetricsWebContentsObserver::MaybeActivatePageLoadTracker(
 
   // This should be a back/forward cache or prerender navigation if we find
   // an inactive_page.
-  DCHECK(navigation_handle->IsServedFromBackForwardCache() ||
-         navigation_handle->IsPrerenderedPageActivation());
+  CHECK(navigation_handle->IsServedFromBackForwardCache() ||
+        navigation_handle->IsPrerenderedPageActivation());
 
   auto* primary_main_frame = navigation_handle->GetRenderFrameHost();
   primary_main_frame->ForEachRenderFrameHost(
@@ -1161,9 +1159,9 @@ void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(
 
 bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
     content::NavigationHandle* navigation_handle) const {
-  DCHECK(navigation_handle->IsInMainFrame());
-  DCHECK(!navigation_handle->HasCommitted() ||
-         !navigation_handle->IsSameDocument());
+  CHECK(navigation_handle->IsInMainFrame());
+  CHECK(!navigation_handle->HasCommitted() ||
+        !navigation_handle->IsSameDocument());
   // Ignore non-HTTP schemes (e.g. chrome://).
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
     return false;
