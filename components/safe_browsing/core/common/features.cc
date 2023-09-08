@@ -395,6 +395,7 @@ constexpr struct {
     {&kExtensionTelemetryPotentialPasswordTheft, true},
     {&kExtensionTelemetryReportContactedHosts, true},
     {&kExtensionTelemetryReportHostsContactedViaWebSocket, true},
+    {&kExtensionTelemetryTabsApiSignal, true},
     {&kExtensionTelemetryTabsExecuteScriptSignal, true},
     {&kFileTypePoliciesTag, true},
     {&kHashPrefixRealTimeLookups, true},
