@@ -22,6 +22,11 @@ frontend: {"id":<number>,"method":"Debugger.setAsyncCallStackDepth","params":{"m
 frontend: {"id":<number>,"method":"Overlay.enable","params":{}}
 frontend: {"id":<number>,"method":"Overlay.setShowViewportSizeOnResize","params":{"show":true}}
 frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":true,"flatten":true}}
+frontend: {"id":<number>,"method":"Overlay.setShowGridOverlays","params":{"gridNodeHighlightConfigs":[]}}
+frontend: {"id":<number>,"method":"Overlay.setShowFlexOverlays","params":{"flexNodeHighlightConfigs":[]}}
+frontend: {"id":<number>,"method":"Overlay.setShowScrollSnapOverlays","params":{"scrollSnapHighlightConfigs":[]}}
+frontend: {"id":<number>,"method":"Overlay.setShowContainerQueryOverlays","params":{"containerQueryHighlightConfigs":[]}}
+frontend: {"id":<number>,"method":"Overlay.setShowIsolatedElements","params":{"isolatedElementHighlightConfigs":[]}}
 
 --> done
 
