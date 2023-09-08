@@ -74,4 +74,10 @@ interface InputDeviceSettingsProvider {
   SetMouseSettings(uint32 device_id, ash.mojom.MouseSettings settings);
   // Sets the touchpad settings based on its id.
   SetTouchpadSettings(uint32 device_id, ash.mojom.TouchpadSettings settings);
+
+  // Starts observing customizable button presses for the device with the given
+  // `device_id`.
+  StartObserving(uint32 device_id);
+  // Stops observing customizable button presses for all devices.
+  StopObserving();
 };

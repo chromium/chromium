@@ -85,6 +85,7 @@ export class FakeInputDeviceSettingsProvider implements
   private touchpadObservers: TouchpadObserverInterface[] = [];
   private stylusObservers: StylusObserverInterface[] = [];
   private graphicsTabletObservers: GraphicsTabletObserverInterface[] = [];
+  private observedIds: number[] = [];
   private callCounts_ = {
     setGraphicsTabletSettings: 0,
     setMouseSettings: 0,
@@ -333,5 +334,20 @@ export class FakeInputDeviceSettingsProvider implements
   setFakeActionsForGraphicsTabletButtonCustomization(actionChoices:
                                                          ActionChoice[]): void {
     this.methods.setResult('fakeGraphicsTabletButtonActions', actionChoices);
+  }
+
+  startObserving(id: number): void {
+    if (this.observedIds.includes(id)) {
+      return;
+    }
+    this.observedIds.push(id);
+  }
+
+  stopObserving(): void {
+    this.observedIds = [];
+  }
+
+  getObservedDevices(): number[] {
+    return this.observedIds;
   }
 }

@@ -61,6 +61,7 @@ export class SettingsCustomizePenButtonsSubpageElement extends
   private buttonActionList_: ActionChoice[];
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
+  private previousRoute_: Route|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -75,16 +76,22 @@ export class SettingsCustomizePenButtonsSubpageElement extends
         'button-remapping-changed', this.onSettingsChanged);
   }
 
-  override currentRouteChanged(route: Route): void {
+  override async currentRouteChanged(route: Route): Promise<void> {
     // Does not apply to this page.
     if (route !== routes.CUSTOMIZE_PEN_BUTTONS) {
+      if (this.previousRoute_ === routes.CUSTOMIZE_PEN_BUTTONS) {
+        this.inputDeviceSettingsProvider_.stopObserving();
+      }
+      this.previousRoute_ = route;
       return;
     }
+    this.previousRoute_ = route;
     if (this.hasGraphicsTablets() &&
         (!this.selectedTablet ||
          this.selectedTablet.id !== this.getGraphicsTabletIdFromUrl())) {
-      this.initializePen();
+      await this.initializePen();
     }
+    this.inputDeviceSettingsProvider_.startObserving(this.selectedTablet.id);
   }
 
   /**
@@ -120,8 +127,8 @@ export class SettingsCustomizePenButtonsSubpageElement extends
     return !!this.graphicsTablets.find(tablet => tablet.id === id);
   }
 
-  onGraphicsTabletListUpdated(): void {
-    if (Router.getInstance().currentRoute !== routes.CUSTOMIZE_TABLET_BUTTONS) {
+  async onGraphicsTabletListUpdated(): Promise<void> {
+    if (Router.getInstance().currentRoute !== routes.CUSTOMIZE_PEN_BUTTONS) {
       return;
     }
 
@@ -130,7 +137,8 @@ export class SettingsCustomizePenButtonsSubpageElement extends
       Router.getInstance().navigateTo(routes.DEVICE);
       return;
     }
-    this.initializePen();
+    await this.initializePen();
+    this.inputDeviceSettingsProvider_.startObserving(this.selectedTablet.id);
   }
 
   onSettingsChanged(): void {

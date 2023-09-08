@@ -63,6 +63,7 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
   private buttonActionList_: ActionChoice[];
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
+  private previousRoute_: Route|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -77,16 +78,22 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
         'button-remapping-changed', this.onSettingsChanged);
   }
 
-  override currentRouteChanged(route: Route): void {
+  override async currentRouteChanged(route: Route): Promise<void> {
     // Does not apply to this page.
     if (route !== routes.CUSTOMIZE_MOUSE_BUTTONS) {
+      if (this.previousRoute_ === routes.CUSTOMIZE_MOUSE_BUTTONS) {
+        this.inputDeviceSettingsProvider_.stopObserving();
+      }
+      this.previousRoute_ = route;
       return;
     }
+    this.previousRoute_ = route;
     if (this.hasMice() &&
         (!this.selectedMouse ||
          this.selectedMouse.id !== this.getMouseIdFromUrl())) {
-      this.initializeMouse();
+      await this.initializeMouse();
     }
+    this.inputDeviceSettingsProvider_.startObserving(this.selectedMouse.id);
   }
 
   /**
@@ -119,7 +126,7 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
     return !!this.mouseList.find(mouse => mouse.id === id);
   }
 
-  onMouseListUpdated(): void {
+  async onMouseListUpdated(): Promise<void> {
     if (Router.getInstance().currentRoute !== routes.CUSTOMIZE_MOUSE_BUTTONS) {
       return;
     }
@@ -128,7 +135,8 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       Router.getInstance().navigateTo(routes.DEVICE);
       return;
     }
-    this.initializeMouse();
+    await this.initializeMouse();
+    this.inputDeviceSettingsProvider_.startObserving(this.selectedMouse.id);
   }
 
   onSettingsChanged(): void {

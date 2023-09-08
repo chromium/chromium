@@ -3,23 +3,27 @@
 // found in the LICENSE file.
 
 import {SettingsCustomizePenButtonsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, GraphicsTablet, Router, routes, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, getInputDeviceSettingsProvider, GraphicsTablet, Router, routes, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<settings-customize-pen-buttons-subpage>', () => {
   let page: SettingsCustomizePenButtonsSubpageElement;
+  let provider: FakeInputDeviceSettingsProvider;
 
   setup(async () => {
+    setupFakeInputDeviceSettingsProvider();
+    provider =
+        getInputDeviceSettingsProvider() as FakeInputDeviceSettingsProvider;
+
     page = document.createElement('settings-customize-pen-buttons-subpage');
     page.graphicsTablets = fakeGraphicsTablets;
-    setupFakeInputDeviceSettingsProvider();
     // Set the current route with mouseId as search param and notify
     // the observer to update mouse settings.
     const url = new URLSearchParams(
         {'graphicsTabletId': encodeURIComponent(fakeGraphicsTablets[0]!.id)});
     await Router.getInstance().setCurrentRoute(
-        routes.CUSTOMIZE_TABLET_BUTTONS,
+        routes.CUSTOMIZE_PEN_BUTTONS,
         /* dynamicParams= */ url, /* removeSearch= */ true);
 
     document.body.appendChild(page);
@@ -33,17 +37,20 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
 
   test('navigate to device page when graphics tablet detached', async () => {
     assertEquals(
-        Router.getInstance().currentRoute, routes.CUSTOMIZE_TABLET_BUTTONS);
+        Router.getInstance().currentRoute, routes.CUSTOMIZE_PEN_BUTTONS);
     const graphicsTablet: GraphicsTablet = page.selectedTablet;
     assertTrue(!!graphicsTablet);
     assertEquals(graphicsTablet.id, fakeGraphicsTablets[0]!.id);
-    // Remove fakeMice[0] from the mouse list.
+    // Remove fakeGraphicsTablets[0] from the mouse list.
     page.graphicsTablets = [fakeGraphicsTablets[1]!];
     await flushTasks();
     assertEquals(Router.getInstance().currentRoute, routes.DEVICE);
   });
 
   test('button action list fetched from provider', async () => {
+    const observed_devices: number[] = provider.getObservedDevices();
+    assertEquals(1, observed_devices.length);
+
     const graphicsTablet: GraphicsTablet = page.selectedTablet;
     assertTrue(!!graphicsTablet);
     assertEquals(graphicsTablet.id, fakeGraphicsTablets[0]!.id);
@@ -72,5 +79,15 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
     }));
     await flushTasks();
     assertEquals(provider.getSetGraphicsTabletSettingsCallCount(), 1);
+  });
+
+  test('starts observing buttons when opened', async () => {
+    let observed_devices: number[] = provider.getObservedDevices();
+    assertEquals(1, observed_devices.length);
+    assertEquals(fakeGraphicsTablets[0]!.id, observed_devices[0]);
+
+    await Router.getInstance().navigateTo(routes.DEVICE);
+    observed_devices = provider.getObservedDevices();
+    assertEquals(0, observed_devices.length);
   });
 });

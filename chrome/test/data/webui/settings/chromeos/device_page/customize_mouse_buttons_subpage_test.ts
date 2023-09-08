@@ -5,17 +5,21 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsCustomizeMouseButtonsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeMice, fakeMouseButtonActions, Mouse, Router, routes, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeMice, fakeMouseButtonActions, getInputDeviceSettingsProvider, Mouse, Router, routes, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<settings-customize-mouse-buttons-subpage>', () => {
   let page: SettingsCustomizeMouseButtonsSubpageElement;
+  let provider: FakeInputDeviceSettingsProvider;
 
   setup(async () => {
+    setupFakeInputDeviceSettingsProvider();
+    provider =
+        getInputDeviceSettingsProvider() as FakeInputDeviceSettingsProvider;
+
     page = document.createElement('settings-customize-mouse-buttons-subpage');
     page.mouseList = fakeMice;
-    setupFakeInputDeviceSettingsProvider();
     // Set the current route with mouseId as search param and notify
     // the observer to update mouse settings.
     const url =
@@ -72,5 +76,15 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
     }));
     await flushTasks();
     assertEquals(provider.getSetMouseSettingsCallCount(), 1);
+  });
+
+  test('starts observing buttons when opened', async () => {
+    let observed_devices: number[] = provider.getObservedDevices();
+    assertEquals(1, observed_devices.length);
+    assertEquals(fakeMice[0]!.id, observed_devices[0]);
+
+    await Router.getInstance().navigateTo(routes.DEVICE);
+    observed_devices = provider.getObservedDevices();
+    assertEquals(0, observed_devices.length);
   });
 });

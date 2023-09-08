@@ -33,9 +33,6 @@ class InputDeviceSettingsProvider
 
   void Initialize(content::WebUI* web_ui);
 
-  void StartObserving(uint32_t device_id);
-  void StopObserving();
-
   void BindInterface(
       mojo::PendingReceiver<mojom::InputDeviceSettingsProvider> receiver);
 
@@ -82,6 +79,8 @@ class InputDeviceSettingsProvider
   void OnMouseSettingsUpdated(const ::ash::mojom::Mouse& mouse) override;
   void OnMousePoliciesUpdated(
       const ::ash::mojom::MousePolicies& mouse_policies) override;
+  void StartObserving(uint32_t device_id) override;
+  void StopObserving() override;
 
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
