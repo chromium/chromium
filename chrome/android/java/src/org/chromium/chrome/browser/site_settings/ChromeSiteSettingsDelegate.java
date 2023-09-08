@@ -88,7 +88,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public ManagedPreferenceDelegate getManagedPreferenceDelegate() {
         if (mManagedPreferenceDelegate == null) {
-            mManagedPreferenceDelegate = new ChromeManagedPreferenceDelegate() {
+            mManagedPreferenceDelegate = new ChromeManagedPreferenceDelegate(mProfile) {
                 @Override
                 public boolean isPreferenceControlledByPolicy(Preference preference) {
                     return false;

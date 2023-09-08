@@ -219,11 +219,14 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return preference -> {
-            if (FLEDGE_TOGGLE_PREFERENCE.equals(preference.getKey())) {
-                return isFledgePrefManaged();
+        return new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                if (FLEDGE_TOGGLE_PREFERENCE.equals(preference.getKey())) {
+                    return isFledgePrefManaged();
+                }
+                return false;
             }
-            return false;
         };
     }
 }

@@ -88,11 +88,14 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return preference -> {
-            String key = preference.getKey();
-            assert PREF_MANAGED_DISCLAIMER_TEXT.equals(key)
-                    || PREF_PRELOAD_PAGES.equals(key) : "Wrong preference key: " + key;
-            return PreloadPagesSettingsBridge.isNetworkPredictionManaged();
+        return new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                String key = preference.getKey();
+                assert PREF_MANAGED_DISCLAIMER_TEXT.equals(key)
+                        || PREF_PRELOAD_PAGES.equals(key) : "Wrong preference key: " + key;
+                return PreloadPagesSettingsBridge.isNetworkPredictionManaged();
+            }
         };
     }
 

@@ -385,7 +385,7 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private ManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return new ChromeManagedPreferenceDelegate() {
+        return new ChromeManagedPreferenceDelegate(mProfile) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {

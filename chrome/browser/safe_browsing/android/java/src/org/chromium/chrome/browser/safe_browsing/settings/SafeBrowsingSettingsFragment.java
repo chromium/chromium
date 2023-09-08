@@ -116,14 +116,17 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return preference -> {
-            String key = preference.getKey();
-            if (PREF_MANAGED_DISCLAIMER_TEXT.equals(key) || PREF_SAFE_BROWSING.equals(key)) {
-                return SafeBrowsingBridge.isSafeBrowsingManaged();
-            } else {
-                assert false : "Should not be reached.";
+        return new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                String key = preference.getKey();
+                if (PREF_MANAGED_DISCLAIMER_TEXT.equals(key) || PREF_SAFE_BROWSING.equals(key)) {
+                    return SafeBrowsingBridge.isSafeBrowsingManaged();
+                } else {
+                    assert false : "Should not be reached.";
+                }
+                return false;
             }
-            return false;
         };
     }
 

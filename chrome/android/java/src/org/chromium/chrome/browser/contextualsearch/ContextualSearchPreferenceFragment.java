@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.os.Bundle;
 
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
@@ -45,9 +46,12 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat
             return true;
         });
 
-        contextualSearchSwitch.setManagedPreferenceDelegate(
-                (ChromeManagedPreferenceDelegate)
-                        preference -> ContextualSearchPolicy.isContextualSearchDisabledByPolicy());
+        contextualSearchSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return ContextualSearchPolicy.isContextualSearchDisabledByPolicy();
+            }
+        });
 
         seeBetterResultsSwitch.setChecked(
                 ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());

@@ -149,7 +149,8 @@ public class PrivacySettings extends PreferenceFragmentCompat
         ChromeSwitchPreference httpsFirstModePref =
                 (ChromeSwitchPreference) findPreference(PREF_HTTPS_FIRST_MODE);
         httpsFirstModePref.setOnPreferenceChangeListener(this);
-        httpsFirstModePref.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate() {
+        httpsFirstModePref.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
+                mProfile) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 String key = preference.getKey();

@@ -556,9 +556,13 @@ public class PasswordSettings extends PreferenceFragmentCompat
             if ((boolean) newValue) PasswordManagerHelper.resetUpmUnenrollment();
             return true;
         });
-        savePasswordsSwitch.setManagedPreferenceDelegate(
-                (ChromeManagedPreferenceDelegate) preference
-                -> getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE));
+        savePasswordsSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
+                mProfile) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
+            }
+        });
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             getPreferenceScreen().addPreference(savePasswordsSwitch);
@@ -585,8 +589,13 @@ public class PasswordSettings extends PreferenceFragmentCompat
                     "PasswordManager.Settings.ToggleAutoSignIn", (boolean) newValue);
             return true;
         });
-        autoSignInSwitch.setManagedPreferenceDelegate((ChromeManagedPreferenceDelegate) preference
-                -> getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
+        autoSignInSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
+                mProfile) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN);
+            }
+        });
         getPreferenceScreen().addPreference(autoSignInSwitch);
         autoSignInSwitch.setChecked(
                 getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));

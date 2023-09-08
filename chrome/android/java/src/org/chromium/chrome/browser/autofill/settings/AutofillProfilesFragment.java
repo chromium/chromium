@@ -157,7 +157,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             PersonalDataManager.setAutofillProfileEnabled((boolean) newValue);
             return true;
         });
-        autofillSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate() {
+        autofillSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(mProfile) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 return PersonalDataManager.isAutofillProfileManaged();

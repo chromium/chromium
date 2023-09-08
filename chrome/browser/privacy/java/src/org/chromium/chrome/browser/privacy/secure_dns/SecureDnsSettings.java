@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy.secure_dns;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.net.SecureDnsManagementMode;
@@ -64,8 +65,12 @@ public class SecureDnsSettings extends PreferenceFragmentCompat {
 
         // Set up preferences inside the activity.
         mSecureDnsSwitch = (ChromeSwitchPreference) findPreference(PREF_SECURE_DNS_SWITCH);
-        mSecureDnsSwitch.setManagedPreferenceDelegate(
-                (ChromeManagedPreferenceDelegate) preference -> SecureDnsBridge.isModeManaged());
+        mSecureDnsSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return SecureDnsBridge.isModeManaged();
+            }
+        });
         mSecureDnsSwitch.setOnPreferenceChangeListener((preference, enabled) -> {
             storePreferenceState((boolean) enabled, mSecureDnsProviderPreference.getState());
             loadPreferenceState();

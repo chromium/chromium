@@ -338,7 +338,12 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             return true;
         });
         addAccountPreference.setManagedPreferenceDelegate(
-                (ChromeManagedPreferenceDelegate) preference -> !canAddAccounts());
+                new ChromeManagedPreferenceDelegate(mProfile) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return !canAddAccounts();
+                    }
+                });
         return addAccountPreference;
     }
 

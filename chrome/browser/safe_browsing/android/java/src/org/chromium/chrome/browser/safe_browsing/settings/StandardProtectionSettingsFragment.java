@@ -142,16 +142,19 @@ public class StandardProtectionSettingsFragment
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return preference -> {
-            String key = preference.getKey();
-            if (PREF_EXTENDED_REPORTING.equals(key)) {
-                return SafeBrowsingBridge.isSafeBrowsingExtendedReportingManaged();
-            } else if (PREF_PASSWORD_LEAK_DETECTION.equals(key)) {
-                return mPrefService.isManagedPreference(Pref.PASSWORD_LEAK_DETECTION_ENABLED);
-            } else {
-                assert false : "Should not be reached";
+        return new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                String key = preference.getKey();
+                if (PREF_EXTENDED_REPORTING.equals(key)) {
+                    return SafeBrowsingBridge.isSafeBrowsingExtendedReportingManaged();
+                } else if (PREF_PASSWORD_LEAK_DETECTION.equals(key)) {
+                    return mPrefService.isManagedPreference(Pref.PASSWORD_LEAK_DETECTION_ENABLED);
+                } else {
+                    assert false : "Should not be reached";
+                }
+                return false;
             }
-            return false;
         };
     }
 }

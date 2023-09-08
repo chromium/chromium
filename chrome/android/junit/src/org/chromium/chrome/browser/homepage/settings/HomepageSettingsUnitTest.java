@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettingsUnitTest.ShadowUrlFormatter;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText;
@@ -103,6 +104,8 @@ public class HomepageSettingsUnitTest {
     public HomepagePolicyManager mMockHomepagePolicyManger;
     @Mock
     public PartnerBrowserCustomizations mMockPartnerBrowserCustomizations;
+    @Mock
+    public Profile mProfile;
 
     private ActivityScenario<TestActivity> mActivityScenario;
     private TestActivity mActivity;
@@ -120,6 +123,7 @@ public class HomepageSettingsUnitTest {
     public void setUp() {
         HomepagePolicyManager.setInstanceForTests(mMockHomepagePolicyManger);
         PartnerBrowserCustomizations.setInstanceForTesting(mMockPartnerBrowserCustomizations);
+        Profile.setLastUsedProfileForTesting(mProfile);
         mActivityScenario = ActivityScenario.launch(TestActivity.class);
         mActivityScenario.onActivity(activity -> {
             mActivity = activity;

@@ -13,21 +13,37 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** A ManagedPreferenceDelegate with Chrome-specific default behavior. */
-public interface ChromeManagedPreferenceDelegate extends ManagedPreferenceDelegate {
+public abstract class ChromeManagedPreferenceDelegate implements ManagedPreferenceDelegate {
+    private Profile mProfile;
+
+    /**
+     * @deprecated Use {@link #ChromeManagedPreferenceDelegate(Profile)} that takes an explicit
+     *             profile reference.
+     */
+    @Deprecated
+    public ChromeManagedPreferenceDelegate() {
+        this(Profile.getLastUsedRegularProfile());
+    }
+
+    /** Builds a ChromeManagedPreferenceDelegate for the given Profile. */
+    public ChromeManagedPreferenceDelegate(Profile profile) {
+        mProfile = profile;
+    }
+
     @Override
-    default boolean isPreferenceControlledByCustodian(Preference preference) {
+    public boolean isPreferenceControlledByCustodian(Preference preference) {
         return false;
     }
 
     @Override
-    default boolean doesProfileHaveMultipleCustodians() {
-        return !UserPrefs.get(Profile.getLastUsedRegularProfile())
+    public boolean doesProfileHaveMultipleCustodians() {
+        return !UserPrefs.get(mProfile)
                         .getString(Pref.SUPERVISED_USER_SECOND_CUSTODIAN_NAME)
                         .isEmpty();
     }
 
     @Override
-    default @LayoutRes int defaultPreferenceLayoutResource() {
+    public @LayoutRes int defaultPreferenceLayoutResource() {
         return R.layout.chrome_managed_preference;
     }
 }

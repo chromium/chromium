@@ -71,11 +71,14 @@ public class PrivacySandboxSettingsFragmentV3 extends PrivacySandboxSettingsBase
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return preference -> {
-            if (TOGGLE_PREFERENCE.equals(preference.getKey())) {
-                return PrivacySandboxBridge.isPrivacySandboxManaged();
+        return new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                if (TOGGLE_PREFERENCE.equals(preference.getKey())) {
+                    return PrivacySandboxBridge.isPrivacySandboxManaged();
+                }
+                return false;
             }
-            return false;
         };
     }
 }

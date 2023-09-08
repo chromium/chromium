@@ -283,23 +283,26 @@ public class GoogleServicesSettings
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return preference -> {
-            String key = preference.getKey();
-            if (PREF_ALLOW_SIGNIN.equals(key)) {
-                return mPrefService.isManagedPreference(Pref.SIGNIN_ALLOWED);
+        return new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                String key = preference.getKey();
+                if (PREF_ALLOW_SIGNIN.equals(key)) {
+                    return mPrefService.isManagedPreference(Pref.SIGNIN_ALLOWED);
+                }
+                if (PREF_SEARCH_SUGGESTIONS.equals(key)) {
+                    return mPrefService.isManagedPreference(Pref.SEARCH_SUGGEST_ENABLED);
+                }
+                if (PREF_USAGE_AND_CRASH_REPORTING.equals(key)) {
+                    return !PrivacyPreferencesManagerImpl.getInstance()
+                                    .isUsageAndCrashReportingPermittedByPolicy();
+                }
+                if (PREF_URL_KEYED_ANONYMIZED_DATA.equals(key)) {
+                    return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(
+                            Profile.getLastUsedRegularProfile());
+                }
+                return false;
             }
-            if (PREF_SEARCH_SUGGESTIONS.equals(key)) {
-                return mPrefService.isManagedPreference(Pref.SEARCH_SUGGEST_ENABLED);
-            }
-            if (PREF_USAGE_AND_CRASH_REPORTING.equals(key)) {
-                return !PrivacyPreferencesManagerImpl.getInstance()
-                                .isUsageAndCrashReportingPermittedByPolicy();
-            }
-            if (PREF_URL_KEYED_ANONYMIZED_DATA.equals(key)) {
-                return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(
-                        Profile.getLastUsedRegularProfile());
-            }
-            return false;
         };
     }
 

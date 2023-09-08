@@ -242,9 +242,14 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 !UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(profile)
                 || UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
         mUrlKeyedAnonymizedData.setChecked(urlKeyedAnonymizedDataShouldBeEnabled);
-        mUrlKeyedAnonymizedData.setManagedPreferenceDelegate((
-                ChromeManagedPreferenceDelegate) (preference
-                -> UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(profile)));
+        mUrlKeyedAnonymizedData.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
+                profile) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(
+                        profile);
+            }
+        });
     }
 
     @Override

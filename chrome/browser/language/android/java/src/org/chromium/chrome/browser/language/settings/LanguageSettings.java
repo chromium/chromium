@@ -126,8 +126,12 @@ public class LanguageSettings extends PreferenceFragmentCompat
                 return true;
             }
         });
-        translateSwitch.setManagedPreferenceDelegate((ChromeManagedPreferenceDelegate) preference
-                -> getPrefService().isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED));
+        translateSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(mProfile) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return getPrefService().isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED);
+            }
+        });
     }
 
     /**
@@ -240,8 +244,12 @@ public class LanguageSettings extends PreferenceFragmentCompat
                 return true;
             }
         });
-        translateSwitch.setManagedPreferenceDelegate((ChromeManagedPreferenceDelegate) preference
-                -> getPrefService().isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED));
+        translateSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(mProfile) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return getPrefService().isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED);
+            }
+        });
     }
 
     @Override

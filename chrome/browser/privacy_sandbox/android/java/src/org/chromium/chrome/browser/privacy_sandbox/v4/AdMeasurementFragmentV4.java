@@ -68,11 +68,14 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return preference -> {
-            if (TOGGLE_PREFERENCE.equals(preference.getKey())) {
-                return isAdMeasurementPrefManaged();
+        return new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                if (TOGGLE_PREFERENCE.equals(preference.getKey())) {
+                    return isAdMeasurementPrefManaged();
+                }
+                return false;
             }
-            return false;
         };
     }
 }

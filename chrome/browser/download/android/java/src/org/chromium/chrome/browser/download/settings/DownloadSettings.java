@@ -47,7 +47,7 @@ public class DownloadSettings extends PreferenceFragmentCompat
         mLocationPromptEnabledPref =
                 (ChromeSwitchPreference) findPreference(PREF_LOCATION_PROMPT_ENABLED);
         mLocationPromptEnabledPref.setOnPreferenceChangeListener(this);
-        mLocationPromptEnabledPrefDelegate = new ChromeManagedPreferenceDelegate() {
+        mLocationPromptEnabledPrefDelegate = new ChromeManagedPreferenceDelegate(mProfile) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 return DownloadDialogBridge.isLocationDialogManaged();
