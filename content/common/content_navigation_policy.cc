@@ -30,9 +30,8 @@ bool DeviceHasEnoughMemoryForBackForwardCache() {
   // It is important to check the base::FeatureList to avoid activating any
   // field trial groups if BFCache is disabled due to memory threshold.
   if (base::FeatureList::IsEnabled(features::kBackForwardCacheMemoryControls)) {
-    // On Android, BackForwardCache is only enabled for 2GB+ high memory
-    // devices. The default threshold value is set to 1700 MB to account for all
-    // 2GB devices which report lower RAM due to carveouts.
+    // On Android, BackForwardCache is enabled for devices with 1200MB memory or
+    // above.
     int default_memory_threshold_mb =
 #if BUILDFLAG(IS_ANDROID)
         1200;

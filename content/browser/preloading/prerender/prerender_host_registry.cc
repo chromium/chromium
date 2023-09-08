@@ -65,8 +65,13 @@ bool DeviceHasEnoughMemoryForPrerender() {
   if (!base::FeatureList::IsEnabled(blink::features::kPrerender2MemoryControls))
     return true;
 
-  // Use the same default threshold as the back/forward cache. See comments in
-  // DeviceHasEnoughMemoryForBackForwardCache().
+  // On Android, Prerender2 is only enabled for 2GB+ high memory devices.  The
+  // default threshold value is set to 1700 MB to account for all 2GB devices
+  // which report lower RAM due to carveouts.
+  // Previously used the same default threshold as the back/forward cache. See
+  // comments in DeviceHasEnoughMemoryForBackForwardCache().
+  // TODO(https://crbug.com/1470820): experiment with 1200 MB threshold like
+  // back/forward cache.
   static constexpr int kDefaultMemoryThresholdMb =
 #if BUILDFLAG(IS_ANDROID)
       1700;
