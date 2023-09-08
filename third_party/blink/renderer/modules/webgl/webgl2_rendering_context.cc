@@ -186,7 +186,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(oes_shader_multisample_interpolation_, kDraftExtension);
   RegisterExtension(oes_texture_float_linear_);
   RegisterExtension(ovr_multiview2_);
-  RegisterExtension(webgl_clip_cull_distance_, kDraftExtension);
+  RegisterExtension(webgl_clip_cull_distance_);
   RegisterExtension(webgl_compressed_texture_astc_);
   RegisterExtension(webgl_compressed_texture_etc_);
   RegisterExtension(webgl_compressed_texture_etc1_);
