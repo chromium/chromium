@@ -123,6 +123,20 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   // Used to configure device settings on the login screen.
   virtual void OnLoginScreenFocusedPodChanged(const AccountId& account_id) = 0;
 
+  // Used to start observing customizable buttons from the given `id`.
+  virtual void StartObservingButtons(DeviceId id) = 0;
+  // Stops observing customizable buttons from all devices.
+  virtual void StopObservingButtons() = 0;
+
+  // Called when a mouse which is currently being "observed" via
+  // `StartObservingButtons` has pressed a customizable button.
+  virtual void OnMouseButtonPressed(DeviceId device_id,
+                                    const mojom::Button& button) = 0;
+  // Called when a graphics tablet which is currently being "observed" via
+  // `StartObservingButtons` has pressed a customizable button.
+  virtual void OnGraphicsTabletButtonPressed(DeviceId device_id,
+                                             const mojom::Button& button) = 0;
+
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 

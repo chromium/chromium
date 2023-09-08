@@ -285,16 +285,15 @@ bool PeripheralCustomizationEventRewriter::NotifyMouseEventObserving(
 
   const auto button =
       GetButtonFromMouseEventFlag(mouse_event.changed_button_flags());
-  for (auto& observer : observers_) {
-    switch (device_type) {
-      case DeviceType::kMouse:
-        observer.OnMouseButtonPressed(mouse_event.source_device_id(), *button);
-        break;
-      case DeviceType::kGraphicsTablet:
-        observer.OnGraphicsTabletButtonPressed(mouse_event.source_device_id(),
-                                               *button);
-        break;
-    }
+  switch (device_type) {
+    case DeviceType::kMouse:
+      input_device_settings_controller_->OnMouseButtonPressed(
+          mouse_event.source_device_id(), *button);
+      break;
+    case DeviceType::kGraphicsTablet:
+      input_device_settings_controller_->OnGraphicsTabletButtonPressed(
+          mouse_event.source_device_id(), *button);
+      break;
   }
 
   return true;
@@ -309,16 +308,15 @@ bool PeripheralCustomizationEventRewriter::NotifyKeyEventObserving(
   }
 
   const auto button = mojom::Button::NewVkey(key_event.key_code());
-  for (auto& observer : observers_) {
-    switch (device_type) {
-      case DeviceType::kMouse:
-        observer.OnMouseButtonPressed(key_event.source_device_id(), *button);
-        break;
-      case DeviceType::kGraphicsTablet:
-        observer.OnGraphicsTabletButtonPressed(key_event.source_device_id(),
-                                               *button);
-        break;
-    }
+  switch (device_type) {
+    case DeviceType::kMouse:
+      input_device_settings_controller_->OnMouseButtonPressed(
+          key_event.source_device_id(), *button);
+      break;
+    case DeviceType::kGraphicsTablet:
+      input_device_settings_controller_->OnGraphicsTabletButtonPressed(
+          key_event.source_device_id(), *button);
+      break;
   }
 
   return true;
@@ -474,14 +472,6 @@ ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteEvent(
   }
 
   return SendEvent(continuation, &event);
-}
-
-void PeripheralCustomizationEventRewriter::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void PeripheralCustomizationEventRewriter::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 const mojom::RemappingAction*

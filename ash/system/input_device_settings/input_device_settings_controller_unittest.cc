@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -45,6 +46,7 @@
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchpad_device.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -104,10 +106,9 @@ const ui::InputDevice kSamplePointingStickInternal(
 const ui::InputDevice kSampleMouseUsb(3,
                                       ui::INPUT_DEVICE_USB,
                                       "kSampleMouseUsb");
-const ui::InputDevice kSampleGraphicsTabletInternal(
-    4,
-    ui::INPUT_DEVICE_INTERNAL,
-    "kSampleGraphicsTabletInternal");
+const ui::InputDevice kSampleGraphicsTablet(4,
+                                            ui::INPUT_DEVICE_USB,
+                                            "kSampleGraphicsTablet");
 
 constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
@@ -270,6 +271,10 @@ class FakeInputDeviceSettingsControllerObserver
     num_graphics_tablets_settings_updated_++;
   }
 
+  void OnMouseSettingsUpdated(const mojom::Mouse& mouse) override {
+    num_mouse_settings_updated_++;
+  }
+
   uint32_t num_keyboards_connected() { return num_keyboards_connected_; }
   uint32_t num_graphics_tablets_connected() {
     return num_graphics_tablets_connected_;
@@ -280,12 +285,14 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_graphics_tablets_settings_updated() {
     return num_graphics_tablets_settings_updated_;
   }
+  uint32_t num_mouse_settings_updated() { return num_mouse_settings_updated_; }
 
  private:
   uint32_t num_keyboards_connected_;
   uint32_t num_graphics_tablets_connected_;
   uint32_t num_keyboards_settings_updated_;
   uint32_t num_graphics_tablets_settings_updated_;
+  uint32_t num_mouse_settings_updated_;
 };
 
 class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
@@ -305,6 +312,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
                                            features::kInputDeviceSettingsSplit},
                                           {});
     NoSessionAshTestBase::SetUp();
+    Shell::Get()->event_rewriter_controller()->Initialize(nullptr, nullptr);
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
 
     // Resetter must be created before the controller is initialized.
@@ -664,46 +672,50 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletSettingsAreValid) {
-  fake_keyboard_manager_->AddFakeGraphicsTablet(kSampleGraphicsTabletInternal);
+  fake_keyboard_manager_->AddFakeGraphicsTablet(kSampleGraphicsTablet);
   EXPECT_EQ(observer_->num_graphics_tablets_connected(), 1u);
+
+  mojom::ButtonPtr button =
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack);
+  controller_->OnGraphicsTabletButtonPressed(kSampleGraphicsTablet.id, *button);
+  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 1u);
 
   // Create a valid settings.
   mojom::ButtonRemapping button_remapping1(
       /*name=*/"test",
       /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
+      button->Clone(),
       /*remapping_action=*/
       mojom::RemappingAction::NewAction(
           ash::AcceleratorAction::kBrightnessDown));
   std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings;
   std::vector<mojom::ButtonRemappingPtr> pen_button_remappings;
-  tablet_button_remappings.push_back(button_remapping1.Clone());
+  pen_button_remappings.push_back(button_remapping1.Clone());
   mojom::GraphicsTabletSettingsPtr settings =
       mojom::GraphicsTabletSettings::New(mojo::Clone(tablet_button_remappings),
                                          mojo::Clone(pen_button_remappings));
 
-  controller_->SetGraphicsTabletSettings(
-      (DeviceId)kSampleGraphicsTabletInternal.id, settings.Clone());
-  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 1u);
+  controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
+                                         settings.Clone());
+  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 2u);
 
   // Invalid empty settings.
-  controller_->SetGraphicsTabletSettings(
-      (DeviceId)kSampleGraphicsTabletInternal.id,
-      mojom::GraphicsTabletSettings::New());
-  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 1u);
+  controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
+                                         mojom::GraphicsTabletSettings::New());
+  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 2u);
 
   // Invalid settings with a button remapping name more than 64 characters.
-  settings->tablet_button_remappings[0]->name =
+  settings->pen_button_remappings[0]->name =
       "This is a really long name which is used to test the name max length";
-  controller_->SetGraphicsTabletSettings(
-      (DeviceId)kSampleGraphicsTabletInternal.id, settings.Clone());
-  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 1u);
+  controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
+                                         settings.Clone());
+  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 2u);
 
   // Valid settings with a button remapping name fewer than 64 characters.
-  settings->tablet_button_remappings[0]->name = "Short valid name";
-  controller_->SetGraphicsTabletSettings(
-      (DeviceId)kSampleGraphicsTabletInternal.id, settings.Clone());
-  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 2u);
+  settings->pen_button_remappings[0]->name = "Short valid name";
+  controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
+                                         settings.Clone());
+  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 3u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
@@ -1009,4 +1021,81 @@ TEST_F(InputDeviceSettingsControllerTest, RestoreDefaultKeyboardRemappings) {
       "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.NumberOfKeysReset",
       /*sample=*/1u, /*expected_bucket_count=*/1u);
 }
+
+TEST_F(InputDeviceSettingsControllerTest, MouseButtonPressed) {
+  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseUsb});
+
+  mojom::ButtonPtr button =
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle);
+  controller_->OnMouseButtonPressed(kSampleMouseUsb.id, *button);
+  EXPECT_EQ(1u, observer_->num_mouse_settings_updated());
+
+  auto* settings = controller_->GetMouseSettings(kSampleMouseUsb.id);
+  ASSERT_TRUE(settings);
+  ASSERT_EQ(1u, settings->button_remappings.size());
+  EXPECT_EQ(*button, *settings->button_remappings[0]->button);
+  EXPECT_EQ("Button 1", settings->button_remappings[0]->name);
+  EXPECT_EQ(nullptr, settings->button_remappings[0]->remapping_action.get());
+}
+
+TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
+  ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices(
+      {kSampleGraphicsTablet});
+
+  mojom::ButtonPtr pen_button =
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward);
+  mojom::ButtonPtr tablet_button = mojom::Button::NewVkey(ui::VKEY_A);
+  controller_->OnGraphicsTabletButtonPressed(kSampleGraphicsTablet.id,
+                                             *pen_button);
+  controller_->OnGraphicsTabletButtonPressed(kSampleGraphicsTablet.id,
+                                             *tablet_button);
+  EXPECT_EQ(2u, observer_->num_graphics_tablets_settings_updated());
+
+  auto* settings =
+      controller_->GetGraphicsTabletSettings(kSampleGraphicsTablet.id);
+  ASSERT_TRUE(settings);
+  ASSERT_EQ(1u, settings->pen_button_remappings.size());
+  EXPECT_EQ(*pen_button, *settings->pen_button_remappings[0]->button);
+  EXPECT_EQ("Button 1", settings->pen_button_remappings[0]->name);
+  EXPECT_EQ(nullptr,
+            settings->pen_button_remappings[0]->remapping_action.get());
+
+  ASSERT_EQ(1u, settings->tablet_button_remappings.size());
+  EXPECT_EQ(*tablet_button, *settings->tablet_button_remappings[0]->button);
+  EXPECT_EQ("Button 1", settings->tablet_button_remappings[0]->name);
+  EXPECT_EQ(nullptr,
+            settings->tablet_button_remappings[0]->remapping_action.get());
+}
+
+TEST_F(InputDeviceSettingsControllerTest, ObservingButtons) {
+  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseUsb});
+  ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices(
+      {kSampleGraphicsTablet});
+
+  auto* rewriter = Shell::Get()
+                       ->event_rewriter_controller()
+                       ->peripheral_customization_event_rewriter();
+
+  controller_->StartObservingButtons(kSampleMouseUsb.id);
+  ASSERT_EQ(1u, rewriter->mice_to_observe().size());
+  EXPECT_TRUE(rewriter->mice_to_observe().contains(kSampleMouseUsb.id));
+
+  controller_->StopObservingButtons();
+  ASSERT_EQ(0u, rewriter->mice_to_observe().size());
+  ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
+
+  controller_->StartObservingButtons(kSampleGraphicsTablet.id);
+  ASSERT_EQ(1u, rewriter->graphics_tablets_to_observe().size());
+  EXPECT_TRUE(rewriter->graphics_tablets_to_observe().contains(
+      kSampleGraphicsTablet.id));
+
+  controller_->StopObservingButtons();
+  ASSERT_EQ(0u, rewriter->mice_to_observe().size());
+  ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
+
+  controller_->StartObservingButtons(kSampleTouchpadInternal.id);
+  ASSERT_EQ(0u, rewriter->mice_to_observe().size());
+  ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
+}
+
 }  // namespace ash

@@ -79,6 +79,12 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       DeviceId id,
       mojom::GraphicsTabletSettingsPtr settings) override;
   void OnLoginScreenFocusedPodChanged(const AccountId& account_id) override;
+  void StartObservingButtons(DeviceId id) override;
+  void StopObservingButtons() override;
+  void OnMouseButtonPressed(DeviceId device_id,
+                            const mojom::Button& button) override;
+  void OnGraphicsTabletButtonPressed(DeviceId device_id,
+                                     const mojom::Button& button) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -152,7 +158,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RefreshStoredLoginScreenPointingStickSettings();
   void RefreshStoredLoginScreenTouchpadSettings();
 
-  base::ObserverList<InputDeviceSettingsController::Observer> observers_;
+  base::ObserverList<Observer> observers_;
 
   std::unique_ptr<InputDeviceSettingsPolicyHandler> policy_handler_;
 

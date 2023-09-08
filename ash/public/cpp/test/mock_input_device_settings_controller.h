@@ -93,6 +93,16 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               OnLoginScreenFocusedPodChanged,
               (const AccountId&),
               (override));
+  MOCK_METHOD(void, StartObservingButtons, (DeviceId id), (override));
+  MOCK_METHOD(void, StopObservingButtons, (), (override));
+  MOCK_METHOD(void,
+              OnMouseButtonPressed,
+              (DeviceId device_id, const mojom::Button& button),
+              (override));
+  MOCK_METHOD(void,
+              OnGraphicsTabletButtonPressed,
+              (DeviceId device_id, const mojom::Button& button),
+              (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 };

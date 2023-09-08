@@ -78,14 +78,15 @@ class TestEventRewriterContinuation
   base::WeakPtrFactory<TestEventRewriterContinuation> weak_ptr_factory_{this};
 };
 
-class TestObserver : public PeripheralCustomizationEventRewriter::Observer {
+class TestInputDeviceSettingsController
+    : public MockInputDeviceSettingsController {
  public:
-  void OnMouseButtonPressed(int device_id,
+  void OnMouseButtonPressed(DeviceId device_id,
                             const mojom::Button& button) override {
     pressed_mouse_buttons_[device_id].push_back(button.Clone());
   }
 
-  void OnGraphicsTabletButtonPressed(int device_id,
+  void OnGraphicsTabletButtonPressed(DeviceId device_id,
                                      const mojom::Button& button) override {
     pressed_graphics_tablet_buttons_[device_id].push_back(button.Clone());
   }
@@ -275,7 +276,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
     AshTestBase::SetUp();
     controller_scoped_resetter_ = std::make_unique<
         InputDeviceSettingsController::ScopedResetterForTest>();
-    controller_ = std::make_unique<MockInputDeviceSettingsController>();
+    controller_ = std::make_unique<TestInputDeviceSettingsController>();
     mouse_settings_ = mojom::MouseSettings::New();
     graphics_tablet_settings_ = mojom::GraphicsTabletSettings::New();
     ON_CALL(*controller_, GetMouseSettings(testing::_))
@@ -288,13 +289,9 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
         .WillByDefault(testing::Return(graphics_tablet_settings_.get()));
     rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>(
         controller_.get());
-    observer_ = std::make_unique<TestObserver>();
-    rewriter_->AddObserver(observer_.get());
   }
 
   void TearDown() override {
-    rewriter_->RemoveObserver(observer_.get());
-    observer_.reset();
     rewriter_.reset();
     controller_.reset();
     controller_scoped_resetter_.reset();
@@ -306,8 +303,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
   std::unique_ptr<PeripheralCustomizationEventRewriter> rewriter_;
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
       controller_scoped_resetter_;
-  std::unique_ptr<MockInputDeviceSettingsController> controller_;
-  std::unique_ptr<TestObserver> observer_;
+  std::unique_ptr<TestInputDeviceSettingsController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   mojom::MouseSettingsPtr mouse_settings_;
   mojom::GraphicsTabletSettingsPtr graphics_tablet_settings_;
@@ -513,7 +509,7 @@ TEST_P(MouseButtonObserverTest, EventRewriting) {
     ASSERT_TRUE(continuation.discarded());
     if (data.pressed_button) {
       const auto& actual_pressed_buttons =
-          observer_->pressed_mouse_buttons().at(kMouseDeviceId);
+          controller_->pressed_mouse_buttons().at(kMouseDeviceId);
       ASSERT_EQ(1u, actual_pressed_buttons.size());
       EXPECT_EQ(*data.pressed_button, *actual_pressed_buttons[0]);
     }
@@ -660,7 +656,7 @@ TEST_P(GraphicsTabletButtonObserverTest, RewriteEvent) {
     ASSERT_TRUE(continuation.discarded());
     if (data.pressed_button) {
       const auto& actual_pressed_buttons =
-          observer_->pressed_graphics_tablet_buttons().at(
+          controller_->pressed_graphics_tablet_buttons().at(
               kGraphicsTabletDeviceId);
       ASSERT_EQ(1u, actual_pressed_buttons.size());
       EXPECT_EQ(*data.pressed_button, *actual_pressed_buttons[0]);

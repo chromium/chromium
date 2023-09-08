@@ -16,6 +16,7 @@
 #include "ash/events/peripheral_customization_event_rewriter.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/command_line.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"

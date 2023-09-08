@@ -10,6 +10,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/events/event_rewriter_controller_impl.h"
+#include "ash/events/peripheral_customization_event_rewriter.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
@@ -30,6 +33,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -133,6 +138,20 @@ mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
       Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
           graphics_tablet);
   return mojom_graphics_tablet;
+}
+
+bool IsGraphicsTabletPenButton(const mojom::Button& button) {
+  return button.is_customizable_button();
+}
+
+void AddButtonToButtonRemappingList(
+    const mojom::Button& button,
+    std::vector<mojom::ButtonRemappingPtr>& button_remappings) {
+  // TODO(b/286930911): Translate "Button" string to other languages.
+  button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/base::StrCat(
+          {"Button ", base::ToString(button_remappings.size() + 1)}),
+      button.Clone(), /*remapping_action=*/nullptr));
 }
 
 // suppress_meta_fkey_rewrites must never be non-default for internal
@@ -1235,17 +1254,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
     auto mojom_graphics_tablet = BuildMojomGraphicsTablet(graphics_tablet);
     // TODO(wangdanny): Add InitializeGraphicsTabletSettings.
-    std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings;
-    std::vector<mojom::ButtonRemappingPtr> pen_button_remappings;
-    tablet_button_remappings.push_back(mojom::ButtonRemapping::New(
-        /*name=*/"test1",
-        /*button=*/
-        mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
-        /*remapping_action=*/
-        mojom::RemappingAction::NewAction(
-            ash::AcceleratorAction::kBrightnessUp)));
-    mojom_graphics_tablet->settings = mojom::GraphicsTabletSettings::New(
-        std::move(tablet_button_remappings), std::move(pen_button_remappings));
+    mojom_graphics_tablet->settings = mojom::GraphicsTabletSettings::New();
     graphics_tablets_.insert_or_assign(graphics_tablet.id,
                                        std::move(mojom_graphics_tablet));
     DispatchGraphicsTabletConnected(graphics_tablet.id);
@@ -1378,6 +1387,111 @@ void InputDeviceSettingsControllerImpl::InitializeTouchpadSettings(
 
   touchpad_pref_handler_->InitializeLoginScreenTouchpadSettings(
       local_state_, active_account_id_.value(), touchpad);
+}
+
+void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
+  PeripheralCustomizationEventRewriter* rewriter =
+      Shell::Get()
+          ->event_rewriter_controller()
+          ->peripheral_customization_event_rewriter();
+  CHECK(rewriter);
+  if (mice_.contains(id)) {
+    rewriter->StartObservingMouse(id);
+  } else if (graphics_tablets_.contains(id)) {
+    rewriter->StartObservingGraphicsTablet(id);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::StopObservingButtons() {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
+  PeripheralCustomizationEventRewriter* rewriter =
+      Shell::Get()
+          ->event_rewriter_controller()
+          ->peripheral_customization_event_rewriter();
+  CHECK(rewriter);
+  rewriter->StopObserving();
+}
+
+void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
+    DeviceId device_id,
+    const mojom::Button& button) {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
+  auto mouse_iter = mice_.find(device_id);
+  if (mouse_iter == mice_.end()) {
+    return;
+  }
+
+  auto& mouse = *mouse_iter->second;
+  auto& button_remappings = mouse.settings->button_remappings;
+  auto remapping_iter =
+      base::ranges::find(button_remappings, button,
+                         [](const mojom::ButtonRemappingPtr& remapping) {
+                           return *remapping->button;
+                         });
+  if (remapping_iter != button_remappings.end()) {
+    // TODO(dpad): Implement observer for button pressed for UI highlighting.
+    return;
+  }
+
+  AddButtonToButtonRemappingList(button, button_remappings);
+  mouse_pref_handler_->UpdateMouseSettings(
+      active_pref_service_, policy_handler_->mouse_policies(), mouse);
+  DispatchMouseSettingsChanged(device_id);
+
+  UpdateDuplicateDeviceSettings(
+      mouse, mice_,
+      base::BindRepeating(
+          &InputDeviceSettingsControllerImpl::DispatchMouseSettingsChanged,
+          base::Unretained(this)));
+}
+
+void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
+    DeviceId device_id,
+    const mojom::Button& button) {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
+  auto graphics_tablet_iter = graphics_tablets_.find(device_id);
+  if (graphics_tablet_iter == graphics_tablets_.end()) {
+    return;
+  }
+
+  auto& graphics_tablet = *graphics_tablet_iter->second;
+  auto& tablet_button_remappings =
+      graphics_tablet.settings->tablet_button_remappings;
+  auto tablet_remapping_iter =
+      base::ranges::find(tablet_button_remappings, button,
+                         [](const mojom::ButtonRemappingPtr& remapping) {
+                           return *remapping->button;
+                         });
+  if (tablet_remapping_iter != tablet_button_remappings.end()) {
+    // TODO(dpad): Implement observer for button pressed for UI highlighting.
+    return;
+  }
+
+  auto& pen_button_remappings = graphics_tablet.settings->pen_button_remappings;
+  auto pen_remapping_iter =
+      base::ranges::find(pen_button_remappings, button,
+                         [](const mojom::ButtonRemappingPtr& remapping) {
+                           return *remapping->button;
+                         });
+  if (pen_remapping_iter != pen_button_remappings.end()) {
+    // TODO(dpad): Implement observer for button pressed for UI highlighting.
+    return;
+  }
+
+  if (IsGraphicsTabletPenButton(button)) {
+    AddButtonToButtonRemappingList(button, pen_button_remappings);
+  } else {
+    AddButtonToButtonRemappingList(button, tablet_button_remappings);
+  }
+  // TODO(dpad): Update graphics tablet prefs.
+  DispatchGraphicsTabletSettingsChanged(device_id);
+
+  UpdateDuplicateDeviceSettings(
+      graphics_tablet, graphics_tablets_,
+      base::BindRepeating(&InputDeviceSettingsControllerImpl::
+                              DispatchGraphicsTabletSettingsChanged,
+                          base::Unretained(this)));
 }
 
 }  // namespace ash

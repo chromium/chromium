@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
-#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
@@ -44,19 +44,6 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
                           const DeviceIdButton& right);
   };
 
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called when a mouse that is currently being observed presses a button
-    // that is remappable on mice.
-    virtual void OnMouseButtonPressed(int device_id,
-                                      const mojom::Button& button) = 0;
-
-    // Called when a graphics tablet that is currently being observed presses a
-    // button that is remappable on graphics tablets.
-    virtual void OnGraphicsTabletButtonPressed(int device_id,
-                                               const mojom::Button& button) = 0;
-  };
-
   explicit PeripheralCustomizationEventRewriter(
       InputDeviceSettingsController* input_device_settings_controller);
   PeripheralCustomizationEventRewriter(
@@ -82,8 +69,10 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
       const ui::Event& event,
       const Continuation continuation) override;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  const base::flat_set<int>& mice_to_observe() { return mice_to_observe_; }
+  const base::flat_set<int>& graphics_tablets_to_observe() {
+    return graphics_tablets_to_observe_;
+  }
 
  private:
   // Notifies observers if the given `mouse_event` is a remappable button for
@@ -126,7 +115,6 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   base::flat_set<int> mice_to_observe_;
   base::flat_set<int> graphics_tablets_to_observe_;
-  base::ObserverList<Observer> observers_;
 
   // Maintains a list of currently pressed buttons and the flags that should
   // be applied to other events processed.
