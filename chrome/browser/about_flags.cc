@@ -4877,7 +4877,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-desktop-pwas-tab-strip",
      flag_descriptions::kDesktopPWAsTabStripName,
      flag_descriptions::kDesktopPWAsTabStripDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kDesktopPWAsTabStrip)},
+     FEATURE_VALUE_TYPE(blink::features::kDesktopPWAsTabStrip)},
     {"enable-desktop-pwas-tab-strip-settings",
      flag_descriptions::kDesktopPWAsTabStripSettingsName,
      flag_descriptions::kDesktopPWAsTabStripSettingsDescription, kOsDesktop,

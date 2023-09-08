@@ -21,6 +21,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -98,7 +99,7 @@ void CreateOpenNewSubmenu(uint32_t string_id, MenuItems& menu_items) {
   menu_item->submenu.push_back(CreateRadioItem(
       ash::USE_LAUNCH_TYPE_WINDOW,
       StringIdForUseLaunchTypeCommand(ash::USE_LAUNCH_TYPE_WINDOW), kGroupId));
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+  if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip) &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings)) {
     menu_item->submenu.push_back(CreateRadioItem(
         ash::USE_LAUNCH_TYPE_TABBED_WINDOW,

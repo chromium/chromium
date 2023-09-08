@@ -4555,7 +4555,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kDesktopPWAsEnforceWebAppSettingsPolicy);
   enabled_features.push_back(features::kRecordWebAppDebugInfo);
   enabled_features.push_back(blink::features::kDesktopPWAsSubApps);
-  enabled_features.push_back(features::kDesktopPWAsTabStrip);
+  enabled_features.push_back(blink::features::kDesktopPWAsTabStrip);
   enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1462253): Also test with Lacros flags enabled.

@@ -402,7 +402,8 @@ class WebAppTabStripLinkCapturingBrowserTest
  public:
   WebAppTabStripLinkCapturingBrowserTest() {
     std::vector<base::test::FeatureRef> features = {
-        features::kDesktopPWAsTabStrip, features::kDesktopPWAsTabStripSettings};
+        blink::features::kDesktopPWAsTabStrip,
+        features::kDesktopPWAsTabStripSettings};
 #if !BUILDFLAG(IS_CHROMEOS)
     features.push_back(features::kDesktopPWAsLinkCapturing);
 #endif

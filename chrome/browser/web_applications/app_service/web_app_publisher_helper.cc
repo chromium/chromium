@@ -89,6 +89,7 @@
 #include "content/public/common/content_features.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
@@ -1248,7 +1249,7 @@ apps::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(
     case blink::mojom::DisplayMode::kBrowser:
       return apps::WindowMode::kBrowser;
     case blink::mojom::DisplayMode::kTabbed:
-      if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+      if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip) &&
           base::FeatureList::IsEnabled(
               features::kDesktopPWAsTabStripSettings)) {
         return apps::WindowMode::kTabbedWindow;

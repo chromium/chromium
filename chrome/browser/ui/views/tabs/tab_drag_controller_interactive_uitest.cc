@@ -68,6 +68,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/aura/env.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
@@ -2807,7 +2808,8 @@ class DetachToBrowserTabDragControllerTestWithTabbedWebApp
     : public DetachToBrowserTabDragControllerTest {
  public:
   DetachToBrowserTabDragControllerTestWithTabbedWebApp() {
-    scoped_feature_list_.InitWithFeatures({features::kDesktopPWAsTabStrip}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kDesktopPWAsTabStrip}, {});
   }
 
   web_app::AppId InstallMockApp(bool add_home_tab) {

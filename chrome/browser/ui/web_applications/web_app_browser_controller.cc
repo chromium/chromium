@@ -44,6 +44,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
@@ -193,7 +194,7 @@ bool WebAppBrowserController::AppUsesBorderlessMode() const {
 }
 
 bool WebAppBrowserController::AppUsesTabbed() const {
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip)) {
     return false;
   }
   return effective_display_mode_ == DisplayMode::kTabbed;
