@@ -157,8 +157,6 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   viewer_view->AddComponent(
       u"IconButton", base::BindRepeating(&CreateIconButtonInstancesGridView));
   viewer_view->AddComponent(
-      u"IconSwitch", base::BindRepeating(&CreateIconSwitchInstancesGridView));
-  viewer_view->AddComponent(
       u"Checkbox", base::BindRepeating(&CreateCheckboxInstancesGridView));
   viewer_view->AddComponent(
       u"CheckboxGroup",
