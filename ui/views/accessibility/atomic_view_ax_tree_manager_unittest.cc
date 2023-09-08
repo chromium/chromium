@@ -45,6 +45,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
 
   void TearDown() override {
     delegate_ = nullptr;
+    textfield_ = nullptr;
     if (!widget_->IsClosed()) {
       widget_->Close();
     }
@@ -67,8 +68,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
   ui::AXNodeData delegate_data() { return delegate_->data(); }
 
  protected:
-  raw_ptr<Textfield, AcrossTasksDanglingUntriaged> textfield_ =
-      nullptr;  // Owned by views hierarchy.
+  raw_ptr<Textfield> textfield_ = nullptr;  // Owned by views hierarchy.
   UniqueWidgetPtr widget_;
   raw_ptr<ViewAXPlatformNodeDelegate> delegate_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
