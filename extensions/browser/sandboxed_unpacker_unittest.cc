@@ -14,11 +14,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/rust_buildflags.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -506,16 +506,17 @@ TEST_F(SandboxedUnpackerTest, InvalidMessagesFile) {
   // Check that there is no _locales folder.
   base::FilePath install_path = GetInstallPath().Append(kLocaleFolder);
   EXPECT_FALSE(base::PathExists(install_path));
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
-  EXPECT_TRUE(base::MatchPattern(
-      GetInstallErrorMessage(),
-      u"*_locales?en_US?messages.json': EOF while parsing a string at line 4*"))
-#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
-  EXPECT_TRUE(base::MatchPattern(
-      GetInstallErrorMessage(),
-      u"*_locales?en_US?messages.json': Line: 4, column: 1,*"))
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
-      << GetInstallErrorMessage();
+  if (base::JSONReader::UsingRust()) {
+    EXPECT_TRUE(base::MatchPattern(GetInstallErrorMessage(),
+                                   u"*_locales?en_US?messages.json': EOF while "
+                                   u"parsing a string at line 4*"))
+        << GetInstallErrorMessage();
+  } else {
+    EXPECT_TRUE(base::MatchPattern(
+        GetInstallErrorMessage(),
+        u"*_locales?en_US?messages.json': Line: 4, column: 1,*"))
+        << GetInstallErrorMessage();
+  }
   ASSERT_EQ(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE,
             GetInstallErrorType());
   EXPECT_EQ(static_cast<int>(

@@ -10,8 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
-#include "base/rust_buildflags.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/constants.h"
@@ -106,17 +106,19 @@ TEST(ExtensionL10nUtil, ValidateLocalesWithErroneousLocalizations) {
                          errors::kLocalesInvalidLocale,
                          base::UTF16ToUTF8(de_messages_file.LossyDisplayName()),
                          "Variable $VAR$ used but not defined.")));
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
-  EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
-                         errors::kLocalesInvalidLocale,
-                         base::UTF16ToUTF8(es_messages_file.LossyDisplayName()),
-                         "expected value at line 1 column 24")));
-#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
-  EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
-                         errors::kLocalesInvalidLocale,
-                         base::UTF16ToUTF8(es_messages_file.LossyDisplayName()),
-                         "Line: 1, column: 24, Unexpected token.")));
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+  if (base::JSONReader::UsingRust()) {
+    EXPECT_THAT(error,
+                testing::HasSubstr(ErrorUtils::FormatErrorMessage(
+                    errors::kLocalesInvalidLocale,
+                    base::UTF16ToUTF8(es_messages_file.LossyDisplayName()),
+                    "expected value at line 1 column 24")));
+  } else {
+    EXPECT_THAT(error,
+                testing::HasSubstr(ErrorUtils::FormatErrorMessage(
+                    errors::kLocalesInvalidLocale,
+                    base::UTF16ToUTF8(es_messages_file.LossyDisplayName()),
+                    "Line: 1, column: 24, Unexpected token.")));
+  }
   EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
                          errors::kLocalesInvalidLocale,
                          base::UTF16ToUTF8(fr_messages_file.LossyDisplayName()),
@@ -275,19 +277,19 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsBadJSONFormat) {
   std::string error;
   EXPECT_FALSE(extension_l10n_util::LoadMessageCatalogs(
       src_path, "en_US", GzippedMessagesPermission::kDisallow, &error));
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
-  EXPECT_NE(std::string::npos,
-            error.find(ErrorUtils::FormatErrorMessage(
-                errors::kLocalesInvalidLocale,
-                base::UTF16ToUTF8(messages_file.LossyDisplayName()),
-                "EOF while parsing a value at line 1 column 9")));
-#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
-  EXPECT_NE(std::string::npos,
-            error.find(ErrorUtils::FormatErrorMessage(
-                errors::kLocalesInvalidLocale,
-                base::UTF16ToUTF8(messages_file.LossyDisplayName()),
-                "Line: 1, column: 10,")));
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+  if (base::JSONReader::UsingRust()) {
+    EXPECT_NE(std::string::npos,
+              error.find(ErrorUtils::FormatErrorMessage(
+                  errors::kLocalesInvalidLocale,
+                  base::UTF16ToUTF8(messages_file.LossyDisplayName()),
+                  "EOF while parsing a value at line 1 column 9")));
+  } else {
+    EXPECT_NE(std::string::npos,
+              error.find(ErrorUtils::FormatErrorMessage(
+                  errors::kLocalesInvalidLocale,
+                  base::UTF16ToUTF8(messages_file.LossyDisplayName()),
+                  "Line: 1, column: 10,")));
+  }
 }
 
 TEST(ExtensionL10nUtil, LoadMessageCatalogsDuplicateKeys) {

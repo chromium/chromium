@@ -126,6 +126,9 @@ class BASE_EXPORT JSONReader {
   static Result ReadAndReturnValueWithError(
       StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS);
+
+  // Determine whether the Rust parser is in use.
+  static bool UsingRust();
 };
 
 }  // namespace base

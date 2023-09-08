@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/features.h"
 #include "base/logging.h"
 #include "base/rust_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -14,9 +15,8 @@
 #include "base/strings/string_piece_rust.h"
 #include "third_party/rust/serde_json_lenient/v0_1/wrapper/functions.h"
 #include "third_party/rust/serde_json_lenient/v0_1/wrapper/lib.rs.h"
-#else
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
 #include "base/json/json_parser.h"
-#endif
 
 namespace base {
 
@@ -135,11 +135,16 @@ absl::optional<Value> JSONReader::Read(StringPiece json,
                                        int options,
                                        size_t max_depth) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
-  JSONReader::Result result = DecodeJSONInRust(json, options, max_depth);
-  if (!result.has_value()) {
-    return absl::nullopt;
+  if (UsingRust()) {
+    JSONReader::Result result = DecodeJSONInRust(json, options, max_depth);
+    if (!result.has_value()) {
+      return absl::nullopt;
+    }
+    return std::move(*result);
+  } else {
+    internal::JSONParser parser(options, max_depth);
+    return parser.Parse(json);
   }
-  return std::move(*result);
 #else   // BUILDFLAG(BUILD_RUST_JSON_READER)
   internal::JSONParser parser(options, max_depth);
   return parser.Parse(json);
@@ -161,7 +166,21 @@ absl::optional<Value::Dict> JSONReader::ReadDict(StringPiece json,
 JSONReader::Result JSONReader::ReadAndReturnValueWithError(StringPiece json,
                                                            int options) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
-  return DecodeJSONInRust(json, options, internal::kAbsoluteMaxDepth);
+  if (UsingRust()) {
+    return DecodeJSONInRust(json, options, internal::kAbsoluteMaxDepth);
+  } else {
+    internal::JSONParser parser(options);
+    auto value = parser.Parse(json);
+    if (!value) {
+      Error error;
+      error.message = parser.GetErrorMessage();
+      error.line = parser.error_line();
+      error.column = parser.error_column();
+      return base::unexpected(std::move(error));
+    }
+
+    return std::move(*value);
+  }
 #else   // BUILDFLAG(BUILD_RUST_JSON_READER)
   internal::JSONParser parser(options);
   auto value = parser.Parse(json);
@@ -174,6 +193,21 @@ JSONReader::Result JSONReader::ReadAndReturnValueWithError(StringPiece json,
   }
 
   return std::move(*value);
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+}
+
+// static
+bool JSONReader::UsingRust() {
+  // If features have not yet been enabled, we cannot check the feature, so fall
+  // back to the C++ parser. In practice, this seems to apply to
+  // `ReadPrefsFromDisk()`, which is parsing trusted JSON.
+  if (!base::FeatureList::GetInstance()) {
+    return false;
+  }
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  return base::FeatureList::IsEnabled(base::features::kUseRustJsonParser);
+#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
+  return false;
 #endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
 }
 

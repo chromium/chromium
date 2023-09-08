@@ -23,6 +23,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeDataUrls);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kSupportsUserDataFlatHashMap);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseRustJsonParser);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
 extern const BASE_EXPORT FeatureParam<bool>

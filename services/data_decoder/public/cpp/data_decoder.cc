@@ -192,19 +192,7 @@ mojom::DataDecoderService* DataDecoder::GetService() {
 
 void DataDecoder::ParseJson(const std::string& json,
                             ValueParseCallback callback) {
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
-  // Parses JSON directly in the calling process using the memory-safe
-  // Rust parser.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          [](const std::string& json) {
-            return base::JSONReader::ReadAndReturnValueWithError(
-                json, base::JSON_PARSE_RFC);
-          },
-          json),
-      base::BindOnce(&ParsingComplete, cancel_requests_, std::move(callback)));
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For Android, if the full Rust parser is not available, we use the
   // in-process sanitizer and then parse in-process.
   JsonSanitizer::Sanitize(
@@ -225,18 +213,40 @@ void DataDecoder::ParseJson(const std::string& json,
                                       result.value(), base::JSON_PARSE_RFC));
                 },
                 std::move(callback), cancel_requests_));
-#else
-  // Parse JSON out-of-process.
-  auto request =
-      base::MakeRefCounted<ValueParseRequest<mojom::JsonParser, base::Value>>(
-          std::move(callback), cancel_requests_);
-  GetService()->BindJsonParser(request->BindRemote());
-  request->remote()->Parse(
-      json, base::JSON_PARSE_RFC,
-      base::BindOnce(&ValueParseRequest<mojom::JsonParser,
-                                        base::Value>::OnServiceValueOrError,
-                     request));
-#endif
+#else  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  // Parses JSON directly in the calling process using the memory-safe
+  // Rust parser.
+  if (base::JSONReader::UsingRust()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](const std::string& json) {
+              return base::JSONReader::ReadAndReturnValueWithError(
+                  json, base::JSON_PARSE_RFC);
+            },
+            json),
+        base::BindOnce(&ParsingComplete, cancel_requests_,
+                       std::move(callback)));
+  } else {
+#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
+  CHECK(!base::JSONReader::UsingRust())
+      << "UseJsonParserFeature enabled, but not supported in this build.";
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+    // Parse JSON out-of-process.
+    auto request =
+        base::MakeRefCounted<ValueParseRequest<mojom::JsonParser, base::Value>>(
+            std::move(callback), cancel_requests_);
+    GetService()->BindJsonParser(request->BindRemote());
+    request->remote()->Parse(
+        json, base::JSON_PARSE_RFC,
+        base::BindOnce(&ValueParseRequest<mojom::JsonParser,
+                                          base::Value>::OnServiceValueOrError,
+                       request));
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  }
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static
