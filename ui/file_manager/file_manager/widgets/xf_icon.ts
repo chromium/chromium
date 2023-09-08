@@ -139,6 +139,10 @@ function getCSS() {
       background-repeat: no-repeat;
     }
 
+    :host-context([disabled]) span.keep-color {
+      opacity: 0.38;
+    }
+
     span.multi-color {
       display: flex;
       align-items: stretch;
@@ -150,6 +154,10 @@ function getCSS() {
       width: 16px;
     }
 
+    :host([size="extra_small"]) span.keep-color {
+      background-size: 16px 16px;
+    }
+
     :host([size="extra_small"]) span:not(.keep-color) {
       -webkit-mask-size: 16px;
     }
@@ -157,6 +165,10 @@ function getCSS() {
     :host([size="small"]) span {
       height: 20px;
       width: 20px;
+    }
+
+    :host([size="small"]) span.keep-color {
+      background-size: 20px 20px;
     }
 
     :host([size="small"]) span:not(.keep-color) {
@@ -168,6 +180,10 @@ function getCSS() {
       width: 32px;
     }
 
+    :host([size="medium"]) span.keep-color {
+      background-size: 32px 32px;
+    }
+
     :host([size="medium"]) span:not(.keep-color) {
       -webkit-mask-size: 32px;
     }
@@ -175,6 +191,10 @@ function getCSS() {
     :host([size="large"]) span {
       height: 48px;
       width: 48px;
+    }
+
+    :host([size="large"]) span.keep-color {
+      background-size: 48px 48px;
     }
 
     :host([size="large"]) span:not(.keep-color) {
