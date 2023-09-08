@@ -9645,7 +9645,6 @@ test("unit_tests") {
   if (enable_supervised_users) {
     sources += [
       "../browser/supervised_user/child_accounts/permission_request_creator_apiary_unittest.cc",
-      "../browser/supervised_user/kids_chrome_management/kids_profile_manager_unittest.cc",
       "../browser/supervised_user/supervised_user_browser_utils_unittest.cc",
       "../browser/supervised_user/supervised_user_google_auth_navigation_throttle_unittest.cc",
     ]
