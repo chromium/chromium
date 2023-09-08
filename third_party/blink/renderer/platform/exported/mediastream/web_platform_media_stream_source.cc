@@ -31,10 +31,12 @@ void WebPlatformMediaStreamSource::StopSource() {
 
 void WebPlatformMediaStreamSource::FinalizeStopSource() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  if (!stop_callback_.is_null())
+  if (!stop_callback_.is_null()) {
     std::move(stop_callback_).Run(Owner());
-  if (Owner())
+  }
+  if (Owner()) {
     Owner().SetReadyState(WebMediaStreamSource::kReadyStateEnded);
+  }
 }
 
 void WebPlatformMediaStreamSource::SetSourceMuted(bool is_muted) {
@@ -42,8 +44,9 @@ void WebPlatformMediaStreamSource::SetSourceMuted(bool is_muted) {
   // Although this change is valid only if the ready state isn't already Ended,
   // there's code further along (like in MediaStreamTrack) which filters
   // that out already.
-  if (!Owner())
+  if (!Owner()) {
     return;
+  }
   Owner().SetReadyState(is_muted ? WebMediaStreamSource::kReadyStateMuted
                                  : WebMediaStreamSource::kReadyStateLive);
 }
@@ -72,7 +75,6 @@ void WebPlatformMediaStreamSource::SetStopCallback(
 
 void WebPlatformMediaStreamSource::ResetSourceStoppedCallback() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!stop_callback_.is_null());
   stop_callback_.Reset();
 }
 
