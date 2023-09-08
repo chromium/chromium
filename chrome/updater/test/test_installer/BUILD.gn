@@ -83,7 +83,7 @@ if (is_win) {
 
   template("test_msi_installer") {
     testonly = true
-    appid = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}"
+    appid = "{C28FCF72-BCF2-45C5-8DEF-31A74AC02012}"
     msi_base_name = "TestSystemMsiInstaller"
     version = invoker.version
     relative_path = appid + "." + version + "/" + msi_base_name + ".msi"
