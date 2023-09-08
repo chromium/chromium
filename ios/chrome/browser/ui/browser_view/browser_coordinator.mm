@@ -2061,7 +2061,9 @@ enum class ToolbarKind {
 }
 
 - (void)openPasswordSettings {
-  CHECK(!self.passwordSettingsCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!self.passwordSettingsCoordinator);
 
   // Use main browser to open the password settings.
   SceneState* sceneState =

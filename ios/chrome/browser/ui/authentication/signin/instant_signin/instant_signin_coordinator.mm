@@ -62,9 +62,9 @@
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/1464966): Replace to DUMP_WILL_BE_CHECK(), when double tap
-  // is fixed.
-  DCHECK(!_mediator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_mediator);
 }
 
 #pragma mark - ChromeCoordinator
@@ -264,7 +264,9 @@
 
 // Adds an activity overlay to block the UI.
 - (void)showActivityOverlay {
-  CHECK(!_activityOverlayCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_activityOverlayCoordinator);
   _activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];
