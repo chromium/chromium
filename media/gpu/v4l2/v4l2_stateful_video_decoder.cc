@@ -359,12 +359,12 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // [1]
   // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#initialization
 
-  OUTPUT_queue_ = base::WrapRefCounted(
-      new V4L2Queue(base::BindRepeating(&HandledIoctl, device_fd_.get()),
-                    /*schedule_poll_cb=*/base::DoNothing(),
-                    /*mmap_cb=*/base::BindRepeating(&Mmap, device_fd_.get()),
-                    V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE,
-                    /*destroy_cb=*/base::DoNothing()));
+  OUTPUT_queue_ = base::WrapRefCounted(new V4L2Queue(
+      base::BindRepeating(&HandledIoctl, device_fd_.get()),
+      /*schedule_poll_cb=*/base::DoNothing(),
+      /*mmap_cb=*/base::BindRepeating(&Mmap, device_fd_.get()),
+      AllocateSecureBufferAsCallback(), V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE,
+      /*destroy_cb=*/base::DoNothing()));
 
   const auto profile_as_v4l2_fourcc =
       VideoCodecProfileToV4L2PixFmt(config.profile(), /*slice_based=*/false);
@@ -636,12 +636,12 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
 
-  CAPTURE_queue_ = base::WrapRefCounted(
-      new V4L2Queue(base::BindRepeating(&HandledIoctl, device_fd_.get()),
-                    /*schedule_poll_cb=*/base::DoNothing(),
-                    /*mmap_cb=*/base::BindRepeating(&Mmap, device_fd_.get()),
-                    V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
-                    /*destroy_cb=*/base::DoNothing()));
+  CAPTURE_queue_ = base::WrapRefCounted(new V4L2Queue(
+      base::BindRepeating(&HandledIoctl, device_fd_.get()),
+      /*schedule_poll_cb=*/base::DoNothing(),
+      /*mmap_cb=*/base::BindRepeating(&Mmap, device_fd_.get()),
+      AllocateSecureBufferAsCallback(), V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
+      /*destroy_cb=*/base::DoNothing()));
 
   const auto v4l2_format_or_error = CAPTURE_queue_->GetFormat();
   if (!v4l2_format_or_error.first || v4l2_format_or_error.second != kIoctlOk) {

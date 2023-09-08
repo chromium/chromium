@@ -10,9 +10,12 @@
 #include <linux/videodev2.h>
 #include <sys/mman.h>
 
+#include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/base/video_codecs.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #ifndef V4L2_PIX_FMT_QC08C
@@ -38,6 +41,16 @@ using IoctlAsCallback = base::RepeatingCallback<int(int, void*)>;
 // TODO(b/279980150): correct types and argument order and use decltype.
 using MmapAsCallback =
     base::RepeatingCallback<void*(void*, unsigned int, int, int, unsigned int)>;
+
+// This is the callback invoked after successfully allocating a secure buffer.
+// Invocation of this is guaranteed to pass a valid FD w/ the corresponding
+// secure handle.
+using SecureBufferAllocatedCB =
+    base::OnceCallback<void(base::ScopedFD fd, uint64_t secure_handle)>;
+
+using AllocateSecureBufferAsCallback =
+    base::RepeatingCallback<void(uint32_t size,
+                                 SecureBufferAllocatedCB callback)>;
 
 // Numerical value of ioctl() OK return value;
 constexpr int kIoctlOk = 0;

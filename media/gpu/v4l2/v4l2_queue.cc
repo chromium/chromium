@@ -159,12 +159,14 @@ V4L2ExtCtrl::V4L2ExtCtrl(uint32_t id, int32_t val) : V4L2ExtCtrl(id) {
 // Also provides helper functions.
 class V4L2Buffer {
  public:
-  static std::unique_ptr<V4L2Buffer> Create(const IoctlAsCallback& ioctl_cb,
-                                            const MmapAsCallback& mmap_cb,
-                                            enum v4l2_buf_type type,
-                                            enum v4l2_memory memory,
-                                            const struct v4l2_format& format,
-                                            size_t buffer_id);
+  static std::unique_ptr<V4L2Buffer> Create(
+      const IoctlAsCallback& ioctl_cb,
+      const MmapAsCallback& mmap_cb,
+      const AllocateSecureBufferAsCallback& allocate_secure_cb,
+      enum v4l2_buf_type type,
+      enum v4l2_memory memory,
+      const struct v4l2_format& format,
+      size_t buffer_id);
 
   V4L2Buffer(const V4L2Buffer&) = delete;
   V4L2Buffer& operator=(const V4L2Buffer&) = delete;
@@ -175,6 +177,10 @@ class V4L2Buffer {
   size_t GetMemoryUsage() const;
   const struct v4l2_buffer& v4l2_buffer() const { return v4l2_buffer_; }
   scoped_refptr<VideoFrame> GetVideoFrame();
+  // Returns true upon successfully claiming the handle, false otherwise.
+  bool ClaimSecureHandle();
+  void ReleaseSecureHandle() { handle_claimed_ = false; }
+  uint64_t GetSecureHandle() { return secure_handle_; }
 
  private:
   V4L2Buffer(const IoctlAsCallback& ioctl_cb,
@@ -185,6 +191,7 @@ class V4L2Buffer {
              size_t buffer_id);
   bool Query();
   scoped_refptr<VideoFrame> CreateVideoFrame();
+  void SecureBufferAllocated(base::ScopedFD secure_fd, uint64_t secure_handle);
 
   const IoctlAsCallback ioctl_cb_;
   const MmapAsCallback mmap_cb_;
@@ -199,20 +206,38 @@ class V4L2Buffer {
 
   struct v4l2_format format_;
   scoped_refptr<VideoFrame> video_frame_;
+  base::ScopedFD secure_buffer_;
+  uint64_t secure_handle_ = 0;
+  bool handle_claimed_ = false;
+  base::WeakPtrFactory<V4L2Buffer> weak_factory_{this};
 };
 
-std::unique_ptr<V4L2Buffer> V4L2Buffer::Create(const IoctlAsCallback& ioctl_cb,
-                                               const MmapAsCallback& mmap_cb,
-                                               enum v4l2_buf_type type,
-                                               enum v4l2_memory memory,
-                                               const struct v4l2_format& format,
-                                               size_t buffer_id) {
+std::unique_ptr<V4L2Buffer> V4L2Buffer::Create(
+    const IoctlAsCallback& ioctl_cb,
+    const MmapAsCallback& mmap_cb,
+    const AllocateSecureBufferAsCallback& allocate_secure_cb,
+    enum v4l2_buf_type type,
+    enum v4l2_memory memory,
+    const struct v4l2_format& format,
+    size_t buffer_id) {
   // Not using std::make_unique because constructor is private.
   std::unique_ptr<V4L2Buffer> buffer(new V4L2Buffer(std::move(ioctl_cb),
                                                     std::move(mmap_cb), type,
                                                     memory, format, buffer_id));
+  if (!buffer->Query()) {
+    return nullptr;
+  }
 
-  return buffer->Query() ? std::move(buffer) : nullptr;
+  if (type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE && allocate_secure_cb) {
+    CHECK_EQ(memory, V4L2_MEMORY_DMABUF);
+    // Invoke the callback for secure buffer allocation. We only use dmabufs for
+    // the OUTPUT queue when doing secure playback.
+    allocate_secure_cb.Run(buffer->v4l2_buffer_.m.planes[0].length,
+                           base::BindOnce(&V4L2Buffer::SecureBufferAllocated,
+                                          buffer->weak_factory_.GetWeakPtr()));
+  }
+
+  return buffer;
 }
 
 V4L2Buffer::V4L2Buffer(const IoctlAsCallback& ioctl_cb,
@@ -246,6 +271,24 @@ V4L2Buffer::~V4L2Buffer() {
       }
     }
   }
+}
+
+bool V4L2Buffer::ClaimSecureHandle() {
+  if (handle_claimed_) {
+    return false;
+  }
+  handle_claimed_ = true;
+  return true;
+}
+
+void V4L2Buffer::SecureBufferAllocated(base::ScopedFD secure_fd,
+                                       uint64_t secure_handle) {
+  CHECK(secure_fd.is_valid());
+  CHECK(secure_handle);
+  secure_buffer_ = std::move(secure_fd);
+  secure_handle_ = secure_handle;
+  // Set the FD in the plane data.
+  v4l2_buffer_.m.planes[0].m.fd = secure_buffer_.get();
 }
 
 bool V4L2Buffer::Query() {
@@ -998,12 +1041,14 @@ size_t V4L2ReadableBuffer::BufferId() const {
 V4L2Queue::V4L2Queue(const IoctlAsCallback& ioctl_cb,
                      const base::RepeatingClosure& schedule_poll_cb,
                      const MmapAsCallback& mmap_cb,
+                     const AllocateSecureBufferAsCallback& allocate_secure_cb,
                      enum v4l2_buf_type type,
                      base::OnceClosure destroy_cb)
     : type_(type),
       ioctl_cb_(ioctl_cb),
       schedule_poll_cb_(schedule_poll_cb),
       mmap_cb_(mmap_cb),
+      allocate_secure_cb_(allocate_secure_cb),
       destroy_cb_(std::move(destroy_cb)),
       weak_this_factory_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1147,8 +1192,8 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
 
   // Now query all buffer information.
   for (size_t i = 0; i < reqbufs.count; i++) {
-    auto buffer =
-        V4L2Buffer::Create(ioctl_cb_, mmap_cb_, type_, memory_, *format, i);
+    auto buffer = V4L2Buffer::Create(ioctl_cb_, mmap_cb_, allocate_secure_cb_,
+                                     type_, memory_, *format, i);
 
     if (!buffer) {
       if (!DeallocateBuffers()) {
@@ -1235,6 +1280,58 @@ class V4L2BufferRefFactory {
                                   std::move(video_frame));
   }
 };
+
+CroStatus::Or<uint64_t> V4L2Queue::GetFreeSecureHandle() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // No buffers allocated at the moment?
+  if (!free_buffers_) {
+    return CroStatus::Codes::kSecureBufferPoolEmpty;
+  }
+
+  uint64_t sec_handle = 0;
+  // Go through the free list and look up each buffer by its ID to see if it has
+  // been claimed yet. If it's not claimed, claim and return that handle.
+  std::vector<size_t> ids_to_return_to_pool;
+  while (!sec_handle) {
+    auto free_id = free_buffers_->GetFreeBuffer();
+    if (!free_id.has_value()) {
+      break;
+    }
+
+    // Go through our buffer list to see if this one is claimed or not.
+    ids_to_return_to_pool.emplace_back(free_id.value());
+    for (auto& buf : buffers_) {
+      if (buf->v4l2_buffer().index == free_id.value()) {
+        if (buf->ClaimSecureHandle()) {
+          sec_handle = buf->GetSecureHandle();
+          break;
+        }
+      }
+    }
+  }
+
+  for (auto buf_id : ids_to_return_to_pool) {
+    free_buffers_->ReturnBuffer(buf_id);
+  }
+
+  if (!sec_handle) {
+    return CroStatus::Codes::kSecureBufferPoolEmpty;
+  }
+
+  return sec_handle;
+}
+
+void V4L2Queue::ReleaseSecureHandle(uint64_t secure_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Go through the list of buffers and find the matching one with the secure
+  // handle and release that one.
+  for (auto& buf : buffers_) {
+    if (buf->GetSecureHandle() == secure_handle) {
+      buf->ReleaseSecureHandle();
+      return;
+    }
+  }
+}
 
 absl::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBuffer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -31,6 +31,7 @@
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateful.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // gn check does not account for BUILDFLAG(), so including this header will
@@ -38,6 +39,10 @@
 // for more information.
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// TODO(jkardatzke): Remove these once they are in linux/videodev2.h.
+#define V4L2_CID_MPEG_MTK_BASE (0x00990000 | 0x2000)
+#define V4L2_CID_MPEG_MTK_GET_SECURE_HANDLE (V4L2_CID_MPEG_MTK_BASE + 8)
 
 namespace media {
 
@@ -283,6 +288,13 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
     if (backend_)
       backend_ = nullptr;
   }
+  if (config.is_encrypted()) {
+    device_->set_secure_allocate_cb(
+        base::BindRepeating(&V4L2VideoDecoder::AllocateSecureBuffer,
+                            weak_this_for_callbacks_.GetWeakPtr()));
+  } else {
+    device_->set_secure_allocate_cb(AllocateSecureBufferAsCallback());
+  }
 
   DCHECK(!input_queue_);
   DCHECK(!output_queue_);
@@ -320,6 +332,13 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Call init_cb.
   output_cb_ = std::move(output_cb);
+
+  // Call init_cb
+  if (pending_secure_allocate_callbacks_) {
+    // We need to wait for these to complete before we invoke the init callback.
+    pending_init_cb_ = std::move(init_cb);
+    return;
+  }
   SetState(State::kInitialized);
   std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
@@ -427,15 +446,98 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   }
 
   const size_t num_OUTPUT_buffers = backend_->GetNumOUTPUTQueueBuffers();
-  VLOGF(1) << "Requesting: " << num_OUTPUT_buffers
-           << " OUTPUT buffers of type V4L2_MEMORY_MMAP";
-  if (input_queue_->AllocateBuffers(num_OUTPUT_buffers, V4L2_MEMORY_MMAP,
+  // Secure playback uses dmabufs for the OUTPUT queue, otherwise we use mmap
+  // buffers.
+  v4l2_memory input_queue_memory =
+      !!cdm_context_ref_ ? V4L2_MEMORY_DMABUF : V4L2_MEMORY_MMAP;
+  VLOGF(1) << "Requesting: " << num_OUTPUT_buffers << " OUTPUT buffers of type "
+           << (input_queue_memory == V4L2_MEMORY_MMAP ? "V4L2_MEMORY_MMAP"
+                                                      : "V4L2_MEMORY_DMABUF");
+  if (input_queue_->AllocateBuffers(num_OUTPUT_buffers, input_queue_memory,
                                     incoherent_) == 0) {
     VLOGF(1) << "Failed to allocate input buffer.";
     return V4L2Status::Codes::kFailedResourceAllocation;
   }
 
   return V4L2Status::Codes::kOk;
+}
+
+void V4L2VideoDecoder::AllocateSecureBuffer(uint32_t size,
+                                            SecureBufferAllocatedCB callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  pending_secure_allocate_callbacks_++;
+  // Wrap this with a default handler if it gets dropped somehow or otherwise we
+  // could hang waiting to finish init.
+  cdm_context_ref_->GetCdmContext()
+      ->GetChromeOsCdmContext()
+      ->AllocateSecureBuffer(
+          size,
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              base::BindPostTaskToCurrentDefault(base::BindOnce(
+                  &V4L2VideoDecoder::AllocateSecureBufferCB,
+                  weak_this_for_callbacks_.GetWeakPtr(), std::move(callback))),
+              mojo::PlatformHandle()));
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void V4L2VideoDecoder::AllocateSecureBufferCB(SecureBufferAllocatedCB callback,
+                                              mojo::PlatformHandle mojo_fd) {
+  if (state_ == State::kError) {
+    // Drop this and return, we've already entered the error state from a prior
+    // failed callback so we have nothing to do.
+    return;
+  }
+  CHECK(!!pending_init_cb_);
+  if (!mojo_fd.is_valid()) {
+    LOG(ERROR) << "Invalid Mojo FD returned for secure buffer allocation";
+    SetState(State::kError);
+    std::move(pending_init_cb_)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+    return;
+  }
+  base::ScopedFD secure_fd = mojo_fd.TakeFD();
+  if (!secure_fd.is_valid()) {
+    LOG(ERROR) << "Invalid FD returned for secure buffer allocation";
+    SetState(State::kError);
+    std::move(pending_init_cb_)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+    return;
+  }
+
+  // Also resolve the secure handle in case failure occurs there, then we know
+  // what we pass into the callback is all valid.
+  struct v4l2_ext_control ctrl;
+  struct v4l2_ext_controls ctrls;
+  memset(&ctrls, 0, sizeof(ctrls));
+  memset(&ctrl, 0, sizeof(ctrl));
+  ctrl.id = V4L2_CID_MPEG_MTK_GET_SECURE_HANDLE;
+  ctrl.value = secure_fd.get();
+
+  ctrls.count = 1;
+  ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;
+  ctrls.controls = &ctrl;
+
+  if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls)) {
+    PLOG(ERROR) << "Failed getting secure buffer identifier for FD "
+                << secure_fd.get();
+    SetState(State::kError);
+    std::move(pending_init_cb_)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+    return;
+  }
+  uint64_t secure_handle = static_cast<uint64_t>(ctrl.value);
+
+  // We have the secure buffer and secure handle, pass it into the callback.
+  std::move(callback).Run(std::move(secure_fd), secure_handle);
+
+  CHECK_GT(pending_secure_allocate_callbacks_, 0u);
+  pending_secure_allocate_callbacks_--;
+  if (!pending_secure_allocate_callbacks_) {
+    SetState(State::kInitialized);
+    std::move(pending_init_cb_).Run(DecoderStatus::Codes::kOk);
+  }
 }
 
 bool V4L2VideoDecoder::SetupInputFormat(uint32_t fourcc) {
@@ -814,6 +916,33 @@ size_t V4L2VideoDecoder::GetMaxOutputFramePoolSize() const {
 
 bool V4L2VideoDecoder::NeedsTranscryption() {
   return !!cdm_context_ref_;
+}
+
+CroStatus V4L2VideoDecoder::AttachSecureBuffer(
+    scoped_refptr<DecoderBuffer>& buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  if (!cdm_context_ref_) {
+    return CroStatus::Codes::kOk;
+  }
+
+  if (state_ == State::kError) {
+    return CroStatus::Codes::kUnableToAllocateSecureBuffer;
+  }
+
+  auto secure_handle_or_error = input_queue_->GetFreeSecureHandle();
+  if (!secure_handle_or_error.has_value()) {
+    // This may only mean we are currently out of buffers, it's not necessarily
+    // a fatal error.
+    return std::move(secure_handle_or_error).error().code();
+  }
+  buffer->WritableSideData().secure_handle =
+      std::move(secure_handle_or_error).value();
+  return CroStatus::Codes::kOk;
+}
+
+void V4L2VideoDecoder::ReleaseSecureBuffer(uint64_t secure_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  input_queue_->ReleaseSecureHandle(secure_handle);
 }
 
 CroStatus V4L2VideoDecoder::ContinueChangeResolution(

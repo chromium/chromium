@@ -69,6 +69,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   void ApplyResolutionChange() override;
   size_t GetMaxOutputFramePoolSize() const override;
   bool NeedsTranscryption() override;
+  CroStatus AttachSecureBuffer(scoped_refptr<DecoderBuffer>& buffer) override;
+  void ReleaseSecureBuffer(uint64_t secure_handle) override;
 
   // V4L2VideoDecoderBackend::Client implementation
   void OnBackendError() override;
@@ -157,6 +159,18 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // until InitializeBackend() is called.
   V4L2Status InitializeBackend();
 
+  // Performs allocation of a secure buffer by invoking the Mojo call on the
+  // CdmContext. This will only invoke the passed in callback on a successful
+  // allocation, otherwise this will cause the decoder init to fail.
+  void AllocateSecureBuffer(uint32_t size, SecureBufferAllocatedCB callback);
+
+  // Callback from invoking the Mojo call to allocate a secure buffer. This
+  // validates the FD and also resolves it to a secure handle before invoking
+  // the callback. If there's anything wrong with the passed in arguments or
+  // resolving the handle, this will cause a failure in decoder initialization.
+  void AllocateSecureBufferCB(SecureBufferAllocatedCB callback,
+                              mojo::PlatformHandle secure_buffer);
+
   // Pages with multiple V4L2VideoDecoder instances might run out of memory
   // (e.g. b/170870476) or crash (e.g. crbug.com/1109312). To avoid that and
   // while the investigation goes on, limit the maximum number of simultaneous
@@ -198,6 +212,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // We need to use a CdmContextRef to ensure the lifetime of the CdmContext
   // backing it while we are alive. This also indicates secure playback mode.
   std::unique_ptr<CdmContextRef> cdm_context_ref_;
+  uint32_t pending_secure_allocate_callbacks_ = 0;
+  InitCB pending_init_cb_;
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 
@@ -209,6 +225,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // |decoder_task_runner_|.
   base::WeakPtr<V4L2VideoDecoder> weak_this_for_polling_;
   base::WeakPtrFactory<V4L2VideoDecoder> weak_this_for_polling_factory_;
+
+  base::WeakPtrFactory<V4L2VideoDecoder> weak_this_for_callbacks_{this};
 };
 
 }  // namespace media

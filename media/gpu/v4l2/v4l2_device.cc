@@ -72,7 +72,8 @@ class V4L2QueueFactory {
                                               base::OnceClosure destroy_cb) {
     return new V4L2Queue(base::BindRepeating(&V4L2Device::Ioctl, dev),
                          base::BindRepeating(&V4L2Device::SchedulePoll, dev),
-                         base::BindRepeating(&V4L2Device::Mmap, dev), type,
+                         base::BindRepeating(&V4L2Device::Mmap, dev),
+                         dev->get_secure_allocate_cb(), type,
                          std::move(destroy_cb));
   }
 };
