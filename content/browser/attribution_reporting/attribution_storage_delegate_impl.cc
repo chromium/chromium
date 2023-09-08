@@ -336,14 +336,13 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
 }
 
 double AttributionStorageDelegateImpl::ComputeChannelCapacity(
-    const CommonSourceInfo& source,
+    SourceType source_type,
     const EventReportWindows& event_report_windows,
-    base::Time source_time,
     int max_event_level_reports,
     double randomized_response_rate) {
   const int64_t num_states = GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/max_event_level_reports,
-      /*num_bars=*/TriggerDataCardinality(source.source_type()) *
+      /*num_bars=*/TriggerDataCardinality(source_type) *
           event_report_windows.end_times().size());
 
   // This computes the channel capacity of a qary-symmetric channel with error

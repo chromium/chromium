@@ -857,7 +857,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       event_report_windows, common_info.source_type(), max_event_level_reports);
 
   double channel_capacity = delegate_->ComputeChannelCapacity(
-      common_info, event_report_windows, source_time, max_event_level_reports,
+      common_info.source_type(), event_report_windows, max_event_level_reports,
       randomized_response_rate);
   if (channel_capacity >
       delegate_->GetMaxChannelCapacity(common_info.source_type())) {

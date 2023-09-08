@@ -175,9 +175,8 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   // Computes the capacity of the q-ary symmetric channel.
   virtual double ComputeChannelCapacity(
-      const CommonSourceInfo& source,
-      const attribution_reporting::EventReportWindows& event_report_windows,
-      base::Time source_time,
+      attribution_reporting::mojom::SourceType,
+      const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,
       double randomized_response_rate) = 0;
 

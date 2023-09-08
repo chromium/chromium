@@ -419,8 +419,8 @@ TEST(AttributionStorageDelegateImplTest,
     double value =
         std::round(
             AttributionStorageDelegateImpl().ComputeChannelCapacity(
-                source.common_info(), source.event_report_windows(),
-                source.source_time(), source.max_event_level_reports(),
+                test_case.source_type, source.event_report_windows(),
+                source.max_event_level_reports(),
                 AttributionStorageDelegateImpl().GetRandomizedResponseRate(
                     source.event_report_windows(), test_case.source_type,
                     source.max_event_level_reports())) *
