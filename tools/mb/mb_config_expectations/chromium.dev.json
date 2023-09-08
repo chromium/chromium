@@ -83,6 +83,17 @@
       "use_remoteexec": true
     }
   },
+  "win-local-ssd-rel-dev": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
   "win-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
