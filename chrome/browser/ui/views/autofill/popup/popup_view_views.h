@@ -143,6 +143,12 @@ class PopupViewViews : public PopupBaseView,
   // selected.
   void SelectNextRow();
 
+  // Selects the next/previous in horizontal direction (i.e. left to right or
+  // vice versa) cell, if there is one. Otherwise leaves the current selection.
+  // Does not wrap.
+  void SelectNextHorizontalCell();
+  void SelectPreviousHorizontalCell();
+
   // Attempts to accept the selected cell. It will return false if there is no
   // selected cell or the cell does not trigger field filling or scanning a
   // credit card. `event_time` must be the time the user input event was

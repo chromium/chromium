@@ -271,6 +271,24 @@ bool PopupViewViews::HandleKeyPressEvent(
     case ui::VKEY_DOWN:
       SelectNextRow();
       return true;
+    case ui::VKEY_LEFT:
+      // `base::i18n::IsRTL` is used here instead of the controller's method
+      // because the controller's `IsRTL` depends on the language of the focused
+      // field and not the overall UI language. However, the layout of the popup
+      // is determined by the overall UI language.
+      if (base::i18n::IsRTL()) {
+        SelectNextHorizontalCell();
+      } else {
+        SelectPreviousHorizontalCell();
+      }
+      return true;
+    case ui::VKEY_RIGHT:
+      if (base::i18n::IsRTL()) {
+        SelectPreviousHorizontalCell();
+      } else {
+        SelectNextHorizontalCell();
+      }
+      return true;
     case ui::VKEY_PRIOR:  // Page up.
       // Set no line and then select the next line in case the first line is not
       // selectable.
@@ -331,6 +349,28 @@ void PopupViewViews::SelectNextRow() {
     new_row = 0u;
   }
   SetSelectedCell(CellIndex{new_row, kNewCellType});
+}
+
+void PopupViewViews::SelectNextHorizontalCell() {
+  absl::optional<CellIndex> selected_cell = GetSelectedCell();
+  if (selected_cell && HasPopupRowViewAt(selected_cell->first)) {
+    PopupRowView& row = GetPopupRowViewAt(selected_cell->first);
+    if (selected_cell->second == PopupRowView::CellType::kContent &&
+        row.GetControlView()) {
+      SetSelectedCell(
+          CellIndex{selected_cell->first, PopupRowView::CellType::kControl});
+    }
+  }
+}
+
+void PopupViewViews::SelectPreviousHorizontalCell() {
+  absl::optional<CellIndex> selected_cell = GetSelectedCell();
+  if (selected_cell && HasPopupRowViewAt(selected_cell->first)) {
+    if (selected_cell->second == PopupRowView::CellType::kControl) {
+      SetSelectedCell(
+          CellIndex{selected_cell->first, PopupRowView::CellType::kContent});
+    }
+  }
 }
 
 bool PopupViewViews::AcceptSelectedContentOrCreditCardCell(

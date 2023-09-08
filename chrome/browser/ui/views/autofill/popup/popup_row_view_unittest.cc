@@ -195,69 +195,25 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsWithControl) {
             absl::make_optional<CellType>(CellType::kControl));
 }
 
-TEST_F(PopupRowViewTest, LeftAndRightKeyEventsAreHandled) {
+TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
   ShowView(0, /*has_control=*/true);
   ASSERT_TRUE(row_view().GetControlView());
   row_view().SetSelectedCell(CellType::kContent);
 
   EXPECT_CALL(a11y_selection_delegate(),
               NotifyAXSelection(Ref(*row_view().GetControlView())));
-  SimulateKeyPress(ui::VKEY_RIGHT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kControl);
+  row_view().SetSelectedCell(CellType::kControl);
 
   // Hitting right again does not do anything.
   EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
-  SimulateKeyPress(ui::VKEY_RIGHT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kControl);
-
-  EXPECT_CALL(a11y_selection_delegate(),
-              NotifyAXSelection(Ref(row_view().GetContentView())));
-  SimulateKeyPress(ui::VKEY_LEFT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kContent);
-
-  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
-  SimulateKeyPress(ui::VKEY_LEFT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kContent);
-}
-
-TEST_F(PopupRowViewTest, LeftAndRightKeyEventsAreHandledForRTL) {
-  base::i18n::SetRTLForTesting(true);
-  ShowView(0, /*has_control=*/true);
-  ASSERT_TRUE(row_view().GetControlView());
   row_view().SetSelectedCell(CellType::kControl);
 
   EXPECT_CALL(a11y_selection_delegate(),
               NotifyAXSelection(Ref(row_view().GetContentView())));
-  SimulateKeyPress(ui::VKEY_RIGHT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kContent);
-
-  // Hitting right again does not do anything.
-  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
-  SimulateKeyPress(ui::VKEY_RIGHT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kContent);
-
-  EXPECT_CALL(a11y_selection_delegate(),
-              NotifyAXSelection(Ref(*row_view().GetControlView())));
-  SimulateKeyPress(ui::VKEY_LEFT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kControl);
-
-  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
-  SimulateKeyPress(ui::VKEY_LEFT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kControl);
-}
-
-TEST_F(PopupRowViewTest, LeftAndRightKeyEventsAreHandledWithoutControl) {
-  ShowView(0, /*has_control=*/false);
-  ASSERT_FALSE(row_view().GetControlView());
   row_view().SetSelectedCell(CellType::kContent);
 
-  // Hitting right or left does not do anything, since there is only one cell to
-  // select.
   EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
-  SimulateKeyPress(ui::VKEY_RIGHT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kContent);
-  SimulateKeyPress(ui::VKEY_LEFT);
-  EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kContent);
+  row_view().SetSelectedCell(CellType::kContent);
 }
 
 TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {

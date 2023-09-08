@@ -452,6 +452,61 @@ TEST_F(PopupViewViewsTest, CursorUpDownForSelectableCells) {
             absl::make_optional<CellIndex>(1u, CellType::kContent));
 }
 
+TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandled) {
+  // The control cell is present in suggestions with children.
+  controller().set_suggestions(
+      {CreateSuggestionWithChildren({Suggestion(u"Child #1")})});
+  CreateAndShowView();
+  view().SetSelectedCell(CellIndex{0, CellType::kContent});
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
+
+  // Hitting right again does not do anything.
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
+
+  SimulateKeyPress(ui::VKEY_LEFT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+
+  SimulateKeyPress(ui::VKEY_LEFT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+}
+
+TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandledForRTL) {
+  base::i18n::SetRTLForTesting(true);
+  // The control cell is present in suggestions with children.
+  controller().set_suggestions(
+      {CreateSuggestionWithChildren({Suggestion(u"Child #1")})});
+  CreateAndShowView();
+  view().SetSelectedCell(CellIndex{0, CellType::kControl});
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+
+  // Hitting right again does not do anything.
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+
+  SimulateKeyPress(ui::VKEY_LEFT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
+
+  SimulateKeyPress(ui::VKEY_LEFT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
+}
+
+TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandledWithoutControl) {
+  CreateAndShowView({PopupItemId::kAddressEntry});
+  view().SetSelectedCell(CellIndex{0, CellType::kContent});
+
+  // Hitting right or left does not do anything, since there is only one cell to
+  // select.
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+  SimulateKeyPress(ui::VKEY_LEFT);
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+}
+
 TEST_F(PopupViewViewsTest, CursorLeftRightDownForAutocompleteEntries) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillShowAutocompleteDeleteButton};

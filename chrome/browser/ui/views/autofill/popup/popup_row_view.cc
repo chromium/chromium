@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
@@ -23,7 +22,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/type_conversion.h"
@@ -161,42 +159,8 @@ bool PopupRowView::HandleKeyPressEvent(
       content_view_->HandleKeyPressEvent(event)) {
     return true;
   }
-  switch (event.windows_key_code) {
-    case ui::VKEY_LEFT:
-      // `base::i18n::IsRTL` is used here instead of the controller's method
-      // because the controller's `IsRTL` depends on the language of the focused
-      // field and not the overall UI language. However, the layout of the popup
-      // is determined by the overall UI language.
-      if (base::i18n::IsRTL()) {
-        SelectNextCell();
-      } else {
-        SelectPreviousCell();
-      }
-      return true;
-    case ui::VKEY_RIGHT:
-      if (base::i18n::IsRTL()) {
-        SelectPreviousCell();
-      } else {
-        SelectNextCell();
-      }
-      return true;
-    default:
-      return false;
-  }
-}
 
-void PopupRowView::SelectNextCell() {
-  CHECK(GetSelectedCell());
-  if (*GetSelectedCell() == CellType::kContent && GetControlView()) {
-    SetSelectedCell(CellType::kControl);
-  }
-}
-
-void PopupRowView::SelectPreviousCell() {
-  CHECK(GetSelectedCell());
-  if (*GetSelectedCell() == CellType::kControl) {
-    SetSelectedCell(CellType::kContent);
-  }
+  return false;
 }
 
 const PopupCellView* PopupRowView::GetCellView(CellType type) const {

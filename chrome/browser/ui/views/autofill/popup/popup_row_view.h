@@ -99,11 +99,6 @@ class PopupRowView : public views::View {
   PopupCellView* GetControlView() { return control_view_.get(); }
 
  private:
-  // Selects the next/previous cell, if there is one. Otherwise leaves the
-  // current selection. Does not wrap.
-  void SelectNextCell();
-  void SelectPreviousCell();
-
   // Returns the cell view or `nullptr` if it was not created.
   const PopupCellView* GetCellView(CellType type) const;
   PopupCellView* GetCellView(CellType type);
