@@ -712,6 +712,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.GoogleDrive.DSSAvailabilityPercentage" units="%"
+    expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Percentage of Docs/Sheets/Slides that are available offline compared to the
+    total number of known Docs/Sheets/Slides by DriveFS. A file is considered
+    known if DriveFS has cached the metadata for the file. Docs offline can see
+    many more files then DriveFS so we prune the list of known files before
+    sending this metric. This is emitted during the polling of Docs offline
+    which happens if at least one Files app window is open.
+  </summary>
+</histogram>
+
 <histogram
     name="FileBrowser.HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin"
     units="ms" expires_after="2024-01-14">
