@@ -3189,9 +3189,11 @@ void NGLineBreaker::RetryAfterOverflow(NGLineInfo* line_info,
   //
   // TODO(kojii): Not all items need to rewind, but such case is rare and
   // rewinding all items simplifes the code.
-  SetCurrentStyleForce(ComputeCurrentStyle(0, line_info));
   if (!item_results->empty()) {
+    SetCurrentStyleForce(ComputeCurrentStyle(0, line_info));
     Rewind(0, line_info);
+  } else {
+    SetCurrentStyleForce(*current_style_);
   }
   ResetRewindLoopDetector();
 }
