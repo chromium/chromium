@@ -607,7 +607,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
                           base::Unretained(observer_)),
       l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE),
       this, idp_metadata);
-  signin_to_idp_button_ = row->AddChildView(std::move(button));
+  row->AddChildView(std::move(button));
   AddChildView(std::move(row));
 
   SizeToContents();
@@ -1042,6 +1042,10 @@ void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
+  // Make sure not to keep dangling pointers around first.
+  continue_button_ = nullptr;
+  auto_reauthn_checkbox_ = nullptr;
+
   const std::vector<views::View*> child_views = children();
   for (views::View* child_view : child_views) {
     if (child_view != header_view_) {
@@ -1049,8 +1053,6 @@ void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
       delete child_view;
     }
   }
-
-  continue_button_ = nullptr;
 }
 
 BEGIN_METADATA(AccountSelectionBubbleView, views::BubbleDialogDelegateView)
