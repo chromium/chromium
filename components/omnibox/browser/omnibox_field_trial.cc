@@ -690,7 +690,7 @@ const base::FeatureParam<double>
 const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconWeather(
     &omnibox::kSquareSuggestIcons,
     "OmniboxSquareSuggestIconWeather",
-    false);
+    true);
 
 bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);
