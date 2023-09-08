@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/missive/fake_missive_client.h"
+#include "chromeos/dbus/missive/history_tracker.h"
 #include "components/reporting/proto/synced/interface.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -256,6 +257,13 @@ class MissiveClientImpl : public MissiveClient {
                        std::move(completion_callback)) {
       *request_.mutable_record() = std::move(record);
       request_.set_priority(priority);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // Turn on the debug state flag, if required (ChromeOS only)
+      if (::reporting::HistoryTracker::Get()->debug_state()) {
+        request_.set_health_data_logging_enabled(true);
+      }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
 
     bool WriteRequest(dbus::MessageWriter* writer) override {

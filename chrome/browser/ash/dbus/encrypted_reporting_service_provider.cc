@@ -16,10 +16,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
+#include "chromeos/dbus/missive/history_tracker.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/interface.pb.h"
 #include "components/reporting/proto/synced/status.pb.h"
@@ -31,6 +33,10 @@
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/missive/history_tracker.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace ash {
 
@@ -50,6 +56,13 @@ void SendStatusAsResponse(
   // Encode whole `response_message`
   dbus::MessageWriter writer(response.get());
   writer.AppendProtoAsArrayOfBytes(response_message);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Turn on the debug state flag, if required.
+  if (::reporting::HistoryTracker::Get()->debug_state()) {
+    response_message.set_health_data_logging_enabled(true);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Send `response`
   std::move(response_sender).Run(std::move(response));
@@ -260,6 +273,14 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
                          std::move(response_message), status);
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Accept health data if present (ChromeOS only)
+  if (request.has_health_data()) {
+    ::reporting::HistoryTracker::Get()->set_data(
+        std::move(request.health_data()), base::DoNothing());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   upload_provider_->RequestUploadEncryptedRecords(
       request.need_encryption_keys(), std::move(records),
