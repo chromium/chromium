@@ -56,7 +56,7 @@ std::map<x11::RandR::Output, int> GetMonitors(int version,
 // must already be initialized to the display bounds.  At most one display out
 // of |displays| will be affected.
 void ClipWorkArea(std::vector<display::Display>* displays,
-                  int64_t primary_display_index) {
+                  size_t primary_display_index) {
   x11::Window x_root_window = ui::GetX11RootWindow();
 
   std::vector<int32_t> value;
@@ -213,7 +213,9 @@ int GetXrandrVersion() {
   return version;
 }
 
-std::vector<display::Display> GetFallbackDisplayList(float scale) {
+std::vector<display::Display> GetFallbackDisplayList(
+    float scale,
+    size_t* primary_display_index_out) {
   const auto& screen = x11::Connection::Get()->default_screen();
   gfx::Size physical_size(screen.width_in_millimeters,
                           screen.height_in_millimeters);
@@ -239,14 +241,15 @@ std::vector<display::Display> GetFallbackDisplayList(float scale) {
   gfx_display.set_depth_per_component(DefaultBitsPerComponent());
 
   std::vector<display::Display> displays{gfx_display};
-  ClipWorkArea(&displays, 0);
+  *primary_display_index_out = 0;
+  ClipWorkArea(&displays, *primary_display_index_out);
   return displays;
 }
 
 std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     int version,
     const DisplayConfig& display_config,
-    int64_t* primary_display_index_out) {
+    size_t* primary_display_index_out) {
   DCHECK(primary_display_index_out);
   DCHECK_GE(version, kMinVersionXrandr);
   const float primary_scale = display_config.primary_scale;
@@ -258,7 +261,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
   auto resources = randr.GetScreenResourcesCurrent({x_root_window}).Sync();
   if (!resources) {
     LOG(ERROR) << "XRandR returned no displays; falling back to root window";
-    return GetFallbackDisplayList(primary_scale);
+    return GetFallbackDisplayList(primary_scale, primary_display_index_out);
   }
 
   const int depth = connection->default_screen().root_depth;
@@ -266,10 +269,9 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
 
   std::map<x11::RandR::Output, int> output_to_monitor =
       GetMonitors(version, &randr, x_root_window);
-  *primary_display_index_out = 0;
   auto output_primary = randr.GetOutputPrimary({x_root_window}).Sync();
   if (!output_primary)
-    return GetFallbackDisplayList(primary_scale);
+    return GetFallbackDisplayList(primary_scale, primary_display_index_out);
   x11::RandR::Output primary_display_id = output_primary->output;
 
   int explicit_primary_display_index = -1;
@@ -307,7 +309,8 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
       display_id = i;
 
     gfx::Rect crtc_bounds(crtc->x, crtc->y, crtc->width, crtc->height);
-    display::Display display(display_id, crtc_bounds);
+    const size_t display_index = displays.size();
+    display::Display& display = displays.emplace_back(display_id, crtc_bounds);
     display.set_native_origin(crtc_bounds.origin());
 
     display.set_audio_formats(edid_parser.audio_formats());
@@ -330,7 +333,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     }
 
     if (is_primary_display)
-      explicit_primary_display_index = displays.size();
+      explicit_primary_display_index = display_index;
 
     const std::string name(output_info->name.begin(), output_info->name.end());
     if (base::StartsWith(name, "eDP") || base::StartsWith(name, "LVDS")) {
@@ -345,7 +348,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     auto monitor_iter =
         output_to_monitor.find(static_cast<x11::RandR::Output>(output_id));
     if (monitor_iter != output_to_monitor.end() && monitor_iter->second == 0)
-      monitor_order_primary_display_index = displays.size();
+      monitor_order_primary_display_index = display_index;
 
     if (!display::HasForceDisplayColorProfile()) {
       gfx::ICCProfile icc_profile = ui::GetICCProfileForMonitor(
@@ -370,17 +373,19 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     int refresh_rate = static_cast<int>(
         GetRefreshRateFromXRRModeInfo(resources->modes, crtc->mode));
     display.set_display_frequency(refresh_rate);
-
-    displays.push_back(display);
   }
 
-  if (explicit_primary_display_index != -1)
-    *primary_display_index_out = explicit_primary_display_index;
-  else if (monitor_order_primary_display_index != -1)
-    *primary_display_index_out = monitor_order_primary_display_index;
+  if (displays.empty()) {
+    return GetFallbackDisplayList(primary_scale, primary_display_index_out);
+  }
 
-  if (displays.empty())
-    return GetFallbackDisplayList(primary_scale);
+  if (explicit_primary_display_index != -1) {
+    *primary_display_index_out = explicit_primary_display_index;
+  } else if (monitor_order_primary_display_index != -1) {
+    *primary_display_index_out = monitor_order_primary_display_index;
+  } else {
+    *primary_display_index_out = 0;
+  }
 
   if (!display::Display::HasForceDeviceScaleFactor()) {
     for (auto& display : displays) {

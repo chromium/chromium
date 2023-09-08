@@ -26,6 +26,7 @@ constexpr int kMinXrandrVersion = 103;  // Need at least xrandr version 1.3
 
 XDisplayManager::XDisplayManager(Delegate* delegate)
     : delegate_(delegate),
+      displays_{display::Display()},
       connection_(x11::Connection::Get()),
       x_root_window_(connection_->default_screen().root),
       xrandr_version_(GetXrandrVersion()),
@@ -49,7 +50,7 @@ bool XDisplayManager::IsXrandrAvailable() const {
   return xrandr_version_ >= kMinXrandrVersion;
 }
 
-display::Display XDisplayManager::GetPrimaryDisplay() const {
+const display::Display& XDisplayManager::GetPrimaryDisplay() const {
   DCHECK(!displays_.empty());
   return displays_[primary_display_index_];
 }
@@ -70,8 +71,10 @@ void XDisplayManager::OnEvent(const x11::Event& xev) {
   }
 }
 
-void XDisplayManager::SetDisplayList(std::vector<display::Display> displays) {
+void XDisplayManager::SetDisplayList(std::vector<display::Display> displays,
+                                     size_t primary_display_index) {
   displays_ = std::move(displays);
+  primary_display_index_ = primary_display_index;
   delegate_->OnXDisplayListUpdated();
 }
 
@@ -81,11 +84,13 @@ void XDisplayManager::SetDisplayList(std::vector<display::Display> displays) {
 void XDisplayManager::FetchDisplayList() {
   std::vector<display::Display> displays;
   auto& display_config = delegate_->GetDisplayConfig();
+  size_t primary_display_index = 0;
   if (IsXrandrAvailable()) {
     displays = BuildDisplaysFromXRandRInfo(xrandr_version_, display_config,
-                                           &primary_display_index_);
+                                           &primary_display_index);
   } else {
-    displays = GetFallbackDisplayList(display_config.primary_scale);
+    displays = GetFallbackDisplayList(display_config.primary_scale,
+                                      &primary_display_index);
   }
 
   if (displays != displays_) {
@@ -95,7 +100,7 @@ void XDisplayManager::FetchDisplayList() {
     }
   }
 
-  SetDisplayList(std::move(displays));
+  SetDisplayList(std::move(displays), primary_display_index);
 }
 
 void XDisplayManager::OnCurrentWorkspaceChanged(
