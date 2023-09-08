@@ -231,6 +231,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.LateFramesPercentage"
+    units="%" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the percentage of {CastStreamingSenderAudioVideo} frames that are
+    reported as late, and therefore dropped by the sender, during a cast
+    mirroring session. Recorded at the end of a cast mirroring session. Logged
+    on all desktop platforms.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.RetransmittedPacketsPercentage"
     units="%" expires_after="2024-09-01">
   <owner>anasr@google.com</owner>
