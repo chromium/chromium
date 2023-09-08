@@ -458,7 +458,6 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 
 ## Win / Intel ##
 
-crbug.com/1477274 [ win intel-0x9bc5 angle-d3d11 ] deqp/functional/gles3/texturefiltering/cube_formats_03.html [ RetryOnFailure ]
 
 ######################
 # Mac Metal failures #
