@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, OpenAndImmediatelyCloseDocument) {
   static constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
            async function openAndRapidlyClose() {
-             let openResult =
+             const openResult =
                  chrome.offscreen.createDocument(
                      {
                        url: 'offscreen.html',
