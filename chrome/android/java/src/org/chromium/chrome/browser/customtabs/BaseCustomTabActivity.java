@@ -26,6 +26,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -200,7 +201,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         // mIntentHandler comes from the base class.
         IntentIgnoringCriterion intentIgnoringCriterion =
-                (intent) -> mIntentHandler.shouldIgnoreIntent(intent, isCustomTab());
+                (intent) -> IntentHandler.shouldIgnoreIntent(intent, isCustomTab());
 
         BaseCustomTabActivityModule baseCustomTabsModule = overridenBaseCustomTabFactory != null
                 ? overridenBaseCustomTabFactory.create(mIntentDataProvider,

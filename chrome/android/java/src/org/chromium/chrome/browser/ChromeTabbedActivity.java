@@ -330,16 +330,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     private @Nullable AuxiliarySearchController mAuxiliarySearchController;
 
-    // This is the cached value of mIntentHandler#shouldIgnoreIntent and shouldn't be read directly.
+    // This is the cached value of IntentHandler#shouldIgnoreIntent and shouldn't be read directly.
     // Use #shouldIgnoreIntent instead.
     private Boolean mShouldIgnoreIntent;
 
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
     private OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
             new OneshotSupplierImpl<>();
-
-    // Time at which an intent was received and handled.
-    private long mIntentHandlingTimeMs;
 
     /**
      * Whether the StartSurface is shown when Chrome is launched.
@@ -908,7 +905,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 return;
             }
 
-            mIntentHandlingTimeMs = SystemClock.uptimeMillis();
             super.onNewIntent(intent);
 
             boolean shouldShowRegularOverviewMode = IntentUtils.safeGetBooleanExtra(
@@ -1294,7 +1290,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             boolean isMainIntentFromLauncher = false;
             if (getSavedInstanceState() == null && intent != null) {
                 if (!shouldIgnoreIntent()) {
-                    isIntentWithEffect = mIntentHandler.onNewIntent(intent);
+                    isIntentWithEffect = IntentHandler.onNewIntent(
+                            intent, mIntentHandlerDelegate, mIntentHandlingTimeMs);
                 }
 
                 if (IntentUtils.isMainIntentFromLauncher(intent)) {
@@ -1644,11 +1641,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         @Override
-        public long getIntentHandlingTimeMs() {
-            return mIntentHandlingTimeMs;
-        }
-
-        @Override
         public void processWebSearchIntent(String query) {
             assert false;
         }
@@ -1811,8 +1803,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private boolean shouldIgnoreIntent() {
         if (mShouldIgnoreIntent == null) {
-            // We call this only once because mIntentHandler#shouldIgnoreIntent has side effects.
-            mShouldIgnoreIntent = mIntentHandler.shouldIgnoreIntent(getIntent());
+            // We call this only once because IntentHandler#shouldIgnoreIntent can be slow.
+            mShouldIgnoreIntent = IntentHandler.shouldIgnoreIntent(getIntent());
         }
         return mShouldIgnoreIntent;
     }

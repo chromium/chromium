@@ -111,7 +111,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     public static @Action int dispatchToCustomTabActivity(Activity currentActivity, Intent intent) {
         LaunchIntentDispatcher dispatcher = new LaunchIntentDispatcher(currentActivity, intent);
         if (!isCustomTabIntent(dispatcher.mIntent)) return Action.CONTINUE;
-        if (dispatcher.launchCustomTabActivity(new IntentHandler(dispatcher))) {
+        if (dispatcher.launchCustomTabActivity()) {
             return Action.FINISH_ACTIVITY;
         } else {
             return Action.CONTINUE;
@@ -159,9 +159,8 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         }
 
         // Check if a web search Intent is being handled.
-        IntentHandler intentHandler = new IntentHandler(this);
         if (url == null && tabId == Tab.INVALID_TAB_ID && !incognito
-                && intentHandler.handleWebSearchIntent(mIntent)) {
+                && IntentHandler.handleWebSearchIntent(mIntent, this)) {
             return Action.FINISH_ACTIVITY;
         }
 
@@ -188,7 +187,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         // Check if we should launch a Custom Tab.
         if (isCustomTabIntent) {
-            launchCustomTabActivity(intentHandler);
+            launchCustomTabActivity();
             return Action.FINISH_ACTIVITY;
         }
 
@@ -220,12 +219,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     public void processUrlViewIntent(LoadUrlParams loadUrlParams, int tabOpenType,
             String externalAppId, int tabIdToBringToFront, Intent intent) {
         assert false;
-    }
-
-    @Override
-    public long getIntentHandlingTimeMs() {
-        assert false;
-        return 0;
     }
 
     /** When started with an intent, maybe pre-resolve the domain. */
@@ -335,12 +328,12 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
      * Handles launching a {@link CustomTabActivity}, which will sit on top of a client's activity
      * in the same task. Returns whether an Activity was launched (or brought to the foreground).
      */
-    private boolean launchCustomTabActivity(IntentHandler intentHandler) {
+    private boolean launchCustomTabActivity() {
         CustomTabsConnection.getInstance().onHandledIntent(
                 CustomTabsSessionToken.getSessionTokenFromIntent(mIntent), mIntent);
 
         boolean isCustomTab = true;
-        if (intentHandler.shouldIgnoreIntent(mIntent, isCustomTab)) {
+        if (IntentHandler.shouldIgnoreIntent(mIntent, isCustomTab)) {
             return false;
         }
 

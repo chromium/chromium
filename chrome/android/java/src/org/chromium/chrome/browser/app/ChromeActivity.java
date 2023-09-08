@@ -306,7 +306,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private boolean mPartnerBrowserRefreshNeeded;
 
-    protected final IntentHandler mIntentHandler;
+    protected final IntentHandlerDelegate mIntentHandlerDelegate;
+    // Time at which an intent was received and handled.
+    protected long mIntentHandlingTimeMs;
 
     /** Set if {@link #postDeferredStartupIfNeeded()} is called before native has loaded. */
     private boolean mDeferredStartupQueued;
@@ -411,7 +413,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private TabModalLifetimeHandler mTabModalLifetimeHandler;
 
     protected ChromeActivity() {
-        mIntentHandler = new IntentHandler(createIntentHandlerDelegate());
+        mIntentHandlerDelegate = createIntentHandlerDelegate();
+        mIntentHandlingTimeMs = SystemClock.uptimeMillis();
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
     }
 
@@ -1265,6 +1268,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     @Override
+    public void onNewIntent(Intent intent) {
+        mIntentHandlingTimeMs = SystemClock.uptimeMillis();
+        super.onNewIntent(intent);
+    }
+
+    @Override
     public void onNewIntentWithNative(Intent intent) {
         if (mFullscreenVideoPictureInPictureController != null) {
             mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
@@ -1272,11 +1281,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         super.onNewIntentWithNative(intent);
         getLaunchCauseMetrics().onReceivedIntent();
-        if (mIntentHandler.shouldIgnoreIntent(intent, isCustomTab())) {
+        if (IntentHandler.shouldIgnoreIntent(intent, isCustomTab())) {
             return;
         }
 
-        mIntentHandler.onNewIntent(intent);
+        IntentHandler.onNewIntent(intent, mIntentHandlerDelegate, mIntentHandlingTimeMs);
     }
 
     /**
@@ -1826,11 +1835,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 };
                 LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
                         ChromeActivity.this, callback);
-            }
-
-            @Override
-            public long getIntentHandlingTimeMs() {
-                return 0;
             }
 
             @Override

@@ -354,8 +354,6 @@ public class IntentHandler {
 
     private static boolean sTestIntentsEnabled;
 
-    private final IntentHandlerDelegate mDelegate;
-
     @IntDef({TabOpenType.OPEN_NEW_TAB, TabOpenType.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB,
             TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB, TabOpenType.CLOBBER_CURRENT_TAB,
             TabOpenType.BRING_TAB_TO_FRONT, TabOpenType.OPEN_NEW_INCOGNITO_TAB,
@@ -403,11 +401,6 @@ public class IntentHandler {
         void processUrlViewIntent(LoadUrlParams loadUrlParams, @TabOpenType int tabOpenType,
                 String externalAppId, int tabIdToBringToFront, Intent intent);
 
-        /**
-         * The time at which the Activity most recently received an Intent (eg onNewIntent).
-         */
-        long getIntentHandlingTimeMs();
-
         void processWebSearchIntent(String query);
     }
 
@@ -417,9 +410,7 @@ public class IntentHandler {
         sTestIntentsEnabled = enabled;
     }
 
-    public IntentHandler(IntentHandlerDelegate delegate) {
-        mDelegate = delegate;
-    }
+    private IntentHandler() {}
 
     /**
      * Determines what App was used to fire this Intent.
@@ -493,7 +484,7 @@ public class IntentHandler {
         return ExternalAppId.OTHER;
     }
 
-    private void recordExternalIntentSourceUMA(Intent intent) {
+    private static void recordExternalIntentSourceUMA(Intent intent) {
         @ExternalAppId
         int externalId = determineExternalIntentSource(intent);
 
@@ -508,7 +499,7 @@ public class IntentHandler {
      * by an application installed on the phone. Also records the name of that application.
      * This doesn't include generic URL handlers, such as browsers.
      */
-    private void recordAppHandlersForIntent(Intent intent) {
+    private static void recordAppHandlersForIntent(Intent intent) {
         List<String> packages = IntentUtils.safeGetStringArrayListExtra(
                 intent, ExternalNavigationHandler.EXTRA_EXTERNAL_NAV_PACKAGES);
         if (packages != null && packages.size() > 0) {
@@ -522,7 +513,8 @@ public class IntentHandler {
      * @param intent Target intent.
      * @return Whether the Intent was successfully handled.
      */
-    public boolean onNewIntent(Intent intent) {
+    public static boolean onNewIntent(
+            Intent intent, IntentHandlerDelegate delegate, long intentHandlingUptimeMillis) {
         assert intentHasValidUrl(intent);
         String url = getUrlFromIntent(intent);
         @TabOpenType
@@ -530,31 +522,32 @@ public class IntentHandler {
         int tabIdToBringToFront = getBringTabToFrontId(intent);
         if (url == null && tabIdToBringToFront == Tab.INVALID_TAB_ID
                 && tabOpenType != TabOpenType.OPEN_NEW_INCOGNITO_TAB) {
-            return handleWebSearchIntent(intent);
+            return handleWebSearchIntent(intent, delegate);
         }
 
         var asyncTabParams = AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().get(
                 getTabId(intent));
         LoadUrlParams loadUrlParams =
                 (asyncTabParams == null || asyncTabParams.getLoadUrlParams() == null)
-                ? createLoadUrlParamsForIntent(url, intent)
+                ? createLoadUrlParamsForIntent(url, intent, intentHandlingUptimeMillis)
                 : asyncTabParams.getLoadUrlParams();
 
         if (isIntentForMhtmlFileOrContent(intent) && tabOpenType == TabOpenType.OPEN_NEW_TAB
                 && loadUrlParams.getReferrer() == null
                 && loadUrlParams.getVerbatimHeaders() == null) {
-            handleMhtmlFileOrContentIntent(url, intent);
+            handleMhtmlFileOrContentIntent(url, intent, delegate);
             return true;
         }
         processUrlViewIntent(loadUrlParams, tabOpenType,
                 IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
-                tabIdToBringToFront, intent);
+                tabIdToBringToFront, intent, delegate);
         return true;
     }
 
-    private void processUrlViewIntent(LoadUrlParams loadUrlParams, @TabOpenType int tabOpenType,
-            String externalAppId, int tabIdToBringToFront, Intent intent) {
-        mDelegate.processUrlViewIntent(
+    private static void processUrlViewIntent(LoadUrlParams loadUrlParams,
+            @TabOpenType int tabOpenType, String externalAppId, int tabIdToBringToFront,
+            Intent intent, IntentHandlerDelegate delegate) {
+        delegate.processUrlViewIntent(
                 loadUrlParams, tabOpenType, externalAppId, tabIdToBringToFront, intent);
         recordExternalIntentSourceUMA(intent);
         recordAppHandlersForIntent(intent);
@@ -733,7 +726,7 @@ public class IntentHandler {
         }
     }
 
-    public boolean handleWebSearchIntent(Intent intent) {
+    public static boolean handleWebSearchIntent(Intent intent, IntentHandlerDelegate delegate) {
         if (intent == null) return false;
 
         String query = null;
@@ -745,16 +738,17 @@ public class IntentHandler {
 
         if (query == null || TextUtils.isEmpty(query)) return false;
 
-        mDelegate.processWebSearchIntent(query);
+        delegate.processWebSearchIntent(query);
         return true;
     }
 
-    private void handleMhtmlFileOrContentIntent(final String url, final Intent intent) {
+    private static void handleMhtmlFileOrContentIntent(
+            final String url, final Intent intent, IntentHandlerDelegate delegate) {
         OfflinePageUtils.getLoadUrlParamsForOpeningMhtmlFileOrContent(url, (loadUrlParams) -> {
             loadUrlParams.setVerbatimHeaders(maybeAddAdditionalContentHeaders(
                     intent, url, loadUrlParams.getVerbatimHeaders()));
-            processUrlViewIntent(
-                    loadUrlParams, TabOpenType.OPEN_NEW_TAB, null, Tab.INVALID_TAB_ID, intent);
+            processUrlViewIntent(loadUrlParams, TabOpenType.OPEN_NEW_TAB, null, Tab.INVALID_TAB_ID,
+                    intent, delegate);
         }, Profile.getLastUsedRegularProfile());
     }
 
@@ -893,7 +887,7 @@ public class IntentHandler {
      * @param intent Intent to check.
      * @return true if the intent should be ignored.
      */
-    public boolean shouldIgnoreIntent(Intent intent) {
+    public static boolean shouldIgnoreIntent(Intent intent) {
         return shouldIgnoreIntent(intent, /*isCustomTab=*/false);
     }
 
@@ -904,7 +898,7 @@ public class IntentHandler {
      * @param isCustomTab True if the Intent will end up in a Custom Tab.
      * @return true if the intent should be ignored.
      */
-    public boolean shouldIgnoreIntent(Intent intent, boolean isCustomTab) {
+    public static boolean shouldIgnoreIntent(Intent intent, boolean isCustomTab) {
         // Although not documented to, many/most methods that retrieve values from an Intent may
         // throw. Because we can't control what packages might send to us, we should catch any
         // Throwable and then fail closed (safe). This is ugly, but resolves top crashers in the
@@ -1081,7 +1075,7 @@ public class IntentHandler {
      * The default behavior here is to open in a new tab.  If this is changed, ensure
      * intents with action NDEF_DISCOVERED (links beamed over NFC) are handled properly.
      */
-    private @TabOpenType int getTabOpenType(Intent intent) {
+    private static @TabOpenType int getTabOpenType(Intent intent) {
         if (IntentUtils.safeGetBooleanExtra(
                     intent, WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false)) {
             return TabOpenType.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB;
@@ -1485,12 +1479,13 @@ public class IntentHandler {
     /**
      * Create a LoadUrlParams for handling a VIEW intent.
      */
-    public LoadUrlParams createLoadUrlParamsForIntent(String url, Intent intent) {
+    public static LoadUrlParams createLoadUrlParamsForIntent(
+            String url, Intent intent, long intentHandlingUptimeMillis) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         RequestMetadata metadata =
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent);
 
-        loadUrlParams.setIntentReceivedTimestamp(mDelegate.getIntentHandlingTimeMs());
+        loadUrlParams.setIntentReceivedTimestamp(intentHandlingUptimeMillis);
         loadUrlParams.setHasUserGesture(metadata == null ? false : metadata.hasUserGesture());
         // Add FROM_API to ensure intent handling isn't used again. Without FROM_API Chrome could
         // get stuck in a loop continually being asked to open a link, and then calling out to the

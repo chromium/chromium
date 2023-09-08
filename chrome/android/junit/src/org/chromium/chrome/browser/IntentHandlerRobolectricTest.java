@@ -156,7 +156,6 @@ public class IntentHandlerRobolectricTest {
 
     private static final String GOOGLE_URL = "https://www.google.com";
 
-    private IntentHandler mIntentHandler;
     private Intent mIntent;
 
     @Rule
@@ -210,7 +209,6 @@ public class IntentHandlerRobolectricTest {
         // To allow use of Origin.
         LibraryLoader.getInstance().ensureMainDexInitialized();
         IntentHandler.setTestIntentsEnabled(false);
-        mIntentHandler = new IntentHandler(mDelegate);
         mIntent = new Intent();
         Context appContext = ApplicationProvider.getApplicationContext();
         mShadowPowerManager =
@@ -227,14 +225,14 @@ public class IntentHandlerRobolectricTest {
         intent.setData(Uri.parse(GOOGLE_URL));
         InOrder inOrder = Mockito.inOrder(mDelegate);
 
-        mIntentHandler.onNewIntent(intent);
+        IntentHandler.onNewIntent(intent, mDelegate, 0);
         inOrder.verify(mDelegate).processUrlViewIntent(
                 mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
         Assert.assertTrue(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin().isOpaque());
 
         intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
-        mIntentHandler.onNewIntent(intent);
+        IntentHandler.onNewIntent(intent, mDelegate, 0);
         inOrder.verify(mDelegate).processUrlViewIntent(
                 mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
         Assert.assertNull(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin());
@@ -248,7 +246,7 @@ public class IntentHandlerRobolectricTest {
         intent.setData(Uri.parse(GOOGLE_URL));
         InOrder inOrder = Mockito.inOrder(mDelegate);
 
-        mIntentHandler.onNewIntent(intent);
+        IntentHandler.onNewIntent(intent, mDelegate, 0);
         inOrder.verify(mDelegate).processUrlViewIntent(
                 mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
         Assert.assertNull(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin());
@@ -257,7 +255,7 @@ public class IntentHandlerRobolectricTest {
         IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
                 intent, metadata);
 
-        mIntentHandler.onNewIntent(intent);
+        IntentHandler.onNewIntent(intent, mDelegate, 0);
         inOrder.verify(mDelegate).processUrlViewIntent(
                 mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
         Assert.assertTrue(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin().isOpaque());
@@ -450,7 +448,7 @@ public class IntentHandlerRobolectricTest {
         Intent intent = WebappLauncherActivity.createIntentToLaunchForWebapp(
                 webappLauncherActivityIntent, launchData);
 
-        assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        assertFalse(IntentHandler.shouldIgnoreIntent(intent));
     }
 
     /**
@@ -463,7 +461,7 @@ public class IntentHandlerRobolectricTest {
     public void testShouldIgnoreIncognitoIntent() {
         Intent intent = new Intent(GOOGLE_URL);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
+        assertTrue(IntentHandler.shouldIgnoreIntent(intent));
     }
 
     /**
@@ -476,7 +474,7 @@ public class IntentHandlerRobolectricTest {
     public void testShouldIgnoreIncognitoIntent_trusted() {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
-        assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        assertFalse(IntentHandler.shouldIgnoreIntent(intent));
     }
 
     /**
@@ -488,7 +486,7 @@ public class IntentHandlerRobolectricTest {
     public void testShouldIgnoreIncognitoIntent_customTab() {
         Intent intent = new Intent(GOOGLE_URL);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*isCustomTab=*/true));
+        assertFalse(IntentHandler.shouldIgnoreIntent(intent, /*isCustomTab=*/true));
     }
 
     @Test
@@ -561,7 +559,7 @@ public class IntentHandlerRobolectricTest {
         AsyncTabParamsManagerSingleton.getInstance().add(
                 tabId, new AsyncTabCreationParams(loadUrlParams));
 
-        mIntentHandler.onNewIntent(intent);
+        IntentHandler.onNewIntent(intent, mDelegate, 0);
         inOrder.verify(mDelegate).processUrlViewIntent(
                 mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
         Assert.assertEquals(
@@ -576,14 +574,14 @@ public class IntentHandlerRobolectricTest {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
         mShadowPowerManager.setIsInteractive(false);
-        Assert.assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent));
         mShadowPowerManager.setIsInteractive(true);
-        Assert.assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent));
         mShadowPowerManager.setIsInteractive(false);
         intent = new Intent(Intent.ACTION_MAIN);
-        Assert.assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent));
         intent.setData(Uri.parse(GOOGLE_URL));
-        Assert.assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent));
     }
 
     @Test
@@ -593,14 +591,14 @@ public class IntentHandlerRobolectricTest {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
         mShadowKeyguardManager.setKeyguardLocked(true);
-        Assert.assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent));
         mShadowKeyguardManager.setKeyguardLocked(false);
-        Assert.assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent));
         mShadowKeyguardManager.setKeyguardLocked(true);
         intent = new Intent(Intent.ACTION_MAIN);
-        Assert.assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent));
         intent.setData(Uri.parse(GOOGLE_URL));
-        Assert.assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent));
     }
 
     @Test
@@ -616,12 +614,10 @@ public class IntentHandlerRobolectricTest {
         Assert.assertTrue(IntentHandler.wasIntentSenderChrome(trustedIntent));
 
         trustedIntent.setData(Uri.parse("chrome://credits"));
-        Assert.assertFalse(
-                mIntentHandler.shouldIgnoreIntent(trustedIntent, /*startedActivity=*/false));
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(trustedIntent));
 
         trustedIntent.setData(Uri.parse("chrome-native://newtab"));
-        Assert.assertFalse(
-                mIntentHandler.shouldIgnoreIntent(trustedIntent, /*startedActivity=*/false));
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(trustedIntent));
     }
 
     @Test
@@ -632,12 +628,10 @@ public class IntentHandlerRobolectricTest {
         Assert.assertFalse(IntentHandler.wasIntentSenderChrome(untrustedIntent));
 
         untrustedIntent.setData(Uri.parse("chrome://credits"));
-        Assert.assertTrue(
-                mIntentHandler.shouldIgnoreIntent(untrustedIntent, /*startedActivity=*/false));
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent));
 
         untrustedIntent.setData(Uri.parse("chrome-native://newtab"));
-        Assert.assertTrue(
-                mIntentHandler.shouldIgnoreIntent(untrustedIntent, /*startedActivity=*/false));
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent));
     }
 
     @Test
@@ -648,12 +642,10 @@ public class IntentHandlerRobolectricTest {
         Assert.assertFalse(IntentHandler.wasIntentSenderChrome(untrustedIntent));
 
         untrustedIntent.setData(Uri.parse("about:blank"));
-        Assert.assertFalse(
-                mIntentHandler.shouldIgnoreIntent(untrustedIntent, /*startedActivity=*/false));
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(untrustedIntent));
 
         untrustedIntent.setData(Uri.parse("about://blank"));
-        Assert.assertFalse(
-                mIntentHandler.shouldIgnoreIntent(untrustedIntent, /*startedActivity=*/false));
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(untrustedIntent));
     }
 
     @Test
