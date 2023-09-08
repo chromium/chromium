@@ -595,6 +595,9 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "systemJapanesePhysicalTyping",
       base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping));
+  html_source->AddBoolean(
+      "languagePacksInSettingsEnabled",
+      base::FeatureList::IsEnabled(features::kLanguagePacksInSettings));
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {

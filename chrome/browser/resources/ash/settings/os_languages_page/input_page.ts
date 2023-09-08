@@ -140,6 +140,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
           return loadTimeData.getBoolean('onDeviceGrammarCheckEnabled');
         },
       },
+
+      languagePacksInSettingsEnabled_: Boolean,
     };
   }
 
@@ -171,6 +173,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private onDeviceGrammarCheckEnabled_: boolean;
   private languageSettingsJapaneseEnabled_: boolean;
   private shouldShowLanguagePacksNotice_: boolean;
+  private languagePacksInSettingsEnabled_ =
+      loadTimeData.getBoolean('languagePacksInSettingsEnabled');
 
   // Computed properties.
   private spellCheckLanguages_: SpellCheckLanguageState[]|undefined;
@@ -615,7 +619,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   private shouldShowSpinner_(_item:
                                  chrome.languageSettingsPrivate.InputMethod) {
-    return false;
+    return this.languagePacksInSettingsEnabled_;
   }
 }
 

@@ -159,7 +159,8 @@
             $i18n{inputMethodEnabled}
           </div>
         </div>
-        <template is="dom-if" if="[[shouldShowSpinner_(item)]]">
+        <template is="dom-if"
+            if="[[shouldShowSpinner_(item, languagePacksInSettingsEnabled_)]]">
           <paper-spinner-lite alt="TO BE TRANSLATED: Loading" active>
           </paper-spinner-lite>
         </template>
