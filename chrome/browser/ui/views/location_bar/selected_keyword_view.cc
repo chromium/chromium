@@ -130,7 +130,7 @@ const std::u16string& SelectedKeywordView::GetKeyword() const {
 
 int SelectedKeywordView::GetExtraInternalSpacing() const {
   // Align the label text with the suggestion text.
-  return OmniboxFieldTrial::IsCr23LayoutEnabled() ? 9 : 11;
+  return OmniboxFieldTrial::IsCr23LayoutEnabled() ? 14 : 11;
 }
 
 void SelectedKeywordView::SetLabelForCurrentWidth() {
