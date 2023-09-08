@@ -1049,6 +1049,13 @@ BASE_FEATURE(kLowDelayVideoRenderingOnLiveStream,
              "low-delay-video-rendering-on-live-stream",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allows the AutoPictureInPictureTabHelper to automatically enter
+// picture-in-picture for websites with video playback (instead of only websites
+// using camera or microphone).
+BASE_FEATURE(kAutoPictureInPictureForVideoPlayback,
+             "AutoPictureInPictureForVideoPlayback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether the autoplay policy should ignore Web Audio. When ignored, the
 // autoplay policy will be hardcoded to be the legacy one on based on the
 // platform

@@ -24,8 +24,7 @@ class HostContentSettingsMap;
 //   - The website has registered a MediaSession action handler for the
 //     'enterpictureinpicture' action.
 //   - The 'Auto Picture-in-Picture' content setting is allowed for the website.
-//   - The website is playing unmuted media OR the website is capturing camera
-//     or microphone.
+//   - The website is capturing camera or microphone.
 class AutoPictureInPictureTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<AutoPictureInPictureTabHelper>,

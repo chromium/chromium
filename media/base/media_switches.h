@@ -162,6 +162,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioFocusLossSuspendMediaSession);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioRendererAlgorithmParameters);
 MEDIA_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kAudioRendererAlgorithmStartingCapacityForEncrypted;
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPictureForVideoPlayback);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayIgnoreWebAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayDisableSettings);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kBresenhamCadence);

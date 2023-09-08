@@ -4,6 +4,7 @@
 
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -15,6 +16,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
+#include "media/base/media_switches.h"
 
 namespace {
 
@@ -211,7 +213,12 @@ TabStripModel* AutoPictureInPictureTabHelper::GetCurrentTabStripModel() const {
 }
 
 bool AutoPictureInPictureTabHelper::HasSufficientPlayback() const {
-  // TODO(https://crbug.com/1464251): Make sure that there is a video that is
+  if (!base::FeatureList::IsEnabled(
+          media::kAutoPictureInPictureForVideoPlayback)) {
+    return false;
+  }
+
+  // TODO(https://crbug.com/1464351): Make sure that there is a video that is
   // large enough and visible.
   return has_audio_focus_ && is_playing_;
 }
