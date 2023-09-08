@@ -339,22 +339,9 @@ class QuicNetworkTransactionTest
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket>
-  ConstructClientConnectionClosePacket(uint64_t num) {
-    return client_maker_->MakeConnectionClosePacket(
-        num, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!");
-  }
-
-  std::unique_ptr<quic::QuicEncryptedPacket>
   ConstructServerConnectionClosePacket(uint64_t num) {
     return server_maker_.MakeConnectionClosePacket(
         num, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!");
-  }
-
-  std::unique_ptr<quic::QuicEncryptedPacket> ConstructServerGoAwayPacket(
-      uint64_t num,
-      quic::QuicErrorCode error_code,
-      std::string reason_phrase) {
-    return server_maker_.MakeGoAwayPacket(num, error_code, reason_phrase);
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientAckPacket(
@@ -406,25 +393,6 @@ class QuicNetworkTransactionTest
   std::unique_ptr<quic::QuicReceivedPacket> ConstructInitialSettingsPacket(
       uint64_t packet_number) {
     return client_maker_->MakeInitialSettingsPacket(packet_number);
-  }
-
-  std::unique_ptr<quic::QuicReceivedPacket> ConstructServerAckPacket(
-      uint64_t packet_number,
-      uint64_t largest_received,
-      uint64_t smallest_received) {
-    return server_maker_.MakeAckPacket(packet_number, largest_received,
-                                       smallest_received);
-  }
-
-  std::unique_ptr<quic::QuicReceivedPacket> ConstructClientAckAndPriorityPacket(
-      uint64_t packet_number,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      quic::QuicStreamId id,
-      RequestPriority request_priority) {
-    return client_maker_->MakeAckAndPriorityPacket(
-        packet_number, largest_received, smallest_received, id,
-        ConvertRequestPriorityToQuicPriority(request_priority));
   }
 
   // Uses default QuicTestPacketMaker.
@@ -774,19 +742,6 @@ class QuicNetworkTransactionTest
     socket_factory_.AddSocketDataProvider(hanging_data_.back().get());
   }
 
-  void SetUpTestForRetryConnectionOnAlternateNetwork() {
-    context_.params()->migrate_sessions_on_network_change_v2 = true;
-    context_.params()->migrate_sessions_early_v2 = true;
-    context_.params()->retry_on_alternate_network_before_handshake = true;
-    scoped_mock_change_notifier_ =
-        std::make_unique<ScopedMockNetworkChangeNotifier>();
-    MockNetworkChangeNotifier* mock_ncn =
-        scoped_mock_change_notifier_->mock_network_change_notifier();
-    mock_ncn->ForceNetworkHandlesSupported();
-    mock_ncn->SetConnectedNetworksList(
-        {kDefaultNetworkForTests, kNewNetworkForTests});
-  }
-
   // Adds a new socket data provider for an HTTP request, and runs a request,
   // expecting it to be used.
   void AddHttpDataAndRunRequest() {
@@ -871,11 +826,6 @@ class QuicNetworkTransactionTest
 
   quic::QuicStreamId GetNthClientInitiatedBidirectionalStreamId(int n) const {
     return quic::test::GetNthClientInitiatedBidirectionalStreamId(
-        version_.transport_version, n);
-  }
-
-  quic::QuicStreamId GetNthServerInitiatedUnidirectionalStreamId(int n) const {
-    return quic::test::GetNthServerInitiatedUnidirectionalStreamId(
         version_.transport_version, n);
   }
 
