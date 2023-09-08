@@ -17,7 +17,7 @@ found in the LICENSE file.
 
     <org.chromium.chrome.browser.toolbar.HomeButton
         android:id="@+id/home_button"
-        style="@style/ToolbarButton"
+        style="@style/ToolbarHoverableButton"
         android:src="@drawable/btn_toolbar_home"
         android:contentDescription="@string/accessibility_toolbar_btn_home"
         android:visibility="gone"
@@ -48,11 +48,13 @@ found in the LICENSE file.
             android:layout_gravity="top"
             android:visibility="gone"
             android:layout_width="52dp"
-            style="@style/ToolbarButton" />
+            style="@style/ToolbarHoverableButton" />
+
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarButton"
-            android:paddingStart="8dp"
+            android:background="@drawable/toolbar_tab_switcher_button_ripple"
+            android:paddingStart="@dimen/toolbar_tab_switcher_button_padding"
             android:layout_gravity="top"
             android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
             app:menuMaxWidth="@dimen/tab_switcher_menu_width"
