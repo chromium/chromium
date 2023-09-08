@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -90,6 +91,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // requests the initial list of messages.
   void Init();
 
+  // Requests the devices from the network manager, sets up observers,
+  // requests the initial list of messages and saves the network state handler.
+  void Init(NetworkStateHandler* network_state_handler);
+
   // Adds |message| to the list of received messages. If the length of the
   // list exceeds the maximum number of retained messages, erase the least
   // recently received message.
@@ -117,10 +122,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // a new handler should be created for the device's new object path.
   void OnObjectPathChanged(const base::Value& object_path);
 
+  std::string GetCurrentNetworkGuid(const base::Value::Dict& device_properties);
+
   base::ObserverList<Observer, true>::Unchecked observers_;
   std::unique_ptr<NetworkSmsDeviceHandler> device_handler_;
   std::vector<base::Value::Dict> received_messages_;
   std::string cellular_device_path_;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
   base::WeakPtrFactory<NetworkSmsHandler> weak_ptr_factory_{this};
 };
 

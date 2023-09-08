@@ -19,10 +19,12 @@
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
 
@@ -34,6 +36,10 @@ const char kCellularDeviceObjectPath1[] =
 const char kCellularDeviceObjectPath2[] =
     "/org/freedesktop/ModemManager1/stub/0/Modem/1";
 const char kSmsPath[] = "/SMS/0";
+constexpr char kTestCellularServicePath1[] = "/service/stub/0";
+constexpr char kTestCellularServicePath2[] = "/service/stub/1";
+constexpr char kTestGuid1[] = "1";
+constexpr char kTestGuid2[] = "2";
 
 struct NetworkSmsHandlerTestCase {
   std::string test_name;
@@ -55,6 +61,7 @@ class TestObserver : public NetworkSmsHandler::Observer {
                                   const TextMessageData& mesage_data) override {
     if (mesage_data.text.has_value()) {
       messages_.insert(*mesage_data.text);
+      guid_messages_map_[guid].insert(*mesage_data.text);
     }
     if (mesage_data.number.has_value()) {
       EXPECT_EQ(FakeSMSClient::kNumber, *mesage_data.number);
@@ -67,15 +74,25 @@ class TestObserver : public NetworkSmsHandler::Observer {
 
   void ClearMessages() {
     messages_.clear();
+    guid_messages_map_.clear();
   }
 
+  // Returns the count for messages received across all cellular networks.
   int message_count() { return messages_.size(); }
+
+  // Returns all received messages.
   const std::set<std::string>& messages() const {
     return messages_;
   }
 
+  // Returns messages for the network with the given |guid|.
+  const std::set<std::string>& messages(const std::string& guid) {
+    return guid_messages_map_[guid];
+  }
+
  private:
   std::set<std::string> messages_;
+  base::flat_map<std::string, std::set<std::string>> guid_messages_map_;
 };
 
 }  // namespace
@@ -107,7 +124,7 @@ class NetworkSmsHandlerTest
     fake_sms_client_ = static_cast<FakeSMSClient*>(SMSClient::Get());
     device_test_ = ShillDeviceClient::Get()->GetTestInterface();
     ASSERT_TRUE(device_test_);
-
+    service_test_ = ShillServiceClient::Get()->GetTestInterface();
     // We want to have only 1 cellular device.
     device_test_->ClearDevices();
     device_test_->AddDevice(kCellularDevicePath, shill::kTypeCellular,
@@ -115,12 +132,19 @@ class NetworkSmsHandlerTest
     device_test_->SetDeviceProperty(
         kCellularDevicePath, shill::kDBusObjectProperty,
         base::Value(kCellularDeviceObjectPath1), /*notify_changed=*/false);
+    SetupCellularModem(kCellularDeviceObjectPath1, kTestCellularServicePath1,
+                       kTestGuid1);
     modem_messaging_test_ = ModemMessagingClient::Get()->GetTestInterface();
 
     // This relies on the stub dbus implementations for ShillManagerClient,
     // ShillDeviceClient, ModemMessagingClient and SMSClient.
     network_sms_handler_.reset(new NetworkSmsHandler());
-    network_sms_handler_->Init();
+    network_state_handler_ = NetworkStateHandler::InitializeForTest();
+    if (features::IsSuppressTextMessagesEnabled()) {
+      network_sms_handler_->Init(network_state_handler_.get());
+    } else {
+      network_sms_handler_->Init();
+    }
     test_observer_ = std::make_unique<TestObserver>();
     network_sms_handler_->AddObserver(test_observer_.get());
     network_sms_handler_->RequestUpdate();
@@ -130,6 +154,8 @@ class NetworkSmsHandlerTest
   void TearDown() override {
     network_sms_handler_->RemoveObserver(test_observer_.get());
     network_sms_handler_.reset();
+    network_state_handler_.reset();
+    service_test_ = nullptr;  // Destroyed by shill_clients::Shutdown() below.
     shill_clients::Shutdown();
   }
 
@@ -144,6 +170,20 @@ class NetworkSmsHandlerTest
     task_environment_.FastForwardBy(NetworkSmsHandler::kFetchSmsDetailsTimeout);
   }
 
+  void SetupCellularModem(const std::string& object_path,
+                          const std::string& service_path,
+                          const std::string& guid) {
+    device_test_->SetDeviceProperty(
+        kCellularDevicePath, shill::kDBusObjectProperty,
+        base::Value(object_path), /*notify_changed=*/true);
+    device_test_->SetDeviceProperty(
+        kCellularDevicePath, shill::kSelectedServiceProperty,
+        base::Value(service_path), /*notify_changed=*/true);
+    service_test_->AddService(service_path, guid, "", shill::kTypeCellular,
+                              shill::kStateOnline,
+                              /*visible=*/true);
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   raw_ptr<ShillDeviceClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
@@ -151,10 +191,12 @@ class NetworkSmsHandlerTest
   raw_ptr<ModemMessagingClient::TestInterface,
           DanglingUntriaged | ExperimentalAsh>
       modem_messaging_test_;
+  raw_ptr<ShillServiceClient::TestInterface> service_test_;
   std::unique_ptr<NetworkSmsHandler> network_sms_handler_;
   std::unique_ptr<TestObserver> test_observer_;
 
  private:
+  std::unique_ptr<NetworkStateHandler> network_state_handler_;
   base::test::ScopedFeatureList features_;
   raw_ptr<FakeSMSClient, DanglingUntriaged | ExperimentalAsh> fake_sms_client_;
 };
@@ -452,6 +494,62 @@ TEST_P(NetworkSmsHandlerTest, DeviceObjectPathChange) {
   base::RunLoop().RunUntilIdle();
   EXPECT_GE(test_observer_->message_count(), 1);
   EXPECT_TRUE(base::Contains(messages, kMessage1));
+}
+
+class NetworkSmsHandlerSmsSuppressOnlyTest : public NetworkSmsHandlerTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkSmsHandlerTests,
+    NetworkSmsHandlerSmsSuppressOnlyTest,
+    testing::ValuesIn<NetworkSmsHandlerTestCase>({
+        {"SuppressTextMessageFlagEnabled", true},
+    }),
+    [](const testing::TestParamInfo<NetworkSmsHandlerTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkGuidTest) {
+  // Test that no messages have been received yet
+  EXPECT_EQ(test_observer_->message_count(), 0);
+
+  const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
+  const char kMessage2[] = "FakeSMSClient: Test Message: /SMS/1";
+  EXPECT_EQ(test_observer_->messages().find(kMessage1),
+            test_observer_->messages().end());
+
+  // Test for messages for the first network.
+  ReceiveSms(dbus::ObjectPath(kCellularDeviceObjectPath1),
+             dbus::ObjectPath(kSmsPath));
+  CompleteReceiveSms();
+  base::RunLoop().RunUntilIdle();
+
+  network_sms_handler_->RequestUpdate();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, test_observer_->messages(kTestGuid1).size());
+  EXPECT_NE(test_observer_->messages(kTestGuid1).find(kMessage1),
+            test_observer_->messages(kTestGuid1).end());
+  modem_messaging_test_->CompletePendingDeleteRequest(/*success=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  // Switch to a different modem.
+  SetupCellularModem(kCellularDeviceObjectPath2, kTestCellularServicePath2,
+                     kTestGuid2);
+
+  base::RunLoop().RunUntilIdle();
+  network_sms_handler_->RequestUpdate();
+
+  // Test for messages for messages from the second network.
+  EXPECT_EQ(0u, test_observer_->messages(kTestGuid2).size());
+  ReceiveSms(dbus::ObjectPath(kCellularDeviceObjectPath2),
+             dbus::ObjectPath("/SMS/1"));
+  CompleteReceiveSms();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2u, test_observer_->messages().size());
+  EXPECT_EQ(1u, test_observer_->messages(kTestGuid2).size());
+  EXPECT_NE(test_observer_->messages(kTestGuid2).find(kMessage2),
+            test_observer_->messages(kTestGuid2).end());
+  EXPECT_EQ(test_observer_->messages(kTestGuid1).find(kMessage2),
+            test_observer_->messages(kTestGuid1).end());
 }
 
 }  // namespace ash

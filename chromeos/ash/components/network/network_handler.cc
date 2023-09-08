@@ -195,10 +195,13 @@ void NetworkHandler::Init() {
   prohibited_technologies_handler_->Init(
       managed_network_configuration_handler_.get(),
       network_state_handler_.get(), technology_state_controller_.get());
-  network_sms_handler_->Init();
   if (features::IsSuppressTextMessagesEnabled()) {
+    network_sms_handler_->Init(network_state_handler_.get());
+
     text_message_provider_->Init(network_sms_handler_.get(),
                                  managed_network_configuration_handler_.get());
+  } else {
+    network_sms_handler_->Init();
   }
   geolocation_handler_->Init();
 }
