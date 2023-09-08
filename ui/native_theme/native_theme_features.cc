@@ -35,19 +35,39 @@ BASE_FEATURE(kFluentScrollbar,
              "FluentScrollbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Makes all native scrollbars behave as overlay scrollbars styled to fit the
+// Windows 11 Fluent design language.
+// TODO(crbug.com/1479156): Right now this feature flag will force Fluent
+// overlay scrollbars on. We have yet to decide how we will expose this feature
+// once it is complete.
+BASE_FEATURE(kFluentOverlayScrollbar,
+             "FluentOverlayScrollbar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace ui {
 
 bool IsOverlayScrollbarEnabled() {
-  return base::FeatureList::IsEnabled(features::kOverlayScrollbar);
+  return base::FeatureList::IsEnabled(features::kOverlayScrollbar) ||
+         IsFluentOverlayScrollbarEnabled();
 }
 
 bool IsFluentScrollbarEnabled() {
 // Currently, the feature is only supported on Windows. Please see more details
 // here: https://crbug.com/1353432.
 #if BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(features::kFluentScrollbar);
+  return base::FeatureList::IsEnabled(features::kFluentScrollbar) ||
+         IsFluentOverlayScrollbarEnabled();
+#else
+  return false;
+#endif
+}
+bool IsFluentOverlayScrollbarEnabled() {
+// Currently, the feature is only supported on Windows. Please see more details
+// here: https://crbug.com/1353432.
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(features::kFluentOverlayScrollbar);
 #else
   return false;
 #endif
