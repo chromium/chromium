@@ -6750,6 +6750,27 @@ def CheckRawPtrUsage(input_api, output_api):
                         path=f.LocalPath(), line=line_num)))
     return errors
 
+def CheckAdvancedMemorySafetyChecksUsage(input_api, output_api):
+    """Checks that ADVANCED_MEMORY_SAFETY_CHECKS() macro is neither added nor
+    removed as it is managed by the memory safety team internally.
+    Do not add / remove it manually."""
+    paths = set([])
+    # The regex below matches "ADVANCED_MEMORY_SAFETY_CHECKS(" following a word
+    # boundary, but not in a C++ comment.
+    macro_matcher = input_api.re.compile(
+        r'^((?!//).)*\bADVANCED_MEMORY_SAFETY_CHECKS\(', input_api.re.MULTILINE)
+    for f in input_api.AffectedFiles():
+        if not _IsCPlusPlusFile(input_api, f.LocalPath()):
+            continue
+        if macro_matcher.search(f.GenerateScmDiff()):
+            paths.add(f.LocalPath())
+    if not paths:
+        return []
+    return [output_api.PresubmitPromptWarning(
+              'ADVANCED_MEMORY_SAFETY_CHECKS() macro is managed by ' \
+              'the memory safety team (chrome-memory-safety@). ' \
+              'Please contact us to add/delete the uses of the macro.',
+              paths)]
 
 def CheckPythonShebang(input_api, output_api):
     """Checks that python scripts use #!/usr/bin/env instead of hardcoding a

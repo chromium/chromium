@@ -4738,6 +4738,35 @@ class CheckRawPtrUsageTest(unittest.TestCase):
           'raw_ptr<T> should not be used in Renderer-only code' in
           error.message)
 
+class CheckAdvancedMemorySafetyChecksUsageTest(unittest.TestCase):
+  def testAllowedCases(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        # Non-C++ files are allowed.
+        MockAffectedFile(
+          'test20/renderer/foo.md', ['ADVANCED_MEMORY_SAFETY_CHECKS()']),
+
+        # Mentions in a comment are allowed.
+        MockAffectedFile(
+          'test30/renderer/foo.cc', ['//ADVANCED_MEMORY_SAFETY_CHECKS()']),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckAdvancedMemorySafetyChecksUsage(
+      mock_input_api, mock_output_api)
+    self.assertFalse(errors)
+
+  def testDisallowedCases(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('test1/foo.h', ['ADVANCED_MEMORY_SAFETY_CHECKS()']),
+        MockAffectedFile('test2/foo.cc', ['ADVANCED_MEMORY_SAFETY_CHECKS()']),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckAdvancedMemorySafetyChecksUsage(mock_input_api, mock_output_api)
+    self.assertEqual(1, len(errors))
+    self.assertTrue(
+        'ADVANCED_MEMORY_SAFETY_CHECKS() macro is managed by' in
+        errors[0].message)
 
 class AssertPythonShebangTest(unittest.TestCase):
     def testError(self):
