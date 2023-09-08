@@ -122,8 +122,8 @@ public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
 
-    private static String[] sCookieDataTypes = {"Cookie", "LocalStorage", "ServiceWorker",
-            "CacheStorage", "IndexedDb", "FileSystem", "WebSql"};
+    private static String[] sCookieDataTypes = {
+            "Cookie", "LocalStorage", "ServiceWorker", "CacheStorage", "IndexedDb", "FileSystem"};
 
     // June 4, 2021 12:00:00 GMT+00:00
     private static long sTimestampJune4 = 1622808000000L;

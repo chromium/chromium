@@ -2047,6 +2047,7 @@ public class AwSettingsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
+    @CommandLineFlags.Add({"enable-features=kWebSQLAccess"})
     public void testDatabaseInitialValue() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -2060,6 +2061,7 @@ public class AwSettingsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
+    @CommandLineFlags.Add({"enable-features=kWebSQLAccess"})
     public void testDatabaseEnabled() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -2074,6 +2076,7 @@ public class AwSettingsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
+    @CommandLineFlags.Add({"enable-features=kWebSQLAccess"})
     public void testDatabaseDisabled() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
