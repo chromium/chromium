@@ -72,6 +72,7 @@ PopupRowView::PopupRowView(
     base::WeakPtr<AutofillPopupController> controller,
     std::unique_ptr<PopupRowStrategy> strategy)
     : a11y_selection_delegate_(a11y_selection_delegate),
+      selection_delegate_(selection_delegate),
       controller_(controller),
       strategy_(std::move(strategy)) {
   CHECK(strategy_);
@@ -86,13 +87,15 @@ PopupRowView::PopupRowView(
   layout->set_inside_border_insets(gfx::Insets::VH(0, kHorizontalPadding));
 
   auto add_exit_enter_callbacks = [&](CellType type, PopupCellView& cell) {
-    cell.SetOnExitedCallback(base::BindRepeating(
-        &SelectionDelegate::SetSelectedCell,
-        base::Unretained(&selection_delegate), absl::nullopt));
+    cell.SetOnExitedCallback(
+        base::BindRepeating(&SelectionDelegate::SetSelectedCell,
+                            base::Unretained(&selection_delegate),
+                            absl::nullopt, PopupCellSelectionSource::kMouse));
     cell.SetOnEnteredCallback(base::BindRepeating(
         &SelectionDelegate::SetSelectedCell,
         base::Unretained(&selection_delegate),
-        PopupViewViews::CellIndex{strategy_->GetLineNumber(), type}));
+        PopupViewViews::CellIndex{strategy_->GetLineNumber(), type},
+        PopupCellSelectionSource::kMouse));
   };
 
   content_view_ = AddChildView(strategy_->CreateContent());
@@ -159,7 +162,6 @@ bool PopupRowView::HandleKeyPressEvent(
       content_view_->HandleKeyPressEvent(event)) {
     return true;
   }
-
   return false;
 }
 

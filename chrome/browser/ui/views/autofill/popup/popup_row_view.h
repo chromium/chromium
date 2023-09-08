@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -63,7 +64,8 @@ class PopupRowView : public views::View {
     virtual ~SelectionDelegate() = default;
 
     virtual absl::optional<CellIndex> GetSelectedCell() const = 0;
-    virtual void SetSelectedCell(absl::optional<CellIndex> cell_index) = 0;
+    virtual void SetSelectedCell(absl::optional<CellIndex> cell_index,
+                                 PopupCellSelectionSource source) = 0;
   };
 
   METADATA_HEADER(PopupRowView);
@@ -108,8 +110,10 @@ class PopupRowView : public views::View {
   }
 
   // The delegate used for accessibility announcements (implemented by the
-  // parent).
+  // parent view).
   const raw_ref<AccessibilitySelectionDelegate> a11y_selection_delegate_;
+  // The delegate used for selection control (implemented by the parent view).
+  const raw_ref<SelectionDelegate> selection_delegate_;
   // The controller for the parent view.
   const base::WeakPtr<AutofillPopupController> controller_;
   // The strategy from which the actual view content of this row is created.

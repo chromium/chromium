@@ -17,6 +17,14 @@ class WebContents;
 
 namespace autofill {
 
+// Specifies how the popup cell was selected.
+enum PopupCellSelectionSource {
+  // (Un)selections with no direct user input, e.g. unselection by timeout.
+  kNonUserInput,
+  kMouse,
+  kKeyboard,
+};
+
 // Sets the |x| and |width| components of |popup_bounds| as the x-coordinate
 // of the starting point and the width of the popup, taking into account the
 // direction it's supposed to grow (either to the left or to the right).

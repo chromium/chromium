@@ -19,11 +19,13 @@ namespace autofill {
 // of events by the controller.
 class AutofillPopupDelegate {
  public:
-  // Called when the Autofill popup is shown.
+  // Called when the Autofill popup is shown. If the popup supports sub-popups
+  // only the root one triggers it.
   virtual void OnPopupShown() = 0;
 
   // Called when the Autofill popup is hidden. This may also get called if the
   // popup was never shown at all, e.g. because of insufficient space.
+  // If the popup supports sub-popups only the root one triggers it.
   virtual void OnPopupHidden() = 0;
 
   // Called when the autofill `suggestion` has been temporarily selected (e.g.,

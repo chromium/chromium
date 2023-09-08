@@ -13,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -52,7 +53,10 @@ class MockAccessibilitySelectionDelegate
 class MockSelectionDelegate : public PopupRowView::SelectionDelegate {
  public:
   MOCK_METHOD(absl::optional<CellIndex>, GetSelectedCell, (), (const override));
-  MOCK_METHOD(void, SetSelectedCell, (absl::optional<CellIndex>), (override));
+  MOCK_METHOD(void,
+              SetSelectedCell,
+              (absl::optional<CellIndex>, PopupCellSelectionSource),
+              (override));
 };
 
 }  // namespace
@@ -72,6 +76,12 @@ class PopupRowViewTest : public ChromeViewsTestBase {
         mock_a11y_selection_delegate_, mock_selection_delegate_,
         /*controller=*/nullptr,
         std::make_unique<TestPopupRowStrategy>(line_number, has_control)));
+    ON_CALL(mock_selection_delegate_, SetSelectedCell)
+        .WillByDefault([this](absl::optional<CellIndex> cell,
+                              PopupCellSelectionSource) {
+          row_view().SetSelectedCell(
+              cell ? absl::optional<CellType>{cell->second} : absl::nullopt);
+        });
     widget_->Show();
   }
 
@@ -92,12 +102,13 @@ class PopupRowViewTest : public ChromeViewsTestBase {
         views::PaintInfo::CreateRootPaintInfo(canvas_painter.context(), size));
   }
 
-  void SimulateKeyPress(int windows_key_code) {
+  // Simulates the keyboard event and returns whether the event was handled.
+  bool SimulateKeyPress(int windows_key_code) {
     content::NativeWebKeyboardEvent event(
         blink::WebKeyboardEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
     event.windows_key_code = windows_key_code;
-    row_view().HandleKeyPressEvent(event);
+    return row_view().HandleKeyPressEvent(event);
   }
 
  protected:
@@ -129,23 +140,27 @@ TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
 
   EXPECT_CALL(
       selection_delegate(),
-      SetSelectedCell(absl::make_optional<CellIndex>(2u, CellType::kContent)));
+      SetSelectedCell(absl::make_optional<CellIndex>(2u, CellType::kContent),
+                      PopupCellSelectionSource::kMouse));
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
 
   // Moving from one cell to another triggers two events, one with
   // `absl::nullopt` as argument and the other with the control cell.
   EXPECT_CALL(selection_delegate(),
-              SetSelectedCell(absl::optional<CellIndex>()));
+              SetSelectedCell(absl::optional<CellIndex>(),
+                              PopupCellSelectionSource::kMouse));
   EXPECT_CALL(
       selection_delegate(),
-      SetSelectedCell(absl::make_optional<CellIndex>(2u, CellType::kControl)));
+      SetSelectedCell(absl::make_optional<CellIndex>(2u, CellType::kControl),
+                      PopupCellSelectionSource::kMouse));
   ASSERT_TRUE(row_view().GetControlView());
   generator().MoveMouseTo(
       row_view().GetControlView()->GetBoundsInScreen().CenterPoint());
 
   EXPECT_CALL(selection_delegate(),
-              SetSelectedCell(absl::optional<CellIndex>()));
+              SetSelectedCell(absl::optional<CellIndex>(),
+                              PopupCellSelectionSource::kMouse));
   generator().MoveMouseTo(kOutOfBounds);
 }
 
@@ -230,10 +245,10 @@ TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
   row_view().GetControlView()->SetOnAcceptedCallback(control_callback.Get());
 
   EXPECT_CALL(content_callback, Run);
-  SimulateKeyPress(ui::VKEY_RETURN);
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_CALL(control_callback, Run);
-  SimulateKeyPress(ui::VKEY_RETURN);
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
 }
 
 }  // namespace autofill

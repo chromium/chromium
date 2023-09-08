@@ -121,6 +121,8 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
   }
 
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
+  MOCK_METHOD(void, OnPopupShown, (), (override));
+  MOCK_METHOD(void, OnPopupHidden, (), (override));
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion&, int, AutofillSuggestionTriggerSource),
@@ -224,6 +226,8 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(web_contents()->GetFocusedFrame());
     external_delegate_ = CreateExternalDelegate();
     autofill_popup_view_ = std::make_unique<NiceMock<MockAutofillPopupView>>();
+    autofill_sub_popup_view_ =
+        std::make_unique<NiceMock<MockAutofillPopupView>>();
 
 #if BUILDFLAG(IS_ANDROID)
     autofill_popup_controller_ =
@@ -244,6 +248,9 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
 #endif
     autofill_popup_controller_->SetViewForTesting(
         autofill_popup_view()->GetWeakPtr());
+
+    ON_CALL(*autofill_popup_view(), CreateSubPopupView)
+        .WillByDefault(Return(autofill_sub_popup_view()->GetWeakPtr()));
   }
 
   void TearDown() override {
@@ -299,16 +306,16 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     return autofill_popup_view_.get();
   }
 
-  content::NativeWebKeyboardEvent CreateTabKeyPressEvent() {
+  MockAutofillPopupView* autofill_sub_popup_view() {
+    return autofill_sub_popup_view_.get();
+  }
+
+  content::NativeWebKeyboardEvent CreateKeyPressEvent(int windows_key_code) {
     content::NativeWebKeyboardEvent event(
         blink::WebInputEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
-    event.dom_key = ui::DomKey::TAB;
-    event.dom_code = static_cast<int>(ui::DomCode::TAB);
-    event.native_key_code =
-        ui::KeycodeConverter::DomCodeToNativeKeycode(ui::DomCode::TAB);
-    event.windows_key_code = ui::VKEY_TAB;
+    event.windows_key_code = windows_key_code;
     return event;
   }
 
@@ -334,6 +341,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>> external_delegate_;
   std::unique_ptr<NiceMock<MockAutofillPopupView>> autofill_popup_view_;
+  std::unique_ptr<NiceMock<MockAutofillPopupView>> autofill_sub_popup_view_;
 #if BUILDFLAG(IS_ANDROID)
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
@@ -589,6 +597,7 @@ TEST_F(AutofillPopupControllerUnitTest, HidingClearsPreview) {
                                                   web_contents(), gfx::RectF(),
                                                   base::DoNothing());
   EXPECT_CALL(delegate, ClearPreviewedForm());
+  EXPECT_CALL(delegate, OnPopupHidden());
   // Hide() also deletes the object itself.
   test_controller->DoHide();
 }
@@ -767,13 +776,42 @@ TEST_F(AutofillPopupControllerUnitTest, AcceptAddressNoPwdWarningAndroid) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(AutofillPopupControllerUnitTest, SubPopupIsCreatedWithViewFromParent) {
-  NiceMock<MockAutofillPopupView> autofill_popup_sub_view;
-  EXPECT_CALL(*autofill_popup_view(), CreateSubPopupView)
-      .WillRepeatedly(Return(autofill_popup_sub_view.GetWeakPtr()));
   base::WeakPtr<AutofillPopupController> sub_controller =
       popup_controller().OpenSubPopup({0, 0, 10, 10}, {},
                                       AutoselectFirstSuggestion(false));
   EXPECT_TRUE(sub_controller);
+}
+
+TEST_F(AutofillPopupControllerUnitTest,
+       DelegateMethodsAreCalledOnlyByRootPopup) {
+  EXPECT_CALL(*external_delegate_, OnPopupShown()).Times(0);
+  base::WeakPtr<AutofillPopupController> sub_controller =
+      popup_controller().OpenSubPopup({0, 0, 10, 10}, {},
+                                      AutoselectFirstSuggestion(false));
+
+  EXPECT_CALL(*external_delegate_, OnPopupHidden()).Times(0);
+  sub_controller->Hide(PopupHidingReason::kUserAborted);
+
+  EXPECT_CALL(*external_delegate_, OnPopupHidden());
+  popup_controller().Hide(PopupHidingReason::kUserAborted);
+}
+
+TEST_F(AutofillPopupControllerUnitTest, EventsAreDelegatedToChildrenAndView) {
+  EXPECT_CALL(*external_delegate_, OnPopupShown()).Times(0);
+  base::WeakPtr<AutofillPopupController> sub_controller =
+      popup_controller().OpenSubPopup({0, 0, 10, 10}, {},
+                                      AutoselectFirstSuggestion(false));
+
+  content::NativeWebKeyboardEvent event = CreateKeyPressEvent(ui::VKEY_LEFT);
+  EXPECT_CALL(*autofill_sub_popup_view(), HandleKeyPressEvent)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*autofill_popup_view(), HandleKeyPressEvent).Times(0);
+  EXPECT_TRUE(popup_controller().HandleKeyPressEvent(event));
+
+  EXPECT_CALL(*autofill_sub_popup_view(), HandleKeyPressEvent)
+      .WillOnce(Return(false));
+  EXPECT_CALL(*autofill_popup_view(), HandleKeyPressEvent).Times(1);
+  EXPECT_FALSE(popup_controller().HandleKeyPressEvent(event));
 }
 #endif
 

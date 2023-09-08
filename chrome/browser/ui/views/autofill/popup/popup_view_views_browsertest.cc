@@ -74,7 +74,8 @@ class PopupViewViewsBrowsertestBase
     PopupPixelTest::ShowUi(name);
     view()->Show(AutoselectFirstSuggestion(false));
     if (selected_cell_) {
-      view()->SetSelectedCell(selected_cell_);
+      view()->SetSelectedCell(selected_cell_,
+                              PopupCellSelectionSource::kNonUserInput);
     }
   }
 

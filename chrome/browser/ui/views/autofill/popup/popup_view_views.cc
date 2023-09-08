@@ -49,6 +49,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -183,7 +184,8 @@ bool PopupViewViews::Show(
     return false;
   }
   if (autoselect_first_suggestion) {
-    SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent});
+    SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
+                    PopupCellSelectionSource::kNonUserInput);
   }
   return true;
 }
@@ -213,7 +215,8 @@ absl::optional<PopupViewViews::CellIndex> PopupViewViews::GetSelectedCell()
   return absl::nullopt;
 }
 
-void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index) {
+void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index,
+                                     PopupCellSelectionSource source) {
   absl::optional<CellIndex> old_index = GetSelectedCell();
   if (old_index == cell_index) {
     return;
@@ -238,11 +241,14 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index) {
         !controller_->GetSuggestionAt(cell_index->first).children.empty();
     absl::optional<CellIndex> open_sub_popup_cell =
         can_open_sub_popup ? cell_index : absl::nullopt;
+    base::TimeDelta delay = source == PopupCellSelectionSource::kMouse
+                                ? kMouseOpenSubPopupDelay
+                                : kNonMouseOpenSubPopupDelay;
     open_sub_popup_timer_.Start(
-        FROM_HERE, kOpenSubPopupDelay,
+        FROM_HERE, delay,
         base::BindOnce(&PopupViewViews::SetCellWithOpenSubPopup,
-                       weak_ptr_factory_.GetWeakPtr(), open_sub_popup_cell));
-
+                       weak_ptr_factory_.GetWeakPtr(), open_sub_popup_cell,
+                       source));
   } else {
     row_with_selected_cell_ = absl::nullopt;
   }
@@ -250,6 +256,14 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index) {
 
 bool PopupViewViews::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
+  // Use the cell with open sub-popup as the selected one when the sub-popup
+  // has not handled the event, it allows to continue working with the parent
+  // (moving selection left/right/up/down) from the row with a sub-pop, which
+  // makes most sense from the UX perspective.
+  if (!GetSelectedCell() && open_sub_popup_cell_) {
+    SetSelectedCell(open_sub_popup_cell_, PopupCellSelectionSource::kKeyboard);
+  }
+
   // If the row can handle the event itself (e.g. switching between cells in the
   // same row), we let it.
   if (absl::optional<CellIndex> selected_cell = GetSelectedCell()) {
@@ -277,30 +291,43 @@ bool PopupViewViews::HandleKeyPressEvent(
       // field and not the overall UI language. However, the layout of the popup
       // is determined by the overall UI language.
       if (base::i18n::IsRTL()) {
-        SelectNextHorizontalCell();
+        return SelectNextHorizontalCell();
       } else {
-        SelectPreviousHorizontalCell();
+        return SelectPreviousHorizontalCell();
       }
-      return true;
     case ui::VKEY_RIGHT:
       if (base::i18n::IsRTL()) {
-        SelectPreviousHorizontalCell();
+        return SelectPreviousHorizontalCell();
       } else {
-        SelectNextHorizontalCell();
+        return SelectNextHorizontalCell();
       }
-      return true;
     case ui::VKEY_PRIOR:  // Page up.
       // Set no line and then select the next line in case the first line is not
       // selectable.
-      SetSelectedCell(absl::nullopt);
+      SetSelectedCell(absl::nullopt, PopupCellSelectionSource::kKeyboard);
       SelectNextRow();
       return true;
     case ui::VKEY_NEXT:  // Page down.
-      SetSelectedCell(absl::nullopt);
+      SetSelectedCell(absl::nullopt, PopupCellSelectionSource::kKeyboard);
       SelectPreviousRow();
       return true;
     case ui::VKEY_DELETE:
       return kHasShiftModifier && RemoveSelectedCell();
+    case ui::VKEY_ESCAPE:
+      if (open_sub_popup_cell_) {
+        // Close the sub-popup by selecting the content cell of the same row.
+        SetSelectedCell(CellIndex{open_sub_popup_cell_->first,
+                                  PopupRowView::CellType::kContent},
+                        PopupCellSelectionSource::kKeyboard);
+        return true;
+      }
+      // If this is the root popup view and there was no sub-popup open (find
+      // the check for it above) just close itself.
+      if (!parent_) {
+        controller_->Hide(PopupHidingReason::kUserAborted);
+        return true;
+      }
+      return false;
     case ui::VKEY_TAB:
       // We want TAB or Shift+TAB press to cause the selected line to be
       // accepted, but still return false so the tab key press propagates and
@@ -331,7 +358,8 @@ void PopupViewViews::SelectPreviousRow() {
   if (new_row < 0) {
     new_row = static_cast<int>(rows_.size()) - 1;
   }
-  SetSelectedCell(CellIndex{new_row, kNewCellType});
+  SetSelectedCell(CellIndex{new_row, kNewCellType},
+                  PopupCellSelectionSource::kKeyboard);
 }
 
 void PopupViewViews::SelectNextRow() {
@@ -348,29 +376,36 @@ void PopupViewViews::SelectNextRow() {
   if (new_row >= rows_.size()) {
     new_row = 0u;
   }
-  SetSelectedCell(CellIndex{new_row, kNewCellType});
+  SetSelectedCell(CellIndex{new_row, kNewCellType},
+                  PopupCellSelectionSource::kKeyboard);
 }
 
-void PopupViewViews::SelectNextHorizontalCell() {
+bool PopupViewViews::SelectNextHorizontalCell() {
   absl::optional<CellIndex> selected_cell = GetSelectedCell();
   if (selected_cell && HasPopupRowViewAt(selected_cell->first)) {
     PopupRowView& row = GetPopupRowViewAt(selected_cell->first);
     if (selected_cell->second == PopupRowView::CellType::kContent &&
         row.GetControlView()) {
       SetSelectedCell(
-          CellIndex{selected_cell->first, PopupRowView::CellType::kControl});
+          CellIndex{selected_cell->first, PopupRowView::CellType::kControl},
+          PopupCellSelectionSource::kKeyboard);
+      return true;
     }
   }
+  return false;
 }
 
-void PopupViewViews::SelectPreviousHorizontalCell() {
+bool PopupViewViews::SelectPreviousHorizontalCell() {
   absl::optional<CellIndex> selected_cell = GetSelectedCell();
   if (selected_cell && HasPopupRowViewAt(selected_cell->first)) {
     if (selected_cell->second == PopupRowView::CellType::kControl) {
       SetSelectedCell(
-          CellIndex{selected_cell->first, PopupRowView::CellType::kContent});
+          CellIndex{selected_cell->first, PopupRowView::CellType::kContent},
+          PopupCellSelectionSource::kKeyboard);
+      return true;
     }
   }
+  return false;
 }
 
 bool PopupViewViews::AcceptSelectedContentOrCreditCardCell(
@@ -424,7 +459,8 @@ void PopupViewViews::OnSuggestionsChanged() {
   if (open_sub_popup_timer_.IsRunning()) {
     open_sub_popup_timer_.Stop();
   }
-  SetCellWithOpenSubPopup(absl::nullopt);
+  SetCellWithOpenSubPopup(absl::nullopt,
+                          PopupCellSelectionSource::kNonUserInput);
 
   CreateChildViews();
   DoUpdateBoundsAndRedrawPopup();
@@ -777,7 +813,8 @@ void PopupViewViews::OnMouseExitedInChildren() {
   no_selection_sub_popup_close_timer_.Start(
       FROM_HERE, kNoSelectionHideSubPopupDelay,
       base::BindRepeating(&PopupViewViews::SetCellWithOpenSubPopup,
-                          weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
+                          weak_ptr_factory_.GetWeakPtr(), absl::nullopt,
+                          PopupCellSelectionSource::kNonUserInput));
 }
 
 bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
@@ -799,7 +836,8 @@ bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
 }
 
 void PopupViewViews::SetCellWithOpenSubPopup(
-    absl::optional<CellIndex> cell_index) {
+    absl::optional<CellIndex> cell_index,
+    PopupCellSelectionSource selection_source) {
   if (open_sub_popup_cell_ == cell_index) {
     return;
   }
@@ -821,12 +859,15 @@ void PopupViewViews::SetCellWithOpenSubPopup(
     CHECK(cell_index->second == PopupRowView::CellType::kControl);
 
     PopupRowView& row = GetPopupRowViewAt(cell_index->first);
-
-    if (controller_->OpenSubPopup(row.GetCellBounds(cell_index->second),
-                                  suggestion.children,
-                                  AutoselectFirstSuggestion(false))) {
+    if (controller_->OpenSubPopup(
+            row.GetCellBounds(cell_index->second), suggestion.children,
+            AutoselectFirstSuggestion(selection_source ==
+                                      PopupCellSelectionSource::kKeyboard))) {
       row.SetCellPermanentlyHighlighted(cell_index->second, true);
       open_sub_popup_cell_ = cell_index;
+      if (selection_source == PopupCellSelectionSource::kKeyboard) {
+        row.SetSelectedCell(absl::nullopt);
+      }
     }
   }
 }
@@ -836,7 +877,6 @@ base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
 }
 
 BEGIN_METADATA(PopupViewViews, PopupBaseView)
-ADD_PROPERTY_METADATA(absl::optional<PopupViewViews::CellIndex>, SelectedCell)
 END_METADATA
 
 // static

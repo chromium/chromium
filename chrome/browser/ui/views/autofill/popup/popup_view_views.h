@@ -63,7 +63,10 @@ class PopupViewViews : public PopupBaseView,
       absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
 
   // The time it takes for a selected cell to open a sub-popup if it has one.
-  static constexpr base::TimeDelta kOpenSubPopupDelay = base::Milliseconds(250);
+  static constexpr base::TimeDelta kMouseOpenSubPopupDelay =
+      base::Milliseconds(250);
+  static constexpr base::TimeDelta kNonMouseOpenSubPopupDelay =
+      kMouseOpenSubPopupDelay / 10;
 
   // The delay for closing the sub-popup after having no cell selected,
   // sub-popup cells are also taken into account.
@@ -82,7 +85,8 @@ class PopupViewViews : public PopupBaseView,
   // Gets and sets the currently selected cell. If an invalid `cell_index` is
   // passed, `GetSelectedCell()` will return `absl::nullopt` afterwards.
   absl::optional<CellIndex> GetSelectedCell() const override;
-  void SetSelectedCell(absl::optional<CellIndex> cell_index) override;
+  void SetSelectedCell(absl::optional<CellIndex> cell_index,
+                       PopupCellSelectionSource source) override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -146,8 +150,8 @@ class PopupViewViews : public PopupBaseView,
   // Selects the next/previous in horizontal direction (i.e. left to right or
   // vice versa) cell, if there is one. Otherwise leaves the current selection.
   // Does not wrap.
-  void SelectNextHorizontalCell();
-  void SelectPreviousHorizontalCell();
+  bool SelectNextHorizontalCell();
+  bool SelectPreviousHorizontalCell();
 
   // Attempts to accept the selected cell. It will return false if there is no
   // selected cell or the cell does not trigger field filling or scanning a
@@ -175,7 +179,8 @@ class PopupViewViews : public PopupBaseView,
 
   // Opens a sub-popup on a new cell (and closes the open one if any), or just
   // closes the existing if `absl::nullopt` is passed.
-  void SetCellWithOpenSubPopup(absl::optional<CellIndex> cell_index);
+  void SetCellWithOpenSubPopup(absl::optional<CellIndex> cell_index,
+                               PopupCellSelectionSource selection_source);
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;

@@ -261,9 +261,12 @@ class AutofillPopupControllerImpl
                 password_manager::ContentPasswordManagerDriver*>
   GetDriver();
 
-  // ExpandablePopupParentControllerImpl
+  // ExpandablePopupParentControllerImpl:
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillPopupController> controller) override;
+
+  // Returns `true` if this popup has no parent, and `false` for sub-popups.
+  bool IsRootPopup() const;
 
   friend class AutofillPopupControllerUnitTest;
   friend class AutofillPopupControllerAccessibilityUnitTest;
@@ -328,7 +331,7 @@ class AutofillPopupControllerImpl
       parent_controller_;
 
   // The open sub-popup controller if any, `nullptr` otherwise.
-  base::WeakPtr<AutofillPopupController> sub_popup_controller_;
+  base::WeakPtr<AutofillPopupControllerImpl> sub_popup_controller_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.
