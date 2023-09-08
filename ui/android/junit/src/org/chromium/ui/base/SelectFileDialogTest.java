@@ -472,7 +472,7 @@ public class SelectFileDialogTest {
         // Test image extensions only.
         assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES,
                 scopeForFileTypes(".jpg", ".jpeg", ".png", ".gif", ".apng", ".tiff", ".tif", ".bmp",
-                        ".pdf", ".xcf", ".webp"));
+                        ".xcf", ".webp"));
         // Test image extensions mixed with image MIME types.
         assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES,
                 scopeForFileTypes(".JPG", ".jpeg", "image/gif", "image/jpeg"));
