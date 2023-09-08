@@ -8,13 +8,10 @@ import {getSanitizedScriptUrl} from './trusted_script_url_policy_util.js';
  * @fileoverview Script loader allows loading scripts at the desired time.
  */
 
-/**
- * @typedef {
- *   {type: (string|undefined), defer: (boolean|undefined)}
- * }
- */
-export let ScriptParams;
-
+export interface ScriptParams {
+  type?: string;
+  defer?: boolean;
+}
 
 /**
  * Used to load scripts at a runtime. Typical use:
@@ -26,27 +23,19 @@ export let ScriptParams;
  * await new ScriptLoader('its_time.js', {type: 'module'}).load();
  */
 export class ScriptLoader {
+  private type_: string|undefined;
+  private defer_: boolean|undefined;
+
   /**
    * Creates a loader that loads the script specified by |src| once the load
    * method is called. Optional |params| can specify other script attributes.
-   * @param {string} src
-   * @param {!ScriptParams} params
    */
-  constructor(src, params = {}) {
-    /** @private {string} */
-    this.src_ = src;
-
-    /** @private {string|undefined} */
+  constructor(private src_: string, params: ScriptParams = {}) {
     this.type_ = params.type;
-
-    /** @private {boolean|undefined} */
     this.defer_ = params.defer;
   }
 
-  /**
-   * @return {!Promise<string>}
-   */
-  async load() {
+  async load(): Promise<string> {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
       if (this.type_ !== undefined) {
@@ -57,7 +46,7 @@ export class ScriptLoader {
       }
       script.onload = () => resolve(this.src_);
       script.onerror = (error) => reject(error);
-      script.src = getSanitizedScriptUrl(this.src_);
+      script.src = getSanitizedScriptUrl(this.src_) as unknown as string;
       document.head.append(script);
     });
   }

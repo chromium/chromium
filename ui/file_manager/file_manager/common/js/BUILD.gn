@@ -281,9 +281,6 @@ js_unittest("recent_date_bucket_unittest") {
   ]
 }
 
-js_library("script_loader") {
-}
-
 js_library("storage") {
 }
 

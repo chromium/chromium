@@ -294,7 +294,6 @@ js_library("test_util") {
     ":test_util_base",
     "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:script_loader",
     "//ui/file_manager/file_manager/common/js:util",
   ]
 }

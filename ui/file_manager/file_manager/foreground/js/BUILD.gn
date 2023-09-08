@@ -848,7 +848,6 @@ js_library("main") {
     ":file_manager",
     ":metrics_start",
     "//ui/file_manager/file_manager/common/js:glitch",
-    "//ui/file_manager/file_manager/common/js:script_loader",
     "//ui/file_manager/file_manager/common/js:util",
   ]
 }
