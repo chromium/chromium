@@ -164,7 +164,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="189358972401248634">Gjuhë të tjera</translation>
 <translation id="1900260903084164610">Duke vazhduar, ti pranon <ph name="BEGIN_TOS_LINK" />Kushtet e shërbimit<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-të që viziton ruhen në "Llogarinë tënde të Google"</translation>
-<translation id="1910950723001426294">Lista e opsioneve të shpërndarjes është e mbyllur.</translation>
+<translation id="1910950723001426294">Lista e opsioneve të ndarjes është e mbyllur.</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="1922362554271624559">Gjuhët e sugjeruara</translation>
 <translation id="1924255092154549435">Skeda është zgjeruar</translation>
@@ -233,7 +233,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2276696007612801991">Identifikohu në "Llogarinë tënde të Google" për të kontrolluar fjalëkalimet e tua</translation>
 <translation id="2278052315791335171">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa e faturimit</translation>
-<translation id="228704530595896923">Listë e opsioneve të shpërndarjes.</translation>
+<translation id="228704530595896923">Listë e opsioneve të ndarjes.</translation>
 <translation id="2297822946037605517">Ndaje këtë faqe</translation>
 <translation id="230115972905494466">Nuk u gjetën pajisje të përputhshme</translation>
 <translation id="2318045970523081853">Trokit për të bërë një telefonatë</translation>
@@ -450,7 +450,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3373701465337594448">Kur ky cilësim është aktiv, këtu shfaqet një listë e sajteve që viziton që hamendësojnë interesat e tu</translation>
 <translation id="3373979091428520308">Për ta ndarë këtë faqe në një pajisje tjetër, aktivizo sinkronizimin në cilësimet e Chrome në pajisjen tjetër</translation>
 <translation id="3374023511497244703">Faqeshënuesit, historiku, fjalëkalimet dhe të dhënat e tjera të Chrome nuk do të sinkronizohen më në "Llogarinë tënde të Google"</translation>
-<translation id="3384347053049321195">Shpërndaje imazhin</translation>
+<translation id="3384347053049321195">Ndaje imazhin</translation>
 <translation id="3387650086002190359">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të gabimeve të sistemit të skedarëve.</translation>
 <translation id="3389286852084373014">Teksti është tepër i madh</translation>
 <translation id="3398320232533725830">Hap menaxherin e faqeshënuesve</translation>
@@ -597,7 +597,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 Bazuar në ndërveprimin tënd me një sajt, si p.sh. identifikimi i vazhdueshëm në një llogari, ai sajt mund të lëshojë një kod të gjendjes private për shfletuesin tënd. Më vonë, nëse sajtet e tjera që viziton kontrollojnë dhe gjejnë një kod të vlefshëm të gjendjes private, ka më shumë gjasa që ato të të trajtojnë si një person dhe jo robot.
 
 Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të përdoren për të zbuluar identitetin tënd.</translation>
-<translation id="4162867837470729563">Listë e opsioneve të shpërndarjes në lartësi të plotë.</translation>
+<translation id="4162867837470729563">Listë e opsioneve të ndarjes në lartësi të plotë.</translation>
 <translation id="4170011742729630528">Shërbimi nuk ofrohet. Provo përsëri më vonë.</translation>
 <translation id="4177222230309051052">Merr të gjithë faqeshënuesit e tu</translation>
 <translation id="4177501066905053472">Temat e reklamave</translation>
@@ -1046,7 +1046,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6459045781120991510">Anketat</translation>
 <translation id="6461962085415701688">Skedari nuk mund të hapet</translation>
 <translation id="6464977750820128603">Mund të shikosh sajtet që viziton në Chrome dhe të caktosh kohëmatës për to.\n\nGoogle merr informacion rreth sajteve për të cilat cakton kohëmatës dhe për sa kohë i viziton ato. Ky informacion përdoret për të përmirësuar "Mirëqenien dixhitale".</translation>
-<translation id="6473086018775716761">Listë e opsioneve të shpërndarjes e hapur në gjysmën e lartësisë.</translation>
+<translation id="6473086018775716761">Listë e opsioneve të ndarjes e hapur në gjysmën e lartësisë.</translation>
 <translation id="6475951671322991020">Shkarko videon</translation>
 <translation id="6477928892249167417">Këto sajte duken të rëndësishme për ty:</translation>
 <translation id="6482749332252372425">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të mungesës së hapësirës ruajtëse.</translation>
@@ -1243,6 +1243,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7431991332293347422">Kontrollo se si përdoret historiku i shfletimit për të personalizuar "Kërkimin" dhe shumë të tjera</translation>
 <translation id="7435356471928173109">Çaktivizuar nga administratori yt</translation>
 <translation id="7437998757836447326">Dil nga Chrome</translation>
+<translation id="7450926666485653189">Dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP</translation>
 <translation id="7453467225369441013">Të nxjerr nga shumica e sajteve. Nuk do të dalësh nga llogaria jote e Google.</translation>
 <translation id="7453810262525006706">Palos te pamja anësore</translation>
 <translation id="7454641608352164238">Nuk ka hapësirë të mjaftueshme</translation>
@@ -1472,6 +1473,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8497242791509864205">Hap opsionet e renditjes</translation>
 <translation id="8497480609928300907">Shpjegim i udhëzuesit të privatësisë</translation>
 <translation id="8497726226069778601">Ende nuk ka asgjë për të parë këtu</translation>
+<translation id="8501423924927196358">Treguesi i ngarkimit të statistikave të faqes</translation>
 <translation id="8503559462189395349">Fjalëkalimet e Chrome</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8505766168025405649">Shiko njoftimin për statusin e shkarkimit</translation>

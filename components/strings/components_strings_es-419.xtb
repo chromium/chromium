@@ -234,6 +234,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1432187715652018471">Esta página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Administrar motores de búsqueda</translation>
 <translation id="1433225466058025572">Intenta volver a mover tus archivos</translation>
+<translation id="1434317006812369578">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google. Recientemente, la Navegación segura <ph name="BEGIN_LINK" />encontró software malicioso en <ph name="SITE" /><ph name="END_LINK" />, que está incorporado en el sitio que intentas visitar.</translation>
 <translation id="1435940442311036198">Usar una clave de acceso en otro dispositivo</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
@@ -384,6 +385,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1732445923934584865">Preguntar de manera presencial</translation>
 <translation id="1733064249834771892">fuentes</translation>
 <translation id="1733631169686303142">Equipos de audio</translation>
+<translation id="1733762317901693627">A veces, incluso los sitios que suelen ser seguros son hackeados por atacantes. Visita <ph name="BEGIN_LINK" />este sitio no seguro<ph name="END_LINK" /> únicamente si estás seguro de que comprendes los riesgos.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Intenta comunicarte con el administrador del sistema.</translation>
 <translation id="1736420071277903564">Computadora</translation>
@@ -717,6 +719,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2480300195898055381">En tu Cuenta de Google, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="248348093745724435">Políticas de la máquina</translation>
+<translation id="2490199669743245365">Los atacantes del sitio que intentas visitar podrían instalar software dañino o borrar elementos como tu contraseña, fotos, mensajes o número de tarjeta de crédito. Chrome recomienda que regreses a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">El certificado del servidor contiene errores.</translation>
 <translation id="2491414235131909199">Una extensión bloqueó esta página</translation>
 <translation id="2495083838625180221">Analizador de JSON</translation>
@@ -1052,6 +1055,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Debes actualizar ChromeOS ahora}=2{Debes actualizar ChromeOS para mañana}other{Debes actualizar ChromeOS dentro de # días}}</translation>
+<translation id="3218388919950135939">Visita <ph name="BEGIN_LINK" />este sitio no seguro<ph name="END_LINK" /> únicamente si estás seguro de que comprendes los riesgos.</translation>
 <translation id="3220264767789936523">Indumentaria formal</translation>
 <translation id="3223287115535306850">Ícono de carga para el inicio de la app</translation>
 <translation id="3223425961342298674">No se permite la ubicación</translation>
@@ -1338,6 +1342,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3772211998634047851">Papel (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva nota en Google Keep rápidamente</translation>
 <translation id="3778403066972421603">¿Deseas guardar esta tarjeta en tu cuenta de Google y en este dispositivo?</translation>
+<translation id="378026377453746707">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google. Recientemente, la Navegación segura <ph name="BEGIN_LINK" />encontró software dañino en <ph name="SITE" /><ph name="END_LINK" />, que está incorporado en el sitio que intentas visitar.</translation>
 <translation id="3780694243617746492">Bandeja de salida</translation>
 <translation id="3781428340399460090">Fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1349,6 +1354,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3795344968043407227">Música independiente y alternativa</translation>
 <translation id="3799805948399000906">Se necesita la fuente</translation>
 <translation id="380329542618494757">Nombre</translation>
+<translation id="3806932344025766608">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software o reveles información como tu contraseña, teléfono o número de tarjeta de crédito. Chrome recomienda que regreses a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Proveedores de servicios telefónicos</translation>
 <translation id="3807366285948165054">Cambio en el eje X de la imagen</translation>
 <translation id="3807873520724684969">Se bloqueó el contenido dañino</translation>
@@ -1414,6 +1420,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3953505489397572035">Este es el precio habitual</translation>
 <translation id="3958057596965527988">10.2 × 10.2 cm (4 × 4 in)</translation>
+<translation id="3959121317419633580">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google. Recientemente, la Navegación segura <ph name="BEGIN_LINK" />encontró un caso de phishing en <ph name="SITE" /><ph name="END_LINK" />, que está incorporado en el sitio que intentas visitar.<ph name="NEW_LINE" />A veces, incluso los sitios que suelen ser seguros son hackeados por atacantes. <ph name="BEGIN_ERROR_LINK" />Cuéntanos<ph name="END_ERROR_LINK" /> si crees que hubo un error y que este sitio no representa un peligro.</translation>
 <translation id="3961148744525529027">La hoja del controlador de pagos está abierta a la mitad</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Modo de lectura</translation>
@@ -1437,6 +1444,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="401170183602135785">Sobre C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} página}other{Documento PDF con {COUNT} páginas}}</translation>
 <translation id="4014895360827978999">Servicios comerciales y sistemas de pagos</translation>
+<translation id="4018819349042761761">Clave pública</translation>
 <translation id="4023431997072828269">Dado que se está utilizando una conexión no segura para enviar este formulario, otras personas podrán ver tu información.</translation>
 <translation id="4030383055268325496">&amp;Deshacer Agregar</translation>
 <translation id="4030545038933060179">Cuando esta configuración está activada, aparecerá una lista de temas según tu historial de navegación reciente.</translation>
@@ -1613,6 +1621,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="433013776994920042">Hosting web y registro de dominios</translation>
 <translation id="4331519897422864041">Apilador 5</translation>
 <translation id="4331708818696583467">No seguro</translation>
+<translation id="4333295216031073611">Lista de compras</translation>
 <translation id="4333561522337981382">Administrar ventanas en todas tus pantallas</translation>
 <translation id="4340575312453649552">Chrome quitó este anuncio porque usó demasiados recursos en tu dispositivo.</translation>
 <translation id="4340810192899866471">Importar desde JSON</translation>
@@ -1665,6 +1674,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4451684391620232683">Texto que se muestra al usuario:</translation>
 <translation id="4452328064229197696">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de asegurar tu cuenta, el Administrador de contraseñas de Google te recomienda revisar las contraseñas guardadas.</translation>
 <translation id="4464826014807964867">Sitios web con información de tu organización</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activa la protección mejorada<ph name="END_ENHANCED_PROTECTION_LINK" /> para obtener el nivel más alto de seguridad de Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Se desactivó la función Autocompletar.</translation>
 <translation id="4477350412780666475">Siguiente pista</translation>
@@ -2383,6 +2393,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5992805036496113940">Ver la información que se usa para mostrarte anuncios</translation>
 <translation id="5995727681868049093">Administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="5997247540087773573">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de proteger tus cuentas, el Administrador de contraseñas de Google te recomienda cambiarla ahora y revisar las contraseñas guardadas.</translation>
+<translation id="5999271311987646952">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente encontró software malicioso<ph name="END_LINK" /> en el sitio que intentas visitar.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6005659677094197001">Continuo</translation>
@@ -2687,6 +2698,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Educación en informática</translation>
 <translation id="6633476656216409494">Software para negocios y ofimática</translation>
+<translation id="6638353438328951386">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google, que recientemente <ph name="BEGIN_LINK" />encontró software dañino<ph name="END_LINK" /> en el sitio que intentas visitar.</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645291930348198241">Acceder a las cookies y los datos de sitios</translation>
 <translation id="6645478838938543427">Las alertas de descuentos se enviarán a <ph name="EMAIL_ADDRESS" /></translation>
@@ -2882,6 +2894,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="702146556168549005">Se envían las URL de las páginas que visitas a Google Cloud o a terceros para su análisis. Por ejemplo, es posible que se analicen para detectar sitios web no seguros o filtrarlos en función de las reglas establecidas por el administrador.</translation>
 <translation id="702275896380648118">Este sitio determina lo que te gusta y, luego, sugiere anuncios a otros sitios. Este sitio también obtiene tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="7023162328967545559">Advertencia del administrador</translation>
+<translation id="7024932305105294144">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente encontró un caso de phishing<ph name="END_LINK" /> en el sitio que intentas visitar. Los sitios de phishing imitan a otros sitios para engañarte.<ph name="NEW_LINE" />A veces, incluso los sitios que suelen ser seguros son hackeados por atacantes. <ph name="BEGIN_ERROR_LINK" />Cuéntanos<ph name="END_ERROR_LINK" /> si crees que hubo un error y que este sitio no representa un peligro.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030436163253143341">El certificado no es válido</translation>
 <translation id="7031646650991750659">Las apps de Google Play que instalaste</translation>
@@ -2917,6 +2930,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7105998430540165694">Llave de acceso del llavero de iCloud</translation>
 <translation id="7106762743910369165">Tu organización administra el navegador.</translation>
 <translation id="7107249414147762907">El PDF es inaccesible. No se extrajo texto</translation>
+<translation id="7107427078069498123">Huellas digitales SHA-256</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> desea usar tu cámara</translation>
 <translation id="7108819624672055576">Permitido por una extensión</translation>
@@ -2982,6 +2996,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
 <translation id="7226276626900992675">Permitiste que este sitio usara cookies de terceros. Esto significa que la mayoría de las funciones deberían poder usarse, pero tendrás menos protección.</translation>
 <translation id="7227293336683593977">Historial de precios</translation>
+<translation id="7227747683324411744">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software dañino que afecta la manera en la que navegas. Por ejemplo, pueden cambiar la página principal o mostrarte anuncios adicionales en los sitios que visitas.</translation>
 <translation id="7233592378249864828">Imprimir hoja de confirmación</translation>
 <translation id="7234638337680728591">Precios de gasolina y combustible para vehículos</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% completado | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3081,6 +3096,7 @@ Detalles adicionales:
 <translation id="7429429656042611765">Ejecutivo</translation>
 <translation id="7437289804838430631">Agregar información de contacto</translation>
 <translation id="7437490109271760224">Juegos de cartas</translation>
+<translation id="7438338505272634288">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software dañino que afecta la manera en la que navegas. Por ejemplo, pueden cambiar la página principal o mostrarte anuncios adicionales en los sitios que visitas. Chrome recomienda que regreses a un sitio seguro para evitar daños. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Explorar sin conexión</translation>
 <translation id="7441627299479586546">Nombre de usuario o dominio de política incorrecto</translation>
 <translation id="7441864845853794192">Alimentos gourmet y especialidades</translation>
@@ -3180,6 +3196,7 @@ Detalles adicionales:
 <translation id="7599089013883397081">Se agotó el tiempo de espera para descargar tus archivos</translation>
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Por lo general, te conectas a este sitio de forma segura, pero Chrome no pudo usar una conexión segura esta vez. Es posible que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Los atacantes del sitio que intentas visitar podrían instalar software dañino que roba o borra elementos como tu contraseña, fotos, mensajes o número de tarjeta de crédito.</translation>
 <translation id="7610193165460212391">El valor <ph name="VALUE" /> está fuera del rango.</translation>
 <translation id="7613889955535752492">Vencimiento: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para ver y administrar tus contraseñas en la configuración de Chrome</translation>
@@ -3407,6 +3424,7 @@ Detalles adicionales:
 <translation id="8078006011486731853">{0,plural, =1{¿Quieres subir este archivo confidencial?}other{¿Quieres subir estos archivos confidenciales?}}</translation>
 <translation id="8078141288243656252">No se pueden realizar anotaciones cuando el documento está rotado</translation>
 <translation id="8079031581361219619">¿Deseas volver a cargar el sitio?</translation>
+<translation id="8079976827192572403">Sitio peligroso</translation>
 <translation id="8081087320434522107">Vehículos tipo sedán</translation>
 <translation id="8086971161893892807">Borrador</translation>
 <translation id="8088680233425245692">Error al visualizar artículo</translation>
@@ -3577,6 +3595,7 @@ Detalles adicionales:
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Se permite el micrófono esta vez</translation>
+<translation id="8422228580902424274">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software o reveles información como tu contraseña, teléfono o número de tarjeta de crédito.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Configuración</translation>
@@ -3690,6 +3709,7 @@ Detalles adicionales:
 <translation id="8680536109547170164"><ph name="QUERY" />, respuesta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">La página web de <ph name="PAGE" /> no se pudo cargar porque:</translation>
 <translation id="8686424632716064939">Seguridad informática</translation>
+<translation id="8687278439622293018">Se borró la entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> administra tu dispositivo y tu cuenta.</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Páginas por conjunto</translation>
@@ -3901,6 +3921,7 @@ Detalles adicionales:
 <translation id="9128870381267983090">Conectarse a una red</translation>
 <translation id="9131119348384879525">¿Deseas capturar contenido confidencial?</translation>
 <translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar tu bloqueo de pantalla para verificar tu identidad cada vez que uses una contraseña guardada</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, tarjeta virtual</translation>
 <translation id="9136861683332321024">Vehículos de lujo</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137248913990643158">Abre Chrome y accede a tu cuenta antes de usar esta app.</translation>

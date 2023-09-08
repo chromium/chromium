@@ -482,6 +482,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1390548061267426325">Adi panel kimi açın</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> adlı şəxsin <ph name="PRINTER_NAME" /> ilə çap etmək icazəsi yoxdur. Administratorunuz ilə əlaqə saxlayın.</translation>
 <translation id="1392047138650695757">İstifadəçi lüğətləri</translation>
+<translation id="139300021892314943">Girişə limit qoyun</translation>
 <translation id="1393283411312835250">Günəş və buludlar</translation>
 <translation id="1395730723686586365">Güncəlləşdirici başladıldı</translation>
 <translation id="1395832189806039783">Klaviatura fokusu ilə elementi vurğulayın</translation>
@@ -2515,6 +2516,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2956070239128776395">Bölmə qrupun daxilindədir: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Paket Artırması Xəbərdarlığı</translation>
 <translation id="2959127025785722291">Xəta baş verdi. Skanlamanı tamamlamaq mümkün olmadı. Yenidən cəhd edin.</translation>
+<translation id="2959474507964749987">Şifrələnmiş bu fayl virus və ya zərərli proqram ola bilər.<ph name="LINE_BREAK" />Təhlükəli olub-olmadığını yoxlamaq üçün fayl və parolu Google güvənli baxışa göndərə bilərsiniz. Adətən, skan bir neçə saniyə çəkir.<ph name="LINE_BREAK" />Skanlamaq üçün fayl parolunu əlavə edin.</translation>
 <translation id="2959842337402130152">Yaddaş yeri az olduğuna görə bərpa etmək mümkün deyil. Cihazın yaddaşında <ph name="SPACE_REQUIRED" /> yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="2960208947600937804">Linux'u konfiqurasiya edərkən xəta baş verdi. Admin ilə əlaqə saxlayın.</translation>
 <translation id="2960942820860729477">Yeniləmə dərəcəsi</translation>
@@ -3976,6 +3978,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4147099377280085053">Brayl cədvəli seçin</translation>
 <translation id="4147911968024186208">Yenidən cəhd edin. Xəta hələ də qalarsa, yardım xidməti ilə əlaqə saxlayın.</translation>
 <translation id="414800391140809654">siz baxarkən məlumatınızdan istifadə edə bilər</translation>
+<translation id="4148195018520464922">Girişi müəyyən istifadəçilərə məhdudlaşdıra bilərsiniz. Bu zaman giriş ekranında "Şəxs əlavə edin" seçimi silinir. Cari istifadəçiləri də silə bilərsiniz.</translation>
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4150569944729499860">Ekran konteksti</translation>
 <translation id="4151449637210235443">Son oyun sürəsi haqqında bildirin</translation>
@@ -4174,6 +4177,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4322394346347055525">Digər tabları qapadın</translation>
 <translation id="4324577459193912240">Fayl yarımçıqdır</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> sistemdən silinir...</translation>
+<translation id="4325433082696797523">Yaddaş və enerji</translation>
 <translation id="4326146840124313313">Chrome-un güclü təhlükəsizlik sistemi təhlükəli veb-sayt, endirmə və artırmalardan qoruyur</translation>
 <translation id="4326484226728068206">Səbətdə <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> tərəfindən təqdim edilən məhsullar (<ph name="DISCOUNT_TEXT" />) var. Baxılıb: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Buzlu su</translation>
@@ -5157,6 +5161,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5146896637028965135">Sistem səsi</translation>
 <translation id="5147992672778369947">Tövsiyə edilən paroldan istifadə edin</translation>
 <translation id="5148277445782867161">Google'un məkan xidməti cihazınızın məkanını təxmin etməkdə kömək üçün Wi-Fi, mobil şəbəkələr və sensorlar kimi mənbələrdən istifadə edir.</translation>
+<translation id="5148285448107770349">Parolda ən az 8 simvol olmalıdır</translation>
 <translation id="5150254825601720210">Netscape Sertifikat SSL Server adı</translation>
 <translation id="5151354047782775295">Diskdə yer boşaldın və ya avtomatik silinə bilən datanı seçin</translation>
 <translation id="5153234146675181447">Telefonu unudun</translation>
@@ -8129,6 +8134,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7617263010641145920">Play Marketi aktiv edin</translation>
 <translation id="7617648809369507487">Sakit mesajlaşmadan istifadə edin</translation>
 <translation id="7621382409404463535">Sistem cihaz konfiqurasiyasını yadda saxlaya bimədi.</translation>
+<translation id="7621480263311228380">Haqqınızda yadda saxlanan məlumatdan istifadə icazəsi verilməyib</translation>
 <translation id="7621595347123595643">Parol və ya PIN kodunuzu unutsanız, lokal datanı bərpa edə bilməyəcəksiniz.</translation>
 <translation id="7622114377921274169">Enerji yığır.</translation>
 <translation id="7622768823216805500">Saytlar adətən asan ödəmə kimi alış-veriş xüsusiyyətləri üçün ödəniş emalçıları quraşdırır</translation>
@@ -8681,6 +8687,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8037117027592400564">Sintetik nitq işlədərək bütün mətni oxuyun</translation>
 <translation id="8037357227543935929">Soruşun (defolt)</translation>
 <translation id="803771048473350947">Fayl</translation>
+<translation id="8037801708772278989">İndicə yoxlanılıb</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 fayl <ph name="CLOUD_PROVIDER" /> provayderinə kopyalanır}other{{NUM_OF_FILES} fayl <ph name="CLOUD_PROVIDER" /> provayderinə kopyalanır}}</translation>
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="8041267120753677077">Telefonunuzun tətbiqlərini yayımlayın</translation>
@@ -9474,6 +9481,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8680251145628383637">Bütün cihazlarınızda əlfəcin, tarixçə və digər ayarları əldə etmək üçün daxil olun. Həmçinin, avtomatik olaraq Google xidmətlərinə daxil ediləcəksiniz.</translation>
 <translation id="8681886425883659911">İntruziv və ya aldadıcı reklamlar göstərdiyi məlum olan saytlarda reklamlar bloklanır</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> qoşuldu və hazırdır</translation>
+<translation id="8684471948980641888">Sayğaclı şəbəkələrdə sinxronlaşdırmaya icazə verin</translation>
 <translation id="8685540043423825702">Chrome profiliniz</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> kimi giriş edilib</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> faylını ləğv edin</translation>

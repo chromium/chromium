@@ -73,6 +73,7 @@ Du bør tenke på følgende:
 <translation id="3655656110921623717">Dette betyr at Chrome kommer til å forespørre mobilnettstedet hver gang.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner når du lukker Chrome</translation>
 <translation id="3741995255368156336">Åpner Chrome-leselisten.</translation>
+<translation id="3744018071945602754">Administrer passord i Chrome</translation>
 <translation id="3827545470516145620">Du får standard sikkerhetsbeskyttelse på denne enheten</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruke kameraet akkurat nå</translation>
 <translation id="3901001113120561395">Få mest mulig ut av Chrome.</translation>
@@ -87,6 +88,7 @@ Du bør tenke på følgende:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> har brukt Chrome og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4251174643044751591">Åpner innstillingssiden for betalingsmåter i Chrome.</translation>
+<translation id="4453284704333523777">Administrer Chrome-innstillinger</translation>
 <translation id="4508370294876102450">Åpne Chrome fra en hvilken som helst app</translation>
 <translation id="4523886039239821078">Noen tillegg fører til at Chrome krasjer. Avinstaller:</translation>
 <translation id="4633328489441962921">Chrome kan ikke se etter oppdateringer</translation>
@@ -123,6 +125,7 @@ Du bør tenke på følgende:
 <translation id="571296537125272375">Uten nett – Chrome kan ikke se etter oppdateringer</translation>
 <translation id="5716154293141027663">Åpne alltid Chrome når du trykker på linker i andre apper</translation>
 <translation id="5808435672482059465">Se Chrome-loggen din</translation>
+<translation id="589695154992054845">Åpner Passordlagring i Chrome.</translation>
 <translation id="5998675059699164418">Organisasjonen din krever at du logger på for å bruke Chrome.</translation>
 <translation id="6054613632208573261">Bruk Chrome som standard</translation>
 <translation id="6063091872902370735">Tillat Chrome-pålogging</translation>
@@ -215,6 +218,7 @@ Dette bør du tenke over:
   • Hvis Chrome krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger.
 
   • Hvis du slår på synkronisering, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Åpner innstillingene i Chrome.</translation>
 <translation id="9112744793181547300">Vil du angi Chrome som standard?</translation>
 <translation id="9122931302567044771">Dette betyr at Chrome kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>
 <translation id="9181628561061032322">Åpner nylige faner fra Chrome.</translation>

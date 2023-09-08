@@ -157,6 +157,7 @@
 <translation id="1872096359983322073">Вспышка</translation>
 <translation id="1882901927376062252">{count,plural, =1{Закладка сохранена в аккаунте Google ({email}).}one{{count} закладка сохранена в аккаунте Google ({email}).}few{{count} закладки сохранены в аккаунте Google ({email}).}many{{count} закладок сохранено в аккаунте Google ({email}).}other{{count} закладки сохранено в аккаунте Google ({email}).}}</translation>
 <translation id="1883255238294161206">Свернуть список</translation>
+<translation id="1890237935065108104">Этот параметр недоступен.</translation>
 <translation id="1894023287452300670">Отслеживайте цены здесь</translation>
 <translation id="189531189292803889">Устройство iPad было недавно восстановлено, поэтому браузер по умолчанию мог измениться.</translation>
 <translation id="1910975740091000991">Chrome для iOS</translation>
@@ -1371,6 +1372,7 @@
 <translation id="8855242995793521265">Не приводит к заметному замедлению работы браузера или устройства.</translation>
 <translation id="8855781063981781621">Отключите режим блокировки входа в Chrome на своем устройстве iPad.</translation>
 <translation id="8863431381414769983">Прокладывайте маршруты и получайте полезную информацию в Google Картах</translation>
+<translation id="8865415417596392024">Данные Chrome в вашем аккаунте</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="8870413625673593573">Недавно закрытые</translation>
 <translation id="8876882697946675716">Синхронизируйте устройства</translation>

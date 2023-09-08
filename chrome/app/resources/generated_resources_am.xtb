@@ -485,6 +485,7 @@
 <translation id="1390548061267426325">እንደ መደበኛ ትር ክፈት</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> ወደ <ph name="PRINTER_NAME" /> ለማተም አልተፈቀደለትም። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="1392047138650695757">የተጠቃሚ መዝገበ ቃላት</translation>
+<translation id="139300021892314943">ማን ወደ መለያ መግባት እንደሚችል ይገድቡ</translation>
 <translation id="1393283411312835250">ፀሐይ እና ደመናዎች</translation>
 <translation id="1395730723686586365">ማዘመኛ ጀምሯል</translation>
 <translation id="1395832189806039783">የቁልፍ ሰሌዳ ትኩረት ያለውን ንጥል ያድምቁ</translation>
@@ -2525,6 +2526,7 @@
 <translation id="2956070239128776395">ክፍል በቡድን እቀፍ ውስጥ ተካቷል፦ <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">የጥቅል ቅጥያ ማስጠንቀቂያ</translation>
 <translation id="2959127025785722291">የሆነ ችግር ተፈጥሯል። መቃኘት ሊጠናቀቅ አልቻለም። እባክዎ እንደገና ይሞክሩ።</translation>
+<translation id="2959474507964749987">ይህ የተመሰጠረ ፋይል ቫይረስ ወይም ተንኮል አዘል ዌር ሊሆን ይችላል።<ph name="LINE_BREAK" />ደህንነቱ ያልተጠበቀ ከሆነ ለማረጋገጥ ፋይሉን እና የይለፍ ቃልን ወደ Google ጥንቃቄ አሰሳ መላክ ይችላሉ። ቅኝቶች በተለምዶ ጥቂት ሰከንዶችን ይወስዳሉ።<ph name="LINE_BREAK" />ለመቃኘት፣ የፋይል ይለፍ ቃሉን ያክሉ።</translation>
 <translation id="2959842337402130152">በማከማቻ ቦታ እጥረት ምክንያት እንደነበረ መመለስ አይቻልም። ከመሣሪያው ላይ <ph name="SPACE_REQUIRED" /> ባዶ ቦታ ነፃ ያድርጉ እና እንደገና ይሞክሩ።</translation>
 <translation id="2960208947600937804">Linuxን በማዋቀር ላይ ሳለ አንድ ስህተት ተከስቶ ነበር። የእርስዎን አስተዳዳሪ ያነጋግሩ</translation>
 <translation id="2960942820860729477">የዕድሳት ፍጥነት</translation>
@@ -3986,6 +3988,7 @@
 <translation id="4147099377280085053">የብሬይል ሰንጠረዥ ይምረጡ</translation>
 <translation id="4147911968024186208">እባክዎ እንደገና ይሞክሩ። ይህን ስህተት በድጋሚ ከተመለከቱ እባክዎ የድጋፍ ተወካይዎን ያነጋግሩ።</translation>
 <translation id="414800391140809654">የእርስዎን መረጃ በሚያስሱ ጊዜ መጠቀም ይችላል</translation>
+<translation id="4148195018520464922">ለተወሰኑ ተጠቃሚዎች ወደ መለያ መግባትን መገደብ ይችላሉ። ይህ ወደ መለያ መግቢያ ማያ ገፅ ላይ «ሰው አክል» አማራጩን ያስወግዳል። እንዲሁም የአሁን ጊዜ ተጠቃሚዎችን ማስወገድ ይችላሉ።</translation>
 <translation id="4150201353443180367">ማሳያ</translation>
 <translation id="4150569944729499860">የማያ ገፅ አውድ</translation>
 <translation id="4151449637210235443">ስለ ቅርብ ጊዜ የጨዋታ ዘዴዎ ይንገሩን</translation>
@@ -4184,6 +4187,7 @@
 <translation id="4322394346347055525">ሌሎች ትሮችን ዝጋ</translation>
 <translation id="4324577459193912240">ፋይል ያልተሟላ ነው</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" />ን በማራገፍ ላይ...</translation>
+<translation id="4325433082696797523">ማከማቻ እና ኃይል</translation>
 <translation id="4326146840124313313">የChrome በጣም ጠንካራ ጥበቃ እርስዎን ከአደገኛ ድር ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ለመጠበቅ ተጨማሪ ነገር ያደርጋል</translation>
 <translation id="4326484226728068206">በተሳቢዎ ውስጥ ንጥሎች <ph name="DISCOUNT_TEXT" /> ከ<ph name="MERCHANT_NAME" />፣ <ph name="MERCHANT_DOMAIN" />፣ የታዩት <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">በረዶ ውሃ</translation>
@@ -8144,6 +8148,7 @@
 <translation id="7617263010641145920">Play መደብርን ያብሩ</translation>
 <translation id="7617648809369507487">ጸጥ ያለ መልዕክት መላላክን ይጠቀሙ</translation>
 <translation id="7621382409404463535">ሥርዓቱ የመሣሪያ ውቅረቱን ማስቀመጥ አልቻለም።</translation>
+<translation id="7621480263311228380">ስለ እርስዎ ያስቀመጧቸውን መረጃዎች ለመጠቀም አልተፈቀደም</translation>
 <translation id="7621595347123595643">የእርስዎን የይለፍ ቃል ወይም ፒን ከረሱ አካባቢያዊ ውሂብዎን መልሰው ማግኘት አይችሉም።</translation>
 <translation id="7622114377921274169">ኃይል በመሙላት ላይ።</translation>
 <translation id="7622768823216805500">ጣቢያዎች አብዛኛው ጊዜ እንደ የቀለለ ከፍሎ ማውጫ ላሉ የግዢ ባህሪዎች የክፍያ ተቆጣጣሪዎችን ይጭናሉ</translation>
@@ -8702,6 +8707,7 @@ nil</translation>
 <translation id="8037117027592400564">ተሰብስቦ በተሰራ ንግግር አማካኝነት ሁሉንም የተነገሩ ጽሑፎች ያነብባል</translation>
 <translation id="8037357227543935929">ጠይቅ (ነባሪ)</translation>
 <translation id="803771048473350947">ፋይል</translation>
+<translation id="8037801708772278989">አሁን ተፈትሿል</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 ፋይልን ወደ <ph name="CLOUD_PROVIDER" /> በመቅዳት ላይ}one{{NUM_OF_FILES} ፋይልን ወደ <ph name="CLOUD_PROVIDER" /> በመቅዳት ላይ}other{{NUM_OF_FILES} ፋይሎችን ወደ <ph name="CLOUD_PROVIDER" /> በመቅዳት ላይ}}</translation>
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>
 <translation id="8041267120753677077">የስልክዎን መተግበሪያዎች በዥረት ይልቀቁ</translation>
@@ -9495,6 +9501,7 @@ nil</translation>
 <translation id="8680251145628383637">የእርስዎን ዕልባቶች፣ ታሪክ፣ የይለፍ ቃሎች እና ሌሎች ቅንብሮች በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ ይግቡ። እንዲሁም በራስ-ሰር ወደ የእርስዎ Google አገልግሎቶች እንዲገቡ ይደረጋሉ።</translation>
 <translation id="8681886425883659911">ማስታወቂያዎች ጣልቃ ገቢ ወይም አሳሳች ማስታወቂያዎችን በማሳየት በሚታወቁ ጣቢያዎች ላይ ታግደዋል</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ተገናኝቶ ዝግጁ ነው</translation>
+<translation id="8684471948980641888">በሚለኩ አውታረ መረቦች ላይ ማስመርን ፍቀድ</translation>
 <translation id="8685540043423825702">የChrome መገለጫዎ</translation>
 <translation id="8686142379631285985">እንደ <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" />ሆነው በመለያ ገብተዋል</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> ይቅር</translation>

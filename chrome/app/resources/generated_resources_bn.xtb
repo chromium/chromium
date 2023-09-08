@@ -487,6 +487,7 @@
 <translation id="1390548061267426325">নিয়মিত ট্যাব রূপে খুলুন</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />-কে <ph name="PRINTER_NAME" />-এ প্রিন্ট করার অনুমতি দেওয়া নেই। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1392047138650695757">ব্যবহারকারীর অভিধান</translation>
+<translation id="139300021892314943">কারা সাইন-ইন করতে পারবেন তা সীমিত করুন</translation>
 <translation id="1393283411312835250">সূর্য ও ক্লাউড</translation>
 <translation id="1395730723686586365">আপডেটার শুরু হয়েছে</translation>
 <translation id="1395832189806039783">কীবোর্ড ফোকাসের সাহায্যে আইটেম হাইলাইট করা</translation>
@@ -2532,6 +2533,7 @@
 <translation id="2956070239128776395">বিভাগ গ্রুপে নেস্ট করা হয়েছে: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">প্যাক এক্সটেনশনের সতর্কীকরণ</translation>
 <translation id="2959127025785722291">কিছু সমস্যা হয়েছে। স্ক্যানিং সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন।</translation>
+<translation id="2959474507964749987">এই এনক্রিপ্ট করা ফাইল ভাইরাস বা ম্যালওয়্যার হতে পারে।<ph name="LINE_BREAK" />এটি অসুরক্ষিত কিনা তা চেক করতে, আপনি ফাইল ও পাসওয়ার্ড Google Safe Browsing-এ পাঠাতে পারেন। স্ক্যান করতে সাধারণত কয়েক সেকেন্ড সময় লাগে।<ph name="LINE_BREAK" />স্ক্যান করতে, এই ফাইলের পাসওয়ার্ড যোগ করুন।</translation>
 <translation id="2959842337402130152">স্টোরেজের জায়গা নেই বলে ফিরিয়ে আনা যায়নি। ডিভাইসে <ph name="SPACE_REQUIRED" /> জায়গা খালি করে আবার চেষ্টা করুন।</translation>
 <translation id="2960208947600937804">Linux কনফিগার করার সময় কোনও সমস্যা হয়েছে। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="2960942820860729477">রিফ্রেশ রেট</translation>
@@ -3995,6 +3997,7 @@
 <translation id="4147099377280085053">ব্রেইল সারণী বেছে নিন</translation>
 <translation id="4147911968024186208">আবার চেষ্টা করুন। সমস্যাটি আবার হলে, কাস্টমার সাপোর্টের সাথে যোগাযোগ করুন।</translation>
 <translation id="414800391140809654">ব্রাউজ করার সময় আপনার তথ্য ব্যবহার করতে পারবে</translation>
+<translation id="4148195018520464922">আপনি নির্দিষ্ট ব্যবহারকারীর সাইন-ইন করা সীমিত করতে পারেন। এটি সাইন-ইন স্ক্রিনে "ব্যক্তি যোগ করুন" বিকল্প সরিয়ে দেয়। এছাড়াও আপনি বর্তমান ব্যবহারকারীকে সরাতে পারেন।</translation>
 <translation id="4150201353443180367">প্রদর্শন</translation>
 <translation id="4150569944729499860">স্ক্রিনের তথ্য</translation>
 <translation id="4151449637210235443">আপনার সাম্প্রতিক গেমপ্লে সম্পর্কে আমাদের বলুন</translation>
@@ -4193,6 +4196,7 @@
 <translation id="4322394346347055525">অন্যান্য ট্যাব বন্ধ করুন</translation>
 <translation id="4324577459193912240">ফাইলটি অসম্পূর্ণ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> আনইনস্টল করা হচ্ছে…</translation>
+<translation id="4325433082696797523">স্টোরেজ ও পাওয়ার</translation>
 <translation id="4326146840124313313">ক্ষতিকর ওয়েবসাইট, ডাউনলোড ও এক্সটেনশন থেকে আপনাকে সুরক্ষিত রাখতে, Chrome-এর সবচেয়ে শক্তিশালী নিরাপত্তা আরও অনেক কিছু করে</translation>
 <translation id="4326484226728068206"><ph name="MERCHANT_NAME" /> থেকে আপনার কার্টে থাকা আইটেমে <ph name="DISCOUNT_TEXT" /> আছে, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> দেখা হয়েছে</translation>
 <translation id="4330191372652740264">বরফ জল</translation>
@@ -4796,6 +4800,7 @@
 <translation id="4820236583224459650">অ্যাক্টিভ টিকিট হিসেবে সেট করুন</translation>
 <translation id="4820795723433418303">উপরের সারির 'কী' হিসেবে ফাংশন 'কী' ব্যবহার করুন</translation>
 <translation id="4821935166599369261">&amp;প্রোফাইলিং সক্ষমিত</translation>
+<translation id="4823193082697477185">স্থানীয় নেটওয়ার্কে শেয়ার করা ফাইল, ফোল্ডার বা ড্রাইভ অ্যাক্সেস করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">ব্যবহারকারী এবং ডিভাইস সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="4824037980212326045">Linux-এর ব্যাক-আপ এবং রিস্টোর করা</translation>
 <translation id="4824958205181053313">সিঙ্ক বাতিল করতে চান?</translation>
@@ -5177,6 +5182,7 @@
 <translation id="5146896637028965135">সিস্টেম ভয়েস</translation>
 <translation id="5147992672778369947">সাজেস্ট করা পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="5148277445782867161">Google-এর লোকেশন ভিত্তিক পরিষেবা ওয়াই-ফাই, মোবাইল নেটওয়ার্ক এবং সেন্সরের মতো সোর্স ব্যবহার করে আপনার ডিভাইসের লোকেশন খুঁজে নেয়।</translation>
+<translation id="5148285448107770349">পাসওয়ার্ড অন্তত ৮টি অক্ষরের হতে হবে</translation>
 <translation id="5150254825601720210">Netscape সার্টিফিকেট SSL সার্ভার নাম</translation>
 <translation id="5151354047782775295">ডিস্কের জায়গা খালি করুন, নাহলে নির্বাচিত তথ্য স্বয়ংক্রিয়ভাবে মুছে ফেলা হতে পারে</translation>
 <translation id="5153234146675181447">ফোন ভুলে যান</translation>
@@ -8156,6 +8162,7 @@
 <translation id="7617263010641145920">Play Store অ্যাপ চালু করুন</translation>
 <translation id="7617648809369507487">'কম শব্দযুক্ত মেসেজিং' বিকল্প ব্যবহার করুন</translation>
 <translation id="7621382409404463535">সিস্টেমটি ডিভাইস কনফিগারেশন সেভ করতে পারেনি।</translation>
+<translation id="7621480263311228380">আপনার সম্পর্কে এইসব সাইট যে তথ্য সেভ করেছে সেগুলি ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="7621595347123595643">আপনার পাসওয়ার্ড বা পিন ভুলে গেলে আপনি স্থানীয় ডেটা আগের অবস্থায় ফেরাতে পারবেন না।</translation>
 <translation id="7622114377921274169">চার্জ হচ্ছে।</translation>
 <translation id="7622768823216805500">খুব সহজে চেক-আউট করার মতো শপিং ফিচারের জন্য সাইট সাধারণত পেমেন্ট হ্যান্ডলার ইনস্টল করে</translation>
@@ -8708,6 +8715,7 @@
 <translation id="8037117027592400564">সিন্থেসাইজড স্পিচ ব্যবহার করে কথিত সব পাঠ্য পড়ুন</translation>
 <translation id="8037357227543935929">জিজ্ঞাসা করুন (ডিফল্ট)</translation>
 <translation id="803771048473350947">ফাইল</translation>
+<translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" />-এ ১টি ফাইল কপি করা হচ্ছে}one{<ph name="CLOUD_PROVIDER" />-এ {NUM_OF_FILES}টি ফাইল কপি করা হচ্ছে}other{<ph name="CLOUD_PROVIDER" />-এ {NUM_OF_FILES}টি ফাইল কপি করা হচ্ছে}}</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8041267120753677077">আপনার ফোনের অ্যাপ স্ট্রিম করুন</translation>
@@ -9501,6 +9509,7 @@
 <translation id="8680251145628383637">আপনার সব ডিভাইসে আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য সেটিংস পেতে সাইন-ইন করুন। এছাড়াও আপনি অটোমেটিক আপনার Google পরিষেবায় সাইন-ইন করবেন।</translation>
 <translation id="8681886425883659911">কিন্তু ব্যাঘাতকারী অথবা বিভ্রান্তিকর বিজ্ঞাপন দেখায় এমন সাইটে বিজ্ঞাপন ব্লক আছে</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> কানেক্ট করা হয়েছে এবং এখন সেটি ব্যবহার করা যাবে</translation>
+<translation id="8684471948980641888">পরিমাপ করা নেটওয়ার্কে সিঙ্ক করার অনুমতি দিন</translation>
 <translation id="8685540043423825702">আপনার Chrome প্রোফাইল</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> বাতিল করুন</translation>

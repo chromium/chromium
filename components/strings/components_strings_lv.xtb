@@ -234,6 +234,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1432187715652018471">lapa vēlas instalēt pakalpojumu apdarinātāju.</translation>
 <translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
 <translation id="1433225466058025572">Mēģiniet vēlreiz pārvietot savus failus.</translation>
+<translation id="1434317006812369578">Pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, Google droša pārlūkošana, lai aizsargātu jūs pārlūkošanas laikā. Droša pārlūkošana <ph name="BEGIN_LINK" />nesen konstatēja ļaunprātīgu programmatūru vietnē <ph name="SITE" /><ph name="END_LINK" />, kas ir iegulta vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="1435940442311036198">Izmantot piekļuves atslēgu citā ierīcē</translation>
 <translation id="1436185428532214179">Var pieprasīt atļauju rediģēt failus un mapes jūsu ierīcē</translation>
 <translation id="1442386063175183758">Abpusējs locījums pa labi</translation>
@@ -384,6 +385,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1732445923934584865">Jautāt klātienē</translation>
 <translation id="1733064249834771892">fonti</translation>
 <translation id="1733631169686303142">Audioaparatūra</translation>
+<translation id="1733762317901693627">Dažkārt uzbrucēji apdraud pat vietnes, kuras parasti ir drošas. Apmeklējiet <ph name="BEGIN_LINK" />šo nedrošo vietni<ph name="END_LINK" /> tikai tad, ja esat pārliecināts, ka izprotat riskus.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Sazinieties ar sistēmas administratoru.</translation>
 <translation id="1736420071277903564">Dators</translation>
@@ -717,6 +719,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2480300195898055381">Jūsu Google kontā <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="248348093745724435">Ierīces politikas</translation>
+<translation id="2490199669743245365">Vietnē, kuru mēģināt apmeklēt, uzbrucēji var instalēt kaitīgu programmatūru, kas zog vai dzēš kādu informāciju, piemēram, jūsu paroli, fotoattēlus, ziņojumus vai kredītkaršu numurus. Chrome stingri iesaka doties atpakaļ. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="2491120439723279231">Servera sertifikātā ir kļūdas.</translation>
 <translation id="2491414235131909199">Šo lapu ir bloķējis kāds paplašinājums.</translation>
 <translation id="2495083838625180221">JSON parsētājs</translation>
@@ -1051,6 +1054,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3216313131063488104">Blūzs</translation>
 <translation id="3218181027817787318">Relatīva</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Atjaunināšana jāveic tūlīt}=2{Rīt jāveic atjaunināšana}zero{Atjaunināšana jāveic # dienu laikā}one{Atjaunināšana jāveic # dienas laikā}other{Atjaunināšana jāveic # dienu laikā}}</translation>
+<translation id="3218388919950135939">Apmeklējiet <ph name="BEGIN_LINK" />šo nedrošo vietni<ph name="END_LINK" /> tikai tad, ja esat pārliecināts, ka izprotat riskus.</translation>
 <translation id="3220264767789936523">Formāls apģērbs</translation>
 <translation id="3223287115535306850">Animēta lietotnes palaišanas ikona</translation>
 <translation id="3223425961342298674">Piekļuve atrašanās vietai nav atļauta</translation>
@@ -1336,6 +1340,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3772211998634047851">Papīrs (biroja)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu piezīmi lietotnē Google Keep, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3778403066972421603">Vai vēlaties saglabāt šo karti savā Google kontā un šajā ierīcē?</translation>
+<translation id="378026377453746707">Pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, Google droša pārlūkošana, lai aizsargātu jūs pārlūkošanas laikā. Droša pārlūkošana nesen <ph name="BEGIN_LINK" />konstatēja kaitīgu programmatūru vietnē <ph name="SITE" /><ph name="END_LINK" />, kas ir iegulta vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="3780694243617746492">Izvades nodalījums</translation>
 <translation id="3781428340399460090">Spilgti rozā</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1347,6 +1352,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3795344968043407227">Indie un alternatīvā mūzika</translation>
 <translation id="3799805948399000906">Tika pieprasīts fonts</translation>
 <translation id="380329542618494757">Vārds, uzvārds</translation>
+<translation id="3806932344025766608">Vietnē, kuru mēģināt apmeklēt, uzbrucēji var jūs maldināt un pamudināt instalēt programmatūru vai atklāt kādu informāciju, piemēram, jūsu paroli, tālruņa numuru vai kredītkartes numuru. Chrome stingri iesaka doties atpakaļ. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3807270098669886186">Telefonsakaru operatori</translation>
 <translation id="3807366285948165054">Attēla nobīde uz X ass</translation>
 <translation id="3807873520724684969">Tika bloķēts kaitīgs saturs.</translation>
@@ -1412,6 +1418,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3950820424414687140">Pierakstīties</translation>
 <translation id="3953505489397572035">Šī ir parastā cena</translation>
 <translation id="3958057596965527988">4 x 4 collas</translation>
+<translation id="3959121317419633580">Pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, Google droša pārlūkošana, lai aizsargātu jūs pārlūkošanas laikā. Droša pārlūkošana nesen <ph name="BEGIN_LINK" />konstatēja pikšķerēšanu vietnē <ph name="SITE" /><ph name="END_LINK" />, kas ir iegulta vietnē, kuru mēģināt apmeklēt.<ph name="NEW_LINE" />Dažkārt uzbrucēji apdraud pat vietnes, kuras parasti ir drošas. <ph name="BEGIN_ERROR_LINK" />Informējiet mūs<ph name="END_ERROR_LINK" />, ja uzskatāt, ka ir pieļauta kļūda un šī vietne nerada apdraudējumu.</translation>
 <translation id="3961148744525529027">Maksājumu apstrādātāja lapa ir līdz pusei atvērta</translation>
 <translation id="3962859241508114581">Iepriekšējais ieraksts</translation>
 <translation id="3963721102035795474">Lasītāja režīms</translation>
@@ -1435,6 +1442,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="401170183602135785">Aploksne C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF dokumentā ir {COUNT} lapa}zero{PDF dokumentā ir {COUNT} lapas}one{PDF dokumentā ir {COUNT} lapa}other{PDF dokumentā ir {COUNT} lapas}}</translation>
 <translation id="4014895360827978999">Tirgotāju pakalpojumi un maksājumu sistēmas</translation>
+<translation id="4018819349042761761">Publiska atslēga</translation>
 <translation id="4023431997072828269">Tā kā šī veidlapa tiek iesniegta, izmantojot nedrošu savienojumu, jūsu informācija būs redzama citām personām.</translation>
 <translation id="4030383055268325496">&amp;Atsaukt pievienošanu</translation>
 <translation id="4030545038933060179">Kad šis iestatījums ir ieslēgts, šeit ir redzams saraksts ar tēmām, kuru pamatā ir jūsu nesenā pārlūkošanas vēsture</translation>
@@ -1611,6 +1619,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="433013776994920042">Tīmekļa mitināšana un domēnu reģistrācija</translation>
 <translation id="4331519897422864041">5. izvades vieta</translation>
 <translation id="4331708818696583467">Nav droši</translation>
+<translation id="4333295216031073611">Iepirkumu saraksts</translation>
 <translation id="4333561522337981382">Pārvaldīt logus visos jūsu displejos</translation>
 <translation id="4340575312453649552">Šī reklāma izmantoja pārāk daudz resursu jūsu ierīcē, tādēļ Chrome to noņēma.</translation>
 <translation id="4340810192899866471">Importēt no JSON formāta</translation>
@@ -1663,6 +1672,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4451684391620232683">Lietotājam rādītais teksts:</translation>
 <translation id="4452328064229197696">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Lai aizsargātu kontus, Google paroļu pārvaldnieks iesaka pārbaudīt saglabātās paroles.</translation>
 <translation id="4464826014807964867">Vietnes ar informāciju no jūsu organizācijas</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Ieslēdziet uzlaboto aizsardzību<ph name="END_ENHANCED_PROTECTION_LINK" />, lai saņemtu Chrome augstāko drošības līmeni</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Šī veidlapa nav droša. Automātiskā aizpilde ir izslēgta.</translation>
 <translation id="4477350412780666475">Nākamais ieraksts</translation>
@@ -2381,6 +2391,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5992805036496113940">Skatīt reklāmu rādīšanai izmantoto informāciju</translation>
 <translation id="5995727681868049093">Pārvaldiet savu informāciju, konfidencialitāti un drošību savā Google kontā</translation>
 <translation id="5997247540087773573">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Lai aizsargātu kontus, Google paroļu pārvaldnieks iesaka nekavējoties to nomainīt un pēc tam pārbaudīt saglabātās paroles.</translation>
+<translation id="5999271311987646952">Pārlūkā Chrome ir iebūvētas drošības funkcijas, lai jūs aizsargātu pārlūkošanas laikā, piemēram, Google droša pārlūkošana — šī funkcija <ph name="BEGIN_LINK" />nesen konstatēja ļaunprātīgu programmatūru<ph name="END_LINK" /> vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultāti vaicājumam “<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6002122790816966947">Jūsu ierīces</translation>
 <translation id="6005659677094197001">Vienlaidu</translation>
@@ -2685,6 +2696,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Izglītība informātikas nozarē</translation>
 <translation id="6633476656216409494">Uzņēmējdarbības un produktivitātes programmatūra</translation>
+<translation id="6638353438328951386">Pārlūkā Chrome ir iebūvētas drošības funkcijas, lai jūs aizsargātu pārlūkošanas laikā, piemēram, Google droša pārlūkošana — šī funkcija <ph name="BEGIN_LINK" />nesen konstatēja kaitīgu programmatūru<ph name="END_LINK" /> vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6645291930348198241">Piekļūt sīkfailiem un vietnes datiem</translation>
 <translation id="6645478838938543427">Paziņojums par cenas kritumu tiks nosūtīts uz adresi <ph name="EMAIL_ADDRESS" />.</translation>
@@ -2880,6 +2892,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="702146556168549005">Jūsu apmeklēto lapu vietrāži URL tiek nosūtīti uz pakalpojumu Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šie vietrāži var tikt pārmeklēti, lai konstatētu nedrošas vietnes vai filtrētu vietnes, pamatojoties uz administratora iestatītajām kārtulām.</translation>
 <translation id="702275896380648118">Šī vietne nosaka jūsu intereses un pēc tam iesaka reklāmas citām vietnēm. Turklāt šī vietne iegūst informāciju par jūsu reklāmu tēmām no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
 <translation id="7023162328967545559">Administratora brīdinājums</translation>
+<translation id="7024932305105294144">Pārlūkā Chrome ir iebūvētas drošības funkcijas, lai jūs aizsargātu pārlūkošanas laikā, piemēram, Google droša pārlūkošana — šī funkcija <ph name="BEGIN_LINK" />nesen konstatēja pikšķerēšanu<ph name="END_LINK" /> vietnē, kuru mēģināt apmeklēt. Pikšķerēšanas vietnes uzdodas par citām vietnēm, lai jūs maldinātu.<ph name="NEW_LINE" />Dažkārt uzbrucēji apdraud pat vietnes, kuras parasti ir drošas. <ph name="BEGIN_ERROR_LINK" />Informējiet mūs<ph name="END_ERROR_LINK" />, ja uzskatāt, ka ir pieļauta kļūda un šī vietne nerada apdraudējumu.</translation>
 <translation id="7029809446516969842">Paroles</translation>
 <translation id="7030436163253143341">Sertifikāts nav derīgs</translation>
 <translation id="7031646650991750659">Kuras Google Play lietotnes esat instalējis</translation>
@@ -2915,6 +2928,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7105998430540165694">Piekļuves atslēga no iCloud Keychain</translation>
 <translation id="7106762743910369165">Pārlūku pārvalda jūsu organizācija</translation>
 <translation id="7107249414147762907">Šis PDF fails nav pieejams. Teksts netika iegūts.</translation>
+<translation id="7107427078069498123">SHA-256 ciparnospiedumi</translation>
 <translation id="7108338896283013870">Slēpt</translation>
 <translation id="7108634116785509031">Vietnē <ph name="HOST" /> tiek pieprasīta atļauja lietot jūsu kameru.</translation>
 <translation id="7108819624672055576">Atļāva paplašinājums</translation>
@@ -3079,6 +3093,7 @@ Papildu informācija:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">Pievienot kontaktinformāciju</translation>
 <translation id="7437490109271760224">Kāršu spēles</translation>
+<translation id="7438338505272634288">Vietnē, kuru mēģināt apmeklēt, uzbrucēji var jūs maldināt un pamudināt instalēt kaitīgu programmatūru, kas ietekmē pārlūkošanu, piemēram, maina sākumlapu vai rāda papildu reklāmas jūsu apmeklētajās vietnēs. Chrome stingri iesaka doties atpakaļ, lai izvairītos no kaitējuma. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7440140511386898319">Pārlūkošana bezsaistē</translation>
 <translation id="7441627299479586546">Politikas subjekts nav pareizs.</translation>
 <translation id="7441864845853794192">Izsmalcināti un īpaši ēdieni</translation>
@@ -3405,6 +3420,7 @@ Papildu informācija:
 <translation id="8078006011486731853">{0,plural, =1{Vai augšupielādēt konfidenciālo failu?}zero{Vai augšupielādēt konfidenciālos failus?}one{Vai augšupielādēt konfidenciālos failus?}other{Vai augšupielādēt konfidenciālos failus?}}</translation>
 <translation id="8078141288243656252">Pagrieztiem dokumentiem nevar pievienot piezīmes</translation>
 <translation id="8079031581361219619">Vai atkārtoti ielādēt vietni?</translation>
+<translation id="8079976827192572403">Bīstama vietne</translation>
 <translation id="8081087320434522107">Sedani</translation>
 <translation id="8086971161893892807">Melnraksts</translation>
 <translation id="8088680233425245692">Rakstu neizdevās skatīt.</translation>
@@ -3688,6 +3704,7 @@ Papildu informācija:
 <translation id="8680536109547170164"><ph name="QUERY" />, atbilde, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Tīmekļa lapu <ph name="PAGE" /> nevarēja ielādēt tālāk norādīto iemeslu dēļ.</translation>
 <translation id="8686424632716064939">Datoru drošība</translation>
+<translation id="8687278439622293018">Ieraksts <ph name="ENTRY_VOICEOVER" /> ir izdzēsts.</translation>
 <translation id="8687429322371626002">Jūsu ierīci un kontu pārvalda <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Pieejams</translation>
 <translation id="868922510921656628">Lapas katrā kopā</translation>
@@ -3899,6 +3916,7 @@ Papildu informācija:
 <translation id="9128870381267983090">Izveidot savienojumu ar tīklu</translation>
 <translation id="9131119348384879525">Vai tvert konfidenciālu saturu?</translation>
 <translation id="9133985615769429248">Ja šo ierīci izmanto arī citas personas, varat izmantot ekrāna bloķēšanu, lai apstiprinātu savu identitāti ikreiz, kad izmantojat saglabātu paroli.</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, virtuāla karte</translation>
 <translation id="9136861683332321024">Luksusa klases transportlīdzekļi</translation>
 <translation id="9137013805542155359">Rādīt oriģinālo</translation>
 <translation id="9137248913990643158">Pirms šīs lietotnes izmantošanas, lūdzu, palaidiet pārlūku Chrome un pierakstieties tajā.</translation>

@@ -4198,6 +4198,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4322394346347055525">Zapri druge zavihke</translation>
 <translation id="4324577459193912240">Datoteka je nedokončana</translation>
 <translation id="4325237902968425115">Odmeščanje aplikacije <ph name="LINUX_APP_NAME" /> …</translation>
+<translation id="4325433082696797523">Shramba in napajanje</translation>
 <translation id="4326146840124313313">Chromova najmočnejša zaščita vas bolje varuje pred nevarnimi spletnimi mesti, prenosi in razširitvami.</translation>
 <translation id="4326484226728068206">Izdelki v vozičku <ph name="DISCOUNT_TEXT" /> od trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, ogledani <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Voda z ledom</translation>
@@ -5182,6 +5183,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5146896637028965135">Sistemski glas</translation>
 <translation id="5147992672778369947">Uporabite priporočeno geslo</translation>
 <translation id="5148277445782867161">Googlova lokacijska storitev si pri določanju lokacije vaše naprave pomaga z viri, kot so omrežja Wi-Fi, mobilna omrežja in tipala.</translation>
+<translation id="5148285448107770349">Geslo mora imeti najmanj 8 znakov</translation>
 <translation id="5150254825601720210">Ime strežnika SLL Netscapeovega potrdila</translation>
 <translation id="5151354047782775295">Sprostite prostor na disku, sicer bodo nekateri podatki morda samodejno izbrisani</translation>
 <translation id="5153234146675181447">Pozabi telefon</translation>
@@ -8719,6 +8721,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8037117027592400564">Branje in izgovarjava vsega besedila z uporabo sintetiziranega govora</translation>
 <translation id="8037357227543935929">Zahteva (privzeto)</translation>
 <translation id="803771048473350947">Datoteka</translation>
+<translation id="8037801708772278989">Pravkar preverjeno</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopiranje 1 datoteke v storitev <ph name="CLOUD_PROVIDER" />}one{Kopiranje {NUM_OF_FILES} datoteke v storitev <ph name="CLOUD_PROVIDER" />}two{Kopiranje {NUM_OF_FILES} datotek v storitev <ph name="CLOUD_PROVIDER" />}few{Kopiranje {NUM_OF_FILES} datotek v storitev <ph name="CLOUD_PROVIDER" />}other{Kopiranje {NUM_OF_FILES} datotek v storitev <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="8041267120753677077">Pretočno predvajanje aplikacij telefona.</translation>
@@ -9512,6 +9515,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8680251145628383637">Prijavite se, če želite uporabljati zaznamke, zgodovino, gesla in druge nastavitve v vseh napravah. Prav tako boste samodejno prijavljeni v Googlove storitve.</translation>
 <translation id="8681886425883659911">Oglasi so blokirani na spletnih mestih, za katera je znano, da prikazujejo vsiljive ali zavajajoče oglase.</translation>
 <translation id="8682730193597992579">Tiskalnik <ph name="PRINTER_NAME" /> je povezan in pripravljen</translation>
+<translation id="8684471948980641888">Dovoli sinhronizacijo v omrežjih z omejenim prenosom podatkov</translation>
 <translation id="8685540043423825702">Vaš profil v Chromu</translation>
 <translation id="8686142379631285985">Prijavljeni ste kot <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Prekliči prenos datoteke <ph name="FILE_NAME" /></translation>

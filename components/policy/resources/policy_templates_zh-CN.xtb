@@ -87,6 +87,7 @@
       如需查看可用变量的列表，请访问 https://support.google.com/chrome/a?p=Supported_directory_variables。
 
       如果您未设置此政策，系统将会使用默认的个人资料目录。</translation>
+<translation id="1053981429146436598">一组与专用网络请求设置相关的政策。请参阅 https://wicg.github.io/private-network-access/。</translation>
 <translation id="1059069692400941670">禁止在首次运行时导入默认搜索引擎</translation>
 <translation id="1062011392452772310">为设备启用远程认证</translation>
 <translation id="1062407476771304334">替换</translation>
@@ -243,6 +244,10 @@
 <translation id="120937472976628837">报告风扇信息</translation>
 <translation id="1212233008927724662">停用延迟的登录 WebUI 加载。</translation>
 <translation id="1216919699175573511">启用 Signed HTTP Exchange (SXG) 支持</translation>
+<translation id="1218658069098810124">如果此政策已启用，WebRTC 对等连接可以降级至已过时的 TLS/DTLS（DTLS 1.0、TLS 1.0 和 TLS 1.1）协议版本。
+      如果此政策已停用或未设置，这些 TLS/DTLS 版本会被停用。
+
+      此政策已被弃用，并会按照我们的计划从 <ph name="PRODUCT_NAME" /> M121 版本中移除。</translation>
 <translation id="1219027971768347970">对音频沙盒使用默认配置</translation>
 <translation id="1219695476179627719">指定是否要将已在运行较新版本的设备回滚到 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 所设定的版本。
 
@@ -2604,16 +2609,6 @@
       可使用通配符“*”匹配 0 个或更多个任意字符。转义字符是“\”，因此要匹配实际的“*”或“\”字符，请在这些字符前面添加“\”。
 
       如果此政策未设置，则设备上的所有 Google 账号都会显示在 <ph name="PRODUCT_NAME" /> 中。</translation>
-<translation id="3246744067327836077">
-      此政策旨在控制是否为特定受管理个人资料启用 <ph name="PRODUCT_NAME" /> 云报告功能。
-
-      如果此政策未设置或已停用，系统将不会收集或上传任何数据。
-      如果此政策已启用，系统便会收集数据并将其上传到 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
-
-      该报告包含个人资料状态和使用情况信息，包括但不限于操作系统版本、浏览器版本、已安装的扩展程序和已应用的政策。
-
-      此政策只能设为云端用户政策。
-      </translation>
 <translation id="3248019773260441802">允许页面在取消加载的过程中显示弹出式窗口</translation>
 <translation id="3251500716404598358">配置政策以在浏览器之间切换。
 
@@ -5724,14 +5719,6 @@
 <translation id="6144046700495610112">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入自动填充表单数据。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入任何自动填充表单数据。
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“自动填充表单数据”复选框。</translation>
-<translation id="614522356524762803">
-      控制 Chrome 状态报告上传频率。
-
-      包括 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 启用的报告。
-
-      如果此政策未设置，系统会每 24 小时上传一次此类报告。
-      如果此政策已设置，所设定的值便决定了两份连续报告上传操作之间应间隔的小时数。
-      </translation>
 <translation id="614551633868957694">Chrome 应用和扩展程序</translation>
 <translation id="614616930188030377">系统会将此列表中的网址格式与请求网址的安全来源进行比对。
       如果找到了匹配项或者 chrome://flags/#enable-webrtc-hide-local-ips-with-mdns 已停用，本地 IP 地址就会显示在 WebRTC ICE 候选路径中。
@@ -9174,16 +9161,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果您设置了此政策，用户便无法更改它。如果您未设置此政策，粘滞键最初会处于关闭状态，但用户可随时开启它。</translation>
 <translation id="91206085111961438">控制 Manifest V2 扩展程序的可用性</translation>
-<translation id="9121178963309901985">此政策旨在控制 <ph name="PRODUCT_NAME" /> 扩展程序安装请求，可允许用户将请求发送到 Google 管理控制台以供审批。
-
-      如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策，并且不会创建或上传扩展程序安装请求。
-      如果此政策未设置或已停用，系统将不会创建或上传扩展程序安装请求。
-      如果此政策已启用，系统将会创建扩展程序安装请求并将其上传到 Google 管理控制台。
-
-      当用户尝试安装 <ph name="EXTENSION_INSTALL_ALLOWLIST" /> 或 <ph name="EXTENSION_SETTINGS" /> 所不允许的扩展程序时，系统将会创建扩展程序安装请求。
-
-      对于 <ph name="PRODUCT_NAME" />，仅当已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后，此政策才有效。
-      对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="9123211093995421438">指定 <ph name="PRODUCT_OS_NAME" />随时可从稳定版回滚到的里程碑的数量下限。
 
       对于由消费者注册的设备，默认值为 0；对于由企业注册的设备，默认值为 4（大约半年）。
@@ -9295,13 +9272,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="9221827710437832530">允许在登录屏幕上访问地理定位。</translation>
 <translation id="922540222991413931">配置扩展程序、应用和用户脚本安装源</translation>
 <translation id="924557436754151212">首次运行时，从默认浏览器导入保存的密码</translation>
-<translation id="926104720905645793">此政策旨在控制 <ph name="PRODUCT_NAME" /> 云报告功能，该功能可将与浏览器操作相关的信息上传到 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
-
-      如果此政策未设置或已停用，系统将不会收集或上传任何数据。
-      如果此政策已启用，系统便会收集数据并将其上传到 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
-
-      对于 <ph name="PRODUCT_NAME" />，此政策仅在已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后有效。
-      对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="927384371566552478">如果此政策已启用或未设置，用户便可使用导出/导入界面。如果此政策已停用，用户便无法使用导出/导入界面。</translation>
 <translation id="927444535723396977">如果此政策设为 1，系统会允许网站运行 JavaScript。如果此政策设为 2，系统会禁止网站运行 JavaScript。
 

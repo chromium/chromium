@@ -485,6 +485,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1390548061267426325">Deschideți ca filă obișnuită</translation>
 <translation id="1390907927270446471">Contul <ph name="PROFILE_USERNAME" /> nu este autorizat să printeze la <ph name="PRINTER_NAME" />. Contactează administratorul.</translation>
 <translation id="1392047138650695757">Dicționarele utilizatorului</translation>
+<translation id="139300021892314943">Restricționează conectarea</translation>
 <translation id="1393283411312835250">Soare și nori</translation>
 <translation id="1395730723686586365">Utilitarul de actualizare a pornit</translation>
 <translation id="1395832189806039783">Evidențiază elementul folosind focalizarea de la tastatură</translation>
@@ -2517,6 +2518,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2956070239128776395">Secțiune imbricată în grup: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Avertisment privind pachetul pentru extensie</translation>
 <translation id="2959127025785722291">A apărut o eroare. Verificarea nu s-a putut finaliza. Încearcă din nou.</translation>
+<translation id="2959474507964749987">Acest fișier criptat poate fi un virus sau un program malware.<ph name="LINE_BREAK" />Pentru a verifica dacă este nesigur, trimite fișierul și parola la Navigarea sigură Google. De obicei, verificările durează câteva secunde.<ph name="LINE_BREAK" />Pentru scanare, adaugă parola fișierului.</translation>
 <translation id="2959842337402130152">Nu se poate restabili din cauza spațiului de stocare insuficient. Eliberează <ph name="SPACE_REQUIRED" /> pe dispozitiv și încearcă din nou.</translation>
 <translation id="2960208947600937804">A apărut o eroare la configurarea Linux. Contactează administratorul.</translation>
 <translation id="2960942820860729477">Rata de actualizare</translation>
@@ -3980,6 +3982,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4147099377280085053">Selectează un tabel Braille</translation>
 <translation id="4147911968024186208">Reîncearcă. Dacă vezi această eroare din nou, contactează reprezentantul de asistență.</translation>
 <translation id="414800391140809654">poate să folosească informațiile tale în timp ce navighezi</translation>
+<translation id="4148195018520464922">Poți restricționa conectarea la anumiți utilizatori. Astfel, va fi eliminată opțiunea Adaugă o persoană din ecranul de conectare. Poți să excluzi și utilizatori actuali.</translation>
 <translation id="4150201353443180367">Ecran</translation>
 <translation id="4150569944729499860">Contextul de pe ecran</translation>
 <translation id="4151449637210235443">Spune-ne despre acțiunea jocului recentă</translation>
@@ -4178,6 +4181,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4322394346347055525">Închide celelalte file</translation>
 <translation id="4324577459193912240">Fișier incomplet</translation>
 <translation id="4325237902968425115">Se dezinstalează <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">Spațiu de stocare și alimentare</translation>
 <translation id="4326146840124313313">Cea mai puternică securitate Chrome face mai multe pentru a te proteja împotriva site-urilor, descărcărilor și extensiilor periculoase</translation>
 <translation id="4326484226728068206">Articole din coșul de cumpărături cu <ph name="DISCOUNT_TEXT" /> de la <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, văzute <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Apă cu gheață</translation>
@@ -5161,6 +5165,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5146896637028965135">Vocea sistemului</translation>
 <translation id="5147992672778369947">Folosește parola recomandată</translation>
 <translation id="5148277445782867161">Serviciul de localizare Google folosește surse precum rețelele Wi-Fi, rețelele mobile și senzorii pentru a estima locația dispozitivului.</translation>
+<translation id="5148285448107770349">Parola trebuie să aibă cel puțin opt caractere</translation>
 <translation id="5150254825601720210">Nume de server SSL pentru certificat Netscape</translation>
 <translation id="5151354047782775295">Eliberează spațiu pe hard disk sau este posibil ca anumite date să fie șterse automat</translation>
 <translation id="5153234146675181447">Elimină telefonul</translation>
@@ -8138,6 +8143,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7617263010641145920">Activează Magazinul Play</translation>
 <translation id="7617648809369507487">Folosește mesaje discrete</translation>
 <translation id="7621382409404463535">Sistemul nu a putut salva configurarea dispozitivului.</translation>
+<translation id="7621480263311228380">Nu are permisiunea de a folosi informațiile pe care le-a salvat despre tine</translation>
 <translation id="7621595347123595643">Nu vei putea recupera datele locale dacă uiți parola sau codul PIN.</translation>
 <translation id="7622114377921274169">Se încarcă.</translation>
 <translation id="7622768823216805500">Site-urile instalează de obicei handlere pentru plăți pentru opțiuni oferite la cumpărare, de exemplu, finalizarea mai simplă a achiziției</translation>
@@ -8691,6 +8697,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8037117027592400564">Citește tot textul rostit folosind vorbirea sintetizată</translation>
 <translation id="8037357227543935929">Solicită (în mod prestabilit)</translation>
 <translation id="803771048473350947">Fișier</translation>
+<translation id="8037801708772278989">A rulat adineauri</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Se copiază un fișier în <ph name="CLOUD_PROVIDER" />}few{Se copiază {NUM_OF_FILES} fișiere în <ph name="CLOUD_PROVIDER" />}other{Se copiază {NUM_OF_FILES} de fișiere în <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Trimiteți feedback</translation>
 <translation id="8041267120753677077">Redă în stream aplicațiile telefonului</translation>
@@ -9484,6 +9491,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8680251145628383637">Conectează-te pentru a-ți accesa marcajele, istoricul, parolele și alte setări pe toate dispozitivele. În plus, te vei conecta automat la serviciile Google.</translation>
 <translation id="8681886425883659911">Anunțurile sunt blocate pe site-urile despre care se știe că afișează anunțuri deranjante sau înșelătoare</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> este conectată și pregătită</translation>
+<translation id="8684471948980641888">Permite sincronizarea în rețelele contorizate</translation>
 <translation id="8685540043423825702">Profilul Chrome</translation>
 <translation id="8686142379631285985">Te-ai conectat ca <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Anulează <ph name="FILE_NAME" /></translation>

@@ -8720,6 +8720,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8037117027592400564">Skaityti visą tekstą sintezuota kalba</translation>
 <translation id="8037357227543935929">Klausti (numatytoji parinktis)</translation>
 <translation id="803771048473350947">Failas</translation>
+<translation id="8037801708772278989">Ką tik patikrinta</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopijuojamas vienas failas į „<ph name="CLOUD_PROVIDER" />“}one{Kopijuojamas {NUM_OF_FILES} failas į „<ph name="CLOUD_PROVIDER" />“}few{Kopijuojami {NUM_OF_FILES} failai į „<ph name="CLOUD_PROVIDER" />“}many{Kopijuojama {NUM_OF_FILES} failo į „<ph name="CLOUD_PROVIDER" />“}other{Kopijuojama {NUM_OF_FILES} failų į „<ph name="CLOUD_PROVIDER" />“}}</translation>
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>
 <translation id="8041267120753677077">Srautu perduokite telefono programas</translation>

@@ -235,6 +235,7 @@
 <translation id="1432187715652018471">صفحہ ایک سروس ہینڈلر انسٹال کرنا چاہتا ہے۔</translation>
 <translation id="1432581352905426595">سرچ انجنز کا نظم کریں</translation>
 <translation id="1433225466058025572">اپنی فائلز کو دوبارہ منتقل کرنے کی کوشش کریں</translation>
+<translation id="1434317006812369578">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے Google محفوظ براؤزنگ جیسی پہلے سے شامل حفاظتی خصوصیات ہیں۔ محفوظ براؤزنگ کو <ph name="BEGIN_LINK" />حال ہی میں <ph name="SITE" /> پر میلویئر کا پتا چلا ہے<ph name="END_LINK" />، جو اس سائٹ میں سرایت کردہ ہے جسے آپ ملاحظہ کرنے کی کوشش کر رہے ہیں۔</translation>
 <translation id="1435940442311036198">کسی دوسرے آلے پر پاس کی استعمال کریں</translation>
 <translation id="1436185428532214179">سائٹ آپ کے آلے پر موجود فائلز یا فولڈرز میں ترمیم کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="1442386063175183758">دایاں گیٹ فولڈ</translation>
@@ -385,6 +386,7 @@
 <translation id="1732445923934584865">اس کے بجائے بالمشافہ پوچھیں</translation>
 <translation id="1733064249834771892">فونٹس</translation>
 <translation id="1733631169686303142">آڈیو ساز و سامان</translation>
+<translation id="1733762317901693627">یہاں تک کہ ایسی سائٹس بھی جو عموماً محفوظ ہوتی ہیں، کبھی کبھار حملہ آور اس کے ساتھ بھی چھیڑ چھاڑ کر دیتے ہیں۔ اگر آپ پُریقین ہیں کہ آپ خطرات کو سمجھتے ہیں تو <ph name="BEGIN_LINK" />صرف یہ غیر محفوظ سائٹ<ph name="END_LINK" /> ملاحظہ کریں۔</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">سسٹم کے منتظم سے رابطہ کرنے کی کوشش کریں۔</translation>
 <translation id="1736420071277903564">کمپیوٹر</translation>
@@ -718,6 +720,7 @@
 <translation id="2480300195898055381">‏آپ کے Google اکاؤنٹ میں، <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="248348093745724435">مشین کی پالیسیاں</translation>
+<translation id="2490199669743245365">‏آپ جو سائٹ ملاحظہ کرنے کی کوشش کر رہے ہیں، اس پر حملہ آور ایسا نقصان دہ سافٹ ویئر انسٹال کر سکتے ہیں جو آپ کے پاس ورڈ، تصاویر، پیغامات یا کریڈٹ کارڈ نمبر جیسی چیزیں چُراتا یا حذف کرتا ہے۔ Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">سرور کے سرٹیفکیٹ میں خرابیاں ہیں۔</translation>
 <translation id="2491414235131909199">اس صفحے کو ایک ایکسٹینشن نے مسدود کر دیا ہے</translation>
 <translation id="2495083838625180221">‏JSON پارسر</translation>
@@ -1053,6 +1056,7 @@
 <translation id="3216313131063488104">بلیوز</translation>
 <translation id="3218181027817787318">متعلقہ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ابھی اپ ڈیٹ درکار ہے}=2{کل تک اپ ڈیٹ درکار ہے}other{# دن کے اندر اپ ڈیٹ درکار ہے}}</translation>
+<translation id="3218388919950135939">اگر آپ پُریقین ہیں کہ آپ خطرات کو سمجھتے ہیں تو <ph name="BEGIN_LINK" />صرف یہ غیر محفوظ سائٹ<ph name="END_LINK" /> ملاحظہ کریں۔</translation>
 <translation id="3220264767789936523">رسمی لباس</translation>
 <translation id="3223287115535306850">ایپ لانچنگ تھروبر</translation>
 <translation id="3223425961342298674">مقام کی اجازت نہیں ہے</translation>
@@ -1339,6 +1343,7 @@
 <translation id="3772211998634047851">کاغذ (بانڈ)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google Keep میں تیزی سے نیا نوٹ تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="3778403066972421603">‏کیا آپ اس کارڈ کو اپنے Google اکاؤنٹ اور اس آلہ میں محفوظ کرنا چاہتے ہیں؟</translation>
+<translation id="378026377453746707">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے Google محفوظ براؤزنگ جیسی پہلے سے شامل حفاظتی خصوصیات ہیں۔ محفوظ براؤزنگ کو حال ہی میں <ph name="BEGIN_LINK" /><ph name="SITE" /> پر نقصان دہ سافٹ ویئر کا پتا چلا ہے<ph name="END_LINK" />، جو اس سائٹ میں سرایت کردہ ہے جسے آپ ملاحظہ کرنے کی کوشش کر رہے ہیں۔</translation>
 <translation id="3780694243617746492">آؤٹ پٹ کوڑے دان</translation>
 <translation id="3781428340399460090">گہرا گلابی</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1350,6 +1355,7 @@
 <translation id="3795344968043407227">انڈی اور متبادل موسیقی</translation>
 <translation id="3799805948399000906">فونٹ کی درخواست کی گئی</translation>
 <translation id="380329542618494757">نام</translation>
+<translation id="3806932344025766608">‏آپ جو سائٹ ملاحظہ کرنے کی کوشش کر رہے ہیں، اس پر حملہ آور دھوکے سے آپ سے سافٹ ویئر انسٹال کروا سکتے ہیں یا آپ کے پاس ورڈ، فون یا کریڈٹ کارڈ نمبر جیسی چیزیں افشاء کروا سکتے ہیں۔ Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">فون سروس فراہم کنندگان</translation>
 <translation id="3807366285948165054">‏تصویر X شفٹ</translation>
 <translation id="3807873520724684969">نقصان دہ مواد مسدود ہے۔</translation>
@@ -1415,6 +1421,7 @@
 <translation id="3950820424414687140">سائن ان کریں</translation>
 <translation id="3953505489397572035">یہ قیمت عمومی ہے</translation>
 <translation id="3958057596965527988">‏‎4 x 4 انچ</translation>
+<translation id="3959121317419633580">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے Google محفوظ براؤزنگ جیسی پہلے سے شامل حفاظتی خصوصیات ہیں۔ محفوظ براؤزنگ کو حال ہی میں <ph name="BEGIN_LINK" /><ph name="SITE" /> پر فریب دہی کا پتا چلا ہے<ph name="END_LINK" />، جو اس سائٹ میں سرایت کردہ ہے جسے آپ ملاحظہ کرنے کی کوشش کر رہے ہیں۔<ph name="NEW_LINE" />یہاں تک کہ ایسی سائٹس بھی جو عموماً محفوظ ہوتی ہیں، کبھی کبھار حملہ آور اس کے ساتھ بھی چھیڑ چھاڑ کر دیتے ہیں۔ اگر آپ کو لگتا ہے کہ ایسا غلطی سے ہوا ہے اور یہ سائٹ خطرناک نہیں ہے تو <ph name="BEGIN_ERROR_LINK" />ہمیں مطلع کریں<ph name="END_ERROR_LINK" />۔</translation>
 <translation id="3961148744525529027">ادائیگی ہینڈلر کی شیٹ آدھی کھلی ہے</translation>
 <translation id="3962859241508114581">پچھلا ٹریک</translation>
 <translation id="3963721102035795474">ریڈر وض‏ع</translation>
@@ -1438,6 +1445,7 @@
 <translation id="401170183602135785">‏C6 لفافہ</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏{COUNT} صفحہ پر مشتمل PDF دستاویز}other{‏{COUNT} صفحات پر مشتمل PDF دستاویز}}</translation>
 <translation id="4014895360827978999">مرچنٹ سروسز اور ادائیگی سسٹمز</translation>
+<translation id="4018819349042761761">عوامی کلید</translation>
 <translation id="4023431997072828269">چونکہ یہ فارم ایک ایسے کنکشن کا استعمال کر کے جمع کیا جا رہا ہے جو محفوظ نہیں ہے آپ کی معلومات دوسروں کو دکھائی دیں گی۔</translation>
 <translation id="4030383055268325496">شامل کریں کو &amp;کالعدم کریں</translation>
 <translation id="4030545038933060179">آن ہونے پر، آپ کی حالیہ براؤزنگ کی سرگزشت کی بنیاد پر موضوعات کی فہرست یہاں ظاہر ہوتی ہے</translation>
@@ -1614,6 +1622,7 @@
 <translation id="433013776994920042">ویب میزبانی اور ڈومین رجسٹریشن</translation>
 <translation id="4331519897422864041">اسٹیکر 5</translation>
 <translation id="4331708818696583467">محفوظ نہیں</translation>
+<translation id="4333295216031073611">خریداری کی فہرست</translation>
 <translation id="4333561522337981382">اپنے سبھی ڈسپلیز پر ونڈوز کا نظم کریں</translation>
 <translation id="4340575312453649552">‏اس اشتہار نے آپ کے آلہ کے لیے بہت سے وسائل کا استعمال کیا، لہذا Chrome نے اسے ہٹا دیا ہے۔</translation>
 <translation id="4340810192899866471">‏JSON سے درآمد کریں</translation>
@@ -1666,6 +1675,7 @@
 <translation id="4451684391620232683">صارف کو پیش کردہ ٹیکسٹ:</translation>
 <translation id="4452328064229197696">‏آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، Google پاس ورڈ مینیجر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="4464826014807964867">آپ کی تنظیم کے ذریعے دی گئی معلومات والی ویب سائٹس</translation>
+<translation id="4473643328224505070">‏Chrome کی اعلی ترین سطح کی سیکیورٹی حاصل کرنے کیلئے، <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />بہتر کردہ حفاظت آن کریں<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />۔ <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">یہ فارم محفوظ نہیں ہے۔ آٹو فل کو آف کر دیا گیا ہے۔</translation>
 <translation id="4477350412780666475">اگلا ٹریک</translation>
@@ -2384,6 +2394,7 @@
 <translation id="5992805036496113940">آپ کو اشتہارات دکھانے کے لیے استعمال کردہ معلومات دیکھیں</translation>
 <translation id="5995727681868049093">‏اپنے Google اکاؤنٹ میں اپنی معلومات، رازداری اور سیکیورٹی کا نظم کریں</translation>
 <translation id="5997247540087773573">‏آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، Google پاس ورڈ مینیجر اسے ابھی تبدیل کرنے اور آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="5999271311987646952">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے پہلے سے شامل حفاظتی خصوصیات ہیں، جیسے Google محفوظ براؤزنگ جسے حال ہی میں اس سائٹ پر <ph name="BEGIN_LINK" />میلویئر کا پتا چلا ہے<ph name="END_LINK" />، جسے آپ ملاحظہ کرنے کی کوشش کر رہے ہیں۔</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' کے <ph name="RESULT_COUNT" /> نتائج</translation>
 <translation id="6002122790816966947">آپ کے آلات</translation>
 <translation id="6005659677094197001">مسلسل</translation>
@@ -2689,6 +2700,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">کمپیوٹر کی تعلیم</translation>
 <translation id="6633476656216409494">کاروبار اور پیداواریت سے متعلق سافٹ ویئر</translation>
+<translation id="6638353438328951386">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے پہلے سے شامل حفاظتی خصوصیات ہیں، جیسے Google محفوظ براؤزنگ جسے حال ہی میں اس سائٹ پر <ph name="BEGIN_LINK" />نقصان دہ سافٹ ویئر کا پتا چلا ہے<ph name="END_LINK" />، جسے آپ ملاحظہ کرنے کی کوشش کر رہے ہیں۔</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6645291930348198241">کوکیز اور سائٹ کے ڈیٹا تک رسائی حاصل کریں۔</translation>
 <translation id="6645478838938543427">قیمت میں کمی کے الرٹس <ph name="EMAIL_ADDRESS" /> پر بھیجے جائیں گے</translation>
@@ -2884,6 +2896,7 @@
 <translation id="702146556168549005">‏آپ کے ملاحظہ کردہ صفحات کے URLs کو تجزیہ کے لئے Google کلاؤڈ یا فریقین ثالث کو بھیجا جاتا ہے۔ مثال کے طور پر، انہیں غیر محفوظ ویب سائٹس کا پتہ لگانے کے لیے اسکین کیا جا سکتا ہے یا منتظم کے مقرر کردہ اصولوں کی بنیاد پر ویب سائٹس کو فلٹر کیا جا سکتا ہے۔</translation>
 <translation id="702275896380648118">‏یہ سائٹ آپ کی پسندیدہ چیزوں کا تعین کرتی ہے اور پھر دیگر سائٹس کو اشتہارات تجویز کرتی ہے۔ آپ کو مزید متعلقہ اشتہارات دکھانے کیلئے، یہ سائٹ Chrome سے آپ کے اشتہار کے موضوعات بھی وصول کرتی ہے۔</translation>
 <translation id="7023162328967545559">منتظم کی وارننگ</translation>
+<translation id="7024932305105294144">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے پہلے سے شامل حفاظتی خصوصیات ہیں، جیسے Google محفوظ براؤزنگ جسے حال ہی میں اس سائٹ پر <ph name="BEGIN_LINK" />فریب دہی کا پتا چلا ہے<ph name="END_LINK" />، جسے آپ ملاحظہ کرنے کی کوشش کر رہے ہیں۔ فریب دہی والی سائٹس آپ کو دھوکہ دینے کیلئے دیگر سائٹس ہونے کا دکھاوا کرتی ہیں۔<ph name="NEW_LINE" />یہاں تک کہ ایسی سائٹس بھی جو عموماً محفوظ ہوتی ہیں، کبھی کبھار حملہ آور اس کے ساتھ بھی چھیڑ چھاڑ کر دیتے ہیں۔ اگر آپ کو لگتا ہے کہ ایسا غلطی سے ہوا ہے اور یہ سائٹ خطرناک نہیں ہے تو <ph name="BEGIN_ERROR_LINK" />ہمیں مطلع کریں<ph name="END_ERROR_LINK" />۔</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
 <translation id="7030436163253143341">سرٹیفیکیٹ درست نہیں ہے</translation>
 <translation id="7031646650991750659">‏آپ نے کن Google Play ایپس کو انسٹال کیا ہے</translation>
@@ -2919,6 +2932,7 @@
 <translation id="7105998430540165694">‏iCloud کی چین کی جانب سے پاس کی</translation>
 <translation id="7106762743910369165">آپ کا براؤزر آپ کی تنظیم کے زیر انتظام ہے</translation>
 <translation id="7107249414147762907">‏یہ PDF ناقابل رسائی ہے۔ کوئی ٹیکسٹ نہیں نکالا گیا</translation>
+<translation id="7107427078069498123">‏SHA-256 فنگر پرنٹس</translation>
 <translation id="7108338896283013870">چھپائیں</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> آپ کا کیمرا استعمال کرنا چاہتا ہے</translation>
 <translation id="7108819624672055576">ایک ایکسٹینشین کی جانب سے اجازت یافتہ</translation>
@@ -2984,6 +2998,7 @@
 <translation id="722454870747268814">نیا پوشیدگی ٹیب</translation>
 <translation id="7226276626900992675">آپ نے اس سائٹ کو فریق ثالث کوکیز کا استعمال کرنے کی اجازت دی ہے۔ اس کا مطلب یہ ہے کہ سائٹ کی زیادہ تر خصوصیات کو کام کرنا چاہیے، لیکن آپ کو کم تحفظ حاصل ہے۔</translation>
 <translation id="7227293336683593977">قیمت کی سرگزشت</translation>
+<translation id="7227747683324411744">آپ جس سائٹ کو ملاحظہ کرنے کی کوشش کر رہے ہیں اس پر حملہ آور آپ کو نقصان دہ سافٹ ویئر انسٹال کرنے کے لیے دھوکہ میں ڈال سکتے ہیں جو آپ کے براؤز کرنے کے طریقے کو متاثر کرتا ہے — مثال کے طور پر، آپ کے ہوم پیج کو تبدیل کر کے یا آپ کو ان سائٹس پر اضافی اشتہارات دکھا کر جنہیں آپ ملاحظہ کرتے ہیں۔</translation>
 <translation id="7233592378249864828">تصدیقی شیٹ پرنٹ کریں</translation>
 <translation id="7234638337680728591">گیس کی قیمتیں اور گاڑی میں ایندھن بھرنا</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> فیصد مکمل ہو گیا | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3083,6 +3098,7 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">رابطے کی معلومات شامل کریں</translation>
 <translation id="7437490109271760224">کارڈ گیمز</translation>
+<translation id="7438338505272634288">‏آپ جو سائٹ ملاحظہ کرنے کی کوشش کر رہے ہیں، اس پر حملہ آور دھوکے سے آپ سے ایسا نقصان دہ سافٹ ویئر انسٹال کروا سکتے ہیں جو آپ کے براؤز کرنے کے طریقے کو متاثر کر سکتا ہے، مثال کے طور پر، آپ کے ہوم پیج کو تبدیل کر کے یا آپ کو ان سائٹس پر اضافی اشتہارات دکھا کر جنہیں آپ ملاحظہ کرتے ہیں۔ نقصان سے بچنے کیلئے، Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">آف لائن رہتے ہوئے دریافت کریں</translation>
 <translation id="7441627299479586546">غلط پالیسی کا مضمون</translation>
 <translation id="7441864845853794192">اعلی اور خاص غذائیں</translation>
@@ -3182,6 +3198,7 @@
 <translation id="7599089013883397081">ڈاؤن لوڈ کا وقت ختم ہو گیا</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="7601297359530599375">‏آپ اس سائٹ سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں، لیکن اس مرتبہ Chrome محفوظ کنکشن کا استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">آپ جس سائٹ کو ملاحظہ کرنے کی کوشش کر رہے ہیں اس پر حملہ آور نقصان دہ سافٹ ویئر انسٹال کر سکتے ہیں جو آپ کے پاس ورڈ، تصاویر، پیغامات یا کریڈٹ کارڈ نمبر جیسی چیزیں چرا لیتا ہے یا انہیں حذف کر دیتا ہے۔</translation>
 <translation id="7610193165460212391">قدر رینج سے باہر کی ہے <ph name="VALUE" />۔</translation>
 <translation id="7613889955535752492">‏اختتامی تاریخ: ‎<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />‎</translation>
 <translation id="7614494068621678628">‏<ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں اپنے پاس ورڈز کا نظم کرنے اور انہیں دیکھنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
@@ -3409,6 +3426,7 @@
 <translation id="8078006011486731853">{0,plural, =1{رازدارانہ فائل اپ لوڈ کریں؟}other{رازدارانہ فائلز اپ لوڈ کریں؟}}</translation>
 <translation id="8078141288243656252">گھماتے وقت تشریح نہیں کی جا سکتی</translation>
 <translation id="8079031581361219619">سائٹ دوبارہ لوڈ کریں؟</translation>
+<translation id="8079976827192572403">خطرناک سائٹ</translation>
 <translation id="8081087320434522107">سیڈانز</translation>
 <translation id="8086971161893892807">مسودہ</translation>
 <translation id="8088680233425245692">مضمون دیکھنے میں ناکام:</translation>
@@ -3579,6 +3597,7 @@
 اضافی معلومات:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">اس بار مائیکروفون کی اجازت ہے</translation>
+<translation id="8422228580902424274">آپ جس سائٹ کو ملاحظہ کرنے کی کوشش کر رہے ہیں اس پر حملہ آور آپ کو سافٹ ویئر انسٹال کرنے یا آپ کے پاس ورڈ، فون یا کریڈٹ کارڈ نمبر جیسی چیزوں کو ظاہر کرنے کے لیے دھوکہ میں ڈال سکتے ہیں۔</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">‏‎500 x 750 ملی میٹر</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
@@ -3691,6 +3710,7 @@
 <translation id="8680536109547170164"><ph name="QUERY" />، جواب، <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> پر موجود ویب صفحہ لوڈ نہیں ہو سکا کیوںکہ:</translation>
 <translation id="8686424632716064939">کمپیوٹر سیکیورٹی</translation>
+<translation id="8687278439622293018">اندراج <ph name="ENTRY_VOICEOVER" /> کو حذف کر دیا گیا ہے</translation>
 <translation id="8687429322371626002">آپ کا آلہ اور اکاؤنٹ <ph name="MANAGER" /> کے زیر انتظام ہے۔</translation>
 <translation id="8688672835843460752">دستیاب</translation>
 <translation id="868922510921656628">صفحات فی سیٹ</translation>
@@ -3903,6 +3923,7 @@
 <translation id="9128870381267983090">نیٹ ورک سے منسلک ہوں</translation>
 <translation id="9131119348384879525">رازدارانہ مواد کو کیپچر کریں؟</translation>
 <translation id="9133985615769429248">اگر آپ اس آلے کا دوسروں کے ساتھ اشتراک کرتے ہیں تو جب بھی آپ محفوظ کردہ پاس ورڈ کا استعمال کرتے ہیں تو آپ اس بات کی تصدیق کرنے کے لیے کہ یہ آپ ہی ہیں اپنے اسکرین لاک کا استعمال کر سکتے ہیں</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />، ورچوئل کارڈ</translation>
 <translation id="9136861683332321024">پُر تعیش گاڑیاں</translation>
 <translation id="9137013805542155359">اصل دکھائیں</translation>
 <translation id="9137248913990643158">‏براہ کرم شروع کریں اور اس ایپ کا استعمال کرنے سے پہلے Chrome میں سائن ان کریں۔</translation>

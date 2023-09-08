@@ -4188,6 +4188,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4322394346347055525">Lukk andre faner</translation>
 <translation id="4324577459193912240">Filen er ufullstendig</translation>
 <translation id="4325237902968425115">Avinstallerer <ph name="LINUX_APP_NAME" /> …</translation>
+<translation id="4325433082696797523">Lagring og strøm</translation>
 <translation id="4326146840124313313">Den sterkeste sikkerheten i Chrome gjør mer for å beskytte deg mot farlige nettsteder, nedlastinger og utvidelser</translation>
 <translation id="4326484226728068206">Varer i handlekurven med <ph name="DISCOUNT_TEXT" /> fra <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, sett <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Isvann</translation>
@@ -8699,6 +8700,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8037117027592400564">lese hele teksten med syntetisert tale</translation>
 <translation id="8037357227543935929">Spør (standard)</translation>
 <translation id="803771048473350947">Fil</translation>
+<translation id="8037801708772278989">Sjekket nettopp</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopierer 1 fil til <ph name="CLOUD_PROVIDER" />}other{Kopierer {NUM_OF_FILES} filer til <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8041267120753677077">Strøm apper fra telefonen</translation>

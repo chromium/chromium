@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">Күн батқанға дейін өшірулі</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + нүкте пернелер тіркесімінің функциясы өзгерді. Insert пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace пернелер тіркесімін басыңыз.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-жолға, <ph name="COLUMN_NUMBER" />-бағанға жылжытылды.</translation>
+<translation id="1771458705381257690">Құрылғы параметрлерін орнату және бейімдеу үшін <ph name="NAME" /> қолданбасын ашыңыз</translation>
 <translation id="1771761307086386028">Оңға айналдыру</translation>
 <translation id="1774796056689732716">Күнтізбе, <ph name="CURRENT_MONTH_YEAR" />, ағымдағы <ph name="DATE" /> таңдалды.</translation>
 <translation id="1775598828170459419"><ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /> көрсету</translation>
@@ -366,6 +367,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Терезелер құлпын ашу</translation>
 <translation id="2528111225373402384">Хотспот параметрлері</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Белсенді курсор режимін қосу немесе өшіру</translation>
 <translation id="2531025035050312891">құрылғы баяу</translation>
 <translation id="2531107890083353124">Қойындыны сүйреу кезінде <ph name="KEY_ONE" /> пернесін басыңыз</translation>
@@ -1191,6 +1193,7 @@
 <translation id="5876666360658629066">Ата-ана кодын енгізіңіз</translation>
 <translation id="5881540930187678962">Phone Hub кейін орнату</translation>
 <translation id="5881663018261910378">Өшіру</translation>
+<translation id="5883017113634523865">Барлық қолжетімді мүмкіндікті көру үшін <ph name="NAME" /> қолданбасын Google Play-ден орнатыңыз</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезесі <ph name="DESK_TITLE" /> жұмыс үстеліне тағайындалып, басқаларының бәрінен алынды.</translation>
 <translation id="588817334757907802">Файлды Chrome браузерінде ашу</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
@@ -1620,6 +1623,7 @@
 <translation id="7714767791242455379">Жаңа ұялы желі қосу</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> дейін қосулы</translation>
 <translation id="7720410380936703141">ҚАЙТАЛАП КӨРУ</translation>
+<translation id="7721132362314201794">Жұмыс үстелінің атауы</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 хабарландыру}other{# хабарландыру}}</translation>
 <translation id="7723703419796509666">"Әзірлеуші құралдары" консолін көрсету немесе жасыру</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
@@ -1855,6 +1859,7 @@
 <translation id="8731487213223706745">Аяқталу уақыты: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Ол басылған пернелерді "ұрлап алу" әрекетін жасауы мүмкін.</translation>
 <translation id="8735678380411481005">Пернетақта жарығының түсі</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: іске қосылып жатыр...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Жеке басыңызды растаңыз: <ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>

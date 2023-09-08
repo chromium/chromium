@@ -1243,6 +1243,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7431991332293347422">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca i més</translation>
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7437998757836447326">Tanca la sessió de Chrome</translation>
+<translation id="7450926666485653189">Envia a Google una part ofuscada de l'URL mitjançant un servidor de privadesa que amaga la teva adreça IP</translation>
 <translation id="7453467225369441013">Et tanca la sessió de la majoria de llocs web, però no la del Compte de Google.</translation>
 <translation id="7453810262525006706">Replega a la visualització lateral</translation>
 <translation id="7454641608352164238">No hi ha prou espai</translation>
@@ -1472,6 +1473,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8497242791509864205">Obre les opcions d'ordenació</translation>
 <translation id="8497480609928300907">Explicació de la guia de privadesa</translation>
 <translation id="8497726226069778601">Aquí encara no hi ha contingut per mostrar</translation>
+<translation id="8501423924927196358">Indicador de càrrega d'estadístiques de la pàgina</translation>
 <translation id="8503559462189395349">Contrasenyes de Chrome</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8505766168025405649">Consulta la notificació de l'estat de la baixada</translation>

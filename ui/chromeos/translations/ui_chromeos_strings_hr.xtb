@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">Nije moguće otvoriti "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Priprema</translation>
+<translation id="3280719573299097127">Povezani ste s mrežom s ograničenim prometom. Sinkronizacija datoteka je pauzirana.</translation>
 <translation id="3280987981688031357">Gramofonska ploča</translation>
 <translation id="3290356915286466215">Nije osigurano</translation>
 <translation id="3291218047831493686">Povežite se s ovom mrežom da biste promijenili postavku zaključavanja SIM kartice</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">Uklonjeni su svi unosi iz odabira.</translation>
 <translation id="5838825566232597749">Američka međunarodna Workman</translation>
 <translation id="5845721951356578987">Medicinska sestra</translation>
+<translation id="5858478190805449225">Način štednje baterije uključen. Pokušajte ponovo kad isključite štednju baterije.</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5861477046012235702">Igrač</translation>
 <translation id="5864471791310927901">DHCP pretraživanje nije uspjelo</translation>
@@ -920,6 +922,7 @@
 <translation id="8087576439476816834">Preuzmi, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Dijeljeno sa mnom</translation>
 <translation id="8116072619078571545">Ledena voda</translation>
+<translation id="8120392982188717723">Dopusti sinkronizaciju na mrežama s ograničenim prometom</translation>
 <translation id="8124093710070495550">Problem sa sinkronizacijom</translation>
 <translation id="8128733386027980860">engleski (UK) s tipkovnicom Dvorak</translation>
 <translation id="8137331602592933310">S vama je podijeljena datoteka "<ph name="FILENAME" />". Ne možete je izbrisati jer joj niste vlasnik.</translation>

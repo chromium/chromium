@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Se cambió a duplicación</translation>
 <translation id="2031987842108996681">Canal rojo</translation>
 <translation id="2060505056492490888">El signo "<ph name="DOT" />" está colocado en una posición incorrecta en "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">El valor mínimo (<ph name="MINIMUM" />) debe ser menor que el valor máximo (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2226276347425096477">Acorta este texto a <ph name="MAX_CHARACTERS" /> caracteres o menos (actualmente estás usando <ph name="CURRENT_LENGTH" /> caracteres).</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

@@ -58,6 +58,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1246905108078336582">Usunąć podpowiedź ze schowka?</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">W sekcji Obserwujesz zobaczysz teraz treści pochodzące z witryny <ph name="SITE_NAME" /> oraz treści na jej temat. Obserwowane przez Ciebie witryny i wyszukiwania są zapisywane na Twoim koncie Google. Możesz nimi zarządzać w ustawieniach.</translation>
 <translation id="1263231323834454256">Do przeczytania</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> – nie udało się udostępnić</translation>
 <translation id="1269129608791067105">Tu znajdziesz swoją historię</translation>
@@ -136,6 +137,7 @@ Jeśli usuniesz swoją historię przeglądania – całą lub dotyczącą okre�
 <translation id="1671236975893690980">Oczekuję na pobranie…</translation>
 <translation id="1672586136351118594">Nie pokazuj ponownie</translation>
 <translation id="1680919990519905526">Kup zdjęcie za pomocą Obiektywu Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Wkrótce w sekcji Obserwujesz zaczną pojawiać się treści pochodzące z witryny <ph name="SITE_NAME" /> oraz treści na jej temat. Obserwowane przez Ciebie witryny i wyszukiwania są zapisywane na Twoim koncie Google. Możesz nimi zarządzać w ustawieniach.</translation>
 <translation id="1702543251015153180">Zmienić ustawienia ciemnego motywu?</translation>
 <translation id="1702907158640575240">Zarządzana przeglądarka</translation>
 <translation id="1710099199314114079">Przełącz lub zamknij karty</translation>
@@ -1243,6 +1245,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7431991332293347422">Zarządzaj personalizacją wyszukiwarki i innych funkcji na podstawie historii przeglądania</translation>
 <translation id="7435356471928173109">Wyłączył administrator</translation>
 <translation id="7437998757836447326">Wyloguj się z Chrome</translation>
+<translation id="7450926666485653189">Wysyła zaciemnioną część adresu URL do Google przez serwer prywatności, który ukrywa Twój adres IP</translation>
 <translation id="7453467225369441013">Wylogowuje z większości stron internetowych. Nie wyloguje Cię z konta Google.</translation>
 <translation id="7453810262525006706">Zwiń do widoku bocznego</translation>
 <translation id="7454641608352164238">Za mało miejsca</translation>

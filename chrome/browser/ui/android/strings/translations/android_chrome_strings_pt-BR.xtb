@@ -58,6 +58,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246905108078336582">Remover sugestão da área de transferência?</translation>
 <translation id="1258753120186372309">Doodle do Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Agora, você vai receber conteúdo de e sobre <ph name="SITE_NAME" /> na guia "Seguindo". Os sites e as pesquisas que você segue são armazenados na sua Conta do Google. Você pode gerenciar esse conteúdo nas configurações a qualquer momento.</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1266864766717917324">Falha no compartilhamento de <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Seu histórico será mostrado aqui</translation>
@@ -136,6 +137,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="1671236975893690980">Download pendente…</translation>
 <translation id="1672586136351118594">Não mostrar novamente</translation>
 <translation id="1680919990519905526">Comprar imagem com o Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Em breve, você vai receber conteúdo de e sobre <ph name="SITE_NAME" /> na guia "Seguindo". Os sites e as pesquisas que você segue são armazenados na sua Conta do Google. Você pode gerenciar esse conteúdo nas configurações a qualquer momento.</translation>
 <translation id="1702543251015153180">Mudar suas configurações do tema escuro?</translation>
 <translation id="1702907158640575240">Navegador gerenciado</translation>
 <translation id="1710099199314114079">Trocar ou fechar guias</translation>
@@ -1244,6 +1246,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7431991332293347422">Controla como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
 <translation id="7435356471928173109">Desativado pelo administrador</translation>
 <translation id="7437998757836447326">Sair do Google Chrome</translation>
+<translation id="7450926666485653189">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP</translation>
 <translation id="7453467225369441013">Desconecta você da maioria dos sites, mas não da sua Conta do Google.</translation>
 <translation id="7453810262525006706">Fechar na visualização lateral</translation>
 <translation id="7454641608352164238">Espaço insuficiente</translation>
@@ -1473,6 +1476,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8497242791509864205">Abrir as opções de classificação</translation>
 <translation id="8497480609928300907">Explicação sobre o Guia de privacidade</translation>
 <translation id="8497726226069778601">Não há nada para ver aqui... ainda</translation>
+<translation id="8501423924927196358">Indicador de carregamento dos insights da página</translation>
 <translation id="8503559462189395349">Senhas do Chrome</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8505766168025405649">Veja a notificação de status do download</translation>

@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">RRRR</translation>
 <translation id="1013952917065545813">Możesz wrócić tu później, by ponownie otworzyć ostatnio zamknięte karty</translation>
 <translation id="1016495303386450659">Zaktualizowano element</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{Zapisz hasło na koncie}few{Zapisz hasła na koncie}many{Zapisz hasła na koncie}other{Zapisz hasła na koncie}}</translation>
 <translation id="1035980983510608210">Zamknięcie wszystkich kart spowoduje też zamknięcie przypiętych kart.</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1044891598689252897">Strony będą działać normalnie</translation>
@@ -72,6 +73,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="132683371494960526">Kliknij dwukrotnie, by zmienić folder nadrzędny.</translation>
 <translation id="1332723353863236763">Niektóre dane nie zostały jeszcze zapisane</translation>
 <translation id="1335348992705722518">Zarządzaj ustawieniami…</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{Zapisz {COUNT} hasło na koncie Google}few{Zapisz {COUNT} hasła na koncie Google}many{Zapisz {COUNT} haseł na koncie Google}other{Zapisz {COUNT} hasła na koncie Google}}</translation>
 <translation id="1340643665687018190">Zamknij menu</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Otwórz skopiowany link</translation>
@@ -159,6 +161,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1872096359983322073">Latarka</translation>
 <translation id="1882901927376062252">{count,plural, =1{Zakładka została zapisana na Twoim koncie Google {email}}few{{count} zakładki zostały zapisane na Twoim koncie Google {email}}many{{count} zakładek zostało zapisanych na Twoim koncie Google {email}}other{{count} zakładki zostało zapisane na Twoim koncie Google {email}}}</translation>
 <translation id="1883255238294161206">Zwiń listę</translation>
+<translation id="1890237935065108104">To ustawienie jest niedostępne.</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
 <translation id="189531189292803889">Twój iPad został ostatnio przywrócony, co mogło spowodować zmianę przeglądarki domyślnej.</translation>
 <translation id="1910975740091000991">Chrome na iOS</translation>
@@ -315,6 +318,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Nie udało się utworzyć linku</translation>
 <translation id="2786701870377699570">Wyszukiwanie kart na zsynchronizowanych urządzeniach</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{Hasło zostało zapisane na Twoim koncie Google {EMAIL}}few{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}many{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}other{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}}</translation>
 <translation id="2797029671965852011">Pokaż historię</translation>
 <translation id="2800683595868705743">Zamknij przełącznik kart</translation>
 <translation id="2815198996063984598">2. Kliknij opcję Domyślna przeglądarka.</translation>
@@ -419,6 +423,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3328801116991980348">Informacje o witrynie</translation>
 <translation id="3340938510625667914">Działania w Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}other{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
+<translation id="3349676726073650389">Obserwowane przez Ciebie witryny i wyszukiwania są zapisywane na Twoim koncie Google. Możesz nimi zarządzać w ustawieniach.</translation>
 <translation id="3365529507898144230">Zapisz w Zdjęciach</translation>
 <translation id="3371831930909698441">Dostępne jest tłumaczenie. Opcje znajdują się u dołu ekranu.</translation>
 <translation id="3377063233124932127">Zapisane zakładki, hasła i inne elementy będą widoczne u góry.</translation>
@@ -650,6 +655,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Tylko na tym urządzeniu, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nowa karta incognito</translation>
 <translation id="4766112107778026136">Odkrywanie i obserwowanie</translation>
+<translation id="47677902929517676">Aby zapisać hasła na koncie, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="4775879719735953715">Domyślna przeglądarka</translation>
 <translation id="4778644898150334464">Użyj innego hasła</translation>
 <translation id="478808905805139173">Otworzyć w trybie incognito?</translation>
@@ -787,6 +793,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5597915316964418992">Otwieranie siatki kart</translation>
 <translation id="560322036295180549">Wyłączone przez organizację</translation>
 <translation id="5614553682702429503">Zapisać hasło?</translation>
+<translation id="5619871095170816857">Ta karta pokazuje ostatnio używaną otwartą kartę z minionych 24 godzin ze wszystkich zsynchronizowanych urządzeń.</translation>
 <translation id="5626245204502895507">Nie udało się pobrać teraz tego pliku.</translation>
 <translation id="562753339521713441">Uruchom kontrolę zabezpieczeń</translation>
 <translation id="5631164295104953411">Dodaj formę płatności</translation>
@@ -1092,6 +1099,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7082853213442715471">Gdy jest włączony, niektóre technologie internetowe są blokowane, przez co niektóre strony mogą się ładować wolniej lub nie działać prawidłowo.</translation>
 <translation id="7095110968493193530">W Menedżerze haseł Google w przypadku konta <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Ostatnie karty</translation>
+<translation id="7101580180124131336">W sekcji Obserwujesz zobaczysz teraz treści pochodzące z witryny <ph name="CHANNEL_NAME" /> oraz treści na jej temat.</translation>
 <translation id="7102005569666697658">Pobieram… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ukryj</translation>
 <translation id="7108762695052995889">Otwórz stronę</translation>
@@ -1115,6 +1123,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7265758999917665941">Nigdy dla tej witryny</translation>
 <translation id="7272437679830969316">Nie można zweryfikować Twojej tożsamości. Hasło nie zostało skopiowane.</translation>
 <translation id="7291368939935408496">Przygotowuję hasła…</translation>
+<translation id="7302503784943202842">Używaj haseł na wszystkich swoich urządzeniach</translation>
 <translation id="730958329302570991">W usłudze Menedżer haseł Google możesz w każdej chwili łatwo dodawać hasła do witryn.</translation>
 <translation id="7313347584264171202">Tu znajdziesz swoje karty incognito</translation>
 <translation id="7331371412779932885">Wyświetla sugestie dotyczące kart na podstawie Twojej aktywności związanej z przeglądaniem na innych urządzeniach, na których używasz swojego konta Google. Na urządzeniach musisz się zalogować na to samo konto Google i włączyć synchronizację.</translation>
@@ -1172,6 +1181,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="764827086632467055">Kliknij opcję Domyślna przeglądarka</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7658239707568436148">Anuluj</translation>
+<translation id="7666861622396822790">Możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach treści<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">ZAINSTALUJ</translation>
 <translation id="7679915578945954324">Adresy witryn zostały skopiowane</translation>
 <translation id="7687508192620387263">Dostępny jest plik kalendarza</translation>
@@ -1246,6 +1256,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8032569120109842252">Obserwujesz</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Historia wyszukiwania<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />inne formy aktywności<ph name="END_LINK" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
 <translation id="804427445359061970">Znajdziesz tu swoje karty z innych urządzeń</translation>
+<translation id="8044568254381073661">Zapisz bez szyfrowania</translation>
 <translation id="8059533439631660104">Zwija sekcję.</translation>
 <translation id="8065292699993359127">Otwórz adresy URL w Chrome w trybie incognito</translation>
 <translation id="806745655614357130">Przechowuj dane oddzielnie</translation>
@@ -1302,7 +1313,9 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8386068868580335421">Resetuj</translation>
 <translation id="838867811594159347">Wpisz hasło…</translation>
 <translation id="8393889347136007944">Karty nie były używane przez <ph name="THRESHOLD" /> dni</translation>
+<translation id="8395339334550012808">Wkrótce w sekcji Obserwujesz zaczną pojawiać się treści pochodzące z witryny <ph name="CHANNEL_NAME" /> oraz treści na jej temat.</translation>
 <translation id="8395378633507873708">Pasek adresu</translation>
+<translation id="8403629764260204788">Ukryj opcję „Przeglądaj dalej”</translation>
 <translation id="8407669440184693619">Nie znaleziono haseł do tej strony</translation>
 <translation id="842017693807136194">Zalogowano za pomocą:</translation>
 <translation id="8423121072346537366">Przed chwilą</translation>
@@ -1460,6 +1473,7 @@ Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzyst
 <translation id="953008885340860025">Wylogowano z Chrome</translation>
 <translation id="959066944189734975">Obserwujesz kanał <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Pokazuj sugestie dotyczące kart z innych urządzeń</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{Hasło do usługi {DOMAIN_ONE} możesz zapisać na swoim koncie Google {EMAIL}}=2{Hasła do usług {DOMAIN_ONE} i {DOMAIN_TWO} możesz zapisać na koncie Google {EMAIL}}=3{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innej możesz zapisać na koncie Google {EMAIL}}few{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innych możesz zapisać na koncie Google {EMAIL}}many{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innych możesz zapisać na koncie Google {EMAIL}}other{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innej możesz zapisać na koncie Google {EMAIL}}}</translation>
 <translation id="97300214378190234">Używaj Chrome, zawsze gdy klikasz linki w innych aplikacjach.</translation>
 <translation id="973493300226275298">Monitoruj cenę produktu w sklepach internetowych. Gdy cena spadnie, otrzymasz alert.</translation>
 <translation id="981498610235328462">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte.</translation>

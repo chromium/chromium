@@ -36,6 +36,7 @@ Things to consider:
 <translation id="2120238739383482109">Opens the Chrome bookmarks.</translation>
 <translation id="2147651015520127414">Chrome verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
 <translation id="2199719347983604670">Data from Chrome sync</translation>
+<translation id="2311240109311056604">Opens the Chrome Dino Game.</translation>
 <translation id="2339201583852607431">Your password will be saved in your Google Account (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome shares your location with sites that you allow.</translation>
 <translation id="2347208864470321755">When this feature is turned on, Chrome will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@ Things to consider:
 <translation id="3655656110921623717">This means that Chrome will request the mobile site every time.</translation>
 <translation id="3720541637541300822">Lock incognito tabs when you close Chrome</translation>
 <translation id="3741995255368156336">Opens the Chrome reading list.</translation>
+<translation id="3744018071945602754">Manage Passwords in Chrome</translation>
 <translation id="3827545470516145620">You're getting standard security protection on this device</translation>
 <translation id="384394811301901750">Google Chrome can't use your camera at the moment.</translation>
 <translation id="3901001113120561395">Get the most out of Chrome.</translation>
@@ -86,6 +88,7 @@ Things to consider:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> was using Chrome and left bookmarks, passwords and other settings on this device.</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4251174643044751591">Opens The Payment Methods Setting Page in Chrome.</translation>
+<translation id="4453284704333523777">Manage Chrome settings</translation>
 <translation id="4508370294876102450">Open Chrome from any app</translation>
 <translation id="4523886039239821078">Some add-ons cause Chrome to crash. Please uninstall:</translation>
 <translation id="4633328489441962921">Chrome can't check for updates</translation>
@@ -99,10 +102,12 @@ Things to consider:
 <translation id="484033449593719797">Not supported on Chrome beta</translation>
 <translation id="4840404732697892756">Google Password Manager can check your passwords when you sign in with your Google Account.</translation>
 <translation id="4903674399067644695">This card shows you suggestions on how to get the most out of Chrome.</translation>
+<translation id="49200511069271369">Your organisation, <ph name="DOMAIN" />, manages the account you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="5030102366287574140">Chrome can help keep you safe from data breaches, unsafe websites and more.</translation>
 <translation id="5108659628347594808">Make Chrome Better</translation>
 <translation id="5112925986883715005">See Chrome reading list</translation>
 <translation id="5119391094379141756">Select Chrome</translation>
+<translation id="5156818928311866442">Opens the Chrome Setting to set Chrome as Default Browser.</translation>
 <translation id="5162467219239570114">Chrome is out of date. If no update is available in the <ph name="BEGIN_LINK" />app store<ph name="END_LINK" />, it's possible that your device doesn't support new versions of Chrome anymore.</translation>
 <translation id="5190139289262548459">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chrome is used.</translation>
 <translation id="5389212809648216794">Google Chrome can't use your camera because it's in use by another application</translation>
@@ -120,6 +125,7 @@ Things to consider:
 <translation id="571296537125272375">Offline, Chrome can't check for updates</translation>
 <translation id="5716154293141027663">Open Chrome whenever you tap on links in other apps</translation>
 <translation id="5808435672482059465">View Your Chrome History</translation>
+<translation id="589695154992054845">Opens The Password Manager in Chrome.</translation>
 <translation id="5998675059699164418">Your organisation requires you to sign in to use Chrome.</translation>
 <translation id="6054613632208573261">Use Chrome by default</translation>
 <translation id="6063091872902370735">Allow Chrome Sign-in</translation>
@@ -152,6 +158,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7173660919484573146">Chrome uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="72119412072970160">You can use the passwords that you saved to Google Password Manager in other apps on your iPad.</translation>
+<translation id="7254380941803999489">Set Chrome as default browser</translation>
 <translation id="7261678641327190792">Chrome can't check your passwords</translation>
 <translation id="7272930098487145294">To save images, tap on settings to let Chrome add to your photos</translation>
 <translation id="7275945473750112644">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chrome data will be cleared from this device</translation>
@@ -211,6 +218,7 @@ Things to consider:
   • If Chrome crashes, details about the crash may include some personal info.
 
   • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Opens The Settings in Chrome.</translation>
 <translation id="9112744793181547300">Set Chrome as default?</translation>
 <translation id="9122931302567044771">This means that Chrome will request the desktop site every time.</translation>
 <translation id="9181628561061032322">Opens the Chrome Recent Tabs.</translation>

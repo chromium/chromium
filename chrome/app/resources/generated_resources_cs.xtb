@@ -486,6 +486,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1390548061267426325">Otevřít jako běžnou kartu</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> nemá oprávnění k tisku na tiskárně <ph name="PRINTER_NAME" />. Obraťte se na administrátora.</translation>
 <translation id="1392047138650695757">Uživatelské slovníky</translation>
+<translation id="139300021892314943">Omezit, kdo se může přihlásit</translation>
 <translation id="1393283411312835250">Slunce a mraky</translation>
 <translation id="1395730723686586365">Byl spuštěn nástroj na aktualizaci</translation>
 <translation id="1395832189806039783">Zvýraznit položku pomocí výběru klávesnicí</translation>
@@ -2518,6 +2519,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2956070239128776395">Sekce vnořená ve skupině: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Upozornění na zabalení rozšíření</translation>
 <translation id="2959127025785722291">Došlo k chybě. Kontrolu nelze dokončit. Zkuste to znovu.</translation>
+<translation id="2959474507964749987">Tento zašifrovaný soubor může být vir nebo malware.<ph name="LINE_BREAK" />Pokud chcete zjistit, zda není bezpečný, můžete tento soubor a heslo odeslat do Bezpečného prohlížení Google. Kontroly obvykle trvají několik sekund.<ph name="LINE_BREAK" />Ke kontrole je potřeba heslo souboru.</translation>
 <translation id="2959842337402130152">Obnovení se kvůli nedostatku úložného prostoru nezdařilo. Uvolněte ze zařízení <ph name="SPACE_REQUIRED" /> a zkuste to znovu.</translation>
 <translation id="2960208947600937804">Při konfiguraci Linuxu došlo k chybě. Kontaktujte administrátora.</translation>
 <translation id="2960942820860729477">Obnovovací frekvence</translation>
@@ -3980,6 +3982,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4147099377280085053">Vyberte typ Braillova písma</translation>
 <translation id="4147911968024186208">Zkuste to znovu. Pokud se opět zobrazí tato chyba, kontaktujte zástupce podpory.</translation>
 <translation id="414800391140809654">může při procházení používat vaše informace</translation>
+<translation id="4148195018520464922">Přihlášení můžete omezit na konkrétní uživatele. Tím z přihlašovací obrazovky odeberete možnost Přidat uživatele. Můžete také odebrat aktuální uživatele.</translation>
 <translation id="4150201353443180367">Displej</translation>
 <translation id="4150569944729499860">Kontext obrazovky</translation>
 <translation id="4151449637210235443">Řekněte nám o svém nedávném hraní</translation>
@@ -6945,7 +6948,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6628328486509726751">Nahráno <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Silnější zabezpečení</translation>
 <translation id="6630752851777525409">Rozšíření <ph name="EXTENSION_NAME" /> požaduje trvalý přístup k certifikátu, aby se vaším jménem mohlo ověřit.</translation>
-<translation id="6635362468090274700">Nikdo s vámi nemůže sdílet obsah, dokud se nenastavíte jako viditelní.<ph name="BR" /><ph name="BR" />Chcete-li být viditelní dočasně, otevřete stavovou oblast a pak zapněte Viditelnost nablízko.</translation>
+<translation id="6635362468090274700">Dokud máte v zařízení vypnutou viditelnost, nikdo s vámi nemůže sdílet obsah.<ph name="BR" /><ph name="BR" />Pokud chcete zapnout viditelnost dočasně, otevřete stavovou oblast a pak zapněte Viditelnost nablízko.</translation>
 <translation id="6635674640674343739">Nelze navázat síťové připojení. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="663569763553406962">Podívejte se, která rozšíření mohou číst nebo měnit web</translation>
 <translation id="6635944431854494329">Vlastník tuto funkci může ovládat v sekci Nastavení &gt; Rozšířená nastavení &gt; Automaticky do Googlu odesílat diagnostické údaje a údaje o využití.</translation>
@@ -8136,6 +8139,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7617263010641145920">Zapnout Obchod Play</translation>
 <translation id="7617648809369507487">Použít tišší zprávy</translation>
 <translation id="7621382409404463535">Systému se nepodařilo uložit konfiguraci zařízení.</translation>
+<translation id="7621480263311228380">Zakázáno používat uložené informace o vás</translation>
 <translation id="7621595347123595643">Pokud zapomenete heslo nebo PIN, místní data nebude možné obnovit.</translation>
 <translation id="7622114377921274169">Nabíjení.</translation>
 <translation id="7622768823216805500">Weby obvykle instalují obslužné nástroje plateb pro funkce nákupů, jako je jednodušší pokladna</translation>
@@ -8689,6 +8693,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8037117027592400564">Číst veškerý text vyslovovaný pomocí syntetické řeči</translation>
 <translation id="8037357227543935929">Zeptat se (výchozí)</translation>
 <translation id="803771048473350947">Soubor</translation>
+<translation id="8037801708772278989">Zkontrolováno právě teď</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopírování 1 souboru do úložiště <ph name="CLOUD_PROVIDER" />}few{Kopírování {NUM_OF_FILES} souborů do úložiště <ph name="CLOUD_PROVIDER" />}many{Kopírování {NUM_OF_FILES} souboru do úložiště <ph name="CLOUD_PROVIDER" />}other{Kopírování {NUM_OF_FILES} souborů do úložiště <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
 <translation id="8041267120753677077">Streamovat aplikace z telefonu</translation>
@@ -9482,6 +9487,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8680251145628383637">Přihlaste se a synchronizujte záložky, historii, hesla a další nastavení do všech svých zařízení. Budete také automaticky přihlášeni do svých služeb Google.</translation>
 <translation id="8681886425883659911">Na webech, o kterých je známo, že zobrazují rušivé nebo zavádějící reklamy, jsou reklamy blokovány</translation>
 <translation id="8682730193597992579">Tiskárna <ph name="PRINTER_NAME" /> je připojená a připravená</translation>
+<translation id="8684471948980641888">Povolit synchronizaci v měřených sítích</translation>
 <translation id="8685540043423825702">Váš profil v Chromu</translation>
 <translation id="8686142379631285985">Jste přihlášeni jako <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Zrušit <ph name="FILE_NAME" /></translation>

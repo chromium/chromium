@@ -58,6 +58,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1246905108078336582">Suggestie verwijderen van klembord?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Je ziet nu content van en over <ph name="SITE_NAME" /> in Je volgt. De sites en zoekopdrachten die je volgt, worden opgeslagen in je Google-account. Je kunt je gevolgde items altijd beheren via de instellingen.</translation>
 <translation id="1263231323834454256">Leeslijst</translation>
 <translation id="1266864766717917324">Kan <ph name="CONTENT_TYPE" /> niet delen</translation>
 <translation id="1269129608791067105">Hier vind je je geschiedenis</translation>
@@ -136,6 +137,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="1671236975893690980">Download in behandeling…</translation>
 <translation id="1672586136351118594">Niet opnieuw bekijken</translation>
 <translation id="1680919990519905526">Kopen met Google Lens <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Binnenkort zie je content van en over <ph name="SITE_NAME" /> in Je volgt. De sites en zoekopdrachten die je volgt, worden opgeslagen in je Google-account. Je kunt je gevolgde items altijd beheren via de instellingen.</translation>
 <translation id="1702543251015153180">Instellingen voor donker thema wijzigen?</translation>
 <translation id="1702907158640575240">Beheerde browser</translation>
 <translation id="1710099199314114079">Tabbladen schakelen of sluiten</translation>
@@ -1243,6 +1245,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7431991332293347422">Beheren hoe je browsegeschiedenis wordt gebruikt om Google Zoeken en meer te personaliseren</translation>
 <translation id="7435356471928173109">Uitgezet door je beheerder</translation>
 <translation id="7437998757836447326">Uitloggen bij Chrome</translation>
+<translation id="7450926666485653189">Stuurt een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt</translation>
 <translation id="7453467225369441013">Hiermee word je uitgelogd van de meeste sites. Je wordt niet uitgelogd van je Google-account.</translation>
 <translation id="7453810262525006706">Samenvouwen naar zijweergave</translation>
 <translation id="7454641608352164238">Onvoldoende ruimte</translation>
@@ -1472,6 +1475,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8497242791509864205">Sorteeropties openen</translation>
 <translation id="8497480609928300907">Uitleg over privacygids</translation>
 <translation id="8497726226069778601">Hier is nog niets te zien</translation>
+<translation id="8501423924927196358">Indicator voor laden van pagina-inzichten</translation>
 <translation id="8503559462189395349">Chrome-wachtwoorden</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8505766168025405649">Bekijk de melding voor de downloadstatus</translation>

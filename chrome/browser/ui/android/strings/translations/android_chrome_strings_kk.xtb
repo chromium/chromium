@@ -58,6 +58,7 @@
 <translation id="124678866338384709">Ағымдағы қойындыны жабу</translation>
 <translation id="1246905108078336582">Ұсыныс буферден өшірілсін бе?</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689"><ph name="SITE_NAME" /> туралы және соның ішіндегі контентті "Жазылымдар" бөлімінен көресіз. Сіз жазылған сайттар мен іздеу нәтижелері Google аккаунтыңызда сақталады. Жазылымдарды параметрлерден кез келген уақытта реттеуге болады.</translation>
 <translation id="1263231323834454256">Оқу тізімі</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> бөлісу мүмкін болмады.</translation>
 <translation id="1269129608791067105">Тарихты осы жерден табасыз.</translation>
@@ -136,6 +137,7 @@
 <translation id="1671236975893690980">Жүктеу күтілуде…</translation>
 <translation id="1672586136351118594">Қайта көрсетілмесін</translation>
 <translation id="1680919990519905526">Суретті Google Lens арқылы сатып алу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139"><ph name="SITE_NAME" /> туралы және соның ішіндегі контентті жақында "Жазылымдар" бөлімінен көресіз. Сіз жазылған сайттар мен іздеу нәтижелері Google аккаунтыңызда сақталады. Жазылымдарды параметрлерден кез келген уақытта реттеуге болады.</translation>
 <translation id="1702543251015153180">Қараңғы режим параметрлері өзгертілсін бе?</translation>
 <translation id="1702907158640575240">Басқарылатын браузер</translation>
 <translation id="1710099199314114079">Қойындыларды ауыстыру немесе жабу</translation>
@@ -1243,6 +1245,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7431991332293347422">Search және т.б. қызметтерді жекелендіру үшін шолу тарихын қалай пайдалану керектігін көрсетіңіз</translation>
 <translation id="7435356471928173109">Әкімші өшіріп қойған.</translation>
 <translation id="7437998757836447326">Chrome жүйесінен шығу</translation>
+<translation id="7450926666485653189">URL мекенжайының бүркемеленген бөлігін IP мекенжайыңызды жасыратын құпиялық сервері арқылы Google-ға жібереді.</translation>
 <translation id="7453467225369441013">Көп сайттардан шығарады. Google аккаунтынан шықпайсыз.</translation>
 <translation id="7453810262525006706">Бүйірлік көрініске жию</translation>
 <translation id="7454641608352164238">Орын жеткіліксіз</translation>
@@ -1472,6 +1475,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8497242791509864205">Сұрыптау опцияларын ашу</translation>
 <translation id="8497480609928300907">Құпиялық нұсқаулығы туралы түсіндірме</translation>
 <translation id="8497726226069778601">Мұнда әзірше қарайтын ештеңе жоқ</translation>
+<translation id="8501423924927196358">Бет статистикасын жүктеу индикаторы</translation>
 <translation id="8503559462189395349">Chrome құпия сөздері</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8505766168025405649">Жүктеп алу күйі туралы хабарландыруды қараңыз.</translation>

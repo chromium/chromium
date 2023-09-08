@@ -58,6 +58,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
 <translation id="1246905108078336582">Eltávolítja a javaslatot a vágólapról?</translation>
 <translation id="1258753120186372309">Google ünnepi embléma: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Mostantól láthatja a(z) <ph name="SITE_NAME" /> webhelyről, illetve webhelytől származó tartalmakat a Követve szakaszban. A követett webhelyeit és kereséseit a Google-fiókjába menti a rendszer. Követéseit bármikor kezelheti a beállításokban.</translation>
 <translation id="1263231323834454256">Olvasási lista</translation>
 <translation id="1266864766717917324">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1269129608791067105">Itt láthatja majd az előzményeit.</translation>
@@ -136,6 +137,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="1671236975893690980">Letöltés függőben…</translation>
 <translation id="1672586136351118594">Ne jelenjen meg többé</translation>
 <translation id="1680919990519905526">Képalapú Google Lens-vásárlás <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Hamarosan látni fogja a(z) <ph name="SITE_NAME" /> webhelytől, illetve webhelyről származó tartalmakat a Követve szakaszban. A követett webhelyeit és kereséseit a Google-fiókjába menti a rendszer. Követéseit bármikor kezelheti a beállításokban.</translation>
 <translation id="1702543251015153180">Módosítja a sötét téma beállításait?</translation>
 <translation id="1702907158640575240">Felügyelt böngésző</translation>
 <translation id="1710099199314114079">Lapok bezárása vagy váltás közöttük</translation>
@@ -1243,6 +1245,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7431991332293347422">Beállíthatja, hogy a rendszer hogyan szabja személyre a Keresést és egyebeket a böngészési előzmények alapján</translation>
 <translation id="7435356471928173109">A rendszergazda kikapcsolta</translation>
 <translation id="7437998757836447326">Kijelentkezés a Chrome-ból</translation>
+<translation id="7450926666485653189">Elküldi az URL obfuszkált részét a Google-nak egy adatvédelmi szerveren keresztül, amely elrejti az Ön IP-címét.</translation>
 <translation id="7453467225369441013">A rendszer a legtöbb webhelyről kijelentkezteti Önt, de Google-fiókjából nem.</translation>
 <translation id="7453810262525006706">Összecsukás oldalsó nézetbe</translation>
 <translation id="7454641608352164238">Nincs elég tárhely</translation>
@@ -1472,6 +1475,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8497242791509864205">Rendezési beállítások megnyitása</translation>
 <translation id="8497480609928300907">Magyarázat az adatvédelmi útmutatóhoz</translation>
 <translation id="8497726226069778601">Nincs itt semmi látnivaló… még</translation>
+<translation id="8501423924927196358">Oldalstatisztikák betöltésjelzője</translation>
 <translation id="8503559462189395349">Chrome-jelszavak</translation>
 <translation id="8503813439785031346">Felhasználónév</translation>
 <translation id="8505766168025405649">A letöltés állapotát a vonatkozó értesítésben láthatja</translation>

@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">המשך בהתקנה</translation>
 <translation id="1029669172902658969">‏הפעלה מחדש לצורך עדכון ‎&amp;ChromiumOS</translation>
 <translation id="1040916596585577953">‏לפי המלצת Chromium, כדאי לבדוק את התוסף הזה</translation>
+<translation id="1042552502243217427">‏כשאתר מבקש לטעון מראש קישורים בדף שלו באופן פרטי, מערכת Chromium משתמשת בשרתי Google. כך מוסתרת הזהות שלך מהאתר שנטען מראש, אבל Google יכולה לדעת אילו אתרים נטענים מראש.</translation>
 <translation id="1065672644894730302">לא הייתה אפשרות לקרוא את ההעדפות שלך. ייתכן שחלק מהתכונות לא יהיו זמינות ושינויים בהעדפות לא יישמרו.</translation>
 <translation id="1083934481477628225">‏ההורה שלך השבית ב-Chromium את ההגדרה 'הרשאות לאתרים, לאפליקציות ולתוספים'</translation>
 <translation id="1098170124587656448">‏Chromium עוזר להגן עליך מפני פרצות באבטחת המידע, תוספים לא תקינים ועוד</translation>
@@ -127,6 +128,7 @@
 <translation id="3713809861844741608">‏פתיחת הקישור ב&amp;כרטיסיית Chromium חדשה</translation>
 <translation id="378917192836375108">‏Chromium מאפשר לך ללחוץ על מספר טלפון באינטרנט ולהתקשר אליו באמצעות Skype!</translation>
 <translation id="3790262771324122253">‏למה הורדות מסוימות נחסמות ב-Chromium</translation>
+<translation id="3802055581630249637">‏כדי שהדפים שבהם מבקרים ייטענו מהר יותר, מערכת Chromium טוענת מראש דפים שיש סיכוי גבוה שייפתחו.</translation>
 <translation id="3830894615770080216">‏מערכת ChromiumOS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">‏קבלת עזרה בנושא ChromiumOS</translation>
@@ -237,6 +239,7 @@
 <translation id="6132897690380286411">‏Chromium ייסגר בקרוב והנתונים שבו יימחקו</translation>
 <translation id="6134968993075716475">‏הגלישה הבטוחה כבויה. ההמלצה של Chromium היא להפעיל אותה.</translation>
 <translation id="6145820983052037069">‏כאן ניתן לעבור בין פרופילים של Chromium</translation>
+<translation id="615103374448673771">‏אם מאפשרים שימוש בקובצי cookie, יכול להיות שמערכת Chromium תשתמש בהם במהלך טעינה מראש.</translation>
 <translation id="6175304430031192654">‏בהתאם להגדרות שלך, Chromium יכול גם לשלוח קובצי cookie ואת כתובת ה-URL הנוכחית שלך</translation>
 <translation id="6183079672144801177">‏יש לוודא שנכנסת ל-Chromium ב-<ph name="TARGET_DEVICE_NAME" /> שלך ולשלוח שוב.</translation>
 <translation id="6212496753309875659">‏במחשב זה קיימת כבר גרסה מתקדמת יותר של Chromium. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Chromium ולנסות שוב.</translation>
@@ -261,6 +264,7 @@
 <translation id="6400112897226594999">‏הלוגו של Chromium בתוך מסך מחשב.</translation>
 <translation id="6403826409255603130">‏Chromium הוא דפדפן אינטרנט המפעיל דפי אינטרנט ואפליקציות במהירות הבזק. זהו דפדפן מהיר, יציב וקל לשימוש שמאפשר לך לגלוש באינטרנט בצורה מאובטחת יותר הודות להגנה מפני תוכנות זדוניות ופישינג המובנית ב-Chromium.</translation>
 <translation id="6442900851116057561">‏הפעלה מחדש של ChromiumOS</translation>
+<translation id="6443470774889161065">‏כדי שהדפים שבהם מבקרים ייטענו מהר יותר, מערכת Chromium טוענת מראש עוד יותר דפים שיש סיכוי גבוה שייפתחו.</translation>
 <translation id="6455857529632101747">‏ברוך בואך לפרופילים של Chromium</translation>
 <translation id="6475912303565314141">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium.</translation>
 <translation id="648319183876919572">הגרסה המשופרת של הגלישה הבטוחה מגנה עליך טוב יותר מפני הורדות ואתרים מסוכנים</translation>

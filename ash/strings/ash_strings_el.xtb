@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">Ανενεργό μέχρι τη δύση του ηλίου</translation>
 <translation id="1768366657309696705">Η συντόμευση πληκτρολογίου <ph name="LAUNCHER_KEY_NAME" /> + τελεία έχει αλλάξει. Για να χρησιμοποιήσετε το κουμπί Insert, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Μετακινήθηκε στη σειρά <ph name="ROW_NUMBER" />, στήλη <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Ανοίξτε την εφαρμογή <ph name="NAME" /> για να ρυθμίσετε και να προσαρμόσετε τη συσκευή σας</translation>
 <translation id="1771761307086386028">Κύλιση δεξιά</translation>
 <translation id="1774796056689732716">Ημερολόγιο, <ph name="CURRENT_MONTH_YEAR" />, αυτήν τη στιγμή είναι επιλεγμένη η ημερομηνία <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Εμφάνιση <ph name="NUM_SHOWN_ITEMS" /> από <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1192,6 +1193,7 @@
 <translation id="5876666360658629066">Εισαγάγετε κωδικό γονέα</translation>
 <translation id="5881540930187678962">Ρυθμίστε το Phone Hub αργότερα</translation>
 <translation id="5881663018261910378">Απενεργοποιημένο</translation>
+<translation id="5883017113634523865">Εγκαταστήστε την εφαρμογή για τη συσκευή <ph name="NAME" /> από το Google Play για να δείτε όλες τις διαθέσιμες λειτουργίες</translation>
 <translation id="5887954372087850114">Το παράθυρο <ph name="WINDOW_TITLE" /> εκχωρήθηκε στο γραφείο <ph name="DESK_TITLE" /> και η εκχώρησή του καταργήθηκε από τα άλλα γραφεία</translation>
 <translation id="588817334757907802">Άνοιγμα αρχείου στο πρόγραμμα περιήγησης Chrome</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
@@ -1621,6 +1623,7 @@
 <translation id="7714767791242455379">Προσθήκη νέου δικτύου κινητής τηλεφωνίας</translation>
 <translation id="7720400844887872976">Ενεργή έως τις <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ΔΟΚΙΜΑΣΤΕ ΞΑΝΑ</translation>
+<translation id="7721132362314201794">Όνομα γραφείου</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ειδοποίηση}other{# ειδοποιήσεις}}</translation>
 <translation id="7723703419796509666">Εμφάνιση ή απόκρυψη της κονσόλας Εργαλείων για προγραμματιστές</translation>
 <translation id="7724603315864178912">Αποκοπή</translation>

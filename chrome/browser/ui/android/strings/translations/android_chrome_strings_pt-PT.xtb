@@ -58,6 +58,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="124678866338384709">Fechar o separador atual</translation>
 <translation id="1246905108078336582">Remover a sugestão da área de transferência?</translation>
 <translation id="1258753120186372309">Doodle da Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Vai ver conteúdo de e sobre o site <ph name="SITE_NAME" /> no separador A seguir. Os sites e as pesquisas que segue são guardados na sua Conta Google. Pode gerir o que segue nas definições em qualquer altura.</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1266864766717917324">Não foi possível partilhar <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">O seu histórico vai ser apresentado aqui</translation>
@@ -136,6 +137,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="1671236975893690980">Transferência pendente…</translation>
 <translation id="1672586136351118594">Não mostrar de novo</translation>
 <translation id="1680919990519905526">Comprar imagem com o Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Em breve, vai ver conteúdo de e sobre o site <ph name="SITE_NAME" /> no separador A seguir. Os sites e as pesquisas que segue são guardados na sua Conta Google. Pode gerir o que segue nas definições em qualquer altura.</translation>
 <translation id="1702543251015153180">Quer alterar as suas definições do tema escuro?</translation>
 <translation id="1702907158640575240">Navegador gerido</translation>
 <translation id="1710099199314114079">Alterne ou feche separadores</translation>
@@ -1243,6 +1245,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7431991332293347422">Controle a forma como o histórico de navegação é utilizado para personalizar a Pesquisa e muito mais.</translation>
 <translation id="7435356471928173109">Desativada pelo seu administrador.</translation>
 <translation id="7437998757836447326">Terminar sessão no Chrome</translation>
+<translation id="7450926666485653189">Envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP</translation>
 <translation id="7453467225369441013">A sua sessão é terminada na maioria dos sites. A sessão na sua Conta Google não é terminada.</translation>
 <translation id="7453810262525006706">Reduzir para vista lateral</translation>
 <translation id="7454641608352164238">Espaço insuficiente</translation>
@@ -1472,6 +1475,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8497242791509864205">Abrir opções de ordenação</translation>
 <translation id="8497480609928300907">Explicação do guia de privacidade</translation>
 <translation id="8497726226069778601">Ainda não há nada para ver aqui</translation>
+<translation id="8501423924927196358">Indicador de carregamento das estatísticas da página</translation>
 <translation id="8503559462189395349">Palavras-passe do Chrome</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8505766168025405649">Veja a notificação para obter o estado da transferência</translation>

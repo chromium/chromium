@@ -234,6 +234,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1432187715652018471">Sidan vill installera en tjänsthanterare.</translation>
 <translation id="1432581352905426595">Hantera sökmotorer</translation>
 <translation id="1433225466058025572">Testa att flytta filerna igen</translation>
+<translation id="1434317006812369578">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning. Säker webbsökning <ph name="BEGIN_LINK" />hittade nyligen skadlig programvara på <ph name="SITE" /><ph name="END_LINK" />, som är inbäddad på webbplatsen som du försöker besöka.</translation>
 <translation id="1435940442311036198">Använd en nyckel på en annan enhet</translation>
 <translation id="1436185428532214179">Får begära tillstånd att redigera filer eller mappar på enheten</translation>
 <translation id="1442386063175183758">Fönsterfalsning, höger flik</translation>
@@ -384,6 +385,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1732445923934584865">Fråga själv</translation>
 <translation id="1733064249834771892">teckensnitt</translation>
 <translation id="1733631169686303142">Ljudutrustning</translation>
+<translation id="1733762317901693627">Även webbplatser som vanligtvis är säkra utsätts ibland för angripare. Besök bara <ph name="BEGIN_LINK" />den här osäkra webbplatsen<ph name="END_LINK" /> om du är säker på att du är medveten om riskerna.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Kontakta systemadministratören.</translation>
 <translation id="1736420071277903564">Dator</translation>
@@ -717,6 +719,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2480300195898055381">I Google-kontot <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="248348093745724435">Datorprinciper</translation>
+<translation id="2490199669743245365">Angripare på webbplatsen som du försöker besöka kan installera skadlig programvara som stjäl eller raderar sådant som lösenord, foton, meddelanden eller kreditkortsnummer. Chrome rekommenderar starkt att du går tillbaka till säkra webbplatser. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Servercertifikatet innehåller fel.</translation>
 <translation id="2491414235131909199">Den här sidan har blockerats av ett tillägg</translation>
 <translation id="2495083838625180221">JSON-analysator</translation>
@@ -1051,6 +1054,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Uppdatering krävs nu}=2{Uppdatering krävs i morgon}other{Uppdatering krävs inom # dagar}}</translation>
+<translation id="3218388919950135939">Besök bara <ph name="BEGIN_LINK" />den här osäkra webbplatsen<ph name="END_LINK" /> om du är säker på att du är medveten om riskerna.</translation>
 <translation id="3220264767789936523">Högtidskläder</translation>
 <translation id="3223287115535306850">Ikon för appstart</translation>
 <translation id="3223425961342298674">Plats tillåts inte</translation>
@@ -1337,6 +1341,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3772211998634047851">Papper (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa en ny anteckning i Google Keep</translation>
 <translation id="3778403066972421603">Vill du spara det här kortet i Google-kontot och på den här enheten?</translation>
+<translation id="378026377453746707">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning. Säker webbsökning <ph name="BEGIN_LINK" />hittade nyligen skadlig programvara på <ph name="SITE" /><ph name="END_LINK" />, som är inbäddad på webbplatsen som du försöker besöka.</translation>
 <translation id="3780694243617746492">Utmatningsfack</translation>
 <translation id="3781428340399460090">Cerise</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1348,6 +1353,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3795344968043407227">Indie och alternativ musik</translation>
 <translation id="3799805948399000906">Teckensnitt begärt</translation>
 <translation id="380329542618494757">Namn</translation>
+<translation id="3806932344025766608">Angripare på webbplatsen som du försöker besöka kan lura dig att installera programvara eller avslöja sådant som lösenord, telefon- eller kreditkortsnummer. Chrome rekommenderar starkt att du går tillbaka till säkra webbplatser. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Teletjänstleverantörer</translation>
 <translation id="3807366285948165054">Bild X – byte</translation>
 <translation id="3807873520724684969">Skadligt innehåll har blockerats.</translation>
@@ -1413,6 +1419,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3950820424414687140">Logga in</translation>
 <translation id="3953505489397572035">Det här är normalpris</translation>
 <translation id="3958057596965527988">4 x 4 tum</translation>
+<translation id="3959121317419633580">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning. Säker webbsökning <ph name="BEGIN_LINK" />hittade nyligen nätfiske på <ph name="SITE" /><ph name="END_LINK" />, som är inbäddad på webbplatsen som du försöker besöka.<ph name="NEW_LINE" />Även webbplatser som vanligtvis är säkra utsätts ibland för angripare. <ph name="BEGIN_ERROR_LINK" />Kontakta oss<ph name="END_ERROR_LINK" /> om du anser att detta är ett misstag och att webbplatsen inte utgör en fara.</translation>
 <translation id="3961148744525529027">Arbetsbladet för betalningshantering visas på halva skärmen</translation>
 <translation id="3962859241508114581">Föregående spår</translation>
 <translation id="3963721102035795474">Läsarläge</translation>
@@ -1436,6 +1443,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="401170183602135785">C6-kuvert</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument som innehåller {COUNT} sida}other{PDF-dokument som innehåller {COUNT} sidor}}</translation>
 <translation id="4014895360827978999">Handelstjänster och betalningssystem</translation>
+<translation id="4018819349042761761">Offentlig nyckel</translation>
 <translation id="4023431997072828269">Din information blir synlig för andra eftersom anslutningen som används för att skicka formuläret inte är säker.</translation>
 <translation id="4030383055268325496">&amp;Ångra Lägg till</translation>
 <translation id="4030545038933060179">När funktionen är aktiverad visas en lista över ämnen utifrån din senaste webbhistorik</translation>
@@ -1612,6 +1620,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="433013776994920042">Webbhotell och domänregistrering</translation>
 <translation id="4331519897422864041">Utmatningsfack 5</translation>
 <translation id="4331708818696583467">Inte säker</translation>
+<translation id="4333295216031073611">Inköpslista</translation>
 <translation id="4333561522337981382">Hantera fönster på alla skärmar</translation>
 <translation id="4340575312453649552">Den här annonsen använde för många resurser för enheten, så den togs bort i Chrome.</translation>
 <translation id="4340810192899866471">Importera från JSON</translation>
@@ -1664,6 +1673,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4451684391620232683">Text som visas för användaren:</translation>
 <translation id="4452328064229197696">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du bör se över dina sparade lösenord för att skydda dina konton.</translation>
 <translation id="4464826014807964867">Webbplatser med information från organisationen</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktivera utökat skydd<ph name="END_ENHANCED_PROTECTION_LINK" /> för att få Chromes högsta säkerhet</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Det här formuläret är inte säkert. Autofyll har inaktiverats.</translation>
 <translation id="4477350412780666475">Nästa spår</translation>
@@ -2382,6 +2392,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5992805036496113940">Se vilken information som används för att visa annonser</translation>
 <translation id="5995727681868049093">Hantera uppgifter, integritet och säkerhet i Google-kontot</translation>
 <translation id="5997247540087773573">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta det nu och se över dina sparade lösenord för att skydda dina konton.</translation>
+<translation id="5999271311987646952">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning, som <ph name="BEGIN_LINK" />nyligen hittade skadlig programvara<ph name="END_LINK" /> på webbplatsen du försöker besöka.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultat för <ph name="SEARCH_TEXT" /></translation>
 <translation id="6002122790816966947">Dina enheter</translation>
 <translation id="6005659677094197001">Kontinuerlig</translation>
@@ -2686,6 +2697,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Datorutbildning</translation>
 <translation id="6633476656216409494">Företags- och produktivitetsprogramvara</translation>
+<translation id="6638353438328951386">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning, som <ph name="BEGIN_LINK" />nyligen hittade skadlig programvara<ph name="END_LINK" /> på webbplatsen du försöker besöka.</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6645291930348198241">få åtkomst till cookies och webbplatsdata.</translation>
 <translation id="6645478838938543427">Aviseringar om prissänkning skickas till <ph name="EMAIL_ADDRESS" /></translation>
@@ -2881,6 +2893,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="702146556168549005">Webbadressen till sidor som du besöker skickas till Google Cloud eller tredje part för analys. De kan till exempel genomsökas i syfte att upptäcka osäkra webbplatser eller filtrera webbplatser utifrån regler som har angetts av administratören.</translation>
 <translation id="702275896380648118">Den här webbplatsen avgör vad du gillar och föreslår sedan annonser till andra webbplatser. Webbplatsen hämtar dessutom dina annonsämnen från Chrome för att visa mer relevanta annonser för dig.</translation>
 <translation id="7023162328967545559">Varning från administratören</translation>
+<translation id="7024932305105294144">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning, som <ph name="BEGIN_LINK" />nyligen hittade nätfiske<ph name="END_LINK" /> på webbplatsen du försöker besöka. Webbplatser för nätfiske imiterar andra webbplatser i syfte att lura dig.<ph name="NEW_LINE" />Även webbplatser som vanligtvis är säkra utsätts ibland för angripare. <ph name="BEGIN_ERROR_LINK" />Kontakta oss<ph name="END_ERROR_LINK" /> om du anser att detta är ett misstag och att webbplatsen inte utgör en fara.</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7030436163253143341">Certifikatet är ogiltigt</translation>
 <translation id="7031646650991750659">Vilka appar från Google Play som du har installerat</translation>
@@ -2916,6 +2929,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7105998430540165694">Nyckel från iCloud-nyckelringen</translation>
 <translation id="7106762743910369165">Webbläsaren hanteras av din organisation</translation>
 <translation id="7107249414147762907">Denna PDF är inte tillgänglig. Ingen text har extraherats</translation>
+<translation id="7107427078069498123">SHA-256-fingeravtryck</translation>
 <translation id="7108338896283013870">Dölj</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> vill använda kameran</translation>
 <translation id="7108819624672055576">Beviljades av ett tillägg</translation>
@@ -2981,6 +2995,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="722454870747268814">Ny inkognitoflik</translation>
 <translation id="7226276626900992675">Du tillåter att cookies från tredje part används på den här webbplatsen. Det betyder att de flesta webbplatsfunktionerna bör fungera, men du är mindre skyddad.</translation>
 <translation id="7227293336683593977">Prishistorik</translation>
+<translation id="7227747683324411744">Angripare på webbplatsen som du försöker besöka kan lura dig att installera skadlig programvara som påverkar hur du surfar, till exempel genom att ändra din startsida eller visa extra annonser på webbplatser som du besöker.</translation>
 <translation id="7233592378249864828">Skriva ut bekräftelseark</translation>
 <translation id="7234638337680728591">Bensinpriser och fordonsbränsle</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % slutförd | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3080,6 +3095,7 @@ Mer information.
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">Lägg till kontaktuppgifter</translation>
 <translation id="7437490109271760224">Kortspel</translation>
+<translation id="7438338505272634288">Angripare på webbplatsen som du försöker besöka kan lura dig att installera skadlig programvara som påverkar hur du surfar, till exempel genom att ändra din startsida eller visa extra annonser på webbplatser som du besöker. Chrome rekommenderar starkt att du går tillbaka till säkra webbplatser för att undvika skada. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Utforska medan du är offline</translation>
 <translation id="7441627299479586546">Felaktigt policyämne</translation>
 <translation id="7441864845853794192">Gourmet- och specialmat</translation>
@@ -3179,6 +3195,7 @@ Mer information.
 <translation id="7599089013883397081">Tidsgränsen för nedladdningen överskreds</translation>
 <translation id="7600965453749440009">Översätt aldrig från <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Du ansluter vanligtvis till den här webbplatsen på ett säkert sätt, men den här gången kunde inte Chrome använda en säker anslutning. Det kan hända att en angripare försöker avlyssna eller ändra din nätverksanslutning. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Angripare på webbplatsen som du försöker besöka kan installera skadlig programvara som stjäl eller raderar sådant som lösenord, foton, meddelanden eller kreditkortsnummer.</translation>
 <translation id="7610193165460212391">Värdet är utanför intervallet <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Upphör: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill visa och hantera lösenord i inställningarna för Chrome</translation>
@@ -3406,6 +3423,7 @@ Mer information.
 <translation id="8078006011486731853">{0,plural, =1{Vill du ladda upp en konfidentiell fil?}other{Vill du ladda upp konfidentiella filer?}}</translation>
 <translation id="8078141288243656252">Det går inte att annotera när dokumentet har roterats</translation>
 <translation id="8079031581361219619">Vill du läsa in webbplatsen igen?</translation>
+<translation id="8079976827192572403">Farlig webbplats</translation>
 <translation id="8081087320434522107">Sedanbilar</translation>
 <translation id="8086971161893892807">Utkast</translation>
 <translation id="8088680233425245692">Det gick inte att visa artikeln.</translation>
@@ -3576,6 +3594,7 @@ Mer information.
 Mer information:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon tillåts den här gången</translation>
+<translation id="8422228580902424274">Angripare på webbplatsen som du försöker besöka kan lura dig att installera programvara eller avslöja sådant som lösenord, telefon- eller kreditkortsnummer.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Inställningar</translation>
@@ -3689,6 +3708,7 @@ Mer information:
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Det gick inte att läsa in webbsidan på <ph name="PAGE" />. Orsak:</translation>
 <translation id="8686424632716064939">Datorsäkerhet</translation>
+<translation id="8687278439622293018">Posten <ph name="ENTRY_VOICEOVER" /> har raderats</translation>
 <translation id="8687429322371626002">Enheten och kontot hanteras av <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Tillgängligt</translation>
 <translation id="868922510921656628">Sidor per uppsättning</translation>
@@ -3900,6 +3920,7 @@ Mer information:
 <translation id="9128870381267983090">Anslut till ett nätverk</translation>
 <translation id="9131119348384879525">Vill du ta en skärmbild/skärminspelning av konfidentiellt innehåll?</translation>
 <translation id="9133985615769429248">Om du delar enheten med andra kan du använda skärmlåset för att verifiera din identitet när du använder ett sparat lösenord</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, virtuellt kort</translation>
 <translation id="9136861683332321024">Lyxfordon</translation>
 <translation id="9137013805542155359">Visa original</translation>
 <translation id="9137248913990643158">Logga in på Chrome innan du använder den här appen.</translation>

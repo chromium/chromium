@@ -484,6 +484,7 @@
 <translation id="1390548061267426325">เปิดเป็นแท็บทั่วไป</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> ไม่ได้รับอนุญาตให้สั่งพิมพ์ไปยัง <ph name="PRINTER_NAME" /> โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="1392047138650695757">พจนานุกรมผู้ใช้</translation>
+<translation id="139300021892314943">จำกัดผู้ที่สามารถลงชื่อเข้าใช้</translation>
 <translation id="1393283411312835250">ดวงอาทิตย์และเมฆ</translation>
 <translation id="1395730723686586365">โปรแกรมอัปเดตเริ่มต้นแล้ว</translation>
 <translation id="1395832189806039783">ไฮไลต์รายการที่มีโฟกัสของแป้นพิมพ์</translation>
@@ -2516,6 +2517,7 @@
 <translation id="2956070239128776395">ส่วนที่ฝังอยู่ในกลุ่ม: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">คำเตือนเกี่ยวกับการรวมแพ็กเกจส่วนขยาย</translation>
 <translation id="2959127025785722291">เกิดข้อผิดพลาด สแกนไม่สำเร็จ โปรดลองอีกครั้ง</translation>
+<translation id="2959474507964749987">ไฟล์ที่เข้ารหัสนี้อาจเป็นไวรัสหรือมัลแวร์<ph name="LINE_BREAK" />คุณส่งไฟล์และรหัสผ่านไปให้ Google Safe Browsing ตรวจสอบได้ว่าไฟล์ปลอดภัยหรือไม่ โดยปกติแล้ว การสแกนจะใช้เวลา 2-3 วินาที<ph name="LINE_BREAK" />โปรดใส่รหัสผ่านของไฟล์เพื่อสแกน</translation>
 <translation id="2959842337402130152">นำเข้าไม่ได้เนื่องจากมีพื้นที่เก็บข้อมูลไม่เพียงพอ เพิ่มพื้นที่ว่าง <ph name="SPACE_REQUIRED" /> ในอุปกรณ์แล้วลองอีกครั้ง</translation>
 <translation id="2960208947600937804">เกิดข้อผิดพลาดขณะกำหนดค่า Linux โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="2960942820860729477">อัตราการรีเฟรช</translation>
@@ -3979,6 +3981,7 @@
 <translation id="4147099377280085053">เลือกตารางอักษรเบรลล์</translation>
 <translation id="4147911968024186208">โปรดลองอีกครั้ง หากพบข้อผิดพลาดนี้อีก ให้ติดต่อตัวแทนฝ่ายสนับสนุน</translation>
 <translation id="414800391140809654">สามารถใช้ข้อมูลของคุณขณะที่คุณเรียกดู</translation>
+<translation id="4148195018520464922">คุณจำกัดการลงชื่อเข้าใช้ให้เฉพาะผู้ใช้บางรายได้ ซึ่งจะนำตัวเลือก "เพิ่มบุคคล" ออกจากหน้าจอลงชื่อเข้าใช้ นอกจากนี้ คุณยังสามารถนำผู้ใช้ปัจจุบันออกได้ด้วย</translation>
 <translation id="4150201353443180367">การแสดงผล</translation>
 <translation id="4150569944729499860">บริบทบนหน้าจอ</translation>
 <translation id="4151449637210235443">บอกเราเกี่ยวกับเกมเพลย์ล่าสุดของคุณ</translation>
@@ -4177,6 +4180,7 @@
 <translation id="4322394346347055525">ปิดแท็บอื่นๆ</translation>
 <translation id="4324577459193912240">ไฟล์ไม่สมบูรณ์</translation>
 <translation id="4325237902968425115">กำลังถอนการติดตั้ง <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">พื้นที่เก็บข้อมูลและพลังงาน</translation>
 <translation id="4326146840124313313">การรักษาความปลอดภัยที่เข้มงวดที่สุดของ Chrome ทำสิ่งต่างๆ ได้มากขึ้นเพื่อปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย</translation>
 <translation id="4326484226728068206">รายการในรถเข็นของคุณ <ph name="DISCOUNT_TEXT" /> จาก <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> ดูเมื่อ <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">น้ำเย็น</translation>
@@ -5160,6 +5164,7 @@
 <translation id="5146896637028965135">เสียงของระบบ</translation>
 <translation id="5147992672778369947">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="5148277445782867161">บริการตำแหน่งของ Google จะใช้แหล่งที่มาอย่าง Wi-Fi เครือข่ายมือถือ และเซ็นเซอร์ในการประมาณตำแหน่งของอุปกรณ์</translation>
+<translation id="5148285448107770349">รหัสผ่านต้องมีอักขระอย่างน้อย 8 ตัว</translation>
 <translation id="5150254825601720210">ใบรับรองชื่อเซิร์ฟเวอร์ SSL ของ Netscape</translation>
 <translation id="5151354047782775295">เพิ่มพื้นที่ว่างของดิสก์หรือเลือกข้อมูลที่อาจลบออกเองโดยอัตโนมัติ</translation>
 <translation id="5153234146675181447">เลิกจำโทรศัพท์</translation>
@@ -8131,6 +8136,7 @@
 <translation id="7617263010641145920">เปิด Play Store</translation>
 <translation id="7617648809369507487">ใช้การส่งข้อความแบบไม่มีการแจ้งเตือน</translation>
 <translation id="7621382409404463535">ระบบบันทึกการกำหนดค่าอุปกรณ์ไม่สำเร็จ</translation>
+<translation id="7621480263311228380">ไม่ได้รับอนุญาตให้ใช้ข้อมูลเกี่ยวกับคุณที่บันทึกไว้</translation>
 <translation id="7621595347123595643">คุณจะกู้คืนข้อมูลในเครื่องไม่ได้หากลืมรหัสผ่านหรือ PIN</translation>
 <translation id="7622114377921274169">กำลังชาร์จ</translation>
 <translation id="7622768823216805500">โดยปกติแล้วเว็บไซต์จะติดตั้งเครื่องจัดการการชำระเงินเพื่อดำเนินการตามฟีเจอร์สำหรับช็อปปิ้ง เช่น การชำระเงินสะดวกขึ้น</translation>
@@ -8684,6 +8690,7 @@
 <translation id="8037117027592400564">อ่านข้อความทั้งหมดที่พูดโดยใช้เสียงสังเคราะห์</translation>
 <translation id="8037357227543935929">ขอ (ค่าเริ่มต้น)</translation>
 <translation id="803771048473350947">ไฟล์</translation>
+<translation id="8037801708772278989">เพิ่งตรวจสอบเมื่อสักครู่นี้</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{กําลังคัดลอก 1 ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" />}other{กําลังคัดลอก {NUM_OF_FILES} ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8041267120753677077">สตรีมแอปของโทรศัพท์</translation>
@@ -9477,6 +9484,7 @@
 <translation id="8680251145628383637">ลงชื่อเข้าใช้เพื่อดึงบุ๊กมาร์ก ประวัติ รหัสผ่าน และการตั้งค่าอื่นๆ บนอุปกรณ์ทุกเครื่องของคุณ ทั้งนี้ ระบบจะลงชื่อเข้าใช้บริการต่างๆ ของ Google ให้คุณโดยอัตโนมัติ</translation>
 <translation id="8681886425883659911">โฆษณาถูกบล็อกในเว็บไซต์ที่ทราบว่าแสดงโฆษณาที่รบกวนหรือทำให้เข้าใจผิด</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> เชื่อมต่อแล้วและพร้อมทำงาน</translation>
+<translation id="8684471948980641888">อนุญาตให้ซิงค์ผ่านเครือข่ายแบบจำกัดปริมาณ</translation>
 <translation id="8685540043423825702">โปรไฟล์ Chrome ของคุณ</translation>
 <translation id="8686142379631285985">ลงชื่อเข้าใช้ด้วย <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">ยกเลิก <ph name="FILE_NAME" /></translation>

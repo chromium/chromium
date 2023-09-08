@@ -366,6 +366,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Lås vinduerne op</translation>
 <translation id="2528111225373402384">Indstillinger for hotspot</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Aktivér eller deaktiver tastenavigation</translation>
 <translation id="2531025035050312891">langsom enhed</translation>
 <translation id="2531107890083353124">Tryk på <ph name="KEY_ONE" />, mens du trækker fanen</translation>
@@ -1620,6 +1621,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7714767791242455379">Tilføj et mobilnetværk</translation>
 <translation id="7720400844887872976">Aktiveret indtil <ph name="TIME" /></translation>
 <translation id="7720410380936703141">PRØV IGEN</translation>
+<translation id="7721132362314201794">Navn på skrivebord</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikation}one{# notifikation}other{# notifikationer}}</translation>
 <translation id="7723703419796509666">Vis eller skjul konsollen i Udviklerværktøjer</translation>
 <translation id="7724603315864178912">Klip</translation>
@@ -1855,6 +1857,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8731487213223706745">Slutter <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Det forsøger muligvis at stjæle dine indtastninger</translation>
 <translation id="8735678380411481005">Farve på tastaturets baggrundslys</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktiverer…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verificer din identitet: <ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>

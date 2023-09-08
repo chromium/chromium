@@ -487,6 +487,7 @@
 <translation id="1390548061267426325">ਨਿਯਮਿਤ ਟੈਬ ਦੇ ਤੌਰ ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />, <ph name="PRINTER_NAME" /> 'ਤੇ ਪ੍ਰਿੰਟ ਕਰਨ ਲਈ ਅਧਿਕਾਰਿਤ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="1392047138650695757">ਵਰਤੋਂਕਾਰ ਸ਼ਬਦਕੋਸ਼</translation>
+<translation id="139300021892314943">ਸਾਈਨ-ਇਨ ਕਰ ਸਕਣਯੋਗ ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਸੀਮਤ ਕਰੋ</translation>
 <translation id="1393283411312835250">ਸੂਰਜ ਅਤੇ ਬੱਦਲ</translation>
 <translation id="1395730723686586365">ਅਪਡੇਟਰ ਸ਼ੁਰੂ ਹੋਇਆ</translation>
 <translation id="1395832189806039783">ਕੀ-ਬੋਰਡ ਫੋਕਸ ਨਾਲ ਆਈਟਮ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
@@ -2531,6 +2532,7 @@
 <translation id="2956070239128776395">ਸੈਕਸ਼ਨ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਜੋੜਿਆ ਗਿਆ: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">ਪੈਕ ਐਕਸਟੈਂਸ਼ਨ ਚਿਤਾਵਨੀ</translation>
 <translation id="2959127025785722291">ਕੋਈ ਗੜਬੜ ਹੋਈ। ਸਕੈਨ ਦਾ ਕੰਮ ਪੂਰਾ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="2959474507964749987">ਇਹ ਇਨਕ੍ਰਿਪਟਡ ਫ਼ਾਈਲ ਵਾਇਰਸ ਜਾਂ ਮਾਲਵੇਅਰ ਹੋ ਸਕਦੀ ਹੈ।<ph name="LINE_BREAK" />ਇਹ ਦੇਖਣ ਲਈ ਕਿ ਕੀ ਇਹ ਅਸੁਰੱਖਿਅਤ ਹੈ ਜਾਂ ਨਹੀਂ, ਤੁਸੀਂ ਫ਼ਾਈਲ ਅਤੇ ਪਾਸਵਰਡ ਨੂੰ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ 'ਤੇ ਭੇਜ ਸਕਦੇ ਹੋ। ਸਕੈਨ ਵਿੱਚ ਆਮ ਤੌਰ 'ਤੇ ਕੁਝ ਸਕਿੰਟਾਂ ਦਾ ਸਮਾਂ ਲੱਗਦਾ ਹੈ।<ph name="LINE_BREAK" />ਸਕੈਨ ਕਰਨ ਲਈ, ਫ਼ਾਈਲ ਦਾ ਪਾਸਵਰਡ ਸ਼ਾਮਲ ਕਰੋ।</translation>
 <translation id="2959842337402130152">ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਦੀ ਘਾਟ ਕਾਰਨ ਮੁੜ-ਬਹਾਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਡੀਵਾਈਸ ਵਿੱਚੋਂ <ph name="SPACE_REQUIRED" /> ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2960208947600937804">Linux ਦਾ ਸੰਰੂਪਣ ਕਰਨ ਦੌਰਾਨ ਗੜਬੜ ਹੋਈ। ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="2960942820860729477">ਰਿਫ੍ਰੈਸ਼ ਦਰ</translation>
@@ -3994,6 +3996,7 @@
 <translation id="4147099377280085053">ਬਰੇਲ ਲਿਪੀ ਦੀ ਸਾਰਨੀ ਚੁਣੋ</translation>
 <translation id="4147911968024186208">ਕਿਰਪਾ ਕਰਕੇ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਜੇਕਰ ਤੁਹਾਨੂੰ ਇਹ ਗੜਬੜ ਦੁਬਾਰਾ ਦਿਖਾਈ ਦਿੰਦੀ ਹੈ ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਹਾਇਕ ਪ੍ਰਤੀਨਿਧੀ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="414800391140809654">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬ੍ਰਾਊਜ਼ ਕੀਤੇ ਜਾਣ ਵੇਲੇ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀ ਹੈ</translation>
+<translation id="4148195018520464922">ਤੁਸੀਂ ਕੁਝ ਖਾਸ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਸਾਈਨ-ਇਨ ਕਰਨ ਨੂੰ ਸੀਮਤ ਕਰ ਸਕਦੇ ਹੋ। ਇਸ ਨਾਲ ਸਾਈਨ-ਇਨ ਸਕ੍ਰੀਨ 'ਤੇ "ਵਿਅਕਤੀ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ" ਵਿਕਲਪ ਹਟ ਜਾਂਦਾ ਹੈ। ਤੁਸੀਂ ਮੌਜੂਦਾ ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਵੀ ਹਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4150201353443180367">ਡਿਸਪਲੇ</translation>
 <translation id="4150569944729499860">ਸਕ੍ਰੀਨ ਸੰਦਰਭ</translation>
 <translation id="4151449637210235443">ਸਾਨੂੰ ਆਪਣੇ ਹਾਲੀਆ ਗੇਮਪਲੇ ਬਾਰੇ ਦੱਸੋ</translation>
@@ -4192,6 +4195,7 @@
 <translation id="4322394346347055525">ਹੋਰ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
 <translation id="4324577459193912240">ਅਧੂਰੀ ਫ਼ਾਈਲ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> ਨੂੰ ਅਣਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="4325433082696797523">ਸਟੋਰੇਜ ਅਤੇ ਪਾਵਰ</translation>
 <translation id="4326146840124313313">Chrome ਦੀ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਸੁਰੱਖਿਆ ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਤੁਹਾਡੀ ਰੱਖਿਆ ਕਰਨ ਲਈ ਬਹੁਤ ਕੁਝ ਕਰਦੀ ਹੈ</translation>
 <translation id="4326484226728068206">ਤੁਹਾਡੇ ਕਾਰਡ ਵਿੱਚ ਮੌਜੂਦ ਆਈਟਮਾਂ ਲਈ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> 'ਤੇ <ph name="DISCOUNT_TEXT" /> ਮਿਲ ਰਹੀ ਹੈ, <ph name="RELATIVE_TIME" /> ਪਹਿਲਾਂ ਦੇਖਿਆ ਗਿਆ</translation>
 <translation id="4330191372652740264">ਠੰਡਾ ਪਾਣੀ</translation>
@@ -5176,6 +5180,7 @@
 <translation id="5146896637028965135">ਸਿਸਟਮ ਦੀ ਅਵਾਜ਼</translation>
 <translation id="5147992672778369947">ਸਿਫ਼ਾਰਸ਼ੀ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="5148277445782867161">Google ਦੀ ਟਿਕਾਣਾ ਸੇਵਾ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਟਿਕਾਣੇ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਵਾਈ‑ਫਾਈ, ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਅਤੇ ਸੈਂਸਰਾਂ ਵਰਗੇ ਸਰੋਤਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ।</translation>
+<translation id="5148285448107770349">ਪਾਸਵਰਡ ਘੱਟੋ-ਘੱਟ 8 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="5150254825601720210">Netscape ਪ੍ਰਮਾਣ-ਪੱਤਰ SSL ਸਰਵਰ ਨਾਮ</translation>
 <translation id="5151354047782775295">ਡਿਸਕ ਜਗ੍ਹਾ ਨੂੰ ਖਾਲੀ ਕਰੋ ਨਹੀਂ ਤਾਂ ਚੋਣਵਾਂ  ਡਾਟਾ  ਆਪਣੇ ਆਪ ਮਿਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="5153234146675181447">ਫ਼ੋਨ ਭੁੱਲ ਜਾਓ</translation>
@@ -8153,6 +8158,7 @@
 <translation id="7617263010641145920">Play Store ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7617648809369507487">ਸ਼ਾਂਤ ਸੁਨੇਹਿਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="7621382409404463535">ਸਿਸਟਮ ਡੀਵਾਈਸ ਸੰਰੂਪਣ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ।</translation>
+<translation id="7621480263311228380">ਉਨ੍ਹਾਂ ਨੇ ਤੁਹਾਡੇ ਬਾਰੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="7621595347123595643">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਵਰਡ ਜਾਂ ਪਿੰਨ ਭੁੱਲ ਜਾਂਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਹਾਸਲ ਨਹੀਂ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="7622114377921274169">ਚਾਰਜ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="7622768823216805500">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਆਸਾਨ ਚੈੱਕਆਊਟ ਜਿਹੀਆਂ ਖਰੀਦਦਾਰੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਦੀਆਂ ਹਨ</translation>
@@ -8704,6 +8710,7 @@
 <translation id="8037117027592400564">ਸਿੰਥੇਸਾਈਜ਼ਡ ਸਪੀਚ ਵਰਤਦੇ ਹੋਏ ਬੋਲਿਆ ਗਿਆ ਸਾਰਾ ਟੈਕਸਟ ਪੜ੍ਹੋ</translation>
 <translation id="8037357227543935929">ਪੁੱਛੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="803771048473350947">ਫਾਈਲ</translation>
+<translation id="8037801708772278989">ਹੁਣੇ ਹੀ ਜਾਂਚ ਕੀਤੀ ਗਈ</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 ਫ਼ਾਈਲ ਨੂੰ <ph name="CLOUD_PROVIDER" /> 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ}one{{NUM_OF_FILES} ਫ਼ਾਈਲ ਨੂੰ <ph name="CLOUD_PROVIDER" /> 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ}other{{NUM_OF_FILES} ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="CLOUD_PROVIDER" /> 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ}}</translation>
 <translation id="8041089156583427627">ਵਿਚਾਰ ਭੇਜੋ</translation>
 <translation id="8041267120753677077">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਸਟ੍ਰੀਮ ਕਰੋ</translation>
@@ -9497,6 +9504,7 @@
 <translation id="8680251145628383637">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੀਆਂ Google ਸੇਵਾਵਾਂ 'ਤੇ ਵੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਹੋ ਜਾਵੋਗੇ।</translation>
 <translation id="8681886425883659911">ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ 'ਤੇ ਬਲਾਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਜੋ ਦਖਲਅੰਦਾਜ਼ੀ ਅਤੇ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀਆਂ ਹਨ</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ਕਨੈਕਟ ਅਤੇ ਤਿਆਰ ਹੈ</translation>
+<translation id="8684471948980641888">ਮੀਟਰਬੱਧ ਨੈੱਟਵਰਕਾਂ 'ਤੇ ਸਿੰਕ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="8685540043423825702">ਤੁਹਾਡਾ Chrome ਪ੍ਰੋਫਾਈਲ</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> ਨੂੰ ਰੱਦ ਕਰੋ</translation>

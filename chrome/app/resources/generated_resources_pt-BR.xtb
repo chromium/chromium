@@ -487,6 +487,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1390548061267426325">Abrir como guia normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> não tem autorização para imprimir com a <ph name="PRINTER_NAME" />. Entre em contato com o administrador.</translation>
 <translation id="1392047138650695757">Dicionários do usuário</translation>
+<translation id="139300021892314943">Limitar quem pode fazer login</translation>
 <translation id="1393283411312835250">Sol e nuvens</translation>
 <translation id="1395730723686586365">Atualizador iniciado</translation>
 <translation id="1395832189806039783">Destacar item com o foco do teclado</translation>
@@ -2531,6 +2532,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2956070239128776395">Seção aninhada no grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Aviso de extensão de pacote</translation>
 <translation id="2959127025785722291">Algo deu errado. Não foi possível concluir a verificação. Tente novamente.</translation>
+<translation id="2959474507964749987">Este arquivo criptografado pode ser um vírus ou malware.<ph name="LINE_BREAK" />Para verificar se ele é seguro, envie o arquivo e a senha para o Navegação segura do Google. As verificações geralmente levam alguns segundos.<ph name="LINE_BREAK" />Para fazer isso agora, adicione a senha do arquivo.</translation>
 <translation id="2959842337402130152">Não é possível restaurar devido à falta de espaço de armazenamento. Libere <ph name="SPACE_REQUIRED" /> do dispositivo e tente novamente.</translation>
 <translation id="2960208947600937804">Algo deu errado na configuração do Linux. Entre em contato com seu administrador.</translation>
 <translation id="2960942820860729477">Taxa de atualização</translation>
@@ -3995,6 +3997,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4147099377280085053">Selecionar uma tabela em braille</translation>
 <translation id="4147911968024186208">Tente novamente. Se o erro se repetir, entre em contato com seu representante de suporte.</translation>
 <translation id="414800391140809654">pode usar suas informações enquanto você navega</translation>
+<translation id="4148195018520464922">Você pode limitar o login a determinados usuários. Isso remove a opção "Adicionar pessoa" da tela de login. Também é possível remover os usuários existentes.</translation>
 <translation id="4150201353443180367">Exibição</translation>
 <translation id="4150569944729499860">Contexto da tela</translation>
 <translation id="4151449637210235443">Conte sobre a jogabilidade na sua sessão mais recente</translation>
@@ -4193,6 +4196,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4322394346347055525">Fechar outras guias</translation>
 <translation id="4324577459193912240">Arquivo incompleto</translation>
 <translation id="4325237902968425115">Desinstalando <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4325433082696797523">Armazenamento e energia</translation>
 <translation id="4326146840124313313">A melhor segurança do Chrome protege você ainda mais contra sites, extensões e downloads perigosos</translation>
 <translation id="4326484226728068206">Itens no seu carrinho com <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) visualizados <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Água com gelo</translation>
@@ -4795,6 +4799,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4820236583224459650">Definir como tíquete ativo</translation>
 <translation id="4820795723433418303">Usar teclas de função como teclas da linha de cima</translation>
 <translation id="4821935166599369261">&amp;Criação de perfil ativada</translation>
+<translation id="4823193082697477185">Acesse arquivos, pastas ou drives compartilhados em uma rede local. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Ler e alterar as configurações do dispositivo e usuário</translation>
 <translation id="4824037980212326045">Backup e restauração do Linux</translation>
 <translation id="4824958205181053313">Cancelar sincronização?</translation>
@@ -5176,6 +5181,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5146896637028965135">Voz do sistema</translation>
 <translation id="5147992672778369947">Usar senha recomendada</translation>
 <translation id="5148277445782867161">Os Serviços de localização do Google usam fontes como Wi-Fi, redes móveis e sensores para estimar a localização do seu dispositivo.</translation>
+<translation id="5148285448107770349">A senha deve ter pelo menos oito caracteres</translation>
 <translation id="5150254825601720210">Nome do servidor SSL do certificado do Netscape</translation>
 <translation id="5151354047782775295">Libere espaço em disco, ou dados específicos podem ser excluídos automaticamente</translation>
 <translation id="5153234146675181447">Esquecer o smartphone</translation>
@@ -8154,6 +8160,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7617263010641145920">Ativar a Play Store</translation>
 <translation id="7617648809369507487">Usar mensagens mais silenciosas</translation>
 <translation id="7621382409404463535">Falha do sistema ao salvar a configuração do dispositivo.</translation>
+<translation id="7621480263311228380">Não pode usar as informações salvas sobre você</translation>
 <translation id="7621595347123595643">Não vai ser possível recuperar dados locais se você esquecer a senha ou o PIN.</translation>
 <translation id="7622114377921274169">Carregando.</translation>
 <translation id="7622768823216805500">Os sites geralmente instalam gerenciadores de pagamento para recursos de compras, como finalizações de compra facilitadas</translation>
@@ -8707,6 +8714,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8037117027592400564">Ler todo texto falado usando voz sintetizada</translation>
 <translation id="8037357227543935929">Perguntar (padrão)</translation>
 <translation id="803771048473350947">Arquivo</translation>
+<translation id="8037801708772278989">Verificado agora mesmo</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 arquivo para o <ph name="CLOUD_PROVIDER" />}one{Copiando {NUM_OF_FILES} arquivo para o <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} arquivos para o <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Enviar comentários</translation>
 <translation id="8041267120753677077">Fazer transmissão dos apps no seu smartphone</translation>
@@ -9500,6 +9508,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8680251145628383637">Faça login para ter acesso aos seus favoritos, histórico, senhas e outras configurações em todos os seus dispositivos. Você será conectado automaticamente aos seus serviços do Google.</translation>
 <translation id="8681886425883659911">A publicidade é bloqueada em sites que mostram anúncios invasivos ou enganosos</translation>
 <translation id="8682730193597992579">A impressora <ph name="PRINTER_NAME" /> está conectada e pronta</translation>
+<translation id="8684471948980641888">Permitir a sincronização em redes limitadas</translation>
 <translation id="8685540043423825702">Seu perfil do Chrome</translation>
 <translation id="8686142379631285985">Login feito como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Cancelar <ph name="FILE_NAME" /></translation>

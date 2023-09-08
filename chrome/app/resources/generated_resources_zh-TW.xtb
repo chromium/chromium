@@ -484,6 +484,7 @@
 <translation id="1390548061267426325">在一般分頁中開啟</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> 未獲授權，因此無法透過「<ph name="PRINTER_NAME" />」列印。請與管理員聯絡。</translation>
 <translation id="1392047138650695757">使用者字典</translation>
+<translation id="139300021892314943">限制可登入的使用者</translation>
 <translation id="1393283411312835250">太陽和雲</translation>
 <translation id="1395730723686586365">更新程式已啟動</translation>
 <translation id="1395832189806039783">醒目顯示鍵盤焦點所在項目</translation>
@@ -2516,6 +2517,7 @@
 <translation id="2956070239128776395">群組中有巢狀區段：<ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">封裝擴充功能警告</translation>
 <translation id="2959127025785722291">發生錯誤，無法完成掃描作業。請再試一次。</translation>
+<translation id="2959474507964749987">這個加密的檔案可能是病毒或惡意軟體。<ph name="LINE_BREAK" />如要檢查檔案是否不安全，你可以將檔案和密碼提供給 Google 安全瀏覽功能。檔案掃描作業通常需要幾秒鐘的時間。<ph name="LINE_BREAK" />如要掃描，請提供檔案的密碼。</translation>
 <translation id="2959842337402130152">儲存空間不足，因此無法復原。請釋出 <ph name="SPACE_REQUIRED" /> 的裝置儲存空間，然後再試一次。</translation>
 <translation id="2960208947600937804">設定 Linux 時發生錯誤，請與你的系統管理員聯絡。</translation>
 <translation id="2960942820860729477">刷新率</translation>
@@ -3978,6 +3980,7 @@
 <translation id="4147099377280085053">選取點字表</translation>
 <translation id="4147911968024186208">請再試一次。如果這個錯誤再次發生，請與你的產品支援代表聯絡。</translation>
 <translation id="414800391140809654">可以在你瀏覽時使用你的資訊</translation>
+<translation id="4148195018520464922">你可以限制只有特定使用者才能登入。設定完成後，系統會移除登入畫面上的「新增使用者」選項。你也可以移除現有的使用者。</translation>
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4150569944729499860">畫面內容</translation>
 <translation id="4151449637210235443">請與我們分享你近期的遊戲體驗</translation>
@@ -4176,6 +4179,7 @@
 <translation id="4322394346347055525">關閉其他分頁</translation>
 <translation id="4324577459193912240">檔案未完成下載</translation>
 <translation id="4325237902968425115">正在解除安裝「<ph name="LINUX_APP_NAME" />」...</translation>
+<translation id="4325433082696797523">儲存空間與電源</translation>
 <translation id="4326146840124313313">Chrome 最強大的安全防護功能可進一步協助你防範危險的網站、下載內容和擴充功能</translation>
 <translation id="4326484226728068206">購物車中的商品在「<ph name="MERCHANT_NAME" />」享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，查看時間為 <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">冰水</translation>
@@ -5159,6 +5163,7 @@
 <translation id="5146896637028965135">系統語音</translation>
 <translation id="5147992672778369947">使用建議的密碼</translation>
 <translation id="5148277445782867161">Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，推測出這部裝置的所在位置。</translation>
+<translation id="5148285448107770349">密碼至少要有 8 個半形字元</translation>
 <translation id="5150254825601720210">Netscape 憑證 SSL 伺服器名稱</translation>
 <translation id="5151354047782775295">請釋出磁碟空間，或選取系統可自動刪除的資料</translation>
 <translation id="5153234146675181447">移除手機</translation>
@@ -8130,6 +8135,7 @@
 <translation id="7617263010641145920">開啟 Play 商店</translation>
 <translation id="7617648809369507487">使用低擾式通知</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
+<translation id="7621480263311228380">這個網站不可使用與你相關的既有資訊</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN 碼，就無法復原本機資料。</translation>
 <translation id="7622114377921274169">充電中。</translation>
 <translation id="7622768823216805500">網站通常會安裝付款處理常式，以便提供相關的購物功能 (例如更方便的結帳方式)</translation>
@@ -8683,6 +8689,7 @@
 <translation id="8037117027592400564">讀取使用合成語音朗讀的所有文字</translation>
 <translation id="8037357227543935929">詢問 (預設)</translation>
 <translation id="803771048473350947">檔案</translation>
+<translation id="8037801708772278989">剛才已檢查</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{正在將 1 個檔案複製到「<ph name="CLOUD_PROVIDER" />」}other{正在將 {NUM_OF_FILES} 個檔案複製到「<ph name="CLOUD_PROVIDER" />」}}</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8041267120753677077">串流手機的應用程式</translation>
@@ -9476,6 +9483,7 @@
 <translation id="8680251145628383637">只要登入帳戶，你在任何裝置上都能取得自己的書籤、歷史記錄和密碼，並套用相同的設定。此外，系統還會自動讓您登入各項 Google 服務。</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的侵入式廣告或誤導性廣告</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> 已連接且準備就緒</translation>
+<translation id="8684471948980641888">允許透過計量付費網路進行同步處理</translation>
 <translation id="8685540043423825702">你的 Chrome 設定檔</translation>
 <translation id="8686142379631285985">目前登入的帳戶：<ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">取消下載 <ph name="FILE_NAME" /></translation>

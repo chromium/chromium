@@ -4778,6 +4778,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4820236583224459650">Ezarri zerbitzu-eskaera aktibo gisa</translation>
 <translation id="4820795723433418303">Erabili funtzio-teklak goiko errenkadako tekla gisa</translation>
 <translation id="4821935166599369261">&amp;Profilen sorrera gaituta</translation>
+<translation id="4823193082697477185">Atzitu fitxategi, karpeta edo unitate partekatuak tokiko sare batean. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Irakurri eta aldatu erabiltzailearen eta gailuaren ezarpenak</translation>
 <translation id="4824037980212326045">Linux-en babeskopiak eta leheneratzea</translation>
 <translation id="4824958205181053313">Sinkronizazioa bertan behera utzi nahi duzu?</translation>
@@ -8681,6 +8682,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8037117027592400564">Irakurri testu idatzi guztiak ahots sintetizatua erabilita</translation>
 <translation id="8037357227543935929">Galdetu (lehenetsia)</translation>
 <translation id="803771048473350947">Fitxategia</translation>
+<translation id="8037801708772278989">Oraintxe bertan egiaztatu da</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 fitxategi <ph name="CLOUD_PROVIDER" />-n kopiatzen}other{{NUM_OF_FILES} fitxategi <ph name="CLOUD_PROVIDER" />-n kopiatzen}}</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8041267120753677077">Igorri zuzenean telefonoko aplikazioak</translation>

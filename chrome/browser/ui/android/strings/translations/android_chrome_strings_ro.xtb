@@ -58,6 +58,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="124678866338384709">Închide fila actuală</translation>
 <translation id="1246905108078336582">Elimini sugestia din clipboard?</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Acum vei vedea conținut de la și despre <ph name="SITE_NAME" /> în secțiunea Urmărești. Site-urile și căutările pe care le urmărești se salvează în Contul Google. Poți gestiona oricând elementele urmărite din setări.</translation>
 <translation id="1263231323834454256">Lista de lectură</translation>
 <translation id="1266864766717917324">Nu s-a trimis <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Aici vei vedea istoricul</translation>
@@ -136,6 +137,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="1671236975893690980">Descărcare în așteptare…</translation>
 <translation id="1672586136351118594">Nu mai afișa</translation>
 <translation id="1680919990519905526">Cumpără cu Google Lens <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">În curând, vei vedea conținut de la și despre <ph name="SITE_NAME" /> în secțiunea Urmărești. Site-urile și căutările pe care le urmărești se salvează în Contul Google. Poți gestiona oricând elementele urmărite din setări.</translation>
 <translation id="1702543251015153180">Modifici setările pentru tema întunecată?</translation>
 <translation id="1702907158640575240">Browser gestionat</translation>
 <translation id="1710099199314114079">Comută sau închide filele</translation>
@@ -1243,6 +1245,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7431991332293347422">Controlează modul în care istoricul de navigare este folosit pentru a personaliza Căutarea și alte servicii</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
 <translation id="7437998757836447326">Deconectează-te de la Chrome</translation>
+<translation id="7450926666485653189">Trimite la Google un fragment de adresă URL codificat printr-un server de confidențialitate care îți ascunde adresa IP</translation>
 <translation id="7453467225369441013">Te deconectează de pe majoritatea site-urilor. Nu te va deconecta de la Contul Google.</translation>
 <translation id="7453810262525006706">Restrânge pentru a vedea imaginea laterală</translation>
 <translation id="7454641608352164238">Spațiu insuficient</translation>
@@ -1472,6 +1475,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8497242791509864205">Deschide opțiunile de sortare</translation>
 <translation id="8497480609928300907">Prezentare a Ghidului privind confidențialitatea</translation>
 <translation id="8497726226069778601">Nu este nimic de văzut aici... deocamdată</translation>
+<translation id="8501423924927196358">Indicator de încărcare a Statisticilor despre pagină</translation>
 <translation id="8503559462189395349">Parole Chrome</translation>
 <translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="8505766168025405649">Vezi notificarea pentru starea descărcării</translation>

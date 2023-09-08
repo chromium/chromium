@@ -486,6 +486,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1390548061267426325">Otwórz jako zwykłą kartę</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> nie ma uprawnień do drukowania na urządzeniu <ph name="PRINTER_NAME" />. Skontaktuj się z administratorem.</translation>
 <translation id="1392047138650695757">Słowniki użytkownika</translation>
+<translation id="139300021892314943">Określ, kto może się zalogować</translation>
 <translation id="1393283411312835250">Słońce i chmury</translation>
 <translation id="1395730723686586365">Aktualizator został uruchomiony</translation>
 <translation id="1395832189806039783">Podświetlaj element za pomocą klawiatury</translation>
@@ -2500,6 +2501,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2956070239128776395">Sekcja umieszczona w grupie: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Ostrzeżenie o rozszerzeniu pakietu</translation>
 <translation id="2959127025785722291">Coś poszło nie tak. Nie udało się dokończyć skanowania. Spróbuj ponownie.</translation>
+<translation id="2959474507964749987">Ten zaszyfrowany plik może zawierać wirusa lub złośliwe oprogramowanie.<ph name="LINE_BREAK" />Aby to sprawdzić, możesz wysłać plik i hasło do Bezpiecznego przeglądania Google. Skanowanie zazwyczaj trwa kilka sekund.<ph name="LINE_BREAK" />Aby przeskanować plik, dodaj jego hasło.</translation>
 <translation id="2959842337402130152">Nie udało się przywrócić z powodu braku miejsca. Zwolnij <ph name="SPACE_REQUIRED" /> na tym urządzeniu i spróbuj ponownie.</translation>
 <translation id="2960208947600937804">Podczas konfigurowania Linuksa wystąpił błąd. Skontaktuj się z administratorem.</translation>
 <translation id="2960942820860729477">Częstotliwość odświeżania</translation>
@@ -3963,6 +3965,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4147099377280085053">Wybierz tabelę brajlowską</translation>
 <translation id="4147911968024186208">Spróbuj jeszcze raz. Jeśli ten błąd pojawi się ponownie, skontaktuj się z przedstawicielem pomocy.</translation>
 <translation id="414800391140809654">może używać Twoich danych podczas przeglądania przez Ciebie stron internetowych</translation>
+<translation id="4148195018520464922">Możesz ograniczyć logowanie do wybranych użytkowników. Spowoduje to usunięcie opcji „Dodaj osobę” z ekranu logowania. Możesz też usunąć bieżących użytkowników.</translation>
 <translation id="4150201353443180367">Wyświetlacz</translation>
 <translation id="4150569944729499860">Kontekst z ekranu</translation>
 <translation id="4151449637210235443">Opisz nam swoją ostatnią rozgrywkę</translation>
@@ -4161,6 +4164,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4322394346347055525">Zamknij inne karty</translation>
 <translation id="4324577459193912240">Plik niekompletny</translation>
 <translation id="4325237902968425115">Odinstalowuję aplikację <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">Zasilanie i miejsce na dane</translation>
 <translation id="4326146840124313313">Najsilniejsze zabezpieczenia Chrome skuteczniej chronią Cię przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami</translation>
 <translation id="4326484226728068206">Produkty w koszyku ze zniżką <ph name="DISCOUNT_TEXT" /> od sprzedawcy <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, wyświetlone <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Woda z lodem</translation>
@@ -8120,6 +8124,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7617263010641145920">Włącz Sklep Play</translation>
 <translation id="7617648809369507487">Pokazuj wiadomości dyskretnie</translation>
 <translation id="7621382409404463535">Systemowi nie udało się zapisać konfiguracji urządzenia.</translation>
+<translation id="7621480263311228380">Nie może używać zapisanych informacji o Tobie</translation>
 <translation id="7621595347123595643">Jeśli zapomnisz hasło lub kod PIN, nie będzie można odzyskać danych lokalnych.</translation>
 <translation id="7622114377921274169">Ładuję.</translation>
 <translation id="7622768823216805500">Strony zwykle instalują moduły obsługi płatności na przykład w celu ułatwienia płatności za zakupy</translation>
@@ -8673,6 +8678,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8037117027592400564">Odczyt całego tekstu mówionego przez syntezator mowy</translation>
 <translation id="8037357227543935929">Pytaj (domyślnie)</translation>
 <translation id="803771048473350947">Plik</translation>
+<translation id="8037801708772278989">Sprawdzano przed chwilą</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopiuję 1 plik do usługi <ph name="CLOUD_PROVIDER" />}few{Kopiuję {NUM_OF_FILES} pliki do usługi <ph name="CLOUD_PROVIDER" />}many{Kopiuję {NUM_OF_FILES} plików do usługi <ph name="CLOUD_PROVIDER" />}other{Kopiuję {NUM_OF_FILES} pliku do usługi <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>
 <translation id="8041267120753677077">Odtwarzaj strumieniowo aplikacje z telefonu</translation>
@@ -9466,6 +9472,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8680251145628383637">Zaloguj się, by korzystać ze swoich zakładek, historii, haseł i innych ustawień na wszystkich urządzeniach. Będziesz też automatycznie logować się do usług Google, których używasz.</translation>
 <translation id="8681886425883659911">Reklamy są blokowane w witrynach, o których wiadomo, że wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>
 <translation id="8682730193597992579">Drukarka <ph name="PRINTER_NAME" /> jest podłączona i gotowa do pracy</translation>
+<translation id="8684471948980641888">Zezwalaj na synchronizację w sieciach z pomiarem użycia danych</translation>
 <translation id="8685540043423825702">Twój profil Chrome</translation>
 <translation id="8686142379631285985">Zalogowano jako <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Anuluj <ph name="FILE_NAME" /></translation>

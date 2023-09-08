@@ -486,6 +486,7 @@
 <translation id="1390548061267426325">Отваряне като нормален раздел</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> няма разрешение да отпечатва чрез <ph name="PRINTER_NAME" />. Моля, обърнете се към администратора си.</translation>
 <translation id="1392047138650695757">Потребителски речници</translation>
+<translation id="139300021892314943">Ограничаване на това, кой може да влиза</translation>
 <translation id="1393283411312835250">Слънце и облаци</translation>
 <translation id="1395730723686586365">Актуализиращата програма е стартирана</translation>
 <translation id="1395832189806039783">Открояване на елемента, върху който е фокусът на клавиатурата</translation>
@@ -2527,6 +2528,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2956070239128776395">В група е вложена секция: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Предупреждение за пакетиране на разширението</translation>
 <translation id="2959127025785722291">Нещо се обърка. Сканирането не завърши. Моля, опитайте отново.</translation>
+<translation id="2959474507964749987">Този шифрован файл може да е вирус или злонамерен софтуер.<ph name="LINE_BREAK" />За да проверите дали е опасен, можете да изпратите него и паролата до Google Безопасно сърфиране. Сканирането обикновено отнема няколко секунди.<ph name="LINE_BREAK" />За да сканирате, добавете паролата за файла.</translation>
 <translation id="2959842337402130152">Възстановяването не е възможно поради липса на място в хранилището. Освободете <ph name="SPACE_REQUIRED" /> от устройството и опитайте отново.</translation>
 <translation id="2960208947600937804">При конфигурирането на Linux възникна грешка. Обърнете се към администратора си.</translation>
 <translation id="2960942820860729477">Честота на опресняване</translation>
@@ -3991,6 +3993,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4147099377280085053">Изберете таблица за брайлово писмо</translation>
 <translation id="4147911968024186208">Моля, опитайте пак. Ако отново видите тази грешка, свържете се с представител на екипа за поддръжка.</translation>
 <translation id="414800391140809654">може да използва информацията ви, докато сърфирате</translation>
+<translation id="4148195018520464922">Можете да ограничите влизането в профила до определени потребители. Това премахва опцията „Добавяне на човек“ на екрана за вход. Можете също да премахвате текущите потребители.</translation>
 <translation id="4150201353443180367">Екран</translation>
 <translation id="4150569944729499860">Контекст на екрана</translation>
 <translation id="4151449637210235443">Разкажете ни за скорошните си изживявания от играта</translation>
@@ -4791,6 +4794,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4820236583224459650">Задаване като активен пропуск</translation>
 <translation id="4820795723433418303">Използване на функционалните клавиши като клавиши на най-горния ред</translation>
 <translation id="4821935166599369261">&amp;Профилирането е активирано</translation>
+<translation id="4823193082697477185">Осъществявайте достъп до споделените файлове, папки или дискове в локална мрежа. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Четене и промяна на настройките на потребителите и устройството</translation>
 <translation id="4824037980212326045">Резервни копия и възстановяване на Linux</translation>
 <translation id="4824958205181053313">Да се анулира ли синхронизирането?</translation>
@@ -8148,6 +8152,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7617263010641145920">Включване на Google Play Магазин</translation>
 <translation id="7617648809369507487">Използване на по-малко натрапчиви съобщения</translation>
 <translation id="7621382409404463535">Системата не успя да запази конфигурацията на устройството.</translation>
+<translation id="7621480263311228380">Не е разрешено използването на информация, която сайтовете са запазили за вас</translation>
 <translation id="7621595347123595643">Няма да можете да възстановите локалните данни, ако забравите паролата или ПИН кода си.</translation>
 <translation id="7622114377921274169">Зарежда се.</translation>
 <translation id="7622768823216805500">Сайтовете обикновено инсталират инструменти за обработване на плащания, за да осигуряват функции за пазаруване, като например по-лесно плащане</translation>
@@ -8701,6 +8706,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8037117027592400564">Четене на целия текст, произнесен посредством синтезирания говор</translation>
 <translation id="8037357227543935929">Извеждане на запитване (по подразбиране)</translation>
 <translation id="803771048473350947">Файл</translation>
+<translation id="8037801708772278989">Проверено току-що</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 файл се копира в <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} файла се копират в <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="8041267120753677077">Предавайте поточно приложенията на телефона си</translation>
@@ -9494,6 +9500,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8680251145628383637">Влезте в профила си, за да получите своите отметки, история, пароли и други настройки на всичките си устройства. Също така ще влезете автоматично в използваните от вас услуги на Google.</translation>
 <translation id="8681886425883659911">Рекламите са блокирани на сайтовете, за които е известно, че показват натрапчиви или подвеждащи реклами</translation>
 <translation id="8682730193597992579">Принтерът <ph name="PRINTER_NAME" /> е свързан и готов</translation>
+<translation id="8684471948980641888">Разрешаване на синхронизирането при мрежи с отчитане</translation>
 <translation id="8685540043423825702">Вашият потребителски профил в Chrome</translation>
 <translation id="8686142379631285985">Влезли сте като <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Анулиране на <ph name="FILE_NAME" /></translation>

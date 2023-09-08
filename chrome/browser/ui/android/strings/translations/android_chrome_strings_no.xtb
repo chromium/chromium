@@ -58,6 +58,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra utklippstavlen?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Nå ser du innhold fra og om <ph name="SITE_NAME" /> i Følger. Nettstedene og søkene du følger, lagres i Google-kontoen din. Du kan når som helst administrere det du følger, i innstillingene.</translation>
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1266864766717917324">Kunne ikke dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Her finner du loggen din</translation>
@@ -136,6 +137,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="1671236975893690980">Nedlasting venter</translation>
 <translation id="1672586136351118594">Ikke vis igjen</translation>
 <translation id="1680919990519905526">Handle bildet med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Snart ser du innhold fra og om <ph name="SITE_NAME" /> i Følger. Nettstedene og søkene du følger, lagres i Google-kontoen din. Du kan når som helst administrere det du følger, i innstillingene.</translation>
 <translation id="1702543251015153180">Vil du endre innstillingene for mørkt tema?</translation>
 <translation id="1702907158640575240">Administrert nettleser</translation>
 <translation id="1710099199314114079">Bytt eller lukk faner</translation>
@@ -1243,6 +1245,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7431991332293347422">Kontroller hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
 <translation id="7435356471928173109">Slått av av administratoren din</translation>
 <translation id="7437998757836447326">Logg av Chrome</translation>
+<translation id="7450926666485653189">Sender en obfuskert del av nettadressen til Google via en personverntjener som skjuler IP-adressen din</translation>
 <translation id="7453467225369441013">Logger deg av de fleste nettsteder. Du blir ikke logget av Google-kontoen din.</translation>
 <translation id="7453810262525006706">Skjul til sidevisning</translation>
 <translation id="7454641608352164238">Det er ikke nok plass</translation>

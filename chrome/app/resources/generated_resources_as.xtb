@@ -5177,6 +5177,7 @@
 <translation id="5146896637028965135">ছিষ্টেম কণ্ঠধ্বনি</translation>
 <translation id="5147992672778369947">চুপাৰিছ কৰা পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
 <translation id="5148277445782867161">Googleৰ অৱস্থান সেৱাই আপোনাৰ ডিভাইচৰ অৱস্থান নির্ধাৰণ কৰাত সহায় কৰিবলৈ ৱাই-ফাই, ম’বাইল নেটৱৰ্ক আৰু ছেন্সৰসমূহ দৰে উৎসবোৰ ব্যৱহাৰ কৰে।</translation>
+<translation id="5148285448107770349">পাছৱৰ্ডটোত কমেও ৮ টা বৰ্ণ থাকিবই লাগিব</translation>
 <translation id="5150254825601720210">Netscape প্ৰমাণপত্ৰ SSL ছার্ভাৰৰ নাম</translation>
 <translation id="5151354047782775295">ডিস্কৰ ঠাই খালী কৰক অন্যথা বাছনি কৰ ডেটা স্বয়ংক্ৰিয়ভাৱে মচা হ’ব</translation>
 <translation id="5153234146675181447">ফ’নৰ জৰিয়াতে ব্যৱহাৰ কৰা সুবিধাসমূহ বাদ দিয়ক</translation>
@@ -8706,6 +8707,7 @@
 <translation id="8037117027592400564">সংশ্লেষিত কথন ব্যৱহাৰ কৰি কোৱা সকলো পাঠ পঢ়ক</translation>
 <translation id="8037357227543935929">সোধক (ডিফ'ল্ট)</translation>
 <translation id="803771048473350947">ফাইল</translation>
+<translation id="8037801708772278989">এইমাত্ৰ পৰীক্ষা কৰা হৈছে</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{১ টা ফাইল <ph name="CLOUD_PROVIDER" />লৈ প্ৰতিলিপি কৰি থকা হৈছে}one{{NUM_OF_FILES} টা ফাইল<ph name="CLOUD_PROVIDER" />লৈ প্ৰতিলিপি কৰি থকা হৈছে}other{{NUM_OF_FILES} টা ফাইল<ph name="CLOUD_PROVIDER" />লৈ প্ৰতিলিপি কৰি থকা হৈছে}}</translation>
 <translation id="8041089156583427627">মতামত পঠিয়াওক</translation>
 <translation id="8041267120753677077">আপোনাৰ ফ’নৰ এপ্‌সমূহ ষ্ট্ৰীম কৰক</translation>

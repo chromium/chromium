@@ -4186,6 +4186,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4322394346347055525">Sule muud vahelehed</translation>
 <translation id="4324577459193912240">Fail on poolik</translation>
 <translation id="4325237902968425115">Rakenduse <ph name="LINUX_APP_NAME" />desinstallimine …</translation>
+<translation id="4325433082696797523">Salvestusruum ja toide</translation>
 <translation id="4326146840124313313">Chrome'i tugevaima turvalisuse seade kaitseb teid paremini ohtlike veebisaitide, allalaadimiste ja laienduste eest</translation>
 <translation id="4326484226728068206">Ostukorvis olevad kaubad <ph name="DISCOUNT_TEXT" /> soodsamalt kaupmehelt <ph name="MERCHANT_NAME" />, (<ph name="MERCHANT_DOMAIN" />), vaadatud <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Jäävesi</translation>
@@ -5169,6 +5170,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5146896637028965135">Süsteemi hääl</translation>
 <translation id="5147992672778369947">Kasutage soovitatud parooli</translation>
 <translation id="5148277445782867161">Google'i asukohateenus kasutab teie seadme asukoha prognoosimiseks selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid.</translation>
+<translation id="5148285448107770349">Parool peab koosnema vähemalt 8 tähemärgist</translation>
 <translation id="5150254825601720210">Netscape'i sertifikaadi SSL-serveri nimi</translation>
 <translation id="5151354047782775295">Vabastage kettaruumi, muidu võidakse valitud andmed automaatselt kustutada</translation>
 <translation id="5153234146675181447">Telefoni unustamine</translation>
@@ -8698,6 +8700,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8037117027592400564">Kogu kõnesünteesil põhineva teksti lugemine</translation>
 <translation id="8037357227543935929">Küsi (vaikimisi)</translation>
 <translation id="803771048473350947">Fail</translation>
+<translation id="8037801708772278989">Kontrolliti just praegu</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Ühte faili kopeeritakse teenusesse <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} faili kopeeritakse teenusesse <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>
 <translation id="8041267120753677077">Teie telefoni rakenduste voogesitamine</translation>
@@ -9491,6 +9494,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8680251145628383637">Logige sisse, et teie järjehoidjad, ajalugu, paroolid ja muud seaded oleksid kõikides seadmetes saadaval. Teid logitakse ka automaatselt sisse Google'i teenustesse.</translation>
 <translation id="8681886425883659911">Reklaamid on blokeeritud saitidel, mis teadaolevalt kuvavad sekkuvaid või eksitavaid reklaame</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> on juba ühendatud</translation>
+<translation id="8684471948980641888">Mahupõhise võrgu kaudu sünkroonimise lubamine</translation>
 <translation id="8685540043423825702">Teie Chrome'i profiil</translation>
 <translation id="8686142379631285985">Sisse logitud kasutajana <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Tühista <ph name="FILE_NAME" /></translation>

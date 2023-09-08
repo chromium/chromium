@@ -484,6 +484,7 @@
 <translation id="1390548061267426325">通常のタブとして開く</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> には <ph name="PRINTER_NAME" /> で印刷する権限がありません。管理者にお問い合わせください。</translation>
 <translation id="1392047138650695757">単語リスト</translation>
+<translation id="139300021892314943">ログインできるユーザーを制限する</translation>
 <translation id="1393283411312835250">太陽と雲</translation>
 <translation id="1395730723686586365">アップデータ起動</translation>
 <translation id="1395832189806039783">キーボードのフォーカスがある項目をハイライト表示する</translation>
@@ -2510,6 +2511,7 @@
 <translation id="2956070239128776395">セクションがグループにネストされています: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">拡張機能のパッケージ化に関する警告</translation>
 <translation id="2959127025785722291">エラーが発生しました。スキャンを完了できませんでした。もう一度お試しください。</translation>
+<translation id="2959474507964749987">この暗号化されたファイルはウイルスやマルウェアの可能性があります。<ph name="LINE_BREAK" />危険かどうかを確認するには、ファイルとパスワードを Google セーフ ブラウジングに送信できます。通常、スキャンには数秒かかります。<ph name="LINE_BREAK" />スキャンするには、ファイルのパスワードを追加してください。</translation>
 <translation id="2959842337402130152">ストレージの空き容量が不足しているため復元できません。デバイスの空き容量を <ph name="SPACE_REQUIRED" /> 確保して、もう一度お試しください。</translation>
 <translation id="2960208947600937804">Linux の設定中にエラーが発生しました。管理者にお問い合わせください。</translation>
 <translation id="2960942820860729477">リフレッシュ レート</translation>
@@ -3972,6 +3974,7 @@
 <translation id="4147099377280085053">点字表を選択</translation>
 <translation id="4147911968024186208">もう一度お試しください。このエラーが再び表示される場合は、サポート担当者にお問い合わせください。</translation>
 <translation id="414800391140809654">では次のサイトの閲覧時にあなたの情報を使用できます:</translation>
+<translation id="4148195018520464922">ログインを特定のユーザーに制限できます。制限すると、ログイン画面から [ユーザーを追加] オプションが削除されます。現在のユーザーを削除することもできます。</translation>
 <translation id="4150201353443180367">表示</translation>
 <translation id="4150569944729499860">画面のコンテキスト</translation>
 <translation id="4151449637210235443">最近のゲームプレイについてお聞かせください</translation>
@@ -4170,6 +4173,7 @@
 <translation id="4322394346347055525">他のタブをすべて閉じる</translation>
 <translation id="4324577459193912240">ファイルが不完全です</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> をアンインストールしています...</translation>
+<translation id="4325433082696797523">ストレージと電源</translation>
 <translation id="4326146840124313313">Chrome の最高水準のセキュリティで、危険なウェブサイト、ダウンロード、拡張機能から保護します</translation>
 <translation id="4326484226728068206">カート内の商品が <ph name="MERCHANT_NAME" />（<ph name="MERCHANT_DOMAIN" />）で <ph name="DISCOUNT_TEXT" />（<ph name="RELATIVE_TIME" /> に閲覧）</translation>
 <translation id="4330191372652740264">氷水</translation>
@@ -5152,6 +5156,7 @@
 <translation id="5146896637028965135">システム音声</translation>
 <translation id="5147992672778369947">推奨されるパスワードを使用してください</translation>
 <translation id="5148277445782867161">Google の位置情報サービスでは、デバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。</translation>
+<translation id="5148285448107770349">パスワードは 8 文字以上で指定してください</translation>
 <translation id="5150254825601720210">Netscape 証明書 SSL サーバー名</translation>
 <translation id="5151354047782775295">ディスクの空き領域を確保してください。十分な空き領域がない場合、一部のデータが自動的に削除される可能性があります</translation>
 <translation id="5153234146675181447">スマートフォンを削除</translation>
@@ -8122,6 +8127,7 @@
 <translation id="7617263010641145920">Play ストアをオンにする</translation>
 <translation id="7617648809369507487">目立たない方法で通知する</translation>
 <translation id="7621382409404463535">デバイスの設定を保存できませんでした。</translation>
+<translation id="7621480263311228380">保存したあなたに関する情報の使用を許可しない</translation>
 <translation id="7621595347123595643">パスワードや PIN を忘れた場合、ローカルデータを復元できなくなります。</translation>
 <translation id="7622114377921274169">充電しています。</translation>
 <translation id="7622768823216805500">多くのサイトは、お支払い手続きを簡易化するなど、ショッピングをより快適にするために支払いハンドラをインストールします。</translation>
@@ -8674,6 +8680,7 @@
 <translation id="8037117027592400564">合成音声で読み上げたすべてのテキストの読み取り</translation>
 <translation id="8037357227543935929">確認（デフォルト）</translation>
 <translation id="803771048473350947">ファイル</translation>
+<translation id="8037801708772278989">前回の確認: たった今</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーしています}other{{NUM_OF_FILES} 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーしています}}</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8041267120753677077">スマートフォンのアプリをストリーミングします</translation>
@@ -9467,6 +9474,7 @@
 <translation id="8680251145628383637">ブックマーク、履歴、パスワードなどの設定をすべてのデバイスで使用するにはログインしてください。ログインすると、利用している Google サービスにも自動的にログインすることになります。</translation>
 <translation id="8681886425883659911">煩わしい広告や誤解を招く広告が表示されることがわかっているサイトで広告がブロックされます</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> が接続され、準備が整いました</translation>
+<translation id="8684471948980641888">従量制ネットワークを使用した同期を許可する</translation>
 <translation id="8685540043423825702">自分の Chrome プロフィール</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> としてログインしています</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> をキャンセル</translation>

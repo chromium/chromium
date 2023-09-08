@@ -200,6 +200,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1757857692711134412">Slökkt til sólarlags</translation>
 <translation id="1768366657309696705">Flýtilyklinum <ph name="LAUNCHER_KEY_NAME" /> + punktur hefur verið breytt. Til að nota Insert-lykilinn ýtirðu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + Shift + bakklykilinn.</translation>
 <translation id="1770726142253415363">Fært í línu <ph name="ROW_NUMBER" />, dálk <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Opnaðu <ph name="NAME" /> til að setja upp og sérsníða tækið þitt</translation>
 <translation id="1771761307086386028">Fletta til hægri</translation>
 <translation id="1774796056689732716">Dagatal, <ph name="CURRENT_MONTH_YEAR" />, núverandi val er <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Sýnir <ph name="NUM_SHOWN_ITEMS" /> af <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1192,6 +1193,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5876666360658629066">Sláðu inn kóða foreldris</translation>
 <translation id="5881540930187678962">Setja Símstöð upp seinna</translation>
 <translation id="5881663018261910378">Slökkt</translation>
+<translation id="5883017113634523865">Settu upp forritið fyrir <ph name="NAME" /> í Google Play til að sjá alla tiltæka eiginleika</translation>
 <translation id="5887954372087850114">Glugganum <ph name="WINDOW_TITLE" /> er úthlutað á <ph name="DESK_TITLE" /> og er ekki úthlutað á önnur skrifborð</translation>
 <translation id="588817334757907802">Opna skrá í Chrome-vafra</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
@@ -1621,6 +1623,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7714767791242455379">Bæta nýju farsímakerfi við</translation>
 <translation id="7720400844887872976">Kveikt til kl. <ph name="TIME" /></translation>
 <translation id="7720410380936703141">REYNDU AFTUR</translation>
+<translation id="7721132362314201794">Heiti skrifborðs</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Ein tilkynning}one{# tilkynning}other{# tilkynningar}}</translation>
 <translation id="7723703419796509666">Sýna eða fela stjórnborð forritunarverkfæra</translation>
 <translation id="7724603315864178912">Klippa</translation>

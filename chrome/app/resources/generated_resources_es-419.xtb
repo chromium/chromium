@@ -484,6 +484,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1390548061267426325">Abrir como pestaña normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> no se puede imprimir en <ph name="PRINTER_NAME" />. Comunícate con tu administrador.</translation>
 <translation id="1392047138650695757">Diccionarios del usuario</translation>
+<translation id="139300021892314943">Limitar quiénes pueden acceder</translation>
 <translation id="1393283411312835250">Sol y nubes</translation>
 <translation id="1395730723686586365">Actualizador iniciado</translation>
 <translation id="1395832189806039783">Destacar el elemento con el enfoque del teclado</translation>
@@ -2513,6 +2514,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2956070239128776395">Se anidó la sección en el grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Advertencia sobre el empaquetado de extensiones</translation>
 <translation id="2959127025785722291">Se produjo un error. No se completó el análisis. Vuelve a intentarlo.</translation>
+<translation id="2959474507964749987">Es posible que este archivo encriptado sea un virus o software malicioso.<ph name="LINE_BREAK" />Para comprobar que no es seguro, puedes enviar el archivo y la contraseña a la Navegación segura de Google. Los análisis suelen tardar unos segundos.<ph name="LINE_BREAK" />Agrega la contraseña del archivo para realizarlos.</translation>
 <translation id="2959842337402130152">No se puede restablecer porque el espacio de almacenamiento es insuficiente. Libera <ph name="SPACE_REQUIRED" /> del dispositivo y vuelve a intentarlo.</translation>
 <translation id="2960208947600937804">Se produjo un error al configurar Linux. Comunícate con el administrador.</translation>
 <translation id="2960942820860729477">Frecuencia de actualización</translation>
@@ -3976,6 +3978,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4147099377280085053">Selecciona una tabla de braille</translation>
 <translation id="4147911968024186208">Vuelve a intentarlo. Si vuelves a ver este error, comunícate con tu representante de asistencia.</translation>
 <translation id="414800391140809654">puede usar tu información mientras navegas</translation>
+<translation id="4148195018520464922">Puedes limitar el acceso a ciertos usuarios. Esto quitará la opción "Agregar a una persona" de la pantalla de acceso. También puedes quitar a los usuarios actuales.</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4150569944729499860">Contexto de pantalla</translation>
 <translation id="4151449637210235443">Cuéntanos acerca de tu experiencia de juego más reciente.</translation>
@@ -4775,6 +4778,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4820236583224459650">Establecer como ticket activo</translation>
 <translation id="4820795723433418303">Usar las teclas de función como las teclas de la fila superior</translation>
 <translation id="4821935166599369261">&amp;Perfiles activados</translation>
+<translation id="4823193082697477185">Accede a carpetas, unidades o archivos compartidos en una red local. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Leer y cambiar la configuración del dispositivo y del usuario</translation>
 <translation id="4824037980212326045">Copia de seguridad y restablecimiento de Linux</translation>
 <translation id="4824958205181053313">¿Quieres cancelar la sincronización?</translation>
@@ -8131,6 +8135,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7617263010641145920">Activar Play Store</translation>
 <translation id="7617648809369507487">Usar notificaciones más discretas</translation>
 <translation id="7621382409404463535">El sistema no pudo guardar la configuración del dispositivo.</translation>
+<translation id="7621480263311228380">No pueden usar la información que guardaron sobre ti</translation>
 <translation id="7621595347123595643">No podrás recuperar datos locales si olvidas tu contraseña o PIN.</translation>
 <translation id="7622114377921274169">Cargando</translation>
 <translation id="7622768823216805500">Por lo general los sitios instalan controladores de pago para habilitar funciones de compra, por ejemplo, a fin de facilitar la confirmación de las compras.</translation>
@@ -8684,6 +8689,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8037117027592400564">Leer todo el texto hablado con la síntesis de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>
+<translation id="8037801708772278989">Se verificó recién</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 archivo en <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} archivos en <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Enviar comentario</translation>
 <translation id="8041267120753677077">Transmitir las apps de tu teléfono</translation>
@@ -9477,6 +9483,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8680251145628383637">Accede para obtener tus favoritos, el historial, las contraseñas y otras opciones de configuración en todos tus dispositivos. Además, accederás de forma automática a los servicios de Google.</translation>
 <translation id="8681886425883659911">Se bloquean los anuncios en sitios conocidos por mostrar anuncios intrusivos o engañosos</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> está conectada y lista para usarse</translation>
+<translation id="8684471948980641888">Permitir la sincronización en redes de uso medido</translation>
 <translation id="8685540043423825702">Tu perfil de Chrome</translation>
 <translation id="8686142379631285985">Accediste como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Cancelar <ph name="FILE_NAME" /></translation>

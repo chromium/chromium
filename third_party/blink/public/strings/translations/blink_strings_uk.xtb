@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Змінено на дзеркалювання</translation>
 <translation id="2031987842108996681">Червоний канал</translation>
 <translation id="2060505056492490888">Символ "<ph name="DOT" />" у "<ph name="INVALIDDOMAIN" />" використано неправильно.</translation>
+<translation id="2068711044993563745">Мінімальне значення (<ph name="MINIMUM" />) має бути меншим за максимальне (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2226276347425096477">Скоротіть текст до такої кількості символів або менше: <ph name="MAX_CHARACTERS" /> (наразі використано символів: <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Тиждень <ph name="WEEKNUMBER" />, <ph name="YEAR" /> р.</translation>

@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">משחקי פעולה ומשחקי פלטפורמה</translation>
 <translation id="1413809658975081374">שגיאת פרטיות</translation>
 <translation id="1414134146594747368">גיל הגן</translation>
+<translation id="141826476809826269">סוף הטקסט שחולץ</translation>
 <translation id="1419305130220238697">‏הלחצן לניהול הורדות ב-Chrome, מפעילים אותו כדי לנהל את הקבצים שהורדת ב-Chrome</translation>
 <translation id="1422930527989633628">‏האתר יכול לבקש הרשאה לחפש מכשירי Bluetooth בקרבת מקום</translation>
 <translation id="1426410128494586442">כן</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">‏האתר שניסית לבקר בו נראה כמו אתר מזויף. תוקפים שמחקים אתרים לפעמים משתמשים בכתובת ה-URL של האתר המקורי ועושים בה שינויים קלים ביותר כדי שיהיה קשה להבחין בהבדל.</translation>
 <translation id="1532118530259321453">הדף הזה אומר</translation>
 <translation id="1536390784834419204">תרגום הדף</translation>
+<translation id="1537807545287921620">‏אין גישה לקובץ ה-PDF הזה. עליך לפתוח את תפריט ההקשר ולהפעיל את האפשרות 'חילוץ טקסט מקובץ PDF'.</translation>
 <translation id="1539840569003678498">הדוח נשלח:</translation>
 <translation id="1542105669288201090">לימודי מנהל עסקים</translation>
 <translation id="1545757265410828525">היסטוריית המחירים</translation>
@@ -434,6 +436,7 @@
 <translation id="1842969606798536927">לתשלום</translation>
 <translation id="1846432862466000825">Plastic (Archival)</translation>
 <translation id="1848982255014129637">Photo (High-Gloss)</translation>
+<translation id="1853392626017747777">רישום הכרטיס הווירטואלי נסגר</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
 <translation id="1855370856221982654">אגרוף</translation>
 <translation id="1856713167556118146">מה לא קורה במצב האנונימי</translation>
@@ -470,6 +473,7 @@
 <translation id="1924727005275031552">חדשה</translation>
 <translation id="1935995810530254458">אעתיק בכל זאת</translation>
 <translation id="1939175642807587452">האתר יכול לבקש הרשאה לשלוח התראות</translation>
+<translation id="1940441167050915935">מחיקה של קודי האבטחה שנשמרו</translation>
 <translation id="1943994668912612445">עיצוב</translation>
 <translation id="1945968466830820669">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chromium, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="1946849748901605102">‏12x15 אינץ'</translation>
@@ -864,6 +868,7 @@
 <translation id="2803306138276472711">‏לאחרונה, 'גלישה בטוחה של Google‏' <ph name="BEGIN_LINK" />זיהתה תוכנה זדונית<ph name="END_LINK" /> באתר <ph name="SITE" />. אתרים שבדרך כלל נחשבים לבטוחים נדבקים לעתים בתוכנה זדונית.</translation>
 <translation id="2807052079800581569">‏מיקום תמונה על ציר Y</translation>
 <translation id="2808278141522721006">‏אפשר להפעיל או להשבית את Windows Hello ב<ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">‏אין גישה לקובץ ה-PDF הזה. עליך ללחוץ על מקש החיפוש + m כדי לפתוח את תפריט ההקשר ולהפעיל את האפשרות 'חילוץ טקסט מקובץ PDF'.</translation>
 <translation id="2818338148457093657">שירותי טיפוח וספא</translation>
 <translation id="2820957248982571256">מתבצעת סריקה…</translation>
 <translation id="2824775600643448204">שורת חיפוש וכתובות אתרים</translation>
@@ -1168,6 +1173,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> רוצה גישה אל טקסט ותמונות שהועתקו אל לוח העריכה.</translation>
 <translation id="3461824795358126837">כלי הדגשה</translation>
 <translation id="3462200631372590220">הסתרת פרטים מתקדמים</translation>
+<translation id="3465972433695735758">‏אין גישה לקובץ ה-PDF הזה. הטקסט חולץ באמצעות AI מבית Google.</translation>
 <translation id="346601286295919445">כימיה</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />, פתוחה כרגע, יש להקיש על Tab ולאחר מכן על Enter כדי לעבור לכרטיסייה הפתוחה</translation>
 <translation id="3470563864795286535">‏<ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי לסגור את כל החלונות הפרטיים שפתוחים כרגע</translation>
@@ -1185,6 +1191,7 @@
 <translation id="350069200438440499">שם הקובץ:</translation>
 <translation id="3501300228850242680">מוזיקת מטאל</translation>
 <translation id="350421688684366066">Labels (High-Gloss)</translation>
+<translation id="350763432931695541">מתבצע חילוץ טקסט בדפים הבאים</translation>
 <translation id="3507869775212388416">משרות בתחום המשפטים</translation>
 <translation id="3507936815618196901">ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="3512163584740124171">המערכת מתעלמת מהמדיניות הזו כי יש מדיניות אחרת מאותה קבוצה של הגדרות מדיניות שקיבלה עדיפות גבוהה יותר.</translation>
@@ -1726,6 +1733,7 @@
 <translation id="4628948037717959914">תמונה</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">הקאשבק מקושר</translation>
+<translation id="4631881646528206880">רישום כרטיס וירטואלי</translation>
 <translation id="4636930964841734540">מידע</translation>
 <translation id="4638670630777875591">‏מצב פרטי ב-Chromium</translation>
 <translation id="464342062220857295">תכונות חיפוש</translation>
@@ -1844,6 +1852,7 @@ Del</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
 <translation id="485902285759009870">הקוד בתהליך אימות…</translation>
 <translation id="4862630594858951805">רוצה לקבל אימיילים על ירידות במחיר?</translation>
+<translation id="4864406669374375262">מחרוזת הגרסה הועתקה ללוח</translation>
 <translation id="486459320933704969">כדי לבקר באתר הזה, עליך לקבל אישור מהורה או מאפוטרופוס</translation>
 <translation id="4866506163384898554">צריך להקיש על |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| כדי להציג את הסמן</translation>
 <translation id="4873616204573862158">משקפיים</translation>
@@ -2855,6 +2864,7 @@ Del</translation>
 <translation id="6973988895180423160">‏3.5x5 אינץ'</translation>
 <translation id="6978236010531171013">אני רוצה לשתף בכל זאת</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">תחילת הטקסט שחולץ</translation>
 <translation id="6979440798594660689">השתקה (ברירת מחדל)</translation>
 <translation id="6987806006823772670">Envelope (Coated)</translation>
 <translation id="6989763994942163495">הצגת הגדרות מתקדמות...</translation>
@@ -2910,6 +2920,7 @@ Del</translation>
 <translation id="7102760431686146931">כלי בישול וכלי אוכל</translation>
 <translation id="7105998430540165694">‏מפתח הגישה מ-iCloud Keychain</translation>
 <translation id="7106762743910369165">הדפדפן מנוהל על ידי הארגון שלך</translation>
+<translation id="7107249414147762907">‏אין גישה לקובץ ה-PDF הזה. לא חולץ טקסט.</translation>
 <translation id="7108338896283013870">הסתרה</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> רוצה להשתמש במצלמה שלך</translation>
 <translation id="7108819624672055576">אושרה על-ידי תוסף</translation>
@@ -3532,6 +3543,7 @@ Del</translation>
 <translation id="8339163506404995330">דפים ב<ph name="LANGUAGE" /> לא יתורגמו</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">אם הבנת את סיכוני האבטחה, באפשרותך <ph name="BEGIN_LINK" />להיכנס לאתר לא בטוח זה<ph name="END_LINK" /> לפני הסרת התכניות המסוכנות.</translation>
+<translation id="8344776605855290140">רישום הכרטיס הווירטואלי נפתח בגובה מלא</translation>
 <translation id="8347658365704983341">למידה מרחוק</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
 <translation id="8351131234907093545">יצירת הערה</translation>
@@ -3921,6 +3933,7 @@ Del</translation>
 <translation id="917450738466192189">אישור השרת לא חוקי.</translation>
 <translation id="9174623988242579721">מכוניות על ומכוניות מיוחדות</translation>
 <translation id="9174917557437862841">‏לחצן החלפת כרטיסיות, צריך להקיש על Enter כדי לעבור לכרטיסייה הזו</translation>
+<translation id="9177283544810807743">‏אין גישה לקובץ ה-PDF הזה. מתבצע חילוץ טקסט באמצעות AI מבית Google.</translation>
 <translation id="9179703756951298733">‏ניהול התשלומים ופרטי כרטיס האשראי בהגדרות Chrome</translation>
 <translation id="9179907736442194268">קבלת התראות באימייל על הנחות באתר כלשהו</translation>
 <translation id="9183302530794969518">Google Docs</translation>

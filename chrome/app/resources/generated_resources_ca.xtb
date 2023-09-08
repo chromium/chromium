@@ -5159,6 +5159,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5146896637028965135">Veu del sistema</translation>
 <translation id="5147992672778369947">Utilitza la contrasenya recomanada</translation>
 <translation id="5148277445782867161">El servei d'ubicació de Google utilitza fonts com ara sensors, xarxes mòbils i Wi-Fi per calcular la ubicació del dispositiu.</translation>
+<translation id="5148285448107770349">La contrasenya ha de tenir 8 caràcters com a mínim</translation>
 <translation id="5150254825601720210">Nom del servidor SSL de certificats de Netscape</translation>
 <translation id="5151354047782775295">Si no alliberes espai de disc pot ser que algunes dades se suprimeixin automàticament</translation>
 <translation id="5153234146675181447">Oblida el telèfon</translation>
@@ -8686,6 +8687,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8037117027592400564">Llegeix tot el text en veu alta mitjançant una síntesi de veu</translation>
 <translation id="8037357227543935929">Pregunta (opció predeterminada)</translation>
 <translation id="803771048473350947">Fitxer</translation>
+<translation id="8037801708772278989">Comprovat ara mateix</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{S'està copiant 1 fitxer a <ph name="CLOUD_PROVIDER" />}other{S'estan copiant {NUM_OF_FILES} fitxers a <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="8041267120753677077">Reprodueix en continu aplicacions del telèfon</translation>
@@ -9480,6 +9482,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8680251145628383637">Inicieu la sessió per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions en tots els dispositius. A més, iniciareu la sessió automàticament als serveis de Google.</translation>
 <translation id="8681886425883659911">Els anuncis es bloquegen en llocs web que se sap que mostren anuncis intrusius o enganyosos</translation>
 <translation id="8682730193597992579">La impressora <ph name="PRINTER_NAME" /> està connectada i a punt</translation>
+<translation id="8684471948980641888">Permet la sincronització en xarxes d'ús mesurat</translation>
 <translation id="8685540043423825702">El teu perfil de Chrome</translation>
 <translation id="8686142379631285985">Has iniciat la sessió com a <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Cancel·la <ph name="FILE_NAME" /></translation>

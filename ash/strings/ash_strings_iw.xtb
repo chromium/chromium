@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">‏מכשיר עם יציאת USB-C (יציאה שמאלית)</translation>
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">‏פתיחת האפליקציה 'מה חדש ב-Chromebook'</translation>
 <translation id="1294929383540927798">שינוי ההגדרות של ההתראות במסך הנעילה</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">אפליקציות מומלצות</translation>
@@ -199,6 +200,7 @@
 <translation id="1757857692711134412">התכונה כבויה עד השקיעה</translation>
 <translation id="1768366657309696705">‏מקשי הקיצור <ph name="LAUNCHER_KEY_NAME" /> + נקודה השתנו. כדי להשתמש במקש Insert, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + Shift + ‏Backspace.</translation>
 <translation id="1770726142253415363">הועברה אל שורה <ph name="ROW_NUMBER" />, עמודה <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">ניתן לפתוח את <ph name="NAME" /> כדי להגדיר את המכשיר ולהתאים אותו אישית</translation>
 <translation id="1771761307086386028">גלילה ימינה</translation>
 <translation id="1774796056689732716">יומן, <ph name="CURRENT_MONTH_YEAR" />, התאריך שנבחר הוא <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">מוצגות <ph name="NUM_SHOWN_ITEMS" /> מתוך <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -388,6 +390,7 @@
 <translation id="2612614436418177118">העברה של סמל אפליקציה בתצוגת האפליקציות</translation>
 <translation id="2620016719323068571">חיפוש ב<ph name="CATEGORY" />, בקבצים, באפליקציות ועוד…</translation>
 <translation id="2620436844016719705">מערכת</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">מאובטחת</translation>
 <translation id="2624588537172718173">מיקרופון ואודיו מהמכשיר</translation>
 <translation id="263399434338050016">‏"Select all" (בחירה של הכול)</translation>
@@ -512,6 +515,7 @@
 <translation id="3161500364292033097">סגירה של שולחן העבודה הווירטואלי והחלונות</translation>
 <translation id="316356270129335934">ה-<ph name="DEVICE_TYPE" /> יוחזר לגרסה הקודמת על ידי <ph name="MANAGER" />. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
 <translation id="3171170659304083361">הגדרות של שיטות הקלט</translation>
+<translation id="3176221688814061633">‏ב-Chromebook או במכשיר ה-Bluetooth שלך מותקנת גרסה ישנה יותר של Bluetooth. אפשר להפעיל את Bluetooth Super Resolution או להשתמש במיקרופון פנימי כדי לשפר את איכות האודיו.</translation>
 <translation id="3181441307743005334">ההפעלה מחדש עשויה להימשך זמן מה</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{מחובר למכשיר אחד}one{מחובר ל-# מכשירים}two{מחובר ל-# מכשירים}other{מחובר ל-# מכשירים}}</translation>
 <translation id="320207200541803018">הגדרת טיימר</translation>
@@ -1189,6 +1193,7 @@
 <translation id="5876666360658629066">יש להזין קוד גישה להורים</translation>
 <translation id="5881540930187678962">‏להגדרת Phone Hub במועד מאוחר יותר</translation>
 <translation id="5881663018261910378">מושבתת</translation>
+<translation id="5883017113634523865">‏ניתן להתקין את האפליקציה של <ph name="NAME" /> דרך Google Play כדי לראות את כל התכונות הזמינות</translation>
 <translation id="5887954372087850114">החלון <ph name="WINDOW_TITLE" /> מוקצה לטובת <ph name="DESK_TITLE" /> וההקצאה שלו לכל שאר שולחנות העבודה הווירטואליים בוטלה.</translation>
 <translation id="588817334757907802">‏פתיחת הקובץ בדפדפן Chrome</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
@@ -1498,6 +1503,7 @@
 <translation id="7189412385142492784">מה המרחק בין כדור הארץ לנוגה</translation>
 <translation id="7198435252016571249">המצלמה מוצמדת לפינה השמאלית התחתונה. התנגשות עם תצוגת המערכת.</translation>
 <translation id="7219573373513695352">אין מכשירים מחוברים</translation>
+<translation id="7229029500464092426">זיכרון פנוי: <ph name="AVAILABLE_MEMORY" /> | סה"כ: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. יש להפעיל את ה-Chromebook מחדש כדי להחיל עדכון. התהליך עשוי להימשך עד דקה אחת.</translation>
 <translation id="7256634071279256947">מיקרופון אחורי</translation>
 <translation id="7258828758145722155">נערך אתמול</translation>
@@ -1514,7 +1520,7 @@
 <translation id="7312210124139670355">‏ה-eSIM הזה עובר איפוס בהוראת האדמין שלך. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="7313193732017069507">הרחבת המצלמה</translation>
 <translation id="7316261577130609484">הוספת משימה חדשה</translation>
-<translation id="7330397557116570022">כדי להשתמש ב'הכתבה', יש לעבור לשדה טקסט</translation>
+<translation id="7330397557116570022">כדי להשתמש בהכתבה, יש לעבור לשדה טקסט</translation>
 <translation id="7331646370422660166">‏Alt + חץ למטה</translation>
 <translation id="7340731148882810149">תפריט קליקים אוטומטיים</translation>
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
@@ -1523,6 +1529,7 @@
 <translation id="7360036564632145207">הביצועים עשויים להשתפר אם ההגדרות של הגנת הגישה לנתונים עבור ציוד היקפי ישונו</translation>
 <translation id="736045644501761622">הגדרה של טפט וסגנון</translation>
 <translation id="7371404428569700291">חלון ההקלטה</translation>
+<translation id="7372069265635026568">נפח זיכרון פנוי של <ph name="AVAILABLE_MEMORY" /> מתוך <ph name="TOTAL_MEMORY" /> סה"כ</translation>
 <translation id="737315737514430195">הפעולה הזו מאפשרת גישה למיקרופון לכל האפליקציות והאתרים עם הרשאת הגישה למיקרופון</translation>
 <translation id="7377169924702866686">‏Caps Lock מופעל.</translation>
 <translation id="7377481913241237033">התחברות באמצעות קוד</translation>

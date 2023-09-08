@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">您只需回到这里，便可重新打开最近关闭的标签页</translation>
 <translation id="1016495303386450659">书签已更新</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{将密码保存到账号}other{将密码保存到账号}}</translation>
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
@@ -70,6 +71,7 @@
 <translation id="132683371494960526">点按两次即可更改父文件夹。</translation>
 <translation id="1332723353863236763">部分数据尚未保存</translation>
 <translation id="1335348992705722518">管理设置…</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{将 {COUNT} 个密码保存到您的 Google 账号}other{将 {COUNT} 个密码保存到您的 Google 账号}}</translation>
 <translation id="1340643665687018190">关闭菜单</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">访问您复制的链接</translation>
@@ -156,6 +158,7 @@
 <translation id="1872096359983322073">闪光灯</translation>
 <translation id="1882901927376062252">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{{count} 个书签已保存到您的 Google 账号 {email}}}</translation>
 <translation id="1883255238294161206">收起列表</translation>
+<translation id="1890237935065108104">无法使用此设置。</translation>
 <translation id="1894023287452300670">在此处跟踪价格</translation>
 <translation id="189531189292803889">您最近恢复过您的 iPad，这可能更改了您的默认浏览器设置。</translation>
 <translation id="1910975740091000991">Chrome（iOS 版）</translation>
@@ -312,6 +315,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">无法创建链接</translation>
 <translation id="2786701870377699570">在所有已同步的设备上搜索标签页</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{密码已保存到您的 Google 账号 {EMAIL}}other{密码已保存到您的 Google 账号 {EMAIL}}}</translation>
 <translation id="2797029671965852011">显示历史记录</translation>
 <translation id="2800683595868705743">离开标签页切换器</translation>
 <translation id="2815198996063984598">2. 点按“默认浏览器应用”</translation>
@@ -643,6 +647,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />，<ph name="STATE" />，仅在该设备上，<ph name="URL" /></translation>
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
 <translation id="4766112107778026136">探索与关注</translation>
+<translation id="47677902929517676">若要将密码保存到您的账号，您必须先在设备上设置屏幕解锁密码。</translation>
 <translation id="4775879719735953715">默认浏览器</translation>
 <translation id="4778644898150334464">使用其他密码</translation>
 <translation id="478808905805139173">在无痕模式下打开？</translation>
@@ -1103,6 +1108,7 @@
 <translation id="7265758999917665941">一律不保存此网站的密码</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7291368939935408496">正在准备密码…</translation>
+<translation id="7302503784943202842">在您的所有设备上使用密码</translation>
 <translation id="730958329302570991">随时都可轻松将登录网站时所用的密码添加到 Google 密码管理工具中。</translation>
 <translation id="7313347584264171202">您已打开的无痕模式标签页会显示在此处</translation>
 <translation id="7331371412779932885">根据您使用自己的 Google 账号在其他设备上进行的浏览活动，向您提供标签页建议。您的设备必须使用同一 Google 账号登录并开启同步功能。</translation>
@@ -1442,6 +1448,7 @@
 <translation id="953008885340860025">已退出 Chrome</translation>
 <translation id="959066944189734975">您已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="96615566463761848">显示来自其他设备的标签页建议</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{您可将用于登录 {DOMAIN_ONE} 的密码保存到您的 Google 账号 {EMAIL}}=2{您可将用于登录 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密码保存到您的 Google 账号 {EMAIL}}=3{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}}other{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}}}</translation>
 <translation id="97300214378190234">每次点按其他应用中的链接时，都使用 Chrome 打开。</translation>
 <translation id="973493300226275298">跟踪某件商品在多个网店中的价格。当相应商品降价时，您会收到提醒。</translation>
 <translation id="981498610235328462">贵单位要求您只能使用特定账号登录。不允许使用的账号会处于隐藏状态。</translation>

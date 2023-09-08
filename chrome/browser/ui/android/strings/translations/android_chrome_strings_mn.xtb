@@ -58,6 +58,7 @@
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1246905108078336582">Түр санах ойгоос зөвлөмжийг устгах уу?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Та одоо <ph name="SITE_NAME" />-с болон түүний талаарх контентыг Дагаж буй табд харна. Таны дагадаг сайт болон хайлтуудыг Google Бүртгэлд тань хадгалдаг. Та тохиргоонд дагалтаа хүссэн үедээ удирдах боломжтой.</translation>
 <translation id="1263231323834454256">Унших жагсаалт</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />-г хуваалцаж чадсангүй</translation>
 <translation id="1269129608791067105">Та түүхээ эндээс олно</translation>
@@ -136,6 +137,7 @@
 <translation id="1671236975893690980">Таталт хүлээгдэж байна...</translation>
 <translation id="1672586136351118594">Дахиж бүү харуул</translation>
 <translation id="1680919990519905526">Google Lens-р зураг авах <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Удахгүй та <ph name="SITE_NAME" />-с болон түүний талаарх контентыг Дагаж буй табд харна. Таны дагадаг сайт болон хайлтуудыг Google Бүртгэлд тань хадгалдаг. Та тохиргоонд дагалтаа хүссэн үедээ удирдах боломжтой.</translation>
 <translation id="1702543251015153180">Бараан загварын тохиргоогоо өөрчлөх үү?</translation>
 <translation id="1702907158640575240">Удирддаг хөтөч</translation>
 <translation id="1710099199314114079">Таб сэлгэх эсвэл хаах</translation>
@@ -1242,6 +1244,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7431991332293347422">Таны хайлтын түүх Хайлт болон бусад зүйлийг хувийн болгоход хэрхэн ашигладгийг хянах</translation>
 <translation id="7435356471928173109">Танай администратор идэвхгүй болгосон</translation>
 <translation id="7437998757836447326">Chrome-с гарах</translation>
+<translation id="7450926666485653189">Таны IP хаягийг нуудаг нууцлалын серверээр дамжуулан URL-н будлиулсан хэсгийг Google-д илгээнэ</translation>
 <translation id="7453467225369441013">Таныг ихэнх сайтаас гаргах болно. Таныг Google бүртгэлээс гаргахгүй.</translation>
 <translation id="7453810262525006706">Хажуугийн харагдах байдал руу хураах</translation>
 <translation id="7454641608352164238">Хангалттай зай алга</translation>
@@ -1471,6 +1474,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8497242791509864205">Эрэмбэлэх сонголтыг нээх</translation>
 <translation id="8497480609928300907">Нууцлалын хөтчийн тайлбар</translation>
 <translation id="8497726226069778601">Энд одоохондоо юу ч алга...</translation>
+<translation id="8501423924927196358">Хуудасны статистик ачаалж буйг харуулах заалт</translation>
 <translation id="8503559462189395349">Chrome-н нууц үг</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="8505766168025405649">Таталтын төлөвийн мэдэгдлийг харах</translation>

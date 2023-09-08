@@ -36,6 +36,7 @@
 <translation id="2120238739383482109">‏فتح الإشارات المرجعية في Chrome.</translation>
 <translation id="2147651015520127414">‏لقد تحقق Chrome من أن <ph name="ISSUER" /> أصدر شهادة الموقع الإلكتروني.</translation>
 <translation id="2199719347983604670">‏البيانات من مزامنة Chrome</translation>
+<translation id="2311240109311056604">‏يؤدي هذا الاختصار إلى فتح لعبة الديناصور في Chrome.</translation>
 <translation id="2339201583852607431">‏سيتم حفظ كلمة المرور في حسابك على Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">‏يشارك Chrome موقعك الجغرافي مع المواقع الإلكترونية التي تسمح بها.</translation>
 <translation id="2347208864470321755">‏عند تفعيل هذه الميزة، سيقترح Chrome ترجمة الصفحات المكتوبة بلغات أخرى باستخدام "ترجمة Google". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -71,6 +72,7 @@
 <translation id="3655656110921623717">‏يعني هذا أنّ Chrome سيطلب دائمًا استخدام الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة.</translation>
 <translation id="3720541637541300822">‏قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chrome</translation>
 <translation id="3741995255368156336">‏فتح قائمة القراءة في Chrome.</translation>
+<translation id="3744018071945602754">‏إدارة كلمات المرور في Chrome</translation>
 <translation id="3827545470516145620">يتم توفير حماية أمنية عادية على هذا الجهاز.</translation>
 <translation id="384394811301901750">‏يتعذر على Google Chrome استخدام الكاميرا في الوقت الحالي</translation>
 <translation id="3901001113120561395">‏يمكنك الاستفادة إلى أقصى حدّ من Chrome.</translation>
@@ -82,6 +84,7 @@
 <translation id="417201473131094001">‏غير متاح على Chrome Canary</translation>
 <translation id="4233521129555661685">‏كان <ph name="USER_EMAIL1" /> يستخدم Chrome وتركَ إشارات مرجعية وكلمات مرور وغيرها من الإعدادات مُسجَّلة على هذا الجهاز.</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
+<translation id="4453284704333523777">‏إدارة إعدادات Chrome</translation>
 <translation id="4508370294876102450">‏فتح Chrome من أي تطبيق</translation>
 <translation id="4523886039239821078">‏تتسبب بعض الإضافات في تعطل Chrome. يُرجى إزالتها:</translation>
 <translation id="4633328489441962921">‏يتعذّر على Chrome البحث عن تحديثات.</translation>
@@ -95,10 +98,12 @@
 <translation id="484033449593719797">‏غير متاح على الإصدار التجريبي من Chrome</translation>
 <translation id="4840404732697892756">‏لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند تسجيل الدخول باستخدام حسابك على Google.</translation>
 <translation id="4903674399067644695">‏تعرض لك هذه القائمة اقتراحات حول كيفية الاستفادة إلى أقصى حدّ من Chrome.</translation>
+<translation id="49200511069271369">‏يدير نطاق مؤسستك <ph name="DOMAIN" /> الحساب الذي تسجِّل الدخول إليه وطريقة استخدامك لمتصفِّح Chrome. ويمكن لمشرفك إعداد ميزات معيّنة أو حظرها.</translation>
 <translation id="5030102366287574140">‏يستطيع Chrome مساعدتك في الحفاظ على أمان معلوماتك من عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="5108659628347594808">‏تحسين أداء متصفِّح Chrome</translation>
 <translation id="5112925986883715005">‏الاطّلاع على قائمة القراءة في Chrome</translation>
 <translation id="5119391094379141756">‏اختَر Chrome.</translation>
+<translation id="5156818928311866442">‏يؤدي هذا الاختصار إلى فتح إعدادات Chrome لضبطه كمتصفِّح تلقائي.</translation>
 <translation id="5162467219239570114">‏إصدار Chrome قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chrome.</translation>
 <translation id="5190139289262548459">‏يدير نطاق مؤسستك <ph name="DOMAIN" /> الحساب الذي سجَّلت الدخول إليه وطريقة استخدامك لمتصفِّح Chrome.</translation>
 <translation id="5389212809648216794">‏يتعذر على Google Chrome استخدام الكاميرا نظرًا لأنها قيد الاستخدام من قِبل تطبيق آخر</translation>
@@ -116,6 +121,7 @@
 <translation id="571296537125272375">‏بلا اتصال بالإنترنت، يتعذّر على Chrome البحث عن تحديثات.</translation>
 <translation id="5716154293141027663">‏سيتم فتح متصفّح Chrome في أي وقت تنقر فيه على روابط في التطبيقات الأخرى.</translation>
 <translation id="5808435672482059465">‏عرض سجلّ Chrome</translation>
+<translation id="589695154992054845">‏فتح "مدير كلمات المرور" في Chrome</translation>
 <translation id="5998675059699164418">‏تطلُب المؤسسة منك تسجيل الدخول للتمكّن من استخدام Chrome.</translation>
 <translation id="6054613632208573261">‏استخدام Chrome بشكلٍ تلقائي</translation>
 <translation id="6063091872902370735">‏السماح بتسجيل الدخول إلى Chrome</translation>
@@ -145,6 +151,7 @@
 <translation id="7173660919484573146">‏يستخدم Chrome تقنية "التعرُّف على الوجه" لضمان الدخول المصرَّح به إلى كلمات المرور.</translation>
 <translation id="7187993566681480880">‏توفير الحماية على Chrome مع احتمالية استخدام هذا الخيار لتحسين مستوى أمانك على تطبيقات Google الأخرى عندما تكون مسجّلاً الدخول</translation>
 <translation id="72119412072970160">‏يمكنك استخدام كلمات المرور التي حفظتها في "مدير كلمات المرور" من Google في التطبيقات الأخرى على جهاز iPad.</translation>
+<translation id="7254380941803999489">‏ضبط Chrome كمتصفِّح تلقائي</translation>
 <translation id="7261678641327190792">‏يتعذّر على متصفِّح Chrome التحقُّق من كلمات المرور.</translation>
 <translation id="7272930098487145294">‏لحفظ الصور، يُرجى النقر على "الإعدادات" للسماح لمتصفّح Chrome بأن يضيف إلى صورك.</translation>
 <translation id="7275945473750112644">‏سيتم محو بيانات Chrome المخزَّنة على هذا الجهاز لأنّ حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" /></translation>
@@ -203,6 +210,7 @@
   • في حال تعطُّل متصفِّح Chrome، قد تشتمل تفاصيل التعطُّل على بعض المعلومات الشخصية.
 
   • في حال تفعيل المزامنة، قد تتضمّن المقاييس أيضًا معلومات عن عناوين URL التي تنتقل إليها.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">‏فتح "الإعدادات" في Chrome</translation>
 <translation id="9112744793181547300">‏هل تريد ضبط Chrome كمتصفّح تلقائي؟</translation>
 <translation id="9122931302567044771">‏يعني هذا أنّ Chrome سيطلب دائمًا استخدام الموقع الإلكتروني المتوافق مع الكمبيوتر المكتبي.</translation>
 <translation id="9181628561061032322">‏فتح علامات التبويب الأخيرة في Chrome</translation>

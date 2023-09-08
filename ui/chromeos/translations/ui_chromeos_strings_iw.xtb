@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">הקשר</translation>
 <translation id="3272909651715601089">לא ניתן היה לפתוח את "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">הקובץ בהכנה</translation>
+<translation id="3280719573299097127">כרגע יש חיבור לרשת עם חיוב לפי שימוש בנתונים. סנכרון הקבצים הושהה.</translation>
 <translation id="3280987981688031357">תקליט</translation>
 <translation id="3290356915286466215">לא מאובטחת</translation>
 <translation id="3291218047831493686">‏יש להתחבר לרשת הזו כדי לשנות את הגדרת הנעילה של ה-SIM</translation>
@@ -633,6 +634,7 @@
 <translation id="5838451609423551646">הסרת את כל הפריטים מהבחירה.</translation>
 <translation id="5838825566232597749">‏US Workman בינלאומית</translation>
 <translation id="5845721951356578987">אחות</translation>
+<translation id="5858478190805449225">מצב 'חיסכון בסוללה' מופעל. עליך לנסות שוב כשמצב 'חיסכון בסוללה' מושבת.</translation>
 <translation id="5860491529813859533">הפעלה</translation>
 <translation id="5861477046012235702">גיימר</translation>
 <translation id="5864471791310927901">‏חיפוש DHCP נכשל</translation>

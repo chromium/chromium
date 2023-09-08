@@ -610,6 +610,7 @@ Ist die Richtlinie nicht konfiguriert, ist die Emoji-Auswahl für normale Nutzer
 <translation id="1516486219683984217">Verwendung von Systembenachrichtigungen nicht zulassen</translation>
 <translation id="1519092983270375506">Standardeinstellung für die Drittanbieter-Speicherpartitionierung</translation>
 <translation id="1522425503138261032">Ermittlung des physischen Standorts des Nutzers durch Websites zulassen</translation>
+<translation id="1523282650847750947">Letzte Sitzung nicht wiederherstellen.</translation>
 <translation id="1523587744262636189">Port 10080 (Blockierung kann bis 01.04.2022 aufgehoben werden)</translation>
 <translation id="1523774894176285446">Für konfigurierte Websites soll ein alternativer Browser geöffnet werden.</translation>
 <translation id="1524243669991877602">Wenn die Richtlinie aktiviert ist, dürfen Richtlinien, die mit einem <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-Konto verknüpft sind, zu Richtlinien auf Maschinenebene zusammengeführt werden.
@@ -2597,16 +2598,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
       Mit dem Platzhalterzeichen "*" kann eine Übereinstimmung mit null oder mehr beliebigen Zeichen erzielt werden. Als Escape-Zeichen wird "\" verwendet. Dieses kannst du vor "*" oder "\" setzen, wenn diese Zeichen – also Sternchen oder umgekehrter Schrägstrich – gemeint sind.
 
       Wenn diese Richtlinie nicht konfiguriert ist, werden alle Google-Konten auf dem Gerät in <ph name="PRODUCT_NAME" /> angezeigt.</translation>
-<translation id="3246744067327836077">
-      Mit dieser Richtlinie wird festgelegt, ob in <ph name="PRODUCT_NAME" /> Cloud-Berichte für ein bestimmtes verwaltetes Profil erstellt werden.
-
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine Daten erhoben oder hochgeladen.
-      Wenn die Richtlinie aktiviert ist, werden Daten erhoben und in die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hochgeladen.
-
-      Der Bericht enthält Status- und Nutzungsinformationen zum Profil, darunter die Betriebssystemversion, die Browserversion, die installierten Erweiterungen und alle angewandten Richtlinien.
-
-      Diese Richtlinie kann nur als Cloud-Nutzer-Richtlinie konfiguriert werden.
-      </translation>
 <translation id="3248019773260441802">Erlaubt Seiten während ihres Entfernens Pop-ups einzublenden</translation>
 <translation id="3251500716404598358">Konfiguriere Richtlinien, um zwischen Browsern zu wechseln.
 
@@ -3331,6 +3322,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
       Sollte sie deaktiviert werden, kann SPDY genutzt werden.
 
       Ist die Richtlinie nicht konfiguriert, steht SPDY zur Verfügung.</translation>
+<translation id="3885896818093825047">Einrichtung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> zulassen</translation>
 <translation id="3889458462150559611">Zulassen, dass Websites unsichere Anfragen an Netzwerkendpunkte senden.</translation>
 <translation id="388999630001435491"><ph name="PRODUCT_NAME" /> nur erlauben, Verbindungen zu Geräten unter privaten IP-Adressen herzustellen</translation>
 <translation id="3891175633496805812">Wilco Diagnostics and Telemetry Controller (DTC) deaktivieren</translation>
@@ -4365,6 +4357,7 @@ Wenn die Richtlinie auf „False“ gesetzt ist, wird die Standardeinstellung ve
 
       Wird die Richtlinie auf "false" gesetzt oder nicht konfiguriert, werden die Informationen zum Betriebssystem-Update nicht gemeldet. Wird die Richtlinie auf "true" gesetzt, werden die Informationen zum Betriebssystem-Update gemeldet.</translation>
 <translation id="4857223512478723171">Vollbildmodus nicht zulassen</translation>
+<translation id="4857888176748302062">Ursprüngen erlauben, Geräteattribute abzufragen</translation>
 <translation id="4858735034935305895">Vollbildmodus zulassen</translation>
 <translation id="4860900625632464759">Nutzern erlauben, SMS zwischen Smartphone und Chromebook zu synchronisieren</translation>
 <translation id="486146220825734683">Nicht zulassen, dass Nutzer Kerberos-Passwörter speichern</translation>
@@ -5717,14 +5710,6 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
 <translation id="6144046700495610112">Wenn die Richtlinie aktiviert ist, werden bei der ersten Ausführung Autofill-Kreditkartendaten aus dem Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine Autofill-Formulardaten importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Autofill-Formulardaten wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
-<translation id="614522356524762803">
-      Diese Richtlinie legt die Häufigkeit fest, mit der Chrome-Statusberichte hochgeladen werden.
-
-      Dazu zählen auch Berichte, die durch <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> aktiviert sind.
-
-      Ist diese Richtlinie nicht konfiguriert, werden Berichte alle 24 Stunden hochgeladen.
-      Wenn die Richtlinie konfiguriert ist, wird durch sie die Anzahl der Stunden zwischen den Uploads von Berichten festgelegt.
-      </translation>
 <translation id="614551633868957694">Chrome-Apps und ‑Erweiterungen</translation>
 <translation id="614616930188030377">Muster in dieser Liste werden mit der Sicherheitsherkunft der anfragenden URL abgeglichen.
       Wenn Übereinstimmungen gefunden werden oder chrome://flags/#enable-webrtc-hide-local-ips-with-mdns deaktiviert ist, werden die lokalen IP-Adressen in WebRTC ICE-Kandidaten angezeigt.
@@ -6533,6 +6518,7 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
       Die Steuerrichtlinie für https_latency und network_telemetry ist ReportDeviceNetworkStatus.
 
       Wenn die Richtlinie nicht konfiguriert ist, werden keine zusätzlichen Telemetriedaten zu Änderungen der Signalstärke gesendet.</translation>
+<translation id="6751612743847158732">Letzte Sitzung immer wiederherstellen.</translation>
 <translation id="6752711782954612641">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />" die Parameter für die Suche nach einer URL mit POST an. Die Richtlinie besteht aus kommagetrennten Name/Wert-Paaren. Wenn ein Wert ein Vorlagenparameter wie <ph name="SEARCH_TERM_MARKER" /> ist, wird er durch echte Suchbegriffsdaten ersetzt.
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />" nicht konfiguriert, werden Suchanfragen mithilfe der GET-Methode gesendet.</translation>
@@ -7303,6 +7289,7 @@ Wenn die Richtlinie auf „<ph name="DISALLOWED_NAME" />“ gesetzt ist, kann de
 Wenn die Richtlinie auf „<ph name="AUTOMATED_NAME" />“ gesetzt ist, wird der <ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="GOOGLE_DRIVE_NAME" /> und <ph name="GOOGLE_WORKSPACE_NAME" /> automatisch so eingerichtet, dass Dateien mit passenden Dateiformaten standardmäßig in <ph name="GOOGLE_DRIVE_NAME" /> verschoben und in einer der <ph name="GOOGLE_WORKSPACE_NAME" />-Apps geöffnet werden, wenn der Nutzer versucht, sie zu öffnen.
 
 Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph name="ALLOWED_NAME" />“ für normale Nutzer. Für Unternehmensnutzer gilt bei nicht konfigurierter Richtlinie die Einstellung „<ph name="DISALLOWED_NAME" />“.</translation>
+<translation id="7438982301540282785">Einrichtung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automatisieren</translation>
 <translation id="7443356543619955157">Wenn die Richtlinie konfiguriert ist, ermöglicht sie, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
 <translation id="7446978687387327623">Weitergeleitete Safe Browsing-Echtzeitprüfungen zulassen</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
@@ -7357,6 +7344,7 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
       Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7481702249684965639">Der Papierkorb ist für den Nutzer aktiviert.</translation>
 <translation id="7482768039644066614">Abruf von Metadaten zum Seitenaufbau und Modellen zum maschinellen Lernen zum Verbessern der Browsernutzung aktivieren</translation>
+<translation id="748292668225669178">Konfiguriert die Bereitstellung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7485481791539008776">Regeln zur Auswahl des Standarddruckers</translation>
 <translation id="7486205887492534734">Aufforderung auf dem Anmeldebildschirm, wenn mehrere Zertifikate passen</translation>
 <translation id="748873163367340515">Nur notwendige Cookies und Daten in der Suche verwenden.</translation>
@@ -8050,6 +8038,7 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVE
       Diese Richtlinie wurde in Chrome 88 entfernt und wird ignoriert, wenn sie aktiviert wurde.
 
       Weitere Informationen findest du unter https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="8137443729340035928">Nutzer bei der Anmeldung fragen, ob die letzte Sitzung wiederhergestellt werden soll.</translation>
 <translation id="8141795997560411818">Diese Richtlinie verhindert nicht, dass der Nutzer die Android Google Drive App verwendet. Wenn du den Zugriff auf Google Drive verhindern möchtest, solltest du auch das Installieren der Android Google Drive App nicht zulassen.</translation>
 <translation id="8142894094385450823">Empfohlene Sprachen für eine verwaltete Sitzung festlegen</translation>
 <translation id="8147132931626030921">Mit dieser Richtlinie legst du den Status des Datenschutzbildschirms auf dem Anmeldebildschirm fest.
@@ -8327,6 +8316,16 @@ Ist die Richtlinie deaktiviert, wird die Seite blockiert.</translation>
 <translation id="8316940611391250886">Zertifikate ohne die Erweiterung „subjectAlternativeName“ nicht zulassen</translation>
 <translation id="8319678975002906774">Mit dieser Richtlinie legst du für bestimmte Ursprünge die Werte für die verwaltete Konfiguration fest</translation>
 <translation id="8320149248919453401">Akkulademodus</translation>
+<translation id="8324872579207355449">Mit dieser Richtlinie können Administratoren die Bereitstellung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> konfigurieren.
+
+Wenn die Richtlinie auf „<ph name="ALLOWED_NAME" />“ gesetzt ist, können Nutzer bei Bedarf <ph name="MICROSOFT_ONE_DRIVE_NAME" /> einrichten.
+Nach der Einrichtung wird <ph name="MICROSOFT_ONE_DRIVE_NAME" /> im Dateimanager bereitgestellt.
+
+Wenn die Richtlinie auf „<ph name="DISALLOWED_NAME" />“ gesetzt ist, kann der Nutzer <ph name="MICROSOFT_ONE_DRIVE_NAME" /> nicht einrichten.
+
+Wenn die Richtlinie auf „<ph name="AUTOMATED_NAME" />“ gesetzt ist, wird versucht, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automatisch einzurichten. Wird ein Fehler festgestellt, wird stattdessen der Einrichtungsvorgang angezeigt.
+
+Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph name="ALLOWED_NAME" />“ für normale Nutzer. Für Unternehmensnutzer gilt bei nicht konfigurierter Richtlinie die Einstellung „<ph name="DISALLOWED_NAME" />“.</translation>
 <translation id="8327651196906278510">Tabaufnahme für diese Ursprünge zulassen</translation>
 <translation id="8329434144708110">Authentifizierungsabläufe für die Synchronisierung von Passwörtern auslösen</translation>
 <translation id="8329984337216493753">Diese Richtlinie ist nur im Händlermodus aktiv.
@@ -8368,6 +8367,9 @@ Ist die Richtlinie deaktiviert, wird die Seite blockiert.</translation>
 <translation id="8369602308428138533">Verzögerung für die Bildschirmabschaltung im Netzbetrieb</translation>
 <translation id="8371178326720637170">Ermöglicht verwalteten Erweiterungen, die Enterprise Hardware Platform API zu verwenden</translation>
 <translation id="8373176843640227330">Melden der Bluetooth-Informationen auf Geräten deaktivieren</translation>
+<translation id="8373940728202278176">Wenn diese Richtlinie aktiviert ist, dürfen die aufgelisteten Ursprünge Geräteattribute wie die Seriennummer und den Hostnamen über die Device Attributes API abrufen.
+
+      Die Ursprünge müssen Webanwendungen sein, deren Installation über die Richtlinie „<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ erzwungen wird oder die als Kiosk-App eingerichtet sind. Technische Daten und Informationen zur Device Attributes API findest du unter https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Schreibzugriff auf Dateien und Verzeichnisse auf diesen Websites blockieren</translation>
 <translation id="8378266419596669629">Berechtigung für lokale Schriftarten auf diesen Websites blockieren</translation>
 <translation id="8379317372795444261"><ph name="BASIC_AUTH" />-Authentifizierung ist bei HTTP-Verbindungen zulässig</translation>
@@ -8441,6 +8443,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
 <translation id="8470317291588703478">Eingeschränkten Modus für YouTube nicht erzwingen</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC verwendet bei der Suche nach dem besten Pfad alle verfügbaren Schnittstellen.</translation>
+<translation id="8482518340010585741">App-Wiederherstellung bei der Anmeldung konfigurieren</translation>
 <translation id="8483004350080020634">Entfernt datenschutz- und sicherheitsrelevante Teile aus https://-URLs, bevor diese an PAC-Scripts (Proxy Auto Config) übergeben werden, die <ph name="PRODUCT_NAME" /> während der Proxy-Auflösung verwendet.
 
 Wenn diese Richtlinie auf "true" gesetzt ist, wird die Sicherheitsfunktion aktiviert und ein Stripping für https://-URLs durchgeführt, bevor diese an ein PAC-Script übergeben werden. Auf diese Weise können für das PAC-Script keine Daten eingesehen werden, die normalerweise durch einen verschlüsselten Kanal geschützt sind, etwa Pfad und Abfrage der URL.
@@ -8919,6 +8922,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="8882307005437314052">Bildschirmtastatur auf dem Anmeldebildschirm aktivieren und dem Nutzer erlauben, sie vorübergehend zu deaktivieren</translation>
 <translation id="8883577480680089760">Dienst <ph name="PRODUCT_NAME" /> Version 2 deaktivieren und Remote-Desktop nach der Anmeldung nicht starten</translation>
 <translation id="8887709920496070892">Zeitraum ohne Nutzereingabe, nach dem eine Warnung angezeigt wird, angegeben in Millisekunden.</translation>
+<translation id="8888289774309799423">Einrichtung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> nicht zulassen</translation>
 <translation id="8890438048579188548">Warnungen zu veralteten Funktionen für <ph name="CLOUD_PRINT_NAME" /> ausblenden</translation>
 <translation id="8891334958985336685">Melden der Systeminformationen auf Geräten deaktivieren</translation>
 <translation id="8892286064305622118">Erforderlicher freier Speicherplatz für <ph name="PLUGIN_VM_NAME" /></translation>
@@ -9173,16 +9177,8 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Einfingerbedienung erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
 <translation id="91206085111961438">Verfügbarkeit von Manifest V2-Erweiterungen festlegen</translation>
-<translation id="9121178963309901985">Mit dieser Richtlinie legst du fest, ob Nutzer Anfragen zur Installation von Erweiterungen für <ph name="PRODUCT_NAME" /> zur Bestätigung an die Google Admin-Konsole senden dürfen.
-
-      Wenn die Richtlinie <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> deaktiviert oder nicht konfiguriert ist, wird diese Richtlinie ignoriert. Anfragen zur Installation von Erweiterungen können dann weder erstellt noch hochgeladen werden.
-      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, können Anfragen zur Installation von Erweiterungen weder erstellt noch hochgeladen werden.
-      Wenn diese Richtlinie aktiviert ist, können Anfragen zur Installation von Erweiterungen erstellt und in der Google Admin-Konsole hochgeladen werden.
-
-      Anfragen zur Installation von Erweiterungen werden erstellt, wenn Nutzer versuchen, eine Erweiterung zu installieren, die weder von <ph name="EXTENSION_INSTALL_ALLOWLIST" /> noch von <ph name="EXTENSION_SETTINGS" /> zugelassen wurde.
-
-      Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
-      Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
+<translation id="9122865885571719292">Legt fest, ob und wie <ph name="PRODUCT_OS_NAME" /> bei der Anmeldung die letzte Sitzung wiederherstellt.
+Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_RESTORE_ENABLED_NAME" />“ auf „true“ gesetzt ist.</translation>
 <translation id="9123211093995421438">Gibt die Mindestanzahl der <ph name="PRODUCT_OS_NAME" />-Meilensteine an. Wird diese erreicht, sollte ein Rollback jederzeit von der stabilen Version aus möglich sein.
 
       Standardwert ist 0 für Kundengeräte und 4 (ca. ein halbes Jahr) für unternehmenseigene Geräte.
@@ -9313,13 +9309,6 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
 <translation id="9221827710437832530">Zugriff auf Standortbestimmung auf dem Anmeldebildschirm zulassen.</translation>
 <translation id="922540222991413931">Installationsquellen für Erweiterungen, Apps und Nutzerskripte konfigurieren</translation>
 <translation id="924557436754151212">Gespeicherte Passwörter bei erster Ausführung aus Standardbrowser importieren</translation>
-<translation id="926104720905645793">Mit dieser Richtlinie wird festgelegt, ob Cloud-Berichte für <ph name="PRODUCT_NAME" /> erstellt werden. Dabei werden Daten zum Betrieb des Browsers in die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hochgeladen.
-
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine Daten erhoben oder hochgeladen.
-      Wenn die Richtlinie aktiviert ist, werden Daten erhoben und in die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hochgeladen.
-
-      Sie wird bei <ph name="PRODUCT_NAME" /> nur angewendet, wenn das Gerät mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
-      Bei <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="927384371566552478">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, steht Nutzern die Benutzeroberfläche zum Exportieren/Importieren zur Verfügung. Ist die Richtlinie deaktiviert, steht Nutzern die Benutzeroberfläche zum Exportieren/Importieren nicht zur Verfügung.</translation>
 <translation id="927444535723396977">Wenn die Richtlinie auf "1" gesetzt ist, können Websites JavaScript ausführen. Wenn sie auf "2" gesetzt ist, wird die Ausführung von JavaScript verweigert.
 

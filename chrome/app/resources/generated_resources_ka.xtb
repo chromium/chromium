@@ -8690,6 +8690,7 @@
 <translation id="8037117027592400564">წარმოთქმული ტექსტის წაკითხვა სინთეზირებული მეტყველების გამოყენებით</translation>
 <translation id="8037357227543935929">შეკითხვა (ნაგულისხმევი)</translation>
 <translation id="803771048473350947">ფაილი</translation>
+<translation id="8037801708772278989">შემოწმდა რამდენიმე წამის წინ</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{მიმდინარეობს 1 ფაილის კოპირება <ph name="CLOUD_PROVIDER" />-ში}other{მიმდინარეობს {NUM_OF_FILES} ფაილის კოპირება <ph name="CLOUD_PROVIDER" />-ში}}</translation>
 <translation id="8041089156583427627">გამოხმაურება</translation>
 <translation id="8041267120753677077">შეასრულეთ თქვენი ტელეფონის აპების სტრიმინგი</translation>

@@ -58,6 +58,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="124678866338384709">Đóng thẻ hiện tại</translation>
 <translation id="1246905108078336582">Xóa nội dung đề xuất khỏi bảng nhớ tạm?</translation>
 <translation id="1258753120186372309">Hình tượng trưng của Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Giờ đây, bạn có thể xem thông tin về <ph name="SITE_NAME" /> và nội dung của kênh trong phần Đang theo dõi. Các trang web và nội dung tìm kiếm mà bạn theo dõi sẽ được lưu trong Tài khoản Google của bạn. Bạn có thể quản lý các trang web/nội dung mà mình theo dõi trong phần cài đặt bất cứ lúc nào.</translation>
 <translation id="1263231323834454256">Danh sách đọc</translation>
 <translation id="1266864766717917324">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Bạn sẽ thấy nhật ký ở đây</translation>
@@ -136,6 +137,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1671236975893690980">Đang chờ tải xuống...</translation>
 <translation id="1672586136351118594">Không hiện lại</translation>
 <translation id="1680919990519905526">Mua sắm với Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Sắp tới, bạn sẽ có thể xem thông tin về <ph name="SITE_NAME" /> và nội dung của kênh trong phần Đang theo dõi. Các trang web và nội dung tìm kiếm mà bạn theo dõi sẽ được lưu trong Tài khoản Google của bạn. Bạn có thể quản lý các trang web/nội dung mà mình theo dõi trong phần cài đặt bất cứ lúc nào.</translation>
 <translation id="1702543251015153180">Bạn muốn thay đổi các chế độ cài đặt cho giao diện tối?</translation>
 <translation id="1702907158640575240">Trình duyệt được quản lý</translation>
 <translation id="1710099199314114079">Chuyển hoặc đóng thẻ</translation>
@@ -1243,6 +1245,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7431991332293347422">Kiểm soát cách Google sử dụng nhật ký duyệt web của bạn để cá nhân hóa dịch vụ Tìm kiếm và các dịch vụ khác</translation>
 <translation id="7435356471928173109">Quản trị viên đã tắt</translation>
 <translation id="7437998757836447326">Đăng xuất khỏi Chrome</translation>
+<translation id="7450926666485653189">Gửi một phần URL đã làm rối mã nguồn đến Google thông qua một máy chủ bảo mật giúp ẩn địa chỉ IP của bạn</translation>
 <translation id="7453467225369441013">Đăng xuất bạn khỏi hầu hết các trang web. Bạn sẽ không bị đăng xuất khỏi Tài khoản Google của mình.</translation>
 <translation id="7453810262525006706">Thu gọn thành chế độ xem từ một bên</translation>
 <translation id="7454641608352164238">Không đủ dung lượng</translation>
@@ -1472,6 +1475,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8497242791509864205">Mở tuỳ chọn sắp xếp</translation>
 <translation id="8497480609928300907">Giải thích hướng dẫn về quyền riêng tư</translation>
 <translation id="8497726226069778601">Chưa có gì để xem ở đây...</translation>
+<translation id="8501423924927196358">Chỉ báo đang tải thông tin chi tiết về trang</translation>
 <translation id="8503559462189395349">Mật khẩu Chrome</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8505766168025405649">Xem thông báo để biết trạng thái tải xuống</translation>

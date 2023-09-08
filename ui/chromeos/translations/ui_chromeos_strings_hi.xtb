@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">प्रसंग</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" को नहीं खोला जा सका</translation>
 <translation id="3280431534455935878">तैयार कर रहा है</translation>
+<translation id="3280719573299097127">आप सीमित डेटा वाले नेटवर्क पर हैं. फ़ाइल को सिंक करने की सुविधा रोक दी गई है.</translation>
 <translation id="3280987981688031357">विनाइल रिकॉर्ड</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
 <translation id="3291218047831493686">सिम लॉक सेटिंग में बदलाव करने के लिए इस नेटवर्क से कनेक्ट करें</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">सभी एंट्री से चुने हुए का निशान हटाया गया.</translation>
 <translation id="5838825566232597749">यूएस वर्कमैन अंतर्राष्‍ट्रीय</translation>
 <translation id="5845721951356578987">नर्स</translation>
+<translation id="5858478190805449225">बैटरी सेवर मोड चालू है. बैटरी सेवर मोड बंद होने पर फिर से कोशिश करें.</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP लुकअप विफल</translation>

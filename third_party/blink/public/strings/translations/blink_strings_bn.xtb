@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">মিররিং এ পরিবর্তন করা হয়েছে</translation>
 <translation id="2031987842108996681">রেড চ্যানেল</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />' এ একটি ভুল অবস্থানে '<ph name="DOT" />' ব্যবহৃত হয়েছে৷</translation>
+<translation id="2068711044993563745">ন্যূনতম ভ্যালু (<ph name="MINIMUM" />) অবশ্যই সর্বাধিক ভ্যালুর (<ph name="MAXIMUM" />) চেয়ে কম হতে হবে।</translation>
 <translation id="2148716181193084225">আজ</translation>
 <translation id="2226276347425096477">দয়া করে এই পাঠ্যটি <ph name="MAX_CHARACTERS" />টি অক্ষর বা তার কমে (আপনি বর্তমানে <ph name="CURRENT_LENGTH" />টি অক্ষর ব্যবহার করছেন) সংক্ষিপ্ত করুন৷</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> সপ্তাহ, <ph name="YEAR" /></translation>

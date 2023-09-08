@@ -58,6 +58,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="124678866338384709">Menutup tab aktif</translation>
 <translation id="1246905108078336582">Hapus saran dari papan klip?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Sekarang Anda akan melihat konten dari dan tentang <ph name="SITE_NAME" /> di tab Mengikuti. Situs dan penelusuran yang Anda ikuti disimpan di Akun Google Anda. Anda dapat mengelola konten yang Anda ikuti di setelan kapan saja.</translation>
 <translation id="1263231323834454256">Daftar bacaan</translation>
 <translation id="1266864766717917324">Tidak dapat membagikan <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Anda akan menemukan histori di sini</translation>
@@ -136,6 +137,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="1671236975893690980">Proses download tertunda...</translation>
 <translation id="1672586136351118594">Jangan tampilkan lagi</translation>
 <translation id="1680919990519905526">Beli dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Anda akan segera melihat konten dari dan tentang <ph name="SITE_NAME" /> di tab Mengikuti. Situs dan penelusuran yang Anda ikuti disimpan di Akun Google Anda. Anda dapat mengelola konten yang Anda ikuti di setelan kapan saja.</translation>
 <translation id="1702543251015153180">Ubah setelan tema gelap?</translation>
 <translation id="1702907158640575240">Browser terkelola</translation>
 <translation id="1710099199314114079">Pindah atau tutup tab</translation>
@@ -1243,6 +1245,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7431991332293347422">Kontrol cara histori browsing digunakan untuk mempersonalisasi Penelusuran dan lainnya</translation>
 <translation id="7435356471928173109">Dinonaktifkan oleh administrator Anda</translation>
 <translation id="7437998757836447326">Logout dari Chrome</translation>
+<translation id="7450926666485653189">Mengirim bagian URL yang di-obfuscate ke Google melalui server privasi yang menyembunyikan alamat IP Anda</translation>
 <translation id="7453467225369441013">Membuat Anda logout dari sebagian besar situs. Anda tidak akan logout dari Akun Google.</translation>
 <translation id="7453810262525006706">Ciutkan ke panel samping</translation>
 <translation id="7454641608352164238">Tidak cukup ruang</translation>
@@ -1472,6 +1475,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8497242791509864205">Buka opsi pengurutan</translation>
 <translation id="8497480609928300907">Penjelasan panduan privasi</translation>
 <translation id="8497726226069778601">Belum ada yang dapat dilihat di sini…</translation>
+<translation id="8501423924927196358">Indikator Pemuatan insight halaman</translation>
 <translation id="8503559462189395349">Sandi Chrome</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8505766168025405649">Lihat notifikasi untuk mengetahui status download</translation>

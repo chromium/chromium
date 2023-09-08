@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
 <translation id="310297983047869047">לשקף הקודם</translation>
 <translation id="3109724472072898302">מכווץ</translation>
 <translation id="3114012059975132928">נגן וידאו</translation>

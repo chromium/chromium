@@ -488,6 +488,7 @@
 <translation id="1390548061267426325">فتح كعلامة تبويب عادية</translation>
 <translation id="1390907927270446471">غير مسموح لحساب <ph name="PROFILE_USERNAME" /> باستخدام الطابعة <ph name="PRINTER_NAME" />. يُرجى التواصل مع المشرف.</translation>
 <translation id="1392047138650695757">قواميس المستخدم</translation>
+<translation id="139300021892314943">حصر إمكانية تسجيل الدخول على مستخدمين معيّنين</translation>
 <translation id="1393283411312835250">الشمس والسحاب</translation>
 <translation id="1395730723686586365">خدمة التحديث بدأت</translation>
 <translation id="1395832189806039783">تمييز العنصر باستخدام تركيز لوحة المفاتيح</translation>
@@ -2520,6 +2521,7 @@
 <translation id="2956070239128776395">تم دمج القسم في المجموعة: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">تحذير حزمة الإضافة</translation>
 <translation id="2959127025785722291">حدث خطأ. تعذّر إكمال المسح. يُرجى إعادة المحاولة.</translation>
+<translation id="2959474507964749987">‏قد يكون هذا الملف المشفَّر فيروسًا أو برنامجًا ضارًا.<ph name="LINE_BREAK" />للتحقّق مما إذا كان الملف آمنًا، يمكنك إرسال الملف وكلمة المرور إلى ميزة "التصفُّح الآمن من Google". وتستغرق عمليات الفحص عادةً بضع ثوانٍ.<ph name="LINE_BREAK" />يُرجى إضافة كلمة مرور للملف لإجراء الفحص.</translation>
 <translation id="2959842337402130152">‏تعذّرت استعادة حاوية Linux لعدم توفر مساحة تخزين. يُرجى إخلاء <ph name="SPACE_REQUIRED" /> من الجهاز وإعادة المحاولة.</translation>
 <translation id="2960208947600937804">‏حدث خطأ أثناء إعداد نظام التشغيل Linux. يُرجى التواصل مع المشرف.</translation>
 <translation id="2960942820860729477">معدّل التحديث</translation>
@@ -3981,6 +3983,7 @@
 <translation id="4147099377280085053">اختيار جدول بلغة برايل</translation>
 <translation id="4147911968024186208">يُرجى إعادة المحاولة. وإذا ظهر هذا الخطأ مرة أخرى، يُرجى التواصل مع ممثِّل الدعم.</translation>
 <translation id="414800391140809654">يمكنه استخدام معلوماتك أثناء التصفُّح.</translation>
+<translation id="4148195018520464922">يمكنك حصر إمكانية تسجيل الدخول على مستخدمين معيّنين. سيؤدي هذا الإجراء إلى إزالة خيار "إضافة شخص" على شاشة تسجيل الدخول. ويمكنك أيضًا إزالة المستخدمين الحاليين.</translation>
 <translation id="4150201353443180367">عرض</translation>
 <translation id="4150569944729499860">سياق الشاشة</translation>
 <translation id="4151449637210235443">أخبِرنا عن تجربتك مع اللّعب في الفترة الأخيرة.</translation>
@@ -4179,6 +4182,7 @@
 <translation id="4322394346347055525">إغلاق علامات التبويب الأخرى</translation>
 <translation id="4324577459193912240">ملف غير مكتمل</translation>
 <translation id="4325237902968425115">جارٍ إلغاء تثبيت <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">التخزين والطاقة</translation>
 <translation id="4326146840124313313">‏يوفِّر Chrome أعلى مستويات الأمان لحمايتك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
 <translation id="4326484226728068206">السلع في سلة التسوّق متوفّرة بخصم ‫<ph name="DISCOUNT_TEXT" /> من "<ph name="MERCHANT_NAME" />" على <ph name="MERCHANT_DOMAIN" />، وتم الاطّلاع عليها <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">ماء مثلج</translation>
@@ -8145,6 +8149,7 @@
 <translation id="7617263010641145920">‏تفعيل "متجر Play"</translation>
 <translation id="7617648809369507487">استخدام طريقة أقل بروزًا لإرسال الإشعارات</translation>
 <translation id="7621382409404463535">تعذّر على النظام حفظ ضبط الجهاز.</translation>
+<translation id="7621480263311228380">المواقع الإلكترونية التي لا يُسمَح لها باستخدام المعلومات التي تم حفظها عنك</translation>
 <translation id="7621595347123595643">لن تتمكّن من استرداد البيانات المحلّية في حال نسيان كلمة المرور أو رقم التعريف الشخصي.</translation>
 <translation id="7622114377921274169">جارٍ الشحن.</translation>
 <translation id="7622768823216805500">تعمل المواقع الإلكترونية عادةً على تثبيت معالجات الدفع لتتيح ميزات التسوّق، مثل الدفع بسهولة.</translation>
@@ -8698,6 +8703,7 @@
 <translation id="8037117027592400564">قراءة جميع النصوص المنطوقة باستخدام الكلام المركب</translation>
 <translation id="8037357227543935929">الطلب (تلقائي)</translation>
 <translation id="803771048473350947">ملف</translation>
+<translation id="8037801708772278989">تمّ إجراء عملية التحقُّق للتوّ.</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{جارٍ نسخ ملف واحد إلى <ph name="CLOUD_PROVIDER" />}zero{جارٍ نسخ {NUM_OF_FILES} ملف إلى <ph name="CLOUD_PROVIDER" />}two{جارٍ نسخ ملفين ({NUM_OF_FILES}) إلى <ph name="CLOUD_PROVIDER" />}few{جارٍ نسخ {NUM_OF_FILES} ملفات إلى <ph name="CLOUD_PROVIDER" />}many{جارٍ نسخ {NUM_OF_FILES} ملفًا إلى <ph name="CLOUD_PROVIDER" />}other{جارٍ نسخ {NUM_OF_FILES} ملف إلى <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">إرسال ملاحظات</translation>
 <translation id="8041267120753677077">بث تطبيقات هاتفك</translation>

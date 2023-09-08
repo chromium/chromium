@@ -58,6 +58,7 @@
 <translation id="124678866338384709">ปิดแท็บปัจจุบัน</translation>
 <translation id="1246905108078336582">นำคำแนะนำออกจากคลิปบอร์ดไหม</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">ตอนนี้คุณจะเห็นเนื้อหาจาก และเกี่ยวกับ <ph name="SITE_NAME" /> ใน "กำลังติดตาม" ระบบจะบันทึกเว็บไซต์และการค้นหาที่คุณติดตามไว้ในบัญชี Google คุณจัดการการติดตามในการตั้งค่าได้ทุกเมื่อ</translation>
 <translation id="1263231323834454256">เรื่องรออ่าน</translation>
 <translation id="1266864766717917324">แชร์<ph name="CONTENT_TYPE" />ไม่ได้</translation>
 <translation id="1269129608791067105">คุณจะเห็นประวัติการเข้าชมที่นี่</translation>
@@ -136,6 +137,7 @@
 <translation id="1671236975893690980">การดาวน์โหลดรอดำเนินการ…</translation>
 <translation id="1672586136351118594">ไม่ต้องแสดงอีก</translation>
 <translation id="1680919990519905526">ช็อปจากภาพกับ Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">เร็วๆ นี้ คุณจะเห็นเนื้อหาจาก และเกี่ยวกับ <ph name="SITE_NAME" /> ใน "กำลังติดตาม" ระบบจะบันทึกเว็บไซต์และการค้นหาที่คุณติดตามไว้ในบัญชี Google คุณจัดการการติดตามในการตั้งค่าได้ทุกเมื่อ</translation>
 <translation id="1702543251015153180">เปลี่ยนการตั้งค่าธีมมืดไหม</translation>
 <translation id="1702907158640575240">เบราว์เซอร์ที่มีการจัดการ</translation>
 <translation id="1710099199314114079">เปลี่ยนหรือปิดแท็บ</translation>
@@ -1243,6 +1245,7 @@
 <translation id="7431991332293347422">ควบคุมการใช้ประวัติการท่องเว็บเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ในแบบของคุณ</translation>
 <translation id="7435356471928173109">ปิดโดยผู้ดูแลระบบ</translation>
 <translation id="7437998757836447326">ออกจากระบบ Chrome</translation>
+<translation id="7450926666485653189">นำเฉพาะบางส่วนของ URL มาสร้างความสับสนแล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ</translation>
 <translation id="7453467225369441013">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ แต่คุณจะไม่ออกจากระบบบัญชี Google</translation>
 <translation id="7453810262525006706">ยุบเป็นมุมมองด้านข้าง</translation>
 <translation id="7454641608352164238">พื้นที่ว่างไม่พอ</translation>
@@ -1472,6 +1475,7 @@
 <translation id="8497242791509864205">เปิดตัวเลือกการจัดเรียง</translation>
 <translation id="8497480609928300907">คำอธิบายคู่มือความเป็นส่วนตัว</translation>
 <translation id="8497726226069778601">ที่นี่ยังไม่มีอะไรให้ดู… เลย</translation>
+<translation id="8501423924927196358">สัญญาณบอกสถานะการโหลดข้อมูลเชิงลึกของหน้า</translation>
 <translation id="8503559462189395349">รหัสผ่าน Chrome</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8505766168025405649">ดูสถานะการดาวน์โหลดในการแจ้งเตือน</translation>

@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Context</translation>
 <translation id="3272909651715601089">Kan '<ph name="PATH" />' niet openen</translation>
 <translation id="3280431534455935878">Voorbereiden</translation>
+<translation id="3280719573299097127">Je gebruikt een netwerk met datalimiet. Bestandssynchronisatie is onderbroken.</translation>
 <translation id="3280987981688031357">Lp</translation>
 <translation id="3290356915286466215">Niet beveiligd</translation>
 <translation id="3291218047831493686">Maak verbinding met dit netwerk om de instelling voor de simlock te wijzigen</translation>
@@ -633,6 +634,7 @@
 <translation id="5838451609423551646">Alle items uit selectie zijn verwijderd.</translation>
 <translation id="5838825566232597749">Amerikaans Workman (internationaal)</translation>
 <translation id="5845721951356578987">Verpleegkundige</translation>
+<translation id="5858478190805449225">Batterijbesparing aan. Probeer het opnieuw als Batterijbesparing uitstaat.</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Opzoeken van DHCP mislukt</translation>
@@ -921,6 +923,7 @@
 <translation id="8087576439476816834">Downloaden, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Gedeeld met mij</translation>
 <translation id="8116072619078571545">IJswater</translation>
+<translation id="8120392982188717723">Synchronisatie toestaan op netwerken met datalimiet</translation>
 <translation id="8124093710070495550">Synchronisatieprobleem</translation>
 <translation id="8128733386027980860">Engels (VK) met Dvorak-toetsenbord</translation>
 <translation id="8137331602592933310">'<ph name="FILENAME" />' is met je gedeeld. Je kunt dit niet verwijderen omdat jij niet de eigenaar bent.</translation>

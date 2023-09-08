@@ -484,6 +484,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1390548061267426325">Apri in una scheda normale</translation>
 <translation id="1390907927270446471">L'utente <ph name="PROFILE_USERNAME" /> non è autorizzato a stampare dalla stampante <ph name="PRINTER_NAME" />. Contatta l'amministratore.</translation>
 <translation id="1392047138650695757">Dizionari utente</translation>
+<translation id="139300021892314943">Limita gli utenti che possono accedere</translation>
 <translation id="1393283411312835250">Sole e nuvole</translation>
 <translation id="1395730723686586365">Programma di aggiornamento avviato</translation>
 <translation id="1395832189806039783">Evidenzia l'elemento con stato attivo della tastiera</translation>
@@ -2516,6 +2517,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2956070239128776395">Sezione nidificata nel gruppo: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Avviso sul pacchetto estensione</translation>
 <translation id="2959127025785722291">Si è verificato un problema. Impossibile completare l'analisi. Riprova.</translation>
+<translation id="2959474507964749987">Questo file criptato potrebbe essere un virus o un malware.<ph name="LINE_BREAK" />Per verificare se non è sicuro, puoi inviare il file e la password a Google Navigazione sicura. In genere l'analisi richiede alcuni secondi.<ph name="LINE_BREAK" />Per eseguire la scansione, aggiungi la password del file.</translation>
 <translation id="2959842337402130152">Impossibile eseguire il ripristino a causa di spazio di archiviazione insufficiente. Libera <ph name="SPACE_REQUIRED" /> dal dispositivo e riprova.</translation>
 <translation id="2960208947600937804">Si è verificato un errore durante la configurazione di Linux. Contatta l'amministratore.</translation>
 <translation id="2960942820860729477">Frequenza di aggiornamento</translation>
@@ -3979,6 +3981,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4147099377280085053">Seleziona una tabella braille</translation>
 <translation id="4147911968024186208">Riprova. Se ricevi ancora questo messaggio di errore, contatta il tuo rappresentante dell'assistenza.</translation>
 <translation id="414800391140809654">può usare le tue informazioni durante la tua navigazione</translation>
+<translation id="4148195018520464922">Puoi limitare l'accesso a determinati utenti. L'opzione "Aggiungi persona" viene rimossa dalla schermata di accesso. Puoi anche rimuovere gli utenti correnti.</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4150569944729499860">Contesto dello schermo</translation>
 <translation id="4151449637210235443">Parlaci del tuo gameplay recente</translation>
@@ -5160,6 +5163,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5146896637028965135">Voce di sistema</translation>
 <translation id="5147992672778369947">Usa password consigliata</translation>
 <translation id="5148277445782867161">Il servizio di geolocalizzazione di Google utilizza fonti quali le reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa del dispositivo.</translation>
+<translation id="5148285448107770349">La password deve avere almeno 8 caratteri</translation>
 <translation id="5150254825601720210">Nome server SSL certificato Netscape</translation>
 <translation id="5151354047782775295">Libera spazio sul disco, altrimenti alcuni dati potrebbero essere eliminati automaticamente</translation>
 <translation id="5153234146675181447">Elimina telefono</translation>
@@ -8132,6 +8136,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7617263010641145920">Attivare il Play Store</translation>
 <translation id="7617648809369507487">Usa messaggi più discreti</translation>
 <translation id="7621382409404463535">Il sistema non è riuscito a salvare la configurazione del dispositivo.</translation>
+<translation id="7621480263311228380">Non può usare le informazioni su di te che ha salvato</translation>
 <translation id="7621595347123595643">Non potrai recuperare i dati locali se non ricordi la password o il PIN.</translation>
 <translation id="7622114377921274169">In carica.</translation>
 <translation id="7622768823216805500">In genere, i siti installano gestori dei pagamenti per funzionalità di acquisto come il pagamento semplificato</translation>
@@ -8685,6 +8690,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8037117027592400564">Lettura di tutto il testo pronunciato utilizzando la sintesi vocale</translation>
 <translation id="8037357227543935929">Chiedi (predefinita)</translation>
 <translation id="803771048473350947">Archivio</translation>
+<translation id="8037801708772278989">Controllo appena eseguito</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copia di 1 file in <ph name="CLOUD_PROVIDER" /> in corso…}other{Copia di {NUM_OF_FILES} file in <ph name="CLOUD_PROVIDER" /> in corso…}}</translation>
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8041267120753677077">Trasmetti in streaming le app del tuo telefono</translation>

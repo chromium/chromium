@@ -487,6 +487,7 @@
 <translation id="1390548061267426325">සාමාන්‍ය ටැබයක් ලෙස විවෘත කරන්න</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> හට <ph name="PRINTER_NAME" /> හි මුද්‍රණය කිරීමට අනුමැතිය දී නැත. කරුණාකර ඔබගේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="1392047138650695757">පරිශීලක ශබ්ද කෝෂ</translation>
+<translation id="139300021892314943">පුරනය විය හැකි අය සීමා කරන්න</translation>
 <translation id="1393283411312835250">හිරු හා වළාකුළු</translation>
 <translation id="1395730723686586365">යාවත්කාලකය ඇරඹිණි</translation>
 <translation id="1395832189806039783">යතුරු පුවරු නාභිගත කිරීම සමග අයිතමය උද්දීපනය කරන්න</translation>
@@ -2520,6 +2521,7 @@
 <translation id="2956070239128776395">කණ්ඩායම තුළ හසු වූ කොටස: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">ඇසුරුම් දිගු අනතුරු හැඟවීම</translation>
 <translation id="2959127025785722291">යම් දෙයක් වැරදිණි. ස්කෑන් කිරීම සම්පූර්ණ කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
+<translation id="2959474507964749987">මෙම සංකේතනය කළ ගොනුව වෛරසයක් හෝ අනිෂ්ට මෘදුකාංගයක් විය හැක.<ph name="LINE_BREAK" />එය අනාරක්ෂිත දැයි පරීක්ෂා කිරීමට, ඔබට ගොනුව සහ මුරපදය Google ආරක්ෂිත බ්‍රවුස් කිරීම වෙත යැවිය හැක. ස්කෑන් කිරීමට සාමාන්‍යයෙන් තත්පර කිහිපයක් ගත වේ.<ph name="LINE_BREAK" />ස්කෑන් කිරීම සඳහා, ගොනුවේ මුරපදය එක් කරන්න.</translation>
 <translation id="2959842337402130152">ආචයන ඉඩකඩ මදි බැවින් ප්‍රතිසාධන කළ නොහැක. උපාංගයෙන් <ph name="SPACE_REQUIRED" /> නිදහස් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="2960208947600937804">ලිනක්ස් වින්‍යාස කිරීමේදී දෝෂයක් තිබුණා. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="2960942820860729477">නැවුම් කිරීමේ අනුපාතය</translation>
@@ -3984,6 +3986,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4147099377280085053">බ්‍රේල් වගුවක් තෝරන්න</translation>
 <translation id="4147911968024186208">යළි උත්සාහ කරන්න. ඔබ නැවතත් මෙම දෝෂය දකින්නේ නම්, ඔබේ සහය නියෝජිතයා සම්බන්ධ කර ගන්න.</translation>
 <translation id="414800391140809654">ඔබ බ්‍රවුස් කරන විට ඔබේ තොරතුරු භාවිත කළ හැක</translation>
+<translation id="4148195018520464922">ඔබට ඇතැම් පරිශීලකයින්ට පුරනය වීම සීමා කළ හැක. මෙය පුරනය වීමේ තිරයෙහි ඇති "පුද්ගලයා එක් කරන්න" විකල්පය ඉවත් කරයි. ඔබට වත්මන් පරිශීලකයින් ඉවත් කිරීමට ද හැක.</translation>
 <translation id="4150201353443180367">සංදර්ශකය</translation>
 <translation id="4150569944729499860">තිර සන්දර්භය</translation>
 <translation id="4151449637210235443">ඔබේ මෑත ක්‍රීඩා කිරීම ගැන අපට කියන්න</translation>
@@ -4783,6 +4786,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4820236583224459650">ක්‍රියාත්මක ප්‍රවේශපත්‍රය ලෙස සකසන්න</translation>
 <translation id="4820795723433418303">කාර්යය යතුරු ඉහළ පේළි යතුරු ලෙස භාවිතා කරන්න</translation>
 <translation id="4821935166599369261">පැතිකඩකරණය සක්‍රිය කරන ලදි</translation>
+<translation id="4823193082697477185">ස්ථානික ජාලයක බෙදා ගත් ගොනු, ෆෝල්ඩර, හෝ ධාවක වෙත ප්‍රවේශ වන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">පරිශීලක සහ උපාංගය සැකසීම් කියවා වෙනස් කරන්න</translation>
 <translation id="4824037980212326045">ලිනක්ස් උපස්ථය සහ ප්‍රතිසාධනය</translation>
 <translation id="4824958205181053313">සමමුහූර්තය අවලංගු කරන්නේද?</translation>
@@ -8139,6 +8143,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7617263010641145920">Play Store සක්‍රීය කරන්න</translation>
 <translation id="7617648809369507487">වඩා නිශ්ශබ්ද පණිවිඩ යැවීම භාවිත කරන්න</translation>
 <translation id="7621382409404463535">පද්ධති වින්‍යාසය සුරැකීමට පද්ධතිය අසමත් විය.</translation>
+<translation id="7621480263311228380">ඔවුන් ඔබ ගැන සුරකින ලද තතු භාවිත කිරීමට ඉඩ නොදෙයි</translation>
 <translation id="7621595347123595643">ඔබට ඔබේ මුරපදය හෝ PIN අමතක වුවහොත් ඔබට ස්ථානීය දත්ත ප්‍රතිසාධනය කිරීමට නොහැකි වනු ඇත.</translation>
 <translation id="7622114377921274169">ආරෝපණය වෙමින්.</translation>
 <translation id="7622768823216805500">අඩවි සාමාන්‍යයෙන් වඩා පහසු ගෙවීම වැනි සාප්පු සවාරි විශේෂාංග සඳහා ගෙවීම් හසුරුවන ස්ථාපනය කරයි</translation>
@@ -8690,6 +8695,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8037117027592400564">සංශ්ලේෂණය කළ කථනය භාවිතා කරමින් කථා කළ සියලු පෙළ කියවන්න</translation>
 <translation id="8037357227543935929">විමසන්න (පෙරනිමි)</translation>
 <translation id="803771048473350947">ගොනුව</translation>
+<translation id="8037801708772278989">මේ දැන් පරීක්ෂා කරන ලදි</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> වෙත 1 ගොනුවක් පිටපත් කිරීම}one{<ph name="CLOUD_PROVIDER" /> වෙත ගොනු {NUM_OF_FILES}ක් පිටපත් කිරීම}other{<ph name="CLOUD_PROVIDER" /> වෙත ගොනු {NUM_OF_FILES}ක් පිටපත් කිරීම}}</translation>
 <translation id="8041089156583427627">ප්‍රතිපෝෂණ යවන්න</translation>
 <translation id="8041267120753677077">ඔබගේ දුරකථනයේ යෙදුම් ප්‍රවාහ කරන්න</translation>
@@ -9483,6 +9489,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8680251145628383637">ඔබගේ සියලු උපාංග මත පිටු සලකුණු, ඉතිහාසය, සහ වෙනත් සැකසීම් ලබා ගැනීමට පුරන්න. ඔබව ස්වයංක්‍රීයව ඔබගේ Google සේවාවලට පිරීමද කරනු ඇත.</translation>
 <translation id="8681886425883659911">ආක්‍රමණශීලී හෝ නොමඟ යවන දැන්වීම් පෙන්වීමට දන්නා අඩවිවල දැන්වීම් අවහිර කර ඇත</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> සම්බන්ධව සහ සූදානම්ව තිබේ</translation>
+<translation id="8684471948980641888">මනුගත ජාල මත සමමුහුර්ත කිරීමට ඉඩ දෙන්න</translation>
 <translation id="8685540043423825702">ඔබේ Chrome පැතිකඩ</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> ලෙස පුරනය වී ඇත</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> අවලංගු කරන්න</translation>

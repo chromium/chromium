@@ -158,6 +158,7 @@
 <translation id="1872096359983322073">Ліхтарык</translation>
 <translation id="1882901927376062252">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{{count} закладка захавана ў вашым Уліковым запісе Google ({email})}few{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{{count} закладак захавана ў вашым Уліковым запісе Google ({email})}other{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="1883255238294161206">Згарнуць спіс</translation>
+<translation id="1890237935065108104">Гэта налада недаступная.</translation>
 <translation id="1894023287452300670">Вы можаце сачыць за цаной тут</translation>
 <translation id="189531189292803889">Ваш планшэт iPad быў нядаўна адноўлены, таму стандартным мог стаць іншы браўзер.</translation>
 <translation id="1910975740091000991">Chrome для iOS</translation>
@@ -418,6 +419,7 @@
 <translation id="3328801116991980348">Звесткі пра сайт</translation>
 <translation id="3340938510625667914">Дзеянні ў Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Закладка захавана ва ўліковым запісе ({email}) у папцы "{title}"}one{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}few{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}many{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}other{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}}</translation>
+<translation id="3349676726073650389">Сайты і вынікі пошуку, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Падпіскамі можна кіраваць у наладах у любы час.</translation>
 <translation id="3365529507898144230">Захаваць у Фота</translation>
 <translation id="3371831930909698441">Пераклад гатовы. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="3377063233124932127">Цяпер вашы захаваныя закладкі, паролі і іншае змесціва будуць паказвацца ўверсе.</translation>
@@ -781,6 +783,7 @@
 <translation id="5597915316964418992">Адкрыйце сетку ўкладак</translation>
 <translation id="560322036295180549">Ваша арганізацыя выключыла гэты параметр</translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
+<translation id="5619871095170816857">На гэтай картцы паказваецца апошняя ўкладка, якую вы адкрывалі на любой са сваіх сінхранізаваных прылад за апошнія 24 гадзіны.</translation>
 <translation id="5626245204502895507">Файл спампаваць не ўдалося.</translation>
 <translation id="562753339521713441">Запусціце праверку бяспекі</translation>
 <translation id="5631164295104953411">Дадаванне спосабу аплаты</translation>
@@ -1086,6 +1089,7 @@
 <translation id="7082853213442715471">Калі ўключаны рэжым блакіроўкі, пэўныя вэб-тэхналогіі блакіруюцца, з-за чаго некаторыя вэб-сайты могуць загружацца марудней або працаваць няправільна.</translation>
 <translation id="7095110968493193530">У Менеджары пароляў Google для ўліковага запісу <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Нядаўнія ўкладкі</translation>
+<translation id="7101580180124131336">Цяпер вы будзеце бачыць змесціва канала "<ph name="CHANNEL_NAME" />" і інфармацыю пра яго ў раздзеле "Вы падпісаны".</translation>
 <translation id="7102005569666697658">Ідзе спампоўванне… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Схаваць</translation>
 <translation id="7108762695052995889">Наведаць сайт</translation>
@@ -1166,6 +1170,7 @@
 <translation id="764827086632467055">Націсніце Default Browser App ("Стандартны браўзер")</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
+<translation id="7666861622396822790">Гэтай функцыяй можна кіраваць у <ph name="BEGIN_LINK" />наладах змесціва<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">УСТАЛЯВАЦЬ</translation>
 <translation id="7679915578945954324">Адрасы сайтаў скапіраваны</translation>
 <translation id="7687508192620387263">Даступны файл календара</translation>
@@ -1239,6 +1244,7 @@
 <translation id="8032569120109842252">Вы падпісаны</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Гісторыя пошуку<ph name="END_LINK" /> і <ph name="BEGIN_LINK" />іншыя дзеянні<ph name="END_LINK" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Іх можна выдаліць у любы час.</translation>
 <translation id="804427445359061970">Вашы ўкладкі з іншых прылад знаходзяцца тут</translation>
+<translation id="8044568254381073661">Захоўванне без шыфравання</translation>
 <translation id="8059533439631660104">Згортвае раздзел.</translation>
 <translation id="8065292699993359127">Адкрыць URL-адрасы ў Chrome у рэжыме інкогніта</translation>
 <translation id="806745655614357130">Захоўваць мае даныя асобна</translation>
@@ -1293,7 +1299,9 @@
 <translation id="8386068868580335421">Скінуць</translation>
 <translation id="838867811594159347">Увесці фразу-пароль…</translation>
 <translation id="8393889347136007944">Укладкі, якія не выкарыстоўваліся на працягу <ph name="THRESHOLD" /> сут</translation>
+<translation id="8395339334550012808">Хутка вы ўбачыце змесціва канала "<ph name="CHANNEL_NAME" />" і інфармацыю пра яго ў раздзеле "Вы падпісаны".</translation>
 <translation id="8395378633507873708">Адрасны радок</translation>
+<translation id="8403629764260204788">Схаваць модуль "Працягвайце прагляд"</translation>
 <translation id="8407669440184693619">Паролі для гэтага сайта не знойдзены</translation>
 <translation id="842017693807136194">Вы ўвайшлі праз</translation>
 <translation id="8423121072346537366">Толькі што</translation>
@@ -1376,6 +1384,7 @@
 <translation id="8855242995793521265">Не выклікае прыметнага запаволення працы браўзера або прылады.</translation>
 <translation id="8855781063981781621">Каб адключыць рэжым Lockdown Mode у Chrome, адключыце яго на iPad.</translation>
 <translation id="8863431381414769983">Паказваць маршруты і мясцовую інфармацыю з Google Карт</translation>
+<translation id="8865415417596392024">Даныя Chrome у вашым уліковым запісе</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} укладка}one{{count} укладка}few{{count} укладкі}many{{count} укладак}other{{count} укладкі}}</translation>
 <translation id="8870413625673593573">Нядаўна закрытыя</translation>
 <translation id="8876882697946675716">Сінхранізуйце свае прылады</translation>

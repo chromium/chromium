@@ -485,6 +485,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1390548061267426325">Ouvrir dans un onglet standard</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> n'est pas autorisé à imprimer sur <ph name="PRINTER_NAME" />. Veuillez contacter votre administrateur.</translation>
 <translation id="1392047138650695757">Dictionnaires personnels</translation>
+<translation id="139300021892314943">Limiter qui est autorisé à se connecter</translation>
 <translation id="1393283411312835250">Soleil et nuages</translation>
 <translation id="1395730723686586365">Processus de mise à jour lancé</translation>
 <translation id="1395832189806039783">Mettre en surbrillance l'élément sélectionné au clavier</translation>
@@ -2517,6 +2518,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2956070239128776395">Section imbriquée dans un groupe : <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Avertissement relatif à la mise en package des extensions</translation>
 <translation id="2959127025785722291">Un problème est survenu. Impossible de terminer l'analyse. Veuillez réessayer.</translation>
+<translation id="2959474507964749987">Ce fichier chiffré pourrait être un virus ou un logiciel malveillant.<ph name="LINE_BREAK" />Pour vérifier s'il est dangereux, vous pouvez envoyer le fichier et le mot de passe à la navigation sécurisée Google. Les analyses prennent généralement quelques secondes.<ph name="LINE_BREAK" />Pour effectuer une analyse, ajoutez le mot de passe du fichier.</translation>
 <translation id="2959842337402130152">Échec de la restauration en raison de l'espace de stockage insuffisant. Libérez <ph name="SPACE_REQUIRED" /> sur cet appareil, puis réessayez.</translation>
 <translation id="2960208947600937804">Une erreur s'est produite lors de la configuration de Linux. Contactez l'administrateur.</translation>
 <translation id="2960942820860729477">Fréquence d'actualisation</translation>
@@ -3980,6 +3982,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4147099377280085053">Sélectionner une table braille</translation>
 <translation id="4147911968024186208">Veuillez réessayer. Si l'erreur se reproduit, veuillez contacter le service d'assistance.</translation>
 <translation id="414800391140809654">peut utiliser vos informations lorsque vous le parcourez</translation>
+<translation id="4148195018520464922">Vous pouvez limiter la connexion à certains utilisateurs. L'option "Ajouter une personne" est alors supprimée de l'écran de connexion. Vous pouvez également supprimer les utilisateurs actuels.</translation>
 <translation id="4150201353443180367">Écran</translation>
 <translation id="4150569944729499860">Contexte de l'écran</translation>
 <translation id="4151449637210235443">Parlez-nous de votre partie récente</translation>
@@ -4178,6 +4181,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4322394346347055525">Fermer les autres onglets</translation>
 <translation id="4324577459193912240">Fichier incomplet</translation>
 <translation id="4325237902968425115">Désinstallation de <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4325433082696797523">Stockage et alimentation</translation>
 <translation id="4326146840124313313">La fonctionnalité de sécurité la plus forte de Chrome vous protège davantage contre les téléchargements, les extensions et les sites Web malveillants</translation>
 <translation id="4326484226728068206">Articles dans votre panier <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) avec <ph name="DISCOUNT_TEXT" /> consulté <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Eau gelée</translation>
@@ -5161,6 +5165,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5146896637028965135">Voix du système</translation>
 <translation id="5147992672778369947">Utilisez le mot de passe recommandé</translation>
 <translation id="5148277445782867161">Le service de localisation de Google utilise des sources comme le Wi-Fi, les réseaux mobiles et des capteurs pour estimer la position de votre appareil.</translation>
+<translation id="5148285448107770349">Le mot de passe doit comporter au moins huit caractères</translation>
 <translation id="5150254825601720210">Nom du serveur SSL du certificat Netscape</translation>
 <translation id="5151354047782775295">Libérez de l'espace disque, car certaines informations risquent d'être supprimées automatiquement.</translation>
 <translation id="5153234146675181447">Oublier le téléphone</translation>
@@ -7975,7 +7980,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7476989672001283112">Autorisations bloquées automatiquement : <ph name="PERMISSION" /> (et <ph name="COUNT" /> de plus)</translation>
 <translation id="7477599578899108080">Utilisation élevée de la mémoire : <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Créer un code QR pour cette page</translation>
-<translation id="7477793887173910789">Contrôler votre musique, vos vidéos et d'autres contenus</translation>
+<translation id="7477793887173910789">Contrôlez votre musique, vos vidéos et bien plus</translation>
 <translation id="7478069565037869084">Large</translation>
 <translation id="7478485216301680444">Impossible d'installer l'application kiosque.</translation>
 <translation id="7478658909253570368">Ne pas autoriser les sites à se connecter aux ports série</translation>
@@ -8139,6 +8144,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7617263010641145920">Activer le Play Store</translation>
 <translation id="7617648809369507487">Activer les notifications discrètes</translation>
 <translation id="7621382409404463535">Échec de l'enregistrement de la configuration de l'appareil.</translation>
+<translation id="7621480263311228380">Non autorisé à utiliser des informations qu'il a enregistrées vous concernant</translation>
 <translation id="7621595347123595643">Vous ne pourrez pas récupérer de données locales si vous oubliez votre mot de passe ou votre code.</translation>
 <translation id="7622114377921274169">En charge.</translation>
 <translation id="7622768823216805500">Les sites installent généralement des gestionnaires de paiement pour proposer certaines fonctionnalités d'achat, comme un règlement plus simple</translation>
@@ -8692,6 +8698,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8037117027592400564">Accéder à l'ensemble du texte énoncé à l'aide de la synthèse vocale</translation>
 <translation id="8037357227543935929">Demander (par défaut)</translation>
 <translation id="803771048473350947">Fichier</translation>
+<translation id="8037801708772278989">Vérification effectuée à l'instant</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copie de 1 fichier dans <ph name="CLOUD_PROVIDER" />…}one{Copie de {NUM_OF_FILES} fichier dans <ph name="CLOUD_PROVIDER" />…}other{Copie de {NUM_OF_FILES} fichiers dans <ph name="CLOUD_PROVIDER" />…}}</translation>
 <translation id="8041089156583427627">Envoyer</translation>
 <translation id="8041267120753677077">Diffusez en streaming les applis de votre téléphone</translation>
@@ -9485,6 +9492,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8680251145628383637">Connectez-vous pour retrouver vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils. De plus, vous serez automatiquement connecté à vos services Google.</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour afficher des annonces intrusives ou trompeuses</translation>
 <translation id="8682730193597992579">L'imprimante <ph name="PRINTER_NAME" /> est connectée et prête</translation>
+<translation id="8684471948980641888">Autoriser la synchronisation sur les réseaux facturés à l'usage</translation>
 <translation id="8685540043423825702">Votre profil Chrome</translation>
 <translation id="8686142379631285985">Connecté en tant que <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Annuler le téléchargement de <ph name="FILE_NAME" /></translation>

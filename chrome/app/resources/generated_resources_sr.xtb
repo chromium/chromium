@@ -486,6 +486,7 @@
 <translation id="1390548061267426325">Отвори као уобичајену картицу</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> нема овлашћење да штампа на: <ph name="PRINTER_NAME" />. Обратите се администратору.</translation>
 <translation id="1392047138650695757">Кориснички речници</translation>
+<translation id="139300021892314943">Ограничи ко може да се пријави</translation>
 <translation id="1393283411312835250">Сунце и облаци</translation>
 <translation id="1395730723686586365">Програм за ажурирање је покренут</translation>
 <translation id="1395832189806039783">Истакните ставку помоћу фокуса тастатуре</translation>
@@ -2514,6 +2515,7 @@
 <translation id="2956070239128776395">Одељак угнежден у групу: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Упозорење о паковању додатка</translation>
 <translation id="2959127025785722291">Дошло је до грешке. Скенирање није довршено. Пробајте поново.</translation>
+<translation id="2959474507964749987">Овај шифровани фајл је можда вирус или малвер.<ph name="LINE_BREAK" />Да бисте проверили да ли је небезбедан, можете да пошаљете фајл и лозинку у Google безбедно прегледање. Скенирање обично траје неколико секунди.<ph name="LINE_BREAK" />Да бисте скенирали, додајте лозинку за фајл.</translation>
 <translation id="2959842337402130152">Враћање није успело због недостатка меморијског простора. Ослободите <ph name="SPACE_REQUIRED" /> са уређаја и пробајте поново.</translation>
 <translation id="2960208947600937804">Дошло је до грешке при конфигурисању Linux-а. Обратите се администратору.</translation>
 <translation id="2960942820860729477">Учесталост освежавања</translation>
@@ -3977,6 +3979,7 @@
 <translation id="4147099377280085053">Изаберите табелу са Брајевом азбуком</translation>
 <translation id="4147911968024186208">Пробајте поново. Ако се ова грешка поново прикаже, контактирајте представника подршке.</translation>
 <translation id="414800391140809654">може да користи ваше податке док прегледате</translation>
+<translation id="4148195018520464922">Можете да ограничите пријављивање на одређене кориснике. Тиме се уклања опција Додај особу са екрана за пријављивање. Можете да уклоните и актуелне кориснике.</translation>
 <translation id="4150201353443180367">Екран</translation>
 <translation id="4150569944729499860">Контекст екрана</translation>
 <translation id="4151449637210235443">Поделите са нама утиске о недавној игри</translation>
@@ -4175,6 +4178,7 @@
 <translation id="4322394346347055525">Затвори друге картице</translation>
 <translation id="4324577459193912240">Датотека је непотпуна</translation>
 <translation id="4325237902968425115">Деинсталира се <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">Меморијски простор и напајање</translation>
 <translation id="4326146840124313313">Најјача Chrome заштита вам пружа додатну заштиту од опасних веб-сајтова, преузимања и додатака</translation>
 <translation id="4326484226728068206">Артикли у корпи уз <ph name="DISCOUNT_TEXT" /> код продавца <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледане су <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Вода са ледом</translation>
@@ -5158,6 +5162,7 @@
 <translation id="5146896637028965135">Системски глас</translation>
 <translation id="5147992672778369947">Користите препоручену лозинку</translation>
 <translation id="5148277445782867161">Google услуга локације користи изворе као што су Wi‑Fi мреже, мобилне мреже и сензори да би одредила приближну локацију уређаја.</translation>
+<translation id="5148285448107770349">Лозинка мора да садржи најмање 8 знакова</translation>
 <translation id="5150254825601720210">Назив SSL сервера Netscape сертификата</translation>
 <translation id="5151354047782775295">Ослободите простор на диску или ће одређени подаци можда аутоматски бити избрисани</translation>
 <translation id="5153234146675181447">Заборављање телефона</translation>
@@ -8137,6 +8142,7 @@
 <translation id="7617263010641145920">Укључите Play продавницу</translation>
 <translation id="7617648809369507487">Користи ненаметљиву размену порука</translation>
 <translation id="7621382409404463535">Систем није успео да сачува конфигурацију уређаја.</translation>
+<translation id="7621480263311228380">Немају дозволу да користе информације које су сачували о вама</translation>
 <translation id="7621595347123595643">Нећете моћи да повратите локалне податке ако заборавите лозинку или PIN.</translation>
 <translation id="7622114377921274169">Пуни се.</translation>
 <translation id="7622768823216805500">Сајтови обично инсталирају обрађиваче плаћања за потребе функција куповине попут лакшег плаћања</translation>
@@ -8690,6 +8696,7 @@
 <translation id="8037117027592400564">Читање свог текста изговореног помоћу синтетизованог говора</translation>
 <translation id="8037357227543935929">Питај (подразумевано)</translation>
 <translation id="803771048473350947">Датотека</translation>
+<translation id="8037801708772278989">Проверено малопре</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 фајл се копира у <ph name="CLOUD_PROVIDER" />}one{{NUM_OF_FILES} фајл се копира у <ph name="CLOUD_PROVIDER" />}few{{NUM_OF_FILES} фајла се копирају у <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} фајлова се копира у <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8041267120753677077">да стримује апликације на телефону</translation>
@@ -9483,6 +9490,7 @@
 <translation id="8680251145628383637">Пријавите се да би вам обележивачи, историја, лозинке и друга подешавања били доступни на свим уређајима. Аутоматски ћете бити пријављени и на Google услуге.</translation>
 <translation id="8681886425883659911">Огласи су блокирани на сајтовима за које је познато да приказују огласе који ометају активности или обмањујуће огласе</translation>
 <translation id="8682730193597992579">Штампач <ph name="PRINTER_NAME" /> је повезан и спреман</translation>
+<translation id="8684471948980641888">Дозволи синхронизацију на мрежама са ограничењем</translation>
 <translation id="8685540043423825702">Chrome профил</translation>
 <translation id="8686142379631285985">Пријављени сте као <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Откажите фајл <ph name="FILE_NAME" /></translation>

@@ -484,6 +484,7 @@
 <translation id="1390548061267426325">在常规标签页中打开</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />无权通过“<ph name="PRINTER_NAME" />”进行打印。请与您的管理员联系。</translation>
 <translation id="1392047138650695757">用户字典</translation>
+<translation id="139300021892314943">限制哪些用户可以登录</translation>
 <translation id="1393283411312835250">太阳和云朵</translation>
 <translation id="1395730723686586365">更新程序已启动</translation>
 <translation id="1395832189806039783">突出显示键盘焦点所在的项</translation>
@@ -2508,6 +2509,7 @@
 <translation id="2956070239128776395">有区段嵌套在分组中：<ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">打包扩展程序警告</translation>
 <translation id="2959127025785722291">出了点问题。无法完成扫描。请重试。</translation>
+<translation id="2959474507964749987">此加密文件可能是病毒或恶意软件。<ph name="LINE_BREAK" />若要确定它是否安全，您可将此文件及密码发送到 Google 安全浏览功能进行检查。扫描通常需要几秒钟的时间。<ph name="LINE_BREAK" />若要扫描，请添加此文件的密码。</translation>
 <translation id="2959842337402130152">存储空间不足，因此无法恢复。请从设备中释放 <ph name="SPACE_REQUIRED" /> 空间，然后重试。</translation>
 <translation id="2960208947600937804">配置 Linux 时出错。请与您的管理员联系。</translation>
 <translation id="2960942820860729477">刷新率</translation>
@@ -3970,6 +3972,7 @@
 <translation id="4147099377280085053">选择一种盲文表</translation>
 <translation id="4147911968024186208">请重试。如果系统仍提示此错误，请与您的支持代表联系。</translation>
 <translation id="414800391140809654">可以在您浏览时使用您的相关信息</translation>
+<translation id="4148195018520464922">您可以设置限制，只允许某些用户登录。此操作会移除登录界面上的“添加用户”选项。您还可以移除当前用户。</translation>
 <translation id="4150201353443180367">显示</translation>
 <translation id="4150569944729499860">屏幕上下文</translation>
 <translation id="4151449637210235443">欢迎与我们分享您近期的游戏内容</translation>
@@ -4168,6 +4171,7 @@
 <translation id="4322394346347055525">关闭其他标签页</translation>
 <translation id="4324577459193912240">文件下载未完成</translation>
 <translation id="4325237902968425115">正在卸载 <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4325433082696797523">存储和电源</translation>
 <translation id="4326146840124313313">Chrome 强大的安全防护功能有助于保护您免受危险的网站、下载内容和扩展程序的侵害</translation>
 <translation id="4326484226728068206">您的购物车中有多件商品享受了由 <ph name="MERCHANT_DOMAIN" /> 的 <ph name="MERCHANT_NAME" /> 提供的 <ph name="DISCOUNT_TEXT" />，距离上次查看已有 <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">冰水</translation>
@@ -8121,6 +8125,7 @@
 <translation id="7617263010641145920">开启 Play 商店</translation>
 <translation id="7617648809369507487">使用干扰性更低的提示方式</translation>
 <translation id="7621382409404463535">系统未能保存设备配置。</translation>
+<translation id="7621480263311228380">不允许使用其保存的与您相关的信息</translation>
 <translation id="7621595347123595643">如果忘记了密码或 PIN 码，您将无法恢复本地数据。</translation>
 <translation id="7622114377921274169">正在充电。</translation>
 <translation id="7622768823216805500">网站通常会安装付款处理程序以实现购物功能（例如更轻松的结算）</translation>
@@ -8674,6 +8679,7 @@
 <translation id="8037117027592400564">读取使用合成语音说出的所有文字</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>
+<translation id="8037801708772278989">刚刚检查过</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{正在将 1 个文件复制到 <ph name="CLOUD_PROVIDER" />}other{正在将 {NUM_OF_FILES} 个文件复制到 <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8041267120753677077">流式传输手机上的应用</translation>
@@ -9178,7 +9184,7 @@
 <translation id="8448729345478502352">缩小或放大屏幕上的内容</translation>
 <translation id="8449008133205184768">粘贴并匹配样式</translation>
 <translation id="8449036207308062757">管理存储空间</translation>
-<translation id="8449836157089738489">在新标签页组中打开全部网址</translation>
+<translation id="8449836157089738489">在新标签页分组中打开全部网址</translation>
 <translation id="8449869326050867919">已分享密码</translation>
 <translation id="8451512073679317615">智能助理</translation>
 <translation id="8452105022015742247">正在从您的 Android 手机传输 Google 账号信息</translation>

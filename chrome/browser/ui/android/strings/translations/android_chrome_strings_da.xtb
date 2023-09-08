@@ -58,6 +58,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra udklipsholderen?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Du kan nu se indhold fra og om <ph name="SITE_NAME" /> i Følger. De websites og søgninger, du følger, gemmes på din Google-konto. Du kan til enhver tid administrere, hvad du følger, i indstillingerne.</translation>
 <translation id="1263231323834454256">Læseliste</translation>
 <translation id="1266864766717917324">Det var ikke muligt at dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Her kan du se din historik</translation>
@@ -136,6 +137,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="1671236975893690980">Download afventer…</translation>
 <translation id="1672586136351118594">Vis ikke igen</translation>
 <translation id="1680919990519905526">Køb med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Du får snart vist indhold fra og om <ph name="SITE_NAME" /> i Følger. De websites og søgninger, du følger, gemmes på din Google-konto. Du kan til enhver tid administrere, hvad du følger, i indstillingerne.</translation>
 <translation id="1702543251015153180">Vil du ændre dine indstillinger for mørkt tema?</translation>
 <translation id="1702907158640575240">Administreret browser</translation>
 <translation id="1710099199314114079">Skift eller luk faner</translation>
@@ -1243,6 +1245,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7431991332293347422">Bestem selv, hvordan din browserhistorik skal bruges til at personligt tilpasse søgeresultater m.m.</translation>
 <translation id="7435356471928173109">Deaktiveret af din administrator</translation>
 <translation id="7437998757836447326">Log ud af Chrome</translation>
+<translation id="7450926666485653189">Sender en sløret del af webadressen til Google via en privatlivsbeskyttende server, som skjuler din IP-adresse</translation>
 <translation id="7453467225369441013">Logger dig ud af de fleste websites. Du bliver ikke logget ud af din Google-konto.</translation>
 <translation id="7453810262525006706">Minimer til visning fra siden</translation>
 <translation id="7454641608352164238">Der er ikke nok plads</translation>
@@ -1472,6 +1475,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8497242791509864205">Åbn sorteringsmuligheder</translation>
 <translation id="8497480609928300907">Beskrivelse af Privatlivsguide</translation>
 <translation id="8497726226069778601">Her er ikke noget at se… endnu</translation>
+<translation id="8501423924927196358">Indikator for indlæsning af sideindsigt</translation>
 <translation id="8503559462189395349">Chrome-adgangskoder</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8505766168025405649">Se notifikation for downloadstatus</translation>

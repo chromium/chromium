@@ -365,6 +365,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Открепить окна</translation>
 <translation id="2528111225373402384">Настройки точки доступа</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Включить или отключить режим активного курсора</translation>
 <translation id="2531025035050312891">устройство работает медленно</translation>
 <translation id="2531107890083353124">Нажмите <ph name="KEY_ONE" /> при перетаскивании вкладки</translation>
@@ -1615,6 +1616,7 @@
 <translation id="7714767791242455379">Добавить мобильную сеть</translation>
 <translation id="7720400844887872976">Вкл. до <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ПОВТОРИТЬ</translation>
+<translation id="7721132362314201794">Название рабочего стола</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 уведомление}one{# уведомление}few{# уведомления}many{# уведомлений}other{# уведомления}}</translation>
 <translation id="7723703419796509666">Показать или скрыть консоль инструментов разработчика</translation>
 <translation id="7724603315864178912">Вырезать</translation>
@@ -1850,6 +1852,7 @@
 <translation id="8731487213223706745">Окончание: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Это может быть попыткой узнать, какие клавиши вы нажимаете.</translation>
 <translation id="8735678380411481005">Цвет подсветки клавиатуры</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: активация…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности</translation>

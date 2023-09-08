@@ -234,6 +234,7 @@
 <translation id="1432187715652018471">페이지에서 서비스 핸들러를 설치하려고 합니다.</translation>
 <translation id="1432581352905426595">검색엔진 관리</translation>
 <translation id="1433225466058025572">파일을 다시 이동해 보세요.</translation>
+<translation id="1434317006812369578">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있습니다. 최근 세이프 브라우징에서 사용자님이 방문하고자 한 <ph name="BEGIN_LINK" /><ph name="SITE" /> 사이트에 멀웨어가 삽입되어 있음을 발견<ph name="END_LINK" />했습니다.</translation>
 <translation id="1435940442311036198">다른 기기의 패스키 사용</translation>
 <translation id="1436185428532214179">기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="1442386063175183758">오른쪽 게이트 폴드</translation>
@@ -384,6 +385,7 @@
 <translation id="1732445923934584865">직접 요청하기</translation>
 <translation id="1733064249834771892">글꼴</translation>
 <translation id="1733631169686303142">오디오 기기</translation>
+<translation id="1733762317901693627">평소에 안전한 사이트도 가끔은 공격자에 의해 해킹당할 수 있습니다. 이러한 위험에 대해 제대로 알고 있다고 생각하는 경우에만 <ph name="BEGIN_LINK" />안전하지 않은 사이트<ph name="END_LINK" />를 방문하세요.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">시스템 관리자에게 문의하세요.</translation>
 <translation id="1736420071277903564">컴퓨터</translation>
@@ -717,6 +719,7 @@
 <translation id="2480300195898055381">Google 계정(<ph name="USER_EMAIL" />)에 저장됩니다</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="248348093745724435">컴퓨터 정책</translation>
+<translation id="2490199669743245365">방문하려는 사이트의 공격자가 비밀번호, 사진, 메시지, 신용카드 번호 등을 도용하거나 삭제하는 유해한 소프트웨어를 설치할 수도 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">서버 인증서에 오류가 있습니다.</translation>
 <translation id="2491414235131909199">확장 프로그램에서 차단한 페이지입니다.</translation>
 <translation id="2495083838625180221">JSON 파서</translation>
@@ -1051,6 +1054,7 @@
 <translation id="3216313131063488104">블루스</translation>
 <translation id="3218181027817787318">상대</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{지금 업데이트 필요함}=2{내일까지 업데이트 필요}other{#일 이내로 업데이트 필요}}</translation>
+<translation id="3218388919950135939">이러한 위험에 대해 제대로 알고 있다고 생각하는 경우에만 <ph name="BEGIN_LINK" />안전하지 않은 사이트<ph name="END_LINK" />를 방문하세요.</translation>
 <translation id="3220264767789936523">정장</translation>
 <translation id="3223287115535306850">앱 실행용 트로버</translation>
 <translation id="3223425961342298674">위치가 허용되지 않음</translation>
@@ -1337,6 +1341,7 @@
 <translation id="3772211998634047851">용지(본드)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Keep에서 빠르게 새 메모 만들기</translation>
 <translation id="3778403066972421603">이 카드를 Google 계정과 이 기기에 저장하시겠습니까?</translation>
+<translation id="378026377453746707">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있습니다. 최근 세이프 브라우징에서 사용자님이 방문하고자 한 <ph name="BEGIN_LINK" /><ph name="SITE" /> 사이트에 위험한 소프트웨어가 삽입되어 있음을 발견<ph name="END_LINK" />했습니다</translation>
 <translation id="3780694243617746492">출력함</translation>
 <translation id="3781428340399460090">진한 분홍색</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1348,6 +1353,7 @@
 <translation id="3795344968043407227">인디 및 얼터너티브 음악</translation>
 <translation id="3799805948399000906">글꼴 요청됨</translation>
 <translation id="380329542618494757">이름</translation>
+<translation id="3806932344025766608">방문하려는 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">전화 서비스 제공업체</translation>
 <translation id="3807366285948165054">이미지 X 시프트</translation>
 <translation id="3807873520724684969">유해한 콘텐츠 차단됨</translation>
@@ -1413,6 +1419,7 @@
 <translation id="3950820424414687140">로그인</translation>
 <translation id="3953505489397572035">일반적인 가격</translation>
 <translation id="3958057596965527988">4x4인치</translation>
+<translation id="3959121317419633580">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있습니다. 최근 세이프 브라우징에서 사용자님이 방문하고자 한 <ph name="BEGIN_LINK" /><ph name="SITE" />사이트에 피싱이 삽입되어 있음을 발견<ph name="END_LINK" />했습니다.<ph name="NEW_LINE" />평소에 안전한 사이트도 가끔은 공격자에 의해 해킹당할 수 있습니다. 세이프 브라우징 기능의 오류이며 이 사이트가 위험을 초래하고 있지 않다고 생각되면 <ph name="BEGIN_ERROR_LINK" />Google에 알려주시기 바랍니다<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">결제 핸들러 시트가 절반 높이로 열림</translation>
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3963721102035795474">리더 모드</translation>
@@ -1436,6 +1443,7 @@
 <translation id="401170183602135785">봉투 C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}페이지로 이루어진 PDF 문서}other{{COUNT}페이지로 이루어진 PDF 문서}}</translation>
 <translation id="4014895360827978999">판매자 서비스 및 결제 시스템</translation>
+<translation id="4018819349042761761">공개 키</translation>
 <translation id="4023431997072828269">안전하지 않은 연결을 통해 이 양식이 제출되므로 내 정보가 다른 사용자에게 표시됩니다.</translation>
 <translation id="4030383055268325496">추가 실행 취소(&amp;U)</translation>
 <translation id="4030545038933060179">사용 설정하면 최근 방문 기록을 기준으로 여기에 주제 목록이 표시됩니다.</translation>
@@ -1612,6 +1620,7 @@
 <translation id="433013776994920042">웹 호스팅 및 도메인 등록</translation>
 <translation id="4331519897422864041">스태커 5</translation>
 <translation id="4331708818696583467">주의 요함</translation>
+<translation id="4333295216031073611">쇼핑 목록</translation>
 <translation id="4333561522337981382">모든 디스플레이의 창 관리</translation>
 <translation id="4340575312453649552">이 광고는 기기에서 너무 많은 리소스를 사용했기 때문에 Chrome에서 삭제했습니다.</translation>
 <translation id="4340810192899866471">JSON에서 가져오기</translation>
@@ -1664,6 +1673,7 @@
 <translation id="4451684391620232683">사용자에게 표시되는 텍스트:</translation>
 <translation id="4452328064229197696">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 저장된 비밀번호를 확인하시기 바랍니다.</translation>
 <translation id="4464826014807964867">조직의 정보가 포함된 웹사이트</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />향상된 보호 모드를 사용 설정<ph name="END_ENHANCED_PROTECTION_LINK" />하여 Chrome의 가장 강력한 보안을 활용하세요.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">안전하지 않은 양식입니다. 자동 완성이 사용 중지되었습니다.</translation>
 <translation id="4477350412780666475">다음 트랙</translation>
@@ -2382,6 +2392,7 @@
 <translation id="5992805036496113940">광고 표시에 사용되는 정보 확인</translation>
 <translation id="5995727681868049093">Google 계정에서 정보, 개인 정보 보호 및 보안 설정 관리</translation>
 <translation id="5997247540087773573">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하고 저장된 비밀번호를 확인하시기 바랍니다.</translation>
+<translation id="5999271311987646952">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있으며, 세이프 브라우징에서는 사용자님이 방문하고자 한 사이트에서 <ph name="BEGIN_LINK" />멀웨어를 최근에 발견<ph name="END_LINK" />했습니다.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' 검색결과 <ph name="RESULT_COUNT" />개</translation>
 <translation id="6002122790816966947">내 기기</translation>
 <translation id="6005659677094197001">연속</translation>
@@ -2686,6 +2697,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">컴퓨터 교육</translation>
 <translation id="6633476656216409494">비즈니스 및 생산성 소프트웨어</translation>
+<translation id="6638353438328951386">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있으며, 세이프 브라우징에서는 사용자님이 방문하고자 한 사이트에서 최근에 <ph name="BEGIN_LINK" />위험한 소프트웨어를 발견<ph name="END_LINK" />했습니다.</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6645291930348198241">쿠키 및 사이트 데이터에 액세스합니다.</translation>
 <translation id="6645478838938543427">가격 인하 알림이 <ph name="EMAIL_ADDRESS" /> 주소로 전송됩니다.</translation>
@@ -2881,6 +2893,7 @@
 <translation id="702146556168549005">방문한 페이지의 URL이 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어 검사를 진행하여 안전하지 않은 웹사이트를 감지하거나 관리자가 설정한 규칙에 따라 웹사이트를 필터링할 수 있습니다.</translation>
 <translation id="702275896380648118">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다. Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
 <translation id="7023162328967545559">관리자 경고</translation>
+<translation id="7024932305105294144">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있으며, 세이프 브라우징에서는 사용자님이 방문하고자 한 사이트에서 <ph name="BEGIN_LINK" />피싱을 최근에 발견<ph name="END_LINK" />했습니다. 피싱 사이트는 사용자를 속이기 위해 다른 사이트인 것처럼 가장합니다.<ph name="NEW_LINE" />평소에 안전한 사이트도 가끔은 공격자에 의해 해킹당할 수 있습니다. 세이프 브라우징 기능의 오류이며 이 사이트가 위험을 초래하고 있지 않다고 생각되면 <ph name="BEGIN_ERROR_LINK" />Google에 알려주시기 바랍니다<ph name="END_ERROR_LINK" />.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7030436163253143341">인증서가 올바르지 않음</translation>
 <translation id="7031646650991750659">내가 설치한 Google Play 앱</translation>
@@ -2916,6 +2929,7 @@
 <translation id="7105998430540165694">iCloud 키체인의 패스키</translation>
 <translation id="7106762743910369165">조직에서 관리하는 브라우저입니다.</translation>
 <translation id="7107249414147762907">이 PDF에 액세스할 수 없습니다. 추출된 텍스트가 없습니다</translation>
+<translation id="7107427078069498123">SHA-256 지문</translation>
 <translation id="7108338896283013870">숨기기</translation>
 <translation id="7108634116785509031"><ph name="HOST" />에서 카메라에 액세스하려고 합니다</translation>
 <translation id="7108819624672055576">확장 프로그램에서 허용</translation>
@@ -2981,6 +2995,7 @@
 <translation id="722454870747268814">새 시크릿 탭</translation>
 <translation id="7226276626900992675">이 사이트에서 서드 파티 쿠키를 사용하도록 허용했습니다. 대부분의 사이트 기능은 작동하지만 보안이 취약해집니다.</translation>
 <translation id="7227293336683593977">가격 변동 내역</translation>
+<translation id="7227747683324411744">방문하려는 사이트의 공격자가 홈페이지를 변경하거나 방문하는 사이트에서 추가 광고를 표시하는 등 탐색 방식에 영향을 주는 유해한 소프트웨어를 설치하도록 유도할 수 있습니다.</translation>
 <translation id="7233592378249864828">인쇄 확인 시트</translation>
 <translation id="7234638337680728591">유가 및 자동차 주유</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% 완료됨 | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3079,6 +3094,7 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">연락처 정보 추가</translation>
 <translation id="7437490109271760224">카드 게임</translation>
+<translation id="7438338505272634288">방문하려는 사이트의 공격자가 홈페이지를 변경하거나 방문하는 사이트에서 추가 광고를 표시하는 등 탐색 방식에 영향을 주는 유해한 소프트웨어를 설치하도록 유도할 수 있습니다. Chrome에서는 피해 방지를 위해 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">오프라인 상태일 때 탐색</translation>
 <translation id="7441627299479586546">잘못된 정책 주체</translation>
 <translation id="7441864845853794192">고급 요리 및 별미 음식</translation>
@@ -3178,6 +3194,7 @@
 <translation id="7599089013883397081">다운로드 시간 초과</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="7601297359530599375">일반적으로 이 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">방문하려는 사이트의 공격자가 비밀번호, 사진, 메시지, 신용카드 번호 등을 도용하거나 삭제하는 유해한 소프트웨어를 설치할 수 있습니다.</translation>
 <translation id="7610193165460212391">값(<ph name="VALUE" />)이 범위를 벗어났습니다.</translation>
 <translation id="7613889955535752492">만료일: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 비밀번호를 확인하고 관리하려면 Tab을 누른 다음 Enter 누르기</translation>
@@ -3405,6 +3422,7 @@
 <translation id="8078006011486731853">{0,plural, =1{기밀 파일을 업로드하시겠습니까?}other{기밀 파일을 업로드하시겠습니까?}}</translation>
 <translation id="8078141288243656252">회전 시 주석을 달 수 없습니다.</translation>
 <translation id="8079031581361219619">사이트를 새로고침하시겠습니까?</translation>
+<translation id="8079976827192572403">위험한 사이트</translation>
 <translation id="8081087320434522107">세단</translation>
 <translation id="8086971161893892807">초고</translation>
 <translation id="8088680233425245692">글을 조회하지 못했습니다.</translation>
@@ -3575,6 +3593,7 @@
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">현재 마이크 허용됨</translation>
+<translation id="8422228580902424274">방문하려는 사이트의 공격자가 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500x750mm</translation>
 <translation id="8428213095426709021">설정</translation>
@@ -3687,6 +3706,7 @@
 <translation id="8680536109547170164"><ph name="QUERY" />, 답변, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">다음 이유로 <ph name="PAGE" />의 웹페이지를 로드할 수 없습니다.</translation>
 <translation id="8686424632716064939">컴퓨터 보안</translation>
+<translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> 항목이 삭제되었습니다.</translation>
 <translation id="8687429322371626002">내 기기와 계정은 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="8688672835843460752">사용 가능</translation>
 <translation id="868922510921656628">세트당 페이지 수</translation>
@@ -3898,6 +3918,7 @@
 <translation id="9128870381267983090">네트워크에 연결</translation>
 <translation id="9131119348384879525">기밀 콘텐츠를 캡처하시겠습니까?</translation>
 <translation id="9133985615769429248">이 기기를 다른 사용자와 공유하는 경우, 저장된 비밀번호를 사용할 때마다 화면 잠금을 통해 본인 인증을 진행할 수 있습니다.</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, 가상 카드</translation>
 <translation id="9136861683332321024">고급형 자동차</translation>
 <translation id="9137013805542155359">원본 보기</translation>
 <translation id="9137248913990643158">이 앱을 사용하기 전에 Chrome을 시작하고 로그인하세요.</translation>

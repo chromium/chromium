@@ -487,6 +487,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1390548061267426325">Opna sem venjulegan flipa</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> hefur ekki heimild til að prenta út með <ph name="PRINTER_NAME" />. Hafðu samband við kerfisstjórann.</translation>
 <translation id="1392047138650695757">Orðabækur notanda</translation>
+<translation id="139300021892314943">Takmarka hver getur skráð sig inn</translation>
 <translation id="1393283411312835250">Sól og ský</translation>
 <translation id="1395730723686586365">Uppfærsla hafin</translation>
 <translation id="1395832189806039783">Yfirstrika atriði með lyklaborðsfókus</translation>
@@ -2532,6 +2533,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2956070239128776395">Hluti faldaður í hópi: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Viðvörun pakkaviðbótar</translation>
 <translation id="2959127025785722291">Eitthvað fór úrskeiðis. Ekki var hægt að ljúka við skönnun. Reyndu aftur.</translation>
+<translation id="2959474507964749987">Þessi dulkóðaða skrá gæti verið vírus eða spilliforrit.<ph name="LINE_BREAK" />Til að athuga hvort hún sé ótraust geturðu sent skrána og aðgangsorðið í örugga vefskoðun Google. Almennt tekur aðeins nokkrar sekúndur að skanna.<ph name="LINE_BREAK" />Bættu við aðgangsorði skráarinnar til að skanna.</translation>
 <translation id="2959842337402130152">Ekki hægt að endurheimta vegna skorts á geymslurými. Losaðu um <ph name="SPACE_REQUIRED" /> í tækinu og reyndu aftur.</translation>
 <translation id="2960208947600937804">Villa kom upp við stillingu Linux. Hafðu samband við kerfisstjórann þinn.</translation>
 <translation id="2960942820860729477">Endurnýjunarhraði</translation>
@@ -3995,6 +3997,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4147099377280085053">Veldu blindraleturstöflu</translation>
 <translation id="4147911968024186208">Reyndu aftur. Ef þú sérð þessa villu aftur skaltu hafa samband við þjónustufulltrúa.</translation>
 <translation id="414800391140809654">getur notað upplýsingarnar þínar við vefskoðun</translation>
+<translation id="4148195018520464922">Þú getur takmarkað innskráningu við tiltekna notendur. Þetta fjarlægir valkostinn „Bæta við aðila“ á innskráningarskjánum. Þú getur einnig fjarlægt fyrirliggjandi notendur.</translation>
 <translation id="4150201353443180367">Skjár</translation>
 <translation id="4150569944729499860">Skjáumhverfi</translation>
 <translation id="4151449637210235443">Segðu okkur frá nýlegri leikjaspilun</translation>
@@ -5177,6 +5180,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5146896637028965135">Rödd kerfis</translation>
 <translation id="5147992672778369947">Notaðu ráðlagt aðgangsorð</translation>
 <translation id="5148277445782867161">Staðsetningarþjónusta Google notar heimildir eins og Wi-Fi, farsímakerfi og skynjara til að ákvarða staðsetningu tækisins.</translation>
+<translation id="5148285448107770349">Aðgangsorð (verður að vera minnst 8 stafir)</translation>
 <translation id="5150254825601720210">SSL-þjónsheiti Netscape-vottorðs</translation>
 <translation id="5151354047782775295">Losaðu um geymslupláss eða veldu gögn sem má eyða sjálfkrafa</translation>
 <translation id="5153234146675181447">Gleyma síma</translation>
@@ -8153,6 +8157,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7617263010641145920">Kveikja á Play Store</translation>
 <translation id="7617648809369507487">Nota hljóðlátari skilaboð</translation>
 <translation id="7621382409404463535">Kerfið gat ekki vistað stillingu tækisins.</translation>
+<translation id="7621480263311228380">Má ekki nota upplýsingar sem það hefur vistað um þig</translation>
 <translation id="7621595347123595643">Þú getur ekki endurheimt staðbundin gögn ef þú gleymir aðgangsorðinu þínu eða PIN-númerinu.</translation>
 <translation id="7622114377921274169">Í hleðslu.</translation>
 <translation id="7622768823216805500">Vefsvæði setja yfirleitt upp greiðslumiðlara fyrir verslunareiginleika eins og einfaldari greiðslu</translation>
@@ -8705,6 +8710,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8037117027592400564">Lesa allan talaðan texta með talgervli</translation>
 <translation id="8037357227543935929">Spyrja (sjálfgefið)</translation>
 <translation id="803771048473350947">Skrá</translation>
+<translation id="8037801708772278989">Athugað rétt í þessu</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Afritar 1 skrá í <ph name="CLOUD_PROVIDER" />}one{Afritar {NUM_OF_FILES} skrá í <ph name="CLOUD_PROVIDER" />}other{Afritar {NUM_OF_FILES} skrár í <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8041267120753677077">Streymdu forritum símans</translation>
@@ -9498,6 +9504,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8680251145628383637">Skráðu þig inn til að sjá bókamerkin þín, ferilinn, aðgangsorðin og aðrar stillingar í öllum tækjunum þínum. Þú skráist einnig sjálfkrafa inn í þá þjónustu Google sem þú notar.</translation>
 <translation id="8681886425883659911">Lokað er fyrir auglýsingar á vefsvæðum sem eru þekkt fyrir að birta ágengar eða villandi auglýsingar</translation>
 <translation id="8682730193597992579">Prentarinn <ph name="PRINTER_NAME" /> er tengdur og tilbúinn</translation>
+<translation id="8684471948980641888">Leyfa samstillingu á neti með mældri notkun</translation>
 <translation id="8685540043423825702">Chrome-prófíllinn þinn</translation>
 <translation id="8686142379631285985">Skráð(ur) inn sem <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Hætta við <ph name="FILE_NAME" /></translation>

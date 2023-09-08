@@ -665,7 +665,7 @@
 <translation id="371370241367527062">ముందువైపు మైక్రోఫోన్</translation>
 <translation id="3713734891607377840">పూర్తయినప్పుడు తెరవండి</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, మరో<ph name="UNAVAILABLE_APPS_COUNT" /> యాప్‌లు ఈ పరికరంలో అందుబాటులో లేవు.</translation>
-<translation id="3735740477244556633">దీని ద్వారా క్రమీకరించు</translation>
+<translation id="3735740477244556633">క్రమపద్ధతి</translation>
 <translation id="3738664582935948253">మీరు స్క్రీన్ రికార్డింగ్‌లలో ఇప్పుడు క్లిక్‌లను, కీబోర్డ్ షార్ట్‌కట్‌లను చూపవచ్చు</translation>
 <translation id="3742055079367172538">స్క్రీన్‌షాట్ తీసినప్పుడు</translation>
 <translation id="3756485814916578707">స్క్రీన్‌ను ప్రసారం చేయడం</translation>
@@ -1622,6 +1622,7 @@
 <translation id="7714767791242455379">కొత్త సెల్యులర్ నెట్‌వర్క్‌ను జోడించండి</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> వరకు ఆన్‌లో ఉంటుంది</translation>
 <translation id="7720410380936703141">మళ్లీ ట్రై చేయండి</translation>
+<translation id="7721132362314201794">డెస్క్ పేరు</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 నోటిఫికేషన్‌}other{# నోటిఫికేషన్‌లు}}</translation>
 <translation id="7723703419796509666">డెవలపర్ టూల్స్ కన్సోల్‌ను చూడండి లేదా దాచండి</translation>
 <translation id="7724603315864178912">కత్తిరించండి</translation>

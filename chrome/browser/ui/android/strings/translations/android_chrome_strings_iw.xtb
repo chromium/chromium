@@ -312,6 +312,7 @@
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
 <translation id="2702516483241149200">חדש: ניתן לשתף קישור שגולל לטקסט הזה</translation>
 <translation id="2708051474374549906">‏הגנה יזומה בזמן אמת מפני אתרים, הורדות ותוספים מסוכנים, המבוססת על נתוני הגלישה שלך שנשלחים אל Google</translation>
+<translation id="2708226184420201102">פתיחה בדפדפן <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">חדש</translation>
 <translation id="2711073837061989559">תקופות ניסיון</translation>
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
@@ -1242,6 +1243,7 @@
 <translation id="7431991332293347422">קביעת אופן השימוש בהיסטוריית הגלישה להתאמה אישית של החיפוש ועוד</translation>
 <translation id="7435356471928173109">מנהל המערכת כיבה את התכונה הזו</translation>
 <translation id="7437998757836447326">‏יציאה מ-Chrome</translation>
+<translation id="7450926666485653189">‏שליחת קטע קוד מעורפל מכתובת ה-URL ל-Google דרך שרת פרטיות שמסתיר את כתובת ה-IP</translation>
 <translation id="7453467225369441013">‏הפעולה תוציא אותך מרוב האתרים אבל לא מחשבון Google שלך.</translation>
 <translation id="7453810262525006706">כיווץ לחלונית צדדית</translation>
 <translation id="7454641608352164238">אין מספיק מקום</translation>
@@ -1471,6 +1473,7 @@
 <translation id="8497242791509864205">פתיחה של אפשרויות המיון</translation>
 <translation id="8497480609928300907">הסבר על המדריך בנושא פרטיות</translation>
 <translation id="8497726226069778601">אין מה לראות כאן… בינתיים</translation>
+<translation id="8501423924927196358">אינדיקטור הטעינה של התובנות לגבי הדף</translation>
 <translation id="8503559462189395349">‏סיסמאות Chrome</translation>
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8505766168025405649">סטטוס ההורדה מוצג בהתראות</translation>

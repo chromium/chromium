@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Konteksto</translation>
 <translation id="3272909651715601089">Hindi mabuksan ang "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Ihinahanda</translation>
+<translation id="3280719573299097127">Nasa nakametrong network ka. Na-pause ang pag-sync ng file.</translation>
 <translation id="3280987981688031357">Vinyl record</translation>
 <translation id="3290356915286466215">Hindi secure</translation>
 <translation id="3291218047831493686">Kumonekta sa network na ito para baguhin ang setting ng lock ng SIM</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">Inalis ang lahat ng entry sa pagpipilian.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
 <translation id="5845721951356578987">Nurse</translation>
+<translation id="5858478190805449225">Naka-on ang battery saver mode. Subukan ulit kapag naka-off ang battery saver mode.</translation>
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Nabigo ang paghanap ng DHCP</translation>
@@ -920,6 +922,7 @@
 <translation id="8087576439476816834">I-download, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Ibinahagi sa akin</translation>
 <translation id="8116072619078571545">Tubig na may yelo</translation>
+<translation id="8120392982188717723">Payagan ang pag-sync sa mga nakametrong network</translation>
 <translation id="8124093710070495550">Isyu sa pag-sync</translation>
 <translation id="8128733386027980860">English (UK) na may Dvorak keyboard</translation>
 <translation id="8137331602592933310">Ibinahagi sa iyo ang "<ph name="FILENAME" />." Hindi mo ito matatanggal dahil hindi mo ito pagmamay-ari.</translation>

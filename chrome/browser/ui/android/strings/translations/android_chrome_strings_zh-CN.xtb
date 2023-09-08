@@ -58,6 +58,7 @@
 <translation id="124678866338384709">关闭当前标签页</translation>
 <translation id="1246905108078336582">从剪贴板中移除建议？</translation>
 <translation id="1258753120186372309">Google 涂鸦：<ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">现在，您会在“已关注”部分中看到来自<ph name="SITE_NAME" />及与其相关的内容。您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
 <translation id="1263231323834454256">阅读清单</translation>
 <translation id="1266864766717917324">无法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">您的历史记录会显示在此处</translation>
@@ -136,6 +137,7 @@
 <translation id="1671236975893690980">正在等待下载…</translation>
 <translation id="1672586136351118594">不再显示</translation>
 <translation id="1680919990519905526">使用 Google 智能镜头搜索图中商品信息<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">不久之后，您就会在“已关注”部分中看到来自<ph name="SITE_NAME" />及与其相关的内容。您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
 <translation id="1702543251015153180">更改您的深色主题设置？</translation>
 <translation id="1702907158640575240">受管理的浏览器</translation>
 <translation id="1710099199314114079">切换或关闭标签页</translation>
@@ -1243,6 +1245,7 @@
 <translation id="7431991332293347422">控制 Google 如何利用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="7435356471928173109">已被您的管理员关闭</translation>
 <translation id="7437998757836447326">退出 Chrome</translation>
+<translation id="7450926666485653189">通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google</translation>
 <translation id="7453467225369441013">您会从大多数网站退出，但不会退出自己的 Google 账号。</translation>
 <translation id="7453810262525006706">合拢为侧边视图</translation>
 <translation id="7454641608352164238">空间不足</translation>

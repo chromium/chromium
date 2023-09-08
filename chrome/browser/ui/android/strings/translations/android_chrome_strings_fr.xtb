@@ -58,6 +58,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1246905108078336582">Supprimer la suggestion du presse-papiers ?</translation>
 <translation id="1258753120186372309">Doodle : <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Dans "Suivis", vous verrez désormais des contenus provenant du site <ph name="SITE_NAME" /> ou le concernant. Les sites et recherches que vous suivez sont enregistrés dans votre compte Google. Vous pouvez à tout moment gérer dans les paramètres les contenus que vous suivez.</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1266864766717917324">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Votre historique s'affichera ici</translation>
@@ -136,6 +137,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="1671236975893690980">Téléchargement en attente…</translation>
 <translation id="1672586136351118594">Ne plus afficher</translation>
 <translation id="1680919990519905526">Acheter avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Dans "Suivis", vous verrez bientôt des contenus provenant du site <ph name="SITE_NAME" /> ou le concernant. Les sites et recherches que vous suivez sont enregistrés dans votre compte Google. Vous pouvez à tout moment gérer dans les paramètres les contenus que vous suivez.</translation>
 <translation id="1702543251015153180">Modifier les paramètres du thème sombre ?</translation>
 <translation id="1702907158640575240">Navigateur géré</translation>
 <translation id="1710099199314114079">Changer d'onglet ou fermer les onglets</translation>
@@ -1243,6 +1245,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7431991332293347422">Contrôler la manière dont votre historique de navigation est utilisé pour personnaliser la recherche et plus encore</translation>
 <translation id="7435356471928173109">Mode désactivé par votre administrateur</translation>
 <translation id="7437998757836447326">Se déconnecter de Chrome</translation>
+<translation id="7450926666485653189">Envoie une partie obscurcie de l'URL à Google par le biais d'un serveur de confidentialité qui masque votre adresse IP.</translation>
 <translation id="7453467225369441013">Vous déconnecte de la plupart des sites. Vous ne serez cependant pas déconnecté de votre compte Google.</translation>
 <translation id="7453810262525006706">Réduire en vue latérale</translation>
 <translation id="7454641608352164238">Espace insuffisant</translation>
@@ -1472,6 +1475,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8497242791509864205">Ouvrir les options de tri</translation>
 <translation id="8497480609928300907">Explications du Guide sur la confidentialité</translation>
 <translation id="8497726226069778601">Aucune page à afficher pour le moment</translation>
+<translation id="8501423924927196358">Indicateur de chargement de Page Insights</translation>
 <translation id="8503559462189395349">Mots de passe Chrome</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8505766168025405649">Affichez la notification pour connaître l'état du téléchargement</translation>

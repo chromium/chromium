@@ -234,6 +234,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1432187715652018471">A página quer instalar um manipulador de serviço.</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
 <translation id="1433225466058025572">Tente mover os arquivos de novo</translation>
+<translation id="1434317006812369578">O Chrome tem medidas de segurança integradas para proteger você, como o recurso Navegação segura do Google. O recurso Navegação segura <ph name="BEGIN_LINK" />encontrou um malware recentemente em <ph name="SITE" /><ph name="END_LINK" />, que está incorporado ao site que você está tentando acessar.</translation>
 <translation id="1435940442311036198">Usar uma chave de acesso em outro dispositivo</translation>
 <translation id="1436185428532214179">Pode pedir para editar arquivos e pastas no dispositivo</translation>
 <translation id="1442386063175183758">Dobra janela à direita</translation>
@@ -384,6 +385,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1732445923934584865">Perguntar pessoalmente</translation>
 <translation id="1733064249834771892">fontes</translation>
 <translation id="1733631169686303142">Equipamento de áudio</translation>
+<translation id="1733762317901693627">Até mesmo sites normalmente seguros podem ser comprometidos por invasores. Acesse <ph name="BEGIN_LINK" />este site não seguro<ph name="END_LINK" /> apenas se tiver certeza de que entende os riscos.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Tente entrar em contato com o administrador do sistema.</translation>
 <translation id="1736420071277903564">Computador</translation>
@@ -717,6 +719,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2480300195898055381">Na sua Conta do Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="248348093745724435">Políticas do computador</translation>
+<translation id="2490199669743245365">Invasores no site que você está tentando acessar podem instalar softwares nocivos que roubam ou excluem itens como senha, fotos, mensagens ou números de cartões de crédito. O Chrome recomenda voltar a uma página segura. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">O certificado do servidor contém erros.</translation>
 <translation id="2491414235131909199">Esta página foi bloqueada por uma extensão</translation>
 <translation id="2495083838625180221">Analisador JSON</translation>
@@ -1051,6 +1054,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{A atualização precisa ser feita agora}=2{A atualização precisa ser feita até amanhã}one{A atualização precisa ser feita em # dia}other{A atualização precisa ser feita em # dias}}</translation>
+<translation id="3218388919950135939">Acesse <ph name="BEGIN_LINK" />este site não seguro<ph name="END_LINK" /> apenas se tiver certeza de que entende os riscos.</translation>
 <translation id="3220264767789936523">Roupas para ocasiões formais</translation>
 <translation id="3223287115535306850">Throbber de abertura do app</translation>
 <translation id="3223425961342298674">Acesso à localização não permitido</translation>
@@ -1337,6 +1341,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3772211998634047851">Papel sulfite</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente uma nova nota no Google Keep</translation>
 <translation id="3778403066972421603">Quer salvar este cartão na sua Conta do Google e neste dispositivo?</translation>
+<translation id="378026377453746707">O Chrome tem medidas de segurança integradas para proteger você, como o recurso Navegação segura do Google. Recentemente, esse <ph name="BEGIN_LINK" />encontrou software nocivo em <ph name="SITE" /><ph name="END_LINK" />, que é incorporado ao site quando você tenta acessá-lo.</translation>
 <translation id="3780694243617746492">Bandeja de saída</translation>
 <translation id="3781428340399460090">Rosa-escuro</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1348,6 +1353,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3795344968043407227">Música alternativa e indie</translation>
 <translation id="3799805948399000906">Fonte solicitada</translation>
 <translation id="380329542618494757">Nome</translation>
+<translation id="3806932344025766608">Invasores no site que você está tentando acessar podem induzir você a instalar um software ou compartilhar dados como senha, telefone ou número do cartão de crédito. O Chrome recomenda voltar a uma página segura. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Provedores de serviço telefônico</translation>
 <translation id="3807366285948165054">Mudança X da imagem</translation>
 <translation id="3807873520724684969">Conteúdo nocivo bloqueado.</translation>
@@ -1413,6 +1419,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="3953505489397572035">Esse preço está normal</translation>
 <translation id="3958057596965527988">4 x 4 pol.</translation>
+<translation id="3959121317419633580">O Chrome tem medidas de segurança integradas para proteger você, como o recurso Navegação segura do Google. Recentemente, esse recurso <ph name="BEGIN_LINK" />encontrou phishing em <ph name="SITE" /><ph name="END_LINK" />, que está incorporado no site que você está tentando acessar.<ph name="NEW_LINE" />Até mesmo sites normalmente seguros podem ser comprometidos por invasores. <ph name="BEGIN_ERROR_LINK" />Entre em contato<ph name="END_ERROR_LINK" /> se você acreditar que houve um engano e que este site não é perigoso.</translation>
 <translation id="3961148744525529027">A página do gerenciador de pagamento está parcialmente aberta</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963721102035795474">Modo leitor</translation>
@@ -1436,6 +1443,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4014895360827978999">Sistemas de pagamento e serviços para comerciantes</translation>
+<translation id="4018819349042761761">Chave pública</translation>
 <translation id="4023431997072828269">Como o formulário é enviado por uma conexão que não é segura, suas informações ficarão visíveis para outras pessoas.</translation>
 <translation id="4030383055268325496">&amp;Desfazer adicionar</translation>
 <translation id="4030545038933060179">Quando ativada, uma lista de temas é mostrada aqui com base no seu histórico de navegação recente.</translation>
@@ -1612,6 +1620,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="433013776994920042">Hospedagem de sites e registro de domínios</translation>
 <translation id="4331519897422864041">Empilhador 5</translation>
 <translation id="4331708818696583467">Não seguro</translation>
+<translation id="4333295216031073611">Lista de compras</translation>
 <translation id="4333561522337981382">Gerenciar janelas em todas as telas</translation>
 <translation id="4340575312453649552">O anúncio usava muitos recursos do seu dispositivo, por isso, ele foi removido pelo Chrome.</translation>
 <translation id="4340810192899866471">Importar do JSON</translation>
@@ -1664,6 +1673,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4451684391620232683">Texto apresentado ao usuário:</translation>
 <translation id="4452328064229197696">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você revise suas senhas salvas.</translation>
 <translation id="4464826014807964867">Sites com informações da sua organização</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Ative a proteção reforçada<ph name="END_ENHANCED_PROTECTION_LINK" /> para ter o nível mais alto de segurança do Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Próxima faixa</translation>
@@ -2382,6 +2392,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5992805036496113940">Consultar informações usadas para mostrar anúncios</translation>
 <translation id="5995727681868049093">Gerenciar suas informações, sua privacidade e sua segurança na Conta do Google.</translation>
 <translation id="5997247540087773573">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você a mude e revise as senhas salvas.</translation>
+<translation id="5999271311987646952">O Chrome tem recursos de segurança integrados para proteger você durante a navegação, como a Navegação segura do Google, que <ph name="BEGIN_LINK" />encontrou malware recentemente<ph name="END_LINK" /> no site que você está tentando acessar.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002122790816966947">Seus dispositivos</translation>
 <translation id="6005659677094197001">Contínua</translation>
@@ -2686,6 +2697,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Educação de informática</translation>
 <translation id="6633476656216409494">Software para produtividade e empresas</translation>
+<translation id="6638353438328951386">O Chrome tem medidas de segurança integradas para proteger você, como o recurso Navegação segura do Google, que <ph name="BEGIN_LINK" />encontrou malware recentemente<ph name="END_LINK" /> no site que você está tentando acessar.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6645291930348198241">Acesso a cookies e dados do site.</translation>
 <translation id="6645478838938543427">Os alertas de redução no preço vão ser enviados para <ph name="EMAIL_ADDRESS" /></translation>
@@ -2881,6 +2893,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="702146556168549005">Os URLs das páginas que você acessa são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados para detectar sites perigosos ou filtrar sites com base em regras definidas pelo administrador.</translation>
 <translation id="702275896380648118">Este site determina seus interesses e sugere anúncios para outros sites. Ele também usa seus temas de anúncios do Chrome para mostrar anúncios mais relevantes.</translation>
 <translation id="7023162328967545559">Aviso do administrador</translation>
+<translation id="7024932305105294144">O Chrome tem recursos de segurança integrados para proteger você, como o Navegação segura do Google, que <ph name="BEGIN_LINK" />encontrou phishing recentemente<ph name="END_LINK" /> no site que você está tentando acessar. Sites de phishing fingem ser outros sites para enganar você.<ph name="NEW_LINE" />Até mesmo sites normalmente seguros podem ser comprometidos por invasores. <ph name="BEGIN_ERROR_LINK" />Entre em contato<ph name="END_ERROR_LINK" /> se você acreditar que houve um engano e que este site não é perigoso.</translation>
 <translation id="7029809446516969842">Senhas</translation>
 <translation id="7030436163253143341">O certificado não é válido</translation>
 <translation id="7031646650991750659">quais apps do Google Play estão instalados.</translation>
@@ -2916,6 +2929,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7105998430540165694">Chave de acesso do conjunto do iCloud</translation>
 <translation id="7106762743910369165">O navegador é gerenciado pela sua organização</translation>
 <translation id="7107249414147762907">Não é possível acessar este PDF. Nenhum texto extraído</translation>
+<translation id="7107427078069498123">Impressões digitais SHA-256</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> quer usar sua câmera</translation>
 <translation id="7108819624672055576">Permitida por uma extensão</translation>
@@ -2981,6 +2995,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="722454870747268814">Nova guia anônima</translation>
 <translation id="7226276626900992675">Você permitiu que este site use cookies de terceiros. Isso significa que a maioria dos recursos do site vai funcionar, mas você terá menos proteção.</translation>
 <translation id="7227293336683593977">Histórico de preços</translation>
+<translation id="7227747683324411744">Invasores no site que você está tentando acessar podem induzir você a instalar softwares nocivos que afetam a navegação, por exemplo, ao mudar sua página inicial ou mostrar mais anúncios nos sites que você visita.</translation>
 <translation id="7233592378249864828">Imprimir página de confirmação</translation>
 <translation id="7234638337680728591">Preços de gasolina e combustíveis para veículos</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% concluído | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3080,6 +3095,7 @@ Mais detalhes:
 <translation id="7429429656042611765">Executivo</translation>
 <translation id="7437289804838430631">Adicionar Informações de Contato</translation>
 <translation id="7437490109271760224">Jogos de cartas</translation>
+<translation id="7438338505272634288">Invasores no site que você está tentando acessar podem induzir você a instalar softwares nocivos que afetam a navegação, por exemplo, ao mudar sua página inicial ou mostrar mais anúncios nos sites que você visita. O Chrome recomenda voltar a uma página segura para evitar danos. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Ver conteúdo enquanto estiver off-line</translation>
 <translation id="7441627299479586546">Assunto da política incorreto</translation>
 <translation id="7441864845853794192">Alimentos gourmet e especialidades</translation>
@@ -3179,6 +3195,7 @@ Mais detalhes:
 <translation id="7599089013883397081">O tempo de download expirou</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">A conexão com este site costuma ser segura, mas o Chrome não conseguiu garantir isso desta vez. Um invasor pode estar tentando espionar ou modificar sua conexão de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Invasores no site que você está tentando acessar podem instalar softwares nocivos que roubam ou excluem itens como sua senha, fotos, mensagens ou números de cartões de crédito.</translation>
 <translation id="7610193165460212391">O valor não corresponde ao período <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Data de expiração: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para ver e gerenciar suas senhas nas configurações do Chrome</translation>
@@ -3406,6 +3423,7 @@ Mais detalhes:
 <translation id="8078006011486731853">{0,plural, =1{Quer mesmo fazer upload do arquivo confidencial?}one{Quer mesmo fazer upload do arquivo confidencial?}other{Quer mesmo fazer upload dos arquivos confidenciais?}}</translation>
 <translation id="8078141288243656252">Não é possível fazer anotações em documentos girados</translation>
 <translation id="8079031581361219619">Atualizar o site?</translation>
+<translation id="8079976827192572403">Site perigoso</translation>
 <translation id="8081087320434522107">Sedãs</translation>
 <translation id="8086971161893892807">Rascunho</translation>
 <translation id="8088680233425245692">Falha ao exibir artigo.</translation>
@@ -3576,6 +3594,7 @@ Mais detalhes:
 Mais detalhes:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfone permitido apenas desta vez</translation>
+<translation id="8422228580902424274">Invasores no site que você está tentando acessar podem induzir você a instalar um software ou compartilhar dados como senha, telefone ou número do cartão de crédito.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Configurações</translation>
@@ -3689,6 +3708,7 @@ Mais detalhes:
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página da Web no endereço <ph name="PAGE" /> porque:</translation>
 <translation id="8686424632716064939">Segurança de computadores</translation>
+<translation id="8687278439622293018">A entrada <ph name="ENTRY_VOICEOVER" /> foi excluída</translation>
 <translation id="8687429322371626002">Seu dispositivo e sua conta são gerenciados por <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="868922510921656628">Páginas por grupo</translation>
@@ -3901,6 +3921,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9128870381267983090">Conectar à rede</translation>
 <translation id="9131119348384879525">Capturar o conteúdo confidencial?</translation>
 <translation id="9133985615769429248">Se você compartilha este dispositivo com outras pessoas, pode usar o bloqueio de tela para confirmar sua identidade sempre que usar uma senha salva</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, cartão virtual</translation>
 <translation id="9136861683332321024">Carros de luxo</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137248913990643158">Inicie e faça login no Chrome antes de usar este app.</translation>

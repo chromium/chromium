@@ -10,6 +10,7 @@
 <translation id="1431818719585918472">Chromiumને તમારી છૂપી ટૅબ લૉક કરવા દો.</translation>
 <translation id="1472013873724362412">તમારું એકાઉન્ટ Chromium પર કાર્ય કરતું નથી. કૃપા કરીને તમારા ડોમેન એડમિનનો સંપર્ક કરો અથવા સાઇન ઇન કરવા માટે નિયમિત Google એકાઉન્ટનો ઉપયોગ કરો.</translation>
 <translation id="1507010443238049608">Chromiumની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો</translation>
+<translation id="1513122820609681462">Chromiumને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="1531155317299575425">Chromiumમાં સાઇન ઇન કરવા માટેના સંકેતો બતાવો.</translation>
 <translation id="1591119736686995611">Chromium ટૅબ ગ્રિડ ખોલે છે.</translation>
 <translation id="1617663976202781617">Chromium સિંકમાંનો ડેટા</translation>
@@ -139,11 +140,13 @@
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
 <translation id="6625409903340039086">Chromium હવે તમારા મેનેજ કરેલા એકાઉન્ટ માટે વપરાશકર્તાની પૉલિસીઓને સપોર્ટ કરે છે</translation>
 <translation id="6752854822223394465">તમારી સંસ્થા Chromiumનું સેટઅપ કરી રહી છે…</translation>
+<translation id="6794054469102824109">Chromium Dino ગેમ ખોલે છે.</translation>
 <translation id="6820823224820483452">Chromium બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરો.</translation>
 <translation id="6911341667534646387">તમારા Google એકાઉન્ટમાં Chromiumના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="7006920032187763988">તમે પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPad પરની અન્ય ઍપમાં કરી શકો છો.</translation>
 <translation id="7018284295775193585">Chromium અપડેટ થઈ શકતું નથી</translation>
 <translation id="7045244423563602563">Chromium કસ્ટમાઇઝ કરો</translation>
+<translation id="7055269218854630176">તમે જેમાં સાઇન ઇન કરી રહ્યાં હો તે એકાઉન્ટને અને Chromiumના વપરાશની રીતને તમારી સંસ્થા <ph name="DOMAIN" /> મેનેજ કરે છે. તમારા ઍડમિનિસ્ટ્રેટર અમુક સુવિધાઓનું સેટઅપ અથવા તેને પ્રતિબંધિત કરી શકે છે.</translation>
 <translation id="7099326575020694068">Chromium, વિભાજિત વ્યૂ મોડમાં તમારા કૅમેરાનો ઉપયોગ કરી શકતુંં નથી</translation>
 <translation id="7165402419892018581">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chromium પસંદ કરો</translation>
 <translation id="7175400662502680481">ડેટા ઉલ્લંઘનમાં તમારો પાસવર્ડ જાહેર થઈ ગયો હતો. પાસવર્ડ મેનેજર હમણાં જ તેને બદલવાનો સુઝાવ આપે છે.</translation>
@@ -183,6 +186,7 @@
 <translation id="865600487977764604">તમને Chromium પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષાને બહેતર બનાવવા માટે કદાચ તેનો ઉપયોગ થઈ શકે છે.</translation>
 <translation id="8663480472502753423">Chromium અપ ટૂ ડેટ રાખો</translation>
 <translation id="8685813584220679697">આ સાઇટ અને Chromiumમાં સાઇન ઇન કરો.</translation>
+<translation id="8730503818204408000">Chromiumને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે, Chromiumના સેટિંગ ખોલે છે.</translation>
 <translation id="8747378496147986285">જ્યારે ચાલુ હોય:
 <ph name="BEGIN_INDENT" />  • તમે જે રીતે કરો છો, તે રીતે Chromiumનો ઉપયોગ કરતા લોકો માટે તેને બહેતર બનાવવામાં સહાય કરો.<ph name="END_INDENT" />
 
@@ -201,5 +205,6 @@
 <translation id="9110075932708282655">ડિફૉલ્ટ રીતે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="921174536258924340">Chromium બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો.<ph name="END_LINK" /></translation>
 <translation id="971488683725792095">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાંની લિંક પર ટૅપ કરો, ત્યારે ઑટોમૅટિક રીતે Chromiumનો ઉપયોગ કરો.</translation>
+<translation id="981812233959540767">Chromium Dino ગેમ રમો</translation>
 <translation id="985602178874221306">Chromium લેખકો</translation>
 </translationbundle>

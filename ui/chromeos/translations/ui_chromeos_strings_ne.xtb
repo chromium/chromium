@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">सन्दर्भ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" खोल्न सकिएन</translation>
 <translation id="3280431534455935878">तैयार गर्दै</translation>
+<translation id="3280719573299097127">तपाईं सीमा तोकिएको नेटवर्कमा कनेक्ट हुनुहुन्छ। फाइल सिंक गर्ने सुविधा पज गरिएको छ।</translation>
 <translation id="3280987981688031357">भाइनल रेकर्ड</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
 <translation id="3291218047831493686">SIM लकसम्बन्धी सेटिङ बदल्न यो नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
@@ -631,6 +632,7 @@
 <translation id="5838451609423551646">चयनबाट सबै प्रविष्टिहरू हटाइए।</translation>
 <translation id="5838825566232597749">US Workman अन्तर्राष्ट्रिय</translation>
 <translation id="5845721951356578987">नर्स</translation>
+<translation id="5858478190805449225">ब्याट्री सेभर मोड अन छ। ब्याट्री सेभर मोड अफ गरिएका बेला फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP खोज्ने असफल भयो</translation>
@@ -919,6 +921,7 @@
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> डाउनलोड गर्नुहोस्</translation>
 <translation id="8106045200081704138">मसँग साझा गरिएको</translation>
 <translation id="8116072619078571545">बरफजस्तो चिसो पानी</translation>
+<translation id="8120392982188717723">सीमा तोकिएका नेटवर्कहरूमा सिंक गर्ने अनुमति दिनुहोस्</translation>
 <translation id="8124093710070495550">सिंकसम्बन्धी समस्या</translation>
 <translation id="8128733386027980860">अङ्ग्रेजी (संयुक्त अधिराज्य) ड्भोराक किबोर्ड</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" तपाईंसँग साझा गरिएको छ। तपाईंले यसलाई मेटाउन सक्नुहुन्न किनकी यसमा तपाईंको स्वामित्व छैन।</translation>

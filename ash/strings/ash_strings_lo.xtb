@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">ປິດຈົນກວ່າຕາເວັນຕົກ</translation>
 <translation id="1768366657309696705">ປ່ຽນປຸ່ມລັດແປ້ນພິມ <ph name="LAUNCHER_KEY_NAME" /> + ຈ້ຳເມັດ ແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Insert, ກະລຸນາກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">ຍ້າຍໄປຫາແຖວ <ph name="ROW_NUMBER" />, ຖັນ <ph name="COLUMN_NUMBER" /> ແລ້ວ.</translation>
+<translation id="1771458705381257690">ເປີດ <ph name="NAME" /> ເພື່ອຕັ້ງຄ່າ ແລະ ປັບແຕ່ງອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1771761307086386028">ເລື່ອນໄປຂວາ</translation>
 <translation id="1774796056689732716">ປະຕິທິນ, <ph name="CURRENT_MONTH_YEAR" />, ຕອນນີ້ເລືອກ <ph name="DATE" /> ຢູ່.</translation>
 <translation id="1775598828170459419">ກຳລັງສະແດງ <ph name="NUM_SHOWN_ITEMS" /> ຈາກທັງໝົດ <ph name="NUM_TOTAL_ITEMS" /> ລາຍການ</translation>
@@ -1192,6 +1193,7 @@
 <translation id="5876666360658629066">ປ້ອນລະຫັດພໍ່ແມ່</translation>
 <translation id="5881540930187678962">ຕັ້ງຄ່າ Phone Hub ໃນພາຍຫຼັງ</translation>
 <translation id="5881663018261910378">ປິດ</translation>
+<translation id="5883017113634523865">ຕິດຕັ້ງແອັບສຳລັບ <ph name="NAME" /> ຈາກ Google Play ເພື່ອເບິ່ງຄຸນສົມບັດທີ່ມີໃຫ້ທັງໝົດ</translation>
 <translation id="5887954372087850114">ໜ້າຈໍ <ph name="WINDOW_TITLE" /> ຖືກມອບໝາຍໃຫ້ <ph name="DESK_TITLE" /> ແລະ ຍົກເລີກການມອບໝາຍຈາກໂຕະອື່ນທັງໝົດແລ້ວ</translation>
 <translation id="588817334757907802">ເປີດໄຟລ໌ໃນໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
@@ -1621,6 +1623,7 @@
 <translation id="7714767791242455379">ເພີ່ມເຄືອຂ່າຍມືຖືໃໝ່</translation>
 <translation id="7720400844887872976">ເປີດຈົນຮອດ <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ລອງໃໝ່</translation>
+<translation id="7721132362314201794">ຊື່ໂຕະ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ການແຈ້ງເຕືອນ}other{# ການແຈ້ງເຕືອນ}}</translation>
 <translation id="7723703419796509666">ສະແດງ ຫຼື ເຊື່ອງຄອນໂຊນເຄື່ອງມືສຳລັບນັກພັດທະນາ</translation>
 <translation id="7724603315864178912">ຕັດ</translation>

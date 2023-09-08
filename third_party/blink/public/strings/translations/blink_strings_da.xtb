@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Ændret til spejling</translation>
 <translation id="2031987842108996681">Rød kanal</translation>
 <translation id="2060505056492490888">"<ph name="DOT" />" er placeret forkert i "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">Minimumværdien (<ph name="MINIMUM" />) skal være mindre end maksimumværdien (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2226276347425096477">Forkort denne tekst til <ph name="MAX_CHARACTERS" /> tegn eller færre (du bruger i øjeblikket <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="2247351761944213033">Uge <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

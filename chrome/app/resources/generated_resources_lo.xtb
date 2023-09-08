@@ -486,6 +486,7 @@
 <translation id="1390548061267426325">ເປີດເປັນແຖບທໍາມະດາ</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ພິມຫາ <ph name="PRINTER_NAME" />. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="1392047138650695757">ວັດຈະນານຸກົມຜູ້ໃຊ້</translation>
+<translation id="139300021892314943">ຈຳກັດຜູ້ທີ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້</translation>
 <translation id="1393283411312835250">ແສງແດດ ແລະ ເມກເຝື້ອ</translation>
 <translation id="1395730723686586365">ຕົວອັບເດດເລີ່ມຕົ້ນແລ້ວ</translation>
 <translation id="1395832189806039783">ໄຮໄລ້ລາຍການດ້ວຍໂຟກັສແປ້ນພິມ</translation>
@@ -1429,6 +1430,7 @@
 <translation id="2102495993840063010">ແອັບ Android</translation>
 <translation id="2104166991923847969">ປິດຮັອດສະປອດໂດຍອັດຕະໂນມັດ</translation>
 <translation id="2105809836724866556">ເຊື່ອງ <ph name="MODULE_TITLE" /> ໄວ້ແລ້ວ</translation>
+<translation id="2108204112555497972">ກວດສອບເມື່ອ <ph name="NUM_DAYS_HOURS_MINUTES" /> ທີ່ຜ່ານມາ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ເບີໂທລະສັບ}other{ເບີໂທລະສັບ # ເບີ}}</translation>
 <translation id="2110941575868943054">ອະນຸຍາດໃຫ້ຊອກຫາອຸປະກອນ Bluetooth</translation>
 <translation id="211144231511833662">ລຶບລ້າງປະພດ</translation>
@@ -2471,6 +2473,7 @@
 <translation id="2907619724991574506">ເລີ່ມຕົ້ນ URLs</translation>
 <translation id="2907798539022650680">ເຊື່ອມຕໍ່ກັບ '<ph name="NAME" />': <ph name="DETAILS" /> ບໍ່ສໍາເລັດ
     ຂໍ້ຄວາມຈາກເຊີບເວີ: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">ເປີດໄຟລ໌ Word, Excel ແລະ PowerPoint</translation>
 <translation id="2908162660801918428">ເພີ່ມແກເລີຣີມີເດຍຕາມໄດເຣັກຕໍຣີ</translation>
 <translation id="2908358077082926882">ກົດ “<ph name="CURRENTKEY" />” ອີກເທື່ອໜຶ່ງເພື່ອລຶບການມອບໝາຍອອກ ແລະ <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບບໍລິການຂອງ Google ໄດ້. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
@@ -2530,6 +2533,7 @@
 <translation id="2956070239128776395">ສ່ວນທີ່ຝັງຢູ່ໃນກຸ່ມ: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">ຄຳເຕືອນກ່ຽວກັບສ່ວນຂະຫຍາຍແພັກ</translation>
 <translation id="2959127025785722291">ມີບາງຢ່າງຜິດພາດ. ບໍ່ສາມາດສຳເລັດການສະແກນໄດ້. ກະລຸນາລອງໃໝ່.</translation>
+<translation id="2959474507964749987">ໄຟລ໌ທີ່ໄດ້ຖືກເຂົ້າລະຫັດນີ້ອາດເປັນໄວຣັສ ຫຼື ເມົາແວ.<ph name="LINE_BREAK" />ເພື່ອກວດສອບວ່າປອດໄພຫຼືບໍ່, ທ່ານສາມາດສົ່ງໄຟລ໌ ແລະ ລະຫັດຜ່ານໄປຫາ Google Safe Browsing ໄດ້. ໂດຍປົກກະຕິແລ້ວ, ການສະແກນຈະໃຊ້ເວລາສອງສາມວິນາທີ.<ph name="LINE_BREAK" />ເພື່ອສະແກນ, ໃຫ້ໃສ່ລະຫັດຜ່ານຂອງໄຟລ໌.</translation>
 <translation id="2959842337402130152">ບໍ່ສາມາດກູ້ຄືນໄດ້ເນື່ອງຈາກພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍ. ຂະຫຍາຍ <ph name="SPACE_REQUIRED" /> ຈາກອຸປະກອນ ແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="2960208947600937804">ເກີດຄວາມຜິດພາດໃນຂະນະທີ່ຕັ້ງຄ່າ Linux. ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="2960942820860729477">ອັດຕາການຣີເຟຣຊ</translation>
@@ -3993,6 +3997,7 @@
 <translation id="4147099377280085053">ເລືອກຕາຕະລາງອັກສອນນູນ</translation>
 <translation id="4147911968024186208">ກະລຸນາລອງໃໝ່. ຖ້າທ່ານເຫັນຄວາມຜິດພາດນີ້ອີກຄັ້ງ ກະລຸນາຕິດຕໍ່ຫາຜູ້ຕາງໜ້າຝ່າຍຊ່ວຍເຫຼືອຂອງທ່ານ.</translation>
 <translation id="414800391140809654">ສາມາດໃຊ້ຂໍ້ມູນຂອງທ່ານໃນເວລາທີ່ທ່ານທ່ອງເວັບໄດ້</translation>
+<translation id="4148195018520464922">ທ່ານສາມາດຈຳກັດການເຂົ້າສູ່ລະບົບໃຫ້ກັບບາງຜູ້ໃຊ້ໄດ້. ການດຳເນີນການນີ້ຈະລຶບຕົວເລືອກ "ເພີ່ມຜູ້ໃຊ້" ອອກຈາກໜ້າຈໍເຂົ້າສູ່ລະບົບ. ທ່ານຍັງສາມາດລຶບຜູ້ໃຊ້ປັດຈຸບັນອອກໄດ້.</translation>
 <translation id="4150201353443180367">ການສະແດງຜົນ</translation>
 <translation id="4150569944729499860">ບໍລິບົດໜ້າຈໍ</translation>
 <translation id="4151449637210235443">ບອກພວກເຮົາກ່ຽວກັບການຫຼິ້ນເກມເທື່ອຫຼ້າສຸດຂອງທ່ານ</translation>
@@ -5176,6 +5181,7 @@
 <translation id="5146896637028965135">ສຽງຂອງລະບົບ</translation>
 <translation id="5147992672778369947">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
 <translation id="5148277445782867161">ການບໍລິການລະບຸສະຖານທີ່ຂອງ Google ໃຊ້ແຫຼ່ງຂໍ້ມູນ ເຊັ່ນວ່າ Wi-Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີ ເພື່ອຄາດຄະເນສະຖານທີ່ຂອງອຸປະກອນຂອງທ່ານ.</translation>
+<translation id="5148285448107770349">ລະຫັດຜ່ານຕ້ອງມີຢ່າງໜ້ອຍ 8 ຕົວອັກສອນ</translation>
 <translation id="5150254825601720210">ຊື່ເຊີບເວີ SSL ໃບຢັ້ງຢືນ Netscape</translation>
 <translation id="5151354047782775295">ຂະຫຍາຍພື້ນທີ່ດິສກ໌ ຫຼື ເລືອກຂໍ້ມູນທີ່ຈະຖືກລຶບໂດຍອັດຕະໂນມັດ</translation>
 <translation id="5153234146675181447">ລືມໂທລະສັບ</translation>
@@ -6108,6 +6114,7 @@
 <translation id="5920543303088087579">ການເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ຖືກປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="5921257443092182237">ການບໍລິການລະບຸສະຖານທີ່ຂອງ Google ໃຊ້ແຫຼ່ງຂໍ້ມູນ ເຊັ່ນວ່າ Wi-Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີ ເພື່ອຄາດຄະເນສະຖານທີ່ຂອງອຸປະກອນນີ້.</translation>
 <translation id="5924047253200400718">ຂໍຄວາມຊ່ວຍເຫຼືອ<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">ສອບຖາມກ່ອນສຳເນົາ ຫຼື ຍ້າຍໄຟລ໌ Microsoft ໄປໃສ່ Google Drive</translation>
 <translation id="5924527146239595929">ຖ່າຍຮູບໃໝ່ ຫຼື ເລືອກຮູບ ຫຼື ໄອຄອນທີ່ມີຢູ່ແລ້ວ.
     <ph name="LINE_BREAK" />
     ຮູບນີ້ຈະປາກົດໃນໜ້າຈໍເຂົ້າສູ່ລະບົບ ແລະ ໜ້າຈໍລັອກຂອງ Chromebook.</translation>
@@ -6526,6 +6533,7 @@
 <translation id="6263284346895336537">ບໍ່ສໍາຄັນ</translation>
 <translation id="6264365405983206840">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="6264376385120300461">ຢືນຢັນການດາວໂຫຼດ</translation>
+<translation id="6265159465845424232">ສອບຖາມກ່ອນສຳເນົາ ຫຼື ຍ້າຍໄຟລ໌ Microsoft ໄປໃສ່ Microsoft OneDrive</translation>
 <translation id="6265687851677020761">ນຳຜອດອອກ</translation>
 <translation id="6266532094411434237">ກຳລັງເຊື່ອມຕໍ່ຫາ <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">ເລືອກໃບຢັ້ງຢືນເພື່ອຮັບຮອງຕົວທ່ານເອງໃຫ້ <ph name="HOST_NAME" /></translation>
@@ -7285,6 +7293,7 @@
 <translation id="6897363604023044284">ເລືອກເວັບໄຊທີ່ຈະລຶບ</translation>
 <translation id="6897688156970667447">ມີປະໂຫຍດໃນເວລາແສງໜ້ອຍ ແລະ ປະຢັດແບັດເຕີຣີ</translation>
 <translation id="6897972855231767338">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການທ່ອງເວັບເປັນແຂກ</translation>
+<translation id="6898438890765871056">ເປີດໂຟນເດີ OneDrive</translation>
 <translation id="6898440773573063262">ດຽວນີ້ແອພພລິເຄຊັນ Kiosk ສາມາດຕັ້ງເປັນເປີດໃຊ້ອັດຕະໂນມັດຢູ່ໃນອຸປະກອນນີ້ໄດ້.</translation>
 <translation id="6899427698619335650">ອະນຸຍາດໃຫ້ມີການລະບຸເຄື່ອງໝາຍການອອກສຽງທີ່ປັບປ່ຽນໄດ້. ຕົວຢ່າງ, ທ່ານສາມາດພິມ “anh1” ຫຼື “a1nh” ເພື່ອໃຫ້ໄດ້ “ánh”.</translation>
 <translation id="6900284862687837908">ແອັບ​ພື້ນ​ຫຼັງ: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8037,6 +8046,7 @@
 <translation id="7517959947270534934">ສະມາຊິກຄອບຄົວຂອງທ່ານບໍ່ສາມາດຮັບລະຫັດຜ່ານໄດ້ໃນຕອນນີ້. ໃຫ້ຂໍໃຫ້ເຂົາເຈົ້າໃຫ້ອັບເດດ Chrome ແລະ ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານຂອງເຂົາເຈົ້າ.</translation>
 <translation id="7520766081042531487">ໜ້າເວັບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ສະແດງທາງລັດ</translation>
+<translation id="7521430434164837205">ໄຟລ໌ Microsoft 365</translation>
 <translation id="7522255036471229694">ເວົ້າ​ຄຳ​ວ່າ "Ok Google"</translation>
 <translation id="7523117833414447032">ເມື່ອອ່ານອັກສອນຕົວພິມໃຫຍ່</translation>
 <translation id="7523585675576642403">ປ່ຽນຊື່ໂປຣໄຟລ໌</translation>
@@ -8148,6 +8158,7 @@
 <translation id="7617263010641145920">ເປີດ Play Store</translation>
 <translation id="7617648809369507487">ໃຊ້ການຮັບສົ່ງຂໍ້ຄວາມທີ່ງຽບລົງ</translation>
 <translation id="7621382409404463535">ລະບົບບັນທຶກການກຳນົດຄ່າອຸປະກອນບໍ່ສຳເລັດ.</translation>
+<translation id="7621480263311228380">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ຂໍ້ມູນທີ່ເຂົາເຈົ້າບັນທຶກໄວ້ກ່ຽວກັບທ່ານ</translation>
 <translation id="7621595347123595643">ທ່ານຈະບໍ່ສາມາດກູ້ຄືນຂໍ້ມູນໃນເຄື່ອງໄດ້ຫາກທ່ານລືມລະຫັດຜ່ານ ຫຼື PIN ຂອງທ່ານ.</translation>
 <translation id="7622114377921274169">ກຳລັງສາກໄຟ.</translation>
 <translation id="7622768823216805500">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນສຳລັບຄຸນສົມບັດການຊື້ເຄື່ອງ ເຊັ່ນ: ການຈ່າຍຄ່າສິນຄ້າທີ່ງ່າຍກວ່າ</translation>
@@ -8699,6 +8710,7 @@
 <translation id="8037117027592400564">ອ່ານຂໍ້ຄວາມທັງໝົດທີ່ໄດ້ເວົ້າໃນລະຫວ່າງການໃຊ້ຄໍາເວົ້າທີ່ຊິງໂຄຣໄນແລ້ວ</translation>
 <translation id="8037357227543935929">ຖາມ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="803771048473350947">ໄຟລ໌</translation>
+<translation id="8037801708772278989">ຫາກໍກວດແລ້ວຕອນນີ້</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{ກຳລັງສຳເນົາ 1 ໄຟລ໌ໄປໃສ່ <ph name="CLOUD_PROVIDER" />}other{ກຳລັງສຳເນົາ {NUM_OF_FILES} ໄຟລ໌ໄປໃສ່ <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>
 <translation id="8041267120753677077">ສະຕຣີມແອັບຂອງໂທລະສັບທ່ານ</translation>
@@ -9761,6 +9773,7 @@
 <translation id="8896830132794747524">ການເຄື່ອນໄຫວທີ່ໄວຂຶ້ນດ້ວຍເມົ້າຂອງທ່ານຈະຍ້າຍເຄີເຊີໄປໄກຂຶ້ນ</translation>
 <translation id="8898140163781851592">ປຸ່ມເມົ້າຫຼັກ</translation>
 <translation id="8898786835233784856">ເລືອກ​ແຖບຕໍ່​ໄປ</translation>
+<translation id="8898790559170352647">ເພີ່ມບັນຊີ Microsoft ຂອງທ່ານ</translation>
 <translation id="8898822736010347272">ສົ່ງ URL ຂອງບາງໜ້າທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບທີ່ຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າໃຫ້ Google ເພື່ອຊ່ວຍຄົ້ນພົບອັນຕະລາຍໃໝ່ ແລະ ປົກປ້ອງທຸກຄົນໃນເວັບ.</translation>
 <translation id="8899851313684471736">ເປີດ​ລິ້ງຢູ່​ໃນໜ້າຕ່າງ​ໃຫມ່</translation>
 <translation id="8900413463156971200">ເປີດການນຳໃຊ້ເຄືອຂ່າຍມືຖື</translation>

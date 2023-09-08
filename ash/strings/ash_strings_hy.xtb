@@ -366,6 +366,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Ապակողպել պատուհանները</translation>
 <translation id="2528111225373402384">Թեժ կետի կարգավորումներ</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Միացրեք/անջատեք ստեղնային դիտարկումը</translation>
 <translation id="2531025035050312891">սարքը դանդաղ է</translation>
 <translation id="2531107890083353124">Ներդիրը քաշելով՝ սեղմեք <ph name="KEY_ONE" /></translation>
@@ -1618,6 +1619,7 @@
 <translation id="7714767791242455379">Ավելացնել նոր բջջային ցանց</translation>
 <translation id="7720400844887872976">Միացված կլինի մինչև <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ՆՈՐԻՑ ՓՈՐՁԵԼ</translation>
+<translation id="7721132362314201794">Աշխատասեղանի անվանումը</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ծանուցում}one{# ծանուցում}other{# ծանուցում}}</translation>
 <translation id="7723703419796509666">Ցուցադրել կամ թաքցնել Ծրագրավորողի գործիքների բարձակը</translation>
 <translation id="7724603315864178912">Կտրել</translation>
@@ -1853,6 +1855,7 @@
 <translation id="8731487213223706745">Ավարտը՝ <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Հնարավոր է՝ ինչ-որ մեկը փորձում է իմանալ, թե ինչ ստեղներ եք սեղմում։</translation>
 <translation id="8735678380411481005">Ստեղնաշարի հետնալույսի գույն</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />․ ակտիվացում...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>

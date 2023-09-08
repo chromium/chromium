@@ -486,6 +486,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1390548061267426325">Öppna som en vanlig flik</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> har inte behörighet att skriva ut på <ph name="PRINTER_NAME" />. Kontakta administratören.</translation>
 <translation id="1392047138650695757">Egna ordlistor</translation>
+<translation id="139300021892314943">Begränsa vem som kan logga in</translation>
 <translation id="1393283411312835250">Sol och moln</translation>
 <translation id="1395730723686586365">Uppdateringstjänsten startades</translation>
 <translation id="1395832189806039783">Markera objekt med tangentbordsfokus</translation>
@@ -2531,6 +2532,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2956070239128776395">Ett avsnitt har kapslats in i en grupp: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Varning vid paketering av tillägg</translation>
 <translation id="2959127025785722291">Något gick fel. Det gick inte att slutföra genomsökningen. Försök igen.</translation>
+<translation id="2959474507964749987">Den här krypterade filen kan innehålla ett virus eller skadlig programvara.<ph name="LINE_BREAK" />Du kan kontrollera om den är säker genom att skicka filen och lösenordet till Google Säker webbsökning. Genomsökningen tar vanligtvis några sekunder.<ph name="LINE_BREAK" />Lägg till filens lösenord för att genomsöka den.</translation>
 <translation id="2959842337402130152">Återställningen misslyckades eftersom det inte finns tillräckligt med lagringsutrymme. Frigör <ph name="SPACE_REQUIRED" /> lagringsutrymme på enheten och försök igen.</translation>
 <translation id="2960208947600937804">Ett fel uppstod när Linux skulle konfigureras. Kontakta administratören.</translation>
 <translation id="2960942820860729477">Uppdateringsfrekvens</translation>
@@ -3994,6 +3996,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4147099377280085053">Välj punktskrift</translation>
 <translation id="4147911968024186208">Försök igen. Kontakta supporten om det här felet återkommer.</translation>
 <translation id="414800391140809654">kan använda dina uppgifter när du surfar</translation>
+<translation id="4148195018520464922">Du kan begränsa inloggning så att det bara är tillgängligt för vissa användare. Då tas alternativet Lägg till person bort från inloggningsskärmen. Du kan även ta bort befintliga användare.</translation>
 <translation id="4150201353443180367">Skärm</translation>
 <translation id="4150569944729499860">Innehållet på skärmen</translation>
 <translation id="4151449637210235443">Berätta om din senaste spelupplevelse</translation>
@@ -8151,6 +8154,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7617263010641145920">Aktivera Play Butik</translation>
 <translation id="7617648809369507487">Få mer diskreta meddelanden</translation>
 <translation id="7621382409404463535">Det gick inte att spara enhetskonfigurationen.</translation>
+<translation id="7621480263311228380">Har inte tillåtelse att använda uppgifter som webbplatsen har sparat om dig</translation>
 <translation id="7621595347123595643">Du kan inte återställa lokal data om du glömmer lösenordet eller pinkoden.</translation>
 <translation id="7622114377921274169">Laddas.</translation>
 <translation id="7622768823216805500">Att installera betalningshanterare brukar kunna behövas till exempel för att förenkla hanteringen i kassan på webbplatsen</translation>
@@ -8704,6 +8708,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8037117027592400564">Läsa all text som läses upp med syntetiskt tal</translation>
 <translation id="8037357227543935929">Fråga (standard)</translation>
 <translation id="803771048473350947">Arkiv</translation>
+<translation id="8037801708772278989">Genomsöktes alldeles nyss</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopierar 1 fil till <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} filer kopieras till <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
 <translation id="8041267120753677077">Streama telefonens appar</translation>
@@ -9497,6 +9502,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8680251145628383637">Logga in om du vill få tillgång till samma bokmärken, historik, lösenord och andra inställningar på alla dina enheter. Dessutom blir du automatiskt inloggad på Googles tjänster.</translation>
 <translation id="8681886425883659911">Annonser blockeras på webbplatser som är kända för att visa påträngande eller vilseledande annonser</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> är ansluten och klar</translation>
+<translation id="8684471948980641888">Tillåt synkronisering i nätverk med datapriser</translation>
 <translation id="8685540043423825702">Din Chrome-profil</translation>
 <translation id="8686142379631285985">Inloggad som <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Avbryt <ph name="FILE_NAME" /></translation>

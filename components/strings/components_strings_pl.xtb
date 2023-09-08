@@ -234,6 +234,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1432187715652018471">Strona chce zainstalować moduł do obsługiwania usługi.</translation>
 <translation id="1432581352905426595">Zarządzaj wyszukiwarkami</translation>
 <translation id="1433225466058025572">Spróbuj przenieść pliki ponownie</translation>
+<translation id="1434317006812369578">Chrome ma wbudowane zabezpieczenia takie jak Bezpieczne przeglądanie Google, które chronią Cię podczas korzystania z internetu. Niedawno funkcja Bezpieczne przeglądanie <ph name="BEGIN_LINK" />wykryła złośliwe oprogramowanie na stronie <ph name="SITE" /><ph name="END_LINK" /> umieszczonej w witrynie, którą chcesz odwiedzić.</translation>
 <translation id="1435940442311036198">Użyj klucza na innym urządzeniu</translation>
 <translation id="1436185428532214179">Może prosić o zgodę na edytowanie plików i folderów na urządzeniu</translation>
 <translation id="1442386063175183758">Składanie od dołu do środka</translation>
@@ -384,6 +385,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1732445923934584865">Poproś osobiście</translation>
 <translation id="1733064249834771892">czcionki</translation>
 <translation id="1733631169686303142">Sprzęt audio</translation>
+<translation id="1733762317901693627">Nawet strony, które zazwyczaj są bezpieczne, mogą zostać przejęte przez hakerów. Odwiedzaj <ph name="BEGIN_LINK" />tę niebezpieczną stronę<ph name="END_LINK" /> tylko wtedy, gdy rozumiesz związane z nią zagrożenia.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Skontaktuj się z administratorem systemu.</translation>
 <translation id="1736420071277903564">Komputer</translation>
@@ -717,6 +719,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2480300195898055381">Na koncie Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="248348093745724435">Zasady dotyczące komputera</translation>
+<translation id="2490199669743245365">Osoby przeprowadzające atak na stronę, którą próbujesz otworzyć, mogą zainstalować szkodliwe oprogramowanie, które kradnie lub usuwa takie dane jak hasło, zdjęcia, wiadomości czy numer karty kredytowej. Chrome zdecydowanie zaleca powrót do zabezpieczeń. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Certyfikat serwera zawiera błędy.</translation>
 <translation id="2491414235131909199">Ta strona została zablokowana przez rozszerzenie</translation>
 <translation id="2495083838625180221">Parser JSON</translation>
@@ -1051,6 +1054,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Względna</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Wymagana jest aktualizacja teraz}=2{Wymagana jest aktualizacja do jutra}few{Wymagana jest aktualizacja w ciągu # dni}many{Wymagana jest aktualizacja w ciągu # dni}other{Wymagana jest aktualizacja w ciągu # dnia}}</translation>
+<translation id="3218388919950135939">Odwiedzaj <ph name="BEGIN_LINK" />tę niebezpieczną stronę<ph name="END_LINK" /> tylko wtedy, gdy rozumiesz związane z nią zagrożenia.</translation>
 <translation id="3220264767789936523">Stroje oficjalne</translation>
 <translation id="3223287115535306850">Animowana ikona uruchamiania aplikacji</translation>
 <translation id="3223425961342298674">Lokalizacja nie jest dozwolona</translation>
@@ -1337,6 +1341,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3772211998634047851">Papier (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nową notatkę w Google Keep</translation>
 <translation id="3778403066972421603">Czy chcesz zapisać tę kartę na swoim koncie Google i na tym urządzeniu?</translation>
+<translation id="378026377453746707">Chrome ma wbudowane zabezpieczenia takie jak Bezpieczne przeglądanie Google, które chronią Cię podczas korzystania z internetu. Niedawno Bezpieczne przeglądanie <ph name="BEGIN_LINK" />znalazło szkodliwe oprogramowanie na stronie<ph name="SITE" /><ph name="END_LINK" /> umieszczonej w witrynie, którą chcesz odwiedzić.</translation>
 <translation id="3780694243617746492">Pojemnik wyjściowy</translation>
 <translation id="3781428340399460090">Ciepłoróżowy</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1348,6 +1353,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3795344968043407227">Muzyka indie i alternatywna</translation>
 <translation id="3799805948399000906">Zażądano czcionki</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
+<translation id="3806932344025766608">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasło, numer telefonu czy numer karty kredytowej. Chrome zdecydowanie zaleca powrót do zabezpieczeń. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Operatorzy telefoniczni</translation>
 <translation id="3807366285948165054">Przesunięcie obrazu wzdłuż osi X</translation>
 <translation id="3807873520724684969">Zablokowano szkodliwe treści.</translation>
@@ -1413,6 +1419,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3950820424414687140">Zaloguj się</translation>
 <translation id="3953505489397572035">To typowa cena</translation>
 <translation id="3958057596965527988">4 x 4 cale</translation>
+<translation id="3959121317419633580">Chrome ma wbudowane zabezpieczenia takie jak Bezpieczne przeglądanie Google, które chronią Cię podczas korzystania z internetu. Niedawno Bezpieczne przeglądanie <ph name="BEGIN_LINK" />wykryło próbę wyłudzenia informacji na stronie <ph name="SITE" /><ph name="END_LINK" /> umieszczonej w witrynie, którą chcesz odwiedzić.<ph name="NEW_LINE" />Zaatakowane mogą zostać nawet strony, które zazwyczaj są bezpieczne. <ph name="BEGIN_ERROR_LINK" />Daj nam znać<ph name="END_ERROR_LINK" />, jeśli uważasz, że zaszła pomyłka i że ta witryna nie stanowi zagrożenia.</translation>
 <translation id="3961148744525529027">Arkusz modułu do obsługi płatności jest w połowie otwarty</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3963721102035795474">Tryb czytnika</translation>
@@ -1436,6 +1443,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="401170183602135785">Koperta C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF zawierający {COUNT} stronę}few{Dokument PDF zawierający {COUNT} strony}many{Dokument PDF zawierający {COUNT} stron}other{Dokument PDF zawierający {COUNT} strony}}</translation>
 <translation id="4014895360827978999">Usługi handlowe i systemy płatnicze</translation>
+<translation id="4018819349042761761">Klucz publiczny</translation>
 <translation id="4023431997072828269">Twoje dane będą widoczne dla innych, ponieważ połączenie używane do przesłania formularza nie jest bezpieczne.</translation>
 <translation id="4030383055268325496">&amp;Cofnij dodanie</translation>
 <translation id="4030545038933060179">Gdy ta opcja będzie włączona, pojawi się tutaj lista tematów utworzona na podstawie najnowszej historii przeglądania</translation>
@@ -1612,6 +1620,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="433013776994920042">Hosting i rejestracja domen</translation>
 <translation id="4331519897422864041">Układarka 5</translation>
 <translation id="4331708818696583467">Niezabezpieczona</translation>
+<translation id="4333295216031073611">Lista zakupów</translation>
 <translation id="4333561522337981382">Zarządzanie oknami na wszystkich wyświetlaczach</translation>
 <translation id="4340575312453649552">Ta reklama zużywała zbyt wiele zasobów Twojego urządzenia, dlatego została usunięta przez Chrome.</translation>
 <translation id="4340810192899866471">Importuj z JSON</translation>
@@ -1664,6 +1673,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4451684391620232683">Tekst wyświetlany użytkownikowi:</translation>
 <translation id="4452328064229197696">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca sprawdzenie zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
 <translation id="4464826014807964867">Witryny z informacjami od Twojej organizacji</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Włącz silniejszą ochronę<ph name="END_ENHANCED_PROTECTION_LINK" />, aby korzystać z najwyższego poziomu zabezpieczeń Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ten formularz nie jest bezpieczny. Autouzupełnianie zostało wyłączone.</translation>
 <translation id="4477350412780666475">Następny utwór</translation>
@@ -2382,6 +2392,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5992805036496113940">Zobacz informacje używane do wyświetlania Ci reklam</translation>
 <translation id="5995727681868049093">Zarządzaj swoimi danymi, prywatnością i bezpieczeństwem na koncie Google</translation>
 <translation id="5997247540087773573">Znaleźliśmy użyte właśnie hasło wśród ujawnionych w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca natychmiastową zmianę tego hasła oraz sprawdzenie innych zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
+<translation id="5999271311987646952">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Na stronie, którą chcesz otworzyć, <ph name="BEGIN_LINK" />niedawno wykryło ono złośliwe oprogramowanie<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">Wyniki wyszukiwania dla zapytania „<ph name="SEARCH_TEXT" />”: <ph name="RESULT_COUNT" /></translation>
 <translation id="6002122790816966947">Twoje urządzenia</translation>
 <translation id="6005659677094197001">Ciągły</translation>
@@ -2686,6 +2697,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Edukacja komputerowa</translation>
 <translation id="6633476656216409494">Oprogramowanie dla firm i do zarządzania wydajnością</translation>
+<translation id="6638353438328951386">Chrome ma wbudowane funkcje bezpieczeństwa, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Niedawno funkcja ta <ph name="BEGIN_LINK" />znalazła szkodliwe oprogramowanie<ph name="END_LINK" /> w witrynie, którą chcesz odwiedzić.</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6645291930348198241">Dostęp do plików cookie i danych witryn.</translation>
 <translation id="6645478838938543427">Alerty o obniżkach cen będą wysyłane na adres <ph name="EMAIL_ADDRESS" /></translation>
@@ -2881,6 +2893,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="702146556168549005">Adresy URL odwiedzanych stron są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane w poszukiwaniu niebezpiecznych stron lub odfiltrowane na podstawie zasad określonych przez administratora.</translation>
 <translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="7023162328967545559">Ostrzeżenie administratora</translation>
+<translation id="7024932305105294144">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Niedawno <ph name="BEGIN_LINK" />wykryło ono próbę wyłudzenia informacji<ph name="END_LINK" /> na stronie, którą chcesz otworzyć. Strony wyłudzające informacje udają inne strony, aby Cię oszukać.<ph name="NEW_LINE" />Osoby przeprowadzające ataki czasem przejmują nawet strony, które zwykle są bezpieczne. <ph name="BEGIN_ERROR_LINK" />Daj nam znać<ph name="END_ERROR_LINK" />, jeśli uważasz, że zaszła pomyłka i że ta witryna nie stanowi zagrożenia.</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7030436163253143341">Certyfikat jest nieważny</translation>
 <translation id="7031646650991750659">Zainstalowane przez Ciebie aplikacje z Google Play</translation>
@@ -2916,6 +2929,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7105998430540165694">Klucz dostępu z pęku kluczy iCloud</translation>
 <translation id="7106762743910369165">Przeglądarka jest zarządzana przez Twoją organizację</translation>
 <translation id="7107249414147762907">Ten plik PDF jest niedostępny. Nie udało się wyodrębnić tekstu</translation>
+<translation id="7107427078069498123">Odciski cyfrowe SHA-256</translation>
 <translation id="7108338896283013870">Ukryj</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> chce korzystać z kamery</translation>
 <translation id="7108819624672055576">Dozwolone przez rozszerzenie</translation>
@@ -2981,6 +2995,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="722454870747268814">Nowa karta incognito</translation>
 <translation id="7226276626900992675">Zezwalasz tej witrynie na korzystanie z plików cookie innych firm. Oznacza to, że większość jej funkcji powinna działać, ale masz słabszą ochronę.</translation>
 <translation id="7227293336683593977">Historia cen</translation>
+<translation id="7227747683324411744">Osoby przeprowadzające atak na stronę, którą chcesz odwiedzić, mogą podstępem nakłonić Cię do zainstalowania szkodliwego oprogramowania wpływającego na sposób korzystania z internetu. Na przykład może ono zmienić stronę główną lub wyświetlać na odwiedzanych stronach dodatkowe reklamy.</translation>
 <translation id="7233592378249864828">Drukuj arkusz potwierdzenia</translation>
 <translation id="7234638337680728591">Ceny paliw i paliwa samochodowe</translation>
 <translation id="7236417832106250253">Ukończono <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3080,6 +3095,7 @@ Dodatkowe informacje:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">Dodaj dane kontaktowe</translation>
 <translation id="7437490109271760224">Gry karciane</translation>
+<translation id="7438338505272634288">Osoby przeprowadzające atak na stronę, którą chcesz odwiedzić, mogą podstępem nakłonić Cię do zainstalowania szkodliwego oprogramowania wpływającego na sposób korzystania z internetu. Na przykład może ono zmienić stronę główną lub wyświetlać na odwiedzanych stronach dodatkowe reklamy. Chrome zdecydowanie zaleca powrót do zabezpieczeń, które pozwolą uniknąć szkód. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Przeglądaj offline</translation>
 <translation id="7441627299479586546">Nieprawidłowy podmiot zasady</translation>
 <translation id="7441864845853794192">Żywność delikatesowa i specjalistyczna</translation>
@@ -3179,6 +3195,7 @@ Dodatkowe informacje:
 <translation id="7599089013883397081">Przekroczono limit czasu pobierania</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Zazwyczaj łączysz się z tą witryną w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Osoby przeprowadzające atak na stronę, którą próbujesz otworzyć, mogą zainstalować szkodliwe oprogramowanie, które kradnie lub usuwa takie dane jak hasło, zdjęcia, wiadomości czy numer karty kredytowej.</translation>
 <translation id="7610193165460212391">Wartość spoza zakresu (<ph name="VALUE" />)</translation>
 <translation id="7613889955535752492">Wygasa: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by wyświetlić hasła i zarządzać nimi w ustawieniach Chrome.</translation>
@@ -3406,6 +3423,7 @@ Dodatkowe informacje:
 <translation id="8078006011486731853">{0,plural, =1{Przesłać poufny plik?}few{Przesłać poufne pliki?}many{Przesłać poufne pliki?}other{Przesłać poufne pliki?}}</translation>
 <translation id="8078141288243656252">Nie można dodawać adnotacji, gdy dokument jest obrócony</translation>
 <translation id="8079031581361219619">Załadować ponownie stronę?</translation>
+<translation id="8079976827192572403">Niebezpieczna strona</translation>
 <translation id="8081087320434522107">Sedany</translation>
 <translation id="8086971161893892807">Wersja robocza</translation>
 <translation id="8088680233425245692">Nie udało się wyświetlić artykułu.</translation>
@@ -3576,6 +3594,7 @@ Dodatkowe informacje:
 Dodatkowe informacje:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Przyznano jednorazowy dostęp do mikrofonu</translation>
+<translation id="8422228580902424274">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasło, numer telefonu czy numer karty kredytowej.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
@@ -3688,6 +3707,7 @@ Dodatkowe informacje:
 <translation id="8680536109547170164"><ph name="QUERY" />, odpowiedź, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Nie można załadować strony <ph name="PAGE" />, ponieważ:</translation>
 <translation id="8686424632716064939">Zabezpieczenia komputerowe</translation>
+<translation id="8687278439622293018">Wpis <ph name="ENTRY_VOICEOVER" /> został usunięty</translation>
 <translation id="8687429322371626002">Twoim urządzeniem i kontem zarządza <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Dostępne</translation>
 <translation id="868922510921656628">Strony na zestaw</translation>
@@ -3899,6 +3919,7 @@ Dodatkowe informacje:
 <translation id="9128870381267983090">Połącz z siecią</translation>
 <translation id="9131119348384879525">Zrobić zrzut ekranu z treściami poufnymi?</translation>
 <translation id="9133985615769429248">Jeśli udostępniasz to urządzenie innym osobom, możesz używać blokady ekranu, aby sprawdzało ono Twoją tożsamość za każdym razem, gdy używasz zapisanego hasła</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, karta wirtualna</translation>
 <translation id="9136861683332321024">Samochody luksusowe</translation>
 <translation id="9137013805542155359">Pokaż tekst oryginalny</translation>
 <translation id="9137248913990643158">Aby użyć tej aplikacji, najpierw uruchom Chrome i zaloguj się w nim.</translation>
