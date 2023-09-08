@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -82,15 +83,24 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, NoMatchesTest) {
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
       .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
+  GroupedFacets group;
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
 
   base::MockCallback<LoginsOrErrorReply> result_callback;
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
+  base::HistogramTester histogram_tester;
   GetLoginsWithAffiliationsRequestHandler(
       observed_form, backend(), &match_helper(), result_callback.Get());
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
   RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.GetLogins.GroupedMatchesStatus",
+      password_manager::metrics_util::GroupedPasswordFetchResult::kNoMatches,
+      1);
 }
 
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ExactAndPslMatchesTest) {
@@ -104,6 +114,10 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ExactAndPslMatchesTest) {
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
       .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
+  GroupedFacets group;
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
 
   base::MockCallback<LoginsOrErrorReply> result_callback;
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
@@ -137,6 +151,11 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchesOnlyTest) {
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
       .WillRepeatedly(RunOnceCallback<2>(facets, true));
+  GroupedFacets group;
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
+  ;
 
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
   base::MockCallback<LoginsOrErrorReply> result_callback;
@@ -165,6 +184,10 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
                            base::DoNothing());
   backend()->AddLoginAsync(*CreateForm(kTestPSLURL, u"username2", u"password"),
                            base::DoNothing());
+  GroupedFacets group;
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
   backend()->AddLoginAsync(
       *CreateForm(kAffiliatedWebURL, u"username3", u"password"),
       base::DoNothing());
@@ -209,6 +232,10 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliationsArePSLTest) {
                            base::DoNothing());
   backend()->AddLoginAsync(*CreateForm(kTestPSLURL, u"username2", u"password"),
                            base::DoNothing());
+  GroupedFacets group;
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
   RunUntilIdle();
 
   EXPECT_CALL(affiliation_service(), GetPSLExtensions)
@@ -260,11 +287,46 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesOnlyTest) {
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
   expected_forms.push_back(CreateForm(kGroupWebURL, u"username", u"password"));
-  expected_forms.back()->match_type =
-      PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kGrouped;
+  expected_forms.back()->match_type = PasswordForm::MatchType::kGrouped;
 
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
   RunUntilIdle();
+}
+
+// Since kFillingAcrossGroupedSites is disabled grouped matches aren't returned.
+TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesClearedTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kFillingAcrossGroupedSites);
+  backend()->AddLoginAsync(*CreateForm(kGroupWebURL, u"username", u"password"),
+                           base::DoNothing());
+  RunUntilIdle();
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
+
+  GroupedFacets group;
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kGroupWebURL));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
+
+  PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
+  base::MockCallback<LoginsOrErrorReply> result_callback;
+  base::HistogramTester histogram_tester;
+  GetLoginsWithAffiliationsRequestHandler(
+      observed_form, backend(), &match_helper(), result_callback.Get());
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.GetLogins.GroupedMatchesStatus",
+      password_manager::metrics_util::GroupedPasswordFetchResult::
+          kOnlyGroupedMatches,
+      1);
 }
 
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
@@ -297,6 +359,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
 
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
   base::MockCallback<LoginsOrErrorReply> result_callback;
+  base::HistogramTester histogram_tester;
   GetLoginsWithAffiliationsRequestHandler(
       observed_form, backend(), &match_helper(), result_callback.Get());
 
@@ -307,11 +370,15 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   expected_forms.back()->match_type =
       PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kGrouped;
   expected_forms.push_back(CreateForm(kGroupWebURL, u"username2", u"password"));
-  expected_forms.back()->match_type =
-      PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kGrouped;
+  expected_forms.back()->match_type = PasswordForm::MatchType::kGrouped;
 
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
   RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.GetLogins.GroupedMatchesStatus",
+      password_manager::metrics_util::GroupedPasswordFetchResult::
+          kBetterMatchesExist,
+      1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -354,6 +421,10 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"slack.com"}));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
       .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
+  GroupedFacets group;
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
 
   base::MockCallback<LoginsOrErrorReply> result_callback;
   PasswordFormDigest observed_form = CreateFormDigest("https://a.slack.com/");

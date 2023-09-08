@@ -1559,10 +1559,16 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForGroupedMatchingLogins) {
       PasswordForm::MatchType::kGrouped | PasswordForm::MatchType::kPSL));
   // Grouped only match is filtered.
 
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   consumer().OnCompleteWithLogins(kJobId,
                                   UnwrapForms(std::move(returned_logins)));
   RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.GetLogins.GroupedMatchesStatus",
+      password_manager::metrics_util::GroupedPasswordFetchResult::
+          kBetterMatchesExist,
+      1);
 }
 
 class PasswordStoreAndroidBackendTestForMetrics

@@ -8,6 +8,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -391,6 +392,24 @@ void LogUserInteractionsInSharedPasswordsNotificationBubble(
   base::UmaHistogramEnumeration(
       "PasswordManager.SharedPasswordsNotificationBubble.UserAction",
       interaction);
+}
+
+void LogGroupedPasswordsResults(
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+        logins) {
+  auto is_grouped_match =
+      [](const std::unique_ptr<password_manager::PasswordForm>& form) {
+        return form->match_type ==
+               password_manager::PasswordForm::MatchType::kGrouped;
+      };
+  GroupedPasswordFetchResult result = GroupedPasswordFetchResult::kNoMatches;
+  if (!logins.empty() && base::ranges::all_of(logins, is_grouped_match)) {
+    result = GroupedPasswordFetchResult::kOnlyGroupedMatches;
+  } else if (base::ranges::any_of(logins, is_grouped_match)) {
+    result = GroupedPasswordFetchResult::kBetterMatchesExist;
+  }
+  base::UmaHistogramEnumeration(
+      "PasswordManager.GetLogins.GroupedMatchesStatus", result);
 }
 
 #if BUILDFLAG(IS_IOS)
