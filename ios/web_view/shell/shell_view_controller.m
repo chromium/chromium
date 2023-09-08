@@ -269,6 +269,8 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [CWVWebView setUserAgentProduct:@"Dummy/1.0"];
   CWVWebView.chromeContextMenuEnabled = YES;
 
+  CWVWebView.webInspectorEnabled = YES;
+
   _authService = [[ShellAuthService alloc] init];
   CWVSyncController.dataSource = _authService;
 

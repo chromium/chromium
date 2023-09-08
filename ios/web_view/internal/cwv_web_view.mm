@@ -453,6 +453,7 @@ namespace {
 NSString* gCustomUserAgent = nil;
 NSString* gUserAgentProduct = nil;
 BOOL gChromeContextMenuEnabled = NO;
+BOOL gWebInspectorEnabled = NO;
 }  // namespace
 
 @implementation CWVWebView
@@ -487,6 +488,14 @@ BOOL gChromeContextMenuEnabled = NO;
 
 + (void)setChromeContextMenuEnabled:(BOOL)newValue {
   gChromeContextMenuEnabled = newValue;
+}
+
++ (BOOL)webInspectorEnabled {
+  return gWebInspectorEnabled;
+}
+
++ (void)setWebInspectorEnabled:(BOOL)newValue {
+  gWebInspectorEnabled = newValue;
 }
 
 + (NSString*)customUserAgent {

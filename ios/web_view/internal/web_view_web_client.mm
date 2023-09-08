@@ -185,6 +185,11 @@ bool WebViewWebClient::EnableLongPressUIContextMenu() const {
   return CWVWebView.chromeContextMenuEnabled;
 }
 
+bool WebViewWebClient::EnableWebInspector(
+    web::BrowserState* browser_state) const {
+  return CWVWebView.webInspectorEnabled;
+}
+
 bool WebViewWebClient::IsMixedContentAutoupgradeEnabled(
     web::BrowserState* browser_state) const {
   return base::FeatureList::IsEnabled(
