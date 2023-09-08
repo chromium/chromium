@@ -1075,6 +1075,7 @@ export class FileTable extends Table {
     const typeId = item.id + '-type';
     const dateId = item.id + '-date';
     const dlpId = item.id + '-dlp-managed-icon';
+    const encryptedId = item.id + '-encrypted-icon';
     filelist.decorateListItem(
         item, entry, assert(this.metadataModel_), assert(this.volumeManager_));
     item.setAttribute('file-name', entry.name);
@@ -1089,11 +1090,15 @@ export class FileTable extends Table {
           this.ownerDocument.querySelector('files-tooltip'))
           .addTargets(item.querySelectorAll('.dlp-managed-icon'));
     }
+    const encryptedIcon = item.querySelector('.encrypted-icon');
+    if (encryptedIcon) {
+      encryptedIcon.setAttribute('id', encryptedId);
+    }
 
     item.setAttribute(
         'aria-labelledby',
         `${nameId} column-size ${sizeId} column-type ${
-            typeId} column-modificationTime ${dateId}`);
+            typeId} column-modificationTime ${dateId} ${encryptedId}`);
     return item;
   }
 

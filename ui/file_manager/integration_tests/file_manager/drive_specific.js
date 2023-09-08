@@ -930,6 +930,22 @@ testcase.driveEncryptionBadge = async () => {
   chrome.test.assertNe('none', encrypted.styles.display);
   chrome.test.assertEq('visible', encrypted.styles.visibility);
 
+  // Check: the badge is included in accessibility labels.
+  const row = await remoteCall.waitForElementStyles(
+      appId, '#file-list [file-name="test-encrypted.txt"]',
+      ['aria-labelledby', 'display', 'visibility']);
+  const ariaLabelledBy = row.attributes['aria-labelledby'];
+  const encryptedBadgeId = ariaLabelledBy.split(/ +/).filter(
+      (id) => id.indexOf('encrypted') != -1)[0];
+  chrome.test.assertTrue(
+      encryptedBadgeId !== undefined,
+      'no encrypted label found in aria for the encrypted file');
+  const encryptedBadgeElements = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId, [`#${encryptedBadgeId}`, []]);
+  chrome.test.assertEq(
+      1, encryptedBadgeElements.length,
+      'no referenced encrypted label element found');
+
   // Check: non-encrypted file doesn't have a badge.
   const plain = await remoteCall.callRemoteTestUtil(
       'deepQueryAllElements', appId,
