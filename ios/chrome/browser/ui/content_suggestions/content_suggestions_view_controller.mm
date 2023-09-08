@@ -695,9 +695,59 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     return;
   }
 
+  __block NSUInteger safetyCheckModuleOrderIndex = NSNotFound;
+
+  [_magicStackModuleOrder enumerateObjectsUsingBlock:^(NSNumber* moduleValue,
+                                                       NSUInteger idx,
+                                                       BOOL* stop) {
+    ContentSuggestionsModuleType type =
+        (ContentSuggestionsModuleType)[moduleValue intValue];
+
+    if (type == ContentSuggestionsModuleType::kSafetyCheck ||
+        type == ContentSuggestionsModuleType::kSafetyCheckMultiRow ||
+        type == ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow) {
+      safetyCheckModuleOrderIndex = idx;
+
+      *stop = YES;
+    }
+  }];
+
+  __block NSUInteger safetyCheckModuleIndex = NSNotFound;
+
+  BOOL existingSafetyCheckModule = NO;
+
+  if (self.safetyCheckModuleContainer) {
+    existingSafetyCheckModule = YES;
+
+    // If there's an existing Safety Check module, find its current index.
+    [_magicStack.arrangedSubviews
+        enumerateObjectsUsingBlock:^(MagicStackModuleContainer* moduleContainer,
+                                     NSUInteger idx, BOOL* stop) {
+          if (moduleContainer.type ==
+                  ContentSuggestionsModuleType::kSafetyCheck ||
+              moduleContainer.type ==
+                  ContentSuggestionsModuleType::kSafetyCheckMultiRow ||
+              moduleContainer.type ==
+                  ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow) {
+            safetyCheckModuleIndex = idx;
+
+            *stop = YES;
+          }
+        }];
+
+    // Assert the updated Safety Check module will be replaced at the same index
+    // as the current module.
+    CHECK_EQ(safetyCheckModuleOrderIndex, safetyCheckModuleIndex);
+
     [self.safetyCheckModuleContainer removeFromSuperview];
+  }
 
   [self createSafetyCheck:state];
+
+  if (existingSafetyCheckModule) {
+    _magicStackModuleOrder[safetyCheckModuleOrderIndex] =
+        @(int(self.safetyCheckModuleContainer.type));
+  }
 
   [self insertModuleIntoMagicStack:self.safetyCheckModuleContainer];
 }

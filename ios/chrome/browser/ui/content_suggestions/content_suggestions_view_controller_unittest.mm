@@ -265,3 +265,80 @@ TEST_F(ContentSuggestionsViewControllerTest, TestUpdateMagicStackOrder) {
       (MagicStackModuleContainer*)subviews[2];
   EXPECT_EQ(ContentSuggestionsModuleType::kShortcuts, tabResumptionModule.type);
 }
+
+// Tests that the Safety Check module (of type `kSafetyCheck`) correctly
+// replaces itself at the index of an existing Safety Check module of different
+// type (`kSafetyCheckMultiRow`), if it exists.
+TEST_F(ContentSuggestionsViewControllerTest,
+       TestReplaceSafetyCheckMultiRowWithSafetyCheck) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}},
+       {kSafetyCheckMagicStack, {}}},
+      {});
+
+  [view_controller_ setMagicStackOrder:@[
+    @(int(ContentSuggestionsModuleType::kMostVisited)),
+    @(int(ContentSuggestionsModuleType::kShortcuts)),
+    @(int(ContentSuggestionsModuleType::kSafetyCheckMultiRow)),
+  ]];
+
+  [view_controller_ setShortcutTilesWithConfigs:@[ BookmarkActionItem() ]];
+
+  [view_controller_ loadViewIfNeeded];
+
+  SafetyCheckState* multiRowSafetyCheckState = [[SafetyCheckState alloc]
+      initWithUpdateChromeState:UpdateChromeSafetyCheckState::kOutOfDate
+                  passwordState:PasswordSafetyCheckState::
+                                    kUnmutedCompromisedPasswords
+              safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
+                   runningState:RunningSafetyCheckState::kDefault];
+
+  [view_controller_ setMostVisitedTilesWithConfigs:@[
+    [[ContentSuggestionsMostVisitedItem alloc] init]
+  ]];
+
+  [view_controller_ showSafetyCheck:multiRowSafetyCheckState];
+
+  UIStackView* magicStack = FindMagicStack();
+
+  // Assert order is correct.
+  NSArray<UIView*>* subviews = magicStack.arrangedSubviews;
+
+  ASSERT_EQ(3u, [subviews count]);
+
+  MagicStackModuleContainer* mostVisitedModule =
+      (MagicStackModuleContainer*)subviews[0];
+
+  EXPECT_EQ(ContentSuggestionsModuleType::kMostVisited, mostVisitedModule.type);
+
+  MagicStackModuleContainer* shortcutsModule =
+      (MagicStackModuleContainer*)subviews[1];
+
+  EXPECT_EQ(ContentSuggestionsModuleType::kShortcuts, shortcutsModule.type);
+
+  MagicStackModuleContainer* safetyCheckModule =
+      (MagicStackModuleContainer*)subviews[2];
+
+  EXPECT_EQ(ContentSuggestionsModuleType::kSafetyCheckMultiRow,
+            safetyCheckModule.type);
+
+  SafetyCheckState* defaultSafetyCheckState = [[SafetyCheckState alloc]
+      initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
+                  passwordState:PasswordSafetyCheckState::kDefault
+              safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
+                   runningState:RunningSafetyCheckState::kDefault];
+
+  [view_controller_ showSafetyCheck:defaultSafetyCheckState];
+
+  magicStack = FindMagicStack();
+
+  // Assert order is correct.
+  subviews = magicStack.arrangedSubviews;
+
+  ASSERT_EQ(3u, [subviews count]);
+
+  safetyCheckModule = (MagicStackModuleContainer*)subviews[2];
+
+  EXPECT_EQ(ContentSuggestionsModuleType::kSafetyCheck, safetyCheckModule.type);
+}
