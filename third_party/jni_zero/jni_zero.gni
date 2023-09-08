@@ -350,10 +350,6 @@ template("generate_jni_impl") {
       foreach(_input, _input_args) {
         args += [ "--input-file=$_input" ]
       }
-
-      if (enable_profiling) {
-        args += [ "--enable-profiling" ]
-      }
     }
   }
 }

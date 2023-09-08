@@ -18,37 +18,6 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/stack_trace.h"
 
-#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-
-// When profiling is enabled (enable_profiling=true) this macro is added to
-// all generated JNI stubs so that it becomes the last thing that runs before
-// control goes into Java.
-//
-// This macro saves stack frame pointer of the current function. Saved value
-// used later by JNI_LINK_SAVED_FRAME_POINTER.
-#define JNI_SAVE_FRAME_POINTER \
-  base::android::JNIStackFrameSaver jni_frame_saver(__builtin_frame_address(0))
-
-// When profiling is enabled (enable_profiling=true) this macro is added to
-// all generated JNI callbacks so that it becomes the first thing that runs
-// after control returns from Java.
-//
-// This macro links stack frame of the current function to the stack frame
-// saved by JNI_SAVE_FRAME_POINTER, allowing frame-based unwinding
-// (used by the heap profiler) to produce complete traces.
-#define JNI_LINK_SAVED_FRAME_POINTER                    \
-  base::debug::ScopedStackFrameLinker jni_frame_linker( \
-      __builtin_frame_address(0),                       \
-      base::android::JNIStackFrameSaver::SavedFrame())
-
-#else
-
-// Frame-based stack unwinding is not supported, do nothing.
-#define JNI_SAVE_FRAME_POINTER
-#define JNI_LINK_SAVED_FRAME_POINTER
-
-#endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-
 namespace base {
 namespace android {
 
@@ -156,26 +125,6 @@ BASE_EXPORT void CheckException(JNIEnv* env);
 // This returns a string representation of the java stack trace.
 BASE_EXPORT std::string GetJavaExceptionInfo(JNIEnv* env,
                                              jthrowable java_throwable);
-
-#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-
-// Saves caller's PC and stack frame in a thread-local variable.
-// Implemented only when profiling is enabled (enable_profiling=true).
-class BASE_EXPORT JNIStackFrameSaver {
- public:
-  JNIStackFrameSaver(void* current_fp);
-
-  JNIStackFrameSaver(const JNIStackFrameSaver&) = delete;
-  JNIStackFrameSaver& operator=(const JNIStackFrameSaver&) = delete;
-
-  ~JNIStackFrameSaver();
-  static void* SavedFrame();
-
- private:
-  const AutoReset<void*> resetter_;
-};
-
-#endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
 }  // namespace android
 }  // namespace base
