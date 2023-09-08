@@ -614,8 +614,6 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         tags.append('webgpu-dxc-enabled')
       else:
         tags.append('webgpu-dxc-disabled')
-    else:
-      tags.append('webgpu-dxc-default')
 
     # No need to tag _use_webgpu_power_preference here,
     # since Telemetry already reports the GPU vendorID
