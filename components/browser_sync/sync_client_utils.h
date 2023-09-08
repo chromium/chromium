@@ -12,6 +12,10 @@
 #include "base/functional/callback.h"
 #include "components/sync/base/model_type.h"
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 namespace password_manager {
 class PasswordStoreInterface;
 }  // namespace password_manager
@@ -27,7 +31,8 @@ namespace browser_sync {
 class LocalDataQueryHelper {
  public:
   explicit LocalDataQueryHelper(
-      password_manager::PasswordStoreInterface* profile_password_store);
+      password_manager::PasswordStoreInterface* profile_password_store,
+      bookmarks::BookmarkModel* local_bookmark_model);
   ~LocalDataQueryHelper();
 
   // Queries the count and description/preview of existing local data for
@@ -52,6 +57,8 @@ class LocalDataQueryHelper {
 
   // For PASSWORDS.
   raw_ptr<password_manager::PasswordStoreInterface> profile_password_store_;
+  // For BOOKMARKS.
+  raw_ptr<bookmarks::BookmarkModel> local_bookmark_model_;
 };
 
 // Helper class to move all local data to account for the requested data types.
@@ -59,7 +66,9 @@ class LocalDataMigrationHelper {
  public:
   LocalDataMigrationHelper(
       password_manager::PasswordStoreInterface* profile_password_store,
-      password_manager::PasswordStoreInterface* account_password_store);
+      password_manager::PasswordStoreInterface* account_password_store,
+      bookmarks::BookmarkModel* local_bookmark_model,
+      bookmarks::BookmarkModel* account_bookmark_model);
   ~LocalDataMigrationHelper();
 
   // Requests sync service to move all local data to account for `types` data
@@ -79,6 +88,9 @@ class LocalDataMigrationHelper {
   // For PASSWORDS.
   raw_ptr<password_manager::PasswordStoreInterface> profile_password_store_;
   raw_ptr<password_manager::PasswordStoreInterface> account_password_store_;
+  // For BOOKMARKS.
+  raw_ptr<bookmarks::BookmarkModel> local_bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> account_bookmark_model_;
 };
 
 }  // namespace browser_sync

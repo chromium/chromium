@@ -13,10 +13,13 @@
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/url_and_title.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync_bookmarks/local_bookmark_model_merger.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace browser_sync {
@@ -27,6 +30,28 @@ std::string GetDomainFromUrl(const GURL& url) {
   // TODO(crbug.com/1451508): Use url_formatter helpers instead.
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url.host(), net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+template <typename T, typename F>
+syncer::LocalDataDescription CreateLocalDataDescription(syncer::ModelType type,
+                                                        std::vector<T>&& items,
+                                                        F&& url_extractor) {
+  syncer::LocalDataDescription desc;
+  desc.type = type;
+  desc.item_count = items.size();
+  // Using a set to get only the distinct domains. This also ensures an
+  // alphabetical ordering of the domains.
+  std::set<std::string> domains;
+  std::transform(
+      items.begin(), items.end(), std::inserter(domains, domains.end()),
+      [&](const auto& item) { return GetDomainFromUrl(url_extractor(item)); });
+  auto it = domains.begin();
+  // Add up to 3 domains as examples to be used in a string shown to the user.
+  for (int i = 0; i < 3 && it != domains.end(); ++i, ++it) {
+    desc.domains.push_back(*it);
+  }
+  desc.domain_count = domains.size();
+  return desc;
 }
 
 }  // namespace
@@ -43,12 +68,14 @@ class LocalDataQueryHelper::LocalDataQueryRequest
       : helper_(helper),
         types_(types),
         barrier_callback_(base::BarrierClosure(
-            // Only PASSWORDS is handled now. So do not count the other types
-            // for barrier closure.
+            // Only PASSWORDS and BOOKMARKS are handled now. So do not count the
+            // other types for barrier closure.
             // TODO(crbug.com/1451508): Change to just `types.Size()` once
             // implementation for all of PASSWORDS, BOOKMARKS and READING_LIST
             // are done.
-            base::Intersection(types, syncer::ModelTypeSet({syncer::PASSWORDS}))
+            base::Intersection(
+                types,
+                syncer::ModelTypeSet({syncer::PASSWORDS, syncer::BOOKMARKS}))
                 .Size(),
             base::BindOnce(&LocalDataQueryHelper::OnRequestComplete,
                            base::Unretained(helper_),
@@ -64,30 +91,33 @@ class LocalDataQueryHelper::LocalDataQueryRequest
       helper_->profile_password_store_->GetAutofillableLogins(
           weak_ptr_factory_.GetWeakPtr());
     }
+    if (types_.Has(syncer::BOOKMARKS)) {
+      CHECK(helper_->local_bookmark_model_);
+
+      std::vector<bookmarks::UrlAndTitle> local_bookmarks;
+      // Only the actual bookmarks are of interest here and not the folders.
+      helper_->local_bookmark_model_->GetBookmarks(&local_bookmarks);
+      result_.emplace(
+          syncer::BOOKMARKS,
+          CreateLocalDataDescription(
+              syncer::BOOKMARKS, std::move(local_bookmarks),
+              [](const bookmarks::UrlAndTitle& item) { return item.url; }));
+
+      // Trigger the barrier closure.
+      barrier_callback_.Run();
+    }
   }
 
   // PasswordStoreConsumer implementation.
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>>
           local_passwords) override {
-    syncer::LocalDataDescription desc;
-    desc.type = syncer::PASSWORDS;
-    desc.item_count = local_passwords.size();
-    // Using a set to get only the distinct domains. This also ensures an
-    // alphabetical ordering of the domains.
-    std::set<std::string> domains;
-    std::transform(local_passwords.begin(), local_passwords.end(),
-                   std::inserter(domains, domains.end()),
-                   [](const auto& password_form) {
-                     return GetDomainFromUrl(password_form->url);
-                   });
-    auto it = domains.begin();
-    // Add up to 3 domains as examples to be used in a string shown to the user.
-    for (int i = 0; i < 3 && it != domains.end(); ++i, ++it) {
-      desc.domains.push_back(*it);
-    }
-    desc.domain_count = domains.size();
-    result_.emplace(syncer::PASSWORDS, std::move(desc));
+    result_.emplace(
+        syncer::PASSWORDS,
+        CreateLocalDataDescription(
+            syncer::PASSWORDS, std::move(local_passwords),
+            [](const std::unique_ptr<password_manager::PasswordForm>&
+                   password_form) { return password_form->url; }));
 
     // Trigger the barrier closure.
     barrier_callback_.Run();
@@ -96,7 +126,8 @@ class LocalDataQueryHelper::LocalDataQueryRequest
   const std::map<syncer::ModelType, syncer::LocalDataDescription>& result()
       const {
     CHECK(result_.size() ==
-          base::Intersection(types_, syncer::ModelTypeSet({syncer::PASSWORDS}))
+          base::Intersection(types_, syncer::ModelTypeSet({syncer::PASSWORDS,
+                                                           syncer::BOOKMARKS}))
               .Size())
         << "Request is still on-going.";
     return result_;
@@ -115,8 +146,10 @@ class LocalDataQueryHelper::LocalDataQueryRequest
 };
 
 LocalDataQueryHelper::LocalDataQueryHelper(
-    password_manager::PasswordStoreInterface* profile_password_store)
-    : profile_password_store_(profile_password_store) {}
+    password_manager::PasswordStoreInterface* profile_password_store,
+    bookmarks::BookmarkModel* local_bookmark_model)
+    : profile_password_store_(profile_password_store),
+      local_bookmark_model_(local_bookmark_model) {}
 
 LocalDataQueryHelper::~LocalDataQueryHelper() = default;
 
@@ -165,6 +198,16 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
           weak_ptr_factory_.GetWeakPtr());
       helper_->account_password_store_->GetAutofillableLogins(
           weak_ptr_factory_.GetWeakPtr());
+    }
+    if (types_.Has(syncer::BOOKMARKS)) {
+      CHECK(helper_->local_bookmark_model_);
+      CHECK(helper_->account_bookmark_model_);
+      // Merge all local bookmarks into the account bookmark model.
+      sync_bookmarks::LocalBookmarkModelMerger(helper_->local_bookmark_model_,
+                                               helper_->account_bookmark_model_)
+          .Merge();
+      // Remove all bookmarks from the local model.
+      helper_->local_bookmark_model_->RemoveAllUserBookmarks();
     }
   }
 
@@ -242,9 +285,13 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
 
 LocalDataMigrationHelper::LocalDataMigrationHelper(
     password_manager::PasswordStoreInterface* profile_password_store,
-    password_manager::PasswordStoreInterface* account_password_store)
+    password_manager::PasswordStoreInterface* account_password_store,
+    bookmarks::BookmarkModel* local_bookmark_model,
+    bookmarks::BookmarkModel* account_bookmark_model)
     : profile_password_store_(profile_password_store),
-      account_password_store_(account_password_store) {}
+      account_password_store_(account_password_store),
+      local_bookmark_model_(local_bookmark_model),
+      account_bookmark_model_(account_bookmark_model) {}
 
 LocalDataMigrationHelper::~LocalDataMigrationHelper() = default;
 
