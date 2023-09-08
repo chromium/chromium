@@ -10,6 +10,7 @@
 class Browser;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
+@class PinnedTabsMediator;
 @class RegularGridMediator;
 @class TabGridViewController;
 
@@ -22,6 +23,9 @@ class Browser;
 @property(nonatomic, weak) TabGridViewController* regularViewController;
 // Regular grid mediator.
 @property(nonatomic, readonly, weak) RegularGridMediator* regularGridMediator;
+// Pinned tabs mediator.
+// TODO(crbug.com/1457146): Remove when it is fully moved.
+@property(nonatomic, readonly, weak) PinnedTabsMediator* pinnedTabsMediator;
 
 // Init method. Parameters can't be nil.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController

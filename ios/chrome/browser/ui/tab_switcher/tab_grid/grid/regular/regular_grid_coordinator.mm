@@ -6,7 +6,9 @@
 
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
 @implementation RegularGridCoordinator {
@@ -16,6 +18,8 @@
   __weak id<GridToolbarsMutator> _toolbarsMutator;
   // Delegate to handle presenting the action sheet.
   __weak id<GridMediatorDelegate> _gridMediatorDelegate;
+  // Mediator for pinned Tabs.
+  PinnedTabsMediator* _pinnedTabsMediator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -43,6 +47,12 @@
   return _mediator;
 }
 
+- (PinnedTabsMediator*)pinnedTabsMediator {
+  CHECK(_pinnedTabsMediator)
+      << "RegularGridCoordinator's -start should be called before.";
+  return _pinnedTabsMediator;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -65,6 +75,14 @@
   self.regularViewController.regularTabsDelegate = _mediator;
   self.regularViewController.regularTabsDragDropHandler = _mediator;
   self.regularViewController.regularTabsShareableItemsProvider = _mediator;
+
+  if (IsPinnedTabsEnabled()) {
+    _pinnedTabsMediator = [[PinnedTabsMediator alloc]
+        initWithConsumer:self.regularViewController.pinnedTabsConsumer];
+    _pinnedTabsMediator.browser = self.browser;
+    self.regularViewController.pinnedTabsDelegate = _pinnedTabsMediator;
+    self.regularViewController.pinnedTabsDragDropHandler = _pinnedTabsMediator;
+  }
 }
 
 - (void)stop {

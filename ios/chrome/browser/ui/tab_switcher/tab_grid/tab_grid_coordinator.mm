@@ -737,6 +737,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _regularGridCoordinator.regularViewController = self.baseViewController;
   [_regularGridCoordinator start];
   self.regularTabsMediator = _regularGridCoordinator.regularGridMediator;
+  if (IsPinnedTabsEnabled()) {
+    // TODO(crbug.com/1457146): To remove when pinned tabs is fully moved.
+    self.pinnedTabsMediator = _regularGridCoordinator.pinnedTabsMediator;
+  }
 
   ChromeBrowserState* regularBrowserState =
       _regularBrowser ? _regularBrowser->GetBrowserState() : nullptr;
@@ -744,14 +748,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       _regularBrowser ? _regularBrowser->GetWebStateList() : nullptr;
   self.priceCardMediator =
       [[PriceCardMediator alloc] initWithWebStateList:regularWebStateList];
-
-
-  if (IsPinnedTabsEnabled()) {
-    self.pinnedTabsMediator = [[PinnedTabsMediator alloc]
-        initWithConsumer:baseViewController.pinnedTabsConsumer];
-    self.pinnedTabsMediator.browser = _regularBrowser;
-    baseViewController.pinnedTabsDelegate = self.pinnedTabsMediator;
-  }
 
   // Offer to manage inactive regular tabs iff the regular tabs grid is
   // available. The regular tabs can be disabled by policy, making the grid
@@ -765,9 +761,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
              prefService:GetApplicationContext()->GetLocalState()];
   }
 
-  if (IsPinnedTabsEnabled()) {
-    baseViewController.pinnedTabsDragDropHandler = self.pinnedTabsMediator;
-  }
   baseViewController.priceCardDataSource = self.priceCardMediator;
 
 
