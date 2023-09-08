@@ -389,6 +389,7 @@
 <translation id="1733762317901693627">សូម្បីតែ​គេហទំព័រ​ដែលជាធម្មតា​មានសុវត្ថិភាព​ក៏ដោយ ក៏ជួនកាល​រងការលុកលុយ​ពីអ្នកវាយប្រហារដែរ។ ចូលមើល<ph name="BEGIN_LINK" />គេហទំព័រ​ដែលគ្មាន​សុវត្ថិភាពនេះ<ph name="END_LINK" /> លុះត្រាតែអ្នក​ប្រាកដថា អ្នកយល់ដឹងអំពី​ហានិភ័យ។</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">សូមសាកល្បងទាក់ទងទៅអ្នកគ្រប់គ្រងប្រព័ន្ធ</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ផុតកំណត់នៅខែ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">កុំព្យូទ័រ</translation>
 <translation id="1741613555002899862">ត្រូវតែ​បានបញ្ជាក់ និងជា​ជួរអក្សរ​ដែលត្រឹមត្រូវ​នៅពេល DnsOverHttpsMode គឺ <ph name="SECURE_DNS_MODE_SECURE" />។</translation>
 <translation id="1743393865165844832">សម្ភារ​គ្រែ​ដេក និង​កម្រាល​ពូក​ខ្នើយ</translation>
@@ -684,6 +685,7 @@
 <translation id="2366689192918515749">សាច់ និង​គ្រឿង​សមុទ្រ</translation>
 <translation id="2367567093518048410">កម្រិត</translation>
 <translation id="23703388716193220">បរិក្ខារលេង​កូនហ្គោល</translation>
+<translation id="2378084239755710604">បានបិទ​កាតដែលបានរក្សាទុក។</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">កំណត់ឧបករណ៍​ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នក​នៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="2384307209577226199">លំនាំដើមសហគ្រាស</translation>
@@ -2264,6 +2266,7 @@
 <translation id="5689199277474810259">នាំចេញទៅជា JSON</translation>
 <translation id="5689516760719285838">ទីតាំង</translation>
 <translation id="569000877158168851">តម្លៃ DnsOverHttpsTemplates គឺ​មិន​ពាក់ព័ន្ធ​ទេ ហើយ​នឹង​មិន​ត្រូវបាន​ប្រើប្រាស់​ឡើយ លុះត្រាតែ​កំណត់​គោលការណ៍ DnsOverHttpsMode ទៅ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ឬ <ph name="SECURE_DNS_MODE_SECURE" />។</translation>
+<translation id="5691848789297492617">រក្សាទុក​កាត​ដែលបានបើក​ពេញអេក្រង់។</translation>
 <translation id="5695542892312572833">ប្រើ Windows Hello ដើម្បី​ផ្ទៀងផ្ទាត់ និង​បញ្ចប់ការទិញ​របស់អ្នកឬ?</translation>
 <translation id="5699628521141772782">ផលិតផលពីទឹក​ដោះគោ និង​ស៊ុត</translation>
 <translation id="5701381305118179107">កណ្តាល</translation>
@@ -3241,6 +3244,7 @@
 <translation id="7676643023259824263">ស្វែងរក​អត្ថបទ​ឃ្លីបបត, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">មើល និងគ្រប់គ្រង​ប្រវត្តិរុករកតាម​អ៊ីនធឺណិត​របស់អ្នកនៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="7679947978757153706">បេស្បល</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ផុតកំណត់នៅខែ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">កីឡា​បែបស្រមើ​ស្រមៃ</translation>
 <translation id="7682287625158474539">ការដឹកជញ្ជូន</translation>
 <translation id="7682451652090915298">បាល់​ឱប</translation>

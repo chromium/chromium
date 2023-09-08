@@ -975,6 +975,17 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, consulta DeviceMetricsReportingEnab
 <translation id="1829839214911753838">Si se habilita esta política, el host de asistencia remota se ejecutará en un proceso con permisos <ph name="UIACCESS_PERMISSION_NAME" />. Así, los usuarios remotos podrán interactuar con ventanas a las que se puede acceder con permisos de administrador en el ordenador del usuario local.
 
       Si se inhabilita esta política o no se le asigna ningún valor, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con las ventanas que requieren permisos de administrador en el ordenador.</translation>
+<translation id="183438382744421768">Esta política controla el comportamiento del navegador después de que una cuenta gestionada inicie sesión en el área de contenido.
+
+Esta política anula la política <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
+
+Si se le asigna el valor Sugerido a esta política, después de iniciar sesión con una cuenta gestionada, se le pedirá al usuario que siga usando un perfil gestionado como si se hubiera implementado obligatoriamente. Si el usuario rechaza esta opción, podrá continuar con la navegación en un entorno no gestionado.
+
+Si se le asigna el valor Con implementación obligatoria a esta política, después de iniciar sesión en una cuenta gestionada, el usuario deberá seguir usando un perfil gestionado. Si el usuario rechaza esta opción, se cerrará la sesión de su cuenta. Esta implementación obligatoria no se ve afectada por la política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Si esta política se inhabilita o no se establece, después de iniciar sesión en una cuenta gestionada, es posible que el usuario vea un cuadro en el que se le pide que cree un perfil nuevo. Ese cuadro se puede cerrar y el usuario puede seguir la navegación en un entorno no gestionado. El cuadro está controlado por la política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Esta política no tiene efecto cuando se establece en un nivel de equipo.</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros</translation>
 <translation id="1838910874018595451">Configuración rellenada previamente de los tickets de Kerberos</translation>
 <translation id="1843102210803941014">Habilitar solo las cookies y los datos esenciales en la búsqueda</translation>
@@ -1050,6 +1061,11 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
       Si la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> se inhabilita, el valor de esta política no tendrá efecto, ya que se inhabilitará toda la funcionalidad de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1894790493260633497">Habilitar el modo de impresión de gráficos de fondo de forma predeterminada</translation>
+<translation id="1894798677636924604">Si no se define esta política, los inicios de sesión en la cuenta no serán necesarios para crear un nuevo perfil separado.
+
+Si se define la política, los inicios de sesión en la cuenta de los dominios de la lista no serán necesarios para crear un nuevo perfil separado.
+
+A esta política se le puede asignar una cadena vacía para que se requieran todos los inicios de sesión de cuenta a la hora de crear un nuevo perfil separado.</translation>
 <translation id="1895052641245790471">Si se le asigna el valor RestoreOnStartupIsURLs a <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />, al establecer <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> en una lista de URLs, se especificarán las URLs que se abren.
 
 Si no se le asigna ningún valor, la página Nueva pestaña se abrirá al iniciar el navegador.
@@ -2371,6 +2387,19 @@ Si esta política se habilita o no se define, el usuario podrá establecer la im
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="305106159605171619">La reducción de user-agent está inhabilitada. No se habilita mediante pruebas de campo ni de origen.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3053695107741362368">Esta política controla si los usuarios pueden llevar los datos de navegación previos a un perfil gestionado creado después de que una cuenta gestionada inicie sesión en el área de contenido.
+
+Si no se define esta política o se le asigna el valor UserOptInData, el usuario podrá elegir si quiere llevar o no los datos de navegación al perfil gestionado. La casilla del cuadro de diálogo de creación del perfil será visible y estará desmarcada de forma predeterminada.
+
+Si se asigna el valor UserOptOutData a esta política, el usuario podrá elegir si quiere llevar o no los datos de navegación previos al perfil gestionado. La casilla del cuadro de diálogo de creación del perfil será visible y estará marcada de forma predeterminada. Esta opción solo está permitida en dispositivos gestionados.
+
+Si se asigna el valor AlwaysSeparateData a esta política, el usuario no podrá llevar los datos de navegación previos al perfil gestionado. La casilla del cuadro de diálogo de creación del perfil no será visible.
+
+Si se llevan los datos de navegación previos al perfil gestionado, el perfil actual pasará a estar gestionado. No se creará ningún perfil.
+
+Si no se llevan los datos de navegación previos al perfil gestionado, se creará un perfil nuevo y limpio. Los datos de navegación previos permanecerán en un perfil no gestionado al que el usuario podrá seguir accediendo mediante el selector de perfiles.
+
+Esta política requiere que se configure la política <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> para que entre en vigor.</translation>
 <translation id="3063302084011279315">Inhabilitar Grabación de pantalla</translation>
 <translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la caché de páginas completas.</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación Kerberos</translation>

@@ -4192,6 +4192,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4322394346347055525">Затваряне на другите раздели</translation>
 <translation id="4324577459193912240">Файлът е непълен</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> се деинсталира...</translation>
+<translation id="4325433082696797523">Хранилище и захранване</translation>
 <translation id="4326146840124313313">Най-високото ниво на сигурност на Chrome прави повече, за да ви предпази от опасни уебсайтове, изтегляния и разширения</translation>
 <translation id="4326484226728068206">Артикули в кошницата ви: <ph name="DISCOUNT_TEXT" /> от <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледани <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Ледена вода</translation>
@@ -5176,6 +5177,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5146896637028965135">Системен глас</translation>
 <translation id="5147992672778369947">Използвайте препоръчаната парола</translation>
 <translation id="5148277445782867161">Услугата на Google за местоположение използва източници като Wi-Fi, мобилни мрежи и сензори, за да спомага за определянето на местоположението на устройството ви.</translation>
+<translation id="5148285448107770349">Паролата трябва да е поне 8 знака</translation>
 <translation id="5150254825601720210">Име на SSL сървър за сертификат на Netscape</translation>
 <translation id="5151354047782775295">Освободете място на диска, в противен случай е възможно автоматично да бъдат изтрити определени данни</translation>
 <translation id="5153234146675181447">Забравяне на телефона</translation>

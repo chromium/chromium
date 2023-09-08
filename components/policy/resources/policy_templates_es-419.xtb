@@ -626,6 +626,7 @@ Si no estableces esta política, se habilitará el selector de emojis para los u
 <translation id="1516486219683984217">Impide el uso de notificaciones del sistema</translation>
 <translation id="1519092983270375506">Configuración predeterminada de la partición de almacenamiento de terceros</translation>
 <translation id="1522425503138261032">Permitir a los sitios que rastreen la ubicación física de los usuarios.</translation>
+<translation id="1523282650847750947">No restablecer la última sesión</translation>
 <translation id="1523587744262636189">puerto 10080 (puede desbloquearse hasta el 01/04/2022)</translation>
 <translation id="1523774894176285446">Navegador alternativo que se inicia para sitios web configurados</translation>
 <translation id="1524243669991877602">Si habilitas la política, las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> podrán combinarse en políticas de la máquina.
@@ -987,6 +988,17 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="1829839214911753838">Si habilitas la política, el host de asistencia remota se ejecutará en un proceso con permisos <ph name="UIACCESS_PERMISSION_NAME" />. De esta manera los usuarios remotos podrán interactuar con permisos de administrador en el escritorio del usuario local.
 
       Si inhabilitas la política o no la estableces, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con permisos de administrador en el escritorio.</translation>
+<translation id="183438382744421768">Esta política controla el comportamiento del navegador después de que acceda una cuenta administrada al área de contenido.
+
+Esta política anula <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
+
+Si estableces esta política como sugerida, después de que acceda una cuenta administrada, se le pedirá al usuario que siga usando un perfil administrado como si se hubiera aplicado de manera forzosa. Si lo rechaza, el usuario podrá continuar su navegación en un entorno no administrado.
+
+Si estableces esta política como aplicada, después de que acceda una cuenta administrada, el usuario deberá seguir usando un perfil administrado. Si lo rechaza, el usuario saldrá de su cuenta. Esta aplicación no se ve afectada por la política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Si la inhabilitas o no la estableces, es posible que, después de que acceda una cuenta administrada, el usuario vea un cuadro en el que se le solicita crear un perfil nuevo. Ese cuadro se puede descartar y el usuario puede seguir navegando en un entorno no administrado. La política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> controla ese cuadro.
+
+Esta política no tiene efecto cuando se configura al nivel de la máquina.</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros.</translation>
 <translation id="1838910874018595451">Configuración ya completada para tickets de Kerberos</translation>
 <translation id="1843102210803941014">Habilitar solo las cookies y los datos esenciales en la búsqueda</translation>
@@ -1064,6 +1076,11 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
       Si inhabilitas la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el valor de esta política no tendrá efecto, ya que se inhabilitará la funcionalidad completa de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1894790493260633497">Habilitar el modo de impresión de los gráficos de fondo de forma predeterminada</translation>
+<translation id="1894798677636924604">Si no estableces esta política, no será necesario acceder a la cuenta para crear un nuevo perfil por separado.
+
+Si estableces esta política, no será necesario acceder a las cuentas de los dominios incluidos para crear un nuevo perfil por separado.
+
+Esta política se puede establecer como una cadena vacía, de modo que todos los accesos a la cuenta deban crear un nuevo perfil por separado.</translation>
 <translation id="1895052641245790471">Si estableces <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> como RestoreOnStartupIsURLs, configurar <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> con una lista de URLs determinará qué URLs se abrirán.
 
 Si no la estableces, se abrirá la página Nueva pestaña al iniciar el navegador.
@@ -2411,6 +2428,19 @@ El usuario puede establecer la imagen de avatar de cualquiera de estas opciones 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="305106159605171619">Se inhabilita la reducción de usuario-agente, y las pruebas de campo o de origen no la habilitan</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3053695107741362368">Esta política controla si los usuarios pueden incorporar datos de navegación existentes en un perfil administrado que se crea después de que acceda una cuenta administrada al área de contenido.
+
+Si estableces esta política como UserOptInData, el usuario podrá incorporar los datos de navegación existentes en el perfil administrado si lo desea. La casilla de verificación del diálogo de creación del perfil estará visible y desmarcada de forma predeterminada.
+
+Si estableces esta política como UserOptOutData, el usuario podrá incorporar los datos de navegación existentes en el perfil administrado si lo desea. La casilla de verificación del diálogo de creación del perfil estará visible y marcada de forma predeterminada. Esta opción solo se permite en dispositivos administrados.
+
+Si estableces esta política como AlwaysSeparateData, el usuario no podrá incorporar ningún dato de navegación existente al perfil administrado. La casilla de verificación del diálogo de creación del perfil no estará visible.
+
+Si se incorporan los datos de navegación existentes al perfil administrado, el perfil actual pasará a ser administrado. No se creará un perfil nuevo.
+
+Si no se incorporan los datos de navegación existentes al perfil administrado, se creará un nuevo perfil sin datos. Los datos de navegación existentes permanecerán en un perfil no administrado al que el usuario seguirá teniendo acceso a través del selector de perfiles.
+
+Para que esta política tenga efecto, se debe establecer la política <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="3063302084011279315">Inhabilitar Screencast</translation>
 <translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la memoria caché atrás/adelante</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación de Kerberos</translation>
@@ -4511,6 +4541,7 @@ Si la estableces como falsa, se usará el comportamiento predeterminado.</transl
 
       Si se establece la política como falsa o no se establece, no se enviará el informe con las actualizaciones del SO. Si se establece como verdadera, se enviará el informe con esos datos.</translation>
 <translation id="4857223512478723171">No permitir el modo de pantalla completa</translation>
+<translation id="4857888176748302062">Permitir que los orígenes consulten atributos del dispositivo</translation>
 <translation id="4858735034935305895">Permitir el modo de pantalla completa</translation>
 <translation id="4860900625632464759">Permitir que los usuarios sincronicen mensajes SMS entre su teléfono y su Chromebook</translation>
 <translation id="486146220825734683">No permitir que los usuarios recuerden las contraseñas de Kerberos</translation>
@@ -6770,6 +6801,7 @@ La política se quitará de <ph name="PRODUCT_NAME" /> en el futuro.</translatio
       La política de control de https_latency y network_telemetry es ReportDeviceNetworkStatus.
 
       Si no la estableces, no se informarán datos de telemetría adicionales sobre los eventos de cambio de intensidad de la señal.</translation>
+<translation id="6751612743847158732">Restablecer siempre la última sesión</translation>
 <translation id="6752711782954612641">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> especificará los parámetros para la búsqueda de una URL con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se reemplazará por datos de términos de búsqueda reales.
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, se enviarán solicitudes de búsqueda con el método GET.</translation>
@@ -8352,6 +8384,7 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="SC
       En la versión 88 de Chrome, se quitó esta política; si la estableces, se ignorará.
 
       Consulta https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="8137443729340035928">Preguntar al usuario si desea restablecer la última sesión al acceder</translation>
 <translation id="8141795997560411818">Esta política no impide que el usuario use la app de Google Drive de Android. Si deseas evitar el acceso a Google Drive, también debes inhabilitar la instalación de su app.</translation>
 <translation id="8142894094385450823">Establecer la configuración regional recomendada para una sesión administrada</translation>
 <translation id="8147132931626030921">Establece el estado de la función de la pantalla de privacidad para la pantalla de acceso.
@@ -8679,6 +8712,9 @@ del dispositivo durante el acceso del usuario.</translation>
 <translation id="8369602308428138533">Demora de pantalla apagada con alimentación de CA</translation>
 <translation id="8371178326720637170">Habilitar las extensiones administradas para usar la API de Enterprise Hardware Platform</translation>
 <translation id="8373176843640227330">Inhabilitar los informes de Bluetooth del dispositivo</translation>
+<translation id="8373940728202278176">Si estableces la política, los orígenes enumerados podrán obtener los atributos del dispositivo (p.ej., el número de serie o nombre de host) con la API de Device Attributes.
+
+      Los orígenes deben corresponder a las apps web que se instalan de manera automática con la política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o que están configuradas como aplicaciones de kiosco. Para conocer las especificaciones de la API de Device Attributes, consulta https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Bloquea el acceso de escritura a archivos y directorios en estos sitios</translation>
 <translation id="8378266419596669629">Bloquear el permiso de fuentes locales para estos sitios</translation>
 <translation id="8379317372795444261">Se permite la autenticación <ph name="BASIC_AUTH" /> en las conexiones de HTTP</translation>
@@ -8752,6 +8788,7 @@ del dispositivo durante el acceso del usuario.</translation>
 <translation id="8470317291588703478">No aplicar de manera forzosa el modo restringido de YouTube</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC utilizará todas las interfaces disponibles al momento de buscar la mejor ruta.</translation>
+<translation id="8482518340010585741">Configurar el restablecimiento de apps al acceder</translation>
 <translation id="8483004350080020634">Recorta las partes confidenciales por motivos de seguridad y privacidad de las URL de https:// antes de enviarlas a secuencias de comandos PAC (Configuración automática de proxy) que usa <ph name="PRODUCT_NAME" /> en la resolución del proxy.
 
       Cuando se establece como verdadera, se activa la función
@@ -9514,6 +9551,8 @@ Si no estableces la política, <ph name="PRODUCT_NAME" /> podrá recopilar y sub
 
       Si configuras la política, los usuarios no podrán cambiarla. Si no la estableces, las teclas especiales estarán desactivadas al principio, pero los usuarios podrán activarlas en cualquier momento.</translation>
 <translation id="91206085111961438">Controlar la disponibilidad de la extensión de Manifest v2</translation>
+<translation id="9122865885571719292">Controla si <ph name="PRODUCT_OS_NAME" /> restablece la última sesión cuando accedes y de qué manera.
+Esta política solo tendrá efecto si estableces la política <ph name="FULL_RESTORE_ENABLED_NAME" /> como verdadera.</translation>
 <translation id="9123211093995421438">Especifica la cantidad mínima de hitos de reversión de <ph name="PRODUCT_OS_NAME" /> que se permiten a partir de la versión estable en cualquier momento.
 
       El valor predeterminado es 0 para dispositivos de usuarios particulares y 4 (aprox., medio año) para dispositivos de empresas.

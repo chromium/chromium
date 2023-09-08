@@ -968,6 +968,17 @@ Per <ph name="PRODUCT_OS_NAME" />, vedi DeviceMetricsReportingEnabled.</translat
 <translation id="1829839214911753838">Se il criterio viene impostato su Attivato, l'host di assistenza remota viene eseguito in un processo con autorizzazioni <ph name="UIACCESS_PERMISSION_NAME" />. In questo modo gli utenti remoti possono interagire con finestre con privilegi più elevati sul desktop dell'utente locale.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, l'host di assistenza remota viene eseguito nel contesto dell'utente e gli utenti remoti non possono interagire con finestre con privilegi più elevati sul desktop.</translation>
+<translation id="183438382744421768">Questo criterio consente di controllare il comportamento del browser dopo che un account gestito ha eseguito l'accesso all'area dei contenuti.
+
+Questo criterio sostituisce <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
+
+Se questo criterio viene impostato su Suggerito, dopo l'accesso a un account gestito, all'utente verrà chiesto di continuare a utilizzare un profilo gestito come se fosse stato applicato in modo forzato. Se rifiuta, l'utente può continuare la navigazione in un ambiente non gestito.
+
+Se questo criterio viene applicato, dopo l'accesso a un account gestito l'utente dovrà continuare a utilizzare un profilo gestito. Se l'invito viene rifiutato, verrà disconnesso dal proprio account. Questa applicazione non è interessata dal criterio <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Se questo criterio viene impostato su Disabled o se non viene impostato, dopo l'accesso a un account gestito l'utente potrebbe visualizzare un fumetto in cui gli viene chiesto di creare un nuovo profilo. Il fumetto può essere ignorato e l'utente può continuare la navigazione in un ambiente non gestito. Il fumetto è controllato dal criterio <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Questo criterio non ha effetto se viene impostato a livello di macchina.</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>
 <translation id="1838910874018595451">Configurazione precompilata per i ticket Kerberos</translation>
 <translation id="1843102210803941014">Attiva solo dati e cookie essenziali nella ricerca</translation>
@@ -1043,6 +1054,11 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
 
       Se il criterio <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> viene disattivato, il valore di questo criterio non ha alcun effetto perché l'intera funzionalità <ph name="PRODUCT_NAME" /> viene disattivata.</translation>
 <translation id="1894790493260633497">Attiva la modalità di stampa delle immagini di sfondo per impostazione predefinita</translation>
+<translation id="1894798677636924604">Se questo criterio non viene impostato, non sarà necessario eseguire l'accesso agli account per creare un nuovo profilo separato.
+
+Se questo criterio viene impostato, non sarà necessario creare un nuovo profilo separato per gli accessi agli account dai domini elencati.
+
+Questo criterio può essere impostato su una stringa vuota in modo che tutti gli accessi all'account debbano creare un nuovo profilo separato.</translation>
 <translation id="1895052641245790471">Se il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> viene impostato su RestoreOnStartupIsURLs e per il criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> viene impostato un elenco di URL, è possibile specificare quali URL aprire.
 
 Se non viene configurato, all'avvio viene aperta la pagina Nuova scheda.
@@ -2362,6 +2378,19 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="305106159605171619">Riduzione dello user agent disattivata e non attivata da Field-Trials o Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3053695107741362368">Questo criterio consente di stabilire se gli utenti possono importare i dati di navigazione esistenti in un profilo gestito creato dopo che un account gestito ha eseguito l'accesso all'area dei contenuti.
+
+Se questo criterio non viene impostato o se viene impostato su User OptInData, l'utente può scegliere se importare i dati di navigazione esistenti nel profilo gestito. La casella di controllo nella finestra di dialogo di creazione del profilo sarà visibile e deselezionata per impostazione predefinita.
+
+Se questo criterio viene impostato su UseroptOutData, l'utente può scegliere se importare i dati di navigazione esistenti nel profilo gestito. La casella di controllo nella finestra di dialogo di creazione del profilo sarà visibile e selezionata per impostazione predefinita. Questa opzione è consentita solo sui dispositivi gestiti.
+
+Se questo criterio viene impostato su AlwaysSeparateData, l'utente non può importare i dati di navigazione esistenti nel profilo gestito. La casella di controllo nella finestra di dialogo di creazione del profilo non sarà visibile.
+
+Se aggiungi i dati di navigazione esistenti nel profilo gestito, il profilo corrente diventerà gestito. Non verrà creato un nuovo profilo.
+
+Il mancato trasferimento dei dati di navigazione esistenti nel profilo gestito comporta la creazione di un nuovo profilo pulito. I dati di navigazione esistenti rimarranno in un profilo non gestito, che sarà comunque accessibile all'utente tramite il selettore del profilo.
+
+Questo criterio richiede l'impostazione del criterio <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> per essere applicato.</translation>
 <translation id="3063302084011279315">Disattiva Registra schermo</translation>
 <translation id="3063307261083019730">Non consentire la memorizzazione nella cache back-forward delle pagine con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" />.</translation>
 <translation id="3064530882228745118">Utilizza ricerca CNAME durante l'autenticazione Kerberos</translation>

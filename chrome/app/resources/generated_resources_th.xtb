@@ -1420,6 +1420,7 @@
 <translation id="2102495993840063010">แอป Android</translation>
 <translation id="2104166991923847969">ปิดฮอตสปอตโดยอัตโนมัติ</translation>
 <translation id="2105809836724866556">ซ่อน<ph name="MODULE_TITLE" />แล้ว</translation>
+<translation id="2108204112555497972">ตรวจสอบเมื่อ <ph name="NUM_DAYS_HOURS_MINUTES" />ที่ผ่านมา</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{หมายเลขโทรศัพท์}other{# หมายเลขโทรศัพท์}}</translation>
 <translation id="2110941575868943054">อนุญาตให้ค้นหาอุปกรณ์บลูทูธ</translation>
 <translation id="211144231511833662">ล้างประเภท</translation>
@@ -2458,6 +2459,7 @@
 <translation id="2907619724991574506">URL เริ่มต้นทำงาน</translation>
 <translation id="2907798539022650680">การเชื่อมต่อกับ "<ph name="NAME" />" ล้มเหลว: <ph name="DETAILS" />
     ข้อความเซิร์ฟเวอร์: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">เปิดไฟล์ Word, Excel และ PowerPoint</translation>
 <translation id="2908162660801918428">เพิ่มแกลเลอรีสื่อตามไดเรกทอรี</translation>
 <translation id="2908358077082926882">กด "<ph name="CURRENTKEY" />" อีกครั้งเพื่อนำการกำหนดออกและ<ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">เชื่อมต่อกับบริการของ Google ไม่สำเร็จ ตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
@@ -6096,6 +6098,7 @@
 <translation id="5920543303088087579">ผู้ดูแลระบบปิดใช้การเชื่อมต่อเครือข่ายนี้</translation>
 <translation id="5921257443092182237">บริการตำแหน่งของ Google จะใช้แหล่งที่มาอย่าง Wi-Fi เครือข่ายมือถือ และเซ็นเซอร์ในการประมาณตำแหน่งของอุปกรณ์นี้</translation>
 <translation id="5924047253200400718">รับความช่วยเหลือ<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">ถามก่อนคัดลอกหรือย้ายไฟล์ Microsoft ไปยัง Google ไดรฟ์</translation>
 <translation id="5924527146239595929">ถ่ายรูปใหม่ หรือเลือกรูปหรือไอคอนที่มีอยู่แล้ว
     <ph name="LINE_BREAK" />
     ภาพนี้จะแสดงในหน้าลงชื่อเข้าใช้และหน้าจอล็อกของ Chromebook</translation>
@@ -6513,6 +6516,7 @@
 <translation id="6263284346895336537">ไม่สำคัญ</translation>
 <translation id="6264365405983206840">เลือก&amp;ทั้งหมด</translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
+<translation id="6265159465845424232">ถามก่อนคัดลอกหรือย้ายไฟล์ Microsoft ไปยัง Microsoft OneDrive</translation>
 <translation id="6265687851677020761">นำพอร์ตออก</translation>
 <translation id="6266532094411434237">กำลังเชื่อมต่อกับ <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">เลือกใบรับรองเพื่อตรวจสอบตัวคุณเองต่อ <ph name="HOST_NAME" /></translation>
@@ -7272,6 +7276,7 @@
 <translation id="6897363604023044284">เลือกเว็บไซต์เพื่อล้างข้อมูล</translation>
 <translation id="6897688156970667447">มีประโยชน์ในสภาวะแสงน้อยและประหยัดแบตเตอรี่</translation>
 <translation id="6897972855231767338">ดูข้อมูลเพิ่มเติมเกี่ยวกับการท่องเว็บในฐานะผู้มาเยือน</translation>
+<translation id="6898438890765871056">เปิดโฟลเดอร์ OneDrive</translation>
 <translation id="6898440773573063262">แอปพลิเคชันคีออสก์สามารถกำหนดค่าให้เปิดอัตโนมัติบนอุปกรณ์นี้ได้แล้ว</translation>
 <translation id="6899427698619335650">อนุญาตให้ระบุเครื่องหมายเสริมสัทอักษรแบบยืดหยุ่น ตัวอย่างเช่น คุณสามารถพิมพ์ "anh1" หรือ "a1nh" เพื่อให้เป็น "ánh" ได้</translation>
 <translation id="6900284862687837908">แอปพื้นหลัง: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8025,6 +8030,7 @@
 <translation id="7517959947270534934">สมาชิกในครอบครัวของคุณไม่สามารถรับรหัสผ่านได้ในขณะนี้ ขอให้สมาชิกอัปเดต Chrome และซิงค์รหัสผ่าน</translation>
 <translation id="7520766081042531487">พอร์ทัลที่ไม่ระบุตัวตน: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">แสดงแป้นพิมพ์ลัด</translation>
+<translation id="7521430434164837205">ไฟล์ Microsoft 365</translation>
 <translation id="7522255036471229694">พูดว่า "Ok Google"</translation>
 <translation id="7523117833414447032">เมื่ออ่านอักษรตัวพิมพ์ใหญ่</translation>
 <translation id="7523585675576642403">เปลี่ยนชื่อโปรไฟล์</translation>
@@ -9753,6 +9759,7 @@
 <translation id="8896830132794747524">การเคลื่อนไหวที่เร็วขึ้นด้วยเมาส์จะเลื่อนเคอร์เซอร์ไปไกลกว่าเดิม</translation>
 <translation id="8898140163781851592">ปุ่มหลักของเมาส์</translation>
 <translation id="8898786835233784856">เลือกแท็บถัดไป</translation>
+<translation id="8898790559170352647">เพิ่มบัญชี Microsoft</translation>
 <translation id="8898822736010347272">ส่ง URL ของหน้าบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้าไปให้ Google เพื่อช่วยตรวจหาภัยคุกคามใหม่ๆ และปกป้องทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="8899851313684471736">เปิดลิงก์ใน&amp;หน้าต่างใหม่</translation>
 <translation id="8900413463156971200">เปิดใช้เครือข่ายมือถือ</translation>

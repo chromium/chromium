@@ -58,6 +58,7 @@
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
 <translation id="1246905108078336582">Дали да се отстрани предлогот од привремената меморија?</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Сега ќе гледате содржини од и за <ph name="SITE_NAME" /> во „Се следи“. Сајтовите и пребарувањата што ги следите се зачувани во вашата сметка на Google. Со работите што ги следите може да управувате во „Поставки“ во секое време.</translation>
 <translation id="1263231323834454256">Список за читање</translation>
 <translation id="1266864766717917324">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Вашата историја ќе ја најдете тука</translation>
@@ -136,6 +137,7 @@
 <translation id="1671236975893690980">Преземањето чека на ред…</translation>
 <translation id="1672586136351118594">Не прикажувај повторно</translation>
 <translation id="1680919990519905526">Купете со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Наскоро, ќе гледате содржини од и за <ph name="SITE_NAME" /> во „Се следи“. Сајтовите и пребарувањата што ги следите се зачувани во вашата сметка на Google. Со работите што ги следите може да управувате во „Поставки“ во секое време.</translation>
 <translation id="1702543251015153180">Дали сакате да ги промените поставките за темната тема?</translation>
 <translation id="1702907158640575240">Надгледуван прелистувач</translation>
 <translation id="1710099199314114079">Префрлете или затворете картички</translation>
@@ -1473,6 +1475,7 @@
 <translation id="8497242791509864205">Отворете ги опциите за подредување</translation>
 <translation id="8497480609928300907">Објаснување за водичот за приватност</translation>
 <translation id="8497726226069778601">Нема што да се види тука... сѐ уште</translation>
+<translation id="8501423924927196358">Индикатор за вчитување увиди за страницата</translation>
 <translation id="8503559462189395349">Лозинки на Chrome</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8505766168025405649">Погледнете го известувањето за статусот на преземање</translation>

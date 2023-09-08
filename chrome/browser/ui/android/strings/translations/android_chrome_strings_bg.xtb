@@ -58,6 +58,7 @@
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
 <translation id="1246905108078336582">Искате ли да премахнете предложението от буферната памет?</translation>
 <translation id="1258753120186372309">Драскулка на Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Вече в „Следено“ ще виждате съдържание от и за <ph name="SITE_NAME" />. Сайтовете и търсенията, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките по всяко време.</translation>
 <translation id="1263231323834454256">Списък за четене</translation>
 <translation id="1266864766717917324">Споделянето на <ph name="CONTENT_TYPE" /> не бе възможно</translation>
 <translation id="1269129608791067105">Тук ще се показва историята ви</translation>
@@ -136,6 +137,7 @@
 <translation id="1671236975893690980">Предстои изтегляне…</translation>
 <translation id="1672586136351118594">Да не се показва отново</translation>
 <translation id="1680919990519905526">Пазар. с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Скоро в „Следено“ ще виждате съдържание от и за <ph name="SITE_NAME" />. Сайтовете и търсенията, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките по всяко време.</translation>
 <translation id="1702543251015153180">Да се променят ли настройките ви за тъмната тема?</translation>
 <translation id="1702907158640575240">Управляван браузър</translation>
 <translation id="1710099199314114079">Превключване или затваряне на раздели</translation>
@@ -1473,6 +1475,7 @@
 <translation id="8497242791509864205">Отваряне на опциите за сортиране</translation>
 <translation id="8497480609928300907">Обяснение на ръководството за поверителност</translation>
 <translation id="8497726226069778601">Тук няма нищо… засега</translation>
+<translation id="8501423924927196358">Индикатор за зареждането на Page Insights</translation>
 <translation id="8503559462189395349">Пароли в Chrome</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="8505766168025405649">Вижте известието за състоянието на изтегляне</translation>

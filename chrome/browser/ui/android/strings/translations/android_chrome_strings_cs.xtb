@@ -58,6 +58,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="124678866338384709">Zavřít aktuální kartu</translation>
 <translation id="1246905108078336582">Odstranit návrh ze schránky?</translation>
 <translation id="1258753120186372309">Sváteční logo Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Na kartě Sledováno nyní uvidíte obsah z webu <ph name="SITE_NAME" /> a o něm. Weby a vyhledávání, která sledujete, se ukládají do vašeho účtu Google. Sledovaný obsah můžete kdykoli spravovat v nastavení.</translation>
 <translation id="1263231323834454256">Seznam četby</translation>
 <translation id="1266864766717917324">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
 <translation id="1269129608791067105">Zde najdete svou historii</translation>
@@ -136,6 +137,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="1671236975893690980">Nevyřízené stahování…</translation>
 <translation id="1672586136351118594">Tuto zprávu již nezobrazovat</translation>
 <translation id="1680919990519905526">Koupit věc na obrázku pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Brzy na kartě Sledováno uvidíte obsah z webu <ph name="SITE_NAME" /> nebo o něm. Weby a vyhledávání, která sledujete, se ukládají do vašeho účtu Google. Sledovaný obsah můžete kdykoli spravovat v nastavení.</translation>
 <translation id="1702543251015153180">Změnit nastavení tmavého motivu?</translation>
 <translation id="1702907158640575240">Spravovaný prohlížeč</translation>
 <translation id="1710099199314114079">Přepnout nebo zavřít karty</translation>
@@ -1473,6 +1475,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8497242791509864205">Otevřít možnosti řazení</translation>
 <translation id="8497480609928300907">Vysvětlení průvodce ochranou soukromí</translation>
 <translation id="8497726226069778601">Zatím tu nic není...</translation>
+<translation id="8501423924927196358">Indikátor načítání statistik stránky</translation>
 <translation id="8503559462189395349">Hesla Chrome</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8505766168025405649">Stav stahování naleznete v oznámení</translation>

@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">კონტექსტი</translation>
 <translation id="3272909651715601089">„<ph name="PATH" />“ ვერ გაიხსნა</translation>
 <translation id="3280431534455935878">მომზადება</translation>
+<translation id="3280719573299097127">თქვენ იყენებთ ლიმიტირებულ ქსელს. ფაილების სინქრონიზაცია დაპაუზდა.</translation>
 <translation id="3280987981688031357">გრამფირფიტა</translation>
 <translation id="3290356915286466215">დაუცველი</translation>
 <translation id="3291218047831493686">SIM ბარათის ჩაკეტვის პარამეტრის შესაცვლელად დაუკავშირდით ამ ქსელს</translation>
@@ -631,6 +632,7 @@
 <translation id="5838451609423551646">არჩეულიდან ამოიშალა ყველა ჩანაწერი.</translation>
 <translation id="5838825566232597749">US Workman, საერთაშორისო</translation>
 <translation id="5845721951356578987">ექთანი</translation>
+<translation id="5858478190805449225">ბატარეის დაზოგვის რეჟიმის ჩართულია. ცადეთ ხელახლა, როცა ბატარეის დაზოგვის რეჟიმის გამორთულია.</translation>
 <translation id="5860491529813859533">ჩართვა</translation>
 <translation id="5861477046012235702">მოთამაშე</translation>
 <translation id="5864471791310927901">DHCP ძებნა ვერ განხორციელდა</translation>
@@ -919,6 +921,7 @@
 <translation id="8087576439476816834">ჩამოტვირთვა, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ჩემთვის გაზიარებული</translation>
 <translation id="8116072619078571545">გაყინული წყალი</translation>
+<translation id="8120392982188717723">ლიმიტირებული ტრაფიკის მქონე ქსელებით სინქრონიზაციის დაშვება</translation>
 <translation id="8124093710070495550">პრობლემა სინქრონიზაციისას</translation>
 <translation id="8128733386027980860">ინგლისური (გაერთიანებული სამეფო) Dvorak კლავიატურით</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ გაზიარებულია თქვენთვის. მისი წაშლა შეუძლებელია, რადგან ის თქვენ არ გეკუთვნით.</translation>

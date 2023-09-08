@@ -1423,6 +1423,7 @@
 <translation id="2102495993840063010">‏تطبيقات Android</translation>
 <translation id="2104166991923847969">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="2105809836724866556">تم إخفاء <ph name="MODULE_TITLE" />.</translation>
+<translation id="2108204112555497972">تمّ التحقُّق قبل <ph name="NUM_DAYS_HOURS_MINUTES" />.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
 <translation id="2110941575868943054">المواقع الإلكترونية التي يُسمح لها بالبحث عن أجهزة تتضمّن بلوتوث</translation>
 <translation id="211144231511833662">محو الأنواع</translation>
@@ -2462,6 +2463,7 @@
 <translation id="2907619724991574506">‏عناوين URL لبدء التشغيل</translation>
 <translation id="2907798539022650680">تعذّر الاتصال بـ '<ph name="NAME" />': <ph name="DETAILS" />
     رسالة الخادم: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">‏فتح ملفات Word وExcel وPowerPoint</translation>
 <translation id="2908162660801918428">إضافة معرض الوسائط باستخدام الدليل</translation>
 <translation id="2908358077082926882">يمكنك الضغط على مفتاح "<ph name="CURRENTKEY" />" مرة أخرى لإزالة التخصيص، واختيار <ph name="RESPONSE" /> بعد ذلك.</translation>
 <translation id="2909506265808101667">‏تعذَّر الاتصال بخدمات Google. يُرجى التحقّق من اتصال الشبكة ثم إعادة المحاولة. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
@@ -5166,6 +5168,7 @@
 <translation id="5146896637028965135">صوت النظام</translation>
 <translation id="5147992672778369947">استخدام كلمة المرور المقترَحة</translation>
 <translation id="5148277445782867161">‏تستخدم خدمة الموقع الجغرافي من Google المصادر مثل شبكة Wi-Fi وشبكات الجوّال وأجهزة الاستشعار للمساعدة في تحديد الموقع الجغرافي لجهازك.</translation>
+<translation id="5148285448107770349">يجب ألا تقل كلمة المرور عن 8 أحرف.</translation>
 <translation id="5150254825601720210">‏اسم خادم بروتوكول SSL (طبقة المقابس الآمنة) لشهادة Netscape</translation>
 <translation id="5151354047782775295">احرص على تفريغ مساحة على القرص أو حدد بيانات قد يتم حذفها تلقائيًا</translation>
 <translation id="5153234146675181447">عدم تذكُّر الهاتف</translation>
@@ -6099,6 +6102,7 @@
 <translation id="5920543303088087579">تم إيقاف الربط بهذه الشبكة بواسطة المشرف</translation>
 <translation id="5921257443092182237">‏تستخدم خدمة الموقع الجغرافي من Google المصادر، مثل شبكة Wi-Fi وشبكات الجّوال وأجهزة الاستشعار لمساعدتك في تقدير الموقع الجغرافي لهذا الجهاز.</translation>
 <translation id="5924047253200400718">الحصول على مساعدة<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">‏طلب الإذن قبل نسخ ملفات Microsoft أو نقلها إلى Google Drive</translation>
 <translation id="5924527146239595929">‏يمكنك التقاط صورة جديدة أو اختيار رمز أو صورة حالية.
     <ph name="LINE_BREAK" />
     ستظهر هذه الصورة على شاشة القفل وشاشة تسجيل الدخول في جهاز Chromebook.</translation>
@@ -6517,6 +6521,7 @@
 <translation id="6263284346895336537">غير مهمة</translation>
 <translation id="6264365405983206840">تحديد &amp;الكل</translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
+<translation id="6265159465845424232">‏طلب الإذن قبل نسخ ملفات Microsoft أو نقلها إلى Microsoft OneDrive</translation>
 <translation id="6265687851677020761">إزالة المنفذ</translation>
 <translation id="6266532094411434237">جارٍ الربط بجهاز <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">اختَر شهادة للمصادقة مع <ph name="HOST_NAME" />.</translation>
@@ -7284,6 +7289,7 @@
 <translation id="6897363604023044284">اختيار المواقع الإلكترونية لمحوها</translation>
 <translation id="6897688156970667447">يفيد استخدام هذا الوضع في الإضاءة المنخفضة ولتوفير شحن البطارية.</translation>
 <translation id="6897972855231767338">مزيد من المعلومات حول التصفُّح في وضع الضيف</translation>
+<translation id="6898438890765871056">‏فتح مجلد OneDrive</translation>
 <translation id="6898440773573063262">الآن، يمكن إعداد تطبيقات الكشك للبدء التلقائي على هذا الجهاز.</translation>
 <translation id="6899427698619335650">‏يتيح لك هذا الخيار تخصيص مفاتيح علامات التشكيل بمرونة. على سبيل المثال، يمكنك كتابة anh1 أو a1nh للحصول على ánh.</translation>
 <translation id="6900284862687837908">تطبيق الخلفية: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8038,6 +8044,7 @@
 <translation id="7517959947270534934">‏لا يمكن لأفراد عائلتك تلقّي كلمات المرور الآن. اطلب منهم تحديث تطبيق Chrome ومزامنة كلمات المرور لديهم.</translation>
 <translation id="7520766081042531487">بوابة التصفّح المتخفي: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">عرض الاختصارات</translation>
+<translation id="7521430434164837205">‏ملفات Microsoft 365</translation>
 <translation id="7522255036471229694">‏قل "Ok Google".</translation>
 <translation id="7523117833414447032">عند قراءة الأحرف الكبيرة</translation>
 <translation id="7523585675576642403">إعادة تسمية الملف الشخصي</translation>
@@ -9498,6 +9505,7 @@
 <translation id="8680251145628383637">‏سجّل الدخول للحصول على الإشارات المرجعية، والسجل، وكلمات المرور، والإعدادات الأخرى على جميع أجهزتك. سيتم أيضًا تسجيل دخولك تلقائيًا إلى خدمات Google.</translation>
 <translation id="8681886425883659911">حظر الإعلانات على المواقع الإلكترونية التي تُعرف بعرضها إعلانات مضلِّلة أو متداخلة</translation>
 <translation id="8682730193597992579">تم توصيل <ph name="PRINTER_NAME" /> وهي جاهزة للاستخدام.</translation>
+<translation id="8684471948980641888">السماح بالمزامنة على الشبكات التي تفرض تكلفة استخدام</translation>
 <translation id="8685540043423825702">‏ملفك الشخصي على Chrome</translation>
 <translation id="8686142379631285985">تم تسجيل الدخول بحساب <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">إلغاء تنزيل "<ph name="FILE_NAME" />"</translation>
@@ -9770,6 +9778,7 @@
 <translation id="8896830132794747524">تؤدي الحركات السريعة باستخدام الماوس إلى تحريك المؤشر بعيدًا.</translation>
 <translation id="8898140163781851592">زر الماوس الأساسي</translation>
 <translation id="8898786835233784856">اختيار علامة التبويب التالية</translation>
+<translation id="8898790559170352647">‏إضافة حسابك على Microsoft</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="8899851313684471736">&amp;فتح الرّابط في نافذة جديدة</translation>
 <translation id="8900413463156971200">تفعيل شبكة الجوّال</translation>

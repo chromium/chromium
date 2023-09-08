@@ -73,6 +73,7 @@ Co je třeba zvážit:
 <translation id="3655656110921623717">To znamená, že Chrom bude pokaždé odesílat požadavek na mobilní web.</translation>
 <translation id="3720541637541300822">Při zavření Chromu zamknout anonymní karty</translation>
 <translation id="3741995255368156336">Otevře seznam četby prohlížeče Chrome.</translation>
+<translation id="3744018071945602754">Spravovat hesla v prohlížeči Chrome</translation>
 <translation id="3827545470516145620">Na tomto zařízení máte standardní bezpečnostní ochranu</translation>
 <translation id="384394811301901750">Google Chrome teď nemůže použít fotoaparát</translation>
 <translation id="3901001113120561395">Využijte Chrome na maximum.</translation>
@@ -87,6 +88,7 @@ Co je třeba zvážit:
 <translation id="4233521129555661685">Uživatel <ph name="USER_EMAIL1" /> používal Chrome a ponechal v tomto zařízení záložky, hesla a další nastavení.</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="4251174643044751591">Otevře stránku nastavení platebních metod v prohlížeči Chrome.</translation>
+<translation id="4453284704333523777">Spravovat nastavení prohlížeče Chrome</translation>
 <translation id="4508370294876102450">Otevírejte Chrome z libovolné aplikace</translation>
 <translation id="4523886039239821078">Některé doplňky způsobují selhání prohlížeče Chrome. Prosím odinstalujte:</translation>
 <translation id="4633328489441962921">Chrome nemůže vyhledat dostupné aktualizace</translation>
@@ -123,6 +125,7 @@ Co je třeba zvážit:
 <translation id="571296537125272375">Chrome nemůže vyhledat dostupné aktualizace, protože jste offline</translation>
 <translation id="5716154293141027663">Otevřít Chrome při každém klepnutí na odkaz v jiné aplikaci</translation>
 <translation id="5808435672482059465">Zobrazit historii Chromu</translation>
+<translation id="589695154992054845">Otevře Správce hesel v prohlížeči Chrome.</translation>
 <translation id="5998675059699164418">Vaše organizace vyžaduje, abyste se k používání Chromu přihlásili.</translation>
 <translation id="6054613632208573261">Používejte Chrome ve výchozím nastavení</translation>
 <translation id="6063091872902370735">Povolit přihlášení do Chromu</translation>
@@ -215,6 +218,7 @@ Co je třeba zvážit:
   • Pokud Chrome spadne, podrobnosti o selhání mohou zahrnovat některé osobní údaje.
 
   • Pokud zapnete synchronizaci, mohou metriky zahrnovat také informace o navštívených adresách URL.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Otevře Nastavení v prohlížeči Chrome.</translation>
 <translation id="9112744793181547300">Nastavit Chrome jako výchozí prohlížeč?</translation>
 <translation id="9122931302567044771">To znamená, že Chrome bude pokaždé odesílat požadavek na web pro počítač.</translation>
 <translation id="9181628561061032322">Otevře nedávno použité karty prohlížeče Chrome.</translation>

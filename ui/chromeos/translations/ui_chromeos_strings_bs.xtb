@@ -278,7 +278,7 @@
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">Otvaranje putanje "<ph name="PATH" />" nije uspjelo</translation>
 <translation id="3280431534455935878">Pripremanje</translation>
-<translation id="3280719573299097127">Povezani ste s mrežom s ograničenim prometom. Sinkronizacija datoteka je pauzirana.</translation>
+<translation id="3280719573299097127">Na mreži ste s naplatom. Sinhronizacija fajlova je pauzirana.</translation>
 <translation id="3280987981688031357">Gramofonska ploča</translation>
 <translation id="3290356915286466215">Nije osigurano</translation>
 <translation id="3291218047831493686">Povežite se s ovom mrežom da promijenite postavke zaključavanja SIM-a</translation>
@@ -633,7 +633,7 @@
 <translation id="5838451609423551646">Svi unosi su uklonjeni iz odabira.</translation>
 <translation id="5838825566232597749">SAD Workman međunarodna</translation>
 <translation id="5845721951356578987">Medicinska sestra</translation>
-<translation id="5858478190805449225">Način štednje baterije uključen. Pokušajte ponovo kad isključite štednju baterije.</translation>
+<translation id="5858478190805449225">Način rada za uštedu baterije je uključen. Pokušajte ponovo kada način rada za uštedu baterije bude isključen.</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5861477046012235702">Igrač</translation>
 <translation id="5864471791310927901">Traženje DHCP-a nije uspjelo</translation>

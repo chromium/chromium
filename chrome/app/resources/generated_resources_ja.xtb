@@ -1417,6 +1417,7 @@
 <translation id="2102495993840063010">Android アプリ</translation>
 <translation id="2104166991923847969">アクセス ポイントを自動的にオフにする</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> を非表示にしました</translation>
+<translation id="2108204112555497972">前回の確認: <ph name="NUM_DAYS_HOURS_MINUTES" /> 前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
 <translation id="2110941575868943054">Bluetooth デバイスの検出が許可されているサイト</translation>
 <translation id="211144231511833662">タイプの選択をすべて解除</translation>
@@ -2452,6 +2453,7 @@
 <translation id="2907619724991574506">起動 URL</translation>
 <translation id="2907798539022650680">「<ph name="NAME" />」に接続できませんでした: <ph name="DETAILS" />
     サーバー メッセージ: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word、Excel、PowerPoint のファイルを開く</translation>
 <translation id="2908162660801918428">メディア ギャラリーをディレクトリ単位で追加</translation>
 <translation id="2908358077082926882">割り当てを削除して<ph name="RESPONSE" />には、もう一度「<ph name="CURRENTKEY" />」キーを押してください</translation>
 <translation id="2909506265808101667">Google サービスに接続できませんでした。ネットワーク接続を確認してからもう一度お試しください。エラーコード: <ph name="ERROR_CODE" />。</translation>
@@ -6088,6 +6090,7 @@
 <translation id="5920543303088087579">このネットワークへの接続は管理者によって無効にされています</translation>
 <translation id="5921257443092182237">Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。</translation>
 <translation id="5924047253200400718"><ph name="SCANNING_STATUS" /> ヘルプ</translation>
+<translation id="5924438086390153180">Microsoft のファイルを Google ドライブにコピーまたは移動する前に確認する</translation>
 <translation id="5924527146239595929">新しく写真を撮るか、既存の写真またはアイコンを選択してください。
     <ph name="LINE_BREAK" />
     この画像は Chromebook のログイン画面とロック画面に表示されます。</translation>
@@ -6506,6 +6509,7 @@
 <translation id="6263284346895336537">非重要</translation>
 <translation id="6264365405983206840">すべて選択(&amp;A)</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
+<translation id="6265159465845424232">Microsoft のファイルを Microsoft OneDrive にコピーまたは移動する前に確認する</translation>
 <translation id="6265687851677020761">ポートを削除</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> に接続しています</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> での認証に使用する証明書を選択してください</translation>
@@ -7263,6 +7267,7 @@
 <translation id="6897363604023044284">削除するサイトを選択</translation>
 <translation id="6897688156970667447">暗い場所でも見やすくして、バッテリーを節約します</translation>
 <translation id="6897972855231767338">ゲストモードでのブラウジングの詳細</translation>
+<translation id="6898438890765871056">OneDrive フォルダを開く</translation>
 <translation id="6898440773573063262">このデバイスでキオスク アプリケーションが自動起動するように設定できるようになりました。</translation>
 <translation id="6899427698619335650">フレキシブルな発音区別符号の割り当てを許可します。たとえば、「anh1」や「a1nh」と入力すると、「ánh」を入力できます。</translation>
 <translation id="6900284862687837908">バックグラウンド アプリ: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8016,6 +8021,7 @@
 <translation id="7517959947270534934">現在、ファミリー メンバーはパスワードを受信できません。Chrome を更新してパスワードを同期するようメンバーに依頼してください。</translation>
 <translation id="7520766081042531487">シークレット ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ショートカットを表示</translation>
+<translation id="7521430434164837205">Microsoft 365 ファイル</translation>
 <translation id="7522255036471229694">「OK Google」と言ってください</translation>
 <translation id="7523117833414447032">大文字の読み上げ</translation>
 <translation id="7523585675576642403">プロファイルの名前を変更</translation>
@@ -9743,6 +9749,7 @@
 <translation id="8896830132794747524">マウスをより速く動かすとカーソルの移動幅が大きくなります</translation>
 <translation id="8898140163781851592">メインのマウスボタン</translation>
 <translation id="8898786835233784856">次のタブを選択</translation>
+<translation id="8898790559170352647">Microsoft アカウントを追加する</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
 <translation id="8899851313684471736">新しいウィンドウで開く(&amp;W)</translation>
 <translation id="8900413463156971200">モバイルデータ通信を有効にする</translation>

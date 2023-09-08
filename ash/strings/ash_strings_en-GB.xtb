@@ -200,6 +200,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1757857692711134412">Off until sunset</translation>
 <translation id="1768366657309696705">The <ph name="LAUNCHER_KEY_NAME" /> + full stop keyboard shortcut has changed. To use the insert key, press the <ph name="LAUNCHER_KEY_NAME" /> key + shift + backspace.</translation>
 <translation id="1770726142253415363">Moved to row <ph name="ROW_NUMBER" />, column <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Open <ph name="NAME" /> to set up and customise your device</translation>
 <translation id="1771761307086386028">Scroll right</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, currently <ph name="DATE" /> is selected.</translation>
 <translation id="1775598828170459419">Showing <ph name="NUM_SHOWN_ITEMS" /> out of <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1192,6 +1193,7 @@ Connect your device to power.</translation>
 <translation id="5876666360658629066">Enter parental code</translation>
 <translation id="5881540930187678962">Set up Phone Hub later</translation>
 <translation id="5881663018261910378">Off</translation>
+<translation id="5883017113634523865">Install the app for <ph name="NAME" /> from Google Play to see all available features</translation>
 <translation id="5887954372087850114">Window <ph name="WINDOW_TITLE" /> assigned to <ph name="DESK_TITLE" /> and unassigned from all other desks</translation>
 <translation id="588817334757907802">Open file in Chrome browser</translation>
 <translation id="5895138241574237353">Restart</translation>

@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Puoi tornare più tardi per riaprire le schede che hai chiuso di recente</translation>
 <translation id="1016495303386450659">Elemento aggiornato</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{Salva password nell'account}other{Salva password nell'account}}</translation>
 <translation id="1035980983510608210">Se chiudi tutte le schede, verranno chiuse anche le schede bloccate.</translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
@@ -72,6 +73,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="132683371494960526">Tocca due volte per cambiare la cartella principale.</translation>
 <translation id="1332723353863236763">Alcuni dati non sono ancora stati salvati</translation>
 <translation id="1335348992705722518">Gestisci impostazioni…</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{Salva {COUNT} password nel tuo Account Google}other{Salva {COUNT} password nel tuo Account Google}}</translation>
 <translation id="1340643665687018190">Chiudi menu</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Regali-Moglie/s?k=Regali+per+Moglie</translation>
 <translation id="1358214951266274152">Visita il link che hai copiato</translation>
@@ -316,6 +318,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Impossibile creare il link</translation>
 <translation id="2786701870377699570">Cerca tra le schede sui dispositivi sincronizzati</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{Password salvata nel tuo Account Google: {EMAIL}}other{Password salvate nel tuo Account Google: {EMAIL}}}</translation>
 <translation id="2797029671965852011">Mostra la cronologia</translation>
 <translation id="2800683595868705743">Chiudi selettore di schede</translation>
 <translation id="2815198996063984598">2. Tocca App browser predefinita</translation>
@@ -652,6 +655,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Solo su questo dispositivo, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nuova scheda in incognito</translation>
 <translation id="4766112107778026136">Discover e Stai seguendo</translation>
+<translation id="47677902929517676">Per salvare le password nel tuo account, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="4775879719735953715">Browser predefinito</translation>
 <translation id="4778644898150334464">Utilizza un'altra password</translation>
 <translation id="478808905805139173">Aprire in modalità di navigazione in incognito?</translation>
@@ -1119,6 +1123,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7265758999917665941">Mai per questo sito</translation>
 <translation id="7272437679830969316">Impossibile verificare la tua identità. Password non copiata.</translation>
 <translation id="7291368939935408496">Preparazione delle password...</translation>
+<translation id="7302503784943202842">Usa le password su tutti i tuoi dispositivi</translation>
 <translation id="730958329302570991">Aggiungi facilmente le password dei siti a Gestore delle password di Google in qualsiasi momento.</translation>
 <translation id="7313347584264171202">Qui troverai le tue schede di navigazione in incognito</translation>
 <translation id="7331371412779932885">Ti offre suggerimenti di schede basati sulla tua attività di navigazione su altri dispositivi usando il tuo Account Google. I dispositivi devono avere eseguito l'accesso e deve essere attiva la sincronizzazione con lo stesso Account Google.</translation>
@@ -1468,6 +1473,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="953008885340860025">Chrome è disconnesso</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Mostra Suggerimenti di schede da Altri dispositivi</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{Puoi salvare la password di {DOMAIN_ONE} nel tuo Account Google {EMAIL}}=2{Puoi salvare le password di {DOMAIN_ONE} e {DOMAIN_TWO} nel tuo Account Google {EMAIL}}=3{Puoi salvare le password di {DOMAIN_ONE}, {DOMAIN_TWO} e {OTHER_DOMAINS_COUNT} altro nel tuo Account Google {EMAIL}}other{Puoi salvare le password di {DOMAIN_ONE}, {DOMAIN_TWO} e di altri {OTHER_DOMAINS_COUNT} utenti nel tuo Account Google {EMAIL}}}</translation>
 <translation id="97300214378190234">Utilizza Chrome ogni volta che tocchi i link in altre app.</translation>
 <translation id="973493300226275298">Monitora il prezzo di un prodotto nei negozi online. Riceverai avvisi quando il prezzo cala.</translation>
 <translation id="981498610235328462">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti.</translation>

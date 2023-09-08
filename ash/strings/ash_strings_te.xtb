@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">సూర్యాస్తమయం వరకు ఆఫ్‌లో ఉంటుంది</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + పీరియడ్ కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. ఇన్‌సర్ట్ కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ + షిఫ్ట్ + బ్యాక్‌స్పేస్ కీలను నొక్కండి.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />వ అడ్డు వరుస, <ph name="COLUMN_NUMBER" />వ నిలువు వరుసకు తరలించబడింది.</translation>
+<translation id="1771458705381257690">మీ పరికరాన్ని సెటప్ చేయడానికి, అనుకూలంగా మార్చడానికి <ph name="NAME" />ను తెరవండి</translation>
 <translation id="1771761307086386028">కుడికి స్క్రోల్ చేయి</translation>
 <translation id="1774796056689732716">క్యాలెండర్, <ph name="CURRENT_MONTH_YEAR" />, ప్రస్తుతం <ph name="DATE" /> తేదీ ఎంపిక చేయబడింది.</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />లో <ph name="NUM_SHOWN_ITEMS" /> చూపుతోంది</translation>
@@ -1193,6 +1194,7 @@
 <translation id="5876666360658629066">తల్లిదండ్రుల కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="5881540930187678962">ఫోన్ హబ్‌ను తర్వాత సెటప్ చేయండి</translation>
 <translation id="5881663018261910378">ఆఫ్‌లో ఉంటుంది</translation>
+<translation id="5883017113634523865">అందుబాటులో ఉన్న అన్ని ఫీచర్‌లను చూడటానికి Google Play నుండి <ph name="NAME" /> కోసం యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="5887954372087850114">విండో <ph name="WINDOW_TITLE" />, <ph name="DESK_TITLE" />కు కేటాయించబడింది, ఇంకా ఇతర డెస్క్‌ల నుండి కేటాయింపు తీసివేయబడింది</translation>
 <translation id="588817334757907802">ఫైల్‌ను Chrome బ్రౌజర్‌లో తెరవండి</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>

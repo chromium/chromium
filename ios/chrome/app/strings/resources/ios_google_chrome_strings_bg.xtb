@@ -73,6 +73,7 @@
 <translation id="3655656110921623717">Това означава, че всеки път Chrome ще заявява мобилната версия на сайта.</translation>
 <translation id="3720541637541300822">Заключване на разделите в режим „инкогнито“ при затваряне на Chrome</translation>
 <translation id="3741995255368156336">Отваря списъка за четене в Chrome.</translation>
+<translation id="3744018071945602754">Управление на паролите в Chrome</translation>
 <translation id="3827545470516145620">Разполагате със стандартно ниво на защита на това устройство</translation>
 <translation id="384394811301901750">В момента Google Chrome не може да използва камерата ви</translation>
 <translation id="3901001113120561395">Възползвайте се максимално от Chrome.</translation>
@@ -87,6 +88,7 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> използва Chrome и запази на това устройство отметки, пароли и други настройки.</translation>
 <translation id="424864128008805179">Искате ли да излезете от Chrome?</translation>
 <translation id="4251174643044751591">Отваря страницата с настройки за начините на плащане в Chrome.</translation>
+<translation id="4453284704333523777">Управление на настройките на Chrome</translation>
 <translation id="4508370294876102450">Отваряне на Chrome от което и да е приложение</translation>
 <translation id="4523886039239821078">Някои добавки водят до срив на Chrome. Моля, деинсталирайте:</translation>
 <translation id="4633328489441962921">Chrome не може да провери за актуализации</translation>
@@ -123,6 +125,7 @@
 <translation id="571296537125272375">Офлайн сте, Chrome не може да провери за актуализации</translation>
 <translation id="5716154293141027663">Отваряне на Chrome при всяко докосване на връзки в други приложения</translation>
 <translation id="5808435672482059465">Преглед на историята ви в Chrome</translation>
+<translation id="589695154992054845">Отваря Мениджър на пароли в Chrome.</translation>
 <translation id="5998675059699164418">Организацията ви изисква да влезете в профила си, за да използвате Chrome.</translation>
 <translation id="6054613632208573261">Използване на Chrome по подразбиране</translation>
 <translation id="6063091872902370735">Разрешаване на влизането в Chrome</translation>
@@ -215,6 +218,7 @@
   • Ако Chrome претърпи срив, подробностите за срива може да включват лична информация.
 
   • В случай че активирате синхронизирането, показателите може да включват и информация за посещаваните от вас URL адреси.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Отваря настройките в Chrome.</translation>
 <translation id="9112744793181547300">Искате ли да зададете Chrome като браузъра по подразбиране?</translation>
 <translation id="9122931302567044771">Това означава, че всеки път Chrome ще заявява настолната версия на сайта.</translation>
 <translation id="9181628561061032322">Отваря скорошните раздели в Chrome.</translation>

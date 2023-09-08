@@ -72,6 +72,7 @@
 <translation id="3655656110921623717">Cela signifie que Chrome demandera toujours la version mobile du site.</translation>
 <translation id="3720541637541300822">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
 <translation id="3741995255368156336">Ouvre la liste de lecture Chrome.</translation>
+<translation id="3744018071945602754">Gérer les mots de passe dans Chrome</translation>
 <translation id="3827545470516145620">Vous bénéficiez d'une protection de sécurité standard sur cet appareil</translation>
 <translation id="384394811301901750">Google Chrome ne peut pas utiliser votre appareil photo pour le moment</translation>
 <translation id="3901001113120561395">Tirez le meilleur parti de Chrome.</translation>
@@ -83,6 +84,7 @@
 <translation id="417201473131094001">Application non prise en charge par Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> utilisait Chrome et a laissé des favoris, des mots de passe et d'autres paramètres sur cet appareil.</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome?</translation>
+<translation id="4453284704333523777">Gérer les paramètres de Chrome</translation>
 <translation id="4508370294876102450">Ouvrez Chrome depuis n'importe quelle application</translation>
 <translation id="4523886039239821078">Certains modules complémentaires provoquent le plantage de Chrome. Veuillez désinstaller :</translation>
 <translation id="4633328489441962921">Chrome ne peut pas vérifier s'il y a des mises à jour</translation>
@@ -119,6 +121,7 @@
 <translation id="571296537125272375">Hors ligne, Chrome ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="5716154293141027663">Ouvrez Chrome chaque fois que vous touchez des liens dans d'autres applications</translation>
 <translation id="5808435672482059465">Afficher votre historique de Chrome</translation>
+<translation id="589695154992054845">Ouvrez le gestionnaire de mots de passe dans Chrome.</translation>
 <translation id="5998675059699164418">Votre organisation vous demande de vous connecter pour utiliser Chrome.</translation>
 <translation id="6054613632208573261">Utiliser Chrome par défaut</translation>
 <translation id="6063091872902370735">Autoriser la connexion dans Chrome</translation>
@@ -204,6 +207,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
   • En cas de plantage de Chrome, les détails de l'événement peuvent inclure des renseignements personnels.
 
   • Si vous activez la synchronisation, les mesures peuvent également inclure des renseignements sur les URL que vous visitez.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Ouvrez les paramètres dans Chrome.</translation>
 <translation id="9112744793181547300">Définir Chrome comme navigateur par défaut?</translation>
 <translation id="9122931302567044771">Cela signifie que Chrome demandera toujours la version bureau du site.</translation>
 <translation id="9181628561061032322">Ouvre les onglets récents de Chrome.</translation>

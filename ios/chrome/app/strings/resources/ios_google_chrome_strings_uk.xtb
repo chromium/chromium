@@ -73,6 +73,7 @@
 <translation id="3655656110921623717">Це означає, що Chrome щоразу буде запитувати мобільний сайт.</translation>
 <translation id="3720541637541300822">Блокувати анонімні вкладки після закриття Chrome</translation>
 <translation id="3741995255368156336">Відкриває список читання в Chrome.</translation>
+<translation id="3744018071945602754">Керувати паролями в Chrome</translation>
 <translation id="3827545470516145620">Ви ввімкнули стандартний режим безпеки на цьому пристрої</translation>
 <translation id="384394811301901750">Зараз Google Chrome не може використовувати камеру</translation>
 <translation id="3901001113120561395">Користуйтеся всіма можливостями Chrome.</translation>
@@ -87,6 +88,7 @@
 <translation id="4233521129555661685">Користувач <ph name="USER_EMAIL1" /> застосовував Chrome і зберіг закладки, паролі й інші налаштування на цьому пристрої.</translation>
 <translation id="424864128008805179">Вийти з Chrome?</translation>
 <translation id="4251174643044751591">Відкриває сторінку налаштувань способів оплати в Chrome.</translation>
+<translation id="4453284704333523777">Керувати налаштуваннями Chrome</translation>
 <translation id="4508370294876102450">Переходьте в Chrome із будь-якого додатка</translation>
 <translation id="4523886039239821078">Деякі додатки спричиняють аварійне завершення роботи Chrome. Видаліть такі додатки:</translation>
 <translation id="4633328489441962921">Chrome не може перевірити наявність оновлень</translation>
@@ -123,6 +125,7 @@
 <translation id="571296537125272375">Офлайн, Chrome не може перевірити наявність оновлень</translation>
 <translation id="5716154293141027663">Посилання, які ви натискатимете в інших додатках, будуть відкриватися в Chrome</translation>
 <translation id="5808435672482059465">Переглянути історію Chrome</translation>
+<translation id="589695154992054845">Відкриває Менеджер паролів у Chrome.</translation>
 <translation id="5998675059699164418">За вимогами вашої організації, ви повинні ввійти в обліковий запис, щоб використовувати Chrome.</translation>
 <translation id="6054613632208573261">Використовувати Chrome за умовчанням</translation>
 <translation id="6063091872902370735">Дозволити вхід у Chrome</translation>
@@ -215,6 +218,7 @@
   • Якщо в Chrome виникає збій, відомості про нього можуть містити особисту інформацію.
 
   • Якщо ви ввімкнете синхронізацію, показники також можуть містити дані про відвідані URL-адреси.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Відкриває налаштування в Chrome.</translation>
 <translation id="9112744793181547300">Зробити Chrome веб-переглядач за умовчанням?</translation>
 <translation id="9122931302567044771">Це означає, що Chrome щоразу буде запитувати версію сайту для комп’ютера.</translation>
 <translation id="9181628561061032322">Відкриває останні вкладки в Chrome.</translation>

@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Puedes volver aquí para abrir de nuevo las últimas pestañas que hayas cerrado recientemente.</translation>
 <translation id="1016495303386450659">Elemento actualizado</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{Guardar contraseña en la cuenta}other{Guardar contraseñas en la cuenta}}</translation>
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
@@ -72,6 +73,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="132683371494960526">Toca dos veces para cambiar la carpeta principal.</translation>
 <translation id="1332723353863236763">Aún no se han guardado algunos datos</translation>
 <translation id="1335348992705722518">Gestionar configuración...</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{Guarda {COUNT} contraseña en tu cuenta de Google}other{Guarda {COUNT} contraseñas en tu cuenta de Google}}</translation>
 <translation id="1340643665687018190">Cerrar el menú</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Ir al enlace que has copiado</translation>
@@ -316,6 +318,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">No se puede crear el enlace</translation>
 <translation id="2786701870377699570">Busca pestañas de todos tus dispositivos sincronizados</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{Contraseña guardada en tu cuenta de Google ({EMAIL})}other{Contraseñas guardadas en tu cuenta de Google ({EMAIL})}}</translation>
 <translation id="2797029671965852011">Mostrar historial</translation>
 <translation id="2800683595868705743">Salir de la función de cambio de pestaña</translation>
 <translation id="2815198996063984598">2. Toca Aplicación de navegador predeterminada.</translation>
@@ -652,6 +655,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, solo en este dispositivo, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nueva pestaña de Incógnito</translation>
 <translation id="4766112107778026136">Discover y Siguiendo</translation>
+<translation id="47677902929517676">Para guardar contraseñas en tu cuenta, primero debes establecer una contraseña en tu dispositivo.</translation>
 <translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4778644898150334464">Usar otra contraseña</translation>
 <translation id="478808905805139173">¿Abrir en modo Incógnito?</translation>
@@ -1119,6 +1123,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7265758999917665941">Jamás para este sitio web</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
 <translation id="7291368939935408496">Preparando contraseñas...</translation>
+<translation id="7302503784943202842">Usar contraseñas en todos tus dispositivos</translation>
 <translation id="730958329302570991">Añade contraseñas de sitios web al Gestor de contraseñas de Google fácilmente y en cualquier momento.</translation>
 <translation id="7313347584264171202">Aquí verás tus pestañas de incógnito</translation>
 <translation id="7331371412779932885">Te ofrece sugerencias de pestañas basadas en tu actividad de navegación en tus otros dispositivos usando tu cuenta de Google. Debes haber iniciado sesión y tener la sincronización activada en tus dispositivos con la misma cuenta de Google.</translation>
@@ -1468,6 +1473,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="953008885340860025">Se ha cerrado sesión en Chrome</translation>
 <translation id="959066944189734975">Estás siguiendo a <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Mostrar sugerencias de pestañas de otros dispositivos</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{Puedes guardar la contraseña de {DOMAIN_ONE} en tu cuenta de Google ({EMAIL})}=2{Puedes guardar las contraseñas de {DOMAIN_ONE} y {DOMAIN_TWO} en tu cuenta de Google ({EMAIL})}=3{Puedes guardar las contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL})}other{Puedes guardar las contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL})}}</translation>
 <translation id="97300214378190234">Usa Chrome cada vez que toques enlaces de otras aplicaciones.</translation>
 <translation id="973493300226275298">Haz un seguimiento del precio de un producto en las tiendas online. Recibirás alertas cuando baje de precio.</translation>
 <translation id="981498610235328462">Tu organización solo te permite iniciar sesión con determinadas cuentas. Las cuentas no permitidas están ocultas.</translation>

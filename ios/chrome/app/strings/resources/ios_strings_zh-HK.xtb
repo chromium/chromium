@@ -156,7 +156,7 @@
 <translation id="1830634592642484976">此地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
 <translation id="1836891464494477513">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{書籤已儲存至 Google 帳戶 ({email})}}</translation>
-<translation id="1847795903283049083">你也可以在書籤、閱讀清單或密碼管理工具中查看及管理這些項目。</translation>
+<translation id="1847795903283049083">你亦可在書籤、「閱讀清單」或密碼管理工具中查看和管理這些項目。</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1882901927376062252">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{{count} 個書籤已儲存至 Google 帳戶 ({email})}}</translation>
@@ -516,7 +516,7 @@
 <translation id="3892144330757387737">您可在此查看記錄</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3904829425754749514">您的機構已關閉同步功能。您仍可在此裝置上查看自己的書籤、記錄、密碼和其他設定，但作出的變更將不會同步到您的帳戶。</translation>
-<translation id="3909222758573607742">將密碼和其他項目儲存到帳戶</translation>
+<translation id="3909222758573607742">將密碼和其他項目儲存至帳戶</translation>
 <translation id="3913386780052199712">已登入 Chrome</translation>
 <translation id="3915450441834151894">網站資料</translation>
 <translation id="3922310737605261887">搜尋複製的文字</translation>
@@ -527,7 +527,7 @@
 <translation id="3959736869653157332">「選單」→「新無痕式分頁」</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} 組密碼}other{{count} 組密碼}}</translation>
+<translation id="3971789053442864420">{count,plural, =1{{count} 個密碼}other{{count} 個密碼}}</translation>
 <translation id="3989635538409502728">登出</translation>
 <translation id="3995521777587992544">網頁載入進度列，已經載入咗 <ph name="EMAIL" />。</translation>
 <translation id="4002019827078931033">將網址列移至頂部</translation>
@@ -693,7 +693,7 @@
 <translation id="4918086044614829423">接受</translation>
 <translation id="4922154083994158612">想增強安全性嗎？</translation>
 <translation id="4930714375720679147">開啟</translation>
-<translation id="4937410517508563815">將密碼儲存到帳戶</translation>
+<translation id="4937410517508563815">將密碼儲存至帳戶</translation>
 <translation id="4938338714234463591">這會讓您在網站上透過語音使用特定功能。</translation>
 <translation id="4941089862236492464">抱歉，分享項目時發生問題。</translation>
 <translation id="4944543191714094452">從網頁中尋找…</translation>
@@ -1422,7 +1422,7 @@
 <translation id="8976414606286374109">信用卡會儲存至您的 Google 帳戶。</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8985320356172329008">已使用下列帳戶登入 Google：</translation>
-<translation id="8991382496704361510">在這部裝置上</translation>
+<translation id="8991382496704361510">在此裝置上</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
 <translation id="8999545564078155498">使用 Face ID 解鎖</translation>
 <translation id="9000089900434778519">您的搜尋引擎是「<ph name="DSE_NAME" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>

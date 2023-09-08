@@ -200,6 +200,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1757857692711134412">Joaktive deri në perëndim</translation>
 <translation id="1768366657309696705">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Pikë është ndryshuar. Për të përdorur tastin Insert, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Është zhvendosur në rreshtin <ph name="ROW_NUMBER" />, kolonën <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Hap <ph name="NAME" /> për të konfiguruar dhe personalizuar pajisjen tënde</translation>
 <translation id="1771761307086386028">Lëviz djathtas</translation>
 <translation id="1774796056689732716">Kalendari, <ph name="CURRENT_MONTH_YEAR" />, aktualisht është zgjedhur <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Po shfaqen <ph name="NUM_SHOWN_ITEMS" /> nga <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1192,6 +1193,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5876666360658629066">Fut kodin e prindit</translation>
 <translation id="5881540930187678962">Konfiguroje Phone Hub më vonë</translation>
 <translation id="5881663018261910378">Joaktiv</translation>
+<translation id="5883017113634523865">Instalo aplikacionin për <ph name="NAME" /> nga Google Play për të parë të gjitha veçoritë që ofrohen</translation>
 <translation id="5887954372087850114">Dritarja <ph name="WINDOW_TITLE" /> u caktua në <ph name="DESK_TITLE" /> dhe u hoq nga të gjitha tavolinat e tjera të punës</translation>
 <translation id="588817334757907802">Hape skedarin në shfletuesin Chrome</translation>
 <translation id="5895138241574237353">Rinis</translation>

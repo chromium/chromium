@@ -58,6 +58,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
 <translation id="1246905108078336582">Vill du ta bort förslaget från urklipp?</translation>
 <translation id="1258753120186372309">Googles doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Nu visas innehåll från och om <ph name="SITE_NAME" /> i Följer. Webbplatser och sökningar du följer sparas i ditt Google-konto. Du kan när som helst hantera vad du följer i inställningarna.</translation>
 <translation id="1263231323834454256">Läslista</translation>
 <translation id="1266864766717917324">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Du hittar historiken här</translation>
@@ -136,6 +137,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="1671236975893690980">Nedladdning väntar …</translation>
 <translation id="1672586136351118594">Visa inte igen</translation>
 <translation id="1680919990519905526">Köp bild med Google Lens <ph name="BEGIN_NEW" />Nytt<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Snart visas innehåll från och om <ph name="SITE_NAME" /> i Följer. Webbplatser och sökningar du följer sparas i ditt Google-konto. Du kan när som helst hantera vad du följer i inställningarna.</translation>
 <translation id="1702543251015153180">Vill du ändra inställningarna för mörkt tema?</translation>
 <translation id="1702907158640575240">Hanterad webbläsare</translation>
 <translation id="1710099199314114079">Byt eller stäng flikar</translation>
@@ -1474,6 +1476,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8497242791509864205">Öppna sorteringsalternativ</translation>
 <translation id="8497480609928300907">Förklaring till integritetsguiden</translation>
 <translation id="8497726226069778601">Det finns inget att se här … än</translation>
+<translation id="8501423924927196358">Förloppsindikator för sidinsikter</translation>
 <translation id="8503559462189395349">Lösenord i Chrome</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="8505766168025405649">Se avisering för nedladdningsstatus</translation>

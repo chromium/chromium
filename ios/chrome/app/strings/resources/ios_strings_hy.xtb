@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">ՏՏՏՏ</translation>
 <translation id="1013952917065545813">Դուք կարող եք վերադառնալ այստեղ՝ վերջերս փակած ներդիրները նորից բացելու համար։</translation>
 <translation id="1016495303386450659">Տարրը թարմացվեց</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{Պահել գաղտնաբառը հաշվում}one{Պահել գաղտնաբառը հաշվում}other{Պահել գաղտնաբառերը հաշվում}}</translation>
 <translation id="1035980983510608210">Եթե փակեք բոլոր ներդիրները, ամրացված ներդիրները նույնպես կփակվեն։</translation>
 <translation id="1036348656032585052">Անջատել</translation>
 <translation id="1044891598689252897">Կայքերը կաշխատեն սովորական ռեժիմով</translation>
@@ -72,6 +73,7 @@
 <translation id="132683371494960526">Կրկնակի հպեք՝ վերադաս պանակը փոխելու համար:</translation>
 <translation id="1332723353863236763">Որոշ տվյալներ դեռ չեն պահվել</translation>
 <translation id="1335348992705722518">Կառավարել կարգավորումները…</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{Պահեք {COUNT} գաղտնաբառ ձեր Google հաշվում}one{Պահեք {COUNT} գաղտնաբառ ձեր Google հաշվում}other{Պահեք {COUNT} գաղտնաբառ ձեր Google հաշվում}}</translation>
 <translation id="1340643665687018190">Փակել ընտրացանկը</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Անցեք ձեր պատճենաց հասցեով</translation>
@@ -316,6 +318,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Չհաջողվեց ստեղծել հղում</translation>
 <translation id="2786701870377699570">Ներդիրների որոնում համաժամացված սարքերում</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{Գաղտնաբառը պահվեց ձեր Google հաշվում ({EMAIL})}one{Գաղտնաբառը պահվեց ձեր Google հաշվում ({EMAIL})}other{Գաղտնաբառերը պահվեցին ձեր Google հաշվում ({EMAIL})}}</translation>
 <translation id="2797029671965852011">Ցույց տալ պատմությունը</translation>
 <translation id="2800683595868705743">Փակել ներդիրների փոխանջատիչը</translation>
 <translation id="2815198996063984598">2. Հպեք «Դիտարկիչի կանխադրված հավելված»։</translation>
@@ -652,6 +655,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Միայն այս սարքում, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4766112107778026136">Discover և բաժանորդագրություններ</translation>
+<translation id="47677902929517676">Գաղտնաբառերը հաշվում պահելու համար նախ պետք է ձեր սարքում անցակոդ կարգավորեք։</translation>
 <translation id="4775879719735953715">Կանխադրված դիտարկիչ</translation>
 <translation id="4778644898150334464">Օգտագործել այլ գաղտնաբառ</translation>
 <translation id="478808905805139173">Բացե՞լ ինկոգնիտո ռեժիմում</translation>
@@ -1119,6 +1123,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7265758999917665941">Երբեք չպահել այս կայքի համար</translation>
 <translation id="7272437679830969316">Չհաջողվեց հաստատել ձեր ինքնությունը: Գաղտնաբառը չի պատճենվել:</translation>
 <translation id="7291368939935408496">Արտահանման նախապատրաստում…</translation>
+<translation id="7302503784943202842">Օգտագործեք գաղտնաբառերը ձեր բոլոր սարքերում</translation>
 <translation id="730958329302570991">Ցանկացած ժամանակ հեշտությամբ ավելացրեք կայքերի գաղտնաբառեր Google գաղտնաբառերի կառավարիչում։</translation>
 <translation id="7313347584264171202">Ձեր ինկոգնիտո ներդիրները կգտնեք այստեղ</translation>
 <translation id="7331371412779932885">Տալիս է ներդիրների համար հուշումներ՝ հաշվի առնելով դիտարկիչում գործողությունները ձեր մյուս սարքերում, որտեղ մուտք եք գործել ձեր Google հաշիվ։ Դուք պետք է մուտք գործեք ձեր սարքերում և համաժամացնեք դրանք նույն Google հաշվի միջոցով։</translation>
@@ -1468,6 +1473,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="953008885340860025">Դուք դուրս եք գրվել Chrome-ից</translation>
 <translation id="959066944189734975">Դուք հետևում եք <ph name="CHANNEL_NAME" /> կայքին</translation>
 <translation id="96615566463761848">Ցույց տալ ներդիրների համար հուշումներ այլ սարքերից</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{Դուք կարող եք {DOMAIN_ONE} տիրույթի գաղտնաբառը պահել ձեր Google հաշվում ({EMAIL})}=2{Դուք կարող եք {DOMAIN_ONE} և {DOMAIN_TWO} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})}=3{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})}one{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})}other{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})}}</translation>
 <translation id="97300214378190234">Օգտագործեք Chrome-ը՝ այլ հավելվածներում առկա հղումները բացելու համար։</translation>
 <translation id="973493300226275298">Հետագծեք ապրանքի գները տարբեր առցանց խանութներում։ Երբ գնիջեցում լինի, դուք ծանուցում կստանաք այդ մասին։</translation>
 <translation id="981498610235328462">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։ Հաշիվները, որոնց մուտքն արգելված է, կթաքցվեն։</translation>

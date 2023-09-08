@@ -73,6 +73,7 @@ Notas importantes:
 <translation id="3655656110921623717">Esto significa que Chrome siempre solicitará la vista del sitio web como móvil.</translation>
 <translation id="3720541637541300822">Bloquear pestañas de Incógnito al cerrar Chrome</translation>
 <translation id="3741995255368156336">Abre la lista de lectura de Chrome.</translation>
+<translation id="3744018071945602754">Gestionar contraseñas en Chrome</translation>
 <translation id="3827545470516145620">Estás usando la protección de seguridad estándar en este dispositivo</translation>
 <translation id="384394811301901750">Google Chrome no puede usar la cámara en este momento</translation>
 <translation id="3901001113120561395">Saca el máximo partido a Chrome.</translation>
@@ -87,6 +88,7 @@ Notas importantes:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> ha usado Chrome y ha dejado marcadores, contraseñas y otras configuraciones en este dispositivo.</translation>
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
 <translation id="4251174643044751591">Abre la página de configuración de métodos de pago en Chrome.</translation>
+<translation id="4453284704333523777">Gestionar la configuración de Chrome</translation>
 <translation id="4508370294876102450">Abre Chrome desde cualquier aplicación</translation>
 <translation id="4523886039239821078">Algunos complementos hacen que Chrome falle. Desinstálalos.</translation>
 <translation id="4633328489441962921">Chrome no puede comprobar si hay actualizaciones</translation>
@@ -123,6 +125,7 @@ Notas importantes:
 <translation id="571296537125272375">Sin conexión, Chrome no puede comprobar si hay actualizaciones</translation>
 <translation id="5716154293141027663">Abre Chrome siempre que toques enlaces en otras aplicaciones</translation>
 <translation id="5808435672482059465">Ver tu historial de Chrome</translation>
+<translation id="589695154992054845">Abre el Gestor de contraseñas en Chrome.</translation>
 <translation id="5998675059699164418">Tu organización requiere que inicies sesión para usar Chrome.</translation>
 <translation id="6054613632208573261">Usa Chrome de forma predeterminada</translation>
 <translation id="6063091872902370735">Permitir el inicio de sesión en Chrome</translation>
@@ -215,6 +218,7 @@ Notas importantes:
   • Si Chrome falla, puede que los detalles sobre el fallo incluyan alguna información personal.
 
   • Si activas la sincronización, puede que las métricas también incluyan información sobre las URLs que visites.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Abre la Configuración de Chrome.</translation>
 <translation id="9112744793181547300">¿Establecer Chrome como predeterminado?</translation>
 <translation id="9122931302567044771">Esto significa que Chrome siempre solicitará la vista del sitio web como ordenador.</translation>
 <translation id="9181628561061032322">Abre las pestañas recientes de Chrome.</translation>

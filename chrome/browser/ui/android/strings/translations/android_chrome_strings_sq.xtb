@@ -58,6 +58,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
 <translation id="1246905108078336582">Të hiqet sugjerimi nga kujtesa e fragmenteve?</translation>
 <translation id="1258753120186372309">Logoja alternative e Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Tani do të shohësh përmbajtje nga <ph name="SITE_NAME" /> dhe në lidhje me të te "Ndjekjet". Sajtet dhe kërkimet që ndjek ruhen në "Llogarinë tënde të Google". Mund t'i menaxhosh ndjekjet te cilësimet në çdo kohë.</translation>
 <translation id="1263231323834454256">Lista e leximit</translation>
 <translation id="1266864766717917324">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Këtu do të gjesh historikun tënd</translation>
@@ -136,6 +137,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="1671236975893690980">Shkarkimi në pritje...</translation>
 <translation id="1672586136351118594">Mos e shfaq përsëri</translation>
 <translation id="1680919990519905526">Bli imazhe me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Së shpejti, do të shohësh përmbajtje nga <ph name="SITE_NAME" /> dhe në lidhje me të te "Ndjekjet". Sajtet dhe kërkimet që ndjek ruhen në "Llogarinë tënde të Google". Mund t'i menaxhosh ndjekjet te cilësimet në çdo kohë.</translation>
 <translation id="1702543251015153180">Të ndryshohen cilësimet e temës së errët?</translation>
 <translation id="1702907158640575240">Shfletues i menaxhuar</translation>
 <translation id="1710099199314114079">Ndërro ose mbyll skeda</translation>
@@ -1517,7 +1519,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8723453889042591629">Përktheje me shpejtësi këtë faqe. Për ta modifikuar këtë shkurtore, preke dhe mbaje shtypur.</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
-<translation id="8746155870861185046">Shpërndaj theksimin</translation>
+<translation id="8746155870861185046">Ndaj theksimin</translation>
 <translation id="874726034427945498">Për të parë sugjerime më të mira në shiritin e adresës, sinkronizo skedat dhe historikun</translation>
 <translation id="8748850008226585750">Përmbajtjet janë të fshehura</translation>
 <translation id="8754448020583829686">Kopjo pa lidhjen</translation>

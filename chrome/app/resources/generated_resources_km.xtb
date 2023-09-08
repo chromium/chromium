@@ -1432,6 +1432,7 @@
 <translation id="2102495993840063010">កម្មវិធី Android</translation>
 <translation id="2104166991923847969">បិទ​ហតស្ប៉ត​ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="2105809836724866556">បានលាក់ <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">បានពិនិត្យមើល <ph name="NUM_DAYS_HOURS_MINUTES" />មុន</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{លេខទូរសព្ទ}other{លេខទូរសព្ទ #}}</translation>
 <translation id="2110941575868943054">បាន​អនុញ្ញាត​ឱ្យ​រកមើល​ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="211144231511833662">សម្អាតប្រភេទ</translation>
@@ -2473,6 +2474,7 @@
 <translation id="2907619724991574506">URLs ចាប់ផ្តើមដំណើរការ</translation>
 <translation id="2907798539022650680">បានបរាជ័យក្នុងការភ្ជាប់ទៅ '<ph name="NAME" />'៖ <ph name="DETAILS" />
     សារពីម៉ាស៊ីនមេ៖ <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">បើកឯកសារ Word, Excel និង PowerPoint</translation>
 <translation id="2908162660801918428">បន្ថែមវិចិត្រសាលកំសាន្តតាមថតឯកសារ</translation>
 <translation id="2908358077082926882">ចុច “<ph name="CURRENTKEY" />” ម្ដងទៀត ដើម្បីដកការកំណត់ រួច<ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">មិនអាចភ្ជាប់​ជាមួយសេវាកម្ម Google បានទេ។ សូមពិនិត្យមើល​ការតភ្ជាប់បណ្ដាញ​របស់អ្នក រួចព្យាយាម​ម្ដងទៀត។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
@@ -6115,6 +6117,7 @@
 <translation id="5920543303088087579">ការ​តភ្ជាប់​ទៅ​បណ្តាញនេះ​ត្រូវបាន​បិទ​ដោយ​អ្នកគ្រប់គ្រង​របស់​អ្នក</translation>
 <translation id="5921257443092182237">សេវាកម្ម​ទីតាំង​របស់ Google ប្រើប្រាស់​ប្រភព​ដូចជា Wi-Fi, បណ្ដាញ​ទូរសព្ទ​ចល័ត និង​ឧបករណ៍​ចាប់​សញ្ញា​ផ្សេង ដើម្បី​ជួយ​ប៉ាន់ស្មាន​ទីតាំងរបស់​ឧបករណ៍​នេះ។</translation>
 <translation id="5924047253200400718">ទទួលជំនួយ<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">ស្នើសុំ​មុនពេល​ចម្លង ឬ​ផ្លាស់ទី​ឯកសារ Microsoft ទៅ Google ថាស</translation>
 <translation id="5924527146239595929">ថតរូបថ្មី ឬជ្រើសរើសរូបថត ឬរូបតំណាងដែលមានស្រាប់។
     <ph name="LINE_BREAK" />
     រូបភាពនេះនឹងបង្ហាញនៅលើអេក្រង់ចាក់សោ និងអេក្រង់ចូល Chromebook ។</translation>
@@ -6533,6 +6536,7 @@
 <translation id="6263284346895336537">មិនធ្ងន់ធរទេ</translation>
 <translation id="6264365405983206840">ជ្រើសរើសទាំងអស់</translation>
 <translation id="6264376385120300461">មិនអីទេ ទាញយកចុះ</translation>
+<translation id="6265159465845424232">ស្នើសុំ​មុនពេល​ចម្លង ឬ​ផ្លាស់ទី​ឯកសារ Microsoft ទៅ Microsoft OneDrive</translation>
 <translation id="6265687851677020761">លុប​ច្រក</translation>
 <translation id="6266532094411434237">កំពុងភ្ជាប់​ជាមួយ <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">ជ្រើសរើសវិញ្ញាបនប័ត្រមួយដើម្បីផ្ទៀងផ្ទាត់ភាពត្រឹមត្រូវដោយខ្លួនអ្នកទៅ <ph name="HOST_NAME" /></translation>
@@ -7292,6 +7296,7 @@
 <translation id="6897363604023044284">ជ្រើសរើស​គេហទំព័រ ដើម្បី​សម្អាត​ទិន្នន័យ​ដែលបាន​រក្សាទុក</translation>
 <translation id="6897688156970667447">មានប្រយោជន៍​នៅពេល​មាន​ពន្លឺ​តិច និង​សន្សំ​ថ្ម</translation>
 <translation id="6897972855231767338">ស្វែងយល់បន្ថែម​អំពីការរុករក​ក្នុងនាមជាភ្ញៀវ</translation>
+<translation id="6898438890765871056">បើកថត OneDrive</translation>
 <translation id="6898440773573063262">កម្មវិធីបញ្ជអាចត្រូវបានតំឡើងទៅការបើកដំណើរការស្វ័យប្រវត្តិនៅលើឧបករណ៍នេះឥឡូវនេះ។</translation>
 <translation id="6899427698619335650">អនុញ្ញាត​ការកំណត់​វណ្ណយុត្ត​ដែលមាន​ភាពបត់បែន។ ឧទាហរណ៍ អ្នកអាច​វាយបញ្ចូល “anh1” ឬ “a1nh” ដើម្បីឱ្យចេញជា “ánh”។</translation>
 <translation id="6900284862687837908">កម្មវិធីផ្ទៃខាងក្រោយ៖ <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8045,6 +8050,7 @@
 <translation id="7517959947270534934">សមាជិក​គ្រួសារ​របស់អ្នក​មិនអាច​ទទួលបាន​ពាក្យសម្ងាត់​ឥឡូវនេះ​ទេ។ សូមស្នើឱ្យ​ពួកគេ​ដំឡើងកំណែ Chrome និង​ធ្វើសមកាល​កម្ម​ពាក្យសម្ងាត់​របស់ពួកគេ។</translation>
 <translation id="7520766081042531487">ច្រក​ឯកជន៖ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">បង្ហាញផ្លូវកាត់</translation>
+<translation id="7521430434164837205">ឯកសារ Microsoft 365</translation>
 <translation id="7522255036471229694">និយាយថា "Ok Google"</translation>
 <translation id="7523117833414447032">នៅពេល​អាន​អក្សរធំ</translation>
 <translation id="7523585675576642403">ប្ដូរឈ្មោះ​កម្រងព័ត៌មាន</translation>
@@ -9773,6 +9779,7 @@
 <translation id="8896830132794747524">ចលនាកាន់តែរហ័ស​នៃកណ្ដុររបស់អ្នក​នឹងផ្លាស់ទី​ទស្សន៍ទ្រនិច​កាន់តែឆ្ងាយ</translation>
 <translation id="8898140163781851592">ប៊ូតុង​កណ្ដុរ​ចម្បង</translation>
 <translation id="8898786835233784856">ជ្រើសរើសផ្ទាំងបន្ទាប់</translation>
+<translation id="8898790559170352647">បញ្ចូល​គណនី Microsoft របស់អ្នក</translation>
 <translation id="8898822736010347272">បញ្ជូន URL នៃ​គេហទំព័រ​មួយចំនួន​ដែលអ្នក​ចូលមើល ព័ត៌មាន​ប្រព័ន្ធ​មួយចំនួន និង​ខ្លឹមសារ​ទំព័រ​មួយចំនួន​ទៅ Google ដើម្បីជួយ​ស្វែងរក​ការគំរាមកំហែង​ថ្មី និង​ការពារ​អ្នកគ្រប់គ្នា​នៅលើ​អ៊ីនធឺណិត​។</translation>
 <translation id="8899851313684471736">បើកតំណនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="8900413463156971200">បើក​បណ្ដាញ​ចល័ត</translation>

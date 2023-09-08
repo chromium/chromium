@@ -200,6 +200,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1757857692711134412">Päikeseloojanguni välja lülitatud</translation>
 <translation id="1768366657309696705">Klaviatuuri otseteed <ph name="LAUNCHER_KEY_NAME" /> + punktiklahv on muudetud. Lisamisklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + tõstuklahvi + tagasilükkeklahvi.</translation>
 <translation id="1770726142253415363">Teisaldati <ph name="ROW_NUMBER" />. reale, <ph name="COLUMN_NUMBER" />. veergu.</translation>
+<translation id="1771458705381257690">Avage <ph name="NAME" />, et oma seadet seadistada ja kohandada</translation>
 <translation id="1771761307086386028">Keri paremale</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, praegu on valitud <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Kuvatud on <ph name="NUM_SHOWN_ITEMS" /> toimingut <ph name="NUM_TOTAL_ITEMS" />-st</translation>
@@ -1193,6 +1194,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5876666360658629066">Sisestage vanema kood</translation>
 <translation id="5881540930187678962">Seadistage Phone Hub hiljem</translation>
 <translation id="5881663018261910378">Väljas</translation>
+<translation id="5883017113634523865">Kõigi funktsioonide nägemiseks installige Google Play kaudu rakendus <ph name="NAME" /></translation>
 <translation id="5887954372087850114">Aken <ph name="WINDOW_TITLE" /> määrati töölauale <ph name="DESK_TITLE" /> ja kõigile muudele töölaudadele määramine tühistati</translation>
 <translation id="588817334757907802">Avage fail Chrome'i brauseris</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>

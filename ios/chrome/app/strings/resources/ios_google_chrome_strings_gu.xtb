@@ -73,6 +73,7 @@
 <translation id="3655656110921623717">આનો અર્થ છે કે Chrome દરેક વખતે મોબાઇલ સાઇટની વિનંતી કરશે.</translation>
 <translation id="3720541637541300822">તમે Chrome બંધ કરો ત્યારે છૂપી ટૅબ લૉક કરો</translation>
 <translation id="3741995255368156336">Chrome વાંચન સૂચિ ખોલે છે.</translation>
+<translation id="3744018071945602754">Chromeમાં પાસવર્ડ મેનેજ કરો</translation>
 <translation id="3827545470516145620">તમે આ ડિવાઇસ માટે સ્ટૅન્ડર્ડ સુરક્ષા સંરક્ષણ મેળવી રહ્યા છો</translation>
 <translation id="384394811301901750">Google Chrome, અત્યારે તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી</translation>
 <translation id="3901001113120561395">Chromeનો વધુને વધુ લાભ મેળવો.</translation>
@@ -87,6 +88,7 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> Chromeનો ઉપયોગ કરી રહ્યાં હતા અને તેઓ આ ડિવાઇસ પર બુકમાર્ક, પાસવર્ડ અને અન્ય સેટિંગ છોડી ગયા છે.</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="4251174643044751591">Chromeમાં ચુકવણી પદ્ધતિઓનું સેટિંગ પેજ ખોલે છે.</translation>
+<translation id="4453284704333523777">Chromeના સેટિંગ મેનેજ કરો</translation>
 <translation id="4508370294876102450">કોઈપણ ઍપમાંથી Chrome ખોલો</translation>
 <translation id="4523886039239821078">કેટલાંક એડ-ઓનને કારણે Chrome ક્રૅશ થાય છે. કૃપા કરી આને અનઇન્સ્ટૉલ કરો:</translation>
 <translation id="4633328489441962921">Chrome અપડેટ ચેક કરી શકતું નથી</translation>
@@ -123,6 +125,7 @@
 <translation id="571296537125272375">ઑનલાઇન, Chrome અપડેટ ચેક કરી શકતાં નથી</translation>
 <translation id="5716154293141027663">કોઈપણ સમયે તમે અન્ય ઍપમાં લિંક પર ટૅપ કરો ત્યારે Chrome ખૂલશે</translation>
 <translation id="5808435672482059465">તમારો Chrome ઇતિહાસ જુઓ</translation>
+<translation id="589695154992054845">Chromeમાં Password Manager ખોલે છે.</translation>
 <translation id="5998675059699164418">તમારી સંસ્થા માટે જરૂરી છે કે Chromeનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો.</translation>
 <translation id="6054613632208573261">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="6063091872902370735">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
@@ -213,6 +216,7 @@
 <ph name="BEGIN_INDENT" />  • Chromeના તમારા વપરાશની માહિતી Googleને મોકલવામાં આવે છે, પણ તેને તમારી સાથે સાંકળવામાં આવતી નથી.
   • જો Chrome ક્રૅશ થાય, તો ક્રૅશની વિગતોમાં અમુક વ્યક્તિગત માહિતીનો સમાવેશ થઈ શકે છે
   • જો તમે સિંક કરવાની સુવિધા ચાલુ કરો, તો મેટ્રિકમાં તમે જે URLsની મુલાકાત લીધી હોય, તેની માહિતીનો પણ સમાવેશ થઈ શકે છે.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Chromeમાં સેટિંગ ખોલે છે.</translation>
 <translation id="9112744793181547300">Chromeને ડિફૉલ્ટ તરીકે સેટ કરીએ?</translation>
 <translation id="9122931302567044771">આનો અર્થ છે કે Chrome દરેક વખતે ડેસ્કટૉપ સાઇટની વિનંતી કરશે.</translation>
 <translation id="9181628561061032322">Chromeના તાજેતરના ટૅબ ખોલે છે.</translation>

@@ -200,6 +200,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1757857692711134412">Nonaktif sampai matahari terbenam</translation>
 <translation id="1768366657309696705">Pintasan keyboard <ph name="LAUNCHER_KEY_NAME" /> + Titik telah diubah. Untuk menggunakan tombol Insert, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Dipindahkan ke baris <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Buka <ph name="NAME" /> untuk menyiapkan dan menyesuaikan perangkat Anda</translation>
 <translation id="1771761307086386028">Scroll ke kanan</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> saat ini dipilih.</translation>
 <translation id="1775598828170459419">Menampilkan <ph name="NUM_SHOWN_ITEMS" /> dari <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1192,6 +1193,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5876666360658629066">Masukkan kode orang tua</translation>
 <translation id="5881540930187678962">Siapkan Phone Hub nanti</translation>
 <translation id="5881663018261910378">Nonaktif</translation>
+<translation id="5883017113634523865">Instal aplikasi untuk <ph name="NAME" /> dari Google Play guna melihat semua fitur yang tersedia</translation>
 <translation id="5887954372087850114">Jendela <ph name="WINDOW_TITLE" /> ditetapkan ke <ph name="DESK_TITLE" /> dan tidak lagi ditetapkan ke semua desktop lainnya</translation>
 <translation id="588817334757907802">Buka file di browser Chrome</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>

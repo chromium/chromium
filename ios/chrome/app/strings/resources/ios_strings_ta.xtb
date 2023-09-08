@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">இந்த முகவரி தற்சமயம் Chrome உலாவியில் சேமிக்கப்பட்டுள்ளது. Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்த, உங்கள் Google கணக்கில் (<ph name="USER_EMAIL" />) அதைச் சேமிக்கவும்.</translation>
 <translation id="1832848789136765277">நீங்கள் ஒத்திசைத்த தரவை எப்போது வேண்டுமானாலும் அணுக இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="1836891464494477513">{count,plural, =1{உங்கள் Google கணக்கில் ({email}) புக்மார்க் சேமிக்கப்பட்டது}other{உங்கள் Google கணக்கில் ({email}) புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
+<translation id="1847795903283049083">உங்கள் புக்மார்க்குகள், வாசிப்புப் பட்டியல் அல்லது Password Managerரில் இவற்றை நீங்கள் பார்க்கலாம் நிர்வகிக்கலாம்.</translation>
 <translation id="1870148520156231997">கடவுச்சொல்லைக் காட்டும்</translation>
 <translation id="1872096359983322073">டார்ச்</translation>
 <translation id="1882901927376062252">{count,plural, =1{புக்மார்க் உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டது}other{{count} புக்மார்க்குகள் உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டன}}</translation>
@@ -515,6 +516,7 @@
 <translation id="3892144330757387737">உங்கள் வரலாற்றை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="3897092660631435901">மெனு</translation>
 <translation id="3904829425754749514">உங்கள் நிறுவனம் ஒத்திசைவை முடக்கியுள்ளது. இருப்பினும் இந்தச் சாதனத்தில் உள்ள உங்கள் புக்மார்க்குகள், பதிவுகள், கடவுச்சொற்கள் மற்றும் பிற அமைப்புகளை உங்களால் பார்க்க முடியும். ஏதேனும் மாற்றங்களைச் செய்தால் அவை உங்கள் கணக்குடன் ஒத்திசைக்கப்படாது.</translation>
+<translation id="3909222758573607742">கடவுச்சொற்கள் மற்றும் பிறவற்றைக் கணக்கில் சேமிக்கும்</translation>
 <translation id="3913386780052199712">Chromeமில் நுழைந்துள்ளீர்கள்</translation>
 <translation id="3915450441834151894">தளம் குறித்த தகவல்</translation>
 <translation id="3922310737605261887">நகலெடுத்த உரைக்குத் தேடவும்</translation>
@@ -525,6 +527,7 @@
 <translation id="3959736869653157332">மெனு → புதிய மறைநிலைப் பக்கம்</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3968505803272650567">ஆர்வங்களை நிர்வகி</translation>
+<translation id="3971789053442864420">{count,plural, =1{{count} கடவுச்சொல்}other{{count} கடவுச்சொற்கள்}}</translation>
 <translation id="3989635538409502728">வெளியேறு</translation>
 <translation id="3995521777587992544">பக்க ஏற்றச் செயல்நிலைப் பட்டி, <ph name="EMAIL" /> ஏற்றப்பட்டுள்ளது.</translation>
 <translation id="4002019827078931033">முகவரிப் பட்டியை மேற்பகுதிக்கு நகர்த்து</translation>
@@ -636,6 +639,7 @@
 <translation id="4645575059429386691">உங்கள் பெற்றோரால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> கணக்கில் தொடர்க</translation>
 <translation id="4652817563047461855">கடவுச்சொற்களின் பாதுகாப்பை உறுதிசெய்துகொள்ளலாம். அவை களவாடப்பட்டுள்ளனவா என்பதைக் கண்டறியலாம். ஆன்லைனில் பாதுகாப்பாக இருக்க ஆலோசனை பெறலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
+<translation id="4659194143325814340">{count,plural, =1{உங்கள் வாசிப்புப் பட்டியலில் உள்ள {count} பக்கம்}other{உங்கள் வாசிப்புப் பட்டியலில் உள்ள {count} பக்கங்கள்}}</translation>
 <translation id="4659667755519643272">தாவல் மாற்றியைத் துவக்கு</translation>
 <translation id="46614316059270592">கடவுச்சொல்லைச் சேமி</translation>
 <translation id="4682686630151240767">1. iPhone அமைப்புகளைத் திறக்கவும்</translation>
@@ -644,6 +648,7 @@
 <translation id="4697071790493980729">முடிவுகள் எதுவும் இல்லை</translation>
 <translation id="470966556546083668">ஒத்திசைவை இயக்க வேண்டாம்</translation>
 <translation id="4711809265250406889">இந்த அம்சம் செயலில் இருக்கும்போது:</translation>
+<translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} மற்றும் 1 தளம்}other{{website_1}, {website_2} மற்றும் {more_count} தளங்கள்}}</translation>
 <translation id="4737560986434232178">சமீபத்திய உலாவிப் பக்கங்களில் தேடுதல்</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4746926359847517643">எப்போது வேண்டுமானாலும் பதிவில் இருந்து அவற்றை மீண்டும் பெறலாம்.</translation>
@@ -688,6 +693,7 @@
 <translation id="4918086044614829423">ஏற்கிறேன்</translation>
 <translation id="4922154083994158612">கூடுதல் பாதுகாப்பு வேண்டுமா?</translation>
 <translation id="4930714375720679147">இயக்கு</translation>
+<translation id="4937410517508563815">கடவுச்சொற்களைக் கணக்கில் சேமிக்கும்</translation>
 <translation id="4938338714234463591">குறிப்பிட்ட அம்சங்களுடன் உங்கள் குரலை இணையதளங்களில் பயன்படுத்த இது அனுமதிக்கும்.</translation>
 <translation id="4941089862236492464">மன்னிக்கவும், உங்கள் உருப்படியைப் பகிர்வதில் ஒரு பிரச்சனை ஏற்பட்டது.</translation>
 <translation id="4944543191714094452">பக்கத்தில் கண்டறிக…</translation>
@@ -1184,6 +1190,7 @@
 <translation id="7711440461521638739">நீங்கள் எந்தக் கடவுச்சொற்களையும் மீண்டும் பயன்படுத்தவில்லை</translation>
 <translation id="7719038820139380048">உங்கள் ஆர்வங்களின் அடிப்படையில் உள்ளடக்கத்தைப் பார்க்க உள்நுழையவும்.</translation>
 <translation id="7720410380936703141">மீண்டும் முயல்க</translation>
+<translation id="7724085059277147439">{count,plural, =1{உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டது}other{உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டன}}</translation>
 <translation id="7726702057919861819">மெனு → பதிவு → உலாவிய தரவை அழி</translation>
 <translation id="7729458878441927652">பிற சாதனங்களில் உள்ள உலாவிப் பக்கங்களைப் பார்க்க, உலாவிப் பக்கங்களையும் பதிவையும் ஒத்திசைக்கவும்.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. இந்தச் சாதனத்தில் மட்டும்.</translation>
@@ -1275,6 +1282,7 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> கணக்குகள்</translation>
 <translation id="8159358225423560600">சற்றுமுன்</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8182037667962849780">{count,plural, =1{{website_1} தளத்திற்கு}=2{{website_1}, {website_2} ஆகிய தளங்களுக்கு}=3{{website_1}, {website_2} மற்றும் 1 தளத்திற்கு}other{{website_1}, {website_2} மற்றும் {more_count} தளங்களுக்கு}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />உங்கள் சாதனங்கள்<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">பக்கத்தை மொழிபெயர்</translation>
 <translation id="8205564605687841303">ரத்துசெய்</translation>
@@ -1300,6 +1308,7 @@
 <translation id="8328777765163860529">எல்லாவற்றையும் மூடு</translation>
 <translation id="8343993175958086504">உங்கள் தரவைக் காப்புப் பிரதி எடுத்து எந்தச் சாதனத்தில் வேண்டுமானாலும் பயன்படுத்தலாம்.</translation>
 <translation id="834783239627985533">அதிகம் பார்த்த தளங்கள்</translation>
+<translation id="8356276002902955750">{count,plural, =1{{count} புக்மார்க்}other{{count} புக்மார்க்குகள்}}</translation>
 <translation id="8378714024927312812">உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="8386068868580335421">மீட்டமை</translation>
 <translation id="838867811594159347">கடவுச்சொற்றொடரை உள்ளிடுங்கள்…</translation>
@@ -1415,6 +1424,7 @@
 <translation id="8976414606286374109">கார்டுகள் உங்கள் Google கணக்கில் சேமிக்கப்படும்.</translation>
 <translation id="8981454092730389528">Google செயல்பாட்டுக் கட்டுப்பாடுகள்</translation>
 <translation id="8985320356172329008">Google இல் உள்நுழைந்திருக்கும் கணக்கு</translation>
+<translation id="8991382496704361510">இந்தச் சாதனத்தில்</translation>
 <translation id="8998289560386111590">உங்கள் சாதனத்தில் இல்லை</translation>
 <translation id="8999545564078155498">Face ID மூலம் அன்லாக் செய்யவும்</translation>
 <translation id="9000089900434778519">உங்கள் தேடல் இன்ஜின்: <ph name="DSE_NAME" />. தேடல் விவரங்களை நீக்க அதன் வழிமுறைகளைப் பாருங்கள் (நீக்க அனுமதித்தால்).</translation>

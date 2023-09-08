@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Konteksti</translation>
 <translation id="3272909651715601089">Nuk mund të hapej "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Po përgatitet</translation>
+<translation id="3280719573299097127">Je në një rrjet me matje. Sinkronizimi i skedarëve është vendosur në pauzë.</translation>
 <translation id="3280987981688031357">Disk gramafoni</translation>
 <translation id="3290356915286466215">I pasiguruar</translation>
 <translation id="3291218047831493686">Lidhu me këtë rrjet për të ndryshuar cilësimin e kyçjes së kartës SIM</translation>
@@ -631,6 +632,7 @@
 <translation id="5838451609423551646">Hiq të gjitha regjistrimet nga përzgjedhja.</translation>
 <translation id="5838825566232597749">Tastiera ndërkombëtare amerikane Workman</translation>
 <translation id="5845721951356578987">Infermier</translation>
+<translation id="5858478190805449225">Modaliteti "Kursyesi i baterisë" është aktiv. Provo përsëri kur modaliteti "Kursyesi i baterisë" të jetë joaktiv.</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
 <translation id="5861477046012235702">Lojtar</translation>
 <translation id="5864471791310927901">Kërkimi i DHCP-së dështoi</translation>
@@ -919,6 +921,7 @@
 <translation id="8087576439476816834">Shkarko, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Të ndara me</translation>
 <translation id="8116072619078571545">Ujë me akull</translation>
+<translation id="8120392982188717723">Lejo sinkronizimin në rrjetet me matje</translation>
 <translation id="8124093710070495550">Problem me sinkronizimin</translation>
 <translation id="8128733386027980860">Anglisht (MB) me tastierë Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" është ndarë me ty. Nuk mund ta fshish sepse nuk je zotëruesi i saj.</translation>

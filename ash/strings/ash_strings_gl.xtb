@@ -200,6 +200,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1757857692711134412">Función desactivada ata o solpor</translation>
 <translation id="1768366657309696705">Cambiouse o atallo de teclado <ph name="LAUNCHER_KEY_NAME" /> + Punto. Para utilizar a tecla Inserir, preme <ph name="LAUNCHER_KEY_NAME" /> + Maiúsculas + Retroceso.</translation>
 <translation id="1770726142253415363">Moveuse á fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Abre <ph name="NAME" /> para configurar e personalizar o teu dispositivo</translation>
 <translation id="1771761307086386028">Desprazarse á dereita</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />; nestes momentos está seleccionada a data <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Mostrando <ph name="NUM_SHOWN_ITEMS" /> de <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -480,7 +481,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
 <translation id="3038571455154067151">Para iniciar sesión, escribe o teu código de acceso parental de Family Link</translation>
 <translation id="3039939407102840004">Batería do lapis óptico ao <ph name="PERCENTAGE" /> %.</translation>
-<translation id="304097922505898963">Abrir aplicación Key Shortcuts</translation>
+<translation id="304097922505898963">Abrir aplicación Atallos de teclado</translation>
 <translation id="3045488863354895414">Boas tardes!</translation>
 <translation id="3047761520276763270">Proba a dicir:</translation>
 <translation id="3055162170959710888">Hoxe utilizaches este dispositivo durante <ph name="USED_TIME" /></translation>
@@ -1193,6 +1194,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5876666360658629066">Escribe o código parental</translation>
 <translation id="5881540930187678962">Configurar O meu teléfono máis tarde</translation>
 <translation id="5881663018261910378">Desactivada</translation>
+<translation id="5883017113634523865">Instala a aplicación para <ph name="NAME" /> desde Google Play para ver todas as funcións dispoñibles</translation>
 <translation id="5887954372087850114">A ventá <ph name="WINDOW_TITLE" /> está asignada ao escritorio <ph name="DESK_TITLE" /> e a ningún outro máis</translation>
 <translation id="588817334757907802">Abrir ficheiro no navegador Chrome</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -1223,7 +1225,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="601304062528754300">Destaca o elemento seguinte no andel</translation>
 <translation id="6015573907265691211">Marcar como finalizada</translation>
 <translation id="6018164090099858612">Saíndo do modo de proxección</translation>
-<translation id="6019566113895157499">Key Shortcuts</translation>
+<translation id="6019566113895157499">Atallos de teclado</translation>
 <translation id="602001110135236999">Desprazarse á esquerda</translation>
 <translation id="6020147141355393792">Configurar a visualización das notificacións e das aplicacións do teu teléfono</translation>
 <translation id="6022924867608035986">Borrar texto da caixa de busca</translation>
@@ -1339,7 +1341,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6497418457565568043">O modo Non molestar está activado</translation>
 <translation id="6500896621837555595">Actualizar</translation>
 <translation id="6501401484702599040">Emitindo pantalla en <ph name="RECEIVER_NAME" /></translation>
-<translation id="6507042703812908515">Abre a aplicación Atallos do teclado con <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="6507042703812908515">Abre a aplicación Atallos de teclado con <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Cambiar ao seguinte método de introdución de texto dispoñible</translation>
 <translation id="6508923215158854599">Asegúrate de que o Chromebook estea conectado á mesma rede wifi que o dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">Perdeuse a conexión coa cámara; tentando conexión de novo.</translation>

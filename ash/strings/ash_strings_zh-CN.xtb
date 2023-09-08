@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">保持关闭状态，直到日落</translation>
 <translation id="1768366657309696705">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 句点键”已更改。若要使用 Insert 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + Shift + 退格键。</translation>
 <translation id="1770726142253415363">已移至第 <ph name="ROW_NUMBER" /> 行与第 <ph name="COLUMN_NUMBER" /> 列的相交处。</translation>
+<translation id="1771458705381257690">打开“<ph name="NAME" />”即可设置和自定义您的设备</translation>
 <translation id="1771761307086386028">向右滚动</translation>
 <translation id="1774796056689732716">日历，<ph name="CURRENT_MONTH_YEAR" />，目前所选日期为 <ph name="DATE" />。</translation>
 <translation id="1775598828170459419">当前显示 <ph name="NUM_SHOWN_ITEMS" /> 项，共 <ph name="NUM_TOTAL_ITEMS" /> 项</translation>
@@ -1192,6 +1193,7 @@
 <translation id="5876666360658629066">输入家长访问码</translation>
 <translation id="5881540930187678962">需要时再设置 Phone Hub</translation>
 <translation id="5881663018261910378">已停用</translation>
+<translation id="5883017113634523865">从 Google Play 安装“<ph name="NAME" />”的配套应用即可查看所有可用功能</translation>
 <translation id="5887954372087850114">已将窗口“<ph name="WINDOW_TITLE" />”分配至“<ph name="DESK_TITLE" />”，并已取消此窗口与所有其他桌面的分配关系</translation>
 <translation id="588817334757907802">在 Chrome 浏览器中打开文件</translation>
 <translation id="5895138241574237353">重新启动</translation>
