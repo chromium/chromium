@@ -9,6 +9,7 @@ import("//media/media_options.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 
   # This is bundled into //media, so all dependencies should be on //media.
   # APK targets that depend on this indirectly, should also

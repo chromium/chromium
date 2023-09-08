@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/components/sync/SyncServiceImpl.java" ]
@@ -19,7 +20,7 @@ android_library("sync_java") {
   srcjar_deps = [
     ":java_enums",
     ":jni_headers",
-   ]
+  ]
   sources = [
     "java/src/org/chromium/components/sync/Passphrase.java",
     "java/src/org/chromium/components/sync/SyncService.java",

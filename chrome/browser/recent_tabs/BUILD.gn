@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("helper_java") {
   sources = [ "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsFeatureHelper.java" ]

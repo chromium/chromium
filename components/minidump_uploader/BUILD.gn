@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//testing/test.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("minidump_uploader_jni_headers") {
   sources = [ "android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java" ]

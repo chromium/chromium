@@ -8,6 +8,7 @@ import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/feed/features.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_resources("java_resources") {
   sources = [

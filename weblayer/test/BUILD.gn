@@ -11,6 +11,7 @@ import("//weblayer/variables.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//components/safe_browsing/buildflags.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 
   weblayer_browsertests_manifest =
       "${target_gen_dir}/weblayer_browsertests_manifest/AndroidManifest.xml"

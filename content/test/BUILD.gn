@@ -28,7 +28,8 @@ import("//tools/typescript/ts_library.gni")
 import("//v8/gni/v8.gni")
 
 if (is_android) {
-  import("//build/config/android/rules.gni")  # For generate_jni().
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 if (is_ios) {

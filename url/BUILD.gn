@@ -12,6 +12,7 @@ import("//build/config/cronet/config.gni")
 
 if (is_android || is_robolectric) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 buildflag_header("buildflags") {

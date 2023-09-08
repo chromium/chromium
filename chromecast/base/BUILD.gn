@@ -8,6 +8,7 @@ import("//testing/test.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 declare_args() {

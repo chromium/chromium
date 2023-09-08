@@ -11,6 +11,7 @@ import("//services/tracing/public/cpp/stack_sampling/loader_lock_sampling.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 source_set("lib") {

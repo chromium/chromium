@@ -27,6 +27,9 @@ import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 if (is_mac) {
   import("//content/public/app/mac_helpers.gni")
 }
+if (is_android) {
+  import("//third_party/jni_zero/jni_zero.gni")
+}
 
 buildflag_header("buildflags") {
   header = "buildflags.h"

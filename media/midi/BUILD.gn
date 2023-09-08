@@ -12,8 +12,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 if (is_android) {
-  # For generate_jni().
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 # Common configuration for targets in the media/midi directory.

@@ -9,7 +9,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 assert(use_blink)
 
 if (is_android) {
-  import("//build/config/android/rules.gni")  # For generate_jni().
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 static_library("usb") {

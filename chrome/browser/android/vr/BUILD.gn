@@ -7,6 +7,7 @@ import("//chrome/android/modules/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//testing/test.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 assert(enable_vr)
 

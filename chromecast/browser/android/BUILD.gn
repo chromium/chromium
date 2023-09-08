@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 assert(is_android)
 

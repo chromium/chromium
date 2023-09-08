@@ -10,6 +10,7 @@ import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 config("viz_service_implementation") {
 }

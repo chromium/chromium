@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("background_task_update_scheduler_java") {
   srcjar_deps = [ ":background_task_update_scheduler_jni_headers" ]

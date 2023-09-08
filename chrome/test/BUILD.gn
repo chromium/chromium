@@ -61,6 +61,7 @@ assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//chrome/android/features/dev_ui/dev_ui_module.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
   import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
 }
 

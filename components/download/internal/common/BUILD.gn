@@ -7,6 +7,7 @@ import("//components/safe_browsing/buildflags.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 source_set("internal") {

@@ -17,6 +17,7 @@ if (is_ios) {
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 # Several targets want to include this header file, and some of them are
