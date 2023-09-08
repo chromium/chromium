@@ -258,6 +258,8 @@ static_library("test_support") {
       "base/chromeos/crosier/chromeos_test_launcher.h",
       "base/chromeos/crosier/chromeos_test_suite.cc",
       "base/chromeos/crosier/chromeos_test_suite.h",
+      "base/chromeos/crosier/upstart.cc",
+      "base/chromeos/crosier/upstart.h",
     ]
   }
 
@@ -993,6 +995,7 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ui/ash/app_list/app_list_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
         "../browser/ui/ash/shelf/shelf_integration_test.cc",
+        "base/chromeos/crosier/upstart_test.cc",
 
         # These cannot live in ":test_support" because they use
         # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
