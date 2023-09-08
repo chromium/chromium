@@ -36,9 +36,9 @@ apps::proto::ClientDeviceContext::Channel ConvertChannelTypeToProto(
     case version_info::Channel::STABLE:
       return apps::proto::ClientDeviceContext::CHANNEL_STABLE;
     case version_info::Channel::UNKNOWN:
-      // The "unknown" channel is used for builds without a channel (e.g.
+      // The default channel is used for builds without a channel (e.g.
       // local builds).
-      return apps::proto::ClientDeviceContext::CHANNEL_UNKNOWN;
+      return apps::proto::ClientDeviceContext::CHANNEL_DEFAULT;
   }
 }
 
