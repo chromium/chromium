@@ -28,6 +28,7 @@
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -317,6 +318,18 @@ class AppServiceProxyShortcutIconTest : public AppServiceProxyTest {
                           apps::IconValuePtr icon) { ++(*num_callbacks); },
                        &num_outer_finished_callbacks_));
   }
+  UniqueReleaser LoadShortcutIconWithBadge(AppServiceProxy* proxy,
+                                           const ShortcutId& shortcut_id) {
+    return proxy->LoadShortcutIconWithBadge(
+        shortcut_id, IconType::kUncompressed,
+        /*size_hint_in_dip=*/1,
+        /*badge_size_hint_in_dip=*/1,
+        /*allow_placeholder_icon=*/false,
+        base::BindOnce(
+            [](int* num_callbacks, apps::IconValuePtr shortcut_icon,
+               apps::IconValuePtr badge_icon) { ++(*num_callbacks); },
+            &num_outer_finished_callbacks_));
+  }
   void OverrideAppServiceProxyShortcutInnerIconLoader(
       AppServiceProxy* proxy,
       apps::IconLoader* icon_loader) {
@@ -423,6 +436,44 @@ TEST_F(AppServiceProxyShortcutIconTest, IconCoalescer) {
   EXPECT_EQ(3, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(6, NumOuterFinishedCallbacks());
 }
+
+TEST_F(AppServiceProxyShortcutIconTest, LoadShortcutIconWithBadge) {
+  TestingProfile profile;
+  AppServiceProxy* const proxy =
+      AppServiceProxyFactory::GetForProfile(&profile);
+
+  FakeIconLoader fake_shortcut_loader;
+  FakeIconLoader fake_app_loader;
+  OverrideAppServiceProxyShortcutInnerIconLoader(proxy, &fake_shortcut_loader);
+  OverrideAppServiceProxyInnerIconLoader(proxy, &fake_app_loader);
+
+  auto shortcut = std::make_unique<Shortcut>("host_app_id", "local_id");
+  ShortcutId shortcut_id = shortcut->shortcut_id;
+  proxy->ShortcutRegistryCache()->UpdateShortcut(std::move(shortcut));
+
+  UniqueReleaser c0 = LoadShortcutIconWithBadge(proxy, shortcut_id);
+  EXPECT_EQ(1, fake_shortcut_loader.NumPendingCallbacks());
+  EXPECT_EQ(0, fake_shortcut_loader.NumInnerFinishedCallbacks());
+  EXPECT_EQ(0, NumOuterFinishedCallbacks());
+
+  // After a cache miss, manually trigger the inner callback.
+  fake_shortcut_loader.FlushPendingCallbacks();
+  EXPECT_EQ(0, fake_shortcut_loader.NumPendingCallbacks());
+  EXPECT_EQ(1, fake_shortcut_loader.NumInnerFinishedCallbacks());
+  EXPECT_EQ(0, NumOuterFinishedCallbacks());
+
+  // Should start loading icon for the host app.
+  EXPECT_EQ(1, fake_app_loader.NumPendingCallbacks());
+  EXPECT_EQ(0, fake_app_loader.NumInnerFinishedCallbacks());
+  EXPECT_EQ(0, NumOuterFinishedCallbacks());
+
+  // After a cache miss, manually trigger the inner callback.
+  fake_app_loader.FlushPendingCallbacks();
+  EXPECT_EQ(0, fake_app_loader.NumPendingCallbacks());
+  EXPECT_EQ(1, fake_app_loader.NumInnerFinishedCallbacks());
+  EXPECT_EQ(1, NumOuterFinishedCallbacks());
+}
+
 #endif
 
 TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {

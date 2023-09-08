@@ -64,6 +64,9 @@ class UninstallDialog;
 struct PromiseApp;
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;
 
+using LoadShortcutIconWithBadgeCallback =
+    base::OnceCallback<void(IconValuePtr, IconValuePtr)>;
+
 struct PauseData {
   int hours = 0;
   int minutes = 0;
@@ -191,14 +194,27 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                       gfx::NativeWindow parent_window);
 
   // Loads the icon for app service shortcut represented by `shortcut_id`, this
-  // icon will include a host app icon as it's badge. `callback` may be
-  // dispatched synchronously if it's possible to quickly return a result.
+  // icon does not include the host app icon badge.
+  // `callback` may be dispatched synchronously if it's possible to quickly
+  // return a result.
   std::unique_ptr<IconLoader::Releaser> LoadShortcutIcon(
       const apps::ShortcutId& shortcut_id,
       const IconType& icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback);
+
+  // Loads the icon for app service shortcut represented by `shortcut_id`, this
+  // icon will include a host app icon as it's badge (returned separately).
+  // `callback` may be dispatched synchronously if it's possible to quickly
+  // return a result.
+  std::unique_ptr<IconLoader::Releaser> LoadShortcutIconWithBadge(
+      const apps::ShortcutId& shortcut_id,
+      const IconType& icon_type,
+      int32_t size_hint_in_dip,
+      int32_t badge_size_hint_in_dip,
+      bool allow_placeholder_icon,
+      apps::LoadShortcutIconWithBadgeCallback callback);
 
   apps::IconLoader* OverrideShortcutInnerIconLoaderForTesting(
       apps::IconLoader* icon_loader);
@@ -376,6 +392,17 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const apps::AppUpdate& update) override;
 
   ShortcutPublisher* GetShortcutPublisher(AppType app_type);
+
+  void OnShortcutIconLoaded(const ShortcutId& shortcut_id,
+                            const IconType& icon_type,
+                            int32_t badge_size_hint_in_dip,
+                            bool allow_placeholder_icon,
+                            apps::LoadShortcutIconWithBadgeCallback callback,
+                            IconValuePtr shortcut_icon);
+  void OnHostAppIconForShortcutLoaded(
+      IconValuePtr shortcut_icon,
+      apps::LoadShortcutIconWithBadgeCallback callback,
+      IconValuePtr host_app_icon);
 
   // The LoadIconFromIconKey implementation sends a chained series of requests
   // through each icon loader, starting from the outer and working back to the

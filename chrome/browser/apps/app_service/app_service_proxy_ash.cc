@@ -492,8 +492,27 @@ std::unique_ptr<IconLoader::Releaser> AppServiceProxyAsh::LoadShortcutIcon(
   return shortcut_outer_icon_loader_.LoadIconFromIconKey(
       shortcut_id.value(), icon_key.value(), icon_type, size_hint_in_dip,
       allow_placeholder_icon, std::move(callback));
-  // TODO(crbug.com/1412708): Add callback to load the parent app icon and add
-  // it as badge.
+}
+
+std::unique_ptr<IconLoader::Releaser>
+AppServiceProxyAsh::LoadShortcutIconWithBadge(
+    const apps::ShortcutId& shortcut_id,
+    const IconType& icon_type,
+    int32_t size_hint_in_dip,
+    int32_t badge_size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadShortcutIconWithBadgeCallback callback) {
+  if (!base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+    std::move(callback).Run(std::make_unique<IconValue>(),
+                            std::make_unique<IconValue>());
+    return nullptr;
+  }
+  return LoadShortcutIcon(
+      shortcut_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
+      base::BindOnce(&AppServiceProxyAsh::OnShortcutIconLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), shortcut_id, icon_type,
+                     badge_size_hint_in_dip, allow_placeholder_icon,
+                     std::move(callback)));
 }
 
 apps::IconLoader* AppServiceProxyAsh::OverrideShortcutInnerIconLoaderForTesting(
@@ -995,6 +1014,30 @@ IntentLaunchInfo AppServiceProxyAsh::CreateIntentLaunchInfo(
 ShortcutPublisher* AppServiceProxyAsh::GetShortcutPublisher(AppType app_type) {
   auto it = shortcut_publishers_.find(app_type);
   return it == shortcut_publishers_.end() ? nullptr : it->second;
+}
+
+void AppServiceProxyAsh::OnShortcutIconLoaded(
+    const ShortcutId& shortcut_id,
+    const IconType& icon_type,
+    int32_t badge_size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadShortcutIconWithBadgeCallback callback,
+    IconValuePtr shortcut_icon) {
+  std::string host_app_id =
+      ShortcutRegistryCache()->GetShortcutHostAppId(shortcut_id);
+  AppType app_type = AppRegistryCache().GetAppType(host_app_id);
+  LoadIcon(app_type, host_app_id, icon_type, badge_size_hint_in_dip,
+           allow_placeholder_icon,
+           base::BindOnce(&AppServiceProxyAsh::OnHostAppIconForShortcutLoaded,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(shortcut_icon), std::move(callback)));
+}
+
+void AppServiceProxyAsh::OnHostAppIconForShortcutLoaded(
+    IconValuePtr shortcut_icon,
+    apps::LoadShortcutIconWithBadgeCallback callback,
+    IconValuePtr host_app_icon) {
+  std::move(callback).Run(std::move(shortcut_icon), std::move(host_app_icon));
 }
 
 }  // namespace apps
