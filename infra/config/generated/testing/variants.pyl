@@ -415,21 +415,21 @@
     'identifier': 'DEDEDE_RELEASE_DEV',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R117-15552.0.0',
+      'cros_img': 'dedede-release/R118-15597.0.0',
     },
   },
   'CROS_DEDEDE_RELEASE_BETA': {
     'identifier': 'DEDEDE_RELEASE_BETA',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R116-15509.50.0',
+      'cros_img': 'dedede-release/R117-15572.24.0',
     },
   },
   'CROS_DEDEDE_RELEASE_STABLE': {
     'identifier': 'DEDEDE_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R115-15474.70.0',
+      'cros_img': 'dedede-release/R115-15474.84.0',
     },
   },
   'CROS_PUFF_RELEASE_LKGM': {
@@ -445,7 +445,7 @@
     'identifier': 'PUFF_RELEASE_DEV',
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R117-15563.0.0',
+      'cros_img': 'puff-release/R118-15597.0.0',
       'dut_pool': 'chrome',
     },
   },
@@ -453,7 +453,7 @@
     'identifier': 'PUFF_RELEASE_BETA',
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R116-15509.50.0',
+      'cros_img': 'puff-release/R117-15572.24.0',
       'dut_pool': 'chrome',
     },
   },
@@ -461,7 +461,7 @@
     'identifier': 'PUFF_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R115-15474.70.0',
+      'cros_img': 'puff-release/R116-15509.63.0',
       'dut_pool': 'chrome',
     },
   },
@@ -487,21 +487,21 @@
     'identifier': 'HANA_RELEASE_DEV',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R117-15563.0.0',
+      'cros_img': 'hana-release/R118-15597.0.0',
     },
   },
   'CROS_HANA_RELEASE_BETA': {
     'identifier': 'HANA_RELEASE_BETA',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R116-15509.50.0',
+      'cros_img': 'hana-release/R117-15572.24.0',
     },
   },
   'CROS_HANA_RELEASE_STABLE': {
     'identifier': 'HANA_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R115-15474.70.0',
+      'cros_img': 'hana-release/R115-15474.84.0',
     },
   },
   'CROS_JACUZZI_RELEASE_LKGM': {
@@ -516,14 +516,14 @@
     'identifier': 'JACUZZI_RELEASE_DEV',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-release/R116-15501.0.0',
+      'cros_img': 'jacuzzi-release/R118-15597.0.0',
     },
   },
   'CROS_JACUZZI_RELEASE_BETA': {
     'identifier': 'JACUZZI_RELEASE_BETA',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-release/R115-15474.14.0',
+      'cros_img': 'jacuzzi-release/R117-15572.24.0',
     },
   },
   'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {
@@ -539,7 +539,7 @@
     'identifier': 'JACUZZI_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-release/R114-15437.42.0',
+      'cros_img': 'jacuzzi-release/R116-15509.63.0',
     },
   },
   'CROS_JACUZZI_PUBLIC_LKGM': {
@@ -604,21 +604,21 @@
     'identifier': 'OCTOPUS_RELEASE_DEV',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R117-15563.0.0',
+      'cros_img': 'octopus-release/R118-15591.0.0',
     },
   },
   'CROS_OCTOPUS_RELEASE_BETA': {
     'identifier': 'OCTOPUS_RELEASE_BETA',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R116-15509.50.0',
+      'cros_img': 'octopus-release/R117-15572.24.0',
     },
   },
   'CROS_OCTOPUS_RELEASE_STABLE': {
     'identifier': 'OCTOPUS_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R115-15474.70.0',
+      'cros_img': 'octopus-release/R116-15509.63.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_LKGM': {
@@ -633,21 +633,21 @@
     'identifier': 'strongbad_RELEASE_DEV',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R117-15563.0.0',
+      'cros_img': 'strongbad-release/R118-15597.0.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_BETA': {
     'identifier': 'STRONGBAD_RELEASE_BETA',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R116-15509.50.0',
+      'cros_img': 'strongbad-release/R117-15572.24.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_STABLE': {
     'identifier': 'STRONGBAD_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R115-15474.70.0',
+      'cros_img': 'strongbad-release/R116-15509.63.0',
     },
   },
   'CROS_TROGDOR_RELEASE_ASH_LKGM': {
