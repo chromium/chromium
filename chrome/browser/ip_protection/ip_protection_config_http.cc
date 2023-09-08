@@ -24,10 +24,10 @@ constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
     semantics {
       sender: "Chrome IP Protection Service Client"
       description:
-        "Request to a Google auth server to obtain an authentication token "
+        "Request to a Google auth server to obtain an authorization token "
         "for Chrome's IP Protection privacy proxies."
       trigger:
-        "The Chrome IP Protection Service is out of proxy authentication "
+        "The Chrome IP Protection Service is out of proxy authorization "
         "tokens."
       data:
         "Chrome sign-in OAuth Token"
@@ -40,7 +40,7 @@ constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
       user_data {
         type: ACCESS_TOKEN
       }
-      last_reviewed: "2023-05-23"
+      last_reviewed: "2023-09-07"
     }
     policy {
       cookies_allowed: NO

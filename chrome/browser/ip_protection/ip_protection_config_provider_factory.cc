@@ -32,9 +32,15 @@ ProfileSelections IpProtectionConfigProviderFactory::CreateProfileSelections() {
   }
   // IP Protection usage requires that a Gaia account is available when
   // authenticating to the proxy (to prevent it from being abused). For
-  // incognito mode, use the profile associated with the logged in user since
-  // users will have a more private experience with IP Protection enabled.
-  // Skip other profile types like Guest and System where no Gaia is available.
+  // incognito mode where there's not an account available by default, use the
+  // profile associated with the logged in user if there is one. There's a small
+  // privacy trade-off with this, the downside being that the incognito mode
+  // profile will send an OAuth token associated with the user to the proxy
+  // token provider server periodically as new blinded proxy tokens are needed,
+  // and users might not expect this behavior. The privacy benefits of being
+  // able to use IP Protection in incognito mode should far outweigh this,
+  // though. Skip other profile types like Guest and System where no Gaia is
+  // available.
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kRedirectedToOriginal)
       .WithGuest(ProfileSelection::kNone)
