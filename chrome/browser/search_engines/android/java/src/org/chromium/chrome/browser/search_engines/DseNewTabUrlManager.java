@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.url.GURL;
 
 /**
  * A central class for feature NewTabSearchEngineUrlAndroid which swaps out NTP if the default
@@ -34,16 +35,16 @@ public class DseNewTabUrlManager {
     /**
      * Returns the new Tab URL of the default search engine if should override any NTP's URL.
      * Returns null if don't need to override.
-     * @param url  The URL to check.
+     * @param gUrl  The GURL to check.
      * @param isIncognito Whether it is an incognito Tab.
      */
-    public String maybeGetOverrideUrl(String url, boolean isIncognito) {
+    public GURL maybeGetOverrideUrl(GURL gurl, boolean isIncognito) {
         if (isIncognito || !DseNewTabUrlManagerUtils.isNewTabSearchEngineUrlAndroidEnabled()
-                || isDefaultSearchEngineGoogle() || !UrlUtilities.isNTPUrl(url)) {
-            return url;
+                || isDefaultSearchEngineGoogle() || !UrlUtilities.isNTPUrl(gurl)) {
+            return gurl;
         }
 
-        return DseNewTabUrlManagerUtils.getDSENewTabUrl(mTemplateUrlService);
+        return new GURL(DseNewTabUrlManagerUtils.getDSENewTabUrl(mTemplateUrlService));
     }
 
     /**

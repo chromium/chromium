@@ -55,6 +55,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//ui/android:ui_full_java",
+    "//url:gurl_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.search_engines"
