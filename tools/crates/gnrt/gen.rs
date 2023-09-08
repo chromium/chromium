@@ -413,7 +413,10 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
     let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
         .iter()
         .filter(|p| p.lib_target.is_some())
-        .map(|p| crates::collect_std_crate_files(p, &config).unwrap())
+        .map(|p| {
+            crates::collect_std_crate_files(p, &config)
+                .expect("missing a stdlib input file, did you gclient sync?")
+        })
         .collect();
 
     let build_file =

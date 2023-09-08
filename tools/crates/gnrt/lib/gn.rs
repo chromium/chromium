@@ -503,16 +503,24 @@ pub fn cfg_expr_to_condition(cfg_expr: &cargo_platform::CfgExpr) -> String {
         cargo_platform::CfgExpr::Not(expr) => {
             format!("!({})", cfg_expr_to_condition(expr))
         }
-        cargo_platform::CfgExpr::All(exprs) => exprs
-            .iter()
-            .map(|expr| format!("({})", cfg_expr_to_condition(expr)))
-            .collect::<Vec<String>>()
-            .join(" && "),
-        cargo_platform::CfgExpr::Any(exprs) => exprs
-            .iter()
-            .map(|expr| format!("({})", cfg_expr_to_condition(expr)))
-            .collect::<Vec<String>>()
-            .join(" || "),
+        cargo_platform::CfgExpr::All(exprs) => {
+            let mut conds = exprs
+                .iter()
+                .map(|expr| format!("({})", cfg_expr_to_condition(expr)))
+                .collect::<Vec<String>>();
+            conds.sort();
+            conds.dedup();
+            conds.join(" && ")
+        }
+        cargo_platform::CfgExpr::Any(exprs) => {
+            let mut conds = exprs
+                .iter()
+                .map(|expr| format!("({})", cfg_expr_to_condition(expr)))
+                .collect::<Vec<String>>();
+            conds.sort();
+            conds.dedup();
+            conds.join(" || ")
+        }
         cargo_platform::CfgExpr::Value(cfg) => cfg_to_condition(cfg),
     }
 }
@@ -613,7 +621,17 @@ mod tests {
             ))))
             .unwrap()
             .0,
-            "((is_win) || (is_android))"
+            "((is_android) || (is_win))"
+        );
+
+        // Redundant cfg expression.
+        assert_eq!(
+            Condition::from_platform_set(PlatformSet::one(Some(Platform::Cfg(
+                CfgExpr::from_str("any(windows, windows)").unwrap()
+            ))))
+            .unwrap()
+            .0,
+            "((is_win))"
         );
 
         // Try a PlatformSet with multiple filters.

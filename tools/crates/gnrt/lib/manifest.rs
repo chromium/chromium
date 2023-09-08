@@ -456,6 +456,7 @@ mod tests {
                 edition: Edition("2021".to_string()),
                 description: None,
                 license: "funtimes".to_string(),
+                include: Vec::new(),
             },
             workspace: None,
             dependencies: CargoDependencySet::new(),
@@ -512,6 +513,7 @@ license = \"funtimes\"
                 edition: Edition("2021".to_string()),
                 description: Some("A library to foo the bars".to_string()),
                 license: "funtimes".to_string(),
+                include: Vec::new(),
             }
         )
     }

@@ -77,7 +77,7 @@ cargo_crate("{{this.0}}") {
   ]
   {{else}}
   if ({{this.cond}}) {
-    deps = [
+    deps += [
       {{#each this.rules}}
       "{{this}}",
       {{/each}}
