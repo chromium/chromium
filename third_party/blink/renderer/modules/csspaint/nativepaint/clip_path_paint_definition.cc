@@ -204,7 +204,7 @@ bool ValidateClipPathValue(const Element* element,
   return false;
 }
 
-scoped_refptr<ShapeClipPathOperation> InterpolateShapes(
+ShapeClipPathOperation* InterpolateShapes(
     const InterpolationValue& from,
     const BasicShape::ShapeType from_shape_type,
     const InterpolationValue& to,
@@ -227,7 +227,8 @@ scoped_refptr<ShapeClipPathOperation> InterpolateShapes(
                                     *to.non_interpolable_value);
   }
   // TODO(pdr): Handle geometry box.
-  return ShapeClipPathOperation::Create(result_shape, GeometryBox::kBorderBox);
+  return MakeGarbageCollected<ShapeClipPathOperation>(result_shape,
+                                                      GeometryBox::kBorderBox);
 }
 
 double GetLocalProgress(double global_progress,
@@ -322,7 +323,7 @@ PaintRecord ClipPathPaintDefinition::Paint(
   const InterpolationValue& from = interpolation_values[result_index];
   const InterpolationValue& to = interpolation_values[result_index + 1];
 
-  scoped_refptr<ShapeClipPathOperation> current_shape =
+  ShapeClipPathOperation* current_shape =
       InterpolateShapes(from, basic_shape_types[result_index], to,
                         basic_shape_types[result_index + 1], adjusted_progress);
 
@@ -441,8 +442,8 @@ gfx::RectF ClipPathPaintDefinition::ClipAreaRect(
     scoped_refptr<BasicShape> cur_shape = animated_shapes[i];
 
     // TODO(pdr): Handle geometry box.
-    scoped_refptr<ShapeClipPathOperation> scpo =
-        ShapeClipPathOperation::Create(cur_shape, GeometryBox::kBorderBox);
+    ShapeClipPathOperation* scpo = MakeGarbageCollected<ShapeClipPathOperation>(
+        cur_shape, GeometryBox::kBorderBox);
     Path path = scpo->GetPath(reference_box, zoom);
     clip_area.Union(path.BoundingRect());
 
@@ -469,7 +470,7 @@ gfx::RectF ClipPathPaintDefinition::ClipAreaRect(
 
     if (min_progress < 0) {
       scoped_refptr<BasicShape> next_shape = animated_shapes[i + 1];
-      scoped_refptr<ShapeClipPathOperation> extrapolated_shape =
+      ShapeClipPathOperation* extrapolated_shape =
           InterpolateShapes(CreateInterpolationValue(*cur_shape.get(), zoom),
                             cur_shape->GetType(),
                             CreateInterpolationValue(*next_shape.get(), zoom),
@@ -479,7 +480,7 @@ gfx::RectF ClipPathPaintDefinition::ClipAreaRect(
     }
     if (max_progress > 1) {
       scoped_refptr<BasicShape> next_shape = animated_shapes[i + 1];
-      scoped_refptr<ShapeClipPathOperation> extrapolated_shape =
+      ShapeClipPathOperation* extrapolated_shape =
           InterpolateShapes(CreateInterpolationValue(*cur_shape.get(), zoom),
                             cur_shape->GetType(),
                             CreateInterpolationValue(*next_shape.get(), zoom),

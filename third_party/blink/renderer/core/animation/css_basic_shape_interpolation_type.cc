@@ -214,13 +214,15 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
       break;
     case CSSPropertyID::kOffsetPath:
       // TODO(sakhapov): handle coord box.
-      state.StyleBuilder().SetOffsetPath(ShapeOffsetPathOperation::Create(
-          std::move(shape), CoordBox::kBorderBox));
+      state.StyleBuilder().SetOffsetPath(
+          MakeGarbageCollected<ShapeOffsetPathOperation>(std::move(shape),
+                                                         CoordBox::kBorderBox));
       break;
     case CSSPropertyID::kClipPath:
       // TODO(pdr): Handle geometry box.
-      state.StyleBuilder().SetClipPath(ShapeClipPathOperation::Create(
-          std::move(shape), GeometryBox::kBorderBox));
+      state.StyleBuilder().SetClipPath(
+          MakeGarbageCollected<ShapeClipPathOperation>(
+              std::move(shape), GeometryBox::kBorderBox));
       break;
     case CSSPropertyID::kObjectViewBox:
       state.StyleBuilder().SetObjectViewBox(std::move(shape));

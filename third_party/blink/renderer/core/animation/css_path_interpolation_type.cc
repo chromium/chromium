@@ -57,12 +57,12 @@ void SetPath(const CSSProperty& property,
       return;
     case CSSPropertyID::kOffsetPath:
       // TODO(sakhapov): handle coord box.
-      builder.SetOffsetPath(ShapeOffsetPathOperation::Create(
+      builder.SetOffsetPath(MakeGarbageCollected<ShapeOffsetPathOperation>(
           std::move(path), CoordBox::kBorderBox));
       return;
     case CSSPropertyID::kClipPath:
       // TODO(pdr): Handle geometry box.
-      builder.SetClipPath(ShapeClipPathOperation::Create(
+      builder.SetClipPath(MakeGarbageCollected<ShapeClipPathOperation>(
           std::move(path), GeometryBox::kBorderBox));
       return;
     default:

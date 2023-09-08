@@ -93,10 +93,10 @@ TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
 
 TEST_F(ComputedStyleTest, ClipPathEqual) {
   scoped_refptr<BasicShapeCircle> shape = BasicShapeCircle::Create();
-  scoped_refptr<ShapeClipPathOperation> path1 =
-      ShapeClipPathOperation::Create(shape, GeometryBox::kBorderBox);
-  scoped_refptr<ShapeClipPathOperation> path2 =
-      ShapeClipPathOperation::Create(shape, GeometryBox::kBorderBox);
+  ShapeClipPathOperation* path1 = MakeGarbageCollected<ShapeClipPathOperation>(
+      shape, GeometryBox::kBorderBox);
+  ShapeClipPathOperation* path2 = MakeGarbageCollected<ShapeClipPathOperation>(
+      shape, GeometryBox::kBorderBox);
   ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
   ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
   builder1.SetClipPath(path1);
