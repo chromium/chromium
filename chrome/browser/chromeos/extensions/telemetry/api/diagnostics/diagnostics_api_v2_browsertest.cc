@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routines_service.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/test/browser_test.h"
@@ -270,14 +271,13 @@ IN_PROC_BROWSER_TEST_F(
           async (status) => {
           chrome.test.assertEq(status.uuid, await uuid);
           finished_resolver();
-        });
+          });
 
         const response = await chrome.os.diagnostics.createMemoryRoutine({
           maxTestingMemKib: 42,
         });
         chrome.test.assertTrue(response !== undefined);
         uuid_resolver(response.uuid);
-
         await on_finished;
         // Test that we were successful by starting again and failing.
         await chrome.test.assertPromiseRejects(
@@ -291,6 +291,42 @@ IN_PROC_BROWSER_TEST_F(
       }
     ]);
   )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    ClosingAppUiResultsInException) {
+  fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
+    // Closing the tab results in an exception.
+    ASSERT_TRUE(browser()->tab_strip_model()->ContainsIndex(0));
+    browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                     TabCloseTypes::CLOSE_NONE);
+  }));
+  OpenAppUiAndMakeItSecure();
+  // Open a second tab so that we don't close the browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://version"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function closingAppUiResultsInException() {
+        chrome.os.diagnostics.onRoutineException.addListener(async (status) => {
+          chrome.test.assertEq(status, {
+            "reason": "app_ui_closed",
+          });
+
+          chrome.test.succeed();
+        });
+
+        const response = await chrome.os.diagnostics.createMemoryRoutine({
+          maxTestingMemKib: 42,
+        });
+        chrome.test.assertTrue(response !== undefined);
+          }
+    ]);
+    )");
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -9,20 +9,25 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/remote_diagnostic_routines_service_strategy.h"
+#include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
@@ -37,6 +42,27 @@ namespace chromeos {
 namespace {
 
 namespace crosapi = ::crosapi::mojom;
+namespace cx_diag = api::os_diagnostics;
+
+void NotifyExtensionAppUiClosed(
+    extensions::ExtensionId extension_id,
+    raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context) {
+  cx_diag::ExceptionInfo exception;
+  exception.reason = cx_diag::ExceptionReason::kAppUiClosed;
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_EXCEPTION,
+      cx_diag::OnRoutineException::kEventName,
+      base::Value::List().Append(exception.ToValue()), browser_context);
+
+  // The `EventRouter` might be unavailable in unittests.
+  if (!extensions::EventRouter::Get(browser_context)) {
+    CHECK_IS_TEST();
+  } else {
+    extensions::EventRouter::Get(browser_context)
+        ->DispatchEventToExtension(extension_id, std::move(event));
+  }
+}
 
 }  // namespace
 
@@ -173,6 +199,7 @@ void DiagnosticRoutineManager::OnAppUiClosed(
 
   app_ui_observers_.erase(extension_id);
   routines_per_extension_.erase(extension_id);
+  NotifyExtensionAppUiClosed(extension_id, browser_context_);
 }
 
 base::expected<std::unique_ptr<AppUiObserver>, DiagnosticRoutineManager::Error>

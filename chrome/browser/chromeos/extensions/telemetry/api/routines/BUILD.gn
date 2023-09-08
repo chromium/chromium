@@ -73,6 +73,7 @@ source_set("routine_manager") {
     "//base",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:util",
+    "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
   ]
