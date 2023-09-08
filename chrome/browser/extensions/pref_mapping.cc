@@ -77,8 +77,6 @@ const PrefMappingEntry kMappings[] = {
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"thirdPartyCookiesAllowed", prefs::kCookieControlsMode,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
-    {"privacySandboxEnabled", prefs::kPrivacySandboxApisEnabled,
-     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"topicsEnabled", prefs::kPrivacySandboxM1TopicsEnabled,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"fledgeEnabled", prefs::kPrivacySandboxM1FledgeEnabled,

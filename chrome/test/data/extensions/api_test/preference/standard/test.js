@@ -25,7 +25,6 @@ var preferences_to_test = [
     root: chrome.privacy.websites,
     preferences: {
       thirdPartyCookiesAllowed: false,
-      privacySandboxEnabled: true,
       hyperlinkAuditingEnabled: false,
       referrersEnabled: false,
       doNotTrackEnabled: false,
@@ -158,6 +157,14 @@ chrome.test.sendMessage('ready', function(message) {
           }
         }
       },
+      function setGlobals() {
+        for (let preferenceSet of preferences_to_test) {
+          for (let key in preferenceSet.preferences) {
+            prefSetterOppositeOfDefault.call(
+                preferenceSet.root, key, preferenceSet.preferences[key]);
+          }
+        }
+      },
       // For Privacy Sandbox APIs unable to enable a pref.
       function setToEnableExpectErrorDefault() {
         for (let preferenceSet of
@@ -185,19 +192,6 @@ chrome.test.sendMessage('ready', function(message) {
           for (let key in preferenceSet.preferences) {
             privacySandboxPrefSetterToTrueExpectErrorAndControlled.call(
                 preferenceSet.root, key);
-          }
-        }
-      },
-      // setGlobals() after setToEnableExpectErrorAndControlled(), so disabling
-      // privacySandboxEnabled doesn't trigger topicsEnabled, fledgeEnabled and
-      // adsMeasurementEnabled to false
-      // TODO(b/263568309): Move this method  after getPreferences() after the
-      // deprecated API privacySandboxEnabled is retired.
-      function setGlobals() {
-        for (let preferenceSet of preferences_to_test) {
-          for (let key in preferenceSet.preferences) {
-            prefSetterOppositeOfDefault.call(
-                preferenceSet.root, key, preferenceSet.preferences[key]);
           }
         }
       },

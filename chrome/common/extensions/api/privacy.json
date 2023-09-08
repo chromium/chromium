@@ -100,12 +100,6 @@
             "value": ["thirdPartyCookiesAllowed", {"type": "boolean"}],
             "description": "If disabled, Chrome blocks third-party sites from setting cookies. The value of this preference is of type boolean, and the default value is <code>true</code>."
           },
-          "privacySandboxEnabled": {
-            "$ref": "types.ChromeSetting",
-            "value": ["privacySandboxEnabled", {"type": "boolean"}],
-            "deprecated": "We’re deprecating the API <a href='#property-websites-privacySandboxEnabled'>chrome.privacy.websites.privacySandboxEnabled</a>, though it will remain active for backward compatibility until release M113. Instead, please use <a href='#property-websites-topicsEnabled'>chrome.privacy.websites.topicsEnabled</a>, <a href='#property-websites-fledgeEnabled'>chrome.privacy.websites.fledgeEnabled</a> and <a href='#property-websites-adMeasurementEnabled'>chrome.privacy.websites.adMeasurementEnabled</a>. During the migration period: 1. Enabling privacySandboxEnabled will CLEAR the new APIs listed above because extensions aren’t allowed to enable them; 2. Disabling privacySandboxEnabled will also disable the new APIs; 3. Clearing privacySandboxEnabled will also clear the new APIs.",
-            "description": "If enabled, the experimental <a href='https://www.chromium.org/Home/chromium-privacy/privacy-sandbox'>Privacy Sandbox</a> features are active. The value of this preference is of type boolean, and the default value is <code>true</code>."
-          },
           "topicsEnabled": {
             "$ref": "types.ChromeSetting",
             "value": ["topicsEnabled", {"type": "boolean"}],
