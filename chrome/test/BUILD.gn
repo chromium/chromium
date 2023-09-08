@@ -4297,8 +4297,6 @@ if (!is_android) {
         "../browser/ash/net/ash_proxy_monitor_browsertest.cc",
         "../browser/ash/net/device_event_log_error_browsertest.cc",
         "../browser/ash/net/network_portal_detector_impl_browsertest.cc",
-        "../browser/ash/net/rollback_network_config/fake_rollback_network_config.cc",
-        "../browser/ash/net/rollback_network_config/fake_rollback_network_config.h",
         "../browser/ash/net/system_proxy_manager_browsertest.cc",
         "../browser/ash/network_change_manager_client_browsertest.cc",
         "../browser/ash/os_feedback/chrome_os_feedback_delegate_browsertest.cc",

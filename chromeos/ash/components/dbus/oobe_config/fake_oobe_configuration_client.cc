@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -43,6 +44,11 @@ void FakeOobeConfigurationClient::Init(dbus::Bus* bus) {}
 
 void FakeOobeConfigurationClient::CheckForOobeConfiguration(
     ConfigurationCallback callback) {
+  if (configuration_.has_value()) {
+    std::move(callback).Run(true, *configuration_);
+    return;
+  }
+
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kFakeOobeConfiguration)) {
     std::move(callback).Run(false, std::string());
@@ -57,6 +63,12 @@ void FakeOobeConfigurationClient::CheckForOobeConfiguration(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&LoadConfigurationFile, path),
       base::BindOnce(&OnConfigurationLoaded, std::move(callback)));
+}
+
+void FakeOobeConfigurationClient::SetConfiguration(
+    const std::string& configuration) {
+  CHECK(!configuration.empty());
+  configuration_ = configuration;
 }
 
 }  // namespace ash

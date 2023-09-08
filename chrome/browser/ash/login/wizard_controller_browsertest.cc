@@ -64,8 +64,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
-#include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
-#include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
@@ -2982,95 +2980,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
       WizardController::default_controller()->GetScreen<WelcomeScreen>();
   const base::Value::Dict& configuration = screen->GetConfigurationForTesting();
   EXPECT_FALSE(configuration.empty());
-}
-
-class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
- public:
-  WizardControllerRollbackFlowTest(const WizardControllerRollbackFlowTest&) =
-      delete;
-  WizardControllerRollbackFlowTest& operator=(
-      const WizardControllerRollbackFlowTest&) = delete;
-
- protected:
-  WizardControllerRollbackFlowTest() = default;
-
-  void SetUp() override {
-    std::unique_ptr<FakeRollbackNetworkConfig> network_config =
-        std::make_unique<FakeRollbackNetworkConfig>();
-    network_config_ = network_config.get();
-    // Release ownership of network config. It is to be deleted via `Shutdown`.
-    rollback_network_config::OverrideInProcessInstanceForTesting(
-        std::move(network_config));
-    WizardControllerFlowTest::SetUp();
-  }
-
-  void TearDown() override {
-    rollback_network_config::Shutdown();
-    WizardControllerFlowTest::TearDown();
-  }
-
-  // WizardControllerTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WizardControllerFlowTest::SetUpCommandLine(command_line);
-
-    base::FilePath configuration_file;
-    ASSERT_TRUE(chromeos::test_utils::GetTestDataPath(
-        "oobe_configuration", "TestEnterpriseRollbackRecover.json",
-        &configuration_file));
-    command_line->AppendSwitchPath(chromeos::switches::kFakeOobeConfiguration,
-                                   configuration_file);
-
-    // Pass command line so that auto enrollment check screen is shown also on
-    // non-official test builds. Rollback doesn't really care about this screen,
-    // but wizard controller tests do not allow for "not caring" if a screen is
-    // shown or not. The mocks are not nice.
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableForcedReEnrollment,
-        policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
-  }
-
-  raw_ptr<FakeRollbackNetworkConfig, DanglingUntriaged | ExperimentalAsh>
-      network_config_;
-};
-
-// Ensure that enrollment screen is triggered after auto enrollment check
-// screen.
-IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
-                       AdvanceToEnrollmentAfterRollback) {
-  CheckCurrentScreen(WelcomeView::kScreenId);
-
-  EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(1);
-  WizardController::default_controller()->AdvanceToScreen(
-      AutoEnrollmentCheckScreenView::kScreenId);
-
-  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-  mock_auto_enrollment_check_screen_->ExitScreen();
-  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
-}
-
-IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
-                       ImportNetworkConfigAfterRollback) {
-  CheckCurrentScreen(WelcomeView::kScreenId);
-  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
-
-  WizardController::default_controller()->AdvanceToScreen(
-      EnrollmentScreenView::kScreenId);
-  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
-  ASSERT_TRUE(network_config_->imported_config() != nullptr);
-  ASSERT_TRUE(network_config_->imported_config()->is_dict());
-
-  const base::Value::List* network_list =
-      network_config_->imported_config()->GetDict().FindList(
-          "NetworkConfigurations");
-  ASSERT_TRUE(network_list);
-
-  const base::Value& network = (*network_list)[0];
-  ASSERT_TRUE(network.is_dict());
-
-  const std::string* guid = network.GetDict().FindString("GUID");
-  ASSERT_TRUE(guid);
-  EXPECT_EQ(*guid, "wpa-psk-network-guid");
 }
 
 class WizardControllerThemeSelectionTest : public WizardControllerTest {

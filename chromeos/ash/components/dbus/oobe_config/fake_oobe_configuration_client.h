@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -27,6 +28,11 @@ class COMPONENT_EXPORT(ASH_DBUS_OOBE_CONFIG) FakeOobeConfigurationClient
 
   // EasyUnlockClient overrides
   void CheckForOobeConfiguration(ConfigurationCallback callback) override;
+
+  void SetConfiguration(const std::string& configuration);
+
+ private:
+  absl::optional<std::string> configuration_;
 };
 
 }  // namespace ash

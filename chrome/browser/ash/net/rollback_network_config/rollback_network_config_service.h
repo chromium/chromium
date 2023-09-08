@@ -21,7 +21,7 @@ void Shutdown();
 void BindToInProcessInstance(
     mojo::PendingReceiver<mojom::RollbackNetworkConfig> receiver);
 
-void OverrideInProcessInstanceForTesting(
+RollbackNetworkConfig* OverrideInProcessInstanceForTesting(
     std::unique_ptr<RollbackNetworkConfig> instance);
 
 }  // namespace rollback_network_config

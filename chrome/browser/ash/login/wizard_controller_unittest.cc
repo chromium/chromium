@@ -17,6 +17,8 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
+#include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
+#include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -68,11 +70,12 @@ constexpr char kEthName[] = "eth-name";
 const StaticOobeScreenId kWelcomeScreen = WelcomeView::kScreenId;
 const StaticOobeScreenId kNetworkScreen = NetworkScreenView::kScreenId;
 const StaticOobeScreenId kUpdateScreen = UpdateView::kScreenId;
-#if BUILDFLAG(PLATFORM_CFM)
+const StaticOobeScreenId kAutoEnrollmentCheckScreen =
+    AutoEnrollmentCheckScreenView::kScreenId;
 const StaticOobeScreenId kEnrollmentScreen = EnrollmentScreenView::kScreenId;
-#else   // BUILDFLAG(PLATFORM_CFM)
+#if !BUILDFLAG(PLATFORM_CFM)
 const StaticOobeScreenId kUserCreationScreen = UserCreationView::kScreenId;
-#endif  // BUILDFLAG(PLATFORM_CFM)
+#endif  // !BUILDFLAG(PLATFORM_CFM)
 
 OobeScreenId CurrentScreenId(WizardController* wizard_controller) {
   return wizard_controller->current_screen()->screen_id();
@@ -255,6 +258,12 @@ class WizardControllerTest : public WizardControllerTestBase {
     return screen_waiter.WaitFor(screen_id);
   }
 
+  void SetOobeConfiguration(const std::string& config) {
+    static_cast<FakeOobeConfigurationClient*>(OobeConfigurationClient::Get())
+        ->SetConfiguration(config);
+    OobeConfiguration::Get()->CheckConfiguration();
+  }
+
   void PerformUserAction(const std::string& action) {
     std::string user_acted_method_path = base::StrCat(
         {"login.", CurrentScreenId(wizard_controller_).external_api_prefix,
@@ -331,5 +340,71 @@ TEST_F(WizardControllerTest,
   ASSERT_TRUE(AwaitScreen(kEnrollmentScreen));
 }
 #endif  // BUILDFLAG(PLATFORM_CFM)
+
+class WizardControllerAfterRollbackTest : public WizardControllerTest {
+ public:
+  void SetUp() override {
+    WizardControllerTest::SetUp();
+    rollback_network_config_ = static_cast<FakeRollbackNetworkConfig*>(
+        rollback_network_config::OverrideInProcessInstanceForTesting(
+            std::make_unique<FakeRollbackNetworkConfig>()));
+    SetOobeConfiguration(kRollbackOobeConfig);
+  }
+  void TearDown() override {
+    rollback_network_config_ = nullptr;
+    rollback_network_config::Shutdown();
+    WizardControllerTest::TearDown();
+  }
+
+ protected:
+  raw_ptr<FakeRollbackNetworkConfig> rollback_network_config_;
+
+ private:
+  static constexpr char kRollbackOobeConfig[] = R"({
+    "enrollmentRestoreAfterRollback": true,
+    "eulaAutoAccept": true,
+    "eulaSendStatistics": true,
+    "networkUseConnected": true,
+    "welcomeNext": true,
+    "networkConfig": "{\"NetworkConfigurations\":[{
+     \"GUID\":\"wpa-psk-network-guid\",
+     \"Type\": \"WiFi\",
+     \"Name\": \"WiFi\",
+     \"WiFi\": {
+       \"Security\": \"WPA-PSK\",
+       \"Passphrase\": \"wpa-psk-network-passphrase\"
+    }}]}"
+  })";
+};
+
+TEST_F(WizardControllerAfterRollbackTest, AdvanceToEnrollmentAfterRollback) {
+  wizard_controller_->Init(kAutoEnrollmentCheckScreen);
+  ASSERT_TRUE(AwaitScreen(kEnrollmentScreen));
+}
+
+TEST_F(WizardControllerAfterRollbackTest, ImportNetworkConfigAfterRollback) {
+  base::test::TestFuture<void> config_imported;
+  rollback_network_config_->RegisterImportClosure(
+      config_imported.GetCallback());
+
+  wizard_controller_->Init(ash::OOBE_SCREEN_UNKNOWN);
+
+  config_imported.Wait();
+
+  auto* imported_config = rollback_network_config_->imported_config();
+  ASSERT_TRUE(imported_config != nullptr);
+  ASSERT_TRUE(imported_config->is_dict());
+
+  const base::Value::List* network_list =
+      imported_config->GetDict().FindList("NetworkConfigurations");
+  ASSERT_TRUE(network_list);
+
+  const base::Value& network = (*network_list)[0];
+  ASSERT_TRUE(network.is_dict());
+
+  const std::string* guid = network.GetDict().FindString("GUID");
+  ASSERT_TRUE(guid);
+  EXPECT_EQ(*guid, "wpa-psk-network-guid");
+}
 
 }  // namespace ash

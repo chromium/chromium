@@ -4606,6 +4606,8 @@ static_library("test_support") {
     "login/version_updater/mock_version_updater_delegate.h",
     "net/network_portal_detector_test_utils.cc",
     "net/network_portal_detector_test_utils.h",
+    "net/rollback_network_config/fake_rollback_network_config.cc",
+    "net/rollback_network_config/fake_rollback_network_config.h",
     "platform_keys/key_permissions/fake_user_private_token_kpm_service.cc",
     "platform_keys/key_permissions/fake_user_private_token_kpm_service.h",
     "platform_keys/key_permissions/mock_key_permissions_manager.cc",
