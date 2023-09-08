@@ -2097,14 +2097,14 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
 
   if (HasVerticalScrollbar() &&
       VerticalScrollbar()->ShouldParticipateInHitTesting()) {
-    LayoutRect v_bar_rect(VerticalScrollbarStart(),
-                          GetLayoutBox()->BorderTop().ToInt(),
-                          VerticalScrollbar()->ScrollbarThickness(),
-                          visible_rect.height() -
-                              (HasHorizontalScrollbar()
-                                   ? HorizontalScrollbar()->ScrollbarThickness()
-                                   : resize_control_size));
-    if (v_bar_rect.Contains(LayoutPoint(local_point))) {
+    gfx::Rect v_bar_rect(VerticalScrollbarStart(),
+                         GetLayoutBox()->BorderTop().ToInt(),
+                         VerticalScrollbar()->ScrollbarThickness(),
+                         visible_rect.height() -
+                             (HasHorizontalScrollbar()
+                                  ? HorizontalScrollbar()->ScrollbarThickness()
+                                  : resize_control_size));
+    if (v_bar_rect.Contains(local_point)) {
       result.SetScrollbar(VerticalScrollbar());
       return true;
     }
@@ -2115,7 +2115,7 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
       HorizontalScrollbar()->ShouldParticipateInHitTesting()) {
     // TODO(crbug.com/638981): Are the conversions to int intentional?
     int h_scrollbar_thickness = HorizontalScrollbar()->ScrollbarThickness();
-    LayoutRect h_bar_rect(
+    gfx::Rect h_bar_rect(
         HorizontalScrollbarStart(),
         GetLayoutBox()->BorderTop().ToInt() + visible_rect.height() -
             h_scrollbar_thickness,
@@ -2123,7 +2123,7 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
                                     ? VerticalScrollbar()->ScrollbarThickness()
                                     : resize_control_size),
         h_scrollbar_thickness);
-    if (h_bar_rect.Contains(LayoutPoint(local_point))) {
+    if (h_bar_rect.Contains(local_point)) {
       result.SetScrollbar(HorizontalScrollbar());
       return true;
     }
