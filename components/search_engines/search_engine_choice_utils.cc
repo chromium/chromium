@@ -113,6 +113,13 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
     return false;
   }
 
+  // A command line argument with the option for disabling the choice screen for
+  // testing and autmation environments.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableSearchEngineChoiceScreen)) {
+    return false;
+  }
+
   PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
 
   // The timestamp indicates that the user has already made a search engine

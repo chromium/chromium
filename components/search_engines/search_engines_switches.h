@@ -11,6 +11,7 @@ extern const char kExtraSearchQueryParams[];
 
 extern const char kSearchEngineChoiceCountry[];
 
+extern const char kDisableSearchEngineChoiceScreen[];
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_

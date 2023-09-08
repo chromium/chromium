@@ -158,6 +158,17 @@ TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfFlagIsDisabled) {
           .is_regular_profile = true, .pref_service = pref_service()}));
 }
 
+// Test that the choice screen does not get displayed if the command line
+// argument for disabling it is set.
+TEST_F(SearchEngineChoiceUtilsTest,
+       DoNotShowChoiceScreenWithDisableCommandLineFlag) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableSearchEngineChoiceScreen);
+  EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
+      policy_service(), /*profile_properties=*/{
+          .is_regular_profile = true, .pref_service = pref_service()}));
+}
+
 TEST_F(SearchEngineChoiceUtilsTest, GetSearchEngineChoiceCountryId) {
   const int kBelgiumCountryId =
       country_codes::CountryCharsToCountryID('B', 'E');
