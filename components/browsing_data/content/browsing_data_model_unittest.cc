@@ -91,6 +91,9 @@ class BrowsingDataModelTest : public testing::Test {
   MockNetworkContext* mock_network_context() {
     return mock_network_context_.get();
   }
+  BrowsingDataModel::BrowsingDataEntries& browsing_data_entries() {
+    return model_->browsing_data_entries_;
+  }
 
   const url::Origin kSubdomainOrigin =
       url::Origin::Create(GURL("https://subsite.example.com"));
@@ -425,9 +428,9 @@ TEST_F(BrowsingDataModelTest, IteratorCanHandleEmptyDataKeyEntriesMaps) {
   // The BrowsingDataModel is currently empty.
 
   // Insert an outer map element with an empty inner map as its value. We can do
-  // this by trying to remove a non-existent origin.
-  model()->RemovePartitionedBrowsingData(
-      kSiteOrigin, net::SchemefulSite(kSiteOrigin), base::DoNothing());
+  // this by using operator[] which will default construct a key/value pair if
+  // it can't find the key.
+  browsing_data_entries()[kSiteOrigin];
 
   // Now iterate over the model. The distance should be 1 because we have our
   // empty outer element.
