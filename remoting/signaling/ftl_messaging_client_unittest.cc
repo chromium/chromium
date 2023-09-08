@@ -156,8 +156,7 @@ class FtlMessagingClientTest : public testing::Test {
   ProtobufHttpTestResponder test_responder_;
   FakeOAuthTokenGetter token_getter_{OAuthTokenGetter::Status::SUCCESS, "", ""};
   std::unique_ptr<FtlMessagingClient> messaging_client_;
-  raw_ptr<MockMessageReceptionChannel, DanglingUntriaged>
-      mock_message_reception_channel_;
+  raw_ptr<MockMessageReceptionChannel> mock_message_reception_channel_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -177,6 +176,7 @@ void FtlMessagingClientTest::SetUp() {
 }
 
 void FtlMessagingClientTest::TearDown() {
+  mock_message_reception_channel_ = nullptr;
   messaging_client_.reset();
 }
 
