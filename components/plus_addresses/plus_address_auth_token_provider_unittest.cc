@@ -21,7 +21,7 @@ namespace plus_addresses {
 class PlusAddressAuthTokenProviderTest : public ::testing::Test {
  public:
   PlusAddressAuthTokenProviderTest() {
-    // Init the feature param to add `test_scope` to GetUnconsentedOAuth2Scopes
+    // Init the feature param to add `test_scope_` to GetUnconsentedOAuth2Scopes
     features_.InitAndEnableFeatureWithParameters(
         kFeature, {{kEnterprisePlusAddressOAuthScope.name, test_scope_}});
 
@@ -80,10 +80,11 @@ TEST_F(PlusAddressAuthTokenProviderTest, TokenRequestedBeforeSignin) {
   PlusAddressAuthTokenProvider provider(identity_manager(), test_scopes_);
 
   bool ran_callback = false;
-  provider.GetAuthToken(base::BindLambdaForTesting([&](std::string token) {
-    EXPECT_EQ(token, test_token_);
-    ran_callback = true;
-  }));
+  provider.GetAuthToken(
+      base::BindLambdaForTesting([&](const std::string& token) {
+        EXPECT_EQ(token, test_token_);
+        ran_callback = true;
+      }));
 
   // The callback is run only after signin.
   EXPECT_FALSE(ran_callback);
@@ -94,7 +95,7 @@ TEST_F(PlusAddressAuthTokenProviderTest, TokenRequestedBeforeSignin) {
 TEST_F(PlusAddressAuthTokenProviderTest, TokenRequestedUserNeverSignsIn) {
   PlusAddressAuthTokenProvider provider(identity_manager(), test_scopes_);
 
-  base::MockOnceCallback<void(std::string)> callback;
+  base::MockOnceCallback<void(const std::string&)> callback;
   EXPECT_CALL(callback, Run(testing::_)).Times(0);
   provider.GetAuthToken(callback.Get());
 }
@@ -102,7 +103,7 @@ TEST_F(PlusAddressAuthTokenProviderTest, TokenRequestedUserNeverSignsIn) {
 TEST_F(PlusAddressAuthTokenProviderTest, TokenRequestedAfterExpiration) {
   PlusAddressAuthTokenProvider provider(identity_manager(), test_scopes_);
   // Make an initial OAuth token request.
-  base::MockOnceCallback<void(std::string)> first_callback;
+  base::MockOnceCallback<void(const std::string&)> first_callback;
   provider.GetAuthToken(first_callback.Get());
   EXPECT_CALL(first_callback, Run(test_token_)).Times(1);
 
@@ -112,7 +113,7 @@ TEST_F(PlusAddressAuthTokenProviderTest, TokenRequestedAfterExpiration) {
   AdvanceTimeTo(now);
 
   // Issue another request for an OAuth token.
-  base::MockOnceCallback<void(std::string)> second_callback;
+  base::MockOnceCallback<void(const std::string&)> second_callback;
   provider.GetAuthToken(second_callback.Get());
 
   // Callback is only run once the new OAuth token request has completed.

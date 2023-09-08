@@ -17,9 +17,11 @@ namespace signin {
 class IdentityManager;
 }
 
-namespace plus_addresses {
+namespace network {
+class SharedURLLoaderFactory;
+}
 
-typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
+namespace plus_addresses {
 
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
 // Not intended for widespread use.
@@ -30,8 +32,11 @@ class PlusAddressService : public KeyedService {
   PlusAddressService();
   ~PlusAddressService() override;
 
-  // Initialize the PlusAddressService with the `IdentityManager`.
-  explicit PlusAddressService(signin::IdentityManager* identity_manager);
+  // Initialize the PlusAddressService with the `IdentityManager` and a
+  // `SharedURLLoaderFactory`.
+  PlusAddressService(
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Returns `true` when plus addresses are supported. Currently requires only
   // that the `kPlusAddressesEnabled` base::Feature is enabled.
@@ -50,8 +55,9 @@ class PlusAddressService : public KeyedService {
   // Check whether the passed-in string is a known plus address.
   bool IsPlusAddress(std::string potential_plus_address);
 
-  // For now, simply generates a fake plus address and runs `callback` with it
-  // immediately.
+  // Asks the PlusAddressClient to get a plus address for use on `origin` and on
+  // completion: runs`callback` with the created plus address, and stores the
+  // plus address in this service.
   void OfferPlusAddressCreation(const url::Origin& origin,
                                 PlusAddressCallback callback);
 
@@ -59,6 +65,9 @@ class PlusAddressService : public KeyedService {
   // While only debatably relevant to this class, this function allows for
   // further decoupling of PlusAddress generation and autofill.
   std::u16string GetCreateSuggestionLabel();
+
+  // Helper to prevent using the service integration to keep tests simpler..
+  void set_use_url_based_plus_addresses_for_testing(bool enabled);
 
  private:
   // The user's existing set of plus addresses, scoped to sites.
@@ -72,8 +81,12 @@ class PlusAddressService : public KeyedService {
   // PlusAddressService and can be null during tests.
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
+  // Controls whether this service uses the url-based approach or  the remote
+  // service integration to create a plus-address.
+  bool use_url_based_plus_address_ = false;
+
   // Handles requests to a remote server that this service uses.
-  const PlusAddressClient plus_address_client_;
+  PlusAddressClient plus_address_client_;
 };
 
 }  // namespace plus_addresses

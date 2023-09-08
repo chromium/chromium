@@ -24,7 +24,7 @@ class PrimaryAccountAccessTokenFetcher;
 
 namespace plus_addresses {
 
-using OnAuthTokenFetchedCallback = base::OnceCallback<void(std::string)>;
+using OnAuthTokenFetchedCallback = base::OnceCallback<void(const std::string&)>;
 
 // Utility class for fetching an OAuth token for plus addresses to use when
 // making requests to the plus-address server.

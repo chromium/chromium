@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
@@ -42,7 +43,7 @@ class PlusAddressCreationControllerImplEnabledTest
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
     return std::make_unique<PlusAddressService>(
-        identity_test_env_.identity_manager());
+        identity_test_env_.identity_manager(), nullptr);
   }
   base::test::ScopedFeatureList features_{kFeature};
   signin::IdentityTestEnvironment identity_test_env_;

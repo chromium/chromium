@@ -59,5 +59,6 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   return std::make_unique<plus_addresses::PlusAddressService>(
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetURLLoaderFactory());
 }

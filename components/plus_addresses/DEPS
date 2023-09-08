@@ -3,4 +3,7 @@ include_rules = [
   "+components/signin/public",
   "+google_apis",
   "+net/base",
+  "+services/data_decoder",
+  "+services/network/public",
+  "+services/network/test",
 ]

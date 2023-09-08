@@ -60,13 +60,16 @@ absl::optional<std::string> MakePlusAddress(std::string email,
 }  // namespace
 
 PlusAddressService::PlusAddressService()
-    : PlusAddressService(/*identity_manager=*/nullptr) {}
+    : PlusAddressService(/*identity_manager=*/nullptr,
+                         /*url_loader_factory=*/nullptr) {}
 
 PlusAddressService::~PlusAddressService() = default;
 
 PlusAddressService::PlusAddressService(
-    signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {}
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : identity_manager_(identity_manager),
+      plus_address_client_(identity_manager, std::move(url_loader_factory)) {}
 
 bool PlusAddressService::SupportsPlusAddresses(url::Origin origin) {
   return base::FeatureList::IsEnabled(plus_addresses::kFeature) &&
@@ -104,15 +107,36 @@ void PlusAddressService::OfferPlusAddressCreation(
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
   }
-  const std::string email =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .email;
-  absl::optional<std::string> result = MakePlusAddress(email, origin);
-  if (!result.has_value()) {
+
+  // TODO (kaklilu): Remove this once we can Mock the PlusAddressClient in tests
+  if (use_url_based_plus_address_) {
+    const std::string email =
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email;
+    absl::optional<std::string> result = MakePlusAddress(email, origin);
+    if (!result.has_value()) {
+      return;
+    }
+    SavePlusAddress(origin, result.value());
+    std::move(callback).Run(result.value());
     return;
   }
-  SavePlusAddress(origin, result.value());
-  std::move(callback).Run(result.value());
+  plus_address_client_.CreatePlusAddress(
+      GetEtldPlusOne(origin),
+      // On receiving the PlusAddress...
+      base::BindOnce(
+          // ... first send it back to Autofill
+          [](PlusAddressCallback callback, const std::string& plus_address) {
+            std::move(callback).Run(plus_address);
+            return plus_address;
+          },
+          std::move(callback))
+          // ... then save it in this service.
+          .Then(base::BindOnce(
+              &PlusAddressService::SavePlusAddress,
+              // base::Unretained is safe here since PlusAddressService owns
+              // the PlusAddressClient and they will have the same lifetime.
+              base::Unretained(this), origin)));
 }
 
 std::u16string PlusAddressService::GetCreateSuggestionLabel() {
@@ -121,4 +145,10 @@ std::u16string PlusAddressService::GetCreateSuggestionLabel() {
   return base::UTF8ToUTF16(
       plus_addresses::kEnterprisePlusAddressLabelOverride.Get());
 }
+
+void PlusAddressService::set_use_url_based_plus_addresses_for_testing(
+    bool enabled) {
+  use_url_based_plus_address_ = enabled;
+}
+
 }  // namespace plus_addresses

@@ -297,6 +297,7 @@ after discussions on the right group.
       <annotation id="almanac_launcher_app"/>
       <annotation id="ip_protection_service_get_proxy_config"/>
       <annotation id="chrome_commerce_parcels_status"/>
+      <annotation id="plus_address_creation"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
