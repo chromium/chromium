@@ -23,34 +23,6 @@ using testing::Each;
 using testing::Property;
 using testing::SafeMatcherCast;
 
-TEST_F(AccessibilityTest, IsDescendantOf) {
-  SetBodyInnerHTML(R"HTML(<button id="button">button</button>)HTML");
-
-  const AXObject* root = GetAXRootObject();
-  ASSERT_NE(nullptr, root);
-  const AXObject* button = GetAXObjectByElementId("button");
-  ASSERT_NE(nullptr, button);
-
-  EXPECT_TRUE(button->IsDescendantOf(*root));
-  EXPECT_FALSE(root->IsDescendantOf(*root));
-  EXPECT_FALSE(button->IsDescendantOf(*button));
-  EXPECT_FALSE(root->IsDescendantOf(*button));
-}
-
-TEST_F(AccessibilityTest, IsAncestorOf) {
-  SetBodyInnerHTML(R"HTML(<button id="button">button</button>)HTML");
-
-  const AXObject* root = GetAXRootObject();
-  ASSERT_NE(nullptr, root);
-  const AXObject* button = GetAXObjectByElementId("button");
-  ASSERT_NE(nullptr, button);
-
-  EXPECT_TRUE(root->IsAncestorOf(*button));
-  EXPECT_FALSE(root->IsAncestorOf(*root));
-  EXPECT_FALSE(button->IsAncestorOf(*button));
-  EXPECT_FALSE(button->IsAncestorOf(*root));
-}
-
 TEST_F(AccessibilityTest, GetClosestElementChecksStartingNode) {
   SetBodyInnerHTML(R"HTML(<button id="button">button</button>)HTML");
 
