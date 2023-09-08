@@ -502,7 +502,7 @@ export async function testEnterToSelectItem(done: () => void) {
       eventToPromise(XfTree.events.TREE_SELECTION_CHANGED, tree);
   sendKeyDownEvent(tree, 'ArrowUp');
   assertTrue(checkFocusedItemToBe(tree, 'item1'));
-  sendKeyDownEvent(tree, 'Space');
+  sendKeyDownEvent(tree, ' ');
   await waitForElementUpdate(tree);
   const selectionChangeEvent2 = await selectionChangeEventPromise2;
   assertTrue(item1.selected);

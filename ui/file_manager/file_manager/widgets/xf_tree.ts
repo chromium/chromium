@@ -229,7 +229,7 @@ export class XfTree extends XfBase {
     let itemToFocus: XfTreeItem|null|undefined = null;
     switch (e.key) {
       case 'Enter':
-      case 'Space':
+      case ' ':
         this.selectItem_(this.focusedItem_);
         break;
       case 'ArrowUp':
