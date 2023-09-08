@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_view.h"
 
-#import <MaterialComponents/MaterialButtons.h>
-
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/grit/components_scaled_resources.h"
@@ -39,6 +37,7 @@ const CGFloat kActionButtonTopPadding = 16.0f;
 // Label font sizes.
 const CGFloat kTitleLabelFontSize = 23.0f;
 const CGFloat kMessageTextViewFontSize = 14.0f;
+const CGFloat kActionButtonFontSize = 14.0f;
 const CGFloat kFooterLabelFontSize = 14.0f;
 // Feedback message bullet indentation.
 const CGFloat kBulletIndent = 17.0f;        // Left margin to bullet indent.
@@ -53,7 +52,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 @interface SadTabView () <UITextViewDelegate> {
   UITextView* _messageTextView;
-  MDCFlatButton* _actionButton;
+  UIButton* _actionButton;
 }
 
 // YES if the SadTab UI is displayed in Off The Record browsing mode.
@@ -544,17 +543,45 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 - (UIButton*)actionButton {
   if (!_actionButton) {
-    _actionButton = [[MDCFlatButton alloc] init];
-    [_actionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]
-                             forState:UIControlStateNormal];
-    [_actionButton setBackgroundColor:[UIColor colorNamed:kDisabledTintColor]
-                             forState:UIControlStateDisabled];
-    [_actionButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                        forState:UIControlStateNormal];
-    [_actionButton setUnderlyingColorHint:self.backgroundColor];
-    [_actionButton setInkColor:[UIColor colorNamed:kMDCInkColor]];
+    _actionButton = [[UIButton alloc] init];
+    UIButtonConfiguration* buttonConfig =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfig.background.backgroundColor = [UIColor colorNamed:kBlueColor];
+    buttonConfig.background.cornerRadius = 0.0;
 
-    [_actionButton setTitle:[self buttonText] forState:UIControlStateNormal];
+    buttonConfig.baseForegroundColor =
+        [UIColor colorNamed:kSolidButtonTextColor];
+    UIFont* font = [UIFont systemFontOfSize:kActionButtonFontSize
+                                     weight:UIFontWeightMedium];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSMutableAttributedString* attributedString =
+        [[NSMutableAttributedString alloc]
+            initWithString:[self buttonText].uppercaseString
+                attributes:attributes];
+    buttonConfig.attributedTitle = attributedString;
+
+    _actionButton.configuration = buttonConfig;
+    _actionButton.configurationUpdateHandler = ^(UIButton* incomingButton) {
+      UIButtonConfiguration* updatedConfig = incomingButton.configuration;
+      switch (incomingButton.state) {
+        case UIControlStateNormal: {
+          updatedConfig.background.backgroundColor =
+              [UIColor colorNamed:kBlueColor];
+          break;
+        }
+        case UIControlStateDisabled:
+          updatedConfig.background.backgroundColor =
+              [UIColor colorNamed:kDisabledTintColor];
+          break;
+        case UIControlStateSelected:
+        case UIControlStateFocused:
+        case UIControlStateApplication:
+        case UIControlStateReserved:
+          break;
+      }
+      incomingButton.configuration = updatedConfig;
+    };
+
     [_actionButton addTarget:self
                       action:@selector(handleActionButtonTapped)
             forControlEvents:UIControlEventTouchUpInside];

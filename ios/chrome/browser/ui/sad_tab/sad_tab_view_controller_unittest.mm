@@ -31,9 +31,8 @@ TEST_F(SadTabViewControllerTest, FirstFailureInNonIncognitoText) {
               view_controller_.messageTextView.text);
 
   ASSERT_TRUE(view_controller_.actionButton);
-  EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_LABEL).uppercaseString,
-      [view_controller_.actionButton titleForState:UIControlStateNormal]);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_LABEL).uppercaseString,
+              view_controller_.actionButton.configuration.title);
 }
 
 // Tests Sad Tab message and button title for first failure in incognito
@@ -48,9 +47,8 @@ TEST_F(SadTabViewControllerTest, FirstFailureInIncognitoText) {
               view_controller_.messageTextView.text);
 
   ASSERT_TRUE(view_controller_.actionButton);
-  EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_LABEL).uppercaseString,
-      [view_controller_.actionButton titleForState:UIControlStateNormal]);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_LABEL).uppercaseString,
+              view_controller_.actionButton.configuration.title);
 }
 
 // Tests Sad Tab message and button title for repeated failure in non-incognito
@@ -75,7 +73,7 @@ TEST_F(SadTabViewControllerTest, RepeatedFailureInNonIncognitoText) {
   ASSERT_TRUE(view_controller_.actionButton);
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_SAD_TAB_SEND_FEEDBACK_LABEL).uppercaseString,
-      [view_controller_.actionButton titleForState:UIControlStateNormal]);
+      view_controller_.actionButton.configuration.title);
 }
 
 // Tests Sad Tab message and button title for repeated failure in incognito
@@ -98,7 +96,7 @@ TEST_F(SadTabViewControllerTest, RepeatedFailureInIncognitoText) {
   ASSERT_TRUE(view_controller_.actionButton);
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_SAD_TAB_SEND_FEEDBACK_LABEL).uppercaseString,
-      [view_controller_.actionButton titleForState:UIControlStateNormal]);
+      view_controller_.actionButton.configuration.title);
 }
 
 // Tests action button tap for first failure.
