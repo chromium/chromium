@@ -37650,6 +37650,7 @@ Called by update_extension_histograms.py.-->
   <int value="1826" label="OS_DIAGNOSTICS_CREATEMEMORYROUTINE"/>
   <int value="1827" label="OS_DIAGNOSTICS_STARTROUTINE"/>
   <int value="1828" label="OS_DIAGNOSTICS_CANCELROUTINE"/>
+  <int value="1829" label="OS_DIAGNOSTICS_ISMEMORYROUTINEARGUMENTSUPPORTED"/>
 </enum>
 
 <enum name="ExtensionIconState">

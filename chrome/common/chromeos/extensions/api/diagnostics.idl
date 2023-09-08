@@ -300,6 +300,17 @@ namespace os.diagnostics {
 
   callback CreateMemoryRoutineCallback = void (CreateMemoryRoutineResponse response);
 
+  enum RoutineSupportStatus {
+    supported,
+    unsupported
+  };
+
+  dictionary RoutineSupportStatusInfo {
+    RoutineSupportStatus? status;
+  };
+
+  callback RoutineSupportStatusInfoCallback = void (RoutineSupportStatusInfo info);
+
   dictionary StartRoutineRequest {
     DOMString uuid;
   };
@@ -398,6 +409,10 @@ namespace os.diagnostics {
 
     [supportsPromises] static void createMemoryRoutine(RunMemoryRoutineArguments args,
                                                           CreateMemoryRoutineCallback callback);
+
+    // Checks whether a certain `RunMemoryRoutineArguments` is supported on the platform.
+    [supportsPromises] static void isMemoryRoutineArgumentSupported(RunMemoryRoutineArguments args,
+                                                          RoutineSupportStatusInfoCallback callback);
   };
 
   interface Events {

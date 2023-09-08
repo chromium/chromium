@@ -12,6 +12,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/types/expected.h"
@@ -169,6 +170,14 @@ void DiagnosticRoutineManager::CancelRoutineForExtension(
       [routine_id](const std::unique_ptr<DiagnosticRoutine>& routine) {
         return routine->uuid() == routine_id;
       });
+}
+
+void DiagnosticRoutineManager::IsRoutineArgumentSupported(
+    crosapi::TelemetryDiagnosticRoutineArgumentPtr arg,
+    base::OnceCallback<void(crosapi::TelemetryExtensionSupportStatusPtr)>
+        callback) {
+  GetRemoteService()->IsRoutineArgumentSupported(std::move(arg),
+                                                 std::move(callback));
 }
 
 void DiagnosticRoutineManager::OnExtensionUnloaded(

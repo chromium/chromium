@@ -207,6 +207,17 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function isMemoryRoutineArgumentSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isMemoryRoutineArgumentSupported({
+              maxTestingMemKib: 42,
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.isMemoryRoutineArgumentSupported. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runAcPowerRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runAcPowerRoutine(

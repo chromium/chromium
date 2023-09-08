@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routine_control.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,6 +34,10 @@ class FakeDiagnosticRoutinesService
 
   void FlushForTesting();
 
+  // Sets the response value for a call to `IsRoutineArgumentSupported`.
+  void SetIsRoutineArgumentSupportedResponse(
+      crosapi::mojom::TelemetryExtensionSupportStatusPtr result);
+
   // `TelemetryDiagnosticRoutinesService`:
   void CreateRoutine(
       crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr routine_argument,
@@ -57,6 +62,11 @@ class FakeDiagnosticRoutinesService
  private:
   mojo::Receiver<crosapi::mojom::TelemetryDiagnosticRoutinesService> receiver_{
       this};
+
+  crosapi::mojom::TelemetryExtensionSupportStatusPtr
+      is_routine_argument_supported_response_{
+          crosapi::mojom::TelemetryExtensionSupportStatus::
+              NewUnmappedUnionField(0)};
 
   base::RepeatingClosure on_routine_created_;
   std::map<crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag,

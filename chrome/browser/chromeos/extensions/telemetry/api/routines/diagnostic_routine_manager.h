@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/remote_diagnostic_routines_service_strategy.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -70,6 +72,11 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
   // Stops the routine with `routine_id`.
   void CancelRoutineForExtension(extensions::ExtensionId extension_id,
                                  base::Uuid routine_id);
+
+  void IsRoutineArgumentSupported(
+      crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr arg,
+      base::OnceCallback<
+          void(crosapi::mojom::TelemetryExtensionSupportStatusPtr)> callback);
 
   // `ExtensionRegistryObserver`:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

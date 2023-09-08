@@ -147,6 +147,27 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    IsMemoryRoutineArgumentSupportedWithoutFeatureFlagError) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function isMemoryRoutineArgumentSupportedFail() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.isMemoryRoutineArgumentSupported({
+            maxTestingMemKib: 123,
+          });
+        }, [],
+          'chrome.os.diagnostics.isMemoryRoutineArgumentSupported ' +
+          'is not a function'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval
     : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
  public:
@@ -498,6 +519,79 @@ IN_PROC_BROWSER_TEST_F(
             }),
             'Error: Unknown routine id.'
         );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    IsMemoryRoutineArgSupportedWithFeatureFlagApiInternalError) {
+  fake_service().SetIsRoutineArgumentSupportedResponse(
+      crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function isMemoryRoutineArgSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isMemoryRoutineArgumentSupported({
+              maxTestingMemKib: 42,
+            }),
+            'Error: API internal error.'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    IsMemoryRoutineArgSupportedWithFeatureFlagException) {
+  auto exception = crosapi::TelemetryExtensionException::New();
+  exception->debug_message = "TEST_MESSAGE";
+  fake_service().SetIsRoutineArgumentSupportedResponse(
+      crosapi::TelemetryExtensionSupportStatus::NewException(
+          std::move(exception)));
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function isMemoryRoutineArgSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isMemoryRoutineArgumentSupported({
+              maxTestingMemKib: 42,
+            }),
+            'Error: TEST_MESSAGE'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    IsMemoryRoutineArgSupportedWithFeatureFlagSuccess) {
+  fake_service().SetIsRoutineArgumentSupportedResponse(
+      crosapi::TelemetryExtensionSupportStatus::NewSupported(
+          crosapi::TelemetryExtensionSupported::New()));
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function isMemoryRoutineArgSupported() {
+        const result = await chrome.os.diagnostics.
+          isMemoryRoutineArgumentSupported({
+            maxTestingMemKib: 42,
+        });
+
+        chrome.test.assertEq(result.status, 'supported');
 
         chrome.test.succeed();
       }

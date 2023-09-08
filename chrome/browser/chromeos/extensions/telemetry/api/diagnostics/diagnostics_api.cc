@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -19,6 +21,7 @@
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -31,6 +34,31 @@ namespace chromeos {
 namespace {
 
 namespace cx_diag = api::os_diagnostics;
+
+base::expected<cx_diag::RoutineSupportStatusInfo, std::string>
+ParseRoutineArgumentSupportResult(
+    crosapi::mojom::TelemetryExtensionSupportStatusPtr result) {
+  switch (result->which()) {
+    case crosapi::mojom::TelemetryExtensionSupportStatus::Tag::
+        kUnmappedUnionField:
+      return base::unexpected("API internal error.");
+    case crosapi::mojom::TelemetryExtensionSupportStatus::Tag::kException:
+      return base::unexpected(result->get_exception()->debug_message);
+    case crosapi::mojom::TelemetryExtensionSupportStatus::Tag::kSupported: {
+      cx_diag::RoutineSupportStatusInfo info;
+      info.status = cx_diag::RoutineSupportStatus::kSupported;
+
+      return base::ok(std::move(info));
+    }
+    case crosapi::mojom::TelemetryExtensionSupportStatus::Tag::kUnsupported: {
+      cx_diag::RoutineSupportStatusInfo info;
+      info.status = cx_diag::RoutineSupportStatus::kUnsupported;
+
+      return base::ok(std::move(info));
+    }
+  }
+  NOTREACHED_NORETURN();
+}
 
 }  // namespace
 
@@ -543,6 +571,47 @@ void OsDiagnosticsCancelRoutineFunction::RunIfAllowed() {
       extension_id(), base::Uuid::ParseLowercase(params.value().request.uuid));
 
   Respond(NoArguments());
+}
+
+// OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction -----------------------
+
+void OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction::RunIfAllowed() {
+  auto params = GetParams<cx_diag::IsMemoryRoutineArgumentSupported::Params>();
+  if (!params.has_value()) {
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  auto mem_args =
+      crosapi::mojom::TelemetryDiagnosticMemoryRoutineArgument::New();
+  mem_args->max_testing_mem_kib = params.value().args.max_testing_mem_kib;
+
+  auto args = crosapi::mojom::TelemetryDiagnosticRoutineArgument::NewMemory(
+      std::move(mem_args));
+  routines_manager->IsRoutineArgumentSupported(
+      std::move(args),
+      base::BindOnce(
+          &OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction::OnResult,
+          this));
+}
+
+void OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction::OnResult(
+    crosapi::mojom::TelemetryExtensionSupportStatusPtr result) {
+  if (result.is_null()) {
+    RespondWithError("API internal error.");
+    return;
+  }
+
+  auto response = ParseRoutineArgumentSupportResult(std::move(result));
+
+  if (!response.has_value()) {
+    RespondWithError(response.error());
+    return;
+  }
+
+  Respond(
+      ArgumentList(cx_diag::IsMemoryRoutineArgumentSupported::Results::Create(
+          response.value())));
 }
 
 }  // namespace chromeos
