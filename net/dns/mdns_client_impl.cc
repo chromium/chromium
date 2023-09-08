@@ -10,9 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
@@ -43,6 +46,39 @@ namespace {
 // the original TTL.
 const double kListenerRefreshRatio1 = 0.85;
 const double kListenerRefreshRatio2 = 0.95;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class mdnsQueryType {
+  kInitial = 0,  // Initial mDNS query sent.
+  kRefresh = 1,  // Refresh mDNS query sent.
+  kMaxValue = kRefresh,
+};
+
+void RecordQueryMetric(mdnsQueryType query_type, std::string_view host) {
+  constexpr auto kPrintScanServices = base::MakeFixedFlatSet<std::string_view>({
+      "_ipps._tcp.local",
+      "_ipp._tcp.local",
+      "_pdl-datastream._tcp.local",
+      "_printer._tcp.local",
+      "_print._sub._ipps._tcp.local",
+      "_print._sub._ipp._tcp.local",
+      "_scanner._tcp.local",
+      "_uscans._tcp.local",
+      "_uscan._tcp.local",
+  });
+
+  if (base::EndsWith(host, "_googlecast._tcp.local")) {
+    base::UmaHistogramEnumeration("Network.Mdns.Googlecast", query_type);
+  } else if (base::ranges::any_of(kPrintScanServices,
+                                  [&host](std::string_view service) {
+                                    return base::EndsWith(host, service);
+                                  })) {
+    base::UmaHistogramEnumeration("Network.Mdns.PrintScan", query_type);
+  } else {
+    base::UmaHistogramEnumeration("Network.Mdns.Other", query_type);
+  }
+}
 
 }  // namespace
 
@@ -616,6 +652,7 @@ void MDnsListenerImpl::ScheduleNextRefresh() {
 }
 
 void MDnsListenerImpl::DoRefresh() {
+  RecordQueryMetric(mdnsQueryType::kRefresh, name_);
   client_->core()->SendQuery(rrtype_, name_);
 }
 
@@ -747,6 +784,7 @@ bool MDnsTransactionImpl::QueryAndListen() {
     return false;
 
   DCHECK(client_->core());
+  RecordQueryMetric(mdnsQueryType::kInitial, name_);
   if (!client_->core()->SendQuery(rrtype_, name_))
     return false;
 

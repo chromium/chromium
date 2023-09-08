@@ -70875,6 +70875,11 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Supported"/>
 </enum>
 
+<enum name="MdnsQueryType">
+  <int value="0" label="Initial"/>
+  <int value="1" label="Refresh"/>
+</enum>
+
 <enum name="MdnsResponderServiceError">
   <int value="0" label="Fail to start manager"/>
   <int value="1" label="Fail to create responder"/>

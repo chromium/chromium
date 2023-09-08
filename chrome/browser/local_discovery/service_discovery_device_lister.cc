@@ -105,6 +105,7 @@ class ServiceDiscoveryDeviceListerImpl : public ServiceDiscoveryDeviceLister {
         base::BindRepeating(&ServiceDiscoveryDeviceListerImpl::OnServiceUpdated,
                             weak_factory_.GetWeakPtr()));
     service_watcher_->Start();
+    service_watcher_->SetActivelyRefreshServices(true);
   }
 
   const raw_ptr<Delegate> delegate_;

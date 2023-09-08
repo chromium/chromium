@@ -1758,6 +1758,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Mdns.{ServiceType}" enum="MdnsQueryType"
+    expires_after="2024-03-31">
+  <owner>nmuggli@google.com</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    Number of mDNS packets sent for mDNS queries in support of different
+    services. The individual enum values indicate whether the query is an
+    initial query or a refresh query.
+  </summary>
+  <token key="ServiceType">
+    <variant name="Googlecast"/>
+    <variant name="Other"/>
+    <variant name="PrintScan"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Multicast.ARC.ActiveTime" units="%"
     expires_after="2024-03-03">
   <owner>chuweih@google.com</owner>
