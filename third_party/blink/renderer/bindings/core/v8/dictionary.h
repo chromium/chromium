@@ -151,15 +151,6 @@ class CORE_EXPORT Dictionary final {
   v8::Local<v8::Object> dictionary_object_;  // an Object or empty
 };
 
-// DictionaryHelper is a collection of static methods for getting or
-// converting a value from Dictionary.
-// DEPRECATED, Use template <typename IDLType> Dictionary::Get.
-struct DictionaryHelper {
-  STATIC_ONLY(DictionaryHelper);
-  template <typename T>
-  static bool Get(const Dictionary&, const StringView& key, T& value);
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_DICTIONARY_H_
