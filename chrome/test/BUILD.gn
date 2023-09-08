@@ -653,6 +653,8 @@ static_library("test_support") {
   if (is_chromeos) {
     sources += [
       "../browser/app_mode/test/accelerator_helpers.cc",
+      "../browser/apps/app_service/metrics/website_metrics_browser_test_base.cc",
+      "../browser/apps/app_service/metrics/website_metrics_browser_test_base.h",
       "../browser/certificate_provider/test_certificate_provider_extension.cc",
       "../browser/certificate_provider/test_certificate_provider_extension.h",
       "../browser/extensions/policy_test_utils.cc",
