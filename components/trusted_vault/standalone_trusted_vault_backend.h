@@ -138,6 +138,7 @@ class StandaloneTrustedVaultBackend
   GetDeviceRegistrationInfoForTesting(const std::string& gaia_id);
 
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
+  int GetLastKeyVersionForTesting(const std::string& gaia_id);
 
   void SetDeviceRegisteredVersionForTesting(const std::string& gaia_id,
                                             int version);

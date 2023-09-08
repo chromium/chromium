@@ -254,6 +254,18 @@ void FakeSecurityDomainsServer::ResetData() {
   state_.trusted_vault_keys.push_back(GetConstantTrustedVaultKey());
 }
 
+void FakeSecurityDomainsServer::ResetDataToState(
+    const std::vector<std::vector<uint8_t>>& keys,
+    int last_key_version) {
+  CHECK(!keys.empty());
+  CHECK(keys.size() > 1 || keys.front() != GetConstantTrustedVaultKey());
+  base::AutoLock autolock(lock_);
+  state_ = State();
+  state_.trusted_vault_keys = keys;
+  state_.constant_key_allowed = false;
+  state_.current_epoch = last_key_version;
+}
+
 void FakeSecurityDomainsServer::RequirePublicKeyToAvoidRecoverabilityDegraded(
     const std::vector<uint8_t>& public_key) {
   DCHECK(!public_key.empty());
@@ -354,7 +366,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
 
   int last_shared_key_epoch =
       deserialized_content.shared_member_key().rbegin()->epoch();
-  if (last_shared_key_epoch == 0 && state_.trusted_vault_keys.size() != 1) {
+  if (last_shared_key_epoch == 0 && !state_.constant_key_allowed) {
     // Request without epoch/epoch set to zero is allowed iff constant key is
     // the only key.
     return CreateErrorResponse(net::HTTP_BAD_REQUEST);

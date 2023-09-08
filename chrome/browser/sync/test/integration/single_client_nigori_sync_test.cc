@@ -131,14 +131,15 @@ MATCHER_P4(StatusLabelsMatch,
 
 GURL GetFakeTrustedVaultRetrievalURL(
     const net::test_server::EmbeddedTestServer& test_server,
-    const std::vector<uint8_t>& encryption_key) {
+    const std::vector<uint8_t>& encryption_key,
+    int encryption_key_version) {
   // encryption_keys_retrieval.html would populate encryption key to sync
   // service upon loading. Key is provided as part of URL and needs to be
   // encoded with Base64, because |encryption_key| is binary.
   const std::string base64_encoded_key = base::Base64Encode(encryption_key);
-  return test_server.GetURL(
-      base::StringPrintf("/sync/encryption_keys_retrieval.html?%s#%s", kGaiaId,
-                         base64_encoded_key.c_str()));
+  return test_server.GetURL(base::StringPrintf(
+      "/sync/encryption_keys_retrieval.html?gaia=%s&key=%s&key_version=%d",
+      kGaiaId, base64_encoded_key.c_str(), encryption_key_version));
 }
 
 GURL GetFakeTrustedVaultRecoverabilityURL(
@@ -974,7 +975,7 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
     // GaiaUrls to |retrieval_url|, which runs Javascript code to mimic
     // retrieval of key |kTestEncryptionKey|.
     const GURL retrieval_url = GetFakeTrustedVaultRetrievalURL(
-        *embedded_test_server(), kTestEncryptionKey);
+        *embedded_test_server(), kTestEncryptionKey, kTestEncryptionKeyVersion);
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &HttpServerRedirect,
         /*from_prefix=*/
@@ -1004,6 +1005,7 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
   // Arbitrary encryption key that the Gaia retrieval page returns via
   // Javascript API if the retrieval page is visited.
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
+  const int kTestEncryptionKeyVersion = 23;
 
   // Arbitrary (but valid) public key of a recovery method that gets
   // automatically added if the Gaia recoverability page is visited.
@@ -1077,6 +1079,72 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   // Verify the profile-menu error string is empty.
   EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+// Regression test for crbug.com/1479879: test verifies that client is able to
+// fix degraded recoverability if trusted vault keys were obtained by key
+// retrieval. In particular, this requires plumbing correct key version
+// (verified by FakeSecurityDomainsServer).
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriWithWebApiTest,
+    ShouldAddRecoveryMethodAfterAcceptingEncryptionKeysFromWeb) {
+  // Setup SecurityDomainsServer to mimic that it has a single non-constant key.
+  GetSecurityDomainsServer()->ResetDataToState({kTestEncryptionKey},
+                                               kTestEncryptionKeyVersion);
+  // Mimic the account being already using a trusted vault passphrase.
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
+                        GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+  ASSERT_TRUE(ShouldShowSyncKeysMissingError(GetSyncService(0),
+                                             GetProfile(0)->GetPrefs()));
+
+  // There needs to be an existing tab for the second tab (the retrieval flow)
+  // to be closeable via javascript.
+  chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
+                   /*foreground=*/true);
+
+  // Mimic opening a web page where the user can interact with the retrieval
+  // flow.
+  OpenTabForSyncKeyRetrieval(
+      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+  ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
+              NotNull());
+
+  // Wait until the page closes and passwords are active, which indicates
+  // successful completion.
+  ASSERT_TRUE(
+      TabClosedChecker(GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
+          .Wait());
+  ASSERT_TRUE(PasswordSyncActiveChecker(GetSyncService(0)).Wait());
+  ASSERT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+  ASSERT_FALSE(ShouldShowSyncKeysMissingError(GetSyncService(0),
+                                              GetProfile(0)->GetPrefs()));
+
+  // Now mimic entering degraded recoverability state.
+  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
+  ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+
+  // Note: this test doesn't expect degraded recoverability state to be shown
+  // (this is not needed and requires more sophisticated setup, because client
+  // normally doesn't refresh this state often). Instead, it expects relevant
+  // API to work as intended and verifies that client state is sufficient to
+  // add recovery method.
+  OpenTabForSyncKeyRecoverabilityDegraded(
+      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+  // Expect two members: one corresponds to the client and another to
+  // kTestRecoveryMethodPublicKey.
+  EXPECT_TRUE(FakeSecurityDomainsServerMemberStatusChecker(
+                  /*expected_member_count=*/2, kTestEncryptionKey,
+                  GetSecurityDomainsServer())
+                  .Wait());
+  EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
