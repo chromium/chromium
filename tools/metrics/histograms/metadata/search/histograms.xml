@@ -41,11 +41,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.AuxiliarySearch.DeleteTime" units="ms"
-    expires_after="M130">
+<histogram name="Search.AuxiliarySearch.DeleteTime{AuxiliarySearchDataType}"
+    units="ms" expires_after="M130">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>Time taken for deleting contents from the auxiliary search.</summary>
+  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
 <histogram
@@ -59,7 +60,8 @@ chromium-metrics-reviews@google.com.
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
-<histogram name="Search.AuxiliarySearch.DeletionRequestStatus"
+<histogram
+    name="Search.AuxiliarySearch.DeletionRequestStatus{AuxiliarySearchDataType}"
     enum="AuxiliarySearchRequestStatus" expires_after="M130">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
@@ -68,6 +70,7 @@ chromium-metrics-reviews@google.com.
     Recorded twice for every deletion request: once to capture the request sent,
     and once to capture the consumer's response.
   </summary>
+  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DonateTime" units="ms"
