@@ -5,6 +5,7 @@
 #include "services/network/masked_domain_list/url_matcher_with_bypass.h"
 
 #include "base/logging.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/schemeful_site.h"
 
@@ -81,6 +82,10 @@ void UrlMatcherWithBypass::AddMaskedDomainListRules(
 
 void UrlMatcherWithBypass::Clear() {
   match_list_with_bypass_map_.clear();
+}
+
+size_t UrlMatcherWithBypass::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(match_list_with_bypass_map_);
 }
 
 bool UrlMatcherWithBypass::IsPopulated() {

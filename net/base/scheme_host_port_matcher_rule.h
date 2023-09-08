@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
@@ -42,6 +43,16 @@ class NET_EXPORT SchemeHostPortMatcherRule {
   // Returns true if |this| is an instance of
   // SchemeHostPortMatcherHostnamePatternRule.
   virtual bool IsHostnamePatternRule() const;
+
+#if !BUILDFLAG(CRONET_BUILD)
+  // Cronet disables tracing and doesn't provide an implementation of
+  // base::trace_event::EstimateMemoryUsage. Having this conditional is
+  // preferred over a fake implementation to avoid reporting fake metrics.
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  virtual size_t EstimateMemoryUsage() const;
+#endif  // !BUILDFLAG(CRONET_BUILD)
 };
 
 // Rule that matches URLs with wildcard hostname patterns, and
@@ -74,6 +85,16 @@ class NET_EXPORT SchemeHostPortMatcherHostnamePatternRule
   std::unique_ptr<SchemeHostPortMatcherHostnamePatternRule>
   GenerateSuffixMatchingRule() const;
 
+#if !BUILDFLAG(CRONET_BUILD)
+  // Cronet disables tracing and doesn't provide an implementation of
+  // base::trace_event::EstimateMemoryUsage. Having this conditional is
+  // preferred over a fake implementation to avoid reporting fake metrics.
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const override;
+#endif  // !BUILDFLAG(CRONET_BUILD)
+
  private:
   const std::string optional_scheme_;
   const std::string hostname_pattern_;
@@ -104,6 +125,16 @@ class NET_EXPORT SchemeHostPortMatcherIPHostRule
   SchemeHostPortMatcherResult Evaluate(const GURL& url) const override;
   std::string ToString() const override;
 
+#if !BUILDFLAG(CRONET_BUILD)
+  // Cronet disables tracing and doesn't provide an implementation of
+  // base::trace_event::EstimateMemoryUsage. Having this conditional is
+  // preferred over a fake implementation to avoid reporting fake metrics.
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const override;
+#endif  // !BUILDFLAG(CRONET_BUILD)
+
  private:
   const std::string optional_scheme_;
   const std::string ip_host_;
@@ -133,6 +164,16 @@ class NET_EXPORT SchemeHostPortMatcherIPBlockRule
   // SchemeHostPortMatcherRule implementation:
   SchemeHostPortMatcherResult Evaluate(const GURL& url) const override;
   std::string ToString() const override;
+
+#if !BUILDFLAG(CRONET_BUILD)
+  // Cronet disables tracing and doesn't provide an implementation of
+  // base::trace_event::EstimateMemoryUsage. Having this conditional is
+  // preferred over a fake implementation to avoid reporting fake metrics.
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const override;
+#endif  // !BUILDFLAG(CRONET_BUILD)
 
  private:
   const std::string description_;

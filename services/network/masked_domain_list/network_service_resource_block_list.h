@@ -24,6 +24,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceResourceBlockList {
   void AddDomainWithBypassForTesting(const std::string& domain,
                                      net::SchemeHostPortMatcher bypass_matcher);
 
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
   // Returns true if the block list is eligible to be used but does not
   // indicate that allow list is currently populated.
   bool IsEnabled();

@@ -953,13 +953,25 @@ void NetworkService::UpdateKeyPinsList(mojom::PinListPtr pin_list,
 }
 
 void NetworkService::UpdateMaskedDomainList(const std::string& raw_mdl) {
+  const base::Time start_time = base::Time::Now();
   auto mdl = masked_domain_list::MaskedDomainList();
   if (mdl.ParseFromString(raw_mdl)) {
+    UMA_HISTOGRAM_MEMORY_KB("NetworkService.MaskedDomainList.SizeInKB",
+                            mdl.ByteSizeLong() / 1024);
+
     network_service_proxy_allow_list_->UseMaskedDomainList(mdl);
     network_service_resource_block_list_->UseMaskedDomainList(mdl);
+
+    base::UmaHistogramBoolean("NetworkService.MaskedDomainList.UpdateSuccess",
+                              true);
   } else {
+    base::UmaHistogramBoolean("NetworkService.MaskedDomainList.UpdateSuccess",
+                              false);
     LOG(ERROR) << "Unable to parse MDL in NetworkService";
   }
+
+  base::UmaHistogramTimes("NetworkService.MaskedDomainList.UpdateProcessTime",
+                          base::Time::Now() - start_time);
 }
 
 #if BUILDFLAG(IS_ANDROID)

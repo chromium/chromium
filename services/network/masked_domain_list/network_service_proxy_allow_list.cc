@@ -4,6 +4,8 @@
 //
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -66,6 +68,10 @@ void NetworkServiceProxyAllowList::AddDomainWithBypass(
                                                std::move(bypass_matcher));
 }
 
+size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(url_matcher_with_bypass_);
+}
+
 bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
                                            const GURL& top_frame_url) {
   VLOG(3) << "NSPAL::Matches(" << request_url << ", " << top_frame_url << ")";
@@ -81,6 +87,10 @@ void NetworkServiceProxyAllowList::UseMaskedDomainList(
                                                         owner);
     }
   }
+  base::UmaHistogramMemoryKB(
+      "NetworkService.MaskedDomainList.NetworkServiceProxyAllowList."
+      "EstimatedMemoryUsageInKB",
+      EstimateMemoryUsage() / 1024);
 }
 
 }  // namespace network
