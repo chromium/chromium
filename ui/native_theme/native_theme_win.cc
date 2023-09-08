@@ -10,6 +10,8 @@
 #include <vsstyle.h>
 #include <vssym32.h>
 
+#include <tuple>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -146,17 +148,17 @@ class ScopedCreateDCWithBitmap {
 base::win::RegKey OpenThemeRegKey(REGSAM access) {
   base::win::RegKey hkcu_themes_regkey;
   // Validity is checked at time-of-use.
-  (void)hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
-                                L"Software\\Microsoft\\Windows\\"
-                                L"CurrentVersion\\Themes\\Personalize",
-                                access);
+  std::ignore = hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
+                                        L"Software\\Microsoft\\Windows\\"
+                                        L"CurrentVersion\\Themes\\Personalize",
+                                        access);
   return hkcu_themes_regkey;
 }
 
 base::win::RegKey OpenColorFilteringRegKey(REGSAM access) {
   base::win::RegKey hkcu_color_filtering_regkey;
   // Validity is checked at time-of-use.
-  (void)hkcu_color_filtering_regkey.Open(
+  std::ignore = hkcu_color_filtering_regkey.Open(
       HKEY_CURRENT_USER, L"Software\\Microsoft\\ColorFiltering", access);
   return hkcu_color_filtering_regkey;
 }
@@ -297,36 +299,35 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
   set_should_use_system_accent_color(false);
 
   // If there's no sequenced task runner handle, we can't be called back for
-  // dark mode changes. This generally happens in tests. As a result, ignore
-  // dark mode in this case.
-  if (!should_only_use_dark_colors && !IsForcedDarkMode() &&
-      !IsForcedHighContrast() &&
-      base::SequencedTaskRunner::HasCurrentDefault()) {
-    // Dark Mode currently targets UWP apps, which means Win32 apps need to use
-    // alternate, less reliable means of detecting the state. The following
-    // can break in future Windows versions.
-    hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
-    if (hkcu_themes_regkey_.Valid()) {
+  // registry changes. This generally happens in tests.
+  const bool observers_can_operate =
+      base::SequencedTaskRunner::HasCurrentDefault();
+
+  hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
+  if (hkcu_themes_regkey_.Valid()) {
+    if (!should_only_use_dark_colors && !IsForcedDarkMode() &&
+        !IsForcedHighContrast()) {
       UpdateDarkModeStatus();
-      UpdatePrefersReducedTransparency();
-      RegisterThemeRegkeyObserver();
     }
-  } else if (base::SequencedTaskRunner::HasCurrentDefault()) {
-    hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
-    if (hkcu_themes_regkey_.Valid()) {
-      UpdatePrefersReducedTransparency();
+    UpdatePrefersReducedTransparency();
+    if (observers_can_operate) {
       RegisterThemeRegkeyObserver();
     }
   }
+
   hkcu_color_filtering_regkey_ =
       OpenColorFilteringRegKey(KEY_READ | KEY_NOTIFY);
   if (hkcu_color_filtering_regkey_.Valid()) {
     UpdateInvertedColors();
-    RegisterColorFilteringRegkeyObserver();
+    if (observers_can_operate) {
+      RegisterColorFilteringRegkeyObserver();
+    }
   }
+
   if (!IsForcedHighContrast()) {
     set_forced_colors(IsUsingHighContrastThemeInternal());
   }
+
   // Initialize the cached system colors.
   UpdateSystemColors();
   set_preferred_color_scheme(CalculatePreferredColorScheme());
@@ -1633,6 +1634,7 @@ HANDLE NativeThemeWin::GetThemeHandle(ThemeName theme_name) const {
 
 void NativeThemeWin::RegisterThemeRegkeyObserver() {
   DCHECK(hkcu_themes_regkey_.Valid());
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   hkcu_themes_regkey_.StartWatching(base::BindOnce(
       [](NativeThemeWin* native_theme) {
         native_theme->UpdateDarkModeStatus();
@@ -1646,6 +1648,7 @@ void NativeThemeWin::RegisterThemeRegkeyObserver() {
 
 void NativeThemeWin::RegisterColorFilteringRegkeyObserver() {
   DCHECK(hkcu_color_filtering_regkey_.Valid());
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   hkcu_color_filtering_regkey_.StartWatching(base::BindOnce(
       [](NativeThemeWin* native_theme) {
         native_theme->UpdateInvertedColors();
