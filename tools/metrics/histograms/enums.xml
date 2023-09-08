@@ -63713,6 +63713,7 @@ from previous Chrome versions.
   <int value="-424134004" label="WebPaymentsExperimentalFeatures:disabled"/>
   <int value="-424125732" label="FlossIsAvailabilityCheckNeeded:disabled"/>
   <int value="-423134304" label="VirtualKeyboardMultitouch:disabled"/>
+  <int value="-421655506" label="RedInterstitialFacelift:disabled"/>
   <int value="-421428607" label="InheritNativeThemeFromParentWidget:disabled"/>
   <int value="-421314301" label="ForceShowContinueSection:enabled"/>
   <int value="-420956156" label="WebApkGenerator:disabled"/>
@@ -66048,6 +66049,7 @@ from previous Chrome versions.
   <int value="742083923" label="MimeHandlerViewInCrossProcessFrame:disabled"/>
   <int value="742363749" label="OSKResizesVisualViewportByDefault:disabled"/>
   <int value="742797916" label="TabStripRedesign:disabled"/>
+  <int value="743696247" label="RedInterstitialFacelift:enabled"/>
   <int value="743714331" label="HelpAppLauncherSearch:enabled"/>
   <int value="744342941" label="SafetyCheckChromeCleanerChild:enabled"/>
   <int value="745541471" label="PaintHolding:disabled"/>
