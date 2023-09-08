@@ -1288,7 +1288,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2061366302742593739">Rien à afficher</translation>
 <translation id="2062354623176996748">Parcourez le Web sans enregistrer l'historique de votre navigation à l'aide d'une fenêtre de navigation privée</translation>
 <translation id="206308717637808771">Supprimer les données lorsque vous fermez toutes les fenêtres. Les données sont traitées de la même manière que le site que vous consultez.</translation>
-<translation id="2063623149012168328">Ajouter un raccourci vers le <ph name="BRAND" /></translation>
+<translation id="2063623149012168328">Ajoutez un raccourci vers le <ph name="BRAND" /></translation>
 <translation id="2065405795449409761">Chrome est contrôlé par un logiciel de test automatisé.</translation>
 <translation id="2071393345806050157">Aucun fichier journal local.</translation>
 <translation id="2071692954027939183">Notifications bloquées automatiquement, car vous les refusez d'habitude</translation>
@@ -8960,7 +8960,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8634348081024879304">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK" />En savoir plus sur les cartes virtuelles<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Actualisation…</translation>
 <translation id="8636284842992792762">Initialisation des extensions…</translation>
-<translation id="8636323803535540285">Pour accéder à ce site plus rapidement, ajoutez un raccourci au <ph name="BRAND" /></translation>
+<translation id="8636323803535540285">Pour accéder à cette page plus rapidement, ajoutez un raccourci vers le <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Ne pas autoriser les sites à envoyer des pop-ups ni à utiliser des redirections</translation>
 <translation id="8637688295594795546">Mise à jour du système disponible. Préparation du téléchargement…</translation>
 <translation id="8639635302972078117">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données liées à son utilisation et à celle des applications, ainsi que des données de diagnostic. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Si vous avez activé le paramètre "Activité supplémentaire sur le Web et les applications" pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
