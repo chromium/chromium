@@ -268,11 +268,16 @@ VkFormat ToVkFormatExternalSampler(viz::SharedImageFormat format) {
   return VK_FORMAT_UNDEFINED;
 }
 
+VkFormat ToVkFormatSinglePlanar(viz::SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  return SharedImageFormatRestrictedUtilsAccessor::ToVkFormat(format);
+}
+
 VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
 
   if (format.is_single_plane()) {
-    return SharedImageFormatRestrictedUtilsAccessor::ToVkFormat(format);
+    return ToVkFormatSinglePlanar(format);
   }
 
   // The following SharedImageFormat constants have PrefersExternalSampler()

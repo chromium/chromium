@@ -66,7 +66,7 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
     if (!HasVkFormat(format)) {
       return;
     }
-    VkFormat vk_format = ToVkFormat(format);
+    VkFormat vk_format = ToVkFormatSinglePlanar(format);
     DCHECK_NE(vk_format, VK_FORMAT_UNDEFINED);
     VkFormatProperties format_props = {};
     vkGetPhysicalDeviceFormatProperties(vk_physical_device, vk_format,

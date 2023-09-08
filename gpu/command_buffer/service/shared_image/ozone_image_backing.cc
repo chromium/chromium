@@ -216,9 +216,11 @@ OzoneImageBacking::ProduceSkiaGanesh(
     gmb_handle.native_pixmap_handle = pixmap_->ExportHandle();
     auto* vulkan_implementation =
         context_state->vk_context_provider()->GetVulkanImplementation();
+    // Note: SkiaVkOzoneImageRepresentation does not support per-plane
+    // sampling, so format() must be single-planar.
     auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
-        device_queue, std::move(gmb_handle), size(), ToVkFormat(format()),
-        gfx::ColorSpace());
+        device_queue, std::move(gmb_handle), size(),
+        ToVkFormatSinglePlanar(format()), gfx::ColorSpace());
 
     if (!vulkan_image)
       return nullptr;
