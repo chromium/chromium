@@ -199,7 +199,8 @@ bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(
     VisualRectFlags) const {
   NOT_DESTROYED();
   transform_state.Flatten();
-  PhysicalRect rect(LayoutRect(transform_state.LastPlanarQuad().BoundingBox()));
+  PhysicalRect rect = PhysicalRect::FastAndLossyFromRectF(
+      transform_state.LastPlanarQuad().BoundingBox());
   // Convert from local HTML coordinates to local SVG coordinates.
   rect.Move(PhysicalLocation());
   // Apply other mappings on local SVG coordinates.
