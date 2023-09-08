@@ -710,10 +710,6 @@ const char kBiometricReauthForPasswordFillingDescription[] =
     "Enables biometric"
     "re-authentication before password filling";
 
-const char kFastCheckoutName[] = "Fast Checkout";
-const char kFastCheckoutDescription[] =
-    "Enables Fast Checkout experiences in Chrome.";
-
 const char kFailFastQuietChipName[] = "Fail fast quiet chip";
 const char kFailFastQuietChipDescription[] =
     "Enables fast finalization of a permission request if it is displayed as a "
@@ -2745,12 +2741,6 @@ const char kPasswordGenerationExperimentName[] =
 const char kPasswordGenerationExperimentDescription[] =
     "Enables different experiments that modify content and behavior of the "
     "existing generated password suggestion dropdown.";
-
-const char kForceEnableFastCheckoutCapabilitiesName[] =
-    "Force enable fast checkout capabilities";
-const char kForceEnableFastCheckoutCapabilitiesDescription[] =
-    "Force enables fast checkout capabilities for every domain, regardless "
-    "of the server response.";
 
 const char kPdfOcrName[] = "Performs OCR on inaccessible PDFs";
 const char kPdfOcrDescription[] =

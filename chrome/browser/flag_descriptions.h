@@ -388,9 +388,6 @@ extern const char kBackForwardCacheDescription[];
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 
-extern const char kFastCheckoutName[];
-extern const char kFastCheckoutDescription[];
-
 extern const char kFailFastQuietChipName[];
 extern const char kFailFastQuietChipDescription[];
 
@@ -1569,9 +1566,6 @@ extern const char kParallelDownloadingDescription[];
 
 extern const char kPasswordGenerationExperimentName[];
 extern const char kPasswordGenerationExperimentDescription[];
-
-extern const char kForceEnableFastCheckoutCapabilitiesName[];
-extern const char kForceEnableFastCheckoutCapabilitiesDescription[];
 
 extern const char kBacklightOcrName[];
 extern const char kBacklightOcrDescription[];

@@ -9082,14 +9082,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBiometricReauthForPasswordFillingDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kBiometricTouchToFill)},
-    {"fast-checkout", flag_descriptions::kFastCheckoutName,
-     flag_descriptions::kFastCheckoutDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kFastCheckout)},
-    {"force-enable-fast-checkout-capabilities",
-     flag_descriptions::kForceEnableFastCheckoutCapabilitiesName,
-     flag_descriptions::kForceEnableFastCheckoutCapabilitiesDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kForceEnableFastCheckoutCapabilities)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -4147,11 +4147,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "fast-checkout",
-    "owners": [ "vizcay@google.com", "bwolfgang@google.com", "jkeitel@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "fast-pair",
     "owners": [
       "//ash/quick_pair/OWNERS",
@@ -4525,11 +4520,6 @@
     "name": "force-control-face-ae",
     "owners": [ "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "force-enable-fast-checkout-capabilities",
-    "owners": [ "vizcay@google.com", "bwolfgang@google.com", "jkeitel@google.com" ],
-    "expiry_milestone": 118
   },
   {
     "name": "force-gpu-main-thread-to-normal-priority-drdc",
