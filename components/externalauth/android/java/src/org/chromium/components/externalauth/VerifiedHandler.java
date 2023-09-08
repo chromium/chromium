@@ -4,7 +4,6 @@
 
 package org.chromium.components.externalauth;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
@@ -21,7 +20,6 @@ public class VerifiedHandler extends Handler {
     private final int mAuthRequirements;
     private final String mCallerPackageToMatch;
     private final Map<Messenger, Boolean> mClientTrustMap = new HashMap<Messenger, Boolean>();
-    private final Context mContext;
     private final ExternalAuthUtils mExternalAuthUtils;
 
     /**
@@ -31,9 +29,8 @@ public class VerifiedHandler extends Handler {
      *                          from AppHooks.
      * @param authRequirements The requirements for authenticating the caller application.
      */
-    public VerifiedHandler(
-            Context context, ExternalAuthUtils externalAuthUtils, int authRequirements) {
-        this(context, externalAuthUtils, authRequirements, "");
+    public VerifiedHandler(ExternalAuthUtils externalAuthUtils, int authRequirements) {
+        this(externalAuthUtils, authRequirements, "");
     }
 
     /**
@@ -44,9 +41,8 @@ public class VerifiedHandler extends Handler {
      * @param authRequirements The requirements for authenticating the caller application.
      * @param callerPackageToMatch The package name to match to.
      */
-    public VerifiedHandler(Context context, ExternalAuthUtils externalAuthUtils,
-            int authRequirements, String callerPackageToMatch) {
-        mContext = context;
+    public VerifiedHandler(ExternalAuthUtils externalAuthUtils, int authRequirements,
+            String callerPackageToMatch) {
         mExternalAuthUtils = externalAuthUtils;
         mAuthRequirements = authRequirements;
         mCallerPackageToMatch = callerPackageToMatch;
@@ -65,8 +61,8 @@ public class VerifiedHandler extends Handler {
      */
     public boolean checkCallerIsValid() {
         return TextUtils.isEmpty(mCallerPackageToMatch)
-                ? mExternalAuthUtils.isCallerValid(mContext, mAuthRequirements)
+                ? mExternalAuthUtils.isCallerValid(mAuthRequirements)
                 : mExternalAuthUtils.isCallerValidForPackage(
-                        mContext, mAuthRequirements, mCallerPackageToMatch);
+                        mAuthRequirements, mCallerPackageToMatch);
     }
 }
