@@ -30,7 +30,7 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 
 // Converts the `AutofillType`s to strings and returns a Java array of strings.
-// Returns `nullptr` instead of `server_predictions` is empty.
+// Returns `nullptr` instead if `server_predictions` is empty.
 base::android::ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfPredictionStrings(
     JNIEnv* env,
     const std::vector<AutofillType>& server_predictions) {

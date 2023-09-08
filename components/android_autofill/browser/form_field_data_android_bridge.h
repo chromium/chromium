@@ -28,8 +28,8 @@ class FormFieldDataAndroidBridge {
       const FormFieldDataAndroid::FieldTypes& type_predictions) = 0;
 
   // Updates the `is_autofilled`, `check_status` and `value` members of `field`
-  // based on the values of the Java `FormFieldData`.
-  // If the reference is to the Java object null, this is a no-op.
+  // based on the values of the Java `FormFieldData`. If the reference is to the
+  // Java object null, this is a no-op.
   virtual void UpdateFieldFromJava(FormFieldData& field) = 0;
 
   // Updates the field types of the Java `FormFieldData`. If the reference to

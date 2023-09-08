@@ -13,6 +13,7 @@
 
 namespace autofill {
 
+class FormDataAndroidBridge;
 class FormFieldDataAndroidBridge;
 
 // Factory for all C++ <-> Java bridges in `//components/android_autofill`. All
@@ -22,8 +23,20 @@ class AndroidAutofillBridgeFactory {
   static AndroidAutofillBridgeFactory& GetInstance();
 
   // Creates and returns a `FormFieldDataAndroidBridge`.
+  std::unique_ptr<FormDataAndroidBridge> CreateFormDataAndroidBridge();
+
+  // Creates and returns a `FormFieldDataAndroidBridge`.
   std::unique_ptr<FormFieldDataAndroidBridge>
   CreateFormFieldDataAndroidBridge();
+
+  // Sets a testing factory for `FormDataAndroidBridge`s. If set, the
+  // testing factory is used in the factory method.
+  using FormDataAndroidBridgeTestingFactory =
+      base::RepeatingCallback<std::unique_ptr<FormDataAndroidBridge>()>;
+  void SetFormDataAndroidTestingFactory(
+      FormDataAndroidBridgeTestingFactory factory) {
+    form_data_android_bridge_testing_factory_ = std::move(factory);
+  }
 
   // Sets a testing factory for `FormFieldDataAndroidBridge`s. If set, the
   // testing factory is used in the factory method.
@@ -40,6 +53,7 @@ class AndroidAutofillBridgeFactory {
   AndroidAutofillBridgeFactory();
   ~AndroidAutofillBridgeFactory();
 
+  FormDataAndroidBridgeTestingFactory form_data_android_bridge_testing_factory_;
   FormFieldDataAndroidBridgeTestingFactory
       form_field_data_android_bridge_testing_factory_;
 };

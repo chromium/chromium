@@ -5,12 +5,16 @@
 #ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_FORM_DATA_ANDROID_H_
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_FORM_DATA_ANDROID_H_
 
-#include "base/android/jni_weak_ref.h"
+#include <memory>
+#include <string_view>
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
 #include "components/autofill/core/common/form_data.h"
 
 namespace autofill {
 
+class FormDataAndroidBridge;
 class FormFieldDataAndroid;
 class FormStructure;
 
@@ -24,23 +28,21 @@ class FormDataAndroid {
 
   virtual ~FormDataAndroid();
 
-  base::android::ScopedJavaLocalRef<jobject> GetJavaPeer(
-      const FormStructure* form_structure);
+  base::android::ScopedJavaLocalRef<jobject> GetJavaPeer();
 
   // Updates `form_` with state from Java side.
   void UpdateFromJava();
 
-  base::android::ScopedJavaLocalRef<jobject> GetNextFormFieldData(JNIEnv* env);
-
-  // Gets index of given field. It returns `true` and sets the `index` if
+  // Gets the index of a given field. It returns `true` and sets the `index` if
   // `field` is found.
   bool GetFieldIndex(const FormFieldData& field, size_t* index);
 
-  // Gets index of given field. It returns `true` and sets the `index` if a
-  // similar field is found. This method compares fewer attributes than
+  // Gets the index of a given field. It returns `true` and sets the `index` if
+  // a similar field is found. This method compares fewer attributes than
   // `GetFieldIndex()` does, and should be used when the field could be changed
   // dynamically, but the change has no impact on autofill purpose. Examples are
-  // CSS style changes - see `FormFieldData::SimilarFieldAs()` for details.
+  // CSS style changes - see `FormFieldDataAndroid::SimilarFieldAs()` for
+  // details.
   bool GetSimilarFieldIndex(const FormFieldData& field, size_t* index);
 
   // Returns true if this form is similar to the given form.
@@ -48,7 +50,7 @@ class FormDataAndroid {
 
   // Is invoked when the form field specified by `index` is changed to a new
   // `value`.
-  void OnFormFieldDidChange(size_t index, const std::u16string& value);
+  void OnFormFieldDidChange(size_t index, std::u16string_view value);
 
   // Updates the field types from the `form`.
   void UpdateFieldTypes(const FormStructure& form);
@@ -56,11 +58,12 @@ class FormDataAndroid {
   const FormData& form() const { return form_; }
 
  private:
-  // Same as the form passed in from constructor, but FormFieldData's bounds are
-  // transformed to viewport coordinates.
+  // A copy of the form passed in through the constructor.
   FormData form_;
   std::vector<std::unique_ptr<FormFieldDataAndroid>> fields_;
-  JavaObjectWeakGlobalRef java_ref_;
+
+  // The bridge for C++ <-> Java communication.
+  std::unique_ptr<FormDataAndroidBridge> bridge_;
 };
 
 }  // namespace autofill

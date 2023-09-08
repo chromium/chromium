@@ -184,15 +184,14 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
     return;
   }
 
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!manager->GetCachedFormAndField(form, field, &form_structure,
-                                      &autofill_field)) {
-    form_structure = nullptr;
+  // Set the field type predictions in `form_`.
+  if (FormStructure* form_structure =
+          manager->FindCachedFormById(form.global_id())) {
+    form_->UpdateFieldTypes(*form_structure);
   }
   gfx::RectF transformed_bounding = ToClientAreaBound(bounding_box);
 
-  ScopedJavaLocalRef<jobject> form_obj = form_->GetJavaPeer(form_structure);
+  ScopedJavaLocalRef<jobject> form_obj = form_->GetJavaPeer();
   manager_ = manager->GetWeakPtrToLeafClass();
   Java_AutofillProvider_startAutofillSession(
       env, obj, form_obj, index, transformed_bounding.x(),

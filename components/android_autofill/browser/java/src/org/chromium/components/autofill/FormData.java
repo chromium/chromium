@@ -20,8 +20,7 @@ public class FormData {
     public final List<FormFieldData> mFields;
 
     @CalledByNative
-    private static FormData createFormData(
-            long nativeObj, String name, String origin, FormFieldData[] fields) {
+    private static FormData createFormData(String name, String origin, FormFieldData[] fields) {
         return new FormData(name, origin, Arrays.asList(fields));
     }
 

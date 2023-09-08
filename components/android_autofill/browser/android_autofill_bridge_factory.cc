@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "components/android_autofill/browser/form_data_android_bridge_impl.h"
 #include "components/android_autofill/browser/form_field_data_android_bridge_impl.h"
 
 namespace autofill {
@@ -20,6 +21,14 @@ AndroidAutofillBridgeFactory::~AndroidAutofillBridgeFactory() = default;
 AndroidAutofillBridgeFactory& AndroidAutofillBridgeFactory::GetInstance() {
   static base::NoDestructor<AndroidAutofillBridgeFactory> instance;
   return *instance;
+}
+
+std::unique_ptr<FormDataAndroidBridge>
+AndroidAutofillBridgeFactory::CreateFormDataAndroidBridge() {
+  if (form_data_android_bridge_testing_factory_) {
+    return form_data_android_bridge_testing_factory_.Run();
+  }
+  return std::make_unique<FormDataAndroidBridgeImpl>();
 }
 
 std::unique_ptr<FormFieldDataAndroidBridge>
