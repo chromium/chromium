@@ -106,6 +106,14 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     void Push(std::unique_ptr<IsolatedWebAppUpdateApplyTask> task);
     void Clear();
 
+    // Removes all tasks for the provided `app_id` that haven't yet started from
+    // the queue.
+    //
+    // TODO(crbug.com/1444407): Ideally, we'd also cancel tasks that have
+    // already started, especially update discovery tasks, but the task
+    // implementation currently does not support cancellation of ongoing tasks.
+    void ClearNonStartedTasksOfApp(const AppId& app_id);
+
     // Starts the next task if no task is currently running. Will prioritize
     // update apply over update discovery tasks.
     void MaybeStartNextTask();

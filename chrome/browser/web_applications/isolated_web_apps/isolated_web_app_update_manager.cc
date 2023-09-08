@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/cxx20_erase_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -162,6 +163,7 @@ void IsolatedWebAppUpdateManager::OnWebAppUninstalled(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   update_apply_waiters_.erase(app_id);
+  task_queue_.ClearNonStartedTasksOfApp(app_id);
   MaybeStopUpdateDiscoveryTimer();
 }
 
@@ -345,6 +347,16 @@ void IsolatedWebAppUpdateManager::TaskQueue::Push(
 void IsolatedWebAppUpdateManager::TaskQueue::Clear() {
   update_discovery_tasks_.clear();
   update_apply_tasks_.clear();
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::ClearNonStartedTasksOfApp(
+    const AppId& app_id) {
+  base::EraseIf(update_discovery_tasks_, [&app_id](const auto& task) {
+    return !task->has_started() && task->url_info().app_id() == app_id;
+  });
+  base::EraseIf(update_apply_tasks_, [&app_id](const auto& task) {
+    return !task->has_started() && task->url_info().app_id() == app_id;
+  });
 }
 
 void IsolatedWebAppUpdateManager::TaskQueue::MaybeStartNextTask() {
