@@ -30,7 +30,7 @@ class UnifiedConsentService;
 }
 
 // Delegate that handles interactions with unified consent screen.
-@protocol UserSigninMediatorDelegate
+@protocol UserSigninMediatorDelegate <NSObject>
 
 // Returns the state of the `settingsLinkWasTapped` parameter in
 // UnifiedConsentCoordinator.
