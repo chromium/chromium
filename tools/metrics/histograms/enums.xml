@@ -3215,6 +3215,7 @@ Unknown properties are collapsed to zero. -->
   </int>
   <int value="81" label="CREATE_WEBVIEW">WebViewCompat#createWebView()</int>
   <int value="82" label="GET_STATICS">WebViewCompat#getStatics()</int>
+  <int value="83" label="GET_PROFILE_STORE">ProfileStore#getInstance()</int>
 </enum>
 
 <enum name="AnnouncementNotificationEvent">

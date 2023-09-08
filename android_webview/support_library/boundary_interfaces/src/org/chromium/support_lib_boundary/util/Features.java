@@ -243,6 +243,16 @@ public class Features {
     // DropDataContentProvider.call
     public static final String IMAGE_DRAG_DROP = "IMAGE_DRAG_DROP";
 
+    // ProfileStore.getOrCreateProfileAsync
+    // ProfileStore.getProfileAsync
+    // ProfileStore.getAllProfileNamesAsync
+    // ProfileStore.deleteProfileAsync
+    // Profile.getCookieManager
+    // Profile.getWebStorage
+    // Profile.getGeolocationPermissions
+    // Profile.getServiceWorkerController
+    public static final String MULTI_PROFILE = "MULTI_PROFILE";
+
     // WebSettingsCompat.enableRestrictSensitiveWebContent
     @Deprecated()
     public static final String RESTRICT_SENSITIVE_WEB_CONTENT = "RESTRICT_SENSITIVE_WEB_CONTENT";

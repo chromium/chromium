@@ -49,6 +49,7 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/GraphicsUtils.java",
     "java/src/com/android/webview/chromium/PacProcessorImpl.java",
     "java/src/com/android/webview/chromium/Profile.java",
+    "java/src/com/android/webview/chromium/ProfileStore.java",
     "java/src/com/android/webview/chromium/SafeBrowsingResponseAdapter.java",
     "java/src/com/android/webview/chromium/ServiceWorkerClientAdapter.java",
     "java/src/com/android/webview/chromium/ServiceWorkerControllerAdapter.java",

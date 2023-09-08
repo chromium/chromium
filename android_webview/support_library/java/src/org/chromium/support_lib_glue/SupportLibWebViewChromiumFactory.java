@@ -17,6 +17,7 @@ import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
+import com.android.webview.chromium.ProfileStore;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
@@ -91,6 +92,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.REQUESTED_WITH_HEADER_ALLOW_LIST,
                     Features.IMAGE_DRAG_DROP,
                     Features.USER_AGENT_METADATA + Features.DEV_SUFFIX,
+                    Features.MULTI_PROFILE + Features.DEV_SUFFIX,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
                     // feature should have a trailing comma for cleaner diffs.
@@ -180,6 +182,16 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.CREATE_WEB_MESSAGE_CHANNEL,
             ApiCall.CREATE_WEBVIEW,
             ApiCall.GET_STATICS,
+            ApiCall.GET_PROFILE_STORE,
+            ApiCall.GET_OR_CREATE_PROFILE,
+            ApiCall.GET_PROFILE,
+            ApiCall.GET_ALL_PROFILE_NAMES,
+            ApiCall.DELETE_PROFILE_ASYNC,
+            ApiCall.GET_PROFILE_NAME,
+            ApiCall.GET_PROFILE_COOKIE_MANAGER,
+            ApiCall.GET_PROFILE_WEB_STORAGE,
+            ApiCall.GET_PROFILE_GET_LOCATION_PERMISSIONS,
+            ApiCall.GET_PROFILE_SERVICE_WORKER_CONTROLLER,
             // Add new constants above. The final constant should have a trailing comma for cleaner
             // diffs.
             ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -273,8 +285,19 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int CREATE_WEB_MESSAGE_CHANNEL = 80;
         int CREATE_WEBVIEW = 81;
         int GET_STATICS = 82;
+        int GET_PROFILE_STORE = 83;
+        int GET_OR_CREATE_PROFILE = 84;
+        int GET_PROFILE = 85;
+        int GET_ALL_PROFILE_NAMES = 86;
+        int DELETE_PROFILE_ASYNC = 87;
+        int GET_PROFILE_NAME = 88;
+        int GET_PROFILE_COOKIE_MANAGER = 89;
+        int GET_PROFILE_WEB_STORAGE = 90;
+        int GET_PROFILE_GET_LOCATION_PERMISSIONS = 91;
+        int GET_PROFILE_SERVICE_WORKER_CONTROLLER = 92;
+
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 83;
+        int COUNT = 93;
     }
     // clang-format on
 
@@ -289,6 +312,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
     private InvocationHandler mTracingController;
     private InvocationHandler mProxyController;
     private InvocationHandler mDropDataProvider;
+    private InvocationHandler mProfileStore;
 
     public SupportLibWebViewChromiumFactory() {
         mCompatConverterAdapter = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -457,6 +481,20 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                 }
             }
             return mDropDataProvider;
+        }
+    }
+
+    @Override
+    public InvocationHandler getProfileStore() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROFILE_STORE")) {
+            recordApiCall(ApiCall.GET_PROFILE_STORE);
+            synchronized (mAwInit.getLock()) {
+                if (mProfileStore == null) {
+                    mProfileStore = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                            new SupportLibProfileStore(new ProfileStore()));
+                }
+            }
+            return mProfileStore;
         }
     }
 }
