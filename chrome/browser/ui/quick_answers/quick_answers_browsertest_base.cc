@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/quick_answers/quick_answers_browsertest_base.h"
+
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/chromeos/read_write_cards/read_write_cards_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "content/public/browser/render_frame_host.h"
@@ -28,6 +30,9 @@ QuickAnswersBrowserTestBase::QuickAnswersBrowserTestBase() = default;
 QuickAnswersBrowserTestBase::~QuickAnswersBrowserTestBase() = default;
 
 void QuickAnswersBrowserTestBase::SetUpOnMainThread() {
+  // Make sure the ReadWriteCardsManager is created.
+  chromeos::ReadWriteCardsFactory::GetForBrowserContext(
+      chrome_test_utils::GetProfile(this));
   QuickAnswersState::Get()->set_eligibility_for_testing(true);
 }
 

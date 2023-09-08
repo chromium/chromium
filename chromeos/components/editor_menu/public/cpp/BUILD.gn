@@ -8,10 +8,7 @@ component("cpp") {
   defines = [ "IS_EDITOR_MENU_PUBLIC_CPP_IMPL" ]
   output_name = "editor_menu_public_cpp"
 
-  sources = [
-    "editor_menu_controller.cc",
-    "editor_menu_controller.h",
-  ]
+  sources = [ "read_write_card_controller.h" ]
 
   deps = [ "//base" ]
 }

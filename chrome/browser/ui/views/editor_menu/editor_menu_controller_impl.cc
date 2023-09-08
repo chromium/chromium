@@ -52,8 +52,12 @@ EditorMenuControllerImpl::EditorMenuControllerImpl() = default;
 
 EditorMenuControllerImpl::~EditorMenuControllerImpl() = default;
 
-void EditorMenuControllerImpl::MaybeShowEditorMenu(
-    const gfx::Rect& anchor_bounds) {
+void EditorMenuControllerImpl::OnContextMenuShown() {}
+
+void EditorMenuControllerImpl::OnTextAvailable(
+    const gfx::Rect& anchor_bounds,
+    const std::string& selected_text,
+    const std::string& surrounding_text) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   GetEditorPanelManager().GetEditorPanelContext(
       base::BindOnce(&EditorMenuControllerImpl::OnGetEditorPanelContextResult,
@@ -67,13 +71,7 @@ void EditorMenuControllerImpl::MaybeShowEditorMenu(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void EditorMenuControllerImpl::DismissEditorMenu() {
-  if (editor_menu_widget_) {
-    editor_menu_widget_.reset();
-  }
-}
-
-void EditorMenuControllerImpl::UpdateAnchorBounds(
+void EditorMenuControllerImpl::OnAnchorBoundsChanged(
     const gfx::Rect& anchor_bounds) {
   if (!editor_menu_widget_) {
     return;
@@ -82,6 +80,12 @@ void EditorMenuControllerImpl::UpdateAnchorBounds(
   // Update the bounds of the shown view.
   // TODO(b/295060733): The main view.
   // TODO(b/295061567): The consent view.
+}
+
+void EditorMenuControllerImpl::OnDismiss(bool is_other_command_executed) {
+  if (editor_menu_widget_) {
+    editor_menu_widget_.reset();
+  }
 }
 
 void EditorMenuControllerImpl::OnSettingsButtonPressed() {}

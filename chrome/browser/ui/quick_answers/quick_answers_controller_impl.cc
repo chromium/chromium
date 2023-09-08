@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -12,6 +13,8 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/menu/menu_controller.h"
 
@@ -20,6 +23,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/feedback_util.h"
 #include "chrome/browser/ui/quick_answers/lacros/quick_answers_state_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -66,6 +70,17 @@ bool ShouldShowQuickAnswers() {
   return settings_enabled || should_show_consent;
 }
 
+bool IsActiveUserInternal() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* user = user_manager::UserManager::Get()->GetActiveUser();
+  const std::string email = user->GetAccountId().GetUserEmail();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  const std::string email = feedback_util::GetSignedInUserEmail();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return gaia::IsGoogleInternalAccountEmail(email);
+}
+
 }  // namespace
 
 QuickAnswersControllerImpl::QuickAnswersControllerImpl()
@@ -83,15 +98,15 @@ QuickAnswersControllerImpl::~QuickAnswersControllerImpl() {
   quick_answers_state_.reset();
 }
 
-void QuickAnswersControllerImpl::SetClient(
-    std::unique_ptr<QuickAnswersClient> client) {
-  quick_answers_client_ = std::move(client);
+void QuickAnswersControllerImpl::OnContextMenuShown() {
+  menu_shown_time_ = base::TimeTicks::Now();
+  visibility_ = QuickAnswersVisibility::kPending;
 }
 
-void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
+void QuickAnswersControllerImpl::OnTextAvailable(
     const gfx::Rect& anchor_bounds,
-    const std::string& title,
-    const Context& context) {
+    const std::string& selected_text,
+    const std::string& surrounding_text) {
   if (!ShouldShowQuickAnswers())
     return;
 
@@ -99,12 +114,16 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
     return;
   }
 
+  Context context;
+  context.surrounding_text = surrounding_text;
+  context.device_properties.is_internal = IsActiveUserInternal();
+
   // Cache anchor-bounds and query.
   anchor_bounds_ = anchor_bounds;
   // Initially, title is same as query. Title and query can be overridden based
   // on text annotation result at |OnRequestPreprocessFinish|.
-  title_ = title;
-  query_ = title;
+  title_ = selected_text;
+  query_ = selected_text;
   context_ = context;
   quick_answers_session_.reset();
 
@@ -118,24 +137,36 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
   }
 }
 
-void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
-    const quick_answers::QuickAnswersRequest& request) {
-  if (QuickAnswersState::Get()->consent_status() ==
-      quick_answers::prefs::ConsentStatus::kUnknown) {
-    ShowUserConsent(
-        IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
-        base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
-  } else {
-    visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
-    quick_answers_ui_controller_->CreateQuickAnswersView(
-        anchor_bounds_, title_, query_,
-        request.context.device_properties.is_internal);
+void QuickAnswersControllerImpl::OnAnchorBoundsChanged(
+    const gfx::Rect& anchor_bounds) {
+  anchor_bounds_ = anchor_bounds;
+  quick_answers_ui_controller_->UpdateQuickAnswersBounds(anchor_bounds);
+}
 
-    if (IsProcessedRequest(request))
-      quick_answers_client_->FetchQuickAnswers(request);
-    else
-      quick_answers_client_->SendRequest(request);
+void QuickAnswersControllerImpl::OnDismiss(bool is_other_command_executed) {
+  const base::TimeDelta time_since_request_sent =
+      base::TimeTicks::Now() - menu_shown_time_;
+  if (is_other_command_executed) {
+    base::UmaHistogramTimes("QuickAnswers.ContextMenu.Close.DurationWithClick",
+                            time_since_request_sent);
+  } else {
+    base::UmaHistogramTimes(
+        "QuickAnswers.ContextMenu.Close.DurationWithoutClick",
+        time_since_request_sent);
   }
+
+  base::UmaHistogramBoolean("QuickAnswers.ContextMenu.Close",
+                            is_other_command_executed);
+
+  QuickAnswersExitPoint exit_point =
+      is_other_command_executed ? QuickAnswersExitPoint::kContextMenuClick
+                                : QuickAnswersExitPoint::kContextMenuDismiss;
+  DismissQuickAnswers(exit_point);
+}
+
+void QuickAnswersControllerImpl::SetClient(
+    std::unique_ptr<QuickAnswersClient> client) {
+  quick_answers_client_ = std::move(client);
 }
 
 void QuickAnswersControllerImpl::DismissQuickAnswers(
@@ -186,6 +217,30 @@ void QuickAnswersControllerImpl::DismissQuickAnswers(
         }
       }
       return;
+    }
+  }
+}
+
+void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
+    const quick_answers::QuickAnswersRequest& request) {
+  CHECK(QuickAnswersState::Get()->consent_status() !=
+        quick_answers::prefs::ConsentStatus::kRejected);
+
+  if (QuickAnswersState::Get()->consent_status() ==
+      quick_answers::prefs::ConsentStatus::kUnknown) {
+    ShowUserConsent(
+        IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
+        base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
+  } else {
+    visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
+    quick_answers_ui_controller_->CreateQuickAnswersView(
+        anchor_bounds_, title_, query_,
+        request.context.device_properties.is_internal);
+
+    if (IsProcessedRequest(request)) {
+      quick_answers_client_->FetchQuickAnswers(request);
+    } else {
+      quick_answers_client_->SendRequest(request);
     }
   }
 }
@@ -284,16 +339,6 @@ void QuickAnswersControllerImpl::OnQuickAnswerClick() {
       quick_answer() ? quick_answer()->result_type : ResultType::kNoResult);
 }
 
-void QuickAnswersControllerImpl::UpdateQuickAnswersAnchorBounds(
-    const gfx::Rect& anchor_bounds) {
-  anchor_bounds_ = anchor_bounds;
-  quick_answers_ui_controller_->UpdateQuickAnswersBounds(anchor_bounds);
-}
-
-void QuickAnswersControllerImpl::SetPendingShowQuickAnswers() {
-  visibility_ = QuickAnswersVisibility::kPending;
-}
-
 void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
   quick_answers_ui_controller_->CloseUserConsentView();
 
@@ -304,7 +349,7 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
     visibility_ = QuickAnswersVisibility::kPending;
     // Display Quick-Answer for the cached query when user consent has
     // been granted.
-    MaybeShowQuickAnswers(anchor_bounds_, title_, context_);
+    OnTextAvailable(anchor_bounds_, title_, context_.surrounding_text);
   }
 }
 

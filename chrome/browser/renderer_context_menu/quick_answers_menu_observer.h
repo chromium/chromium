@@ -10,11 +10,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
+#include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
 class RenderViewContextMenuProxy;
+
+namespace chromeos {
+class ReadWriteCardController;
+class ReadWriteCardsManager;
+}  // namespace chromeos
 
 // A class that implements the quick answers menu.
 class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
@@ -35,7 +40,7 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
 
  private:
   void OnTextSurroundingSelectionAvailable(
-      const std::string& selected_text,
+      const std::u16string& selected_text,
       const std::u16string& surrounding_text,
       uint32_t start_offset,
       uint32_t end_offset);
@@ -48,8 +53,9 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
   // Whether commands other than quick answers is executed.
   bool is_other_command_executed_ = false;
 
-  // Time that the context menu is shown.
-  base::TimeTicks menu_shown_time_;
+  raw_ptr<chromeos::ReadWriteCardController> read_write_card_controller_ =
+      nullptr;
+  raw_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_ = nullptr;
 
   base::WeakPtrFactory<QuickAnswersMenuObserver> weak_factory_{this};
 };

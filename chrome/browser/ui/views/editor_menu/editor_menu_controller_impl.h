@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
-#include "chromeos/components/editor_menu/public/cpp/editor_menu_controller.h"
+#include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -20,9 +20,9 @@
 
 namespace chromeos::editor_menu {
 
-// Implementation of EditorMenuController. It manages the editor menu related
+// Implementation of ReadWriteCardController. It manages the editor menu related
 // views.
-class EditorMenuControllerImpl : public EditorMenuController,
+class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
                                  public EditorMenuViewDelegate {
  public:
   EditorMenuControllerImpl();
@@ -30,10 +30,13 @@ class EditorMenuControllerImpl : public EditorMenuController,
   EditorMenuControllerImpl& operator=(const EditorMenuControllerImpl&) = delete;
   ~EditorMenuControllerImpl() override;
 
-  // EditorMenuController:
-  void MaybeShowEditorMenu(const gfx::Rect& anchor_bounds) override;
-  void DismissEditorMenu() override;
-  void UpdateAnchorBounds(const gfx::Rect& anchor_bounds) override;
+  // ReadWriteCardController:
+  void OnContextMenuShown() override;
+  void OnTextAvailable(const gfx::Rect& anchor_bounds,
+                       const std::string& selected_text,
+                       const std::string& surrounding_text) override;
+  void OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) override;
+  void OnDismiss(bool is_other_command_executed) override;
 
   // EditorMenuViewDelegate:
   void OnSettingsButtonPressed() override;

@@ -37,6 +37,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chromeos/read_write_cards/read_write_cards_factory.h"
 #include "chrome/browser/client_hints/client_hints_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service_factory.h"
@@ -647,6 +648,9 @@ void ChromeBrowserMainExtraPartsProfiles::
     chromeos::cloud_upload::CloudUploadPrefsWatcherFactory::GetInstance();
   }
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+  chromeos::ReadWriteCardsFactory::GetInstance();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::RemoteAppsProxyLacrosFactory::GetInstance();
 #endif

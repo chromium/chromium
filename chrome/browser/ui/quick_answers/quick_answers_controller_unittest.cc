@@ -60,13 +60,13 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
     // To show the quick answers view, its visibility must be set to 'pending'
     // first.
     if (set_visibility)
-      controller()->SetPendingShowQuickAnswers();
+      controller()->OnContextMenuShown();
 
     // Set up a companion menu before creating the QuickAnswersView.
     CreateAndShowBasicMenu();
 
-    controller()->MaybeShowQuickAnswers(kDefaultAnchorBoundsInScreen,
-                                        kDefaultTitle, {});
+    controller()->OnTextAvailable(kDefaultAnchorBoundsInScreen, kDefaultTitle,
+                                  /*surrounding_text=*/"");
   }
 
   void ShowConsentView() {
@@ -206,7 +206,7 @@ TEST_F(QuickAnswersControllerTest,
   AcceptConsent();
   ShowView();
 
-  controller()->UpdateQuickAnswersAnchorBounds(BoundsWithXPosition(123));
+  controller()->OnAnchorBoundsChanged(BoundsWithXPosition(123));
 
   // We only check the 'x' position as that is guaranteed to be identical
   // between the view and the menu.
@@ -218,7 +218,7 @@ TEST_F(QuickAnswersControllerTest,
        ShouldUpdateConsentViewBoundsWhenMenuBoundsChange) {
   ShowConsentView();
 
-  controller()->UpdateQuickAnswersAnchorBounds(BoundsWithXPosition(123));
+  controller()->OnAnchorBoundsChanged(BoundsWithXPosition(123));
 
   // We only check the 'x' position as that is guaranteed to be identical
   // between the view and the menu.

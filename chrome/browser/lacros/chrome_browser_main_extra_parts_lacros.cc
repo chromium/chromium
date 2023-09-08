@@ -53,10 +53,7 @@
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
-#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
-#include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -270,12 +267,6 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
   if (!is_initial_profile) {
     return;
   }
-
-  quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
-  QuickAnswersController::Get()->SetClient(
-      std::make_unique<quick_answers::QuickAnswersClient>(
-          g_browser_process->shared_url_loader_factory(),
-          QuickAnswersController::Get()->GetQuickAnswersDelegate()));
 
   // Initialize the metric reporting manager so we can start recording relevant
   // telemetry metrics and events on managed devices. The reporting manager

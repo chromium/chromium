@@ -4680,6 +4680,7 @@ if (!is_android) {
         "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
         "//chrome/browser/chromeos:dlp_policy_event_proto",
         "//chrome/browser/chromeos:test_support",
+        "//chrome/browser/chromeos/read_write_cards",
         "//chrome/browser/enterprise/connectors/device_trust:features",
         "//chrome/browser/enterprise/connectors/device_trust/common",
         "//chrome/browser/image_decoder",
@@ -9781,6 +9782,7 @@ static_library("test_support_unit") {
 
     deps += [
       "//ash:test_support",
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ui/quick_answers",
     ]
   }

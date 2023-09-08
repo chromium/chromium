@@ -13,7 +13,6 @@ namespace quick_answers {
 class QuickAnswersClient;
 class QuickAnswersDelegate;
 enum class QuickAnswersExitPoint;
-struct Context;
 }  // namespace quick_answers
 
 enum class QuickAnswersVisibility {
@@ -45,28 +44,10 @@ class QuickAnswersController {
   virtual void SetClient(
       std::unique_ptr<quick_answers::QuickAnswersClient> client) = 0;
 
-  // Show the quick-answers view (and/or any accompanying/associated views like
-  // user-consent view instead, if consent is not yet granted). |anchor_bounds|
-  // is the bounds of the anchor view (which is the context menu for browser).
-  // |title| is the text selected by the user. |context| is the context
-  // information which will be used as part of the request for getting more
-  // relevant result.
-  virtual void MaybeShowQuickAnswers(const gfx::Rect& anchor_bounds,
-                                     const std::string& title,
-                                     const quick_answers::Context& context) = 0;
-
   // Dismiss the specific quick-answers, user-consent, or rich-answers view
   // currently shown. |exit_point| indicates the exit point of the view.
   virtual void DismissQuickAnswers(
       quick_answers::QuickAnswersExitPoint exit_point) = 0;
-
-  // Update the bounds of the anchor view.
-  virtual void UpdateQuickAnswersAnchorBounds(
-      const gfx::Rect& anchor_bounds) = 0;
-
-  // Called when a quick-answers session has started but the detailed context is
-  // still pending.
-  virtual void SetPendingShowQuickAnswers() = 0;
 
   virtual quick_answers::QuickAnswersDelegate* GetQuickAnswersDelegate() = 0;
 

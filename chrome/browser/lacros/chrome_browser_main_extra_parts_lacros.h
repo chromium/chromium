@@ -29,7 +29,6 @@ class LacrosFileSystemProvider;
 class KioskSessionServiceLacros;
 class FieldTrialObserver;
 class NetworkChangeManagerBridge;
-class QuickAnswersController;
 class StandaloneBrowserTestController;
 class TabletModePageBehavior;
 class UiMetricRecorderLacros;
@@ -177,9 +176,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Handles WebAuthn request id generation.
   std::unique_ptr<WebAuthnRequestRegistrarLacros>
       webauthn_request_registrar_lacros_;
-
-  // Handles Quick answers requests from the Lacros browser.
-  std::unique_ptr<QuickAnswersController> quick_answers_controller_;
 
   // Updates Blink preferences on tablet mode state change.
   std::unique_ptr<TabletModePageBehavior> tablet_mode_page_behavior_;

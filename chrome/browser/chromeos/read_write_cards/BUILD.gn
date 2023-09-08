@@ -1,0 +1,36 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("read_write_cards") {
+  # Only allow use by chrome/browser, e.g. one instance.
+  visibility = [
+    "//chrome/browser:browser",
+    "//chrome/test:browser_tests",
+  ]
+
+  sources = [
+    "read_write_cards_factory.cc",
+    "read_write_cards_factory.h",
+    "read_write_cards_manager.cc",
+    "read_write_cards_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/quick_answers",
+    "//chrome/browser/ui/views/editor_menu",
+    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp",
+    "//chromeos/constants",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+  ]
+}

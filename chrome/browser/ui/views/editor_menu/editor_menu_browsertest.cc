@@ -5,7 +5,8 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
+#include "chrome/browser/chromeos/read_write_cards/read_write_cards_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -30,14 +31,15 @@ class EditorMenuBrowserTest : public InProcessBrowserTest {
   ~EditorMenuBrowserTest() override = default;
 
  protected:
-  using EditorMenuController = chromeos::editor_menu::EditorMenuController;
   using EditorMenuControllerImpl =
       chromeos::editor_menu::EditorMenuControllerImpl;
   using EditorMenuPromoCardView =
       chromeos::editor_menu::EditorMenuPromoCardView;
 
   EditorMenuControllerImpl* GetControllerImpl() {
-    return static_cast<EditorMenuControllerImpl*>(EditorMenuController::Get());
+    return chromeos::ReadWriteCardsFactory::GetForBrowserContext(
+               browser()->profile())
+        ->editor_menu_for_testing();
   }
 
   views::View* GetEditorMenuView() {
@@ -61,21 +63,22 @@ class EditorMenuBrowserFeatureEnabledTest : public EditorMenuBrowserTest {
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserTest,
                        ShouldNotCreateWhenFeatureNotEnabled) {
   EXPECT_FALSE(chromeos::features::IsOrcaEnabled());
-  EXPECT_EQ(nullptr, EditorMenuController::Get());
+  EXPECT_EQ(nullptr, GetControllerImpl());
 };
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        ShouldCreateWhenFeatureEnabled) {
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
-  EXPECT_NE(nullptr, EditorMenuController::Get());
+  EXPECT_NE(nullptr, GetControllerImpl());
 }
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        ShowEditorMenuAboveAnchor) {
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
-  EXPECT_NE(nullptr, EditorMenuController::Get());
+  EXPECT_NE(nullptr, GetControllerImpl());
 
-  EditorMenuController::Get()->MaybeShowEditorMenu(kAnchorBounds);
+  GetControllerImpl()->OnTextAvailable(kAnchorBounds, /*selected_text=*/"",
+                                       /*surrounding_text=*/"");
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
   // View is vertically left aligned with anchor.
@@ -89,9 +92,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        ShowEditorMenuBelowAnchor) {
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
-  EXPECT_NE(nullptr, EditorMenuController::Get());
+  EXPECT_NE(nullptr, GetControllerImpl());
 
-  EditorMenuController::Get()->MaybeShowEditorMenu(kAnchorBoundsTop);
+  GetControllerImpl()->OnTextAvailable(kAnchorBoundsTop, /*selected_text=*/"",
+                                       /*surrounding_text=*/"");
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
   // View is vertically left aligned with anchor.
@@ -104,9 +108,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        InitiallyShowsPromoCard) {
-  ASSERT_NE(EditorMenuController::Get(), nullptr);
+  EXPECT_NE(nullptr, GetControllerImpl());
 
-  EditorMenuController::Get()->MaybeShowEditorMenu(kAnchorBounds);
+  GetControllerImpl()->OnTextAvailable(kAnchorBounds, /*selected_text=*/"",
+                                       /*surrounding_text=*/"");
 
   EXPECT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
 
