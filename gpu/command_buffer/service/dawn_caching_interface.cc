@@ -165,10 +165,18 @@ void DawnCachingBackend::StoreData(const std::string& key,
     EvictEntry(it->second.get());
   }
 
-  auto entry = std::make_unique<Entry>(key, value, value_size);
+  // If the entry is too large for the cache, we cannot store it so skip. We
+  // avoid creating the entry here early since it would incur unneeded large
+  // copies.
+  size_t entry_size = key.length() + value_size;
+  if (entry_size >= max_size_) {
+    return;
+  }
 
   // Evict least used entries until we have enough room to add the new entry.
-  while (current_size_ + entry->TotalSize() > max_size_) {
+  auto entry = std::make_unique<Entry>(key, value, value_size);
+  DCHECK(entry->TotalSize() == entry_size);
+  while (current_size_ + entry_size > max_size_) {
     EvictEntry(lru_.head()->value());
   }
 
