@@ -28,18 +28,6 @@
 #include "url/gurl.h"
 
 namespace updater {
-namespace {
-
-scoped_refptr<base::SequencedTaskRunner> GetBlockingTaskRunner() {
-  constexpr base::TaskTraits KMayBlockTraits = {base::MayBlock()};
-#if BUILDFLAG(IS_WIN)
-  return base::ThreadPool::CreateCOMSTATaskRunner(KMayBlockTraits);
-#else
-  return base::ThreadPool::CreateSequencedTaskRunner(KMayBlockTraits);
-#endif
-}
-
-}  // namespace
 
 PolicyFetcher::PolicyFetcher(
     const GURL& server_url,
@@ -48,7 +36,8 @@ PolicyFetcher::PolicyFetcher(
     : server_url_(server_url),
       policy_service_proxy_configuration_(proxy_configuration),
       override_is_managed_device_(override_is_managed_device),
-      sequenced_task_runner_(GetBlockingTaskRunner()) {
+      sequenced_task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
   VLOG(0) << "Policy server: " << server_url_.possibly_invalid_spec();
 }
 
