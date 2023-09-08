@@ -11,9 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "services/device/geolocation/wifi_data_provider.h"
-#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "url/gurl.h"
 
@@ -35,11 +33,10 @@ class NetworkLocationRequest {
   // Called when a new geo position is available. The second argument indicates
   // whether there was a server error or not. It is true when there was a
   // server or network error - either no response or a 500 error code.
-  using LocationResponseCallback = base::RepeatingCallback<void(
-      mojom::GeopositionResultPtr /* result */,
-      bool /* server_error */,
-      const WifiData& /* wifi_data */,
-      mojom::NetworkLocationResponsePtr /* response data */)>;
+  using LocationResponseCallback =
+      base::RepeatingCallback<void(mojom::GeopositionResultPtr /* result */,
+                                   bool /* server_error */,
+                                   const WifiData& /* wifi_data */)>;
 
   NetworkLocationRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -51,19 +48,18 @@ class NetworkLocationRequest {
 
   ~NetworkLocationRequest();
 
-  // Makes a new request using the specified |wifi_data|. Any currently pending
+  // Makes a new request using the specified |wifi_data|. Returns true if the
+  // new request was successfully started. In all cases, any currently pending
   // request will be canceled. The specified |wifi_data| and |wifi_timestamp|
   // are passed back to the client upon completion, via
   // LocationResponseCallback's |wifi_data| and |position.timestamp|
   // respectively.
-  void MakeRequest(const WifiData& wifi_data,
+  bool MakeRequest(const WifiData& wifi_data,
                    const base::Time& wifi_timestamp,
                    const net::PartialNetworkTrafficAnnotationTag&
                        partial_traffic_annotation);
 
   bool is_request_pending() const { return bool(url_loader_); }
-
-  std::vector<mojom::AccessPointDataPtr> GetRequestDataForDiagnostics() const;
 
  private:
   void OnRequestComplete(std::unique_ptr<std::string> data);
@@ -76,7 +72,6 @@ class NetworkLocationRequest {
   // Keep a copy of the data sent in the request, so we can refer back to it
   // when the response arrives.
   WifiData wifi_data_;
-  base::Value::Dict request_data_;
   base::Time wifi_timestamp_;
 };
 
