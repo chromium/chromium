@@ -39,11 +39,6 @@ SelectToSpeakTray* GetTray() {
       ->select_to_speak_tray();
 }
 
-ui::GestureEvent CreateTapEvent() {
-  return ui::GestureEvent(0, 0, 0, base::TimeTicks(),
-                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-}
-
 }  // namespace
 
 class SelectToSpeakTrayTest : public AshTestBase {
@@ -116,10 +111,10 @@ TEST_F(SelectToSpeakTrayTest, ButtonRequestsSelectToSpeakStateChange) {
   TestAccessibilityControllerClient client;
   EXPECT_EQ(0, client.select_to_speak_change_change_requests());
 
-  GetTray()->PerformAction(CreateTapEvent());
+  GestureTapOn(GetTray());
   EXPECT_EQ(1, client.select_to_speak_change_change_requests());
 
-  GetTray()->PerformAction(CreateTapEvent());
+  GestureTapOn(GetTray());
   EXPECT_EQ(2, client.select_to_speak_change_change_requests());
 }
 

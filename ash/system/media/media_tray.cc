@@ -223,8 +223,11 @@ void MediaTray::PinButton::ButtonPressed() {
 
 MediaTray::MediaTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kMediaPlayer) {
-  if (MediaNotificationProvider::Get())
+  SetCallback(base::BindRepeating(&MediaTray::OnTrayButtonPressed,
+                                  base::Unretained(this)));
+  if (MediaNotificationProvider::Get()) {
     MediaNotificationProvider::Get()->AddObserver(this);
+  }
 
   Shell::Get()->session_controller()->AddObserver(this);
 
@@ -327,6 +330,15 @@ void MediaTray::OnActiveUserPrefServiceChanged(PrefService* pref_service) {
       base::BindRepeating(&MediaTray::OnGlobalMediaControlsPinPrefChanged,
                           base::Unretained(this)));
   OnGlobalMediaControlsPinPrefChanged();
+}
+
+void MediaTray::OnTrayButtonPressed() {
+  if (GetBubbleWidget()) {
+    CloseBubble();
+    return;
+  }
+
+  ShowBubble();
 }
 
 void MediaTray::UpdateDisplayState() {

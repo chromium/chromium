@@ -145,6 +145,9 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // space tray state.
   void ObservePrefService(PrefService* prefs);
 
+  // Callback called when this TrayBackgroundView is pressed.
+  void OnTrayButtonPressed(const ui::Event& event);
+
   // Called when the state reflected in the previews icon changes - it updates
   // the previews icon visibility and schedules the previews icon update.
   void UpdatePreviewsState();

@@ -59,6 +59,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
+  void OnTrayButtonPressed(const ui::Event& event);
   void HideAnnotationTray();
   void SetTrayEnabled(bool enabled);
   void ToggleAnnotator();

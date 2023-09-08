@@ -74,8 +74,8 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kOverview),
       icon_(new views::ImageView()),
       scoped_session_observer_(this) {
-  SetPressedCallback(base::BindRepeating(&OverviewButtonTray::OnButtonPressed,
-                                         base::Unretained(this)));
+  SetCallback(base::BindRepeating(&OverviewButtonTray::OnButtonPressed,
+                                  base::Unretained(this)));
 
   const gfx::ImageSkia image = GetIconImage();
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
@@ -121,11 +121,6 @@ void OverviewButtonTray::OnGestureEvent(ui::GestureEvent* event) {
     SplitViewController::Get(Shell::GetPrimaryRootWindow())
         ->OnOverviewButtonTrayLongPressed(event->location());
   }
-}
-
-void OverviewButtonTray::HandlePerformActionResult(bool action_performed,
-                                                   const ui::Event& event) {
-  // Do nothing, prevent the default ripple handling.
 }
 
 void OverviewButtonTray::OnSessionStateChanged(

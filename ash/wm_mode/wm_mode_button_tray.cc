@@ -35,7 +35,7 @@ WmModeButtonTray::WmModeButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kWmMode),
       image_view_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
-  SetPressedCallback(base::BindRepeating(
+  SetCallback(base::BindRepeating(
       [](const ui::Event& event) { WmModeController::Get()->Toggle(); }));
 
   image_view_->SetTooltipText(GetAccessibleNameForTray());

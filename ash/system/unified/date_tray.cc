@@ -34,7 +34,7 @@ DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
           std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kDate))),
       unified_system_tray_(tray) {
   SetID(VIEW_ID_SA_DATE_TRAY);
-  SetPressedCallback(
+  SetCallback(
       base::BindRepeating(&DateTray::OnButtonPressed, base::Unretained(this)));
 
   tray_container()->SetMargin(
@@ -167,7 +167,7 @@ void DateTray::HideGlanceableBubble() {
   SetIsActive(false);
 }
 
-BEGIN_METADATA(DateTray, ActionableView)
+BEGIN_METADATA(DateTray, views::Button)
 END_METADATA
 
 }  // namespace ash

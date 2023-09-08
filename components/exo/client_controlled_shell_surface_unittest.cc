@@ -739,9 +739,7 @@ TEST_P(ClientControlledShellSurfaceTest,
 
   // Show system tray by performing a gesture tap at tray.
   ash::UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  system_tray->PerformAction(tap);
+  GestureTapOn(system_tray);
   ASSERT_TRUE(system_tray->GetWidget());
 
   // Confirm that system tray is not active at this time.

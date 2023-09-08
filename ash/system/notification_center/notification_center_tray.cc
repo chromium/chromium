@@ -37,6 +37,8 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
               /*model=*/nullptr,
               /*notification_center_tray=*/this)) {
   DCHECK(features::IsQsRevampEnabled());
+  SetCallback(base::BindRepeating(&NotificationCenterTray::OnTrayButtonPressed,
+                                  base::Unretained(this)));
   SetID(VIEW_ID_SA_NOTIFICATION_TRAY);
   set_use_bounce_in_animation(false);
 
@@ -81,6 +83,15 @@ void NotificationCenterTray::OnSystemTrayVisibilityChanged(
     bool system_tray_visible) {
   system_tray_visible_ = system_tray_visible;
   UpdateVisibility();
+}
+
+void NotificationCenterTray::OnTrayButtonPressed() {
+  if (GetBubbleWidget()) {
+    CloseBubble();
+    return;
+  }
+
+  ShowBubble();
 }
 
 NotificationListView* NotificationCenterTray::GetNotificationListView() {

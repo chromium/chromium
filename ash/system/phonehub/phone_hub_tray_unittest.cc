@@ -6,6 +6,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/focus_cycler.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/phonehub/multidevice_feature_opt_in_view.h"
@@ -29,6 +30,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -118,12 +120,6 @@ class PhoneHubTrayTest : public AshTestBase {
 
   phonehub::AppStreamLauncherDataModel* GetAppStreamLauncherDataModel() {
     return phone_hub_manager_.fake_app_stream_launcher_data_model();
-  }
-
-  void PressReturnKeyOnTrayButton() {
-    const ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
-                                 ui::EF_NONE);
-    phone_hub_tray_->PerformAction(key_event);
   }
 
   void ClickTrayButton() { LeftClickOn(phone_hub_tray_); }
@@ -246,7 +242,10 @@ TEST_F(PhoneHubTrayTest, ClickTrayButton) {
 
 TEST_F(PhoneHubTrayTest, FocusBubbleWhenOpenedByKeyboard) {
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
-  PressReturnKeyOnTrayButton();
+
+  Shell::Get()->focus_cycler()->FocusWidget(phone_hub_tray_->GetWidget());
+  phone_hub_tray_->RequestFocus();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
   // Generate a tab key press.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());

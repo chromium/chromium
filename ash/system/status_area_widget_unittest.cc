@@ -587,10 +587,7 @@ TEST_F(StatusAreaWidgetCollapseStateTest, ClickOverflowButton) {
   EXPECT_TRUE(overflow_button_->GetVisible());
 
   // Click overflow button.
-  gfx::Point point = overflow_button_->GetBoundsInScreen().origin();
-  ui::MouseEvent click(ui::ET_MOUSE_PRESSED, point, point,
-                       base::TimeTicks::Now(), 0, 0);
-  overflow_button_->PerformAction(click);
+  LeftClickOn(overflow_button_);
 
   // All tray buttons should be visible in the expanded state.
   EXPECT_EQ(StatusAreaWidget::CollapseState::EXPANDED, collapse_state());
@@ -601,7 +598,7 @@ TEST_F(StatusAreaWidgetCollapseStateTest, ClickOverflowButton) {
   EXPECT_TRUE(overflow_button_->GetVisible());
 
   // Clicking the overflow button again should go back to the collapsed state.
-  overflow_button_->PerformAction(click);
+  LeftClickOn(overflow_button_);
   EXPECT_EQ(StatusAreaWidget::CollapseState::COLLAPSED, collapse_state());
   EXPECT_FALSE(select_to_speak_->GetVisible());
   EXPECT_FALSE(ime_menu_->GetVisible());

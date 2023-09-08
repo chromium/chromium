@@ -235,18 +235,9 @@ EcheTray::EcheTray(Shelf* shelf)
       icon_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
       event_interceptor_(std::make_unique<EventInterceptor>(this)) {
-  SetPressedCallback(base::BindRepeating(
-      [](EcheTray* eche_tray, const ui::Event& event) {
-        // The `bubble_` is cached, so don't check for existence (which is the
-        // base TrayBackgroundView implementation), check for visibility to
-        // decide on whether to show or hide.
-        if (eche_tray->IsBubbleVisible()) {
-          eche_tray->HideBubble();
-          return;
-        }
-        eche_tray->ShowBubble();
-      },
-      base::Unretained(this)));
+  SetCallback(
+      base::BindRepeating(&EcheTray::OnButtonPressed, base::Unretained(this)));
+
   const int icon_padding = (kTrayItemSize - kIconSize) / 2;
 
   icon_->SetBorder(
@@ -544,6 +535,17 @@ void EcheTray::StartGracefulCloseInitializer() {
   unload_timer_->Reset();  // Starts the timer.
 }
 
+void EcheTray::OnButtonPressed() {
+  // The `bubble_` is cached, so don't check for existence (which is the base
+  // TrayBackgroundView implementation), check for visibility to decide on
+  // whether to show or hide.
+  if (IsBubbleVisible()) {
+    HideBubble();
+    return;
+  }
+  ShowBubble();
+}
+
 void EcheTray::SetUrl(const GURL& url) {
   if (web_view_ && url_ != url)
     web_view_->Navigate(url);
@@ -596,8 +598,8 @@ bool EcheTray::LoadBubble(
   StartLoadingAnimation();
   auto* phone_hub_tray = GetPhoneHubTray();
   if (phone_hub_tray) {
-    phone_hub_tray->SetEcheIconActivationCallback(
-        base::BindRepeating(&EcheTray::PerformAction, base::Unretained(this)));
+    phone_hub_tray->SetEcheIconActivationCallback(base::BindRepeating(
+        &EcheTray::OnButtonPressed, base::Unretained(this)));
   }
   // Hide bubble first until the streaming is ready.
   HideBubble();

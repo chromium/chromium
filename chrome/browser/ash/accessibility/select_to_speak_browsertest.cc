@@ -15,6 +15,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_util.h"

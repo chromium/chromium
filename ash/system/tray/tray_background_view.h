@@ -11,10 +11,8 @@
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
 #include "ash/system/model/virtual_keyboard_model.h"
-#include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/user/login_status.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -43,7 +41,7 @@ class TrayEventFilter;
 // PerformAction when clicked on. Note that events targeting a
 // `TrayBackgroundView`'s view hierarchy are ignored while the
 // `TrayBackgroundView`'s hide animation is running.
-class ASH_EXPORT TrayBackgroundView : public ActionableView,
+class ASH_EXPORT TrayBackgroundView : public views::Button,
                                       public views::ContextMenuController,
                                       public ShelfBackgroundAnimatorObserver,
                                       public TrayBubbleView::Delegate,
@@ -77,10 +75,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   void AddTrayBackgroundViewObserver(Observer* observer);
   void RemoveTrayBackgroundViewObserver(Observer* observer);
 
-  // Overrides default button press handling in `PerformAction()`.
-  void SetPressedCallback(
-      base::RepeatingCallback<void(const ui::Event& event)> pressed_callback);
-
   // Called after the tray has been added to the widget containing it.
   virtual void Initialize();
 
@@ -88,8 +82,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // animation that hides `bubble_widget` when it becomes invisible.
   static void InitializeBubbleAnimations(views::Widget* bubble_widget);
 
-  // ActionableView:
+  // views::Button:
   void OnThemeChanged() override;
+  void NotifyClick(const ui::Event& event) override;
 
   // VirtualKeyboardModel::Observer:
   void OnVirtualKeyboardVisibilityChanged() override;
@@ -135,10 +130,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Called when the anchor (tray or bubble) may have moved or changed.
   virtual void AnchorUpdated() {}
-
-  // Called after the tray has been activated, and `PerformAction()` has been
-  // called.
-  virtual void OnTrayActivated(const ui::Event& event);
 
   // Called from GetAccessibleNodeData, must return a valid accessible name.
   virtual std::u16string GetAccessibleNameForTray() = 0;
@@ -186,9 +177,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Helper function that calculates background bounds relative to local bounds
   // based on background insets returned from GetBackgroundInsets().
   gfx::Rect GetBackgroundBounds() const;
-
-  // ActionableView:
-  bool PerformAction(const ui::Event& event) final;
 
   // Sets whether the tray item should be shown by default (e.g. it is
   // activated). The effective visibility of the tray item is determined by the
@@ -253,11 +241,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   }
 
  protected:
-  // ActionableView:
+  // views::Button:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool ShouldEnterPushedState(const ui::Event& event) override;
-  void HandlePerformActionResult(bool action_performed,
-                                 const ui::Event& event) override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
 
   virtual void OnShouldShowAnimationChanged(bool should_animate) {}
@@ -394,9 +380,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // The shape of this tray which is only applied to the horizontal tray.
   // Defaults to `kAllRounded`.
   RoundedCornerBehavior corner_behavior_;
-
-  // Called instead of the default `PerformAction()`.
-  base::RepeatingCallback<void(const ui::Event& event)> pressed_callback_;
 
   std::unique_ptr<TrayWidgetObserver> widget_observer_;
   std::unique_ptr<TrayEventFilter> tray_event_filter_;

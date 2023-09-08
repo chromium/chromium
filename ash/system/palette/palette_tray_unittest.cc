@@ -586,13 +586,6 @@ class PaletteTrayTestMultiDisplay : public PaletteTrayTest {
   PaletteTrayTestMultiDisplay& operator=(const PaletteTrayTestMultiDisplay&) =
       delete;
 
-  // Performs a tap on the palette tray button.
-  void PerformTap(PaletteTray* tray) {
-    ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                         ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-    tray->PerformAction(tap);
-  }
-
   // Fake a stylus ejection.
   void EjectStylus() {
     test_api_->OnStylusStateChanged(ui::StylusState::REMOVED);

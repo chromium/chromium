@@ -267,8 +267,8 @@ PaletteTray::PaletteTray(Shelf* shelf)
       welcome_bubble_(std::make_unique<PaletteWelcomeBubble>(this)),
       stylus_event_handler_(std::make_unique<StylusEventHandler>(this)),
       scoped_session_observer_(this) {
-  SetPressedCallback(base::BindRepeating(&PaletteTray::OnPaletteTrayPressed,
-                                         base::Unretained(this)));
+  SetCallback(base::BindRepeating(&PaletteTray::OnPaletteTrayPressed,
+                                  weak_factory_.GetWeakPtr()));
 
   PaletteTool::RegisterToolInstances(palette_tool_manager_.get());
 

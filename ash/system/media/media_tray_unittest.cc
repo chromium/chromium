@@ -77,12 +77,6 @@ class MediaTrayTest : public AshTestBase {
     media_tray_->OnNotificationListChanged();
   }
 
-  void SimulateTapOnMediaTray() {
-    ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                         ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-    media_tray_->PerformAction(tap);
-  }
-
   void SimulateTapOnPinButton() {
     ASSERT_TRUE(media_tray_->pin_button_for_testing());
     ui::test::EventGenerator* generator = GetEventGenerator();
@@ -172,14 +166,14 @@ TEST_F(MediaTrayTest, ShowAndHideBubbleTest) {
   // getting active notifications.
   EXPECT_CALL(*provider(), GetMediaNotificationListView(
                                _, /*should_clip_height=*/true, _, _));
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
   EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_TRUE(media_tray()->is_active());
 
   // Tap again should close the bubble and MediaNotificationProvider should
   // be notified.
   EXPECT_CALL(*provider(), OnBubbleClosing());
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
   EXPECT_EQ(GetBubbleWrapper(), nullptr);
   EXPECT_FALSE(media_tray()->is_active());
 }
@@ -195,7 +189,8 @@ TEST_F(MediaTrayTest, OpenBubbleForcesShelfToShow) {
   EXPECT_FALSE(status_area_widget()->ShouldShowShelf());
 
   // Open the media tray bubble and verify that the shelf is forced to show.
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
+  ;
   EXPECT_TRUE(status_area_widget()->ShouldShowShelf());
 }
 
@@ -211,7 +206,8 @@ TEST_F(MediaTrayTest, ShowEmptyStateWhenNoActiveNotification) {
   EXPECT_FALSE(media_tray()->is_active());
 
   // Tap and show bubble.
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
+
   EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_TRUE(media_tray()->is_active());
 
@@ -238,7 +234,7 @@ TEST_F(MediaTrayTest, PinButtonTest) {
   provider()->SetHasActiveNotifications(true);
   SimulateNotificationListChanged();
   EXPECT_TRUE(media_tray()->GetVisible());
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
   EXPECT_NE(GetBubbleWrapper(), nullptr);
 
   // Tapping the pin button while the media controls dialog is opened
@@ -283,7 +279,7 @@ TEST_F(MediaTrayTest, DialogAnchor) {
   provider()->SetHasActiveNotifications(true);
   SimulateNotificationListChanged();
   EXPECT_TRUE(media_tray()->GetVisible());
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
   EXPECT_NE(GetBubbleWrapper(), nullptr);
 
   EXPECT_TRUE(status_area_widget()->shelf()->IsHorizontalAlignment());
@@ -322,9 +318,9 @@ TEST_F(MediaTrayTest, DialogAnchor) {
 
   // Hide bubble, change shelf alignment to left (vertical), and open
   // bubble again.
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
   status_area_widget()->shelf()->SetAlignment(ShelfAlignment::kLeft);
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
 
   // Get new bounds.
   initial_bounds = GetBubbleBounds();
@@ -340,11 +336,11 @@ TEST_F(MediaTrayTest, DialogAnchor) {
 
   // Hide bubble, change shelf alignment back to bottom and switch ui
   // direction to RTL.
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
   status_area_widget()->shelf()->SetAlignment(ShelfAlignment::kBottom);
   base::i18n::SetRTLForTesting(true);
   status_area_widget()->UpdateLayout(false);
-  SimulateTapOnMediaTray();
+  GestureTapOn(media_tray());
 
   // Get new bounds.
   initial_bounds = GetBubbleBounds();

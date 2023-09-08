@@ -88,7 +88,7 @@ void FloatingAccessibilityDetailedController::Show(
       std::make_unique<AccessibilityDetailedView>(this));
   bubble_view_->SetPreferredSize(
       gfx::Size(kTrayMenuWidth, kDetailedViewHeightDip));
-  bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
+  bubble_view_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_view_->SetCanActivate(true);

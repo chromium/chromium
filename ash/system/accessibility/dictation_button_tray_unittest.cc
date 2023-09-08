@@ -67,12 +67,6 @@ DictationButtonTray* GetTray() {
       ->dictation_button_tray();
 }
 
-ui::GestureEvent CreateTapEvent(
-    base::TimeDelta delta_from_start = base::TimeDelta()) {
-  return ui::GestureEvent(0, 0, 0, base::TimeTicks() + delta_from_start,
-                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-}
-
 // ProgressIndicatorWaiter -----------------------------------------------------
 
 // A class which supports waiting for a progress indicator to reach a desired
@@ -163,10 +157,10 @@ TEST_F(DictationButtonTrayTest, ButtonActivatesDictation) {
   controller->dictation().SetEnabled(true);
   EXPECT_FALSE(controller->dictation_active());
 
-  GetTray()->PerformAction(CreateTapEvent());
+  GestureTapOn(GetTray());
   EXPECT_TRUE(controller->dictation_active());
 
-  GetTray()->PerformAction(CreateTapEvent());
+  GestureTapOn(GetTray());
   EXPECT_FALSE(controller->dictation_active());
 }
 

@@ -108,8 +108,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   }
 
   // Sets a callback that will be called when eche icon is activated.
-  void SetEcheIconActivationCallback(
-      base::RepeatingCallback<bool(const ui::Event&)> callback);
+  void SetEcheIconActivationCallback(base::RepeatingCallback<void()> callback);
 
   views::View* content_view_for_testing() { return content_view_; }
 
@@ -178,8 +177,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
       eche_loading_indicator_ = nullptr;
 
   // This callback is called when the Eche icon is activated.
-  base::RepeatingCallback<bool(const ui::Event&)> eche_icon_callback_ =
-      base::BindRepeating([](const ui::Event&) { return true; });
+  base::RepeatingCallback<void()> eche_icon_callback_ = base::DoNothing();
 
   // Controls the main content view displayed in the bubble based on the current
   // PhoneHub state.

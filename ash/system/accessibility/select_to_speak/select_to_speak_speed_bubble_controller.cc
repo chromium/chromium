@@ -13,6 +13,7 @@
 #include "ash/system/accessibility/floating_menu_utils.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_constants.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_speed_view.h"
+#include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"

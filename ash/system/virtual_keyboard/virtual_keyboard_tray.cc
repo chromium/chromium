@@ -39,8 +39,8 @@ VirtualKeyboardTray::VirtualKeyboardTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf, catalog_name), shelf_(shelf) {
-  SetPressedCallback(base::BindRepeating(&VirtualKeyboardTray::OnButtonPressed,
-                                         base::Unretained(this)));
+  SetCallback(base::BindRepeating(&VirtualKeyboardTray::OnButtonPressed,
+                                  base::Unretained(this)));
 
   auto icon = std::make_unique<views::ImageView>();
   const ui::ImageModel image = ui::ImageModel::FromVectorIcon(

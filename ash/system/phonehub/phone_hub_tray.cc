@@ -85,8 +85,9 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
       last_unlocked_timestamp_(base::Time::NowFromSystemTime()) {
   // By default, if the individual buttons did not handle the event consider it
   // as a phone hub icon event.
-  SetPressedCallback(base::BindRepeating(&PhoneHubTray::PhoneHubIconActivated,
-                                         base::Unretained(this)));
+  SetCallback(base::BindRepeating(&PhoneHubTray::PhoneHubIconActivated,
+                                  base::Unretained(this)));
+
   observed_phone_hub_ui_controller_.Observe(ui_controller_.get());
   observed_session_.Observe(Shell::Get()->session_controller());
 
@@ -412,7 +413,7 @@ void PhoneHubTray::OnIconsDecoded(
 }
 
 void PhoneHubTray::SetEcheIconActivationCallback(
-    base::RepeatingCallback<bool(const ui::Event&)> callback) {
+    base::RepeatingCallback<void()> callback) {
   eche_icon_callback_ = std::move(callback);
 }
 
@@ -482,7 +483,7 @@ void PhoneHubTray::TemporarilyDisableAnimation() {
 }
 
 void PhoneHubTray::EcheIconActivated(const ui::Event& event) {
-  eche_icon_callback_.Run(event);
+  eche_icon_callback_.Run();
 }
 
 void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {

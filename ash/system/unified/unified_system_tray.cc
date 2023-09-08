@@ -190,8 +190,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
               ? nullptr
               : std::make_unique<NotificationIconsController>(shelf,
                                                               model_.get())) {
-  SetPressedCallback(base::BindRepeating(&UnifiedSystemTray::OnButtonPressed,
-                                         base::Unretained(this)));
+  SetCallback(base::BindRepeating(&UnifiedSystemTray::OnButtonPressed,
+                                  base::Unretained(this)));
 
   if (features::IsUserEducationEnabled()) {
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`

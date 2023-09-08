@@ -231,10 +231,12 @@ TEST_F(FloatingAccessibilityControllerTest, ImeButtonHiddenWhenSingleLanguage) {
 TEST_F(FloatingAccessibilityControllerTest, KioskImeTrayVisibility) {
   SetUpVisibleMenu();
 
-  ClickOnImeTrayButton();
+  // Tray bubble is visible when  a user taps on the IME icon.
+  GestureTapOn(GetImeTray());
   EXPECT_TRUE(IsImeTrayShown());
 
-  ClickOnImeTrayButton();
+  // Tray bubble is invisible when the user clicks on the IME icon again.
+  GestureTapOn(GetImeTray());
   EXPECT_FALSE(IsImeTrayShown());
 }
 
@@ -247,7 +249,8 @@ TEST_F(FloatingAccessibilityControllerTest,
        ImeTrayNotOverlapWithFloatingBubble) {
   SetUpVisibleMenu();
 
-  ClickOnImeTrayButton();
+  // Tray bubble is visible when  a user taps on the IME icon.
+  GestureTapOn(GetImeTray());
 
   auto* ime_tray = GetImeTray()->GetBubbleView();
   ASSERT_TRUE(ime_tray);

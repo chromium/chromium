@@ -79,8 +79,7 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   menu_view_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kUnifiedTopShortcutSpacing, 0, 0, 0)));
   bubble_view_->AddChildView(menu_view_.get());
-  bubble_view_->SetFocusBehavior(
-      ActionableView::FocusBehavior::ACCESSIBLE_ONLY);
+  bubble_view_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_view_->SetCanActivate(true);

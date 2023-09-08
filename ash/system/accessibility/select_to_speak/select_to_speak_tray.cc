@@ -85,7 +85,7 @@ std::u16string GetTooltipTextOnCurrentSelectToSpeakStatus(
 SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf,
                                      TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf, catalog_name) {
-  SetPressedCallback(base::BindRepeating([](const ui::Event& event) {
+  SetCallback(base::BindRepeating([](const ui::Event& event) {
     Shell::Get()->accessibility_controller()->RequestSelectToSpeakStateChange();
   }));
 

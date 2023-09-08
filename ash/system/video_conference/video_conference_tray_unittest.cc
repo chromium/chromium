@@ -34,6 +34,7 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/widget/widget.h"
@@ -266,17 +267,22 @@ TEST_F(VideoConferenceTrayTest, ClickTrayButton) {
 // Tests that tapping directly on the VideoConferenceTray (not the child toggle
 // buttons) toggles the bubble.
 TEST_F(VideoConferenceTrayTest, ClickTrayBackgroundViewTogglesBubble) {
+  // Make sure all buttons in the tray are visible.
+  SetTrayAndButtonsVisible();
+
   // Tap the body of the TrayBackgroundView, missing all toggle buttons. The
   // bubble should show up.
-  video_conference_tray()->PerformAction(ui::GestureEvent(
-      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+  GetEventGenerator()->GestureTapAt(
+      toggle_bubble_button()->GetBoundsInScreen().bottom_right() +
+      gfx::Vector2d(4, 0));
 
   EXPECT_TRUE(video_conference_tray()->GetBubbleView());
   EXPECT_TRUE(toggle_bubble_button()->toggled());
 
   // Tap the body again, it should hide the bubble.
-  video_conference_tray()->PerformAction(ui::GestureEvent(
-      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+  GetEventGenerator()->GestureTapAt(
+      toggle_bubble_button()->GetBoundsInScreen().bottom_right() +
+      gfx::Vector2d(4, 0));
 
   EXPECT_FALSE(video_conference_tray()->GetBubbleView());
   EXPECT_FALSE(toggle_bubble_button()->toggled());

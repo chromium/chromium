@@ -251,9 +251,7 @@ TrayBackgroundView::TrayBackgroundView(
     Shelf* shelf,
     const TrayBackgroundViewCatalogName catalog_name,
     RoundedCornerBehavior corner_behavior)
-    // Note the ink drop style is ignored.
-    : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
-      shelf_(shelf),
+    : shelf_(shelf),
       catalog_name_(catalog_name),
       tray_container_(new TrayContainer(shelf, this)),
       is_active_(false),
@@ -309,13 +307,6 @@ void TrayBackgroundView::AddTrayBackgroundViewObserver(Observer* observer) {
 void TrayBackgroundView::RemoveTrayBackgroundViewObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
-
-void TrayBackgroundView::SetPressedCallback(
-    base::RepeatingCallback<void(const ui::Event& event)> pressed_callback) {
-  pressed_callback_ = std::move(pressed_callback);
-}
-
-void TrayBackgroundView::OnTrayActivated(const ui::Event& event) {}
 
 TrayBackgroundView::~TrayBackgroundView() {
   StopPulseAnimation();
@@ -600,7 +591,7 @@ void TrayBackgroundView::AboutToRequestFocusFromTabTraversal(bool reverse) {
 }
 
 void TrayBackgroundView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  ActionableView::GetAccessibleNodeData(node_data);
+  views::Button::GetAccessibleNodeData(node_data);
   node_data->SetName(GetAccessibleNameForTray());
 
   if (LockScreen::HasInstance()) {
@@ -626,8 +617,14 @@ std::unique_ptr<ui::Layer> TrayBackgroundView::RecreateLayer() {
   return views::View::RecreateLayer();
 }
 
+void TrayBackgroundView::NotifyClick(const ui::Event& event) {
+  base::UmaHistogramEnumeration("Ash.StatusArea.TrayBackgroundView.Pressed",
+                                catalog_name_);
+  views::Button::NotifyClick(event);
+}
+
 void TrayBackgroundView::OnThemeChanged() {
-  ActionableView::OnThemeChanged();
+  views::Button::OnThemeChanged();
   UpdateBackground();
   if (!chromeos::features::IsJellyEnabled()) {
     StyleUtil::ConfigureInkDropAttributes(
@@ -949,32 +946,10 @@ gfx::Rect TrayBackgroundView::GetBackgroundBounds() const {
   return bounds;
 }
 
-bool TrayBackgroundView::PerformAction(const ui::Event& event) {
-  base::UmaHistogramEnumeration("Ash.StatusArea.TrayBackgroundView.Pressed",
-                                catalog_name_);
-
-  base::ScopedClosureRunner scoped_runner(
-      base::BindOnce(&TrayBackgroundView::OnTrayActivated,
-                     base::Unretained(this), std::cref(event)));
-
-  // `pressed_callback_` can be provided to override default press handling.
-  if (pressed_callback_) {
-    pressed_callback_.Run(event);
-    return true;
-  }
-
-  if (GetBubbleWidget()) {
-    CloseBubble();
-  } else {
-    ShowBubble();
-  }
-  return true;
-}
-
 void TrayBackgroundView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   UpdateBackground();
 
-  ActionableView::OnBoundsChanged(previous_bounds);
+  views::Button::OnBoundsChanged(previous_bounds);
 }
 
 bool TrayBackgroundView::ShouldEnterPushedState(const ui::Event& event) {
@@ -982,16 +957,7 @@ bool TrayBackgroundView::ShouldEnterPushedState(const ui::Event& event) {
     return false;
   }
 
-  return ActionableView::ShouldEnterPushedState(event);
-}
-
-void TrayBackgroundView::HandlePerformActionResult(bool action_performed,
-                                                   const ui::Event& event) {
-  // When an action is performed, ink drop ripple is handled in SetIsActive().
-  if (action_performed) {
-    return;
-  }
-  ActionableView::HandlePerformActionResult(action_performed, event);
+  return views::Button::ShouldEnterPushedState(event);
 }
 
 std::unique_ptr<ui::SimpleMenuModel>
@@ -1206,7 +1172,7 @@ void TrayBackgroundView::StartPulseAnimationCoolDownTimer() {
                      base::Unretained(this)));
 }
 
-BEGIN_METADATA(TrayBackgroundView, ActionableView)
+BEGIN_METADATA(TrayBackgroundView, views::Button)
 END_METADATA
 
 }  // namespace ash

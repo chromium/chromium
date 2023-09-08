@@ -414,6 +414,8 @@ ImeMenuTray::ImeMenuTray(Shelf* shelf)
       is_handwriting_enabled_(false),
       is_voice_enabled_(false) {
   DCHECK(ime_controller_);
+  SetCallback(base::BindRepeating(&ImeMenuTray::OnTrayButtonPressed,
+                                  weak_ptr_factory_.GetWeakPtr()));
   CreateLabel();
   SystemTrayNotifier* tray_notifier = Shell::Get()->system_tray_notifier();
   tray_notifier->AddIMEObserver(this);
@@ -433,6 +435,18 @@ ImeMenuTray::~ImeMenuTray() {
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   if (keyboard_controller->HasObserver(this))
     keyboard_controller->RemoveObserver(this);
+}
+
+void ImeMenuTray::OnTrayButtonPressed() {
+  UserMetricsRecorder::RecordUserClickOnTray(
+      LoginMetricsRecorder::TrayClickTarget::kImeTray);
+
+  if (GetBubbleWidget()) {
+    CloseBubble();
+    return;
+  }
+
+  ShowBubble();
 }
 
 void ImeMenuTray::ShowImeMenuBubbleInternal() {
@@ -527,13 +541,6 @@ void ImeMenuTray::UpdateTrayItemColor(bool is_active) {
   DCHECK(chromeos::features::IsJellyEnabled());
   UpdateTrayImageOrLabelColor(
       extension_ime_util::IsArcIME(ime_controller_->current_ime().id));
-}
-
-void ImeMenuTray::OnTrayActivated(const ui::Event& event) {
-  if (!event.IsMouseEvent() && !event.IsGestureEvent())
-    return;
-  UserMetricsRecorder::RecordUserClickOnTray(
-      LoginMetricsRecorder::TrayClickTarget::kImeTray);
 }
 
 void ImeMenuTray::CloseBubble() {

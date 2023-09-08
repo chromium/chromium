@@ -104,7 +104,7 @@ StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
           shelf,
           TrayBackgroundViewCatalogName::kStatusAreaOverflowButton),
       icon_(tray_container()->AddChildView(std::make_unique<IconView>())) {
-  SetPressedCallback(base::BindRepeating(
+  SetCallback(base::BindRepeating(
       &StatusAreaOverflowButtonTray::OnButtonPressed, base::Unretained(this)));
 
   set_use_bounce_in_animation(false);

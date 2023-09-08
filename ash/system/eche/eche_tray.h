@@ -160,6 +160,9 @@ class ASH_EXPORT EcheTray
       eche_app::mojom::ConnectionStatus connection_status) override;
   void OnRequestBackgroundConnectionAttempt() override;
 
+  // Callback called when the eche icon or tray button is pressed.
+  void OnButtonPressed();
+
   // Sets the url that will be passed to the webview.
   // Setting a new value will cause the current bubble be destroyed.
   void SetUrl(const GURL& url);

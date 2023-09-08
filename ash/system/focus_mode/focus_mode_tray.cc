@@ -24,8 +24,8 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
                          RoundedCornerBehavior::kAllRounded),
       image_view_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
-  SetPressedCallback(base::BindRepeating(&FocusModeTray::FocusModeIconActivated,
-                                         weak_ptr_factory_.GetWeakPtr()));
+  SetCallback(base::BindRepeating(&FocusModeTray::FocusModeIconActivated,
+                                  weak_ptr_factory_.GetWeakPtr()));
 
   image_view_->SetTooltipText(GetAccessibleNameForTray());
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);

@@ -63,7 +63,7 @@ DictationButtonTray::DictationButtonTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf, catalog_name), download_progress_(0) {
-  SetPressedCallback(base::BindRepeating(
+  SetCallback(base::BindRepeating(
       &DictationButtonTray::OnDictationButtonPressed, base::Unretained(this)));
 
   Shell* shell = Shell::Get();

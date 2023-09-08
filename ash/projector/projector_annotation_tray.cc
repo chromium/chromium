@@ -102,20 +102,9 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
       image_view_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
       pen_view_(nullptr) {
-  SetPressedCallback(base::BindRepeating(
-      [](ProjectorAnnotationTray* projector_annotation_tray,
-         const ui::Event& event) {
-        // NOTE: Long press not supported via the `views::Button` callback, it
-        // is handled via OnGestureEvent override.
-        if (event.IsMouseEvent() &&
-            event.AsMouseEvent()->IsRightMouseButton()) {
-          projector_annotation_tray->ShowBubble();
-          return;
-        }
+  SetCallback(base::BindRepeating(&ProjectorAnnotationTray::OnTrayButtonPressed,
+                                  base::Unretained(this)));
 
-        projector_annotation_tray->ToggleAnnotator();
-      },
-      base::Unretained(this)));
   // Right click should show the bubble. In tablet mode, long press is
   // synonymous with right click, gesture long press must be intercepted via
   // `OnGestureEvent()` override, as `views::Button` forces long press to show a
@@ -255,6 +244,17 @@ void ProjectorAnnotationTray::HideAnnotationTray() {
   pref_service->SetUint64(prefs::kProjectorAnnotatorLastUsedMarkerColor,
                           current_pen_color_);
   ResetTray();
+}
+
+void ProjectorAnnotationTray::OnTrayButtonPressed(const ui::Event& event) {
+  // NOTE: Long press not supported via the `views::Button` callback, it
+  // is handled via OnGestureEvent override.
+  if (event.IsMouseEvent() && event.AsMouseEvent()->IsRightMouseButton()) {
+    ShowBubble();
+    return;
+  }
+
+  ToggleAnnotator();
 }
 
 void ProjectorAnnotationTray::SetTrayEnabled(bool enabled) {

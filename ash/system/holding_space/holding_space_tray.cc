@@ -217,6 +217,9 @@ aura::client::DragDropClient* GetDragDropClient(views::Widget* widget) {
 
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kHoldingSpace) {
+  SetCallback(base::BindRepeating(&HoldingSpaceTray::OnTrayButtonPressed,
+                                  weak_factory_.GetWeakPtr()));
+
   // Ensure the existence of the singleton animation registry.
   HoldingSpaceAnimationRegistry::GetInstance();
 
@@ -725,6 +728,15 @@ void HoldingSpaceTray::ObservePrefService(PrefService* prefs) {
                                           tray->UpdateVisibility();
                                         },
                                         base::Unretained(this)));
+}
+
+void HoldingSpaceTray::OnTrayButtonPressed(const ui::Event& event) {
+  if (GetBubbleWidget()) {
+    CloseBubble();
+    return;
+  }
+
+  ShowBubble();
 }
 
 void HoldingSpaceTray::UpdatePreviewsState() {

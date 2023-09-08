@@ -27,12 +27,11 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
           RoundedCornerBehavior::kAllRounded),
       image_view_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
-  SetPressedCallback(base::BindRepeating([](const ui::Event& event) {
+  SetCallback(base::BindRepeating([](const ui::Event& event) {
     base::RecordAction(base::UserMetricsAction("Tray_StopRecording"));
     CaptureModeController::Get()->EndVideoRecording(
         EndRecordingReason::kStopRecordingButton);
   }));
-
   image_view_->SetTooltipText(GetAccessibleNameForTray());
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);

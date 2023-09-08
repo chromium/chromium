@@ -61,19 +61,6 @@ OverviewButtonTray* GetSecondaryTray() {
       ->overview_button_tray();
 }
 
-ui::GestureEvent CreateTapEvent(
-    base::TimeDelta delta_from_start = base::TimeDelta()) {
-  return ui::GestureEvent(0, 0, 0, base::TimeTicks() + delta_from_start,
-                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-}
-
-// Helper function to perform a double tap on the overview button tray.
-void PerformDoubleTap() {
-  ui::GestureEvent tap = CreateTapEvent();
-  GetTray()->PerformAction(tap);
-  GetTray()->PerformAction(tap);
-}
-
 }  // namespace
 
 class OverviewButtonTrayTest : public AshTestBase {
@@ -104,6 +91,12 @@ class OverviewButtonTrayTest : public AshTestBase {
   void NotifySessionStateChanged() {
     GetTray()->OnSessionStateChanged(
         Shell::Get()->session_controller()->GetSessionState());
+  }
+
+  // Helper function to perform a double tap on the overview button tray.
+  void PerformDoubleTap() {
+    GestureTapOn(GetTray());
+    GestureTapOn(GetTray());
   }
 
   SplitViewController* split_view_controller() {
@@ -165,11 +158,12 @@ TEST_F(OverviewButtonTrayTest, PerformAction) {
   // Overview Mode only works when there is a window
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
-  GetTray()->PerformAction(CreateTapEvent());
+  GetTray()->SetVisiblePreferred(true);
+  GestureTapOn(GetTray());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Verify tapping on the button again closes overview mode.
-  GetTray()->PerformAction(CreateTapEvent());
+  GestureTapOn(GetTray());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Test in tablet mode.
@@ -177,11 +171,11 @@ TEST_F(OverviewButtonTrayTest, PerformAction) {
   TabletModeControllerTestApi().EnterTabletMode();
   waiter.Wait();
 
-  GetTray()->PerformAction(CreateTapEvent());
+  GestureTapOn(GetTray());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Verify tapping on the button again closes overview mode.
-  GetTray()->PerformAction(CreateTapEvent());
+  GestureTapOn(GetTray());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
@@ -205,16 +199,15 @@ TEST_F(OverviewButtonTrayTest, PerformDoubleTapAction) {
 
   // Verify that if we double tap on the window selection page, it acts as two
   // taps, and ends up on the window selection page again.
-  ui::GestureEvent tap = CreateTapEvent();
   ASSERT_TRUE(wm::IsActiveWindow(window1.get()));
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   PerformDoubleTap();
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Verify that if we minimize a window, double tapping the overlay tray button
   // will bring up the window, and it should be the active window.
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   ASSERT_TRUE(!Shell::Get()->overview_controller()->InOverviewSession());
   ASSERT_TRUE(wm::IsActiveWindow(window1.get()));
   WindowState::Get(window2.get())->Minimize();
@@ -235,6 +228,8 @@ TEST_F(OverviewButtonTrayTest, PerformDoubleTapAction) {
 
 // Tests that tapping on the control will record the user action Tray_Overview.
 TEST_F(OverviewButtonTrayTest, TrayOverviewUserAction) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
   ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // With one window present, tapping on the control to enter overview mode
@@ -242,15 +237,13 @@ TEST_F(OverviewButtonTrayTest, TrayOverviewUserAction) {
   base::UserActionTester user_action_tester;
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
-  GetTray()->PerformAction(
-      CreateTapEvent(OverviewButtonTray::kDoubleTapThresholdMs));
+  GestureTapOn(GetTray());
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kTrayOverview));
 
   // Tapping on the control to exit overview mode should record the
   // user action.
-  GetTray()->PerformAction(
-      CreateTapEvent(OverviewButtonTray::kDoubleTapThresholdMs * 2));
+  GestureTapOn(GetTray());
   ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(2, user_action_tester.GetActionCount(kTrayOverview));
 }
@@ -371,6 +364,8 @@ TEST_F(OverviewButtonTrayTest, VisibilityChangesForSystemModalWindow) {
 // Verify that quick switch works properly when one of the windows has a
 // transient child.
 TEST_F(OverviewButtonTrayTest, TransientChildQuickSwitch) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   std::unique_ptr<aura::Window> window2 =
       CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_POPUP);

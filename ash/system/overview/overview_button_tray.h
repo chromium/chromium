@@ -61,10 +61,6 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // ActionableView:
-  void HandlePerformActionResult(bool action_performed,
-                                 const ui::Event& event) override;
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
