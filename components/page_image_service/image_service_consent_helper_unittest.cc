@@ -19,6 +19,11 @@ namespace {
 
 class ImageServiceConsentHelperTest : public testing::Test {
  public:
+  ImageServiceConsentHelperTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kImageServiceObserveSyncDownloadStatus);
+  }
+
   void SetUp() override {
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     consent_helper_ = std::make_unique<ImageServiceConsentHelper>(
@@ -52,6 +57,8 @@ class ImageServiceConsentHelperTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<ImageServiceConsentHelper> consent_helper_;

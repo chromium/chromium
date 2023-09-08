@@ -23,6 +23,6 @@ BASE_FEATURE(kImageServiceOptimizationGuideSalientImages,
 // images for already synced sync entities can be fetched.
 BASE_FEATURE(kImageServiceObserveSyncDownloadStatus,
              "ImageServiceObserveSyncDownloadStatus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace page_image_service
