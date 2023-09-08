@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/accelerators/keyboard_code_util.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -218,7 +219,7 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
     desk_shortcut_view_->AddChildView(std::make_unique<views::Label>(u"+"));
     desk_shortcut_view_->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            kDeskBarSearchIcon, cros_tokens::kIconColorPrimary,
+            *GetSearchOrLauncherVectorIcon(), cros_tokens::kIconColorPrimary,
             kShortcutViewIconSize)));
     desk_shortcut_view_->AddChildView(std::make_unique<views::Label>(u"+"));
     desk_shortcut_label_ =

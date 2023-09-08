@@ -5,6 +5,8 @@
 #include "ash/accelerators/keyboard_code_util.h"
 
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -67,6 +69,12 @@ absl::optional<std::u16string> GetSpecialStringForKeyboardCode(
   return l10n_util::GetStringUTF16(msg_id);
 }
 
+bool IsAssistantAvailable() {
+  AssistantStateBase* state = AssistantState::Get();
+  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
+         state->settings_enabled().value_or(false);
+}
+
 }  // namespace
 
 std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
@@ -116,6 +124,16 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
     default:
       return nullptr;
   }
+}
+
+const gfx::VectorIcon* GetSearchOrLauncherVectorIcon() {
+  if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
+    return IsAssistantAvailable()
+               ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
+               : &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+  }
+
+  return &kCaptureModeDemoToolsSearchIcon;
 }
 
 }  // namespace ash
