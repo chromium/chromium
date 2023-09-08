@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_MOJOM_BANNED_BROWSERTEST_FIXTURE_H_
-#define ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_MOJOM_BANNED_BROWSERTEST_FIXTURE_H_
+#ifndef ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_MOJOM_BANNED_MOCHA_TEST_BASE_H_
+#define ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_MOJOM_BANNED_MOCHA_TEST_BASE_H_
 
 #include <memory>
 
-#include "chrome/test/base/mojo_web_ui_browser_test.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
+#include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "url/gurl.h"
@@ -22,17 +22,17 @@ class TestPersonalizationAppMojomBannedWebUIProvider
                                                      const GURL& url) override;
 };
 
-class PersonalizationAppMojomBannedBrowserTestFixture
-    : public MojoWebUIBrowserTest {
+class PersonalizationAppMojomBannedMochaTestBase
+    : public WebUIMochaBrowserTest {
  public:
-  PersonalizationAppMojomBannedBrowserTestFixture() = default;
+  PersonalizationAppMojomBannedMochaTestBase();
 
-  PersonalizationAppMojomBannedBrowserTestFixture(
-      const PersonalizationAppMojomBannedBrowserTestFixture&) = delete;
-  PersonalizationAppMojomBannedBrowserTestFixture& operator=(
-      const PersonalizationAppMojomBannedBrowserTestFixture&) = delete;
+  PersonalizationAppMojomBannedMochaTestBase(
+      const PersonalizationAppMojomBannedMochaTestBase&) = delete;
+  PersonalizationAppMojomBannedMochaTestBase& operator=(
+      const PersonalizationAppMojomBannedMochaTestBase&) = delete;
 
-  ~PersonalizationAppMojomBannedBrowserTestFixture() override = default;
+  ~PersonalizationAppMojomBannedMochaTestBase() override = default;
 
   void SetUpOnMainThread() override;
 
@@ -45,4 +45,4 @@ class PersonalizationAppMojomBannedBrowserTestFixture
 
 }  // namespace ash::personalization_app
 
-#endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_MOJOM_BANNED_BROWSERTEST_FIXTURE_H_
+#endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_MOJOM_BANNED_MOCHA_TEST_BASE_H_

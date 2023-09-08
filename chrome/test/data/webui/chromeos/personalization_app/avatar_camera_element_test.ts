@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://personalization/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AvatarCameraElement, AvatarCameraMode, GetUserMediaProxy, setWebcamUtilsForTesting} from 'chrome://personalization/js/personalization_app.js';
 import * as webcamUtils from 'chrome://resources/ash/common/cr_picture/webcam_utils.js';

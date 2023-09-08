@@ -4,6 +4,7 @@
 
 /**
  * @fileoverview E2E test suite for chrome://personalization.
+ * TODO(b/299299659) use WebUIMochaBrowserTest for these tests.
  */
 
 GEN('#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_browsertest_fixture.h"');

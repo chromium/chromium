@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://personalization/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {emptyState, SetSelectedImageAction, WallpaperActionName, WallpaperObserver} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';

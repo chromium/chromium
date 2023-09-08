@@ -5,7 +5,6 @@
 /** @fileoverview Test suite for dynamic-color-element component.  */
 
 import 'chrome://personalization/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ColorScheme, DynamicColorElement, emptyState, SetColorSchemeAction, SetSampleColorSchemesAction, SetStaticColorAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://personalization/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AlbumsSubpageElement, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpageElement, AmbientTheme, AmbientThemeItemElement, AmbientUiVisibility, emptyState, Paths, PersonalizationRouterElement, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItemElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://personalization/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, getNumberOfGridItemsPerRow, GooglePhotosPhoto, GooglePhotosPhotosElement, GooglePhotosPhotosSection, PersonalizationActionName, SetErrorAction, WallpaperGridItemElement, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';

@@ -28,17 +28,17 @@ tests, javascript component browser tests, and javascript full-app browsertests.
     * fake wallpaper\_controller
     * etc
 * component browser tests
-  * `personalization_app_component_browsertest.js`
+  * `personalization_app_component_browsertest.cc`
   * `browser_tests --gtest_filter=*PersonalizationAppComponent*`
   * loads test cases from `//chrome/test/data/webui/chromeos/personalization_app/*`
   * Opens an empty browser window, loads javascript necessary to render a
     single Polymer element, and executes javascript tests against that component
   * All mojom calls are faked in javascript
     * any mojom call that reaches
-    `personalization_app_mojom_banned_browsertest_fixture.h`
+    `personalization_app_mojom_banned_mocha_test_base.h`
     will immediately fail the test
 * controller browser tests
-  * `personalization_app_controller_browsertest.js`
+  * `personalization_app_controller_browsertest.cc`
   * `browser_tests --gtest_filter=*PersonalizationAppController*`
   * no UI elements, javascript testing of controller functions, reducers, logic
   * All mojom calls are faked in javascript the same way as component browser

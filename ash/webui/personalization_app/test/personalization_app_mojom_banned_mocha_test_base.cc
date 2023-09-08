@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/personalization_app/test/personalization_app_mojom_banned_browsertest_fixture.h"
+#include "ash/webui/personalization_app/test/personalization_app_mojom_banned_mocha_test_base.h"
 
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
@@ -13,6 +14,7 @@
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -309,10 +311,17 @@ TestPersonalizationAppMojomBannedWebUIProvider::NewWebUI(content::WebUI* web_ui,
       std::move(user_provider), std::move(wallpaper_provider));
 }
 
-void PersonalizationAppMojomBannedBrowserTestFixture::SetUpOnMainThread() {
-  MojoWebUIBrowserTest::SetUpOnMainThread();
+PersonalizationAppMojomBannedMochaTestBase::
+    PersonalizationAppMojomBannedMochaTestBase() {
+  set_test_loader_host(
+      ::ash::personalization_app::kChromeUIPersonalizationAppHost);
+}
+
+void PersonalizationAppMojomBannedMochaTestBase::SetUpOnMainThread() {
+  WebUIMochaBrowserTest::SetUpOnMainThread();
   test_factory_.AddFactoryOverride(kChromeUIPersonalizationAppHost,
                                    &test_web_ui_provider_);
+  ::ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
 }
 
 }  // namespace ash::personalization_app

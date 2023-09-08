@@ -5,7 +5,6 @@
 /** @fileoverview Test suite for wallpaper-preview component.  */
 
 import 'chrome://personalization/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {WallpaperPreviewElement, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
