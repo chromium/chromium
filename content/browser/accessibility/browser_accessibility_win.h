@@ -28,6 +28,12 @@ class CONTENT_EXPORT BrowserAccessibilityWin : public BrowserAccessibility {
   void UpdatePlatformAttributes() override;
 
   //
+  // AXPlatformNodeDelegate overrides.
+  //
+
+  std::wstring ComputeListItemNameFromContent() const override;
+
+  //
   // BrowserAccessibility overrides.
   //
 

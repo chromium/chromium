@@ -69,6 +69,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   size_t GetChildCount() const override;
   gfx::NativeViewAccessible ChildAtIndex(size_t index) const override;
   bool HasModalDialog() const override;
+  std::wstring ComputeListItemNameFromContent() const override;
   // Also in |ViewAccessibility|.
   bool IsChildOfLeaf() const override;
   ui::AXNodePosition::AXPositionInstance CreateTextPositionAt(

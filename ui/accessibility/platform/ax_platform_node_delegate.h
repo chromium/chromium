@@ -369,6 +369,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   virtual TextAttributeMap ComputeTextAttributeMap(
       const TextAttributeList& default_attributes) const;
 
+  virtual std::wstring ComputeListItemNameFromContent() const;
+
   // Get the inherited font family name for text attributes. We need this
   // because inheritance works differently between the different delegate
   // implementations.

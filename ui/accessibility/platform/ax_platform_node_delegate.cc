@@ -408,6 +408,11 @@ TextAttributeMap AXPlatformNodeDelegate::ComputeTextAttributeMap(
   return attributes_map;
 }
 
+std::wstring AXPlatformNodeDelegate::ComputeListItemNameFromContent() const {
+  NOTIMPLEMENTED();
+  return std::wstring();
+}
+
 std::string AXPlatformNodeDelegate::GetInheritedFontFamilyName() const {
   return GetInheritedStringAttribute(ax::mojom::StringAttribute::kFontFamily);
 }

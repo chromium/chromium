@@ -661,6 +661,25 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
             child_view_4->GetPreviousSibling());
 }
 
+TEST_F(ViewAXPlatformNodeDelegateTest, ComputeViewListItemName) {
+  View::Views extra_views = SetUpExtraViews();
+  ViewAXPlatformNodeDelegate* parent_view = view_accessibility(extra_views[0]);
+  ViewAXPlatformNodeDelegate* child_view_1 = view_accessibility(extra_views[1]);
+  ViewAXPlatformNodeDelegate* child_view_2 = view_accessibility(extra_views[2]);
+  ViewAXPlatformNodeDelegate* child_view_3 = view_accessibility(extra_views[3]);
+
+  parent_view->OverrideRole(ax::mojom::Role::kListItem);
+  child_view_1->OverrideRole(ax::mojom::Role::kStaticText);
+  child_view_2->OverrideRole(ax::mojom::Role::kLink);
+  child_view_3->OverrideRole(ax::mojom::Role::kStaticText);
+
+  child_view_1->OverrideName("1");
+  child_view_2->OverrideName("2");
+  child_view_3->OverrideName("3");
+
+  EXPECT_EQ(parent_view->ComputeListItemNameFromContent(), L"123");
+}
+
 TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // Adds one extra parent view with four child views to our widget. The parent
   // view is added as the next sibling of the already present button view.

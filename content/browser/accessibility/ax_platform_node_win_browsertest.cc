@@ -253,6 +253,51 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
       FindNode(ax::mojom::Role::kGenericContainer, "b3"), {"a3", "c3"});
 }
 
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest, UIANamePropertyValue) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <ol>
+          <li>list item 1</li>
+          <li></li>
+          <li>before <div><span>problem</span></div>, after</li>
+          <li>before <a href="https://blah.com">problem</a>, after</li>
+          <li aria-label="from author">from content</li>
+        </ol>
+      </html>
+  )HTML"));
+  BrowserAccessibility* list_node =
+      GetRootAndAssertNonNull()->PlatformGetChild(0);
+  BrowserAccessibility* item_node = list_node->PlatformGetChild(0);
+  ASSERT_NE(nullptr, item_node);
+  EXPECT_UIA_BSTR_EQ(ToBrowserAccessibilityWin(item_node)->GetCOM(),
+                     UIA_NamePropertyId, L"list item 1");
+
+  // Empty string as name should correspond to empty <li>.
+  item_node = list_node->PlatformGetChild(1);
+  ASSERT_NE(nullptr, item_node);
+  EXPECT_UIA_BSTR_EQ(ToBrowserAccessibilityWin(item_node)->GetCOM(),
+                     UIA_NamePropertyId, L"");
+
+  //  <li> with complex structure and text.
+  item_node = list_node->PlatformGetChild(2);
+  ASSERT_NE(nullptr, item_node);
+  EXPECT_UIA_BSTR_EQ(ToBrowserAccessibilityWin(item_node)->GetCOM(),
+                     UIA_NamePropertyId, L"beforeproblem, after");
+
+  // <li> with a link inside
+  item_node = list_node->PlatformGetChild(3);
+  ASSERT_NE(nullptr, item_node);
+  EXPECT_UIA_BSTR_EQ(ToBrowserAccessibilityWin(item_node)->GetCOM(),
+                     UIA_NamePropertyId, L"before problem, after");
+
+  // <li> with name specified by the author rather than by the contents.
+  item_node = list_node->PlatformGetChild(4);
+  ASSERT_NE(nullptr, item_node);
+  EXPECT_UIA_BSTR_EQ(ToBrowserAccessibilityWin(item_node)->GetCOM(),
+                     UIA_NamePropertyId, L"from author");
+}
+
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
                        UIAIWindowProviderGetIsModalOnDialog) {
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(

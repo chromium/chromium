@@ -441,6 +441,26 @@ bool ViewAXPlatformNodeDelegate::HasModalDialog() const {
   return GetChildWidgets().is_tab_modal_showing;
 }
 
+std::wstring ViewAXPlatformNodeDelegate::ComputeListItemNameFromContent()
+    const {
+  DCHECK_EQ(GetData().role, ax::mojom::Role::kListItem);
+
+  std::string str = "";
+  // The list item name will result in the concatenation of its children's
+  // accessible names, excluding the list item marker.
+  // TODO(accessibility): We're aware the accessible name might be computed
+  // incorrectly if there's a complex structure. Things might be missing for
+  // descendants of descendants.
+  for (size_t i = 0; i < GetChildCount(); ++i) {
+    auto* child = ui::AXPlatformNode::FromNativeViewAccessible(ChildAtIndex(i));
+    if (GetData().role != ax::mojom::Role::kListMarker) {
+      str += child->GetDelegate()->GetName();
+    }
+  }
+
+  return base::UTF8ToWide(str);
+}
+
 bool ViewAXPlatformNodeDelegate::IsChildOfLeaf() const {
   return AXPlatformNodeDelegate::IsChildOfLeaf();
 }
