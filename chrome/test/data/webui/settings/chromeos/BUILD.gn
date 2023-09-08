@@ -203,7 +203,7 @@ build_webui_tests("build") {
 
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.ts",
     "os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js",
-    "os_bluetooth_page/os_bluetooth_devices_subpage_tests.js",
+    "os_bluetooth_page/os_bluetooth_devices_subpage_test.ts",
     "os_bluetooth_page/os_bluetooth_page_test.ts",
     "os_bluetooth_page/os_bluetooth_pairing_dialog_test.ts",
     "os_bluetooth_page/os_bluetooth_saved_devices_subpage_test.ts",
