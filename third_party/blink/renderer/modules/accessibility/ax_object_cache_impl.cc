@@ -1311,6 +1311,11 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AccessibleNode* accessible_node,
   if (AXObject* obj = Get(accessible_node))
     return obj;
 
+  // New AXObjects cannot be created when the tree is frozen.
+  if (IsFrozen()) {
+    return nullptr;
+  }
+
   DCHECK_EQ(accessible_node->GetDocument(), &GetDocument());
 
   DCHECK(parent)
@@ -1368,6 +1373,13 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
                                            LayoutObject* layout_object,
                                            AXObject* parent_if_known,
                                            AXID use_axid) {
+  // New AXObjects cannot be created when the tree is frozen.
+  // In this state, the tree should already be complete because
+  // of UpdateTreeIfNeeded().
+  if (IsFrozen()) {
+    return nullptr;
+  }
+
 #if DCHECK_IS_ON()
   DCHECK(node || layout_object);
   DCHECK(!node || !layout_object || layout_object->GetNode() == node);
@@ -2786,6 +2798,10 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
   // Ensure root exists.
   GetOrCreate(document_);
 
+  // Update (create or remove) validation child of root, if it is needed, so
+  // that the tree can be frozen in the correct state.
+  ValidationMessageObjectIfInvalid(/* notify children changed */ true);
+
   // Changes to ids or aria-owns may have resulted in queued up relation
   // cache work; do that now.
   EnsureRelationCache();
@@ -3933,6 +3949,7 @@ void AXObjectCacheImpl::HandleNameAttributeChangedWithCleanLayout(Node* node) {
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreateValidationMessageObject() {
+  // New AXObjects cannot be created when the tree is frozen.
   AXObject* message_ax_object = nullptr;
   // Create only if it does not already exist.
   if (validation_message_axid_) {
@@ -3946,6 +3963,9 @@ AXObject* AXObjectCacheImpl::GetOrCreateValidationMessageObject() {
       DCHECK(message_ax_object->CachedParentObject() == Root());
     }
   } else {
+    if (IsFrozen()) {
+      return nullptr;
+    }
     message_ax_object = MakeGarbageCollected<AXValidationMessage>(*this);
     DCHECK(message_ax_object);
     // Cache the validation message container for reuse.
