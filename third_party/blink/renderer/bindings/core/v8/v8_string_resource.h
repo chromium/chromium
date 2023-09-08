@@ -69,14 +69,6 @@ class V8StringResource {
 
   void operator=(std::nullptr_t) { SetString(String()); }
 
-  bool Prepare() {  // DEPRECATED
-    if (PrepareFast())
-      return true;
-
-    return v8_object_->ToString(v8::Isolate::GetCurrent()->GetCurrentContext())
-        .ToLocal(&v8_object_);
-  }
-
   bool Prepare(v8::Isolate* isolate, ExceptionState& exception_state) {
     return PrepareFast() || PrepareSlow(isolate, exception_state);
   }
