@@ -397,15 +397,18 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     // Create a proxy URLLoader even when there is no CRX
     // installed with webRequest permissions. This allows the extension
     // requests to be intercepted for CRX telemetry service if enabled.
-    // TODO(zackhan): This is here for the current implementation, but if it's
-    // expanded, it should live somewhere else so that we don't have to create
-    // a full proxy just for telemetry.
+    // Only proxy if the new RHC interception logic is disabled.
+    // TODO(crbug.com/1447587): Clean up collection logic here once new RHC
+    // interception logic is fully launched.
     const std::string& request_scheme = request_initiator.scheme();
     if (extensions::kExtensionScheme == request_scheme &&
         ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
             browser_context) &&
         base::FeatureList::IsEnabled(
-            safe_browsing::kExtensionTelemetryReportContactedHosts)) {
+            safe_browsing::kExtensionTelemetryReportContactedHosts) &&
+        !base::FeatureList::IsEnabled(
+            safe_browsing::
+                kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
       skip_proxy = false;
     }
     if (skip_proxy) {
@@ -544,13 +547,18 @@ bool WebRequestAPI::MayHaveProxies() const {
 }
 
 bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
+  // TODO(crbug.com/1447587): Clean up once new RHC interception logic is fully
+  // launched.
   return ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
              browser_context_) &&
          base::FeatureList::IsEnabled(
              safe_browsing::kExtensionTelemetryReportContactedHosts) &&
          base::FeatureList::IsEnabled(
              safe_browsing::
-                 kExtensionTelemetryReportHostsContactedViaWebSocket);
+                 kExtensionTelemetryReportHostsContactedViaWebSocket) &&
+         !base::FeatureList::IsEnabled(
+             safe_browsing::
+                 kExtensionTelemetryInterceptRemoteHostsContactedInRenderer);
 }
 
 bool WebRequestAPI::HasExtraHeadersListenerForTesting() {
