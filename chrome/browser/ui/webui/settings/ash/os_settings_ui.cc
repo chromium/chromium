@@ -263,9 +263,13 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<mojom::InputDeviceSettingsProvider> receiver) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
-  OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
-      ->input_device_settings_provider()
-      ->BindInterface(std::move(receiver));
+  auto* provider =
+      OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+          ->input_device_settings_provider();
+  if (features::IsPeripheralCustomizationEnabled()) {
+    provider->Initialize(web_ui());
+  }
+  provider->BindInterface(std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

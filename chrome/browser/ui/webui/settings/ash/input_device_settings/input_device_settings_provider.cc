@@ -9,7 +9,9 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash::settings {
 
@@ -48,16 +50,102 @@ std::vector<T> SanitizeAndSortDeviceList(std::vector<T> devices) {
 
 InputDeviceSettingsProvider::InputDeviceSettingsProvider() {
   auto* controller = InputDeviceSettingsController::Get();
-  if (features::IsInputDeviceSettingsSplitEnabled() && controller) {
+  if (!controller) {
+    return;
+  }
+
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
     controller->AddObserver(this);
   }
 }
 
 InputDeviceSettingsProvider::~InputDeviceSettingsProvider() {
   auto* controller = InputDeviceSettingsController::Get();
-  if (features::IsInputDeviceSettingsSplitEnabled() && controller) {
+  if (!controller) {
+    return;
+  }
+
+  if (features::IsPeripheralCustomizationEnabled()) {
+    controller->StopObservingButtons();
+    if (widget_) {
+      widget_->RemoveObserver(this);
+    }
+  }
+
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
     controller->RemoveObserver(this);
   }
+}
+
+void InputDeviceSettingsProvider::Initialize(content::WebUI* web_ui) {
+  if (features::IsPeripheralCustomizationEnabled() && !widget_) {
+    widget_ = views::Widget::GetWidgetForNativeWindow(
+        web_ui->GetWebContents()->GetTopLevelNativeWindow());
+    if (widget_) {
+      widget_->AddObserver(this);
+      HandleObserving();
+    }
+  }
+}
+
+void InputDeviceSettingsProvider::HandleObserving() {
+  if (!widget_) {
+    return;
+  }
+
+  bool previous = observing_paused_;
+  const bool widget_open = !widget_->IsClosed();
+  const bool widget_active = widget_->IsActive();
+  const bool widget_visible = widget_->IsVisible();
+  observing_paused_ = !(widget_open && widget_visible && widget_active);
+
+  if (observing_paused_ == previous) {
+    return;
+  }
+
+  if (observing_paused_) {
+    InputDeviceSettingsController::Get()->StopObservingButtons();
+    return;
+  }
+
+  for (const auto& id : observing_devices_) {
+    InputDeviceSettingsController::Get()->StartObservingButtons(id);
+  }
+}
+
+void InputDeviceSettingsProvider::OnWidgetVisibilityChanged(
+    views::Widget* widget,
+    bool visible) {
+  HandleObserving();
+}
+
+void InputDeviceSettingsProvider::OnWidgetActivationChanged(
+    views::Widget* widget,
+    bool active) {
+  HandleObserving();
+}
+
+void InputDeviceSettingsProvider::OnWidgetDestroyed(views::Widget* widget) {
+  widget_->RemoveObserver(this);
+  widget_ = nullptr;
+  // Reset observing paused since context was lost on the current state of the
+  // settings app window.
+  observing_paused_ = true;
+  InputDeviceSettingsController::Get()->StopObservingButtons();
+}
+
+void InputDeviceSettingsProvider::StartObserving(uint32_t device_id) {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
+  observing_devices_.insert(device_id);
+  if (!observing_paused_) {
+    InputDeviceSettingsController::Get()->StartObservingButtons(device_id);
+  }
+}
+
+void InputDeviceSettingsProvider::StopObserving() {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
+  observing_devices_.clear();
+  InputDeviceSettingsController::Get()->StopObservingButtons();
 }
 
 void InputDeviceSettingsProvider::BindInterface(
@@ -266,6 +354,12 @@ void InputDeviceSettingsProvider::NotifyMiceUpdated() {
   for (const auto& observer : mouse_settings_observers_) {
     observer->OnMouseListUpdated(mojo::Clone(mice));
   }
+}
+
+void InputDeviceSettingsProvider::SetWidgetForTesting(views::Widget* widget) {
+  widget_ = widget;
+  widget_->AddObserver(this);
+  HandleObserving();
 }
 
 }  // namespace ash::settings

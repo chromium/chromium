@@ -13,17 +13,16 @@
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
-#include "base/containers/cxx20_erase_vector.h"
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom.h"
-#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash::settings {
 namespace {
@@ -282,7 +281,10 @@ class FakeInputDeviceSettingsController
     NOTIMPLEMENTED();
   }
 
-  void OnLoginScreenFocusedPodChanged(const AccountId& account_id) override {}
+  void StartObservingButtons(DeviceId id) override {
+    observed_currently_ = true;
+  }
+  void StopObservingButtons() override { observed_currently_ = false; }
 
   void AddKeyboard(::ash::mojom::KeyboardPtr keyboard) {
     keyboards_.push_back(std::move(keyboard));
@@ -370,6 +372,7 @@ class FakeInputDeviceSettingsController
   int num_times_set_touchpad_settings_called() {
     return num_times_set_touchpad_settings_called_;
   }
+  bool observed_currently() { return observed_currently_; }
 
  private:
   std::vector<::ash::mojom::KeyboardPtr> keyboards_;
@@ -388,26 +391,37 @@ class FakeInputDeviceSettingsController
   int num_times_set_pointing_stick_settings_called_ = 0;
   int num_times_set_mouse_settings_called_ = 0;
   int num_times_set_touchpad_settings_called_ = 0;
+  bool observed_currently_ = false;
 };
 
 }  // namespace
 
-class InputDeviceSettingsProviderTest : public testing::Test {
+class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
  public:
   InputDeviceSettingsProviderTest() = default;
   ~InputDeviceSettingsProviderTest() override = default;
 
   void SetUp() override {
     feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    feature_list_->InitAndEnableFeature(features::kInputDeviceSettingsSplit);
-
+    feature_list_->InitWithFeatures({features::kInputDeviceSettingsSplit,
+                                     features::kPeripheralCustomization},
+                                    {});
+    views::ViewsTestBase::SetUp();
+    widget_ = CreateTestWidget();
+    widget_->Show();
+    scoped_resetter_ = std::make_unique<
+        InputDeviceSettingsController::ScopedResetterForTest>();
     controller_ = std::make_unique<FakeInputDeviceSettingsController>();
     provider_ = std::make_unique<InputDeviceSettingsProvider>();
+    provider_->SetWidgetForTesting(widget_.get());
   }
 
   void TearDown() override {
     provider_.reset();
     controller_.reset();
+    scoped_resetter_.reset();
+    widget_.reset();
+    views::ViewsTestBase::TearDown();
     feature_list_.reset();
   }
 
@@ -415,7 +429,9 @@ class InputDeviceSettingsProviderTest : public testing::Test {
   std::unique_ptr<FakeInputDeviceSettingsController> controller_;
   std::unique_ptr<InputDeviceSettingsProvider> provider_;
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
+      scoped_resetter_;
+  std::unique_ptr<views::Widget> widget_;
 };
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetKeyboardSettings) {
@@ -732,6 +748,45 @@ TEST_F(InputDeviceSettingsProviderTest, TestPointingStickSettingsObeserver) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_called());
   ExpectListsEqual(expected_pointing_sticks, fake_observer.pointing_sticks());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, ObservationMatchesWidget) {
+  provider_->StartObserving(kMouse1.id);
+  EXPECT_TRUE(controller_->observed_currently());
+
+  widget_->Hide();
+  EXPECT_FALSE(controller_->observed_currently());
+
+  widget_->Show();
+  EXPECT_TRUE(controller_->observed_currently());
+
+  controller_->StopObservingButtons();
+  EXPECT_FALSE(controller_->observed_currently());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, ObservationStateRemembered) {
+  provider_->StartObserving(kMouse1.id);
+  EXPECT_TRUE(controller_->observed_currently());
+
+  widget_->Hide();
+  EXPECT_FALSE(controller_->observed_currently());
+
+  provider_->StopObserving();
+  EXPECT_FALSE(controller_->observed_currently());
+
+  widget_->Show();
+  EXPECT_FALSE(controller_->observed_currently());
+
+  provider_->StartObserving(kMouse1.id);
+  EXPECT_TRUE(controller_->observed_currently());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, ObservationStateOnDestruction) {
+  provider_->StartObserving(kMouse1.id);
+  EXPECT_TRUE(controller_->observed_currently());
+
+  widget_.reset();
+  EXPECT_FALSE(controller_->observed_currently());
 }
 
 }  // namespace ash::settings

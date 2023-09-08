@@ -7,16 +7,22 @@
 
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom.h"
+#include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash::settings {
 
 class InputDeviceSettingsProvider
     : public mojom::InputDeviceSettingsProvider,
-      public InputDeviceSettingsController::Observer {
+      public InputDeviceSettingsController::Observer,
+      public views::WidgetObserver {
  public:
   InputDeviceSettingsProvider();
   InputDeviceSettingsProvider(const InputDeviceSettingsProvider& other) =
@@ -24,6 +30,11 @@ class InputDeviceSettingsProvider
   InputDeviceSettingsProvider& operator=(
       const InputDeviceSettingsProvider& other) = delete;
   ~InputDeviceSettingsProvider() override;
+
+  void Initialize(content::WebUI* web_ui);
+
+  void StartObserving(uint32_t device_id);
+  void StopObserving();
 
   void BindInterface(
       mojo::PendingReceiver<mojom::InputDeviceSettingsProvider> receiver);
@@ -72,17 +83,36 @@ class InputDeviceSettingsProvider
   void OnMousePoliciesUpdated(
       const ::ash::mojom::MousePolicies& mouse_policies) override;
 
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
+
+  void SetWidgetForTesting(views::Widget* widget);
+
  private:
   void NotifyKeyboardsUpdated();
   void NotifyTouchpadsUpdated();
   void NotifyPointingSticksUpdated();
   void NotifyMiceUpdated();
 
+  void HandleObserving();
+
+  // Denotes whether button observing should be paused due to the settings app
+  // being out of focus or minimized. Default to true to require a valid widget
+  // to observe devices.
+  bool observing_paused_ = true;
+  // The list of device ids to observe when the settings app is focused or in
+  // use by the user.
+  base::flat_set<uint32_t> observing_devices_;
+
   mojo::RemoteSet<mojom::KeyboardSettingsObserver> keyboard_settings_observers_;
   mojo::RemoteSet<mojom::TouchpadSettingsObserver> touchpad_settings_observers_;
   mojo::RemoteSet<mojom::PointingStickSettingsObserver>
       pointing_stick_settings_observers_;
   mojo::RemoteSet<mojom::MouseSettingsObserver> mouse_settings_observers_;
+
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 
   mojo::Receiver<mojom::InputDeviceSettingsProvider> receiver_{this};
 };
