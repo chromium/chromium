@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -18,6 +19,7 @@
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui.h"
+#include "components/permissions/features.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -144,6 +146,10 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   if (base::FeatureList::IsEnabled(features::kFedCm)) {
     permissions_to_display.push_back(
         ContentSettingsType::FEDERATED_IDENTITY_API);
+  }
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionStorageAccessAPI)) {
+    permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
   }
 
   std::map<ContentSettingsType, ContentSetting>

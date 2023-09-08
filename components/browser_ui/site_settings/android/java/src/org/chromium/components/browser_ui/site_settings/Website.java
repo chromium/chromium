@@ -40,6 +40,12 @@ public final class Website implements WebsiteEntry {
      */
     private Map<Integer, PermissionInfo> mPermissionInfos = new HashMap<>();
 
+    /**
+     * Indexed by ContentSettingsType. For Permissions like the StorageAccess API that are keyed by
+     * requesting and embedding site.
+     */
+    private Map<Integer, List<PermissionInfo>> mEmbeddedPermissionInfos = new HashMap<>();
+
     private LocalStorageInfo mLocalStorageInfo;
     private FPSCookieInfo mFPSCookieInfo;
     private CookiesInfo mCookiesInfo;
@@ -158,6 +164,18 @@ public final class Website implements WebsiteEntry {
      */
     public void setPermissionInfo(PermissionInfo info) {
         mPermissionInfos.put(info.getContentSettingsType(), info);
+    }
+
+    public Map<Integer, List<PermissionInfo>> getEmbeddedPermissionInfos() {
+        return mEmbeddedPermissionInfos;
+    }
+
+    public void addEmbeddedPermissionInfo(PermissionInfo info) {
+        assert info.getEmbedder() != null;
+        assert !info.getEmbedder().equals("*");
+        var list = mEmbeddedPermissionInfos.computeIfAbsent(
+                info.getContentSettingsType(), k -> new ArrayList<>());
+        list.add(info);
     }
 
     public Collection<ContentSettingException> getContentSettingExceptions() {

@@ -160,6 +160,12 @@
   <message name="IDS_SITE_SETTINGS_TYPE_VR_MID_SENTENCE" desc="The label used for the VR site settings controls when used mid-sentence.">
     virtual reality
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS" desc="The name of a Chrome setting. This string also appears as the title of a dialog box and as the title of a Chrome settings page.">
+    Embedded content
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE" desc="The name of a Chrome setting. This string also appears as the title of a dialog box and as the title of a Chrome settings page. Used mid-sentence.">
+    embedded content
+  </message>
 
   <!-- Site Settings desktop-only -->
   <if expr="not is_android">
@@ -225,12 +231,6 @@
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE" desc="The label used for the window management site settings controls when used mid-sentence.">
     window management
-  </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS" desc="The name of a Chrome setting. This string also appears as the title of a dialog box and as the title of a Chrome settings page.">
-    Embedded content
-  </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE" desc="The name of a Chrome setting. This string also appears as the title of a dialog box and as the title of a Chrome settings page. Used mid-sentence.">
-    embedded content
   </message>
   </if>
 </grit-part>

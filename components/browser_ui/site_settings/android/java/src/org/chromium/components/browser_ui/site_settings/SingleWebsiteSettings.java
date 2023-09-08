@@ -423,6 +423,16 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                     merged.setPermissionInfo(info);
                 }
             }
+            for (var infoList : other.getEmbeddedPermissionInfos().values()) {
+                for (var info : infoList) {
+                    boolean matchesOrigin = other.getEmbedder() != null
+                            && WebsitePreferenceBridgeJni.get().urlMatchesContentSettingsPattern(
+                                    origin, info.getEmbedder());
+                    if (matchesOrigin) {
+                        merged.addEmbeddedPermissionInfo(info);
+                    }
+                }
+            }
             if (merged.getLocalStorageInfo() == null && other.getLocalStorageInfo() != null
                     && origin.equals(other.getLocalStorageInfo().getOrigin())) {
                 merged.setLocalStorageInfo(other.getLocalStorageInfo());

@@ -68,6 +68,12 @@ public class WebsiteAddressTest {
         Assert.assertEquals("google.com", anySubdomainAddress.getHost());
         Assert.assertEquals("google.com", anySubdomainAddress.getTitle());
         Assert.assertTrue(anySubdomainAddress.getIsAnySubdomainPattern());
+
+        WebsiteAddress schemefulSitePattern = WebsiteAddress.create("https://[*.]google.com");
+        Assert.assertEquals("https://google.com", schemefulSitePattern.getOrigin());
+        Assert.assertEquals("google.com", schemefulSitePattern.getHost());
+        Assert.assertEquals("https://google.com", schemefulSitePattern.getTitle());
+        Assert.assertFalse(schemefulSitePattern.getIsAnySubdomainPattern());
     }
 
     @Test

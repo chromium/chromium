@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -29,16 +31,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Utility class that asynchronously fetches any Websites and the permissions
- * that the user has set for them.
+ * Utility class that asynchronously fetches any Websites and the permissions that the user has set
+ * for them.
  */
 public class WebsitePermissionsFetcher {
-    /**
-     * An enum describing the types of permissions that exist in website settings.
-     */
+    /** An enum describing the types of permissions that exist in website settings. */
     public enum WebsitePermissionsType {
         CONTENT_SETTING_EXCEPTION,
         PERMISSION_INFO,
+        EMBEDDED_PERMISSION_INFO,
         CHOSEN_OBJECT_INFO
     }
 
@@ -52,8 +53,8 @@ public class WebsitePermissionsFetcher {
     private static final String VALID_HOST_NAME_REGEX = "[a-zA-Z0-9][a-zA-Z0-9._-]*";
 
     /**
-     * A callback to pass to WebsitePermissionsFetcher. This is run when the
-     * website permissions have been fetched.
+     * A callback to pass to WebsitePermissionsFetcher. This is run when the website permissions
+     * have been fetched.
      */
     public interface WebsitePermissionsCallback {
         void onWebsitePermissionsAvailable(Collection<Website> sites);
@@ -62,6 +63,7 @@ public class WebsitePermissionsFetcher {
     /**
      * A helper function to get the associated WebsitePermissionsType of a particular
      * ContentSettingsType
+     *
      * @param contentSettingsType The ContentSettingsType int of the permission.
      */
     public static WebsitePermissionsType getPermissionsType(
@@ -94,6 +96,12 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.SENSORS:
             case ContentSettingsType.VR:
                 return WebsitePermissionsType.PERMISSION_INFO;
+            case ContentSettingsType.STORAGE_ACCESS:
+                if (PermissionsAndroidFeatureMap.isEnabled(
+                            PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS)) {
+                    return WebsitePermissionsType.EMBEDDED_PERMISSION_INFO;
+                }
+                return null;
             case ContentSettingsType.BLUETOOTH_GUARD:
             case ContentSettingsType.USB_GUARD:
                 return WebsitePermissionsType.CHOSEN_OBJECT_INFO;
@@ -143,11 +151,11 @@ public class WebsitePermissionsFetcher {
     }
 
     /**
-     * Fetches preferences for all sites that have them.
-     * TODO(mvanouwerkerk): Add an argument |url| to only fetch permissions for
-     * sites from the same origin as that of |url| - https://crbug.com/459222.
-     * @param callback The callback to run when the fetch is complete.
+     * Fetches preferences for all sites that have them. TODO(mvanouwerkerk): Add an argument |url|
+     * to only fetch permissions for sites from the same origin as that of |url| -
+     * https://crbug.com/459222.
      *
+     * @param callback The callback to run when the fetch is complete.
      */
     public void fetchAllPreferences(WebsitePermissionsCallback callback) {
         var fetcherInternal = new WebsitePermissionFetcherInternal();
@@ -159,7 +167,6 @@ public class WebsitePermissionsFetcher {
      *
      * @param category A category to fetch.
      * @param callback The callback to run when the fetch is complete.
-     *
      */
     public void fetchPreferencesForCategory(
             SiteSettingsCategory category, WebsitePermissionsCallback callback) {
@@ -168,13 +175,12 @@ public class WebsitePermissionsFetcher {
     }
 
     /**
-     * Fetches all preferences within a specific category and populates them with First Party
-     * Sets info.
+     * Fetches all preferences within a specific category and populates them with First Party Sets
+     * info.
      *
      * @param siteSettingsDelegate Delegate needed for fetching First Party Sets info.
      * @param category A category to fetch.
      * @param callback The callback to run when the fetch is complete.
-     *
      */
     public void fetchPreferencesForCategoryAndPopulateFpsInfo(
             SiteSettingsDelegate siteSettingsDelegate, SiteSettingsCategory category,
@@ -185,19 +191,19 @@ public class WebsitePermissionsFetcher {
     }
 
     /**
-     * Internal class that actually performs the fetches, asynchronously fetching any Websites
-     * and the permissions that the user has set for them.
+     * Internal class that actually performs the fetches, asynchronously fetching any Websites and
+     * the permissions that the user has set for them.
      */
     private class WebsitePermissionFetcherInternal {
         // This map looks up Websites by their origin and embedder.
         private final Map<OriginAndEmbedder, Website> mSites = new HashMap<>();
 
         /**
-         * Fetches preferences for all sites that have them.
-         * TODO(mvanouwerkerk): Add an argument |url| to only fetch permissions for
-         * sites from the same origin as that of |url| - https://crbug.com/459222.
-         * @param callback The callback to run when the fetch is complete.
+         * Fetches preferences for all sites that have them. TODO(mvanouwerkerk): Add an argument
+         * |url| to only fetch permissions for sites from the same origin as that of |url| -
+         * https://crbug.com/459222.
          *
+         * @param callback The callback to run when the fetch is complete.
          */
         public void fetchAllPreferences(WebsitePermissionsCallback callback) {
             TaskQueue queue = new TaskQueue();
@@ -224,7 +230,6 @@ public class WebsitePermissionsFetcher {
          *
          * @param category A category to fetch.
          * @param callback The callback to run when the fetch is complete.
-         *
          */
         public void fetchPreferencesForCategory(
                 SiteSettingsCategory category, WebsitePermissionsCallback callback) {
@@ -260,7 +265,6 @@ public class WebsitePermissionsFetcher {
          * @param siteSettingsDelegate Delegate needed for fetching First Party Sets info.
          * @param category A category to fetch.
          * @param callback The callback to run when the fetch is complete.
-         *
          */
         public void fetchPreferencesForCategoryAndPopulateFpsInfo(
                 SiteSettingsDelegate siteSettingsDelegate, SiteSettingsCategory category,
@@ -328,7 +332,10 @@ public class WebsitePermissionsFetcher {
                     queue.add(new ExceptionInfoFetcher(contentSettingsType));
                     return;
                 case PERMISSION_INFO:
-                    queue.add(new PermissionInfoFetcher(contentSettingsType));
+                    queue.add(new PermissionInfoFetcher(contentSettingsType, false));
+                    return;
+                case EMBEDDED_PERMISSION_INFO:
+                    queue.add(new PermissionInfoFetcher(contentSettingsType, true));
                     return;
                 case CHOSEN_OBJECT_INFO:
                     queue.add(new ChooserExceptionInfoFetcher(contentSettingsType));
@@ -421,9 +428,12 @@ public class WebsitePermissionsFetcher {
 
         private class PermissionInfoFetcher extends Task {
             final @ContentSettingsType int mType;
+            private boolean mIsEmbeddedPermission;
 
-            public PermissionInfoFetcher(@ContentSettingsType int type) {
+            public PermissionInfoFetcher(
+                    @ContentSettingsType int type, boolean isEmbeddedPermission) {
                 mType = type;
+                mIsEmbeddedPermission = isEmbeddedPermission;
             }
 
             @Override
@@ -434,7 +444,12 @@ public class WebsitePermissionsFetcher {
                     if (origin == null) continue;
                     String embedder =
                             mType == ContentSettingsType.SENSORS ? null : info.getEmbedder();
-                    findOrCreateSite(origin, embedder).setPermissionInfo(info);
+                    Website site = findOrCreateSite(origin, embedder);
+                    if (mIsEmbeddedPermission) {
+                        site.addEmbeddedPermissionInfo(info);
+                    } else {
+                        site.setPermissionInfo(info);
+                    }
                 }
             }
         }

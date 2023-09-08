@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.os.Build;
 
 import androidx.test.filters.SmallTest;
@@ -28,17 +30,21 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
+import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tests that exercise functionality when showing details for a single site.
@@ -132,6 +138,24 @@ public class SingleWebsiteSettingsTest {
         settingsActivity.finish();
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS)
+    public void testStorageAccessePermission() {
+        Website website = createWebsiteWithStorageAccessPermission(
+                "https://[*.]embedded.com", "https://[*.]example.com");
+        Website other = createWebsiteWithStorageAccessPermission(
+                "https://[*.]embedded.com", "https://[*.]foo.com");
+        Website merged = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                WebsiteAddress.create(EXAMPLE_ADDRESS), List.of(website, other));
+        assertThat(merged.getEmbeddedPermissionInfos())
+                .isEqualTo(website.getEmbeddedPermissionInfos());
+
+        SettingsActivity activity = SiteSettingsTestUtils.startSingleWebsitePreferences(merged);
+        // TODO(crbug.com/1478113): Test UI when it is implemented.
+        activity.finish();
+    }
+
     /**
      * Helper function for creating a {@link ParameterSet} for {@link SingleWebsiteSettingsParams}.
      */
@@ -194,6 +218,15 @@ public class SingleWebsiteSettingsTest {
                 new ContentSettingException(type, website.getAddress().getOrigin(), value,
                         "preference", /*isEmbargoed=*/false));
 
+        return website;
+    }
+
+    private static Website createWebsiteWithStorageAccessPermission(
+            String origin, String embedder) {
+        Website website =
+                new Website(WebsiteAddress.create(origin), WebsiteAddress.create(embedder));
+        website.addEmbeddedPermissionInfo(new PermissionInfo(
+                ContentSettingsType.STORAGE_ACCESS, origin, embedder, /*isEmbargoed=*/false));
         return website;
     }
 }

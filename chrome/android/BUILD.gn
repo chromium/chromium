@@ -1753,6 +1753,7 @@ if (current_toolchain == default_toolchain) {
       "//components/payments/content/android:java",
       "//components/payments/content/android:service_java",
       "//components/payments/mojom:mojom_java",
+      "//components/permissions/android:core_java",
       "//components/permissions/android:java",
       "//components/policy/android:policy_java",
       "//components/policy/android:policy_java_test_support",

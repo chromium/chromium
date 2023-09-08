@@ -124,6 +124,7 @@ android_library("java") {
     "//components/content_settings/android:java",
     "//components/embedder_support/android:util_java",
     "//components/location/android:location_java",
+    "//components/permissions/android:core_java",
     "//components/permissions/android:java",
     "//components/prefs/android:java",
     "//components/subresource_filter/android:java",
