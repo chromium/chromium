@@ -370,7 +370,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
 
     // NetworkPredictionOptions.WIFI_ONLY_DEPRECATED is treated the same as
     // NetworkPredictionOptions.STANDARD.
-    // See chrome/browser/prefetch/prefetch_prefs.h.
+    // See chrome/browser/preloading/preloading_prefs.h.
     return this.i18n('preloadingPageStandardPreloadingTitle');
   }
 

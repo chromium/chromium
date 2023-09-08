@@ -132,7 +132,7 @@ suite('CookiesPageTest', function() {
     // This value is deprecated, and users cannot change their prefs to this
     // value, but it is still the default value for the pref. It is treated the
     // as STANDARD and the "Standard preloading" sub label is applied for this
-    // case. See chrome/browser/prefetch/prefetch_prefs.h for more info.
+    // case. See chrome/browser/preloading/preloading_prefs.h for more info.
     page.setPrefValue(
         'net.network_prediction_options',
         NetworkPredictionOptions.WIFI_ONLY_DEPRECATED);

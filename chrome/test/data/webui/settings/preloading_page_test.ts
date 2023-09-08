@@ -17,8 +17,8 @@ suite('PreloadingPage', function() {
         key: 'net.network_prediction_options',
         type: chrome.settingsPrivate.PrefType.NUMBER,
         // By default the pref is initialized to WIFI_ONLY_DEPRECATED, but then
-        // treated as STANDARD. See chrome/browser/prefetch/prefetch_prefs.h for
-        // more details.
+        // treated as STANDARD. See chrome/browser/preloading/preloading_prefs.h
+        // for more details.
         value: NetworkPredictionOptions.WIFI_ONLY_DEPRECATED,
       },
     ];

@@ -77,7 +77,7 @@ export class PreloadingPageElement extends PreloadingPageElementBase {
           return;
         case NetworkPredictionOptions.WIFI_ONLY_DEPRECATED:
           // The default pref value is deprecated, and is treated the same as
-          // STANDARD. See chrome/browser/prefetch/prefetch_prefs.h.
+          // STANDARD. See chrome/browser/preloading/preloading_prefs.h.
           this.setPrefValue(
               'net.network_prediction_options',
               NetworkPredictionOptions.STANDARD);

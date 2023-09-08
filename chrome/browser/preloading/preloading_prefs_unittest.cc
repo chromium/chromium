@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/battery/battery_saver.h"
@@ -15,7 +15,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(PrefetchPrefsTest, GetPreloadPagesState) {
+TEST(PreloadingPrefsTest, GetPreloadPagesState) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kNetworkPredictionOptions,
@@ -52,7 +52,7 @@ TEST(PrefetchPrefsTest, GetPreloadPagesState) {
             prefetch::PreloadPagesState::kNoPreloading);
 }
 
-TEST(PrefetchPrefsTest, SetPreloadPagesState) {
+TEST(PreloadingPrefsTest, SetPreloadPagesState) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kNetworkPredictionOptions,
@@ -74,16 +74,16 @@ TEST(PrefetchPrefsTest, SetPreloadPagesState) {
             static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
 }
 
-class PrefetchPrefsPreloadingTest : public ::testing::Test {
+class PreloadingPrefsPreloadingTest : public ::testing::Test {
  public:
-  PrefetchPrefsPreloadingTest() = default;
-  ~PrefetchPrefsPreloadingTest() override = default;
+  PreloadingPrefsPreloadingTest() = default;
+  ~PreloadingPrefsPreloadingTest() override = default;
 
   // IsSomePreloadingEnabled() requires a threaded environment.
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(PrefetchPrefsPreloadingTest, IsSomePreloadingEnabled) {
+TEST_F(PreloadingPrefsPreloadingTest, IsSomePreloadingEnabled) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kNetworkPredictionOptions,
@@ -115,15 +115,16 @@ TEST_F(PrefetchPrefsPreloadingTest, IsSomePreloadingEnabled) {
             content::PreloadingEligibility::kEligible);
 }
 
-class PrefetchPrefsWithBatterySaverTest : public PrefetchPrefsPreloadingTest {
+class PreloadingPrefsWithBatterySaverTest
+    : public PreloadingPrefsPreloadingTest {
  public:
-  PrefetchPrefsWithBatterySaverTest() = default;
-  ~PrefetchPrefsWithBatterySaverTest() override = default;
+  PreloadingPrefsWithBatterySaverTest() = default;
+  ~PreloadingPrefsWithBatterySaverTest() override = default;
 
   void TearDown() override { battery::ResetIsBatterySaverEnabledForTesting(); }
 };
 
-TEST_F(PrefetchPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
+TEST_F(PreloadingPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kNetworkPredictionOptions,
@@ -142,15 +143,15 @@ TEST_F(PrefetchPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
             content::PreloadingEligibility::kBatterySaverEnabled);
 }
 
-class PrefetchPrefsWithDataSaverTest : public PrefetchPrefsPreloadingTest {
+class PreloadingPrefsWithDataSaverTest : public PreloadingPrefsPreloadingTest {
  public:
-  PrefetchPrefsWithDataSaverTest() = default;
-  ~PrefetchPrefsWithDataSaverTest() override = default;
+  PreloadingPrefsWithDataSaverTest() = default;
+  ~PreloadingPrefsWithDataSaverTest() override = default;
 
   void TearDown() override { data_saver::ResetIsDataSaverEnabledForTesting(); }
 };
 
-TEST_F(PrefetchPrefsWithDataSaverTest, IsSomePreloadingEnabled) {
+TEST_F(PreloadingPrefsWithDataSaverTest, IsSomePreloadingEnabled) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kNetworkPredictionOptions,
