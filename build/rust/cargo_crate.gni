@@ -290,6 +290,9 @@ template("cargo_crate") {
       if (!defined(sources)) {
         sources = []
       }
+      if (!defined(inputs)) {
+        inputs = []
+      }
 
       # This... is a bit weird. We generate a file called cargo_flags.rs which
       # does not actually contain Rust code, but instead some flags to add
@@ -309,7 +312,6 @@ template("cargo_crate") {
                 filter_include(invoker.build_script_outputs, [ "*.rs" ])) {
           sources += [ "$_build_script_env_out_dir/$extra_source" ]
         }
-        inputs = []
         foreach(extra_source,
                 filter_exclude(invoker.build_script_outputs, [ "*.rs" ])) {
           inputs += [ "$_build_script_env_out_dir/$extra_source" ]
