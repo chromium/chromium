@@ -167,6 +167,7 @@ ci.builder(
     # TODO(crbug/1473182): Remove once the bug is closed.
     reclient_bootstrap_env = {
         "RBE_v": "3",
+        "RBE_experimental_exit_on_stuck_actions": "true",
     },
 )
 
