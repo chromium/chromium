@@ -56,6 +56,8 @@ class ChromeFileSystemAccessPermissionContext
     : public content::FileSystemAccessPermissionContext,
       public permissions::ObjectPermissionContextBase {
  public:
+  enum class GrantType { kRead, kWrite };
+
   explicit ChromeFileSystemAccessPermissionContext(
       content::BrowserContext* context,
       const base::Clock* clock = base::DefaultClock::GetInstance());
@@ -148,8 +150,6 @@ class ChromeFileSystemAccessPermissionContext
     return GetDormantPersistedObjects(origin);
   }
 
-  enum class GrantType { kRead, kWrite };
-
   // Converts permissions objects into a snapshot of grants categorized by
   // read/write and file/directory types. Currently, used in UI code.
   // Assumes that all objects are grants for the same origin.
@@ -213,6 +213,23 @@ class ChromeFileSystemAccessPermissionContext
 
  private:
   class PermissionGrantImpl;
+
+  // Represents the origin-scoped state for a given origin's permission grants.
+  // The associated `grant_status` value is stored on the `OriginState`, for
+  // the `active_permissions_map`.
+  // TODO(crbug.com/1011533): Update naming of this enum to better reflect
+  // its purpose, and move the definition to `OriginState` if needed.
+  enum class GrantStatus {
+    // Origin state has been loaded, and persisted grants can may represent
+    // Dormant grants if they exist, or Extended grants if Extended permissions
+    // are enabled.
+    kLoaded,
+    // Persisted grants are synced for this session and represent Shadow or
+    // Extended grants.
+    kCurrent,
+    // Persisted grants are in dormant state due to being backgrounded.
+    kBackgrounded
+  };
 
   // This value should not be stored, and should only be used to check the
   // state of persisted grants, using the `GetPersistedGrantState()` method.
@@ -283,13 +300,23 @@ class ChromeFileSystemAccessPermissionContext
                                    const base::FilePath& path,
                                    GrantType grant_type) const;
 
-  bool OriginHasExtendedPermission(const url::Origin& origin) const;
+  bool IsEligibleToUpgradePermissionRequestToRestorePrompt(
+      const url::Origin& origin,
+      const base::FilePath& file_path,
+      HandleType handle_type,
+      UserAction user_action,
+      GrantType grant_type);
 
+  bool HasDormantPermission(const url::Origin& origin,
+                            base::FilePath file_path,
+                            HandleType handle_type,
+                            GrantType grant_type);
   // Returns whether the origin has extended permission for a specific file.
   bool HasExtendedPermission(const url::Origin& origin,
                              const base::FilePath& path,
                              HandleType handle_type,
                              GrantType grant_type);
+  bool OriginHasExtendedPermission(const url::Origin& origin) const;
 
   bool HasGrantedActiveGrant(const url::Origin& origin) const;
 

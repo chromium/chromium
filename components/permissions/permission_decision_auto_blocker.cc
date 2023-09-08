@@ -83,6 +83,10 @@ std::string GetStringForContentType(ContentSettingsType content_type) {
     return "FederatedIdentityAutoReauthn";
   }
 
+  if (content_type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
+    return "FileSystemWriteGuard";
+  }
+
   return PermissionUtil::GetPermissionString(content_type);
 }
 
@@ -235,7 +239,8 @@ bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
   return PermissionUtil::IsPermission(content_setting) ||
          content_setting == ContentSettingsType::FEDERATED_IDENTITY_API ||
          content_setting ==
-             ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION;
+             ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION ||
+         content_setting == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD;
 }
 
 // static

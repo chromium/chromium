@@ -190,6 +190,7 @@ void FileSystemAccessHandleBase::DidRequestPermission(
     case Outcome::kGrantedByContentSetting:
     case Outcome::kGrantedByPersistentPermission:
     case Outcome::kGrantedByAncestorPersistentPermission:
+    case Outcome::kGrantedByRestorePrompt:
       std::move(callback).Run(
           file_system_access_error::Ok(),
           writable ? GetWritePermissionStatus() : GetReadPermissionStatus());

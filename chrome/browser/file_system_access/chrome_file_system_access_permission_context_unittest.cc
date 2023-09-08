@@ -1215,6 +1215,118 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(dormant_objects_origin2.empty());
 }
 
+TEST_F(ChromeFileSystemAccessPermissionContextTest, ShowRestorePrompt) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grant.
+  grant.reset();
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+  grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kLoadFromStorage);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kGrantedByRestorePrompt, future.Get());
+
+  permission_context()->RevokeGrants(kTestOrigin);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+  grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+
+  // The permission request is not granted via the restore prompt after grants
+  // are revoked.
+  base::test::TestFuture<PermissionRequestOutcome> future2;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future2.GetCallback());
+  auto permission_request_outcome = future2.Get();
+  EXPECT_NE(PermissionRequestOutcome::kGrantedByRestorePrompt,
+            permission_request_outcome);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       DoNotShowRestorePrompt_NoDormatGrants) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
+  // The origin only has active grants, and no dormant grants. Therefore, the
+  // origin should not grant permission via the restore prompt.
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  auto permission_request_outcome = future.Get();
+  EXPECT_NE(PermissionRequestOutcome::kGrantedByRestorePrompt,
+            permission_request_outcome);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       DoNotShowRestorePrompt_RequestWriteAccessToReadGrant) {
+  auto grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grant.
+  grant.reset();
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // The origin is not eligible to request permission via the restore prompt if
+  // requesting write access to a file which previously had read access.
+  grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kLoadFromStorage);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  auto permission_request_outcome = future.Get();
+  EXPECT_NE(PermissionRequestOutcome::kGrantedByRestorePrompt,
+            permission_request_outcome);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       DoNotShowRestorePrompt_RequestAccessToNewFile) {
+  auto kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/baz/bar"));
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grant.
+  grant.reset();
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // The origin is not eligible to request permission via the restore prompt if
+  // requesting access to a new file.
+  grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kLoadFromStorage);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  auto permission_request_outcome = future.Get();
+  EXPECT_NE(PermissionRequestOutcome::kGrantedByRestorePrompt,
+            permission_request_outcome);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       DoNotShowRestorePrompt_FileNotLoadedFromStorage) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grant.
+  grant.reset();
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // The origin is not eligible to request permission via the restore prompt if
+  // the file was not loaded from storage.
+  grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  auto permission_request_outcome = future.Get();
+  EXPECT_NE(PermissionRequestOutcome::kGrantedByRestorePrompt,
+            permission_request_outcome);
+}
+
 TEST_F(
     ChromeFileSystemAccessPermissionContextNoPersistenceTest,
     GetWritePermissionGrant_GrantIsRevokedWhenNoLongerUsed_GlobalGuardBlockedAfterNewGrant_NoPersistentPermissions) {

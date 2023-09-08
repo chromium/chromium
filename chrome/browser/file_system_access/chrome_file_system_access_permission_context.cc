@@ -32,6 +32,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/ui/file_system_access_dialogs.h"
@@ -40,6 +41,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -531,7 +533,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
         origin_(origin),
         handle_type_(handle_type),
         type_(type),
-        path_(path) {}
+        path_(path),
+        user_action_(user_action) {}
 
   // FileSystemAccessPermissionGrant:
   PermissionStatus GetStatus() override {
@@ -674,6 +677,16 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     // Drop fullscreen mode so that the user sees the URL bar.
     base::ScopedClosureRunner fullscreen_block =
         web_contents->ForSecurityDropFullscreen();
+
+    if (context_->IsEligibleToUpgradePermissionRequestToRestorePrompt(
+            origin_, path_, handle_type_, user_action_, type_)) {
+      // TODO(crbug.com/1011533): Implement triggering the restore prompt,
+      // then update active / persisted grants based on response.
+      RunCallbackAndRecordPermissionRequestOutcome(
+          std::move(callback),
+          PermissionRequestOutcome::kGrantedByRestorePrompt);
+      return;
+    }
 
     FileSystemAccessPermissionRequestManager::Access access =
         type_ == GrantType::kRead
@@ -931,7 +944,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   const GrantType type_;
   // `path_` can be updated if the entry is moved.
   base::FilePath path_;
-  base::Time last_used_time_;
+  const UserAction user_action_;
 
   // This member should only be updated via SetStatus(), to make sure
   // observers are properly notified about any change in status.
@@ -944,6 +957,11 @@ struct ChromeFileSystemAccessPermissionContext::OriginState {
   // PermissionGrantDestroyed().
   std::map<base::FilePath, PermissionGrantImpl*> read_grants;
   std::map<base::FilePath, PermissionGrantImpl*> write_grants;
+
+  // TODO(crbug.com/1011533): Implement logic that updates the grant status
+  // when design details are finalized. Additionally, implement logic that
+  // updates this status as a result of tab backgrouding.
+  GrantStatus grant_status = GrantStatus::kLoaded;
 
   // Timer that is triggered whenever the user navigates away from this origin.
   // This is used to give a website a little bit of time for background work
@@ -998,7 +1016,7 @@ bool ChromeFileSystemAccessPermissionContext::RevokeActiveGrants(
   if (origin_it != active_permissions_map_.end()) {
     OriginState& origin_state = origin_it->second;
     for (auto& grant : origin_state.read_grants) {
-      if (file_path.empty() || grant.first.value() == file_path.value()) {
+      if (file_path.empty() || grant.first == file_path) {
         grant.second->SetStatus(
             PermissionStatus::ASK,
             PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
@@ -1006,12 +1024,19 @@ bool ChromeFileSystemAccessPermissionContext::RevokeActiveGrants(
       }
     }
     for (auto& grant : origin_state.write_grants) {
-      if (file_path.empty() || grant.first.value() == file_path.value()) {
+      if (file_path.empty() || grant.first == file_path) {
         grant.second->SetStatus(
             PermissionStatus::ASK,
             PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
         grant_revoked = true;
       }
+    }
+    // TODO(crbug.com/1011533): Update `grant_status` value depending on
+    // whether the permissions have been revoked due to tab backgrounding,
+    // once the One Time Permissions tab backgrounding listener has been
+    // implemented.
+    if (file_path.empty()) {
+      origin_state.grant_status = GrantStatus::kLoaded;
     }
   }
   return grant_revoked;
@@ -1933,17 +1958,16 @@ bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
   return false;
 }
 
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
-// TODO(crbug.com/1011533): Add checks for `PersistentPermissionPref` value
-// once the ContentSetting is implemented.
-bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
-    const url::Origin& origin) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+bool ChromeFileSystemAccessPermissionContext::
+    IsEligibleToUpgradePermissionRequestToRestorePrompt(
+        const url::Origin& origin,
+        const base::FilePath& file_path,
+        HandleType handle_type,
+        UserAction user_action,
+        GrantType grant_type) {
 #if BUILDFLAG(IS_ANDROID)
   // The File System Access API is not supported on Android (see
-  // crbug.com/1011535). If this ever changes, we'll need to revist this.
+  // crbug.com/1011535). If this ever changes, we'll need to revisit this.
   return false;
 #else
 
@@ -1952,24 +1976,24 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
     return false;
   }
 
-  const auto& origin_it = extended_permissions_settings_map_.find(origin);
-  if (origin_it != extended_permissions_settings_map_.end() &&
-      origin_it->second == ContentSetting::CONTENT_SETTING_ALLOW) {
-    return true;
-  }
-
-  DCHECK(profile());
-  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
-      Profile::FromBrowserContext(profile()));
-  if (!web_app_provider) {
+  const bool origin_is_embargoed =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(
+          Profile::FromBrowserContext(profile()))
+          ->IsEmbargoed(origin.GetURL(),
+                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  if (origin_is_embargoed) {
     return false;
   }
 
-  auto app_id = web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
-      origin.GetURL());
-  return app_id.has_value() &&
-         web_app_provider->registrar_unsafe().IsActivelyInstalled(
-             app_id.value());
+  // TODO(crbug.com/1011533): Implement logic to check if permissions have
+  // been revoked as a result of tab(s) being backgrounded, and allow the
+  // possibility of the Restore Prompt to be shown even if the handle was not
+  // retrieved from IndexedDB.
+  if (user_action != UserAction::kLoadFromStorage) {
+    return false;
+  }
+
+  return HasDormantPermission(origin, file_path, handle_type, grant_type);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -2014,6 +2038,21 @@ bool ChromeFileSystemAccessPermissionContext::HasExtendedPermissionForTesting(
   return HasExtendedPermission(origin, path, handle_type, grant_type);
 }
 
+bool ChromeFileSystemAccessPermissionContext::HasDormantPermission(
+    const url::Origin& origin,
+    base::FilePath file_path,
+    HandleType handle_type,
+    GrantType grant_type) {
+  auto dormant_persisted_objects = GetDormantPersistedObjects(origin);
+  return base::ranges::any_of(dormant_persisted_objects, [&](const auto& obj) {
+    return ValueToFilePath(obj->value.Find(kPermissionPathKey)) == file_path &&
+           obj->value.FindBool(kPermissionIsDirectoryKey).value() ==
+               (handle_type == HandleType::kDirectory) &&
+           obj->value.FindBool(GetGrantKeyFromGrantType(grant_type))
+               .value_or(false);
+  });
+}
+
 bool ChromeFileSystemAccessPermissionContext::HasExtendedPermission(
     const url::Origin& origin,
     const base::FilePath& path,
@@ -2054,10 +2093,50 @@ bool ChromeFileSystemAccessPermissionContext::HasExtendedPermission(
   return true;
 }
 
+// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
+// feature flag checks before launch.
+// TODO(crbug.com/1011533): Add checks for `PersistentPermissionPref` value
+// once the ContentSetting is implemented.
+bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
+    const url::Origin& origin) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_ANDROID)
+  // The File System Access API is not supported on Android (see
+  // crbug.com/1011535). If this ever changes, we'll need to revisit this.
+  return false;
+#else
+
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    return false;
+  }
+
+  const auto origin_it = extended_permissions_settings_map_.find(origin);
+  if (origin_it != extended_permissions_settings_map_.end() &&
+      origin_it->second == ContentSetting::CONTENT_SETTING_ALLOW) {
+    return true;
+  }
+
+  DCHECK(profile());
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(profile()));
+  if (!web_app_provider) {
+    return false;
+  }
+
+  auto app_id = web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
+      origin.GetURL());
+  return app_id.has_value() &&
+         web_app_provider->registrar_unsafe().IsActivelyInstalled(
+             app_id.value());
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 // Determines if a given origin has active grants.
 bool ChromeFileSystemAccessPermissionContext::HasGrantedActiveGrant(
     const url::Origin& origin) const {
-  auto origin_it = active_permissions_map_.find(origin);
+  const auto origin_it = active_permissions_map_.find(origin);
   if (origin_it == active_permissions_map_.end()) {
     return false;
   }
