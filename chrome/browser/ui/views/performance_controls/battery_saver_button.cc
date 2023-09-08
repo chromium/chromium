@@ -67,7 +67,7 @@ void BatterySaverButton::Show() {
 }
 
 void BatterySaverButton::Hide() {
-  CloseFeaturePromo();
+  CloseFeaturePromo(user_education::FeaturePromoCloseReason::kAbortPromo);
 
   if (IsBubbleShowing()) {
     // The bubble is closed sync and will be cleared in OnBubbleHidden
@@ -101,7 +101,7 @@ void BatterySaverButton::OnClicked() {
     // The bubble is closed sync and will be cleared in OnBubbleHidden
     BatterySaverBubbleView::CloseBubble(bubble_);
   } else {
-    CloseFeaturePromo();
+    CloseFeaturePromo(user_education::FeaturePromoCloseReason::kFeatureEngaged);
 
     browser_view_->NotifyFeatureEngagementEvent(
         feature_engagement::events::kBatterySaverDialogShown);
@@ -117,12 +117,13 @@ void BatterySaverButton::MaybeShowFeaturePromo() {
       feature_engagement::kIPHBatterySaverModeFeature);
 }
 
-void BatterySaverButton::CloseFeaturePromo() {
+void BatterySaverButton::CloseFeaturePromo(
+    user_education::FeaturePromoCloseReason close_reason) {
   // CloseFeaturePromo checks if the promo is active for the feature before
   // attempting to close the promo bubble
   pending_promo_ = false;
   browser_view_->CloseFeaturePromo(
-      feature_engagement::kIPHBatterySaverModeFeature);
+      feature_engagement::kIPHBatterySaverModeFeature, close_reason);
 }
 
 BEGIN_METADATA(BatterySaverButton, ToolbarButton)
