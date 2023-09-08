@@ -617,11 +617,10 @@
 
     'chromeos_chrome_all_tast_tests': {
       'chrome_all_tast_tests': {
-        # This tast_expr needs to be kept in sync with chrome_all_tast_tests target in //chromeos/BUILD.gn.
-        # Adding !no_chrome_dcheck since the builds (except for release builds) are with dcheck.
-        # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
-        # TODO(b/294489383): Re-enable lacros tests once lacros chrome is deployed to ash skylab builders.
-        'tast_expr': '("group:mainline" && "dep:chrome" && !"dep:no_chrome_dcheck" && !"dep:lacros" && !informational)',
+        # `tast_expr` must be a non-empty string to run the tast tests. But the value of
+        # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
+        # put the stub string here.
+        'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
         'test_level_retries': 2,
         'timeout_sec': 21600,
       },
@@ -630,11 +629,10 @@
     # Test suite for running critical Tast tests.
     'chromeos_chrome_criticalstaging_tast_tests': {
       'chrome_criticalstaging_tast_tests': {
-        # This tast_expr needs to be kept in sync with chrome_criticalstaging_tast_tests target in //chromeos/BUILD.gn.
-        # Adding !no_chrome_dcheck since the builds (except for release builds) are with dcheck.
-        # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
-        # TODO(b/294489383): Re-enable lacros tests once lacros chrome is deployed to ash skylab builders.
-        'tast_expr': '("group:mainline" && "dep:chrome" && !"dep:no_chrome_dcheck" && !"dep:lacros" && informational && "group:criticalstaging")',
+        # `tast_expr` must be a non-empty string to run the tast tests. But the value of
+        # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
+        # put the stub string here.
+        'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
         'test_level_retries': 2,
         'timeout_sec': 7200,
         'experiment_percentage': 100,
@@ -645,7 +643,10 @@
     # them. The test suite should not be critical to builders.
     'chromeos_chrome_disabled_tast_tests': {
       'chrome_disabled_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:chrome" && !"dep:no_chrome_dcheck")',
+        # `tast_expr` must be a non-empty string to run the tast tests. But the value of
+        # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
+        # put the stub string here.
+        'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
         'test_level_retries': 1,
         'timeout_sec': 7200,
         'experiment_percentage': 100,
