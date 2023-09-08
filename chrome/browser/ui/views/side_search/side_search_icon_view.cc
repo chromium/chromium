@@ -118,7 +118,9 @@ void SideSearchIconView::UpdateImpl() {
 
   if (!should_show) {
     HidePageActionLabel();
-    browser_view->CloseFeaturePromo(feature_engagement::kIPHSideSearchFeature);
+    browser_view->CloseFeaturePromo(
+        feature_engagement::kIPHSideSearchFeature,
+        user_education::FeaturePromoCloseReason::kAbortPromo);
   }
 }
 
