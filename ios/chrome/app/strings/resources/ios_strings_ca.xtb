@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Pots tornar aquí per obrir de nou les pestanyes que has tancat fa poc</translation>
 <translation id="1016495303386450659">S'ha actualitzat l'element.</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{Desa la contrasenya al compte}other{Desa les contrasenyes al compte}}</translation>
 <translation id="1035980983510608210">Si tanques totes les pestanyes, també es tancaran les pestanyes fixades.</translation>
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1044891598689252897">Els llocs web funcionaran amb normalitat</translation>
@@ -72,6 +73,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="132683371494960526">Feu doble toc per canviar la carpeta principal.</translation>
 <translation id="1332723353863236763">Encara no s'han desat algunes dades</translation>
 <translation id="1335348992705722518">Gestiona la configuració...</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{Desa {COUNT} contrasenya al teu Compte de Google}other{Desa {COUNT} contrasenyes al teu Compte de Google}}</translation>
 <translation id="1340643665687018190">Tanca el menú</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Ves a l'enllaç que has copiat</translation>
@@ -315,6 +317,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">No es pot crear l'enllaç</translation>
 <translation id="2786701870377699570">Cerca pestanyes als dispositius sincronitzats</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{Contrasenya desada al teu Compte de Google ({EMAIL})}other{Contrasenyes desades al teu Compte de Google ({EMAIL})}}</translation>
 <translation id="2797029671965852011">Mostra l'historial</translation>
 <translation id="2800683595868705743">Surt del selector de pestanyes</translation>
 <translation id="2815198996063984598">2. Toca App de navegació per omissió.</translation>
@@ -651,6 +654,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Només en aquest dispositiu, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Pestanya d'incògnit nova</translation>
 <translation id="4766112107778026136">Discover i Seguint</translation>
+<translation id="47677902929517676">Per desar les contrasenyes al teu compte, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="4775879719735953715">Navegador predeterminat</translation>
 <translation id="4778644898150334464">Utilitza una altra contrasenya</translation>
 <translation id="478808905805139173">Vols obrir-ho en mode d'incògnit?</translation>
@@ -1118,6 +1122,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7265758999917665941">Mai per a aquest lloc web</translation>
 <translation id="7272437679830969316">No es pot verificar la teva identitat. La contrasenya no s'ha copiat.</translation>
 <translation id="7291368939935408496">S'estan preparant les contrasenyes...</translation>
+<translation id="7302503784943202842">Utilitza contrasenyes en tots els teus dispositius</translation>
 <translation id="730958329302570991">Afegeix fàcilment contrasenyes de llocs web al gestor de contrasenyes de Google en qualsevol moment.</translation>
 <translation id="7313347584264171202">Trobaràs les pestanyes d'incògnit aquí</translation>
 <translation id="7331371412779932885">Et fa suggeriments de pestanyes basats en la teva activitat de navegació en altres dispositius que utilitzen el teu Compte de Google. Els dispositius han de tenir la sessió iniciada i han d'estar sincronitzats amb el mateix Compte de Google.</translation>
@@ -1467,6 +1472,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="953008885340860025">S'ha tancat la sessió de Chrome</translation>
 <translation id="959066944189734975">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Mostra suggeriments de pestanyes d'altres dispositius</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{Pots desar la contrasenya per a {DOMAIN_ONE} al teu Compte de Google ({EMAIL})}=2{Pots desar les contrasenyes per a {DOMAIN_ONE} i {DOMAIN_TWO} al teu Compte de Google ({EMAIL})}=3{Pots desar les contrasenyes per a {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} dominis més al teu Compte de Google ({EMAIL})}other{Pots desar les contrasenyes per a {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} dominis més al teu Compte de Google ({EMAIL})}}</translation>
 <translation id="97300214378190234">Utilitza Chrome cada vegada que toquis enllaços en altres aplicacions.</translation>
 <translation id="973493300226275298">Fes un seguiment del preu d'un producte en diferents botigues en línia. Rebràs alertes quan el preu baixi.</translation>
 <translation id="981498610235328462">La teva organització només et permet iniciar la sessió amb determinats comptes. Els comptes no admesos s'amaguen.</translation>

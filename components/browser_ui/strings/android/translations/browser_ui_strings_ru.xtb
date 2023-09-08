@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Сбросить все разрешения</translation>
 <translation id="301521992641321250">Заблокировано автоматически</translation>
 <translation id="3069226013421428034">Разрешить вход через сторонние сервисы для определенного сайта.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Срок действия истекает завтра}one{Срок действия истекает через # день}few{Срок действия истекает через # дня}many{Срок действия истекает через # дней}other{Срок действия истекает через # дня}}</translation>
 <translation id="310297983047869047">Предыдущий слайд</translation>
 <translation id="3109724472072898302">Свернуто</translation>
 <translation id="3114012059975132928">Видеопроигрыватель</translation>
@@ -281,7 +282,6 @@
 <translation id="5975083100439434680">Уменьшить</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Управляйте доступом сайта к данным на устройстве.</translation>
-<translation id="6018815681665454784">Очистить и сбросить?</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="6064125863973209585">Завершенные скачивания</translation>
@@ -301,13 +301,11 @@
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6320088164292336938">Вибросигнал</translation>
 <translation id="6367753977865761591">Блокировать вход через сторонние сервисы для определенного сайта.</translation>
-<translation id="6388207532828177975">Очистить и сбросить</translation>
 <translation id="6398765197997659313">Обычный режим</translation>
 <translation id="640163077447496506">Срок действия истекает сегодня</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Запретить сайтам использовать устройство и данные виртуальной реальности</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
-<translation id="6467852467360539617">Удалить данные и сбросить разрешения</translation>
 <translation id="6500423977866688905">Запросите мобильную версию, если окно вытянутое</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="652937045869844725">Попробуйте разрешить сторонние файлы cookie. Это снизит вашу защиту, зато функции сайта, скорее всего, будут работать.</translation>
@@ -380,11 +378,9 @@
 <translation id="7846076177841592234">Отменить выбор</translation>
 <translation id="7882806643839505685">Включить звуки на определенном сайте</translation>
 <translation id="789180354981963912">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
-<translation id="7895868624847501462">Это действие удалит все локальные данные <ph name="DOMAIN" /> и всех связанных с ним сайтов, включая файлы cookie, а также сбросит все разрешения этих сайтов.</translation>
 <translation id="7940722705963108451">Напомнить</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}one{<ph name="FPS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}few{<ph name="FPS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}many{<ph name="FPS_MEMBERS_COUNT" /> сайтов в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}other{<ph name="FPS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}}</translation>
 <translation id="7986741934819883144">Выберите контакт</translation>
-<translation id="7999064672810608036">Вы уверены, что хотите удалить все данные этого веб-сайта, включая файлы cookie, и сбросить заданные разрешения?</translation>
 <translation id="8007176423574883786">Отключено для этого устройства</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
 <translation id="8042586301629853791">Упорядочить:</translation>
@@ -408,7 +404,6 @@
 <translation id="8284326494547611709">Субтитры</translation>
 <translation id="8300705686683892304">Под управлением приложения</translation>
 <translation id="8324158725704657629">Больше не спрашивать</translation>
-<translation id="8338445138528827481">Это действие удалит все локальные данные сайта <ph name="ORIGIN" />, включая файлы cookie, и сбросит все его разрешения.</translation>
 <translation id="8362795839483915693">Вы можете изменять масштаб на сайтах, которые посещаете.</translation>
 <translation id="8372893542064058268">Разрешить фоновую синхронизацию для конкретного сайта</translation>
 <translation id="8376384591331888629">В том числе сторонние файлы cookie на сайте</translation>

@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">ਜ਼ੂਮ ਘਟਾਓ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">ਆਪਣੇ ਡੀਵਾਈਸ ਤੱਕ ਇਸ ਸਾਈਟ ਦੀ ਪਹੁੰਚ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
-<translation id="6018815681665454784">ਕੀ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰ ਕੇ ਰੀਸੈੱਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
 <translation id="6064125863973209585">ਮੁਕੰਮਲ ਹੋਏ ਡਾਊਨਲੋਡ</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">ਸਾਰੀਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="6320088164292336938">ਵਾਈਬ੍ਰੇਟ ਕਰੋ</translation>
 <translation id="6367753977865761591">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੇ ਸਾਈਨ-ਇਨ ਨੂੰ ਬਲਾਕ ਕਰੋ।</translation>
-<translation id="6388207532828177975">ਹਟਾਓ &amp; ਰੀਸੈਟ ਕਰੋ</translation>
 <translation id="6398765197997659313">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="640163077447496506">ਮਿਆਦ ਅੱਜ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਡੀਵਾਈਸ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6447842834002726250">ਕੁਕੀਜ਼</translation>
-<translation id="6467852467360539617">ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="6500423977866688905">ਵਿੰਡੋ ਛੋਟੀ ਹੋਣ 'ਤੇ, ਮੋਬਾਈਲ ਦ੍ਰਿਸ਼ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="652937045869844725">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਆਗਿਆ ਦਿਓ, ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ ਸੁਰੱਖਿਆ ਘਟ ਜਾਵੇਗੀ ਪਰ ਸਾਈਟ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਕਰਨਗੀਆਂ</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">ਚੋਣ ਰੱਦ ਕਰੋ</translation>
 <translation id="7882806643839505685">ਕਿਸੇ ਖ਼ਾਸ ਸਾਈਟ ਲਈ ਧੁਨੀ ਵਜਾਉਣ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="789180354981963912">ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰੋ:</translation>
-<translation id="7895868624847501462">ਇਹ ਕਾਰਵਾਈ ਕੁਕੀਜ਼ ਸਮੇਤ ਸਾਰੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦੇਵੇਗੀ, ਅਤੇ <ph name="DOMAIN" /> ਅਤੇ ਇਸ ਅਧੀਨ ਆਉਣ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਲਈ ਸਾਰੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਦੇਵੇਗੀ</translation>
 <translation id="7940722705963108451">ਮੈਨੂੰ ਯਾਦ ਕਰਵਾਓ</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="FPS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}one{<ph name="FPS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="FPS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}other{<ph name="FPS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀਆਂ <ph name="FPS_MEMBERS_COUNT" /> ਸਾਈਟਾਂ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀਆਂ ਹਨ}}</translation>
 <translation id="7986741934819883144">ਇੱਕ ਸੰਪਰਕ ਚੁਣੋ</translation>
-<translation id="7999064672810608036">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਕੁਕੀਜ਼ ਸਮੇਤ ਸਾਰਾ ਸਥਾਨਕ ਡਾਟਾ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ ਅਤੇ ਇਸ ਵੈੱਬਸਾਈਟ ਲਈ ਸਾਰੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="8007176423574883786">ਇਸ ਡਿਵਾਈਸ ਲਈ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="802154636333426148">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8042586301629853791">ਇਸ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">ਸੁਰਖੀਆਂ</translation>
 <translation id="8300705686683892304">ਐਪ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ</translation>
 <translation id="8324158725704657629">ਦੁਬਾਰਾ ਨਾ ਪੁੱਛੋ</translation>
-<translation id="8338445138528827481">ਇਹ ਕਾਰਵਾਈ ਕੁਕੀਜ਼ ਸਮੇਤ ਸਾਰੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦੇਵੇਗੀ ਅਤੇ <ph name="ORIGIN" /> ਲਈ ਸਾਰੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਦੇਵੇਗੀ</translation>
 <translation id="8362795839483915693">ਤੁਸੀਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਜਾਂਦੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਜ਼ੂਮ ਵਧਾ ਜਾਂ ਘਟਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="8372893542064058268">ਇੱਕ ਖ਼ਾਸ ਸਾਈਟ ਲਈ ਬੈਕਗ੍ਰਾਊਂਡ ਸਿੰਕ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="8376384591331888629">ਇਸ ਸਾਈਟ 'ਤੇ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਸਮੇਤ</translation>

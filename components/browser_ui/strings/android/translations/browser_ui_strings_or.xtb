@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">ଜୁମ୍ କମାନ୍ତୁ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">ଆପଣଙ୍କ ଡିଭାଇସକୁ ଏହି ସାଇଟର ଆକ୍ସେସ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
-<translation id="6018815681665454784">ଖାଲି କରି ରିସେଟ କରିବେ?</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6042308850641462728">ଅଧିକ</translation>
 <translation id="6064125863973209585">ସମ୍ପୂର୍ଣ୍ଣ କରାଯାଇଥିବା ଡାଉନ୍‌ଲୋଡ୍</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">ସମସ୍ତ ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="6320088164292336938">କମ୍ପନ</translation>
 <translation id="6367753977865761591">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ ପାଇଁ ତୃତୀୟ ପକ୍ଷ ସାଇନ-ଇନକୁ ବ୍ଲକ କରନ୍ତୁ।</translation>
-<translation id="6388207532828177975">ଖାଲି ଏବଂ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6398765197997659313">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
 <translation id="640163077447496506">ଆଜି ମିଆଦ ଶେଷ ହେବ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ଆପଣଙ୍କର ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାରୁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="6447842834002726250">କୁକୀଗୁଡିକ</translation>
-<translation id="6467852467360539617">ଡାଟା ଖାଲି କରି ଅନୁମତିଗୁଡ଼ିକୁ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="6500423977866688905">ୱିଣ୍ଡୋ ଛୋଟ ଥିଲେ ମୋବାଇଲ ଭ୍ୟୁର ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="652937045869844725">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅସ୍ଥାୟୀ ଭାବରେ ଅନୁମତି ଦେବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ, ଯାହାର ଅର୍ଥ ହେଉଛି କମ ସୁରକ୍ଷା କିନ୍ତୁ ସାଇଟ ଫିଚରଗୁଡ଼ିକ କାମ କରିବାର ସମ୍ଭାବନା ଅଧିକ</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">ଚୟନିତ ଆଇଟମ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="7882806643839505685">ଏକ ନିର୍ଦ୍ଧିଷ୍ଟ ସାଇଟ୍‌ରେ ଧ୍ୱନୀ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
 <translation id="789180354981963912">ଇନକଗ୍ନିଟୋ ମୋଡରେ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ:</translation>
-<translation id="7895868624847501462">ଏହି କାର୍ଯ୍ୟ କୁକୀଗୁଡ଼ିକ ସମେତ ସମସ୍ତ ସ୍ଥାନୀୟ ଡାଟାକୁ ଖାଲି କରିଦେବ ଏବଂ <ph name="DOMAIN" /> ଓ ଏହା ଅଧୀନରେ ଥିବା ସବୁ ସାଇଟ ପାଇଁ ସମସ୍ତ ଅନୁମତିକୁ ରିସେଟ କରିବ</translation>
 <translation id="7940722705963108451">ମୋତେ ରିମାଇଣ୍ଡ କରନ୍ତୁ</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />ର ସାଇଟଗୁଡ଼ିକର ଗୋଷ୍ଠୀରେ ଥିବା <ph name="FPS_MEMBERS_COUNT" />ଟି ସାଇଟ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଗୋଷ୍ଠୀରେ ଦେଖିପାରିବ}other{<ph name="FPS_OWNER" />ର ସାଇଟଗୁଡ଼ିକର ଗୋଷ୍ଠୀରେ ଥିବା <ph name="FPS_MEMBERS_COUNT" />ଟି ସାଇଟ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଗୋଷ୍ଠୀରେ ଦେଖିପାରିବ}}</translation>
 <translation id="7986741934819883144">ଗୋଟିଏ ଯୋଗାଯୋଗ ଚୟନ କରନ୍ତୁ</translation>
-<translation id="7999064672810608036">ଆପଣ କ’ଣ ସୁନିଶ୍ଚିତ ଯେ ଆପଣ କୁକୀ ସହିତ ଏହି ୱେବ୍‌ସାଇଟ୍‌ର ସମସ୍ତ ସ୍ଥାନୀୟ ଡାଟା ଖାଲି କରିବା ଏବଂ ଏହାର ସମସ୍ତ ଅନୁମତି ରିସେଟ୍‍ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="8007176423574883786">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8042586301629853791">ଏହି ଅନୁସାରେ ସର୍ଟ କରନ୍ତୁ:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">କ୍ୟାପସନ୍</translation>
 <translation id="8300705686683892304">ଆପ୍ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="8324158725704657629">ପୁଣି ପଚାର ନାହିଁ</translation>
-<translation id="8338445138528827481">ଏହି କାର୍ଯ୍ୟ କୁକୀଗୁଡ଼ିକ ସମେତ ସମସ୍ତ ସ୍ଥାନୀୟ ଡାଟାକୁ ଖାଲି କରିଦେବ ଏବଂ <ph name="ORIGIN" /> ପାଇଁ ସମସ୍ତ ଅନୁମତିକୁ ରିସେଟ କରିବ</translation>
 <translation id="8362795839483915693">ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକରେ ଜୁମ ଇନ କିମ୍ବା ଆଉଟ କରିପାରିବେ</translation>
 <translation id="8372893542064058268">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ ପୃଷ୍ଟପଟ ସିଙ୍କ୍‌କୁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
 <translation id="8376384591331888629">ଏହି ସାଇଟରେ ଥିବା ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ସମେତ</translation>

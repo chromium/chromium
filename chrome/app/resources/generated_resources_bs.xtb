@@ -430,6 +430,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1335929031622236846">Registrirajte uređaj</translation>
 <translation id="133660899895084533">Čitaj informacije i podatke s perifernih Bluetooth uređaja</translation>
 <translation id="1336902454946927954">Vaš sigurnosni ključ je zaključan jer prepoznavanje vašeg otiska prsta nije uspjelo. Da ga otključate, unesite PIN.</translation>
+<translation id="1337066099824654054">Kontekstualna pomoć je isključena</translation>
 <translation id="1338631221631423366">Uparivanje...</translation>
 <translation id="1338802252451106843">Web lokacija <ph name="ORIGIN" /> želi otvoriti ovu aplikaciju.</translation>
 <translation id="1338950911836659113">Brisanje...</translation>
@@ -3458,6 +3459,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3738632186060045350">Podaci na uređaju <ph name="DEVICE_TYPE" /> će se izbrisati za 24 sata</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Otvoriti <ph name="APPLICATION" />?</translation>
+<translation id="3740396996321407665">Primaj kontekstualnu pomoć od nekih značajki</translation>
 <translation id="3740945083753997630">Smanjivanje veličine prikaza i teksta</translation>
 <translation id="3741056951918180319">Uvijek možete kliknuti na ekstenziju da ga koristite na bilo kojoj web lokaciji</translation>
 <translation id="3742235229730461951">Raspored korejske tastature</translation>
@@ -5178,7 +5180,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5146896637028965135">Sistemski glas</translation>
 <translation id="5147992672778369947">Koristite preporučenu lozinku</translation>
 <translation id="5148277445782867161">Googleova usluga lokacije koristi izvore poput WiFi mreže, mobilnih mreža i senzora radi lakše procjene lokacije vašeg uređaja.</translation>
-<translation id="5148285448107770349">Zaporka mora imati barem 8 znakova</translation>
+<translation id="5148285448107770349">Lozinka mora sadržavati najmanje 8 znakova</translation>
 <translation id="5150254825601720210">Naziv SSL servera za Netscape potvrde</translation>
 <translation id="5151354047782775295">Oslobodite prostor na disku ili će se određeni podaci automatski izbrisati</translation>
 <translation id="5153234146675181447">Zaboravi telefon</translation>
@@ -6422,6 +6424,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6173623053897475761">Unesite ponovo PIN</translation>
 <translation id="6175314957787328458">GUID Microsoft domene</translation>
 <translation id="6175910054050815932">Preuzmite link</translation>
+<translation id="6176701216248282552">Kontekstualna pomoć je uključena. Ove značajke mogu slati otvorene stranice Googleu.</translation>
 <translation id="6177412385419165772">Uklanjanje...</translation>
 <translation id="6178664161104547336">Odaberite potvrdu</translation>
 <translation id="6178682841350631965">Vaši podaci za prijavu su ažurirani</translation>

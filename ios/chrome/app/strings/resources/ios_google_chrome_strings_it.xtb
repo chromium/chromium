@@ -13,7 +13,6 @@
 <translation id="1491435845014430217">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chrome".</translation>
 <translation id="1493827051843127077">Imposta Chrome come browser predefinito per la sincronizzazione di schede, password e dati di pagamento su tutti i tuoi dispositivi</translation>
 <translation id="1504372625950710826">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Verifica la tua connessione a Internet.</translation>
-<translation id="1511320244449497906">Hai eseguito l'accesso e stai sincronizzando i tuoi dati con un account gestito da <ph name="DOMAIN" /> il cui amministratore può ora configurare criteri relativi agli utenti specifici per questo account che possono modificare il comportamento di Chrome.</translation>
 <translation id="1516692594929310090">Apre la griglia delle schede di Chrome.</translation>
 <translation id="1526327845902180576">Quando la funzionalità è attiva:
 <ph name="BEGIN_INDENT" /> • Contribuisci a migliorare Chrome per le persone che lo usano come fai tu.<ph name="END_INDENT" />
@@ -74,6 +73,7 @@ Aspetti da considerare:
 <translation id="3655656110921623717">Ciò significa che Chrome richiederà ogni volta il sito per dispositivi mobili.</translation>
 <translation id="3720541637541300822">Blocca le schede di navigazione in incognito quando chiudi Chrome</translation>
 <translation id="3741995255368156336">Consente di aprire l'elenco di lettura di Chrome.</translation>
+<translation id="3744018071945602754">Gestisci le password in Chrome</translation>
 <translation id="3827545470516145620">Otterrai la protezione di sicurezza standard su questo dispositivo</translation>
 <translation id="384394811301901750">Google Chrome non può utilizzare la videocamera al momento</translation>
 <translation id="3901001113120561395">Usa al meglio Chrome.</translation>
@@ -88,6 +88,7 @@ Aspetti da considerare:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> stava usando Chrome e ha lasciato preferiti, password e altre impostazioni su questo dispositivo.</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
 <translation id="4251174643044751591">Apre la pagina delle impostazioni dei metodi di pagamento in Chrome.</translation>
+<translation id="4453284704333523777">Gestisci le impostazioni di Chrome</translation>
 <translation id="4508370294876102450">Apri Chrome da qualsiasi app</translation>
 <translation id="4523886039239821078">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Disinstallali.</translation>
 <translation id="4633328489441962921">Chrome non può controllare la disponibilità di aggiornamenti</translation>
@@ -124,6 +125,7 @@ Aspetti da considerare:
 <translation id="571296537125272375">Offline. Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="5716154293141027663">Apri Chrome ogni volta che tocchi link in altre app</translation>
 <translation id="5808435672482059465">Visualizza la tua cronologia di Chrome</translation>
+<translation id="589695154992054845">Apre Gestore delle password in Chrome.</translation>
 <translation id="5998675059699164418">La tua organizzazione richiede l'accesso per usare Chrome.</translation>
 <translation id="6054613632208573261">Usa Chrome per impostazione predefinita</translation>
 <translation id="6063091872902370735">Consenti l'accesso a Chrome</translation>
@@ -217,6 +219,7 @@ Aspetti da considerare:
   • Se Chrome si arresta in modo anomalo, i dettagli relativi a questo evento potrebbero includere alcune informazioni personali.
 
   • Se attivi la sincronizzazione, le metriche potrebbero includere anche informazioni relative agli URL che visiti.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Apre le impostazioni in Chrome.</translation>
 <translation id="9112744793181547300">Impostare Chrome come browser predefinito?</translation>
 <translation id="9122931302567044771">Ciò significa che Chrome richiederà ogni volta il sito desktop.</translation>
 <translation id="9181628561061032322">Apre le schede recenti di Chrome.</translation>

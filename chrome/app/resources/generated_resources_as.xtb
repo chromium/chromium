@@ -429,6 +429,7 @@
 <translation id="1335929031622236846">আপোনাৰ ডিভাইচটো পঞ্জীয়ন কৰক</translation>
 <translation id="133660899895084533">ব্লুটুথৰ পৰিধীয় তথ্য আৰু ডেটা পঢ়ক</translation>
 <translation id="1336902454946927954">আপোনাৰ ফিংগাৰপ্ৰিণ্ট চিনাক্ত কৰিব পৰা নগ’ল বাবে আপোনাৰ সুৰক্ষা সম্পর্কীয় চাবিটো লক কৰা হৈছে। এইটো আনলক কৰিবলৈ, আপোনাৰ পিনটো দিয়ক।</translation>
+<translation id="1337066099824654054">প্ৰাসংগিক সহায়ৰ সুবিধাটো অফ কৰা আছে</translation>
 <translation id="1338631221631423366">পেয়াৰ কৰি থকা হৈছে…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" />এ এই এপ্লিকেশ্বনটো খুলিবলৈ বিচাৰে।</translation>
 <translation id="1338950911836659113">মচি থকা হৈছে…</translation>
@@ -3457,6 +3458,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />ৰ ডেটা ২৪ ঘণ্টাৰ ভিতৰত মচি পেলোৱা হ’ব</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> খুলিবনে?</translation>
+<translation id="3740396996321407665">কিছুমান সুবিধাৰ পৰা প্ৰাসংগিক সহায় লাভ কৰক</translation>
 <translation id="3740945083753997630">ডিছপ্লে’ আৰু পাঠৰ আকাৰ কমাওক</translation>
 <translation id="3741056951918180319">আপুনি যিকোনো ছাইটত এক্সটেনশ্বনটো ব্যৱহাৰ কৰিবলৈ যিকোনো সময়তে তাত ক্লিক কৰিব পাৰে</translation>
 <translation id="3742235229730461951">কোৰিয়ান কীব’ৰ্ডৰ লে’আউট</translation>
@@ -6420,6 +6422,7 @@
 <translation id="6173623053897475761">আপোনাৰ পিন পুনৰ টাইপ কৰক</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">এটা লিংক লাভ কৰক</translation>
+<translation id="6176701216248282552">প্ৰাসংগিক সহায়ৰ সুবিধাটো অন কৰা আছে। এই সুবিধাসমূহে খোলা থকা পৃষ্ঠাসমূহ Googleলৈ পঠিয়াব পাৰে।</translation>
 <translation id="6177412385419165772">আঁতৰাই থকা হৈছে...</translation>
 <translation id="6178664161104547336">এখন প্ৰমাণপত্ৰ বাছনি কৰক</translation>
 <translation id="6178682841350631965">আপোনাৰ ছাইন-ইন ডেটা আপডে’ট কৰা হৈছে</translation>

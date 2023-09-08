@@ -168,7 +168,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7674213385180944843">Odprite Settings &gt; Privacy &gt; Camera &gt; Chromium in vklopite fotoaparat.</translation>
 <translation id="7710137812207066069">Odpiranje novega zavihka v Chromiumu.</translation>
 <translation id="7763454117143368771">Uporabljajte Chromium kot privzeti brskalnik, če se želite zaščititi pred nevarnimi spletnimi mesti in poskrbeti za varnost gesel.</translation>
-<translation id="7812317783196516890">Prijavljeni ste in poteka sinhronizacija podatkov z računom, ki ga upravlja domena <ph name="DOMAIN" />, kjer lahko skrbnik zdaj nastavi uporabniške pravilnike, specifične za ta račun, to pa lahko spremeni način delovanja Chromiuma.</translation>
 <translation id="7859018312476869945">Ko tipkate v naslovno vrstico ali iskalno polje, Chromium vaše vnose pošlje v privzeti iskalnik zaradi boljših predlogov. V anonimnem načinu je to izklopljeno.</translation>
 <translation id="786327964234957808">Z računa za sinhronizacijo <ph name="USER_EMAIL1" /> boste preklopili na račun <ph name="USER_EMAIL2" />. Obstoječe podatke v Chromiumu upravlja <ph name="DOMAIN" />. S tem boste izbrisali podatke iz te naprave, vendar bodo vaši podatki še vedno na voljo v računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Začnite uporabljati optični bralnik Chromium</translation>

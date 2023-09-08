@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">Nie udało się otworzyć pliku „<ph name="PATH" />”</translation>
 <translation id="3280431534455935878">Przygotowywanie</translation>
+<translation id="3280719573299097127">Korzystasz z sieci z pomiarem użycia danych. Synchronizacja plików została wstrzymana.</translation>
 <translation id="3280987981688031357">Płyta winylowa</translation>
 <translation id="3290356915286466215">Niezabezpieczona</translation>
 <translation id="3291218047831493686">Połącz się z tą siecią, aby zmienić ustawienie blokady SIM</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">Usunięto wszystkie elementy z zaznaczenia.</translation>
 <translation id="5838825566232597749">Amerykańska klawiatura międzynarodowa Workman</translation>
 <translation id="5845721951356578987">Pielęgniarka</translation>
+<translation id="5858478190805449225">Tryb oszczędzania baterii jest włączony. Spróbuj ponownie, gdy będzie on wyłączony.</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5861477046012235702">Gracz</translation>
 <translation id="5864471791310927901">Wyszukiwanie DHCP nie powiodło się</translation>
@@ -920,6 +922,7 @@
 <translation id="8087576439476816834">Pobierz, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Udostępnione dla mnie</translation>
 <translation id="8116072619078571545">Woda z lodem</translation>
+<translation id="8120392982188717723">Zezwalaj na synchronizację w sieciach z pomiarem użycia danych</translation>
 <translation id="8124093710070495550">Problem z synchronizacją</translation>
 <translation id="8128733386027980860">Angielski (Wielka Brytania) z klawiaturą Dvoraka</translation>
 <translation id="8137331602592933310">Plik „<ph name="FILENAME" />” został Ci udostępniony. Nie możesz go usunąć, ponieważ nie jesteś jego właścicielem.</translation>

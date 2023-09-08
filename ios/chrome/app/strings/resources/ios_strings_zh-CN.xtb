@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">您只需回到这里，便可重新打开最近关闭的标签页</translation>
 <translation id="1016495303386450659">书签已更新</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{将密码保存到账号}other{将密码保存到账号}}</translation>
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
@@ -70,6 +71,7 @@
 <translation id="132683371494960526">点按两次即可更改父文件夹。</translation>
 <translation id="1332723353863236763">部分数据尚未保存</translation>
 <translation id="1335348992705722518">管理设置…</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{将 {COUNT} 个密码保存到您的 Google 账号}other{将 {COUNT} 个密码保存到您的 Google 账号}}</translation>
 <translation id="1340643665687018190">关闭菜单</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">访问您复制的链接</translation>
@@ -152,6 +154,7 @@
 <translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="USER_EMAIL" />) 中。</translation>
 <translation id="1832848789136765277">若要确保您能随时访问自己的同步数据，请验证是您本人在操作</translation>
 <translation id="1836891464494477513">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{书签已保存到您的 Google 账号 {email}}}</translation>
+<translation id="1847795903283049083">您也可在书签、阅读清单或密码管理工具中查看和管理这些内容。</translation>
 <translation id="1870148520156231997">显示密码</translation>
 <translation id="1872096359983322073">闪光灯</translation>
 <translation id="1882901927376062252">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{{count} 个书签已保存到您的 Google 账号 {email}}}</translation>
@@ -313,6 +316,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">无法创建链接</translation>
 <translation id="2786701870377699570">在所有已同步的设备上搜索标签页</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{密码已保存到您的 Google 账号 {EMAIL}}other{密码已保存到您的 Google 账号 {EMAIL}}}</translation>
 <translation id="2797029671965852011">显示历史记录</translation>
 <translation id="2800683595868705743">离开标签页切换器</translation>
 <translation id="2815198996063984598">2. 点按“默认浏览器应用”</translation>
@@ -364,6 +368,7 @@
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
 <translation id="3039722182465315531">不登录</translation>
 <translation id="3053332585453689122">将您访问过的网址以及网页内容、下载内容、扩展程序活动和系统信息的少量样本发送至“Google 安全浏览”功能，以检查这些内容是否有害。</translation>
+<translation id="3054631738875941048">隐藏“添加到阅读清单”</translation>
 <translation id="3074499504015191586">翻译整页内容</translation>
 <translation id="3076846064362030967">您不会因此而退出自己的 Google 账号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。
 
@@ -481,6 +486,7 @@
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
 <translation id="37207012422556617">热搜字词</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以无痕模式打开输入的网址。</translation>
+<translation id="3745190878148784130">隐藏“缩放文字”</translation>
 <translation id="3762232513783804601">专为 iPad 打造</translation>
 <translation id="3768725474733206671">重新打开最后关闭的标签页</translation>
 <translation id="3771033907050503522">无痕模式标签页</translation>
@@ -509,6 +515,7 @@
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3904829425754749514">贵组织已关闭同步功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的账号。</translation>
+<translation id="3909222758573607742">将密码和其他内容保存到账号</translation>
 <translation id="3913386780052199712">已登录 Chrome</translation>
 <translation id="3915450441834151894">网站信息</translation>
 <translation id="3922310737605261887">搜索复制的文字</translation>
@@ -519,6 +526,7 @@
 <translation id="3959736869653157332">菜单 → 打开新的无痕式标签页</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3968505803272650567">管理感兴趣的主题</translation>
+<translation id="3971789053442864420">{count,plural, =1{{count} 个密码}other{{count} 个密码}}</translation>
 <translation id="3989635538409502728">退出</translation>
 <translation id="3995521777587992544">网页加载进度条，已加载 <ph name="EMAIL" />。</translation>
 <translation id="4002019827078931033">将地址栏移到顶部</translation>
@@ -630,6 +638,8 @@
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4650125387981512669">继续以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份登录</translation>
 <translation id="4652817563047461855">确保您的密码始终安全，检查密码是否遭到泄露，并获取关于如何保障您的在线安全的建议。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="4658335131052370646">保存</translation>
+<translation id="4659194143325814340">{count,plural, =1{您的阅读清单中有 {count} 个页面}other{您的阅读清单中有 {count} 个页面}}</translation>
 <translation id="4659667755519643272">进入标签页切换器</translation>
 <translation id="46614316059270592">保存密码</translation>
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
@@ -638,12 +648,14 @@
 <translation id="4697071790493980729">找不到任何结果</translation>
 <translation id="470966556546083668">请勿开启同步功能</translation>
 <translation id="4711809265250406889">处于开启状态时</translation>
+<translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2} 和另外 1 个}other{{website_1}、{website_2} 和另外 {more_count} 个}}</translation>
 <translation id="4737560986434232178">在最近打开的标签页中搜索</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4746926359847517643">您随时可以从历史记录中重新打开这些标签页。</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />，<ph name="STATE" />，仅在该设备上，<ph name="URL" /></translation>
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
 <translation id="4766112107778026136">探索与关注</translation>
+<translation id="47677902929517676">若要将密码保存到您的账号，您必须先在设备上设置屏幕解锁密码。</translation>
 <translation id="4775879719735953715">默认浏览器</translation>
 <translation id="4778644898150334464">使用其他密码</translation>
 <translation id="478808905805139173">在无痕模式下打开？</translation>
@@ -681,6 +693,7 @@
 <translation id="4918086044614829423">接受</translation>
 <translation id="4922154083994158612">想提升安全性？</translation>
 <translation id="4930714375720679147">开启</translation>
+<translation id="4937410517508563815">将密码保存到账号</translation>
 <translation id="4938338714234463591">这样，您就可以通过语音在网站上使用某些功能。</translation>
 <translation id="4941089862236492464">很抱歉，分享您的信息时出现问题。</translation>
 <translation id="4944543191714094452">在网页中查找…</translation>
@@ -704,6 +717,7 @@
 <translation id="5090832849094901128">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的账号。</translation>
 <translation id="5094827893301452931">Tweet 信息发布已完成。</translation>
 <translation id="5100848274708256363">加入家人群组</translation>
+<translation id="5100969332803472179">隐藏“添加到书签”</translation>
 <translation id="5109892411553231226">管理付款方式</translation>
 <translation id="5118713593561876160">兴趣</translation>
 <translation id="5118764316110575523">已关闭</translation>
@@ -735,6 +749,7 @@
 <translation id="5228579091201413441">启用同步功能</translation>
 <translation id="5232485538978018676">使用受管理的账号登录</translation>
 <translation id="5234764350956374838">关闭</translation>
+<translation id="5235389474593199952">隐藏“历史记录”</translation>
 <translation id="5238301240406177137">保存到账号</translation>
 <translation id="5245322853195994030">取消同步</translation>
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
@@ -873,6 +888,7 @@
 <translation id="6064824697233747382">贵单位要求您关闭同步功能。</translation>
 <translation id="6066301408025741299">点按可取消。</translation>
 <translation id="6067849159007176401">添加浏览保护功能</translation>
+<translation id="607620096698446287">无法上传“<ph name="FILENAME" />”(<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">选择标签页</translation>
 <translation id="6100617279104942061">您目前登录的账号为 <ph name="USER_EMAIL" />。打开“设置”。</translation>
 <translation id="6103540626693881831">设备上加密</translation>
@@ -986,6 +1002,7 @@
 <translation id="6585618849026997638">您可以为重要网页添加书签以便返回查看</translation>
 <translation id="6596481460663245319">使用 Google 搜索图片</translation>
 <translation id="6598875554591387303">按发布者排序</translation>
+<translation id="6601302169302852717">已将此图片保存到 <ph name="USER_EMAIL" /> 所用的 Google 相册</translation>
 <translation id="6603393121510733479">贵单位关闭了无痕浏览。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">正在运行安全检查…</translation>
@@ -1056,7 +1073,9 @@
 <translation id="6930799952781667037">点按此行即可更改为对应的语言。</translation>
 <translation id="6939941780796374211">密码选项</translation>
 <translation id="6944369514868857500">另选一个账号</translation>
+<translation id="6944935964236827145">隐藏“翻译”</translation>
 <translation id="6945221475159498467">选择</translation>
+<translation id="6955779377310719430">隐藏“关注”</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6973630695168034713">文件夹</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
@@ -1104,6 +1123,7 @@
 <translation id="7265758999917665941">一律不保存此网站的密码</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7291368939935408496">正在准备密码…</translation>
+<translation id="7302503784943202842">在您的所有设备上使用密码</translation>
 <translation id="730958329302570991">随时都可轻松将登录网站时所用的密码添加到 Google 密码管理工具中。</translation>
 <translation id="7313347584264171202">您已打开的无痕模式标签页会显示在此处</translation>
 <translation id="7331371412779932885">根据您使用自己的 Google 账号在其他设备上进行的浏览活动，向您提供标签页建议。您的设备必须使用同一 Google 账号登录并开启同步功能。</translation>
@@ -1169,8 +1189,10 @@
 <translation id="7711440461521638739">您未重复使用任何密码</translation>
 <translation id="7719038820139380048">登录即可获取系统根据您的兴趣推荐的内容。</translation>
 <translation id="7720410380936703141">重试</translation>
+<translation id="7724085059277147439">{count,plural, =1{这项内容已保存到您的 Google 账号 {email}}other{这些内容已保存到您的 Google 账号 {email}}}</translation>
 <translation id="7726702057919861819">菜单 → 历史 → 清除浏览数据</translation>
 <translation id="7729458878441927652">如需查看您在其他设备中打开的标签页，请同步您的标签页和历史记录。</translation>
+<translation id="7730973429297233609">选择您要使用哪个账号来保存“<ph name="FILENAME" />”- <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。仅在该设备上。</translation>
 <translation id="7738120385185846461">报告问题…</translation>
 <translation id="7741325291586284254">新的无痕式标签页</translation>
@@ -1259,6 +1281,7 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> 个账号</translation>
 <translation id="8159358225423560600">刚刚</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8182037667962849780">{count,plural, =1{对于 {website_1}}=2{对于 {website_1}、{website_2}}=3{对于 {website_1}、{website_2} 和另外 1 个}other{对于 {website_1}、{website_2} 个另外 {more_count} 个}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">翻译网页</translation>
 <translation id="8205564605687841303">取消</translation>
@@ -1284,6 +1307,8 @@
 <translation id="8328777765163860529">全部关闭</translation>
 <translation id="8343993175958086504">备份您的资料，以便在任意设备上使用。</translation>
 <translation id="834783239627985533">最常访问的网站</translation>
+<translation id="8356276002902955750">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
+<translation id="8364841868226993049">正在将此图片保存到 <ph name="USER_EMAIL" /> 所用的 Google 相册…</translation>
 <translation id="8378714024927312812">由贵组织管理</translation>
 <translation id="8386068868580335421">重置</translation>
 <translation id="838867811594159347">输入口令…</translation>
@@ -1330,6 +1355,7 @@
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
 <translation id="8637431369725868556">保护您免受危险网站的侵害。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
+<translation id="8640430998629397789">隐藏“请求切换到桌面版网站”</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8663764600409216912">您使用的密码不易猜中</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>
@@ -1344,6 +1370,7 @@
 <translation id="8725066075913043281">重试</translation>
 <translation id="8727043961453758442">充分利用 Chrome</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8731958888085671579">隐藏“在网页中查找”</translation>
 <translation id="87371078663613140">浏览菜单栏中的选项</translation>
 <translation id="8737620822084008350">{count,plural, =1{键盘上方显示了 {count} 份已保存的个人资料。}other{键盘上方显示了 {count} 份已保存的个人资料。}}</translation>
 <translation id="8741995161408053644">您的 Google 账号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
@@ -1360,6 +1387,7 @@
 <translation id="8806823403540278281">贵单位要求您进行无痕浏览。在无痕模式下，系统不会保存标签页。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">默认网站视图</translation>
+<translation id="881195471495802652">无法上传此文件</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="8825562130641217944">获取您保存的书签、密码等信息。</translation>
 <translation id="882557203579758546">在网页中查找…</translation>
@@ -1374,6 +1402,7 @@
 <translation id="8870413625673593573">最近关闭的标签页</translation>
 <translation id="8876882697946675716">让您的各部设备保持同步</translation>
 <translation id="8877287418679067891">在“设置”中设为默认选项…</translation>
+<translation id="8879984884633913185">隐藏“清除浏览数据”</translation>
 <translation id="8881801611828450202">在 <ph name="SEARCH_ENGINE" /> 中搜索此图片</translation>
 <translation id="8891935667620843985">只需将 Chrome 设为默认浏览器应用，便可自动在 Chrome 中打开链接。</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
@@ -1395,6 +1424,7 @@
 <translation id="8976414606286374109">系统会将信用卡信息保存到您的 Google 账号中。</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
 <translation id="8985320356172329008">已使用以下账号登录 Google：</translation>
+<translation id="8991382496704361510">在这部设备上</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="8999545564078155498">使用面容 ID 解锁</translation>
 <translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
@@ -1417,6 +1447,7 @@
 <translation id="9094033019050270033">更新密码</translation>
 <translation id="9097506547406246598">无法取消关注。出了点问题。</translation>
 <translation id="9098541895599151034">删除 <ph name="NUMBER_OF_ACCOUNTS" /> 个密码？</translation>
+<translation id="9099233023029360602">每次都询问我要使用哪个账号</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="9106655997975673326">来自“<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">检查是否有已泄露的密码</translation>
@@ -1443,6 +1474,7 @@
 <translation id="953008885340860025">已退出 Chrome</translation>
 <translation id="959066944189734975">您已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="96615566463761848">显示来自其他设备的标签页建议</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{您可将用于登录 {DOMAIN_ONE} 的密码保存到您的 Google 账号 {EMAIL}}=2{您可将用于登录 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密码保存到您的 Google 账号 {EMAIL}}=3{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}}other{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}}}</translation>
 <translation id="97300214378190234">每次点按其他应用中的链接时，都使用 Chrome 打开。</translation>
 <translation id="973493300226275298">跟踪某件商品在多个网店中的价格。当相应商品降价时，您会收到提醒。</translation>
 <translation id="981498610235328462">贵单位要求您只能使用特定账号登录。不允许使用的账号会处于隐藏状态。</translation>

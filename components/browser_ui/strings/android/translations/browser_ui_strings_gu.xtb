@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">આ સાઇટના તમારા ડિવાઇસના ઍક્સેસનું નિયંત્રણ કરો</translation>
-<translation id="6018815681665454784">સાફ કરીએ અને ફરીથી સેટ કરીએ?</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6042308850641462728">વધુ</translation>
 <translation id="6064125863973209585">પૂર્ણ થયેલા ડાઉનલોડ</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">બધી સાઇટ</translation>
 <translation id="6320088164292336938">વાઇબ્રેટ</translation>
 <translation id="6367753977865761591">ચોક્કસ સાઇટ માટે ત્રીજા પક્ષ દ્વારા સાઇન-ઇનને બ્લૉક કરો.</translation>
-<translation id="6388207532828177975">સાફ કરો અને ફરીથી સેટ કરો</translation>
 <translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
 <translation id="640163077447496506">આજે સમાપ્ત થાય છે</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">સાઇટને તમારું વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરવાથી બ્લૉક કરો</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
-<translation id="6467852467360539617">ડેટા સાફ કરો અને પરવાનગીઓ રીસેટ કરો</translation>
 <translation id="6500423977866688905">વિન્ડો નાની હોય ત્યારે, મોબાઇલ વ્યૂની વિનંતી કરો</translation>
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="652937045869844725">ત્રીજા પક્ષની કુકીને મંજૂરી આપવાનો પ્રયાસ કરવાનો અર્થ છે ઓછું સંરક્ષણ પરંતુ સાઇટની સુવિધાઓની કાર્ય કરવાની સંભાવના વધુ છે</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
 <translation id="7882806643839505685">કોઈ એક ચોક્કસ સાઇટ માટે અવાજ ચલાવવાની મંજૂરી આપો.</translation>
 <translation id="789180354981963912">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો:</translation>
-<translation id="7895868624847501462">આ ક્રિયા કુકી સહિતનો તમામ સ્થાનિક ડેટા સાફ કરશે અને <ph name="DOMAIN" /> તથા તેની હેઠળની બધી સાઇટ માટેની તમામ પરવાનગીઓ રીસેટ કરશે</translation>
 <translation id="7940722705963108451">મને યાદ કરાવો</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />ના સાઇટના ગ્રૂપમાંની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ, જે ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોઈ શકે છે}one{<ph name="FPS_OWNER" />ના સાઇટના ગ્રૂપમાંની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ, જે ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોઈ શકે છે}other{<ph name="FPS_OWNER" />ના સાઇટના ગ્રૂપમાંની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ, જે ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોઈ શકે છે}}</translation>
 <translation id="7986741934819883144">સંપર્ક પસંદ કરો</translation>
-<translation id="7999064672810608036">શું તમે ખરેખર કૂકીઝ સહિત આ વેબસાઇટ માટેનો બધો ડેટા સાફ કરી અને આ વેબસાઇટ માટેની બધી પરવાનગીઓ ફરીથી સેટ કરવા માગો છો?</translation>
 <translation id="8007176423574883786">આ ઉપકરણ માટે બંધ કર્યું</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8042586301629853791">આ પ્રમાણે સૉર્ટ કરો:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">કૅપ્શન્સ</translation>
 <translation id="8300705686683892304">ઍપ દ્વારા મેનેજ થતી</translation>
 <translation id="8324158725704657629">ફરીથી પૂછશો નહીં</translation>
-<translation id="8338445138528827481">આ ક્રિયા કુકી સહિતનો તમામ સ્થાનિક ડેટા સાફ કરશે અને <ph name="ORIGIN" /> માટેની બધી પરવાનગીઓને રીસેટ કરશે</translation>
 <translation id="8362795839483915693">તમે મુલાકાત લો છો તે સાઇટને તમે મોટી કે નાની કરી શકો છો</translation>
 <translation id="8372893542064058268">ચોક્કસ સાઇટ માટે બૅકગ્રાઉન્ડ સિંકની મંજૂરી આપો.</translation>
 <translation id="8376384591331888629">આ સાઇટ પરની ત્રીજા પક્ષની કુકી શામેલ છે</translation>

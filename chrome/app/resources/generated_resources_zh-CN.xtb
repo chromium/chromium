@@ -426,6 +426,7 @@
 <translation id="1335929031622236846">注册您的设备</translation>
 <translation id="133660899895084533">读取蓝牙外围设备的信息和数据</translation>
 <translation id="1336902454946927954">您的安全密钥已被锁定，因为无法识别您的指纹。若要解锁，请输入 PIN 码。</translation>
+<translation id="1337066099824654054">相关帮助处于关闭状态</translation>
 <translation id="1338631221631423366">正在配对…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> 想打开此应用。</translation>
 <translation id="1338950911836659113">正在删除…</translation>
@@ -3436,6 +3437,7 @@
 <translation id="3738632186060045350">系统将会在 24 小时后删除 <ph name="DEVICE_TYPE" /> 数据</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
 <translation id="3739254215541673094">要打开 <ph name="APPLICATION" /> 吗？</translation>
+<translation id="3740396996321407665">通过某些功能获得相关帮助</translation>
 <translation id="3740945083753997630">缩小显示大小和文字大小</translation>
 <translation id="3741056951918180319">您可以在任意网站上点击该扩展程序，即可随时使用它</translation>
 <translation id="3742235229730461951">韩语键盘布局</translation>
@@ -4170,6 +4172,7 @@
 <translation id="4322394346347055525">关闭其他标签页</translation>
 <translation id="4324577459193912240">文件下载未完成</translation>
 <translation id="4325237902968425115">正在卸载 <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4325433082696797523">存储和电源</translation>
 <translation id="4326146840124313313">Chrome 强大的安全防护功能有助于保护您免受危险的网站、下载内容和扩展程序的侵害</translation>
 <translation id="4326484226728068206">您的购物车中有多件商品享受了由 <ph name="MERCHANT_DOMAIN" /> 的 <ph name="MERCHANT_NAME" /> 提供的 <ph name="DISCOUNT_TEXT" />，距离上次查看已有 <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">冰水</translation>
@@ -5151,6 +5154,7 @@
 <translation id="5146896637028965135">系统语音</translation>
 <translation id="5147992672778369947">使用建议的密码</translation>
 <translation id="5148277445782867161">Google 的位置信息服务会使用 WLAN、移动网络和传感器等来源协助估测您设备所在的位置。</translation>
+<translation id="5148285448107770349">密码必须包含至少 8 个字符。</translation>
 <translation id="5150254825601720210">Netscape 证书 SSL 服务器名称</translation>
 <translation id="5151354047782775295">请释放磁盘空间，否则系统可能会自动删除某些数据</translation>
 <translation id="5153234146675181447">移除手机</translation>
@@ -6391,6 +6395,7 @@
 <translation id="6173623053897475761">再次输入您的 PIN 码</translation>
 <translation id="6175314957787328458">Microsoft 域 GUID</translation>
 <translation id="6175910054050815932">获取链接</translation>
+<translation id="6176701216248282552">相关帮助处于开启状态。这些功能可将打开的网页发送给 Google。</translation>
 <translation id="6177412385419165772">正在移除…</translation>
 <translation id="6178664161104547336">选择证书</translation>
 <translation id="6178682841350631965">您的登录数据已更新</translation>
@@ -9180,7 +9185,7 @@
 <translation id="8448729345478502352">缩小或放大屏幕上的内容</translation>
 <translation id="8449008133205184768">粘贴并匹配样式</translation>
 <translation id="8449036207308062757">管理存储空间</translation>
-<translation id="8449836157089738489">在新标签页组中打开全部网址</translation>
+<translation id="8449836157089738489">在新标签页分组中打开全部网址</translation>
 <translation id="8449869326050867919">已分享密码</translation>
 <translation id="8451512073679317615">智能助理</translation>
 <translation id="8452105022015742247">正在从您的 Android 手机传输 Google 账号信息</translation>

@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">ຊູມອອກ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">ຄວບຄຸມສິດເຂົ້າເຖິງອຸປະກອນຂອງທ່ານຂອງເວັບໄຊນີ້</translation>
-<translation id="6018815681665454784">ລຶບລ້າງ ແລະ ຣີເຊັດບໍ?</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>
 <translation id="6064125863973209585">ການດາວໂຫຼດສຳເລັດແລ້ວ</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">ທຸກ​ເວັບ​ໄຊ​ທ໌</translation>
 <translation id="6320088164292336938">ສັ່ນ</translation>
 <translation id="6367753977865761591">ບລັອກການເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
-<translation id="6388207532828177975">ລຶບ ແລະ​ຕັ້ງ​ຄ່າ​ຄືນ​ໃໝ່</translation>
 <translation id="6398765197997659313">ອອກຈາກເຕັມໜ້າຈໍ</translation>
 <translation id="640163077447496506">ໝົດອາຍຸມື້ນີ້</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ບລັອກບໍ່ໃຫ້ເວັບໄຊໃຊ້ອຸປະກອນ ແລະ ຂໍ້ມູນເວີຊົວ ຣິອາລິຕີຂອງທ່ານ</translation>
 <translation id="6447842834002726250">ຄຸກກີ້</translation>
-<translation id="6467852467360539617">ລຶບລ້າງຂໍ້ມູນ ແລະ ຣີເຊັດການອະນຸຍາດ</translation>
 <translation id="6500423977866688905">ເມື່ອໜ້າຈໍແຄບ,​ ໃຫ້ຮ້ອງຂໍມຸມມອງມືຖື</translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
 <translation id="652937045869844725">ລອງອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມ, ເຊິ່ງໝາຍຄວາມວ່າການປົກປ້ອງຈະຫຼຸດລົງ ແຕ່ຄຸນສົມບັດຂອງເວັບໄຊມີແນວໂນ້ມທີ່ຈະເຮັດວຽກໄດ້ຫຼາຍກວ່າ</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">ຍົກ​ເລີກ​ການ​ເລືອກ</translation>
 <translation id="7882806643839505685">ອະນຸຍາດສຽງສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="789180354981963912">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ:</translation>
-<translation id="7895868624847501462">ການດຳເນີນການນີ້ຈະລຶບລ້າງຂໍ້ມູນທັງໝົດໃນເຄື່ອງ, ຮວມທັງຄຸກກີ້ ແລະ ຈະຣີເຊັດການອະນຸຍາດທັງໝົດສຳລັບ <ph name="DOMAIN" /> ແລະ ເວັບໄຊທັງໝົດທີ່ຢູ່ພາຍໃຕ້ໂດເມນນີ້</translation>
 <translation id="7940722705963108451">ແຈ້ງເຕືອນຂ້ອຍ</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> ເວັບໄຊໃນກຸ່ມເວັບໄຊຂອງ <ph name="FPS_OWNER" /> ທີ່ສາມາດເບິ່ງເຫັນການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມ}other{<ph name="FPS_MEMBERS_COUNT" /> ເວັບໄຊໃນກຸ່ມເວັບໄຊຂອງ <ph name="FPS_OWNER" /> ທີ່ສາມາດເບິ່ງເຫັນການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມ}}</translation>
 <translation id="7986741934819883144">ເລືອກລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
-<translation id="7999064672810608036">ທ່ານ​ແນ່​ໃຈ​ບໍ​ວ່າ ທ່ານ​ຕ້ອງ​ການ​ລຶບ​ຂໍ້​ມູນໃນ​ເຄື່ອງ​ທັງ​ໝົດ, ລວມ​ທັງ​ຄຸກ​ກີ້, ແລະ​ຕັ້ງ​ຄ່າ​ການ​ອະ​ນຸ​ຍາດ​ທັງ​ໝົດສຳ​ລັບ​ເວັບ​ໄຊ​ທ໌​ນີ້?</translation>
 <translation id="8007176423574883786">ປິດ​ສຳ​ລັບ​ອຸ​ປະ​ກອນ​ນີ້</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8042586301629853791">ຈັດຮຽງຕາມ:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">ຄໍາບັນຍາຍພາບ</translation>
 <translation id="8300705686683892304">ຈັດການໂດຍແອັບ</translation>
 <translation id="8324158725704657629">ຢ່າຖາມອີກ</translation>
-<translation id="8338445138528827481">ການດຳເນີນການນີ້ຈະລຶບລ້າງຂໍ້ມູນທັງໝົດໃນເຄື່ອງ, ຮວມທັງຄຸກກີ້ ແລະ ຈະຣີເຊັດການອະນຸຍາດທັງໝົດສຳລັບ <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">ທ່ານສາມາດຊູມເຂົ້າ ຫຼື ອອກຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໄດ້</translation>
 <translation id="8372893542064058268">ອະນຸຍາດການຊິ້ງຂໍ້ມູນໃນພື້ນຫຼັງສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="8376384591331888629">ຮວມທັງຄຸກກີ້ພາກສ່ວນທີສາມໃນເວັບໄຊນີ້</translation>

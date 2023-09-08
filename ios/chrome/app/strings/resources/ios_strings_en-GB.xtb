@@ -305,6 +305,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">Unable to Open File</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
+<translation id="2738375676495545665">Hide What's New</translation>
 <translation id="2747003861858887689">Previous field</translation>
 <translation id="2749231692441336879">Following <ph name="CHANNEL_NAME" /></translation>
 <translation id="2762000892062317888">just now</translation>
@@ -486,8 +487,10 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} password is saved only to this device. To use it on your other devices, save it in your Google Account, {EMAIL}.}other{{COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Mark as unread</translation>
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
+<translation id="371398631992790800">Hide Bookmarks</translation>
 <translation id="37207012422556617">Trending searches</translation>
 <translation id="3740397331642243698">Opens the inputted URLs in Google Chrome in Incognito.</translation>
+<translation id="374357899112510277">Hide Downloads</translation>
 <translation id="3762232513783804601">Built for your iPad</translation>
 <translation id="3768725474733206671">Reopen last closed tab</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
@@ -838,6 +841,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="581659025233126501">Turn On Sync</translation>
 <translation id="5817176759448082654">Password Checkup</translation>
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="5827650163984030263">Hide Password Manager</translation>
 <translation id="5833643789537100742">Save passwords, payment methods and addresses for Chrome to auto-fill later.</translation>
 <translation id="5834415013958049700">Lens image that you copied</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
@@ -1303,6 +1307,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8286036467436129157">Sign In</translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
 <translation id="8299613349954694191">Open an Incognito tab to browse the web privately.</translation>
+<translation id="8311853334103696030">Hide Track Price</translation>
 <translation id="8316944564970119719">Enter site and password, then save</translation>
 <translation id="8319076807703933069">New search</translation>
 <translation id="8328777765163860529">Close All</translation>
@@ -1354,6 +1359,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8588404856427128947">Off</translation>
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
 <translation id="8605219856220328675">Close tab.</translation>
+<translation id="8613883225817609844">Hide Recent Tabs</translation>
 <translation id="8620640915598389714">Edit</translation>
 <translation id="8626393685701737946">You can change the default site view to desktop in Settings &gt; Content Settings</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
@@ -1453,6 +1459,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="9120217828624527905">Switch to full-page translation</translation>
 <translation id="9124387962554796433">Google may use your history to personalise Search and other Google services.</translation>
 <translation id="9137526406337347448">Google Services</translation>
+<translation id="9144931028079269381">Hide Reading List</translation>
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9157836665414082580">Suppress dialogues</translation>
 <translation id="9162432979321511934">Turn on Auto-fill passwords</translation>

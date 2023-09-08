@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Micșorează</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Gestionează accesul acestui site la dispozitivul tău</translation>
-<translation id="6018815681665454784">Ștergi și resetezi?</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6042308850641462728">Mai multe</translation>
 <translation id="6064125863973209585">Descărcări finalizate</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Toate site-urile</translation>
 <translation id="6320088164292336938">Vibrații</translation>
 <translation id="6367753977865761591">Blochează conectarea terță parte pentru un anumit site.</translation>
-<translation id="6388207532828177975">Șterge și resetează</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="640163077447496506">Expiră astăzi</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Împiedică site-urile să folosească dispozitivul de realitate virtuală și datele conexe</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
-<translation id="6467852467360539617">Șterge datele și resetează permisiunile</translation>
 <translation id="6500423977866688905">Când fereastra este îngustă, solicită afișarea pe mobil</translation>
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="652937045869844725">Permite cookie-urile terță parte, ceea ce înseamnă mai puțină protecție, dar mai multe șanse ca funcțiile site-ului să ruleze</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Anulează selecția</translation>
 <translation id="7882806643839505685">Permite sunetul pentru un anumit site.</translation>
 <translation id="789180354981963912">Blochează cookie-urile terță parte în modul incognito:</translation>
-<translation id="7895868624847501462">Astfel se vor șterge toate datele locale, inclusiv cookie-urile, și se vor reseta toate permisiunile pentru <ph name="DOMAIN" /> și pentru toate site-urile asociate</translation>
 <translation id="7940722705963108451">Reamintește-mi</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site din grupul utilizatorului <ph name="FPS_OWNER" /> care îți poate vedea activitatea în grup}few{<ph name="FPS_MEMBERS_COUNT" /> site-uri din grupul utilizatorului <ph name="FPS_OWNER" /> care îți pot vedea activitatea în grup}other{<ph name="FPS_MEMBERS_COUNT" /> de site-uri din grupul utilizatorului <ph name="FPS_OWNER" /> care îți pot vedea activitatea în grup}}</translation>
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
-<translation id="7999064672810608036">Sigur dorești să ștergi toate datele locale, inclusiv cookie-urile pentru acest site și să îi resetezi permisiunile?</translation>
 <translation id="8007176423574883786">Dezactivată pentru acest dispozitiv</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
 <translation id="8042586301629853791">Sortează după:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Subtitrări</translation>
 <translation id="8300705686683892304">Gestionate de aplicație</translation>
 <translation id="8324158725704657629">Nu mai întreba</translation>
-<translation id="8338445138528827481">Această acțiune va șterge toate datele locale, inclusiv cookie-urile, și va reseta toate permisiunile pentru <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Poți să mărești sau să micșorezi site-urile pe care le accesezi</translation>
 <translation id="8372893542064058268">Permite sincronizarea în fundal pentru un anumit site.</translation>
 <translation id="8376384591331888629">Inclusiv cookie-urile terță parte de pe acest site</translation>

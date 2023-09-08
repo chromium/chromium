@@ -7,12 +7,12 @@
 <translation id="1333745675627230582">Laruin ang Chrome Dino</translation>
 <translation id="1352919863522755794">Hindi masuri ng Google Password Manager ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="1407843355326180937">Mag-sign in sa site na ito at sa Chrome para makuha mo ang iyong mga bookmark at higit pa sa lahat ng device mo.</translation>
+<translation id="1436059927646026729">Buksan ang Aking Pinakabagong Tab sa Chrome</translation>
 <translation id="1462727070346936664">Mag-sign in para masulit ang Chrome.</translation>
 <translation id="1479202195792305274">Masusuri ng Chrome ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="1491435845014430217">I-on ang “I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chrome.”</translation>
 <translation id="1493827051843127077">Itakda ang Chrome bilang default para ma-sync ang iyong mga tab, password, at impormasyon sa pagbabayad sa lahat ng device mo</translation>
 <translation id="1504372625950710826">Hindi matingnan ng Chrome kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
-<translation id="1511320244449497906">Naka-sign in ka at sini-sync ang iyong data sa isang account na pinamamahalaan ng <ph name="DOMAIN" /> kung saan magagawa na ng administrator nito na magtakda ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa pagkilos ng Chrome.</translation>
 <translation id="1516692594929310090">M agbubukas sa Tab Grid ng Chrome.</translation>
 <translation id="1526327845902180576">Kapag naka-on:
 <ph name="BEGIN_INDENT" />  • Tumulong na pahusayin ang Chrome para sa mga taong gumagamit nito gaya ng iyong paggamit.<ph name="END_INDENT" />
@@ -176,6 +176,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="7855730255114109580">Napapanahon ang Google Chrome</translation>
 <translation id="7897703007638178753">Tingnan ang Mga Kamakailang Tab sa Chrome</translation>
 <translation id="7925119591961387184">Piliin ang "Chrome."</translation>
+<translation id="7933491483529363150">Buksan ang Aking Pinakabagong Tab sa Chrome.</translation>
 <translation id="8022947259858476807">Gamitin ang Chrome bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
 <translation id="804638182476029347">Payagan ang mga notification sa Chrome na makatanggap ng mga alerto sa pagbaba ng presyo</translation>
 <translation id="81358522153858150">Suportado na ngayon ng Chrome ang mga patakaran ng user para sa iyong pinamamahalaang account</translation>

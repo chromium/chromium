@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Minnka aðdrátt</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Stjórnaðu aðgangi þessa vefsvæðis að tækinu þínu</translation>
-<translation id="6018815681665454784">Viltu hreinsa og endurstilla?</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6042308850641462728">Meira</translation>
 <translation id="6064125863973209585">Niðurhali lokið</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Öll vefsvæði</translation>
 <translation id="6320088164292336938">Titringur</translation>
 <translation id="6367753977865761591">Loka á innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
-<translation id="6388207532828177975">Hreinsa og endurstilla</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
 <translation id="640163077447496506">Rennur út í dag</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Loka á að vefsvæði fái að nota sýndarveruleikatækið og -gögnin þín</translation>
 <translation id="6447842834002726250">Fótspor</translation>
-<translation id="6467852467360539617">Hreinsa gögn og endurstilla heimildir</translation>
 <translation id="6500423977866688905">Þegar glugginn er mjór skaltu biðja um símaútgáfu</translation>
 <translation id="6527303717912515753">Deila</translation>
 <translation id="652937045869844725">Prófaðu að leyfa fótspor þriðju aðila, það skilar minni vernd en eykur líkur á að eiginleikar vefsvæðisins virki</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Hætta við val</translation>
 <translation id="7882806643839505685">Leyfa hljóð á tilteknu vefsvæði.</translation>
 <translation id="789180354981963912">Loka á fótspor þriðju aðila í huliðsstillingu:</translation>
-<translation id="7895868624847501462">Þessi aðgerð hreinsar öll staðbundin gögn, þar á meðal fótspor, og endurstillir allar heimildir fyrir <ph name="DOMAIN" /> og öll undirvefsvæði þess</translation>
 <translation id="7940722705963108451">Minna mig á</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða sem <ph name="FPS_OWNER" /> á sem geta séð virkni þína í hópnum}one{<ph name="FPS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða sem <ph name="FPS_OWNER" /> á sem geta séð virkni þína í hópnum}other{<ph name="FPS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða sem <ph name="FPS_OWNER" /> á sem geta séð virkni þína í hópnum}}</translation>
 <translation id="7986741934819883144">Velja tengilið</translation>
-<translation id="7999064672810608036">Ertu viss um að þú viljir hreinsa öll staðbundin gögn fyrir þetta vefsvæði, þar á meðal fótspor, og endurstilla allar heimildir þess?</translation>
 <translation id="8007176423574883786">Slökkt fyrir þetta tæki</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8042586301629853791">Raða eftir:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Skjátextar</translation>
 <translation id="8300705686683892304">Stjórnað af forriti</translation>
 <translation id="8324158725704657629">Ekki spyrja aftur</translation>
-<translation id="8338445138528827481">Þessi aðgerð hreinsar öll staðbundin gögn, þar á meðal fótspor, og endurstillir allar heimildir fyrir <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Þú getur aukið eða minnkað aðdrátt á vefsvæðum sem þú opnar</translation>
 <translation id="8372893542064058268">Leyfa bakgrunnssamstillingu fyrir ákveðið vefsvæði.</translation>
 <translation id="8376384591331888629">Hafa fótspor þriðju aðila á þessu vefsvæði með</translation>

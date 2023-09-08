@@ -206,6 +206,7 @@
 <translation id="1775598828170459419"><ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /> көрсету</translation>
 <translation id="178347895271755507">Телефондағы соңғы фотосуреттерді, медиафайлдарды және хабарландыруларды көру мүмкіндігін реттеу</translation>
 <translation id="1787955149152357925">Өшірулі</translation>
+<translation id="1797271123677381264">Құпия сөзді ұмытып қалдым</translation>
 <translation id="181103072419391116">Сигнал күші – <ph name="SIGNAL_STRENGTH" />, Әкімші басқарады</translation>
 <translation id="1815245884418711390">Хотспотты қосу/өшіру. Хотспот өшірулі.</translation>
 <translation id="1816896987747843206">Бұл — камера рұқсаты бар барлық қолданба мен веб-сайт үшін камераны пайдалануға мүмкіндік береді.</translation>
@@ -1224,7 +1225,7 @@
 <translation id="601304062528754300">Сөредегі келесі элементті ерекшелеу</translation>
 <translation id="6015573907265691211">Орындалған деп белгілеу</translation>
 <translation id="6018164090099858612">Айна режимінен шығуда</translation>
-<translation id="6019566113895157499">Перне таңбашалары</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Солға айналдыру</translation>
 <translation id="6020147141355393792">Телефондағы хабарландырулар мен қолданбаларды көру мүмкіндігін реттеу</translation>
 <translation id="6022924867608035986">Іздеу жолағының мәтінін өшіру</translation>

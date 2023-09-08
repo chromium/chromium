@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Uzaklaştır</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Bu sitenin cihazınıza erişimini kontrol edin</translation>
-<translation id="6018815681665454784">Temizlenip sıfırlansın mı?</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6042308850641462728">Daha fazla</translation>
 <translation id="6064125863973209585">Tamamlanan indirme işlemleri</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Tüm siteler</translation>
 <translation id="6320088164292336938">Titreşim</translation>
 <translation id="6367753977865761591">Belirli bir sitede üçüncü taraf oturum açmayı engelleyin.</translation>
-<translation id="6388207532828177975">Temizle ve sıfırla</translation>
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
 <translation id="640163077447496506">Süresi bugün dolacak</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Sitelerin sanal gerçeklik cihazımı ve verilerimi kullanmasını engelle</translation>
 <translation id="6447842834002726250">Çerezler</translation>
-<translation id="6467852467360539617">Verileri temizle ve izinleri sıfırla</translation>
 <translation id="6500423977866688905">Pencere dar olduğunda mobil cihaz görünümü isteğinde bulunma</translation>
 <translation id="6527303717912515753">Paylaş</translation>
 <translation id="652937045869844725">Üçüncü taraf çerezlerine izin vermeyi deneyin. Bu durumda daha az korunursunuz ancak site özelliklerinin çalışma olasılığı daha yüksektir</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Seçimi iptal et</translation>
 <translation id="7882806643839505685">Belirli bir site için sese izin verin.</translation>
 <translation id="789180354981963912">Gizli modda üçüncü taraf çerezlerini engelle:</translation>
-<translation id="7895868624847501462">Bu işlem, çerezler de dahil olmak üzere yerel verilerin tamamını temizler, ayrıca <ph name="DOMAIN" /> ve altındaki tüm sitelerin izinlerini sıfırlar</translation>
 <translation id="7940722705963108451">Bana hatırlat</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="FPS_MEMBERS_COUNT" /> site var}other{<ph name="FPS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="FPS_MEMBERS_COUNT" /> site var}}</translation>
 <translation id="7986741934819883144">Kişi seçin</translation>
-<translation id="7999064672810608036">Bu web sitesine ilişkin çerezler dahil tüm yerel verileri temizlemek ve bu sitenin tüm izinlerini sıfırlamak istediğinizden emin misiniz?</translation>
 <translation id="8007176423574883786">Bu cihaz için kapatıldı</translation>
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8042586301629853791">Sıralama ölçütü:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Altyazılar</translation>
 <translation id="8300705686683892304">Uygulama tarafından yönetiliyor</translation>
 <translation id="8324158725704657629">Tekrar sorma</translation>
-<translation id="8338445138528827481">Bu işlem, çerezler de dahil olmak üzere yerel verilerin tamamını temizler ve tüm <ph name="ORIGIN" /> izinlerini sıfırlar</translation>
 <translation id="8362795839483915693">Ziyaret ettiğiniz siteleri yakınlaştırabilir veya uzaklaştırabilirsiniz</translation>
 <translation id="8372893542064058268">Belirli bir site için Arka Plan Senkronizasyonuna izin verin.</translation>
 <translation id="8376384591331888629">Bu sitedeki üçüncü taraf çerezleri dahil</translation>

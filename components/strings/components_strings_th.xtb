@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">แม้แต่เว็บไซต์ที่โดยปกติแล้วมีความปลอดภัยก็อาจถูกบุกรุกจากผู้โจมตีได้ โปรดเข้าชม<ph name="BEGIN_LINK" />เว็บไซต์ที่ไม่ปลอดภัยนี้<ph name="END_LINK" />ต่อเมื่อคุณมั่นใจว่าเข้าใจถึงความเสี่ยงแล้วเท่านั้น</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">ลองติดต่อผู้ดูแลระบบ</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, หมดอายุ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">คอมพิวเตอร์</translation>
 <translation id="1741613555002899862">ต้องระบุและสตริงที่ถูกต้องเมื่อนโยบาย DnsOverHttpsMode ตั้งค่าเป็น <ph name="SECURE_DNS_MODE_SECURE" /></translation>
 <translation id="1743393865165844832">เครื่องนอนและผ้าปูที่นอน</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">เนื้อสัตว์และอาหารทะเล</translation>
 <translation id="2367567093518048410">ระดับ</translation>
 <translation id="23703388716193220">อุปกรณ์เล่นกอล์ฟ</translation>
+<translation id="2378084239755710604">ปิดข้อความแจ้งให้บันทึกบัตรแล้ว</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">ปรับเปลี่ยนเครื่องมือการช่วยเหลือพิเศษในแบบของคุณในการตั้งค่า Chrome</translation>
 <translation id="2384307209577226199">ค่าเริ่มต้นขององค์กร</translation>
@@ -2246,6 +2248,7 @@
 <translation id="5653432653077411130">การประปาและการบำบัดน้ำเสีย</translation>
 <translation id="5654927323611874862">รหัสรายงานข้อขัดข้องที่อัปโหลด:</translation>
 <translation id="5659593005791499971">อีเมล</translation>
+<translation id="5660122698869360728">โฟลเดอร์อัจฉริยะใหม่ที่ช่วยให้คุณบันทึกหน้าช็อปปิ้งทั้งหมดไว้ในที่เดียว รวมถึงติดตามราคา ดูข้อมูลเชิงลึกด้านราคา และอื่นๆ ได้โดยอัตโนมัติ</translation>
 <translation id="5663955426505430495">ผู้ดูแลระบบของอุปกรณ์นี้ได้ติดตั้งส่วนขยายสำหรับฟังก์ชันเพิ่มเติม ส่วนขยายเข้าถึงข้อมูลบางส่วนของคุณได้</translation>
 <translation id="5666606186680807225">ชายหาดและเกาะ</translation>
 <translation id="5667827081946850877">หนังสือเสียง</translation>
@@ -2258,6 +2261,7 @@
 <translation id="5689199277474810259">ส่งออกไปยัง JSON</translation>
 <translation id="5689516760719285838">ตำแหน่ง</translation>
 <translation id="569000877158168851">ค่า DnsOverHttpsTemplates ไม่เกี่ยวข้องและจะไม่มีการนำไปใช้ นอกเสียจากจะมีการตั้งค่านโยบาย DnsOverHttpsMode เป็น <ph name="SECURE_DNS_MODE_AUTOMATIC" /> หรือ <ph name="SECURE_DNS_MODE_SECURE" /></translation>
+<translation id="5691848789297492617">ข้อความแจ้งให้บันทึกบัตรที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="5695542892312572833">ใช้ Windows Hello เพื่อยืนยันและทำการซื้อให้เสร็จใช่ไหม</translation>
 <translation id="5699628521141772782">ผลิตภัณฑ์นมและไข่</translation>
 <translation id="5701381305118179107">กึ่งกลาง</translation>
@@ -3008,6 +3012,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">ถาดหลัง</translation>
 <translation id="725866823122871198">ไม่สามารถเริ่มการเชื่อมต่อส่วนตัวกับ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ได้เนื่องจากวันที่และเวลาของคอมพิวเตอร์ (<ph name="DATE_AND_TIME" />) ไม่ถูกต้อง</translation>
+<translation id="7260075294900977274">โฟลเดอร์อัจฉริยะใหม่ที่ช่วยให้คุณบันทึกหน้าช็อปปิ้งทั้งหมดไว้ในที่เดียว รวมถึงติดตามราคา ดูข้อมูลเชิงลึกด้านราคา และอื่นๆ ได้โดยอัตโนมัติ</translation>
 <translation id="7265608370113700582">ที่อยู่จะใช้งานได้เฉพาะบนอุปกรณ์นี้เท่านั้น</translation>
 <translation id="7275334191706090484">บุ๊กมาร์กที่มีการจัดการ</translation>
 <translation id="7277998515889183784">อุปกรณ์แต่งหน้าและเครื่องสำอาง</translation>
@@ -3232,6 +3237,7 @@
 <translation id="7676643023259824263">ค้นหาข้อความในคลิปบอร์ด <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">ดูและจัดการประวัติการท่องเว็บในการตั้งค่า Chrome</translation>
 <translation id="7679947978757153706">เบสบอล</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, หมดอายุ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">แฟนตาซีสปอร์ต</translation>
 <translation id="7682287625158474539">จัดส่ง</translation>
 <translation id="7682451652090915298">รักบี้</translation>
@@ -3309,6 +3315,7 @@
 <translation id="7822611063308883975">คอนโซลเกมมือถือ</translation>
 <translation id="7825558994363763489">ไมโครเวฟ</translation>
 <translation id="782886543891417279">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่หน้าการเข้าสู่ระบบ</translation>
+<translation id="7831993212387676366">รายการช็อปปิ้งคืออะไร</translation>
 <translation id="7840103971441592723">เริ่มจับภาพหน้าจอแล้ว</translation>
 <translation id="784137052867620416">ข้อมูลเชิงลึกเกี่ยวกับ Shopping</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ไม่มี}=1{1 แอป (<ph name="EXAMPLE_APP_1" />)}=2{2 แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

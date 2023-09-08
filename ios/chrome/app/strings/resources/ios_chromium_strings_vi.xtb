@@ -168,7 +168,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7674213385180944843">Mở Cài đặt &gt; Bảo mật &gt; Máy ảnh &gt; Chromium và bật máy ảnh.</translation>
 <translation id="7710137812207066069">Mở một thẻ mới trong Chromium.</translation>
 <translation id="7763454117143368771">Hãy đặt Chromium làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
-<translation id="7812317783196516890">Bạn đang đăng nhập và đồng bộ hoá dữ liệu bằng một tài khoản do <ph name="DOMAIN" /> quản lý; theo đó, quản trị viên nay có thể thiết lập chính sách người dùng dành riêng cho tài khoản đó và việc này có thể làm thay đổi hành vi của Chromium.</translation>
 <translation id="7859018312476869945">Khi bạn nhập vào thanh địa chỉ hoặc hộp tìm kiếm, Chromium sẽ gửi nội dung bạn nhập đến công cụ tìm kiếm mặc định để đề xuất cho bạn cụm từ phù hợp hơn. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
 <translation id="786327964234957808">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chromium hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Bắt đầu dùng trình quét của Chromium</translation>

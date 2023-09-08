@@ -7,12 +7,12 @@
 <translation id="1333745675627230582">Zagraj w grę z dinozaurem w Chrome</translation>
 <translation id="1352919863522755794">Menedżerowi haseł Google nie udało się sprawdzić haseł. Sprawdź połączenie z internetem.</translation>
 <translation id="1407843355326180937">Zaloguj się na tej stronie i w Chrome, aby mieć dostęp do zakładek i innych opcji na wszystkich swoich urządzeniach.</translation>
+<translation id="1436059927646026729">Otwórz moją ostatnio używaną kartę w Chrome</translation>
 <translation id="1462727070346936664">Zaloguj się, aby w pełni wykorzystać możliwości Chrome.</translation>
 <translation id="1479202195792305274">Chrome może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="1491435845014430217">Włącz „Po zamknięciu Chrome blokuj karty incognito”.</translation>
 <translation id="1493827051843127077">Ustaw Chrome jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
 <translation id="1504372625950710826">Chrome nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
-<translation id="1511320244449497906">Jesteś zalogowany(-a) i synchronizujesz dane z kontem zarządzanym przez <ph name="DOMAIN" />. Administrator może teraz ustawiać specjalnie dla tego konta zasady dotyczące użytkowników, które mogą zmieniać działanie Chrome.</translation>
 <translation id="1516692594929310090">Otwiera siatkę kart w Chrome.</translation>
 <translation id="1526327845902180576">Po włączeniu:
 <ph name="BEGIN_INDENT" /> • Pomagaj w udoskonalaniu Chrome pod kątem potrzeb użytkowników, którzy korzystają z przeglądarki w taki sam sposób jak Ty.<ph name="END_INDENT" />
@@ -73,6 +73,7 @@ Pamiętaj, że:
 <translation id="3655656110921623717">Oznacza to, że Chrome będzie za każdym razem wyświetlać witrynę mobilną.</translation>
 <translation id="3720541637541300822">Po zamknięciu Chrome blokuj karty incognito</translation>
 <translation id="3741995255368156336">Otwiera listę Do przeczytania w Chrome.</translation>
+<translation id="3744018071945602754">Zarządzaj hasłami w Chrome</translation>
 <translation id="3827545470516145620">Na tym urządzeniu korzystasz ze standardowej ochrony</translation>
 <translation id="384394811301901750">Google Chrome nie może teraz użyć aparatu</translation>
 <translation id="3901001113120561395">W pełni wykorzystuj potencjał Chrome.</translation>
@@ -87,6 +88,7 @@ Pamiętaj, że:
 <translation id="4233521129555661685">Użytkownik <ph name="USER_EMAIL1" /> korzystał z Chrome i zapisał na tym urządzeniu swoje zakładki, hasła i inne ustawienia.</translation>
 <translation id="424864128008805179">Wylogować z Chrome?</translation>
 <translation id="4251174643044751591">Otwiera stronę ustawień form płatności w Chrome.</translation>
+<translation id="4453284704333523777">Zarządzaj ustawieniami Chrome</translation>
 <translation id="4508370294876102450">Otwieraj Chrome z dowolnej aplikacji</translation>
 <translation id="4523886039239821078">Niektóre dodatki mogą powodować awarie Chrome. Odinstaluj je.</translation>
 <translation id="4633328489441962921">Chrome nie może sprawdzić dostępności aktualizacji</translation>
@@ -123,6 +125,7 @@ Pamiętaj, że:
 <translation id="571296537125272375">Tryb offline. Chrome nie może sprawdzić dostępności aktualizacji.</translation>
 <translation id="5716154293141027663">Otwieraj Chrome po kliknięciu linków w innych aplikacjach</translation>
 <translation id="5808435672482059465">Wyświetl historię Chrome</translation>
+<translation id="589695154992054845">Otwiera Menedżera haseł w Chrome.</translation>
 <translation id="5998675059699164418">Twoja organizacja wymaga od Ciebie zalogowania się w Chrome.</translation>
 <translation id="6054613632208573261">Używaj domyślnie Chrome</translation>
 <translation id="6063091872902370735">Zezwalaj na logowanie się w Chrome</translation>
@@ -173,6 +176,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="7855730255114109580">Masz aktualną wersję Google Chrome</translation>
 <translation id="7897703007638178753">Zobacz ostatnie karty w Chrome</translation>
 <translation id="7925119591961387184">Wybierz „Chrome”.</translation>
+<translation id="7933491483529363150">Otwórz moją ostatnio używaną kartę w Chrome.</translation>
 <translation id="8022947259858476807">Używaj domyślnie Chrome, aby otwierać linki, wyszukiwać z widżetów i korzystać z autouzupełniania haseł w innych aplikacjach</translation>
 <translation id="804638182476029347">Zezwalaj na powiadomienia Chrome, aby otrzymywać alerty o obniżkach cen</translation>
 <translation id="81358522153858150">Chrome obsługuje teraz zasady dotyczące użytkowników na koncie zarządzanym</translation>
@@ -215,6 +219,7 @@ Pamiętaj, że:
   • Jeśli Chrome ulegnie awarii, szczegółowe informacje o problemie mogą zawierać niektóre dane osobowe.
 
   • Jeśli włączysz synchronizację, dane mogą też zawierać informacje o adresach URL, które odwiedzasz.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Otwiera Ustawienia w Chrome.</translation>
 <translation id="9112744793181547300">Ustawić Chrome jako domyślną przeglądarkę?</translation>
 <translation id="9122931302567044771">Oznacza to, że Chrome będzie za każdym razem wyświetlać witrynę w wersji na komputery.</translation>
 <translation id="9181628561061032322">Otwiera ostatnie karty w Chrome.</translation>

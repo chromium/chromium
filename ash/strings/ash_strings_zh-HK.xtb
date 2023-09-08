@@ -200,11 +200,13 @@
 <translation id="1757857692711134412">關閉，直到日落</translation>
 <translation id="1768366657309696705">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 句號鍵」的鍵盤快速鍵已變更。如要使用 Insert 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Shift + Backspace 鍵。</translation>
 <translation id="1770726142253415363">移咗去第 <ph name="ROW_NUMBER" /> 列，第 <ph name="COLUMN_NUMBER" /> 欄。</translation>
+<translation id="1771458705381257690">使用「<ph name="NAME" />」設定及自訂裝置</translation>
 <translation id="1771761307086386028">向右捲動</translation>
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前揀咗 <ph name="DATE" />。</translation>
 <translation id="1775598828170459419">目前顯示 <ph name="NUM_SHOWN_ITEMS" /> 個，共 <ph name="NUM_TOTAL_ITEMS" /> 個</translation>
 <translation id="178347895271755507">設定睇手機最近嘅相、媒體同通知</translation>
 <translation id="1787955149152357925">關閉</translation>
+<translation id="1797271123677381264">忘記密碼</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="1815245884418711390">切換熱點。熱點已關閉。</translation>
 <translation id="1816896987747843206">此操作會允許具備相機權限的所有應用程式和網站存取相機</translation>
@@ -1191,6 +1193,7 @@
 <translation id="5876666360658629066">輸入家長存取碼</translation>
 <translation id="5881540930187678962">稍後再設定 Phone Hub</translation>
 <translation id="5881663018261910378">已停用</translation>
+<translation id="5883017113634523865">前往 Google Play 安裝「<ph name="NAME" />」的應用程式，即可查看所有可用功能</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
 <translation id="588817334757907802">在 Chrome 瀏覽器中開啟檔案</translation>
 <translation id="5895138241574237353">重新啟動</translation>

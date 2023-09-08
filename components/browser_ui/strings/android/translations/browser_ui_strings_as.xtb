@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">জুম আউট কৰক</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">আপোনাৰ ডিভাইচটোলৈ এই ছাইটটোৰ থকা এক্সেছ নিয়ন্ত্ৰণ কৰক</translation>
-<translation id="6018815681665454784">মচিব আৰু ৰিছেট কৰিবনে?</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6042308850641462728">অধিক</translation>
 <translation id="6064125863973209585">সম্পূৰ্ণ হোৱা ডাউনল’ডসমূহ</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">সকলো ছাইট</translation>
 <translation id="6320088164292336938">কম্পন</translation>
 <translation id="6367753977865761591">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইন অৱৰোধ কৰক।</translation>
-<translation id="6388207532828177975">মচক আৰু ৰিছেট কৰক</translation>
 <translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীন ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="640163077447496506">আজি ম্যাদ উকলিব</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ছাইটসমূহে আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা এক্সেছ কৰাটো অৱৰোধ কৰক</translation>
 <translation id="6447842834002726250">কুকীসমূহ</translation>
-<translation id="6467852467360539617">ডেটা মচক আৰু অনুমতি ৰিছেট কৰক</translation>
 <translation id="6500423977866688905">ৱিণ্ড’ৰ আকাৰ সৰু হ’লে, ম’বাইল ভিউৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
 <translation id="652937045869844725">তৃতীয় পক্ষৰ কুকিসমূহক অনুমতি দি চাওক, যি কম সুৰক্ষিত হ’ব কিন্তু ছাইটৰ সুবিধাসমূহে কাম কৰাৰ সম্ভাৱনা অধিক থাকে</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">বাছনি বাতিল কৰক</translation>
 <translation id="7882806643839505685">নির্দিষ্ট ছাইটৰ বাবে ধ্বনিৰ অনুমতি দিয়ক।</translation>
 <translation id="789180354981963912">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকি অৱৰোধ কৰক:</translation>
-<translation id="7895868624847501462">এই কাৰ্যটোৱে কুকিসমূহকে ধৰি আপোনাৰ আটাইবোৰ স্থানীয় ডেটা মচিব আৰু <ph name="DOMAIN" /> আৰু ইয়াৰ অন্তৰ্গত আটাইবোৰ ছাইটৰ বাবে আটাইবোৰ অনুমতি ৰিছেট কৰিব</translation>
 <translation id="7940722705963108451">মোক মনত পেলাই দিব</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />ৰ ছাইটসমূহৰ গোটৰ <ph name="FPS_MEMBERS_COUNT" /> টা ছাইটে গোটটোত আপোনাৰ কাৰ্যকলাপ চাব পাৰে}one{<ph name="FPS_OWNER" />ৰ ছাইটসমূহৰ গোটৰ <ph name="FPS_MEMBERS_COUNT" /> টা ছাইটে গোটটোত আপোনাৰ কাৰ্যকলাপ চাব পাৰে}other{<ph name="FPS_OWNER" />ৰ ছাইটসমূহৰ গোটৰ <ph name="FPS_MEMBERS_COUNT" /> টা ছাইটে গোটটোত আপোনাৰ কাৰ্যকলাপ চাব পাৰে}}</translation>
 <translation id="7986741934819883144">সম্পৰ্ক এটা বাছনি কৰক</translation>
-<translation id="7999064672810608036">আপুনি এই ৱেবছাইটটোৰ কুকিকে ধৰি সকলো স্থানীয় ডেটা মচিব আৰু সকলো অনুমতি ৰিছেট কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="8007176423574883786">এই ডিভাইচটোৰ বাবে অফ কৰা হৈছে</translation>
 <translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="8042586301629853791">এই অনুসৰি সজাওক:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">কেপশ্বন</translation>
 <translation id="8300705686683892304">এপৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="8324158725704657629">পুনৰ নুসুধিব</translation>
-<translation id="8338445138528827481">এই কাৰ্যটোৱে কুকিসমূহকে ধৰি আপোনাৰ আটাইবোৰ স্থানীয় ডেটা মচিব আৰু <ph name="ORIGIN" />ৰ বাবে আটাইবোৰ অনুমতি ৰিছেট কৰিব</translation>
 <translation id="8362795839483915693">আপুনি চোৱা ছাইটসমূহত জুম ইন অথবা জুম আউট কৰিব পাৰে</translation>
 <translation id="8372893542064058268">কোনো নির্দিষ্ট ছাইটৰ বাবে নেপথ্যত ছিংক কৰাৰ অনুমতি দিয়ক।</translation>
 <translation id="8376384591331888629">এই ছাইটটোত থকা তৃতীয় পক্ষৰ কুকিসমূহো অন্তৰ্ভুক্ত কৰক</translation>

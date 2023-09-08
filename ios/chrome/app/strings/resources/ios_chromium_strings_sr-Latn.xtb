@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Pregledajte Chromium istoriju</translation>
 <translation id="2052320862053429062">Chromium povremeno upoređuje vaše lozinke sa listama koje su objavljene onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="2054703085270098503">Ostanite bezbedni uz Chromium</translation>
+<translation id="2098023844024447022">Otvorite najnoviju karticu u Chromium-u.</translation>
 <translation id="2168108852149185974">Neki programski dodaci izazivaju otkazivanje Chromium-a. Deinstalirajte:</translation>
 <translation id="2178608107313874732">Chromium trenutno ne može da koristi kameru</translation>
 <translation id="2195025571279539885">Želite li da Chromium sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
@@ -168,7 +169,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7674213385180944843">Otvorite Podešavanja &gt; Privatnost &gt; Kamera &gt; Chromium i uključite kameru.</translation>
 <translation id="7710137812207066069">Otvara novu karticu u Chromium-u.</translation>
 <translation id="7763454117143368771">Koristite Chromium kao podrazumevani pregledač da biste se odbranili od opasnih sajtova i zaštitili lozinke</translation>
-<translation id="7812317783196516890">Prijavljeni ste i sinhronizujete podatke sa nalogom kojim upravlja <ph name="DOMAIN" />, pri čemu njegov administrator sada može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chromium-a.</translation>
 <translation id="7859018312476869945">Kada kucate u traci za adresu ili u okviru za pretragu, Chromium šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
 <translation id="786327964234957808">Menjate nalog za sinhronizaciju iz <ph name="USER_EMAIL1" /> u <ph name="USER_EMAIL2" />. Postojećim Chromium podacima upravlja <ph name="DOMAIN" />. Na ovaj način brišete podatke sa ovog uređaja, ali podaci ostaju na <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Počnite da koristite Chromium skener</translation>
@@ -191,6 +191,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="8663480472502753423">Redovno ažuriraju Chromium</translation>
 <translation id="8685813584220679697">Prijavite se na ovaj sajt i u Chromium.</translation>
 <translation id="8730503818204408000">Otvara podešavanje Chromium-a da bi ga podesilo kao podrazumevani pregledač.</translation>
+<translation id="8742300022028858275">Otvori moju najnoviju karticu u Chromium-u</translation>
 <translation id="8747378496147986285">Kada je ovo uključeno:
 <ph name="BEGIN_INDENT" />  • Pomozite da poboljšamo Chromium za ljude koji ga koriste kao vi.<ph name="END_INDENT" />
 

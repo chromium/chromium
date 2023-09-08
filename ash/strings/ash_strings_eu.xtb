@@ -205,6 +205,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1775598828170459419"><ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /> daude ikusgai</translation>
 <translation id="178347895271755507">Konfiguratu telefonoko azken argazkiak, multimedia-elementuak eta jakinarazpenak ikusteko aukera</translation>
 <translation id="1787955149152357925">Desaktibatuta</translation>
+<translation id="1797271123677381264">Pasahitza ahaztu zait</translation>
 <translation id="181103072419391116">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="1815245884418711390">Aktibatu/Desaktibatu wifi-gunea. Wifi-gunea desaktibatuta dago.</translation>
 <translation id="1816896987747843206">Kamera erabiltzeko baimena daukaten aplikazio eta webgune guztiek kamera atzitu ahal izango dute</translation>
@@ -1621,6 +1622,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7714767791242455379">Gehitu beste sare mugikor bat</translation>
 <translation id="7720400844887872976">Aktibatuta <ph name="TIME" /> arte</translation>
 <translation id="7720410380936703141">SAIATU BERRIRO</translation>
+<translation id="7721132362314201794">Lan-eremuaren izena</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 jakinarazpen}other{# jakinarazpen}}</translation>
 <translation id="7723703419796509666">Erakutsi edo ezkutatu garatzaileentzako tresnen kontsola</translation>
 <translation id="7724603315864178912">Ebaki</translation>

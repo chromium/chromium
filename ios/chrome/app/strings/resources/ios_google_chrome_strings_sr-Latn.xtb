@@ -7,12 +7,12 @@
 <translation id="1333745675627230582">Igrajte igru Chrome dinosaurus</translation>
 <translation id="1352919863522755794">Google menadžer lozinki nije uspeo da vam proveri lozinke. Proverite internet vezu.</translation>
 <translation id="1407843355326180937">Prijavite se na ovaj sajt i u Chrome da bi vam obeleživači i drugi sadržaj bili dostupni na svim uređajima.</translation>
+<translation id="1436059927646026729">Otvori moju najnoviju karticu u Chrome-u</translation>
 <translation id="1462727070346936664">Prijavite se da biste iskoristili Chrome na najbolji način.</translation>
 <translation id="1479202195792305274">Chrome može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
 <translation id="1491435845014430217">Uključite Zaključaj kartice bez arhiviranja posle zatvaranja Chrome-a.</translation>
 <translation id="1493827051843127077">Podesite Chrome kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome ne može da traži ažuriranja. Proverite internet vezu.</translation>
-<translation id="1511320244449497906">Prijavljeni ste i sinhronizujete podatke sa nalogom kojim upravlja <ph name="DOMAIN" />, pri čemu njegov administrator sada može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chrome-a.</translation>
 <translation id="1516692594929310090">Otvara mrežu Chrome kartica.</translation>
 <translation id="1526327845902180576">Kada je ovo uključeno:
 <ph name="BEGIN_INDENT" /> • Pomozite da poboljšamo Chrome za ljude koji ga koriste kao vi.<ph name="END_INDENT" />
@@ -176,6 +176,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7855730255114109580">Google Chrome je aktuelan</translation>
 <translation id="7897703007638178753">Pogledajte nedavne kartice u Chrome-u</translation>
 <translation id="7925119591961387184">Izaberite „Chrome“.</translation>
+<translation id="7933491483529363150">Otvorite najnoviju karticu u Chrome-u.</translation>
 <translation id="8022947259858476807">Podrazumevano koristite Chrome da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dozvolite Chrome obaveštenja da biste dobijali obaveštenja o sniženjima</translation>
 <translation id="81358522153858150">Chrome sada podržava smernice za korisnika za upravljani nalog</translation>

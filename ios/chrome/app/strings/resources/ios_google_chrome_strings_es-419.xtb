@@ -12,7 +12,6 @@
 <translation id="1491435845014430217">Activa la opción "Bloquear las pestañas de incógnito cuando cierras Chrome".</translation>
 <translation id="1493827051843127077">Establece Chrome como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
-<translation id="1511320244449497906">Accediste y estás sincronizando tus datos en una cuenta administrada por <ph name="DOMAIN" />, donde su administrador puede establecer las políticas del usuario específicas para esa cuenta, que pueden cambiar el comportamiento de Chrome.</translation>
 <translation id="1516692594929310090">Abre la cuadrícula de pestañas de Chrome.</translation>
 <translation id="1526327845902180576">Cuando se activa:
 <ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chrome para las personas que lo usan de la misma forma que tú.<ph name="END_INDENT" />
@@ -73,6 +72,7 @@ Aspectos que debes tener en cuenta:
 <translation id="3655656110921623717">Esto significa que Chrome solicitará el sitio móvil cada vez.</translation>
 <translation id="3720541637541300822">Bloquear las pestañas de incógnito cuando cierras Chrome</translation>
 <translation id="3741995255368156336">Abre la Lista de lectura de Chrome.</translation>
+<translation id="3744018071945602754">Administrar contraseñas en Chrome</translation>
 <translation id="3827545470516145620">Recibes protección de seguridad estándar en este dispositivo</translation>
 <translation id="384394811301901750">Google Chrome no puede usar tu cámara en este momento</translation>
 <translation id="3901001113120561395">Aprovecha Chrome al máximo.</translation>
@@ -87,6 +87,7 @@ Aspectos que debes tener en cuenta:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> usó Chrome y dejó favoritos, contraseñas y otros parámetros de configuración en este dispositivo.</translation>
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
 <translation id="4251174643044751591">Abre la página de configuración de formas de pago en Chrome.</translation>
+<translation id="4453284704333523777">Administrar la configuración de Chrome</translation>
 <translation id="4508370294876102450">Abre Chrome desde cualquier app</translation>
 <translation id="4523886039239821078">Algunos complementos causan bloqueos en Chrome. Desinstala:</translation>
 <translation id="4633328489441962921">Chrome no puede buscar actualizaciones</translation>
@@ -123,6 +124,7 @@ Aspectos que debes tener en cuenta:
 <translation id="571296537125272375">Sin conexión, Chrome no puede buscar actualizaciones.</translation>
 <translation id="5716154293141027663">Abre Chrome cada vez que presiones vínculos en otras apps</translation>
 <translation id="5808435672482059465">Ver tu historial de Chrome</translation>
+<translation id="589695154992054845">Abre el Administrador de contraseñas en Chrome.</translation>
 <translation id="5998675059699164418">Tu organización requiere que accedas para usar Chrome.</translation>
 <translation id="6054613632208573261">Usa Chrome de forma predeterminada</translation>
 <translation id="6063091872902370735">Permitir el acceso a Chrome</translation>
@@ -215,6 +217,7 @@ Aspectos para tener en cuenta:
   • Si Chrome falla, los detalles sobre lo ocurrido pueden incluir información personal.
 
   • Si desactivas la sincronización, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Abre la configuración en Chrome.</translation>
 <translation id="9112744793181547300">¿Deseas establecer Chrome como navegador predeterminado?</translation>
 <translation id="9122931302567044771">Esto significa que Chrome solicitará la versión de escritorio del sitio cada vez.</translation>
 <translation id="9181628561061032322">Abre las pestañas recientes de Chrome.</translation>

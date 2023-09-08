@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Kichiklashtirish</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Bu saytning qurilmangizni boshqarish ruxsatlarini boshqaring</translation>
-<translation id="6018815681665454784">Tozalansinmi va asliga qaytarilsinmi?</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6042308850641462728">Yana</translation>
 <translation id="6064125863973209585">Yuklab olinganlar</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Barcha saytlar</translation>
 <translation id="6320088164292336938">Tebranish</translation>
 <translation id="6367753977865761591">Muayyan sayt uchun tashqi xizmatga kirishni bloklang.</translation>
-<translation id="6388207532828177975">Tozalash va asl holiga qaytarish</translation>
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
 <translation id="640163077447496506">Muddati bugun tugaydi</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Saytlarga virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishni taqiqlash</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
-<translation id="6467852467360539617">Maʼlumotlarni tozalash va ruxsatlarni tiklash</translation>
 <translation id="6500423977866688905">Oyna kichkina boʻlsa, mobil versiyani soʻrang</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="652937045869844725">Tashqi cookie fayllarga ruxsat bering, bunda himoya pasayadi, lekin saytdagi aksariyat funksiyalar ishlaydi</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Belgilashni bekor qilish</translation>
 <translation id="7882806643839505685">Muayyan saytga ovoz ijro etish uchun ruxsat berish.</translation>
 <translation id="789180354981963912">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash:</translation>
-<translation id="7895868624847501462">Bunda qurilmadagi cookie fayllar kabi barcha maʼlumotlar oʻchib ketadi va <ph name="DOMAIN" /> va uning barcha quyi saytlari ruxsatlari tiklanadi</translation>
 <translation id="7940722705963108451">Menga eslatilsin</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> saytlar guruhidagi <ph name="FPS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}other{<ph name="FPS_OWNER" /> saytlar guruhidagi <ph name="FPS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}}</translation>
 <translation id="7986741934819883144">Kontaktni tanlang</translation>
-<translation id="7999064672810608036">Siz haqiqatdan ham bu saytning cookie fayllari kabi barcha ma’lumotlarni o‘chirmoqchimisiz (barcha ruxsatnomalar ilk holatga qaytariladi)?</translation>
 <translation id="8007176423574883786">Ushbu qurilma uchun o‘chirilgan</translation>
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
 <translation id="8042586301629853791">Saralash:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Taglavhalar</translation>
 <translation id="8300705686683892304">Ilova boshqaruvida</translation>
 <translation id="8324158725704657629">Boshqa soʻralmasin</translation>
-<translation id="8338445138528827481">Bunda qurilmadagi cookie fayllar kabi barcha maʼlumotlar oʻchib ketadi va <ph name="ORIGIN" /> saytining barcha ruxsatlari tiklanadi</translation>
 <translation id="8362795839483915693">Ochilgan saytlarda zumni oʻzgartirish mumkin</translation>
 <translation id="8372893542064058268">Ko‘rsatilgan sayt uchun fonda sinxronlashga ruxsat berish.</translation>
 <translation id="8376384591331888629">Bu saytdagi tashqi cookie fayllariga ham</translation>

@@ -200,11 +200,13 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1757857692711134412">Iyavalwa kuze kushone ilanga</translation>
 <translation id="1768366657309696705">Isifinyezo sekhibhodi sika-<ph name="LAUNCHER_KEY_NAME" /> + Ungci sishintshile. Ukuze usebenzise ukhiye we-Insert, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Ihanjiswe emgqeni <ph name="ROW_NUMBER" />, ikholomu<ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Vula i-<ph name="NAME" /> ukuze usethe futhi wenze ngokwezifiso idivayisi yakho</translation>
 <translation id="1771761307086386028">Skrolela ngakwesokudla</translation>
 <translation id="1774796056689732716">Ikhalenda, <ph name="CURRENT_MONTH_YEAR" />, okwamanje umhla ka-<ph name="DATE" /> ukhethiwe.</translation>
 <translation id="1775598828170459419">Ibonisa okungu-<ph name="NUM_SHOWN_ITEMS" /> kokungu-<ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Setha ukubuka izithombe, imidiya, kanye nezaziso zefoni yakho zakamuva</translation>
 <translation id="1787955149152357925">Valiwe</translation>
+<translation id="1797271123677381264">Ukhohlwe iphasiwedi</translation>
 <translation id="181103072419391116">Amandla esignali <ph name="SIGNAL_STRENGTH" />, Kuphethwe umlawuli wakho</translation>
 <translation id="1815245884418711390">Guqula I-hotspot. I-hotspot ivaliwe.</translation>
 <translation id="1816896987747843206">Lokhu kuvumela ukufinyelela kwekhamera kuwo wonke ama-app namawebhusayithi ngemvume yekhamera</translation>
@@ -1192,6 +1194,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="5876666360658629066">Faka ikhodi yomzali</translation>
 <translation id="5881540930187678962">Setha Ihabhu Lefoni kamuva</translation>
 <translation id="5881663018261910378">Valiwe</translation>
+<translation id="5883017113634523865">Fakela u-<ph name="NAME" /> i-app kusuka ku-Google Play ukuze ubone zonke izakhi ezitholakalayo</translation>
 <translation id="5887954372087850114">Iwindi le-<ph name="WINDOW_TITLE" /> labelwe ku-<ph name="DESK_TITLE" /> futhi lasuswa ekwabelweni kuwo wonke amatafula</translation>
 <translation id="588817334757907802">Vula ifayela kubhrawuza ye-Chrome</translation>
 <translation id="5895138241574237353">Qalisa kabusha</translation>

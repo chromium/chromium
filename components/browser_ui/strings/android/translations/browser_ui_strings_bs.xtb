@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Upravljanje pristupom ove web lokacije vašem uređaju</translation>
-<translation id="6018815681665454784">Obrisati i poništiti?</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Više</translation>
 <translation id="6064125863973209585">Završena preuzimanja</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Sve web lokacije</translation>
 <translation id="6320088164292336938">Vibracija</translation>
 <translation id="6367753977865761591">Blokirajte prijavu trećih stana za određenu web lokaciju.</translation>
-<translation id="6388207532828177975">Obriši i vrati na zadano</translation>
 <translation id="6398765197997659313">Napusti prikaz preko cijelog ekrana</translation>
 <translation id="640163077447496506">Ističe danas</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blokira web lokacijama korištenje uređaja i podataka virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
-<translation id="6467852467360539617">Obriši podatke i poništi odobrenja</translation>
 <translation id="6500423977866688905">Kada je prozor uzak, zatražite prikaz na mobilnom uređaju</translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="652937045869844725">Pokušajte dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu, ali i veću vjerovatnost da će funkcije web lokacije funkcionirati</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Otkazivanje odabira</translation>
 <translation id="7882806643839505685">Omogućavanje zvuka za određenu web lokaciju.</translation>
 <translation id="789180354981963912">Blokirajte kolačiće treće strane u anonimnom načinu rada:</translation>
-<translation id="7895868624847501462">Ova radnja će obrisati sve lokalne podatke, uključujući kolačiće i poništiti sva odobrenja za domenu <ph name="DOMAIN" /> i sve web lokacije na njoj</translation>
 <translation id="7940722705963108451">Podsjeti me</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="FPS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}one{<ph name="FPS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="FPS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}few{<ph name="FPS_MEMBERS_COUNT" /> web lokacije u grupi web lokacija čiji je vlasnik <ph name="FPS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}other{<ph name="FPS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="FPS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}}</translation>
 <translation id="7986741934819883144">Odaberite kontakt</translation>
-<translation id="7999064672810608036">Jeste li sigurni da želite obrisati sve lokalne podatke, uključujući kolačiće i poništiti sva odobrenja za ovu web lokaciju?</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8042586301629853791">Poredaj po:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="8300705686683892304">Upravlja aplikacija</translation>
 <translation id="8324158725704657629">Ne pitaj ponovo</translation>
-<translation id="8338445138528827481">Ova radnja će obrisati sve lokalne podatke, uključujući kolačiće i poništiti sva odobrenja za izvor <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Možete uvećati ili umanjiti na web lokacijama koje posjećujete</translation>
 <translation id="8372893542064058268">Dozvolite sinhronizaciju u pozadini za određenu web lokaciju.</translation>
 <translation id="8376384591331888629">Uključujući kolačiće treće strane na ovoj web lokaciji</translation>

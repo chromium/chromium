@@ -426,6 +426,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1335929031622236846">Inscreva o seu dispositivo</translation>
 <translation id="133660899895084533">Ler dados e informações de periféricos Bluetooth</translation>
 <translation id="1336902454946927954">A sua chave de segurança está bloqueada porque não foi possível reconhecer a sua impressão digital. Para a desbloquear, introduza o seu PIN.</translation>
+<translation id="1337066099824654054">A ajuda contextual está desativada</translation>
 <translation id="1338631221631423366">A sincronizar…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quer abrir esta aplicação.</translation>
 <translation id="1338950911836659113">A eliminar...</translation>
@@ -3445,6 +3446,7 @@ Quer pará-lo?</translation>
 <translation id="3738632186060045350">Os dados do dispositivo <ph name="DEVICE_TYPE" /> serão eliminados dentro de 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Quer abrir <ph name="APPLICATION" />?</translation>
+<translation id="3740396996321407665">Receber ajuda contextual de algumas funcionalidades</translation>
 <translation id="3740945083753997630">Diminuir o tamanho da visualização e do texto</translation>
 <translation id="3741056951918180319">Pode sempre clicar na extensão para a utilizar em qualquer site</translation>
 <translation id="3742235229730461951">Esquema de teclado coreano</translation>
@@ -6409,6 +6411,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6173623053897475761">Introduza o PIN novamente</translation>
 <translation id="6175314957787328458">GUID de Domínio do Windows</translation>
 <translation id="6175910054050815932">Receba um link</translation>
+<translation id="6176701216248282552">A ajuda contextual está ativada. Estas funcionalidades podem enviar as páginas abertas para a Google.</translation>
 <translation id="6177412385419165772">A remover…</translation>
 <translation id="6178664161104547336">Selecionar um certificado</translation>
 <translation id="6178682841350631965">Os seus dados de início de sessão foram atualizados</translation>

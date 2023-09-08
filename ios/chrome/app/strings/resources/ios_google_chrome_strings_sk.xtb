@@ -12,7 +12,6 @@
 <translation id="1491435845014430217">Zapnite Uzamknúť karty inkognito pri zavretí Chromu.</translation>
 <translation id="1493827051843127077">Nastavte si Chrome ako predvolený prehliadač a karty, heslá a platobné údaje sa budú  synchronizovať vo všetkých vašich zariadeniach</translation>
 <translation id="1504372625950710826">Chromu sa nepodarilo skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
-<translation id="1511320244449497906">Prihlásili ste sa do účtu spravovaného doménou <ph name="DOMAIN" /> a synchronizujete s ním svoje údaje. Na tejto doméne môže jeho správca teraz nastavovať pravidlá pre používateľov, ktoré sú preň špecifické a môžu zmeniť správanie Chromu.</translation>
 <translation id="1516692594929310090">Otvorí mriežku kariet v Chrome.</translation>
 <translation id="1526327845902180576">Keď túto možnosť zapnete:
 <ph name="BEGIN_INDENT" />  • budete pomáhať zlepšovať Chrome pre ľudí, ktorí ho používajú rovnako ako vy.<ph name="END_INDENT" />
@@ -73,6 +72,7 @@
 <translation id="3655656110921623717">Znamená to, že Chrome bude zakaždým žiadať o mobilný web.</translation>
 <translation id="3720541637541300822">Uzamknúť karty inkognito pri zavretí Chromu</translation>
 <translation id="3741995255368156336">Otvorí čitateľský zoznam v Chrome.</translation>
+<translation id="3744018071945602754">Spravovať heslá v Chrome</translation>
 <translation id="3827545470516145620">V tomto zariadení máte štandardnú bezpečnostnú ochranu</translation>
 <translation id="384394811301901750">Google Chrome momentálne nemôže použiť váš fotoaparát</translation>
 <translation id="3901001113120561395">Využívajte Chrome naplno.</translation>
@@ -87,6 +87,7 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> používal(a) Chrome a zanechal(a) záložky, heslá a ďalšie nastavenia v tomto zariadení.</translation>
 <translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
 <translation id="4251174643044751591">Otvorí stránku nastavení spôsobov platby v Chrome.</translation>
+<translation id="4453284704333523777">Spravovať Nastavenia Chromu</translation>
 <translation id="4508370294876102450">Otvárajte Chrome z ľubovoľnej aplikácie</translation>
 <translation id="4523886039239821078">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Odinštalujte ich.</translation>
 <translation id="4633328489441962921">Chrome nemôže skontrolovať dostupnosť aktualizácií</translation>
@@ -123,6 +124,7 @@
 <translation id="571296537125272375">Offline, Chrome nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="5716154293141027663">Chrome otvoríte vždy, keď klepnete na odkazy v iných aplikáciách</translation>
 <translation id="5808435672482059465">Zobraziť históriu Chromu</translation>
+<translation id="589695154992054845">Otvorí Správcu hesiel v Chrome.</translation>
 <translation id="5998675059699164418">Vaša organizácia vyžaduje, aby ste sa na používanie Chromu prihlásili.</translation>
 <translation id="6054613632208573261">Predvolene používať Chrome</translation>
 <translation id="6063091872902370735">Povoliť prihlásenie do Chromu</translation>
@@ -214,6 +216,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <ph name="BEGIN_INDENT" />  • Informácie o vašom používaní Chromu sa odosielajú Googlu, ale nie sú s vami spojené.
   • V prípade pádu Chromu môžu podrobnosti o páde zahŕňať niektoré osobné údaje.
   • Ak zapnete synchronizáciu, metriky môžu zahŕňať aj informácie o webových adresách, ktoré navštívite.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Otvorí Nastavenia v Chrome.</translation>
 <translation id="9112744793181547300">Chcete nastaviť Chrome ako predvolený prehliadač?</translation>
 <translation id="9122931302567044771">Znamená to, že Chrome bude zakaždým žiadať o verziu webu pre počítače.</translation>
 <translation id="9181628561061032322">Otvorí nedávne karty v Chrome.</translation>

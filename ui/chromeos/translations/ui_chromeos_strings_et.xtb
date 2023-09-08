@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">Faili „<ph name="PATH" />” ei õnnestunud avada</translation>
 <translation id="3280431534455935878">Ettevalmistamine</translation>
+<translation id="3280719573299097127">Kasutate mahupõhist võrku. Failide sünkroonimine on peatatud.</translation>
 <translation id="3280987981688031357">Vinüülplaat</translation>
 <translation id="3290356915286466215">Kaitsmata</translation>
 <translation id="3291218047831493686">SIM-kaardi luku seade muutmiseks ühendage selle võrguga</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">Valikust eemaldati kõik kirjed.</translation>
 <translation id="5838825566232597749">USA Workmani rahvusvaheline klaviatuur</translation>
 <translation id="5845721951356578987">Meditsiiniõde</translation>
+<translation id="5858478190805449225">Akusäästja režiim on sisse lülitatud. Proovige uuesti, kui akusäästja režiim on välja lülitatud.</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5861477046012235702">Mängur</translation>
 <translation id="5864471791310927901">DHCP otsing nurjus</translation>
@@ -920,6 +922,7 @@
 <translation id="8087576439476816834">Allalaadimine, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Minuga jagatud</translation>
 <translation id="8116072619078571545">Jäävesi</translation>
+<translation id="8120392982188717723">Luba sünkroonimine mahupõhistes võrkudes</translation>
 <translation id="8124093710070495550">Sünkroonimisprobleem</translation>
 <translation id="8128733386027980860">inglise (Ühendkuningriik), Dvoraki klaviatuuriga</translation>
 <translation id="8137331602592933310">Faili „<ph name="FILENAME" />” on teiega jagatud. Te ei saa seda kustutada, kuna te pole selle omanik.</translation>

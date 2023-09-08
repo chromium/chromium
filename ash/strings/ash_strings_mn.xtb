@@ -200,11 +200,13 @@
 <translation id="1757857692711134412">Нар жаргах хүртэл унтраалттай</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Цэг товчлуурын шууд холбоосыг өөрчилсөн байна. Оруулах товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Shift + Ухраахыг дарна уу.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-р мөр, <ph name="COLUMN_NUMBER" />-р багана руу зөөсөн.</translation>
+<translation id="1771458705381257690">Төхөөрөмжөө тохируулж, өөрчлөхийн тулд <ph name="NAME" />-г нээнэ үү</translation>
 <translation id="1771761307086386028">Баруун тийш гүйлгэх</translation>
 <translation id="1774796056689732716">Календарь, <ph name="CURRENT_MONTH_YEAR" />, одоогоор <ph name="DATE" />-г сонгосон.</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />-с <ph name="NUM_SHOWN_ITEMS" />-г харуулж байна</translation>
 <translation id="178347895271755507">Утасныхаа саяхны зураг, медиа болон мэдэгдлүүдийг харахыг тохируулах</translation>
 <translation id="1787955149152357925">Унтраалттай</translation>
+<translation id="1797271123677381264">Нууц үгээ мартсан</translation>
 <translation id="181103072419391116">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="1815245884418711390">Сүлжээний цэгийг асаана уу/унтраана уу. Сүлжээний цэг унтраалттай байна.</translation>
 <translation id="1816896987747843206">Энэ нь камерын зөвшөөрөлтэй бүх апп болон вебсайтад камерын хандалтыг зөвшөөрнө</translation>
@@ -1193,6 +1195,7 @@
 <translation id="5876666360658629066">Эцэг эхийн кодыг оруулах</translation>
 <translation id="5881540930187678962">Phone Hub-г дараа тохируулах</translation>
 <translation id="5881663018261910378">Унтраалттай</translation>
+<translation id="5883017113634523865">Боломжтой бүх онцлогийг харахын тулд <ph name="NAME" />-н аппыг Google Play-с суулгана уу</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> цонхыг <ph name="DESK_TITLE" />-д оноосон бөгөөд бусад бүх дэлгэцэд оноохоо больсон</translation>
 <translation id="588817334757907802">Файлыг Chrome хөтчид нээх</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>

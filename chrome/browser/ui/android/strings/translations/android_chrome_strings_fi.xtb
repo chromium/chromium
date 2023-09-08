@@ -58,6 +58,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="124678866338384709">Sulje nykyinen välilehti</translation>
 <translation id="1246905108078336582">Poistetaanko ehdotus leikepöydältä?</translation>
 <translation id="1258753120186372309">Google-piirros: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Näet Seurataan-kohdassa nyt tähän liittyvää sisältöä: <ph name="SITE_NAME" />. Seuraamasi sivustot ja haut tallennetaan Google-tilillesi. Voit muuttaa seuraamiasi kohteita milloin tahansa asetuksista.</translation>
 <translation id="1263231323834454256">Lukulista</translation>
 <translation id="1266864766717917324">Jakaminen epäonnistui: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Näet historiasi täällä</translation>
@@ -136,6 +137,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="1671236975893690980">Lataus odottaa…</translation>
 <translation id="1672586136351118594">Älä näytä uudelleen</translation>
 <translation id="1680919990519905526">Osta kuvasta Lensilla <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Näet Seurataan-kohdassa pian tähän liittyvää sisältöä: <ph name="SITE_NAME" />. Seuraamasi sivustot ja haut tallennetaan Google-tilillesi. Voit muuttaa seuraamiasi kohteita milloin tahansa asetuksista.</translation>
 <translation id="1702543251015153180">Muutetaanko tumman teeman asetuksia?</translation>
 <translation id="1702907158640575240">Hallinnoitu selain</translation>
 <translation id="1710099199314114079">Vaihda tai sulje välilehti</translation>

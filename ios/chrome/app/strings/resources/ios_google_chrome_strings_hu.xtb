@@ -12,7 +12,6 @@
 <translation id="1491435845014430217">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
 <translation id="1493827051843127077">A Chrome-ot alapértelmezett böngészőként beállítva az összes eszközén szinkronizálhatja a lapfüleket, jelszavakat és fizetési adatokat</translation>
 <translation id="1504372625950710826">A Chrome nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
-<translation id="1511320244449497906">Ön a(z) <ph name="DOMAIN" /> által felügyelt fiókba van bejelentkezve, és szinkronizálja vele az adatait. Ennek a domainnek a rendszergazdája mostantól beállíthat olyan felhasználói házirendeket erre a fiókra vonatkozóan, amelyek módosíthatják a Chrome viselkedését.</translation>
 <translation id="1516692594929310090">Megnyitja a Chrome laprácsát.</translation>
 <translation id="1526327845902180576">Amikor be van kapcsolva:
 <ph name="BEGIN_INDENT" /> • Segít, hogy továbbfejleszthessük a Chrome-ot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" /> 
@@ -73,6 +72,7 @@ Megjegyzések:
 <translation id="3655656110921623717">Ez azt jelenti, hogy a Chrome mindig a mobilwebhelyet kéri majd.</translation>
 <translation id="3720541637541300822">Inkognitó lapok zárolása a Chrome bezárásakor</translation>
 <translation id="3741995255368156336">Megnyitja a Chrome-olvasólistát.</translation>
+<translation id="3744018071945602754">Jelszavak kezelése a Chrome-ban</translation>
 <translation id="3827545470516145620">Normál biztonsági védelemben részesül ezen az eszközön</translation>
 <translation id="384394811301901750">A Google Chrome jelenleg nem tudja használni a kamerát</translation>
 <translation id="3901001113120561395">Hozza ki a legtöbbet a Chrome-ból.</translation>
@@ -87,6 +87,7 @@ Megjegyzések:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> felhasználó használta Chrome-ot, és könyvjelzőket, jelszavakat, valamint egyéb beállításokat hagyott az eszközön.</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
 <translation id="4251174643044751591">Megnyitja a Fizetési módok beállítási oldalát a Chrome-ban.</translation>
+<translation id="4453284704333523777">A Chrome beállításainak kezelése</translation>
 <translation id="4508370294876102450">A Chrome megnyitása bármely alkalmazásból</translation>
 <translation id="4523886039239821078">Bizonyos bővítmények a Chrome összeomlását eredményezik. Távolítsa el a következő(ke)t:</translation>
 <translation id="4633328489441962921">A Chrome nem tud frissítéseket keresni</translation>
@@ -123,6 +124,7 @@ Megjegyzések:
 <translation id="571296537125272375">Offline állapotban van, ezért a Chrome nem tud frissítéseket keresni</translation>
 <translation id="5716154293141027663">A Chrome megnyitása mindig, amikor más alkalmazásokban lévő linkekre koppint</translation>
 <translation id="5808435672482059465">Chrome-előzmények megtekintése</translation>
+<translation id="589695154992054845">Megnyitja a Jelszókezelőt a Chrome-ban.</translation>
 <translation id="5998675059699164418">Szervezete megköveteli a bejelentkezést a Chrome használatához.</translation>
 <translation id="6054613632208573261">A Chrome használata alapértelmezettként</translation>
 <translation id="6063091872902370735">Chrome-bejelentkezés engedélyezése</translation>
@@ -214,6 +216,7 @@ Fontos tudnivalók:
   • Ha a Chrome összeomlik, az összeomlással kapcsolatos adatok között szerepelhetnek bizonyos személyes információk.
 
   • Ha bekapcsolja a szinkronizálást, a mutatók tartalmazhatnak az Ön által felkeresett URL-ekkel kapcsolatos adatokat is.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Megnyitja a Chrome beállításait.</translation>
 <translation id="9112744793181547300">Beállítja a Chrome-ot alapértelmezettként?</translation>
 <translation id="9122931302567044771">Ez azt jelenti, hogy a Chrome mindig az asztali webhelyet kéri majd.</translation>
 <translation id="9181628561061032322">Megnyitja a Chrome legutóbbi lapjait.</translation>

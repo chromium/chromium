@@ -757,6 +757,7 @@
 <translation id="1596780725094407793">- サブドメインを含める</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> を利用</translation>
 <translation id="1598233202702788831">更新は管理者によって無効になっています。</translation>
+<translation id="1600541617401655593">ChromeOS Flex の機能とパフォーマンスの改善に協力します。データは集約され、厳重に保護されます。</translation>
 <translation id="1600857548979126453">ページ デバッガ バックエンドにアクセスする</translation>
 <translation id="1601481906560916994">サイトを除外</translation>
 <translation id="1601560923496285236">適用</translation>
@@ -1159,6 +1160,7 @@
 <translation id="1906181697255754968">多くのサイトは、作業内容を自動的に保存するためにデバイスのファイルやフォルダにアクセスします。</translation>
 <translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />では他にもさまざまな拡張機能やテーマを入手できます</translation>
 <translation id="1907044622262489040">音声で入力できます。音声入力を開始するには、検索+D キーを使用します。</translation>
+<translation id="1907659324308286326">一部の Thunderbolt または USB4 アクセサリは、正しく動作するためにメモリにアクセスする必要があります。</translation>
 <translation id="1908591798274282246">閉じたグループを開く</translation>
 <translation id="1909880997794698664">このデバイスをキオスク モードに固定してもよろしいですか？</translation>
 <translation id="1910721550319506122">ようこそ！</translation>
@@ -1417,6 +1419,7 @@
 <translation id="2102495993840063010">Android アプリ</translation>
 <translation id="2104166991923847969">アクセス ポイントを自動的にオフにする</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> を非表示にしました</translation>
+<translation id="2108204112555497972">前回の確認: <ph name="NUM_DAYS_HOURS_MINUTES" /> 前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
 <translation id="2110941575868943054">Bluetooth デバイスの検出が許可されているサイト</translation>
 <translation id="211144231511833662">タイプの選択をすべて解除</translation>
@@ -1884,6 +1887,7 @@
 <translation id="2462332841984057083">Steam はすでに設定中です。セットアップが完了するまでお待ちください。</translation>
 <translation id="2462724976360937186">認証局キー ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> を追加しました</translation>
+<translation id="2464046291463112461">外付けのアクセサリがメモリ（RAM）にアクセスして共有するのをブロックする</translation>
 <translation id="2467755475704469005">デバイスは検出されませんでした。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">タッチパッドのスクロール アクセラレーション</translation>
 <translation id="2468205691404969808">Cookie を使って設定を保存します（これらのページにアクセスしない場合も Cookie が保持されます）</translation>
@@ -2092,6 +2096,7 @@
 <translation id="2636266464805306348">ウィンドウのタイトル</translation>
 <translation id="2637313651144986786">タブを検索...</translation>
 <translation id="2637400434494156704">PIN が正しくありません。あと 1 回試行できます。</translation>
+<translation id="2637594967780188166">障害レポート、診断データ、使用状況データを ChromeOS に送信する</translation>
 <translation id="2638662041295312666">サインイン画像</translation>
 <translation id="2640299212685523844">GTK を使用</translation>
 <translation id="264083724974021997">電話に接続 - ダイアログ</translation>
@@ -2452,6 +2457,7 @@
 <translation id="2907619724991574506">起動 URL</translation>
 <translation id="2907798539022650680">「<ph name="NAME" />」に接続できませんでした: <ph name="DETAILS" />
     サーバー メッセージ: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word、Excel、PowerPoint のファイルを開く</translation>
 <translation id="2908162660801918428">メディア ギャラリーをディレクトリ単位で追加</translation>
 <translation id="2908358077082926882">割り当てを削除して<ph name="RESPONSE" />には、もう一度「<ph name="CURRENTKEY" />」キーを押してください</translation>
 <translation id="2909506265808101667">Google サービスに接続できませんでした。ネットワーク接続を確認してからもう一度お試しください。エラーコード: <ph name="ERROR_CODE" />。</translation>
@@ -2548,6 +2554,7 @@
 <translation id="2989786307324390836">DER エンコード バイナリ形式の単一の証明書</translation>
 <translation id="2989805286512600854">新しいタブで開く</translation>
 <translation id="2990313168615879645">Google アカウントを追加</translation>
+<translation id="2990375978470734995">この変更を有効にするには、外付けのアクセサリをもう一度接続してください。</translation>
 <translation id="2990583317361835189">サイトにモーション センサーの使用を許可しない</translation>
 <translation id="2992931425024192067">すべての通知内容を表示する</translation>
 <translation id="2993517869960930405">アプリ情報</translation>
@@ -3342,6 +3349,7 @@
 <translation id="3672681487849735243">出荷時のエラーが見つかりました</translation>
 <translation id="3673097791729989571">ログインは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="3673622964532248901">このデバイスにキャストできません。</translation>
+<translation id="3675683621636519363">障害レポート、診断データ、使用状況データを ChromeOS Flex に送信する</translation>
 <translation id="367645871420407123">既定のテストイメージの値にルート パスワードを設定する場合は、空欄のままにします</translation>
 <translation id="3677106374019847299">カスタム プロバイダを入力</translation>
 <translation id="3677911431265050325">モバイルサイトをリクエスト</translation>
@@ -4303,6 +4311,7 @@
 <translation id="4426464032773610160">始める前に、USB または Bluetooth スイッチが Chromebook に接続されていることをご確認ください。キーボードのキーを使うこともできます。</translation>
 <translation id="4426490308207168518">フィードバックを送信したり、問題を報告したりできます</translation>
 <translation id="4426508677408162512">すべてのブックマーク</translation>
+<translation id="4426513927906544654">コンテンツの候補を表示する</translation>
 <translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
 <translation id="4427365070557649936">確認コードを確認しています...</translation>
 <translation id="4429163740524851942">物理キーボード配列</translation>
@@ -4977,6 +4986,7 @@
 <translation id="4991420928586866460">キーボードの最上段のキーをファンクション キーとして使用する</translation>
 <translation id="4992458225095111526">Powerwash の実行を確認</translation>
 <translation id="4992473555164495036">使用できる入力方法が管理者によって制限されています。</translation>
+<translation id="4992869834339068470">ChromeOS の機能とパフォーマンスの改善に協力します。データは集約され、厳重に保護されます。</translation>
 <translation id="4994426888044765950">キーを押し続けると、そのキーの文字が繰り返されます</translation>
 <translation id="4994754230098574403">設定しています</translation>
 <translation id="4995293419989417004">広告のトピックに関する詳細</translation>
@@ -6010,6 +6020,7 @@
 <translation id="5862109781435984885">シェルフにタッチペン ツールを表示</translation>
 <translation id="5862319196656206789">接続済みデバイスのセットアップ</translation>
 <translation id="5862731021271217234">他のデバイスと同じタブを使用するには、同期を有効にします</translation>
+<translation id="5863195274347579748">外付けのアクセサリが個人データにアクセスまたは共有する可能性があります。</translation>
 <translation id="5863445608433396414">デバッグ機能を有効にする</translation>
 <translation id="5863515189965725638">IBAN の編集</translation>
 <translation id="5864195618110239517">従量制接続を使用</translation>
@@ -6087,6 +6098,7 @@
 <translation id="5920543303088087579">このネットワークへの接続は管理者によって無効にされています</translation>
 <translation id="5921257443092182237">Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。</translation>
 <translation id="5924047253200400718"><ph name="SCANNING_STATUS" /> ヘルプ</translation>
+<translation id="5924438086390153180">Microsoft のファイルを Google ドライブにコピーまたは移動する前に確認する</translation>
 <translation id="5924527146239595929">新しく写真を撮るか、既存の写真またはアイコンを選択してください。
     <ph name="LINE_BREAK" />
     この画像は Chromebook のログイン画面とロック画面に表示されます。</translation>
@@ -6505,6 +6517,7 @@
 <translation id="6263284346895336537">非重要</translation>
 <translation id="6264365405983206840">すべて選択(&amp;A)</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
+<translation id="6265159465845424232">Microsoft のファイルを Microsoft OneDrive にコピーまたは移動する前に確認する</translation>
 <translation id="6265687851677020761">ポートを削除</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> に接続しています</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> での認証に使用する証明書を選択してください</translation>
@@ -7262,6 +7275,7 @@
 <translation id="6897363604023044284">削除するサイトを選択</translation>
 <translation id="6897688156970667447">暗い場所でも見やすくして、バッテリーを節約します</translation>
 <translation id="6897972855231767338">ゲストモードでのブラウジングの詳細</translation>
+<translation id="6898438890765871056">OneDrive フォルダを開く</translation>
 <translation id="6898440773573063262">このデバイスでキオスク アプリケーションが自動起動するように設定できるようになりました。</translation>
 <translation id="6899427698619335650">フレキシブルな発音区別符号の割り当てを許可します。たとえば、「anh1」や「a1nh」と入力すると、「ánh」を入力できます。</translation>
 <translation id="6900284862687837908">バックグラウンド アプリ: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8014,6 +8028,7 @@
 <translation id="7517959947270534934">現在、ファミリー メンバーはパスワードを受信できません。Chrome を更新してパスワードを同期するようメンバーに依頼してください。</translation>
 <translation id="7520766081042531487">シークレット ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ショートカットを表示</translation>
+<translation id="7521430434164837205">Microsoft 365 ファイル</translation>
 <translation id="7522255036471229694">「OK Google」と言ってください</translation>
 <translation id="7523117833414447032">大文字の読み上げ</translation>
 <translation id="7523585675576642403">プロファイルの名前を変更</translation>
@@ -8616,6 +8631,7 @@
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7982878511129296052">オフにしています...</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> をミラーリング</translation>
+<translation id="7985528042147759910">外付けのアクセサリがメモリにアクセスするのを許可しますか？</translation>
 <translation id="7986295104073916105">保存されたパスワード設定の読み取りと変更</translation>
 <translation id="7987814697832569482">この VPN で常に接続する</translation>
 <translation id="7988355189918024273">ユーザー補助機能を有効にします</translation>
@@ -9740,6 +9756,7 @@
 <translation id="8896830132794747524">マウスをより速く動かすとカーソルの移動幅が大きくなります</translation>
 <translation id="8898140163781851592">メインのマウスボタン</translation>
 <translation id="8898786835233784856">次のタブを選択</translation>
+<translation id="8898790559170352647">Microsoft アカウントを追加する</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
 <translation id="8899851313684471736">新しいウィンドウで開く(&amp;W)</translation>
 <translation id="8900413463156971200">モバイルデータ通信を有効にする</translation>
@@ -10066,6 +10083,7 @@
 <translation id="9151249085738989067">言語に基づいて ChromeVox の音声を自動的に切り替える</translation>
 <translation id="9151906066336345901">End</translation>
 <translation id="9153274276370926498">Lacros システム情報</translation>
+<translation id="9153367754133725216">ランチャーと検索結果に新しいアプリやウェブ コンテンツの候補が表示されます。障害レポート、診断データ、使用状況データを ChromeOS に送信するよう選択した場合のみ、候補の精度を向上させるために統計情報を送信します。</translation>
 <translation id="9154082578438716291">これまでアクセスしたページや検索候補が表示され、Chrome のジャーニーで最近のアクティビティに簡単にアクセスできます。
         <ph name="BREAK" />
         <ph name="BREAK" />

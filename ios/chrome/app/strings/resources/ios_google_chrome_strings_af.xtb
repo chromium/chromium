@@ -12,7 +12,6 @@
 <translation id="1491435845014430217">Skakel “Sluit Incognito-oortjies wanneer jy Chrome toemaak” aan.</translation>
 <translation id="1493827051843127077">Stel Chrome as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
 <translation id="1504372625950710826">Chrome kon nie vir opdaterings kyk nie. Probeer jou internetverbinding nagaan.</translation>
-<translation id="1511320244449497906">Jy is aangemeld en sinkroniseer tans jou data met ’n rekening wat deur <ph name="DOMAIN" /> bestuur word. Die administrateur kan nou gebruikerbeleide spesifiek vir dié rekening stel, wat die gedrag van Chrome kan verander.</translation>
 <translation id="1516692594929310090">Maak die Chrome-oortjierooster oop.</translation>
 <translation id="1526327845902180576">Wanneer dit aan is:
 <ph name="BEGIN_INDENT" />  • Help dit om Chrome beter te maak vir mense wat dit gebruik soos wat jy dit gebruik.<ph name="END_INDENT" />
@@ -73,6 +72,7 @@ Dinge om in ag te neem:
 <translation id="3655656110921623717">Dit beteken dat Chrome elke keer die mobiele werf sal versoek.</translation>
 <translation id="3720541637541300822">Sluit Incognito-oortjies wanneer jy Chrome toemaak</translation>
 <translation id="3741995255368156336">Maak die Chrome-leeslys oop.</translation>
+<translation id="3744018071945602754">Bestuur wagwoorde in Chrome</translation>
 <translation id="3827545470516145620">Jy kry tans standaardsekuriteitbeskerming op hierdie toestel</translation>
 <translation id="384394811301901750">Google Chrome kan nie jou kamera nou gebruik nie</translation>
 <translation id="3901001113120561395">Benut Chrome ten beste.</translation>
@@ -87,6 +87,7 @@ Dinge om in ag te neem:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> het Chrome gebruik en het boekmerke, wagwoorde en ander instellings op hierdie toestel gelos.</translation>
 <translation id="424864128008805179">Meld af uit Chrome?</translation>
 <translation id="4251174643044751591">Maak die betaalmetode-instellingbladsy in Chrome oop.</translation>
+<translation id="4453284704333523777">Bestuur Chrome-instellings</translation>
 <translation id="4508370294876102450">Maak Chrome uit enige app oop</translation>
 <translation id="4523886039239821078">Sekere byvoegings het veroorsaak dat Chrome omval. Probeer om hulle te deïnstalleer:</translation>
 <translation id="4633328489441962921">Chrome kan nie vir opdaterings kyk nie</translation>
@@ -123,6 +124,7 @@ Dinge om in ag te neem:
 <translation id="571296537125272375">Chrome kan nie vanlyn vir opdaterings kyk nie</translation>
 <translation id="5716154293141027663">Maak Chrome oop elke keer wanneer jy op skakels in ander programme tik</translation>
 <translation id="5808435672482059465">Bekyk jou Chrome-geskiedenis</translation>
+<translation id="589695154992054845">Maak die wagwoordbestuurder in Chrome oop.</translation>
 <translation id="5998675059699164418">Jou organisasie vereis dat jy aanmeld om Chrome te gebruik.</translation>
 <translation id="6054613632208573261">Gebruik Chrome by verstek</translation>
 <translation id="6063091872902370735">Laat Chrome-aanmelding toe</translation>
@@ -215,6 +217,7 @@ Dinge om in ag te neem:
   • As Chrome omval, kan besonderhede oor die omval sekere persoonlike inligting insluit.
 
   • As jy sinkronisering aanskakel, kan maatstawwe inligting insluit oor URL'e wat jy besoek.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Maak die instellings in Chrome oop.</translation>
 <translation id="9112744793181547300">Stel Chrome as verstek?</translation>
 <translation id="9122931302567044771">Dit beteken dat Chrome elke keer die rekenaarwerf sal versoek.</translation>
 <translation id="9181628561061032322">Maak Chrome se onlangse oortjies oop.</translation>

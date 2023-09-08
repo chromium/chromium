@@ -425,6 +425,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1335929031622236846">Inscrivez votre appareil</translation>
 <translation id="133660899895084533">Lire les informations et les données des périphériques Bluetooth</translation>
 <translation id="1336902454946927954">Votre clé de sécurité est verrouillée parce que votre empreinte digitale n'a pas été reconnue. Pour la déverrouiller, entrez votre NIP.</translation>
+<translation id="1337066099824654054">L'aide contextuelle est désactivée</translation>
 <translation id="1338631221631423366">Association en cours…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> souhaite ouvrir cette application.</translation>
 <translation id="1338950911836659113">Suppression en cours…</translation>
@@ -3441,6 +3442,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3738632186060045350">Les données du <ph name="DEVICE_TYPE" /> seront supprimées dans 24 heures</translation>
 <translation id="3738924763801731196"><ph name="OID" /> :</translation>
 <translation id="3739254215541673094">Ouvrir l'application <ph name="APPLICATION" />?</translation>
+<translation id="3740396996321407665">Obtenir une aide contextuelle de certaines fonctionnalités</translation>
 <translation id="3740945083753997630">Réduire la taille de l'affichage et du texte</translation>
 <translation id="3741056951918180319">Vous pouvez toujours cliquer sur l'extension pour l'utiliser sur n'importe quel site</translation>
 <translation id="3742235229730461951">Disposition du clavier coréen</translation>
@@ -4176,6 +4178,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4322394346347055525">Fermer les autres onglets</translation>
 <translation id="4324577459193912240">Fichier incomplet</translation>
 <translation id="4325237902968425115">Désinstallation de l'application <ph name="LINUX_APP_NAME" /> en cours…</translation>
+<translation id="4325433082696797523">Stockage et alimentation</translation>
 <translation id="4326146840124313313">La sécurité la plus puissante de Chrome en fait plus pour vous protéger contre les sites Web, les téléchargements et les extensions dangereux</translation>
 <translation id="4326484226728068206">Articles dans votre panier <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, vus <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Eau glacée</translation>
@@ -5156,6 +5159,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5146896637028965135">Voix du système</translation>
 <translation id="5147992672778369947">Utiliser le mot de passe recommandé</translation>
 <translation id="5148277445782867161">Le service de localisation de Google utilise des sources comme le Wi-Fi, les réseaux cellulaires et les capteurs de l'appareil pour vous aider à estimer la position de votre appareil.</translation>
+<translation id="5148285448107770349">Le mot de passe doit contenir au moins huit caractères</translation>
 <translation id="5150254825601720210">Nom du serveur SSL du certificat Netscape</translation>
 <translation id="5151354047782775295">Libérez de l'espace disque ou certaines données pourront être supprimées automatiquement</translation>
 <translation id="5153234146675181447">Oublier le téléphone</translation>
@@ -6398,6 +6402,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6173623053897475761">Entrer à nouveau votre NIP</translation>
 <translation id="6175314957787328458">GUID de domaine Microsoft</translation>
 <translation id="6175910054050815932">Obtenir un lien</translation>
+<translation id="6176701216248282552">L'aide contextuelle est activée. Ces fonctionnalités peuvent envoyer des pages ouvertes à Google.</translation>
 <translation id="6177412385419165772">Suppression en cours...</translation>
 <translation id="6178664161104547336">Sélectionner un certificat</translation>
 <translation id="6178682841350631965">Vos données de connexion ont été mises à jour</translation>

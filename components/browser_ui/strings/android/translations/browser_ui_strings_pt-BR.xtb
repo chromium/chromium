@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Controle o acesso deste site ao seu dispositivo</translation>
-<translation id="6018815681665454784">Limpar e redefinir?</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>
 <translation id="6064125863973209585">Downloads concluídos</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6367753977865761591">Bloqueie o login de terceiros em um site específico.</translation>
-<translation id="6388207532828177975">Limpar e redefinir</translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="640163077447496506">Expira hoje</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Impedir que sites usem seus dispositivos e dados de realidade virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6467852467360539617">Limpar dados e redefinir permissões</translation>
 <translation id="6500423977866688905">Quando a janela estiver estreita, solicite a visualização para dispositivos móveis</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
 <translation id="652937045869844725">Permita cookies de terceiros. Isso significa menos proteção, mas os recursos do site têm mais chances de funcionar</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Cancelar seleção</translation>
 <translation id="7882806643839505685">Permitir o som de um site específico.</translation>
 <translation id="789180354981963912">Bloquear cookies de terceiros na navegação anônima:</translation>
-<translation id="7895868624847501462">Essa ação vai apagar todos os dados locais, incluindo cookies, e redefinir todas as permissões de <ph name="DOMAIN" /> e sites relacionados</translation>
 <translation id="7940722705963108451">Lembrar</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="FPS_OWNER" />}one{<ph name="FPS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="FPS_OWNER" />}other{<ph name="FPS_MEMBERS_COUNT" /> sites que podem ver sua atividade no grupo <ph name="FPS_OWNER" />}}</translation>
 <translation id="7986741934819883144">Selecione um contato</translation>
-<translation id="7999064672810608036">Você quer mesmo apagar todos os dados locais, inclusive os cookies, e redefinir todas as permissões para este website?</translation>
 <translation id="8007176423574883786">Desativado neste dispositivo</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Legendas</translation>
 <translation id="8300705686683892304">Gerenciados por app</translation>
 <translation id="8324158725704657629">Não perguntar novamente</translation>
-<translation id="8338445138528827481">Essa ação vai apagar todos os dados locais, incluindo cookies, e redefinir todas as permissões de <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Você pode aumentar ou diminuir o zoom nos sites que visita</translation>
 <translation id="8372893542064058268">Permitir a sincronização em segundo plano para um site específico.</translation>
 <translation id="8376384591331888629">Incluir também os cookies de terceiros desse site</translation>

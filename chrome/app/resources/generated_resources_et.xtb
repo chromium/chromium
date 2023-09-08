@@ -4185,6 +4185,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4322394346347055525">Sule muud vahelehed</translation>
 <translation id="4324577459193912240">Fail on poolik</translation>
 <translation id="4325237902968425115">Rakenduse <ph name="LINUX_APP_NAME" />desinstallimine …</translation>
+<translation id="4325433082696797523">Salvestusruum ja toide</translation>
 <translation id="4326146840124313313">Chrome'i tugevaima turvalisuse seade kaitseb teid paremini ohtlike veebisaitide, allalaadimiste ja laienduste eest</translation>
 <translation id="4326484226728068206">Ostukorvis olevad kaubad <ph name="DISCOUNT_TEXT" /> soodsamalt kaupmehelt <ph name="MERCHANT_NAME" />, (<ph name="MERCHANT_DOMAIN" />), vaadatud <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Jäävesi</translation>
@@ -5168,6 +5169,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5146896637028965135">Süsteemi hääl</translation>
 <translation id="5147992672778369947">Kasutage soovitatud parooli</translation>
 <translation id="5148277445782867161">Google'i asukohateenus kasutab teie seadme asukoha prognoosimiseks selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid.</translation>
+<translation id="5148285448107770349">Parool peab koosnema vähemalt 8 tähemärgist</translation>
 <translation id="5150254825601720210">Netscape'i sertifikaadi SSL-serveri nimi</translation>
 <translation id="5151354047782775295">Vabastage kettaruumi, muidu võidakse valitud andmed automaatselt kustutada</translation>
 <translation id="5153234146675181447">Telefoni unustamine</translation>

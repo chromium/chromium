@@ -167,7 +167,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="7674213385180944843">Ouvrez Paramètres &gt; Confidentialité &gt; Appareil photo &gt; Chromium, puis activez l'appareil photo.</translation>
 <translation id="7710137812207066069">Ouvre un nouvel onglet dans Chromium.</translation>
 <translation id="7763454117143368771">Utilisez Chromium comme navigateur par défaut pour rester à l'abri des sites dangereux et protéger vos mots de passe</translation>
-<translation id="7812317783196516890">Vous êtes connecté et synchronisez vos données avec un compte géré par <ph name="DOMAIN" /> sur lequel l'administrateur peut maintenant définir des règles relatives aux utilisateurs propres à ce compte et pouvant modifier le comportement de Chromium.</translation>
 <translation id="7859018312476869945">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chromium envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="786327964234957808">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Chromium actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données de cet appareil, mais celles-ci seront conservées dans le compte <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Commencer à utiliser le lecteur Chromium</translation>

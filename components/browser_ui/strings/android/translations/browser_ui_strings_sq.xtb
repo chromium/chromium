@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Kontrollo qasjen e këtij sajti te pajisja jote</translation>
-<translation id="6018815681665454784">Të pastrohet dhe të rivendoset?</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6042308850641462728">Më shumë</translation>
 <translation id="6064125863973209585">Shkarkimet e përfunduara</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
 <translation id="6320088164292336938">Dridhja</translation>
 <translation id="6367753977865761591">Blloko identifikimin e palëve të treta për një sajt specifik.</translation>
-<translation id="6388207532828177975">Pastro dhe rivendos</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="640163077447496506">Skadon sot</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blloko sajtet që të mos përdorin pajisjen e realitetit virtual dhe të dhënat e tua</translation>
 <translation id="6447842834002726250">Kukit</translation>
-<translation id="6467852467360539617">Pastro të dhënat dhe rivendos lejet</translation>
 <translation id="6500423977866688905">Kur dritarja është e ngushtë, kërko pamjen për celular</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="652937045869844725">Provo të lejosh kukit e palëve të treta, që do të thotë më pak mbrojtje, por veçoritë e sajteve kanë më shumë mundësi të punojnë</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
 <translation id="7882806643839505685">Lejo tingullin për një sajt specifik.</translation>
 <translation id="789180354981963912">Blloko kukit e palëve të treta në modalitetin "e fshehtë"</translation>
-<translation id="7895868624847501462">Ky veprim do të pastrojë të gjitha të dhënat lokale, duke përfshirë kukit, dhe do të rivendosë të gjitha lejet për <ph name="DOMAIN" /> dhe për sajtet nën të</translation>
 <translation id="7940722705963108451">Më kujto</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sajt në grupin e sajteve të <ph name="FPS_OWNER" /> që mund ta shikojnë aktivitetin tënd në grup}other{<ph name="FPS_MEMBERS_COUNT" /> sajte në grupin e sajteve të <ph name="FPS_OWNER" /> që mund ta shikojnë aktivitetin tënd në këtë grup}}</translation>
 <translation id="7986741934819883144">Zgjidh një kontakt</translation>
-<translation id="7999064672810608036">Je i sigurt që dëshiron t'i pastrosh të gjitha të dhënat lokale, duke përfshirë kukit, dhe të rivendosësh të gjitha lejet për këtë sajt uebi?</translation>
 <translation id="8007176423574883786">E çaktivizuar për këtë pajisje</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8042586301629853791">Rendit sipas:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Titrat</translation>
 <translation id="8300705686683892304">Menaxhuar nga aplikacioni</translation>
 <translation id="8324158725704657629">Mos pyet më</translation>
-<translation id="8338445138528827481">Ky veprim do të pastrojë të gjitha të dhënat lokale, duke përfshirë kukit, dhe do të rivendosë të gjitha lejet për <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Mund të zmadhosh ose zvogëlosh në sajtet që viziton ti</translation>
 <translation id="8372893542064058268">Lejo "Sinkronizimin në sfond" për një sajt specifik.</translation>
 <translation id="8376384591331888629">Duke përfshirë kukit e palëve të treta në këtë sajt</translation>

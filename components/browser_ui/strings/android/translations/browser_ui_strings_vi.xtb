@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Thu nhỏ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Kiểm soát quyền truy cập của trang web này vào thiết bị của bạn</translation>
-<translation id="6018815681665454784">Xoá và đặt lại?</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
 <translation id="6064125863973209585">Đã hoàn tất quá trình tải xuống</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6320088164292336938">Rung</translation>
 <translation id="6367753977865761591">Chặn đăng nhập của bên thứ ba đối với một trang web cụ thể.</translation>
-<translation id="6388207532828177975">Xóa và đặt lại</translation>
 <translation id="6398765197997659313">Thoát khỏi chế độ toàn màn hình</translation>
 <translation id="640163077447496506">Hết hạn hôm nay</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Không cho các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6467852467360539617">Xoá dữ liệu và đặt lại quyền</translation>
 <translation id="6500423977866688905">Khi cửa sổ bị thu hẹp, hãy yêu cầu chế độ xem trên thiết bị di động</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="652937045869844725">Hãy thử cho phép cookie của bên thứ ba. Chế độ cài đặt này làm giảm khả năng bảo vệ nhưng các tính năng của trang web sẽ có khả năng hoạt động cao hơn</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Hủy chọn</translation>
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
 <translation id="789180354981963912">Chặn cookie của bên thứ ba ở chế độ Ẩn danh:</translation>
-<translation id="7895868624847501462">Thao tác này sẽ xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho <ph name="DOMAIN" /> cũng như mọi trang web thuộc nhóm này</translation>
 <translation id="7940722705963108451">Nhắc tôi</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="FPS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}other{<ph name="FPS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="FPS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}}</translation>
 <translation id="7986741934819883144">Chọn một người liên hệ</translation>
-<translation id="7999064672810608036">Bạn có chắc chắn muốn xóa tất cả dữ liệu cục bộ, bao gồm cookie và đặt lại tất cả các quyền cho trang web này không?</translation>
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
 <translation id="8042586301629853791">Sắp xếp theo:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Phụ đề</translation>
 <translation id="8300705686683892304">Do ứng dụng quản lý</translation>
 <translation id="8324158725704657629">Không hỏi lại</translation>
-<translation id="8338445138528827481">Thao tác này sẽ xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Bạn có thể phóng to hoặc thu nhỏ các trang web mà bạn truy cập</translation>
 <translation id="8372893542064058268">Cho phép Đồng bộ hóa dưới nền cho trang web cụ thể.</translation>
 <translation id="8376384591331888629">Bao gồm cả cookie của bên thứ ba trên trang web này</translation>

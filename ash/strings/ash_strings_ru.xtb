@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">Устройство USB-C (порт слева)</translation>
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Открыть приложение "Возможности"</translation>
 <translation id="1294929383540927798">Изменить настройки уведомлений на заблокированном экране</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
@@ -204,6 +205,7 @@
 <translation id="1775598828170459419">Показано задач: <ph name="NUM_SHOWN_ITEMS" /> из <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Настроить просмотр недавних фотографий, медиафайлов и уведомлений с телефона</translation>
 <translation id="1787955149152357925">Отключено</translation>
+<translation id="1797271123677381264">Не помню пароль</translation>
 <translation id="181103072419391116">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="1815245884418711390">Включить или отключить точку доступа. Точка доступа отключена.</translation>
 <translation id="1816896987747843206">Доступ к камере получат все приложения и сайты с разрешением "Камера".</translation>
@@ -388,6 +390,7 @@
 <translation id="2612614436418177118">Переместить значок приложения в сетке</translation>
 <translation id="2620016719323068571">Ищите <ph name="CATEGORY" />, файлы, приложения и не только…</translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Защищена</translation>
 <translation id="2624588537172718173">Звук с устройства и микрофон</translation>
 <translation id="263399434338050016">"Выбрать все"</translation>
@@ -512,6 +515,7 @@
 <translation id="3161500364292033097">Закрыть рабочий стол и окна</translation>
 <translation id="316356270129335934">По требованию <ph name="MANAGER" /> на вашем устройстве <ph name="DEVICE_TYPE" /> выполняется откат. Настройки устройства будут сброшены, а все данные – удалены.</translation>
 <translation id="3171170659304083361">Настройки способов ввода</translation>
+<translation id="3176221688814061633">На одном из ваших устройств устаревшая версия Bluetooth. Включите функцию Bluetooth Super Resolution или используйте встроенный микрофон для более высокого качества звука.</translation>
 <translation id="3181441307743005334">Перезапуск может занять несколько минут</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Подключено одно устройство}one{Подключено # устройство}few{Подключено # устройства}many{Подключено # устройств}other{Подключено # устройства}}</translation>
 <translation id="320207200541803018">Установи таймер</translation>
@@ -1498,6 +1502,7 @@
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
 <translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="7219573373513695352">Нет подключенных устройств.</translation>
+<translation id="7229029500464092426">Доступно памяти: <ph name="AVAILABLE_MEMORY" /> | Всего памяти: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Для установки обновления необходимо перезапустить Chromebook. Это может занять около минуты.</translation>
 <translation id="7256634071279256947">Основной микрофон</translation>
 <translation id="7258828758145722155">Изменено вчера</translation>
@@ -1523,6 +1528,7 @@
 <translation id="7360036564632145207">Чтобы оптимизировать производительность, измените настройки доступа к данным для периферийных устройств.</translation>
 <translation id="736045644501761622">Выбрать обои и стиль</translation>
 <translation id="7371404428569700291">Запись контента в окне</translation>
+<translation id="7372069265635026568">Память: доступно <ph name="AVAILABLE_MEMORY" /> из <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Доступ к микрофону получат все приложения и сайты с разрешением "Микрофон".</translation>
 <translation id="7377169924702866686">Включен режим Caps Lock.</translation>
 <translation id="7377481913241237033">Подключиться с помощью кода</translation>

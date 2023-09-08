@@ -12,7 +12,6 @@
 <translation id="1491435845014430217">Washa kipengele cha “Funga Vichupo Fiche unapofunga Chrome.”</translation>
 <translation id="1493827051843127077">Weka Chrome iwe kivinjari chaguomsingi cha kusawazisha vichupo, manenosiri na maelezo yako ya malipo kwenye vifaa vyako vyote</translation>
 <translation id="1504372625950710826">Chrome imeshindwa kukagua kama kuna masasisho. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
-<translation id="1511320244449497906">Umeingia katika akaunti na unasawazisha data yako ukitumia akaunti inayosimamiwa na <ph name="DOMAIN" /> ambapo msimamizi wake sasa anaweza kufanya sera za mtumiaji ziwe mahususi kwenye akaunti hiyo hivyo zinaweza kubadilisha tabia za Chrome.</translation>
 <translation id="1516692594929310090">Hufungua Gridi ya Kichupo cha Chrome.</translation>
 <translation id="1526327845902180576">Inapokuwa imewashwa:
 <ph name="BEGIN_INDENT" />  • Saidia kuboresha Chrome kwa ajili ya watu wanaoitumia kama wewe unavyoitumia.<ph name="END_INDENT" />
@@ -73,6 +72,7 @@ Mambo ya kuzingatia:
 <translation id="3655656110921623717">Hii inamaanisha kwamba Chrome itahitaji tovuti ya kifaa cha mkononi kila wakati.</translation>
 <translation id="3720541637541300822">Funga Vichupo Fiche Unapofunga Chrome</translation>
 <translation id="3741995255368156336">Hufungua Orodha ya Kusoma ya Chrome.</translation>
+<translation id="3744018071945602754">Kudhibiti Manenosiri kwenye Chrome</translation>
 <translation id="3827545470516145620">Unapata ulinzi wa kawaida kwenye kifaa hiki</translation>
 <translation id="384394811301901750">Google Chrome haiwezi kutumia kamera hivi sasa</translation>
 <translation id="3901001113120561395">Nufaika zaidi na Chrome.</translation>
@@ -87,6 +87,7 @@ Mambo ya kuzingatia:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> alikuwa akitumia Chrome na akaacha alamisho, manenosiri na mipangilio mingine kwenye kifaa hiki.</translation>
 <translation id="424864128008805179">Ungependa kuondoka kwenye Chrome?</translation>
 <translation id="4251174643044751591">Hufungua Ukurasa wa Mipangilio ya Njia ya Kulipa kwenye Chrome.</translation>
+<translation id="4453284704333523777">Kudhibiti Mipangilio ya Chrome</translation>
 <translation id="4508370294876102450">Fungua Chrome Kwenye Programu Yoyote</translation>
 <translation id="4523886039239821078">Baadhi ya programu jalizi husababisha Chrome iache kufanya kazi. Tafadhali ondoa:</translation>
 <translation id="4633328489441962921">Chrome imeshindwa kukagua kama kuna masasisho</translation>
@@ -123,6 +124,7 @@ Mambo ya kuzingatia:
 <translation id="571296537125272375">Nje ya mtandao, Chrome imeshindwa kukagua kama kuna masasisho</translation>
 <translation id="5716154293141027663">Tumia Chrome kufungua viungo vyovyote unavyogusa katika programu zingine</translation>
 <translation id="5808435672482059465">Angalia Historia Yako ya Chrome</translation>
+<translation id="589695154992054845">Hufungua Kidhibiti cha Manenosiri kwenye Chrome.</translation>
 <translation id="5998675059699164418">Shirika lako linahitaji uingie katika akaunti ili uweze kutumia Chrome.</translation>
 <translation id="6054613632208573261">Tumia Chrome kwa Chaguomsingi</translation>
 <translation id="6063091872902370735">Ruhusu vidokezo vya kuingia katika akaunti kwenye Chrome</translation>
@@ -215,6 +217,7 @@ Mambo ya kuzingatia:
   • Ikiwa Chrome itaacha kufanya kazi, maelezo kuhusu kutofanya kazi yanaweza kuhusisha baadhi ya taarifa binafsi.
 
   • Iwapo utawasha usawazishaji, vipimo vinaweza pia kujumuisha taarifa kuhusu URL unazozitembelea.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Hufungua Mipangilio kwenye Chrome.</translation>
 <translation id="9112744793181547300">Ungependa Kuweka Chrome iwe Kivinjari chaguomsingi?</translation>
 <translation id="9122931302567044771">Hii inamaanisha kwamba Chrome itahitaji tovuti ya kompyuta kila wakati.</translation>
 <translation id="9181628561061032322">Hufungua Vichupo vya Hivi Karibuni kwenye Chrome.</translation>

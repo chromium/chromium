@@ -58,6 +58,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="124678866338384709">Cau'r tab presennol</translation>
 <translation id="1246905108078336582">Tynnu'r awgrym o'r clipfwrdd?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Gallwch bellach weld cynnwys gan ac ynglŷn â <ph name="SITE_NAME" /> yn yr adran Dilyn. Mae'r gwefannau a'r chwiliadau rydych yn eu dilyn yn cael eu cadw yn eich Cyfrif Google. Gallwch bellach reoli eich dilyn yn y gosodiadau ar unrhyw bryd.</translation>
 <translation id="1263231323834454256">Rhestr ddarllen</translation>
 <translation id="1266864766717917324">Ni ellid rhannu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Byddwch yn gweld eich hanes yma</translation>
@@ -136,6 +137,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="1671236975893690980">Wrthi'n aros i lawrlwytho…</translation>
 <translation id="1672586136351118594">Peidio â dangos eto</translation>
 <translation id="1680919990519905526">Siopa'r llun gyda Google Lens <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Yn fuan, byddwch yn gweld cynnwys gan ac ynglŷn â <ph name="SITE_NAME" /> yn Dilyn. Mae'r gwefannau a'r chwiliadau rydych yn eu dilyn yn cael eu cadw yn eich Cyfrif Google. Gallwch bellach reoli eich dilyn yn y gosodiadau ar unrhyw bryd.</translation>
 <translation id="1702543251015153180">Newid eich gosodiadau thema dywyll?</translation>
 <translation id="1702907158640575240">Porwr a reolir</translation>
 <translation id="1710099199314114079">Newid neu gau tabiau</translation>
@@ -1473,6 +1475,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8497242791509864205">Agor opsiynau didoli</translation>
 <translation id="8497480609928300907">Esboniad canllaw preifatrwydd</translation>
 <translation id="8497726226069778601">Dim i'w weld yma… eto</translation>
+<translation id="8501423924927196358">Dangosydd Llwytho Mewnwelediadau Tudalen</translation>
 <translation id="8503559462189395349">Cyfrineiriau Chrome</translation>
 <translation id="8503813439785031346">Enw defnyddiwr</translation>
 <translation id="8505766168025405649">Gweld hysbysiad ar gyfer y statws lawrlwytho</translation>

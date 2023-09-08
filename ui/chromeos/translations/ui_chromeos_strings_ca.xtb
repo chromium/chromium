@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Context</translation>
 <translation id="3272909651715601089"><ph name="PATH" /> no s'ha pogut obrir</translation>
 <translation id="3280431534455935878">S'està preparant</translation>
+<translation id="3280719573299097127">Tens connexió a una xarxa d'ús mesurat. La sincronització de fitxers s'ha posat en pausa.</translation>
 <translation id="3280987981688031357">Disc de vinil</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3291218047831493686">Connecta amb aquesta xarxa per canviar la configuració del bloqueig de la SIM</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">S'han suprimit totes les entrades de la selecció.</translation>
 <translation id="5838825566232597749">Workman nord-americà internacional</translation>
 <translation id="5845721951356578987">Infermer</translation>
+<translation id="5858478190805449225">El mode d'estalvi de bateria està activat. Torna-ho a provar quan aquest mode estigui desactivat.</translation>
 <translation id="5860491529813859533">Activa</translation>
 <translation id="5861477046012235702">Jugador de videojocs</translation>
 <translation id="5864471791310927901">Error en la cerca de DHCP</translation>
@@ -920,6 +922,7 @@
 <translation id="8087576439476816834">Baixa, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Compartit amb mi</translation>
 <translation id="8116072619078571545">Aigua amb gel</translation>
+<translation id="8120392982188717723">Permet la sincronització en xarxes d'ús mesurat</translation>
 <translation id="8124093710070495550">Problema de sincronització</translation>
 <translation id="8128733386027980860">Anglès (Regne Unit) amb teclat Dvorak</translation>
 <translation id="8137331602592933310">El fitxer "<ph name="FILENAME" />" s'ha compartit amb l'usuari. No el podeu suprimir perquè no és vostre.</translation>

@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Nadziranje dostopa spletnega mesta do naprave</translation>
-<translation id="6018815681665454784">Želite izbrisati in ponastaviti?</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6042308850641462728">Več</translation>
 <translation id="6064125863973209585">Dokončani prenosi</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Vsa spletna mesta</translation>
 <translation id="6320088164292336938">Vibriranje</translation>
 <translation id="6367753977865761591">Blokiranje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
-<translation id="6388207532828177975">Izbriši in ponastavi</translation>
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
 <translation id="640163077447496506">Poteče danes</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Spletnim mestom prepreči spremljanje naprave in podatkov za navidezno resničnost</translation>
 <translation id="6447842834002726250">Piškotki</translation>
-<translation id="6467852467360539617">Počisti podatke in ponastavi dovoljenja</translation>
 <translation id="6500423977866688905">Če je okno omejeno, zahtevajte pogled za mobilno napravo</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="652937045869844725">Poskusite omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je večja verjetnost, da bodo funkcije spletnega mesta delovale</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Prekliči izbor</translation>
 <translation id="7882806643839505685">Dovolitev zvoka za določeno spletno mesto.</translation>
 <translation id="789180354981963912">Blokiranje piškotkov tretjih oseb v anonimnem načinu:</translation>
-<translation id="7895868624847501462">To dejanje bo izbrisalo vse lokalne podatke, vključno s piškotki, in ponastavilo vsa dovoljenja za spletno mesto <ph name="DOMAIN" /> ter vsa njegova podrejena spletna mesta</translation>
 <translation id="7940722705963108451">Opomni me</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}one{<ph name="FPS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}two{<ph name="FPS_MEMBERS_COUNT" /> spletni mesti v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}few{<ph name="FPS_MEMBERS_COUNT" /> spletna mesta v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}other{<ph name="FPS_MEMBERS_COUNT" /> spletnih mest v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}}</translation>
 <translation id="7986741934819883144">Izberite stik</translation>
-<translation id="7999064672810608036">Ali želite res izbrisati vse lokalne podatke, vključno s piškotki, in ponastaviti vsa dovoljenja za to spletno mesto?</translation>
 <translation id="8007176423574883786">Izklopljeno za to napravo</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8042586301629853791">Razvrsti po:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Napisi</translation>
 <translation id="8300705686683892304">Upravlja aplikacija</translation>
 <translation id="8324158725704657629">Ne vprašaj me več</translation>
-<translation id="8338445138528827481">To dejanje bo izbrisalo vse lokalne podatke, vključno s piškotki, in ponastavilo vsa dovoljenja za <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Povečate ali zmanjšate lahko prikaz obiskanih spletnih mest.</translation>
 <translation id="8372893542064058268">Dovoli sinhroniziranje v ozadju za določeno spletno mesto.</translation>
 <translation id="8376384591331888629">Vključno s piškotki drugih mest na tem spletnem mestu</translation>

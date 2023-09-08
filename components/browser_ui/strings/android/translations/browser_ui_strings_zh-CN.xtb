@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">缩小</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">控制此网站对您的设备的访问权限</translation>
-<translation id="6018815681665454784">清除并重置？</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6042308850641462728">展开</translation>
 <translation id="6064125863973209585">下载已完成</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6320088164292336938">振动</translation>
 <translation id="6367753977865761591">禁止使用第三方账号登录特定网站。</translation>
-<translation id="6388207532828177975">清除并重置</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="640163077447496506">今天过期</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">禁止网站使用您的虚拟现实设备和数据</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6467852467360539617">清除数据并重置权限</translation>
 <translation id="6500423977866688905">当窗口狭窄时，请求使用移动版视图</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="652937045869844725">尝试允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">取消选择</translation>
 <translation id="7882806643839505685">允许特定网站播放声音。</translation>
 <translation id="789180354981963912">阻止无痕模式下的第三方 Cookie：</translation>
-<translation id="7895868624847501462">此操作会清除所有本地数据（包括 Cookie），并重置 <ph name="DOMAIN" /> 及其下属所有网站的所有权限</translation>
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> 的网站群组中有 <ph name="FPS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="FPS_OWNER" /> 的网站群组中有 <ph name="FPS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
 <translation id="7986741934819883144">选择联系人</translation>
-<translation id="7999064672810608036">确定要清除该网站的所有本地数据（包括 Cookie）并重置该网站的所有权限吗？</translation>
 <translation id="8007176423574883786">已对此设备停用</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8042586301629853791">排序方式：</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">由应用管理</translation>
 <translation id="8324158725704657629">别再询问</translation>
-<translation id="8338445138528827481">此操作会清除所有本地数据（包括 Cookie），并重置 <ph name="ORIGIN" /> 的所有权限</translation>
 <translation id="8362795839483915693">您可以放大或缩小所访问网站的内容</translation>
 <translation id="8372893542064058268">允许特定网站进行后台同步。</translation>
 <translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>

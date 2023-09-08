@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Loitonna</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Valitse, mitä tämä sivusto saa tehdä laitteellasi</translation>
-<translation id="6018815681665454784">Tyhjennetäänkö ja nollataanko?</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6042308850641462728">Lisää</translation>
 <translation id="6064125863973209585">Valmiit lataukset</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6320088164292336938">Värinä</translation>
 <translation id="6367753977865761591">Estä kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
-<translation id="6388207532828177975">Tyhjennä ja nollaa</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="640163077447496506">Vanhenee tänään</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Estä sivustoja käyttämästä virtuaalitodellisuuslaitteitasi ja ‑dataasi</translation>
 <translation id="6447842834002726250">Evästeet</translation>
-<translation id="6467852467360539617">Poista data ja nollaa luvat</translation>
 <translation id="6500423977866688905">Kun ikkuna on kapea, pyydä mobiilinäkymää</translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="652937045869844725">Kokeile sallia kolmannen osapuolen evästeet. Suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin.</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Peru valinta</translation>
 <translation id="7882806643839505685">Salli tietyn sivuston äänet.</translation>
 <translation id="789180354981963912">Estä kolmannen osapuolen evästeet incognito-tilassa:</translation>
-<translation id="7895868624847501462">Tämä toiminto poistaa kaiken paikallisen datan, myös evästeet, ja nollaa kaikki luvat verkkotunnukselta <ph name="DOMAIN" /> ja kaikilta sen alaisilta sivustoilta</translation>
 <translation id="7940722705963108451">Muistuta minua</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sivusto osoitteen <ph name="FPS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}other{<ph name="FPS_MEMBERS_COUNT" /> sivustoa osoitteen <ph name="FPS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}}</translation>
 <translation id="7986741934819883144">Valitse yhteystieto</translation>
-<translation id="7999064672810608036">Haluatko varmasti tyhjentää kaikki paikalliset tiedot, mukaan lukien evästeet, ja nollata kaikki tämän verkkosivuston käyttöluvat?</translation>
 <translation id="8007176423574883786">Ei käytössä tällä laitteella</translation>
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
 <translation id="8042586301629853791">Lajitteluperuste:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Tekstitykset</translation>
 <translation id="8300705686683892304">Sovelluksen ylläpitämät</translation>
 <translation id="8324158725704657629">Älä kysy uudestaan</translation>
-<translation id="8338445138528827481">Tämä toiminto poistaa kaiken paikallisen datan, myös evästeet, ja nollaa kaikki luvat: <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Voit lähentää tai loitontaa avaamiasi sivustoja</translation>
 <translation id="8372893542064058268">Salli taustasynkronointi tietyllä sivustolla.</translation>
 <translation id="8376384591331888629">Mukaan lukien kolmannen osapuolen evästeet tällä sivustolla</translation>

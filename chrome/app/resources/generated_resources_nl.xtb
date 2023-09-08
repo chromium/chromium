@@ -426,6 +426,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1335929031622236846">Je apparaat inschrijven</translation>
 <translation id="133660899895084533">Informatie en gegevens over bluetooth-randapparatuur lezen</translation>
 <translation id="1336902454946927954">Je beveiligingssleutel is vergrendeld omdat je vingerafdruk niet kan worden herkend. Geef je pincode op om de sleutel te ontgrendelen.</translation>
+<translation id="1337066099824654054">Contextuele hulp staat uit</translation>
 <translation id="1338631221631423366">Koppelen...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> wil deze app openen.</translation>
 <translation id="1338950911836659113">Verwijderen...</translation>
@@ -3444,6 +3445,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-gegevens worden over 24 uur verwijderd</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> openen?</translation>
+<translation id="3740396996321407665">Contextuele hulp krijgen van bepaalde functies</translation>
 <translation id="3740945083753997630">Weergave- en tekstgrootte verkleinen</translation>
 <translation id="3741056951918180319">Je kunt altijd op de extensie klikken om deze op een site te gebruiken</translation>
 <translation id="3742235229730461951">Koreaanse toetsenbordindeling</translation>
@@ -4224,7 +4226,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4363771538994847871">Er zijn geen Cast-bestemmingen gevonden. Hulp nodig?</translation>
 <translation id="4364327530094270451">Meloen</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deelt een venster.</translation>
-<translation id="4364830672918311045">Meldingen bekijken</translation>
+<translation id="4364830672918311045">Meldingen weergeven</translation>
 <translation id="4366138410738374926">Afdrukken gestart</translation>
 <translation id="4367513928820380646">Verwijderde rechten bekijken</translation>
 <translation id="4367971618859387374">Weergavenaam</translation>
@@ -5400,7 +5402,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5352033265844765294">Tijdstempel</translation>
 <translation id="5352257124367865087">Siterechten beheren</translation>
 <translation id="5353252989841766347">Wachtwoorden exporteren uit Chrome</translation>
-<translation id="5355099869024327351">Hiermee kan de Assistent meldingen aan jou bekijken</translation>
+<translation id="5355099869024327351">Hiermee kan de Assistent meldingen aan jou tonen</translation>
 <translation id="5355191726083956201">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="5355498626146154079">Je moet de flag Borealis Enabled aanzetten</translation>
 <translation id="5355501370336370394">Zakelijk apparaat inschrijven</translation>
@@ -6401,6 +6403,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6173623053897475761">Typ je pincode nog een keer</translation>
 <translation id="6175314957787328458">Microsoft-domein-GUID</translation>
 <translation id="6175910054050815932">Een link ophalen</translation>
+<translation id="6176701216248282552">Contextuele hulp staat aan. Deze functies kunnen geopende pagina's naar Google sturen.</translation>
 <translation id="6177412385419165772">Verwijderen...</translation>
 <translation id="6178664161104547336">Een certificaat selecteren</translation>
 <translation id="6178682841350631965">Je inloggegevens zijn geüpdatet</translation>
@@ -9349,7 +9352,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR presenteren op headset</translation>
 <translation id="8590375307970699841">Automatische updates instellen</translation>
 <translation id="8591783563402255548">1 seconde</translation>
-<translation id="8592141010104017453">Helemaal geen meldingen bekijken</translation>
+<translation id="8592141010104017453">Helemaal geen meldingen tonen</translation>
 <translation id="859246725979739260">Toegang tot je locatie is geblokkeerd voor deze site.</translation>
 <translation id="8593121833493516339">Stuur gebruiks- en diagnostische gegevens. Verbeter de Android-functionaliteit voor je kind door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je aanvullende Web- en app-activiteit hebt aangezet voor het account van je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind. <ph name="BEGIN_LINK1" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Je kunt pas bestanden openen in Microsoft 365 als het instellen is afgerond.</translation>

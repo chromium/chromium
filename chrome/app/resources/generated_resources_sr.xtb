@@ -428,6 +428,7 @@
 <translation id="1335929031622236846">Региструјте уређај</translation>
 <translation id="133660899895084533">Читање информација о Bluetooth периферним уређајима и података са њих</translation>
 <translation id="1336902454946927954">Ваш безбедносни кључ је закључан јер нисмо успели да препознамо отисак прста. Да бисте га откључали, унесите PIN.</translation>
+<translation id="1337066099824654054">Контекстуална помоћ је искључена</translation>
 <translation id="1338631221631423366">Упарује се...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> жели да отвори ову апликацију.</translation>
 <translation id="1338950911836659113">Брисање...</translation>
@@ -3442,6 +3443,7 @@
 <translation id="3738632186060045350">Подаци са уређаја <ph name="DEVICE_TYPE" /> ће бити избрисани за 24 сата</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Желите ли да отворите <ph name="APPLICATION" />?</translation>
+<translation id="3740396996321407665">Добијте контекстуалну помоћ од неких функција</translation>
 <translation id="3740945083753997630">Смањите величину приказа и текста</translation>
 <translation id="3741056951918180319">Увек можете да кликнете на додатак да бисте га користили на било ком сајту</translation>
 <translation id="3742235229730461951">Распоред тастера на тастатури за корејски</translation>
@@ -6405,6 +6407,7 @@
 <translation id="6173623053897475761">Поново унесите PIN</translation>
 <translation id="6175314957787328458">GUID Microsoft домена</translation>
 <translation id="6175910054050815932">Преузмите линк</translation>
+<translation id="6176701216248282552">Контекстуална помоћ је укључена. Ове функције могу да шаљу отворене странице Google-у.</translation>
 <translation id="6177412385419165772">Уклања се…</translation>
 <translation id="6178664161104547336">Избор сертификата</translation>
 <translation id="6178682841350631965">Подаци за пријављивање су ажурирани</translation>

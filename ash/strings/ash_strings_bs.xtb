@@ -200,12 +200,13 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1757857692711134412">Isključeno do zalaska sunca</translation>
 <translation id="1768366657309696705">Prečica na tastaturi <ph name="LAUNCHER_KEY_NAME" /> + tačka je promijenjena. Da koristite tipku Insert, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Premješteno u <ph name="ROW_NUMBER" />. red, <ph name="COLUMN_NUMBER" />. kolonu.</translation>
-<translation id="1771458705381257690">Otvorite aplikaciju <ph name="NAME" /> da biste postavili i prilagodili uređaj</translation>
+<translation id="1771458705381257690">Otvorite aplikaciju <ph name="NAME" /> da postavite i prilagodite uređaj</translation>
 <translation id="1771761307086386028">Listaj udesno</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, trenutno je odabran datum <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Prikazuje <ph name="NUM_SHOWN_ITEMS" /> od <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Postavljanje pregledanja nedavnih fotografija, medijskih fajlova i obavještenja telefona</translation>
 <translation id="1787955149152357925">Isključeno</translation>
+<translation id="1797271123677381264">Zaboravljena lozinka</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="1815245884418711390">Uključite/isključite pristupnu tačku. Pristupna tačka je isključena.</translation>
 <translation id="1816896987747843206">Ovo omogućava pristup kameri za sve aplikacije i web lokacije s odobrenjem za nju</translation>
@@ -1193,7 +1194,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5876666360658629066">Unesite kôd za roditelja</translation>
 <translation id="5881540930187678962">Kasnije postavite Phone Hub</translation>
 <translation id="5881663018261910378">Isključeno</translation>
-<translation id="5883017113634523865">Instalirajte aplikaciju <ph name="NAME" /> s Google Playa da biste vidjeli sve dostupne značajke</translation>
+<translation id="5883017113634523865">Instalirajte aplikaciju <ph name="NAME" /> s Google Playa da vidite sve dostupne funkcije</translation>
 <translation id="5887954372087850114">Prozor <ph name="WINDOW_TITLE" /> je dodijeljen radnoj površini <ph name="DESK_TITLE" /> i poništeno je njegovo dodjeljivanje svim drugim radnim površinama</translation>
 <translation id="588817334757907802">Otvori fajl u pregledniku Chrome</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>

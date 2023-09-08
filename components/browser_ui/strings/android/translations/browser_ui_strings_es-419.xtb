@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Alejar</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Controla el acceso de este sitio a tu dispositivo</translation>
-<translation id="6018815681665454784">¿Quieres borrar y restablecer los datos?</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
 <translation id="6064125863973209585">Descargas completadas</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6367753977865761591">Bloquea el acceso de terceros a un sitio específico.</translation>
-<translation id="6388207532828177975">Borrar y restablecer</translation>
 <translation id="6398765197997659313">Salir de pantalla completa</translation>
 <translation id="640163077447496506">Vence hoy</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Impedir que los sitios utilicen tus datos y dispositivos de realidad virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6467852467360539617">Borrar datos y restablecer permisos</translation>
 <translation id="6500423977866688905">Cuando la ventana sea reducida, solicita la vista para dispositivos móviles</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="652937045869844725">Intenta permitir cookies de terceros, lo que implica menos protección, pero aumenta las probabilidades de que las funciones del sitio puedan usarse</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Cancelar la selección</translation>
 <translation id="7882806643839505685">Habilitar el sonido de un sitio específico</translation>
 <translation id="789180354981963912">Bloquear cookies de terceros en el modo Incógnito:</translation>
-<translation id="7895868624847501462">Esta acción borrará todos los datos locales, incluidas las cookies, y restablecerá todos los permisos de <ph name="DOMAIN" /> y todos sus sitios secundarios</translation>
 <translation id="7940722705963108451">Recordarme</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sitio en el grupo de sitios de <ph name="FPS_OWNER" /> puede ver tu actividad en el grupo}other{<ph name="FPS_MEMBERS_COUNT" /> sitios en el grupo de sitios de <ph name="FPS_OWNER" /> pueden ver tu actividad en el grupo}}</translation>
 <translation id="7986741934819883144">Seleccionar un contacto</translation>
-<translation id="7999064672810608036">¿Quieres eliminar todos los datos locales de este sitio web, incluidas las cookies, y restablecer todos los permisos?</translation>
 <translation id="8007176423574883786">Desactivado para este dispositivo</translation>
 <translation id="802154636333426148">Error en la descarga</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8300705686683892304">Administrados por una app</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
-<translation id="8338445138528827481">Esta acción borrará todos los datos locales, incluidas las cookies, y restablecerá todos los permisos de <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Puedes acercar o alejar los sitios que visitas</translation>
 <translation id="8372893542064058268">Permite la sincronización en segundo plano para un sitio específico.</translation>
 <translation id="8376384591331888629">Habilitar también cookies de terceros en este sitio</translation>

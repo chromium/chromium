@@ -168,7 +168,6 @@
 <translation id="7674213385180944843">[設定] &gt; [プライバシー] &gt; [カメラ] &gt; [Chromium] の順に選択し、カメラをオンにします。</translation>
 <translation id="7710137812207066069">Chromium で新しいタブを開きます。</translation>
 <translation id="7763454117143368771">Chromium を既定のブラウザとして使用すると、危険なサイトから保護され、パスワードを安全に保つことができます</translation>
-<translation id="7812317783196516890">ログインしてデータを同期している、<ph name="DOMAIN" /> 管理のアカウントに対して、管理者が専用のユーザー ポリシーを設定して Chromimum の動作を変更できるようになりました。</translation>
 <translation id="7859018312476869945">Chromium でアドレスバーや検索ボックスに入力を始めると、入力内容がデフォルトの検索エンジンに送信され、より関連性の高い検索候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
 <translation id="786327964234957808">同期アカウントを <ph name="USER_EMAIL1" /> から <ph name="USER_EMAIL2" /> に切り替えようとしています。既存の Chromium データは <ph name="DOMAIN" /> で管理されています。この操作を行うと、データはこのデバイスから削除されますが、<ph name="USER_EMAIL1" /> には残ります。</translation>
 <translation id="7890287942691234100">Chromium のスキャナの使用開始</translation>

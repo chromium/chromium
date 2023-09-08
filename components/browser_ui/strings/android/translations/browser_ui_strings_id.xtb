@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Perkecil</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Mengontrol akses situs ini ke perangkat Anda</translation>
-<translation id="6018815681665454784">Hapus &amp; reset?</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lainnya</translation>
 <translation id="6064125863973209585">Download yang selesai</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Semua situs</translation>
 <translation id="6320088164292336938">Getar</translation>
 <translation id="6367753977865761591">Blokir login pihak ketiga untuk situs tertentu.</translation>
-<translation id="6388207532828177975">Hapus &amp; reset</translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="640163077447496506">Berakhir hari ini</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blokir situs agar tidak menggunakan perangkat dan data virtual reality Anda</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6467852467360539617">Hapus data &amp; reset izin</translation>
 <translation id="6500423977866688905">Jika jendela terlihat sempit, minta tampilan seluler</translation>
 <translation id="6527303717912515753">Bagikan</translation>
 <translation id="652937045869844725">Coba izinkan cookie pihak ketiga, yang berarti lebih sedikit perlindungan, tetapi fitur situs biasanya berfungsi</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7882806643839505685">Izinkan suara untuk situs tertentu.</translation>
 <translation id="789180354981963912">Blokir cookie pihak ketiga dalam mode Samaran:</translation>
-<translation id="7895868624847501462">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="DOMAIN" /> serta semua situs di bawahnya</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> situs di grup situs <ph name="FPS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}other{<ph name="FPS_MEMBERS_COUNT" /> situs di grup situs <ph name="FPS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}}</translation>
 <translation id="7986741934819883144">Pilih kontak</translation>
-<translation id="7999064672810608036">Yakin ingin menghapus semua data lokal, termasuk cookie, dan menyetel ulang semua izin untuk situs web ini?</translation>
 <translation id="8007176423574883786">Dinonaktifkan untuk perangkat ini</translation>
 <translation id="802154636333426148">Download gagal</translation>
 <translation id="8042586301629853791">Urutkan menurut:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Teks</translation>
 <translation id="8300705686683892304">Dikelola oleh aplikasi</translation>
 <translation id="8324158725704657629">Jangan tanya lagi</translation>
-<translation id="8338445138528827481">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Anda dapat memperbesar atau memperkecil situs yang Anda buka</translation>
 <translation id="8372893542064058268">Mengizinkan Sinkronisasi Latar Belakang untuk situs tertentu.</translation>
 <translation id="8376384591331888629">Menyertakan cookie pihak ketiga di situs ini</translation>

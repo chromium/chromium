@@ -200,11 +200,13 @@
 <translation id="1757857692711134412">Kikapcsolva napnyugtáig</translation>
 <translation id="1768366657309696705">A(z) <ph name="LAUNCHER_KEY_NAME" /> + pont billentyűkombináció módosult. A Beillesztés billentyű használatához nyomja le a(z) <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace billentyűkombinációt.</translation>
 <translation id="1770726142253415363">Áthelyezve ide: <ph name="ROW_NUMBER" />. sor, <ph name="COLUMN_NUMBER" />. oszlop.</translation>
+<translation id="1771458705381257690">Eszköze beállításához és személyre szabásához nyissa meg a következőt: <ph name="NAME" /></translation>
 <translation id="1771761307086386028">Görgetés jobbra</translation>
 <translation id="1774796056689732716">Naptár, <ph name="CURRENT_MONTH_YEAR" />, jelenleg kijelölt dátum: <ph name="DATE" /></translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />/<ph name="NUM_SHOWN_ITEMS" /> feladat látható</translation>
 <translation id="178347895271755507">A telefonján lévő legutóbbi fotók, médiatartalmak és értesítések megtekintésének beállítása</translation>
 <translation id="1787955149152357925">Ki</translation>
+<translation id="1797271123677381264">Elfelejtett jelszó</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="1815245884418711390">Hotspot be-/kikapcsolása. A hotspot ki van kapcsolva.</translation>
 <translation id="1816896987747843206">Ezzel engedélyezi a kamerához való hozzáférést a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
@@ -1193,6 +1195,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5876666360658629066">Adja meg a szülői kódot</translation>
 <translation id="5881540930187678962">A Telefonközpont későbbi beállítása</translation>
 <translation id="5881663018261910378">Ki</translation>
+<translation id="5883017113634523865">Telepítse az alkalmazást <ph name="NAME" /> számára a Google Playről, hogy az összes rendelkezésre álló funkció látható legyen</translation>
 <translation id="5887954372087850114">A(z) <ph name="WINDOW_TITLE" /> ablak hozzárendelve a(z) <ph name="DESK_TITLE" /> asztalhoz; minden más asztalhoz való hozzárendelése megszüntetve</translation>
 <translation id="588817334757907802">Fájl megnyitása a Chrome böngészőben</translation>
 <translation id="5895138241574237353">Újraindítás</translation>

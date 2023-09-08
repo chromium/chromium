@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Fifiza</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Dhibiti ufikiaji wa tovuti hii kwenye kifaa chako</translation>
-<translation id="6018815681665454784">Ungependa ufute na uweke upya?</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6042308850641462728">Zaidi</translation>
 <translation id="6064125863973209585">Faili zilizopakuliwa</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Tovuti zote</translation>
 <translation id="6320088164292336938">Tetema</translation>
 <translation id="6367753977865761591">Zuia uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
-<translation id="6388207532828177975">Futa na uweke upya</translation>
 <translation id="6398765197997659313">Ondoka kwenye Skrini nzima</translation>
 <translation id="640163077447496506">Muda wa matumizi unaisha leo</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Zuia tovuti zisitumie data na vifaa vyako vya uhalisia pepe</translation>
 <translation id="6447842834002726250">Vidakuzi</translation>
-<translation id="6467852467360539617">Futa data na uweke upya ruhusa</translation>
 <translation id="6500423977866688905">Iwapo dirisha ni nyembamba, omba mwonekano wa kifaa cha mkononi</translation>
 <translation id="6527303717912515753">Shiriki</translation>
 <translation id="652937045869844725">Jaribu kuruhusu vidakuzi vya mshirika mwingine, jambo linalomaanisha ulinzi mdogo lakini vipengele vina uwezekano mkubwa wa kufanya kazi.</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Ghairi uchaguzi</translation>
 <translation id="7882806643839505685">Ruhusu sauti katika tovuti mahususi.</translation>
 <translation id="789180354981963912">Kuzuia vidakuzi vya washirika wengine katika hali fiche:</translation>
-<translation id="7895868624847501462">Kitendo hiki kitafuta data yote iliyo kwenye kifaa, ikiwa ni pamoja na vidakuzi na kuweka upya ruhusa zote za <ph name="DOMAIN" /> na tovuti zote zilizo kwenye kikoa hiki</translation>
 <translation id="7940722705963108451">Nikumbushe</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{Tovuti <ph name="FPS_MEMBERS_COUNT" /> iliyo katika kikundi cha tovuti cha <ph name="FPS_OWNER" /> inaweza kuona shughuli zako kwenye kikundi}other{Tovuti <ph name="FPS_MEMBERS_COUNT" /> zilizo katika kikundi cha tovuti cha <ph name="FPS_OWNER" /> zinaweza kuona shughuli zako kwenye kikundi}}</translation>
 <translation id="7986741934819883144">Chagua anwani</translation>
-<translation id="7999064672810608036">Una uhakika unataka kufuta data zote za ndani, ikiwemo vidakuzi, na kuweka upya ruhusa za tovuti hii?</translation>
 <translation id="8007176423574883786">Imezimwa kwa kifaa hiki</translation>
 <translation id="802154636333426148">Haikuweza kupakua</translation>
 <translation id="8042586301629853791">Panga kulingana na:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Manukuu</translation>
 <translation id="8300705686683892304">Zinazodhibitiwa na programu</translation>
 <translation id="8324158725704657629">Usiniulize tena</translation>
-<translation id="8338445138528827481">Kitendo hiki kitafuta data yote iliyo kwenye kifaa, ikiwa ni pamoja na vidakuzi na kuweka upya ruhusa zote za <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Unaweza kuvuta karibu au kusogeza mbali kwenye tovuti unazotembelea</translation>
 <translation id="8372893542064058268">Ruhusu Usawazishaji wa Chini Chini wa tovuti mahususi.</translation>
 <translation id="8376384591331888629">Vikiwemo vidakuzi vya wengine kwenye tovuti hii</translation>

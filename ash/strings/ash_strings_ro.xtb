@@ -200,11 +200,13 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1757857692711134412">Dezactivată până la apus</translation>
 <translation id="1768366657309696705">Comanda rapidă de la tastatură <ph name="LAUNCHER_KEY_NAME" /> + punct s-a schimbat. Pentru a folosi tasta Insert, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">S-a mutat pe rândul <ph name="ROW_NUMBER" />, în coloana <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Deschide <ph name="NAME" /> pentru a configura și personaliza dispozitivul</translation>
 <translation id="1771761307086386028">Derulează la dreapta</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, momentan s-a selectat <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Se afișează <ph name="NUM_SHOWN_ITEMS" /> din <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Configurează afișarea fotografiilor, a elementelor media și a notificărilor recente ale telefonului</translation>
 <translation id="1787955149152357925">Dezactivată</translation>
+<translation id="1797271123677381264">Am uitat parola</translation>
 <translation id="181103072419391116">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="1815245884418711390">Comută hotspotul. Hotspotul este dezactivat.</translation>
 <translation id="1816896987747843206">Astfel, accesul la cameră este permis pentru toate aplicațiile și site-urile care au permisiunea adecvată</translation>
@@ -1192,6 +1194,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5876666360658629066">Introdu codul pentru părinte</translation>
 <translation id="5881540930187678962">Configurează mai târziu Phone Hub</translation>
 <translation id="5881663018261910378">Dezactivat</translation>
+<translation id="5883017113634523865">Instalează aplicația pentru <ph name="NAME" /> de pe Google Play ca să vezi toate funcțiile disponibile</translation>
 <translation id="5887954372087850114">Fereastra <ph name="WINDOW_TITLE" /> a fost atribuită către <ph name="DESK_TITLE" /> și s-a anulat atribuirea către toate celelalte desktopuri</translation>
 <translation id="588817334757907802">Deschide fișierul în browserul Chrome</translation>
 <translation id="5895138241574237353">Reîncepe</translation>

@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">ज़ूम आउट</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">इस साइट के लिए अपने डिवाइस का ऐक्सेस नियंत्रित करें</translation>
-<translation id="6018815681665454784">क्या साफ़ करके रीसेट करना है?</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6042308850641462728">और ज़्यादा</translation>
 <translation id="6064125863973209585">पूरे हो चुके डाउनलोड</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">सभी साइटें</translation>
 <translation id="6320088164292336938">कंपन</translation>
 <translation id="6367753977865761591">किसी साइट पर, तीसरे पक्ष के खाते से साइन इन को ब्लॉक करें.</translation>
-<translation id="6388207532828177975">साफ़ करें और रीसेट करें</translation>
 <translation id="6398765197997659313">फ़ुल स्क्रीन से बाहर निकलें</translation>
 <translation id="640163077447496506">समयसीमा आज खत्म हो जाएगी</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">साइटों को अपने वर्चुअल रिएलिटी वाले डिवाइस और डेटा का इस्तेमाल करने से रोकें</translation>
 <translation id="6447842834002726250">कुकी</translation>
-<translation id="6467852467360539617">डेटा मिटाएं और अनुमतियां रीसेट करें</translation>
 <translation id="6500423977866688905">जब विंडो छोटी हो, तब साइट को मोबाइल व्यू में दिखाने का अनुरोध करें</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
 <translation id="652937045869844725">तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट की सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">चुना गया हटाएं</translation>
 <translation id="7882806643839505685">किसी खास साइट के लिए आवाज़ की अनुमति दें.</translation>
 <translation id="789180354981963912">गुप्त मोड में, तीसरे पक्ष की कुकी ब्लॉक करें:</translation>
-<translation id="7895868624847501462">ऐसा करने से, कुकी के साथ-साथ लोकल डेटा भी मिट जाएगा. साथ ही, <ph name="DOMAIN" /> और इसके तहत आने वाली सभी साइटों के लिए, सभी अनुमतियां रीसेट हो जाएंगी</translation>
 <translation id="7940722705963108451">मुझे याद दिलाएं</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> की साइटों के ग्रुप में मौजूद <ph name="FPS_MEMBERS_COUNT" /> साइट, ग्रुप में आपकी गतिविधि देख सकती है}one{<ph name="FPS_OWNER" /> की साइटों के ग्रुप में मौजूद <ph name="FPS_MEMBERS_COUNT" /> साइट, ग्रुप में आपकी गतिविधि देख सकती है}other{<ph name="FPS_OWNER" /> की साइटों के ग्रुप में मौजूद <ph name="FPS_MEMBERS_COUNT" /> साइटें, ग्रुप में आपकी गतिविधि देख सकती हैं}}</translation>
 <translation id="7986741934819883144">कोई संपर्क चुनें</translation>
-<translation id="7999064672810608036">क्‍या आप वाकई कुकी सहित इस वेबसाइट का सभी स्‍थानीय डेटा साफ़ करना और इसकी सभी अनुमतियों को रीसेट करना चाहते हैं?</translation>
 <translation id="8007176423574883786">इस डिवाइस के लिए बंद कर दिया गया है</translation>
 <translation id="802154636333426148">डाउनलोड विफल रहा</translation>
 <translation id="8042586301629853791">इसके अनुसार क्रम से लगाएं:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">कैप्शन</translation>
 <translation id="8300705686683892304">ऐप्लिकेशन मैनेज करता है</translation>
 <translation id="8324158725704657629">दोबारा न पूछें</translation>
-<translation id="8338445138528827481">इस कार्रवाई से, कुकी के साथ-साथ पूरा स्थानीय डेटा मिट जाएगा. साथ ही, <ph name="ORIGIN" /> की सभी अनुमतियां रीसेट हो जाएंगी</translation>
 <translation id="8362795839483915693">उन साइटों पर ज़ूम इन या ज़ूम आउट किया जा सकता है जिन पर आपने विज़िट किया है</translation>
 <translation id="8372893542064058268">किसी विशिष्ट साइट के लिए पृष्ठभूमि समन्वयन की अनुमति दें.</translation>
 <translation id="8376384591331888629">इस साइट पर मौजूद तीसरे पक्ष की कुकी शामिल करें</translation>

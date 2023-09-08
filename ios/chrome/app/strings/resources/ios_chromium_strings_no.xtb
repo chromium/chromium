@@ -168,7 +168,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7674213385180944843">Åpne Innstillinger &gt; Personvern &gt; Kamera &gt; Chromium, og slå på kameraet.</translation>
 <translation id="7710137812207066069">Åpner en ny fane i Chromium.</translation>
 <translation id="7763454117143368771">Bruk Chromium som standardnettleser for å holde deg beskyttet mot farlige nettsteder og holde passordene dine trygge</translation>
-<translation id="7812317783196516890">Du er pålogget og synkroniserer dataene dine med en konto som er administrert av <ph name="DOMAIN" />, hvor administratoren nå kan angi brukerinnstillinger spesifikt for denne kontoen for å endre virkemåten til Chromium.</translation>
 <translation id="7859018312476869945">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="786327964234957808">Du bytter synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. De eksisterende Chromium-dataene dine administreres av <ph name="DOMAIN" />. Dette fører til at dataene dine slettes fra denne enheten, men de blir værende i <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Begynn å bruke Chromium-skanneren</translation>

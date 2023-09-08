@@ -12,7 +12,6 @@
 <translation id="1491435845014430217">Aktivera Lås inkognitoflikar när du stänger Chrome.</translation>
 <translation id="1493827051843127077">Ställ in Chrome som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
 <translation id="1504372625950710826">Chrome kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
-<translation id="1511320244449497906">Du är inloggad på och synkroniserar din data med ett konto som hanteras av <ph name="DOMAIN" />. Administratören kan nu ställa in användarpolicyer som gäller det kontot specifikt och som kan påverka hur Chrome fungerar.</translation>
 <translation id="1516692594929310090">Öppnar rutnätet med flikar i Chrome.</translation>
 <translation id="1526327845902180576">När detta är aktiverat:
 <ph name="BEGIN_INDENT" /> • Du hjälper oss att göra Chrome bättre för den som använder programmet på samma sätt som du.<ph name="END_INDENT" />
@@ -73,6 +72,7 @@ Tänk på detta:
 <translation id="3655656110921623717">Detta betyder att mobilversionen av webbplatsen begärs varje gång i Chrome.</translation>
 <translation id="3720541637541300822">Lås inkognitoflikar när du stänger Chrome</translation>
 <translation id="3741995255368156336">Öppnar läslistan i Chrome.</translation>
+<translation id="3744018071945602754">Hantera lösenord i Chrome</translation>
 <translation id="3827545470516145620">Du har standardsäkerhetsskydd på den här enheten</translation>
 <translation id="384394811301901750">Google Chrome kan inte använda kameran just nu</translation>
 <translation id="3901001113120561395">Få ut mesta möjliga av Chrome.</translation>
@@ -87,6 +87,7 @@ Tänk på detta:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> använde Chrome och har lämnat kvar bokmärken, lösenord och andra inställningar på enheten.</translation>
 <translation id="424864128008805179">Vill du logga ut från Chrome?</translation>
 <translation id="4251174643044751591">Öppnar inställningssidan för betalningsmetoder i Chrome.</translation>
+<translation id="4453284704333523777">Hantera inställningar för Chrome</translation>
 <translation id="4508370294876102450">Öppna Chrome i valfri app</translation>
 <translation id="4523886039239821078">Några tillägg har fått Chrome att krascha. Avinstallera följande:</translation>
 <translation id="4633328489441962921">Chrome kan inte söka efter uppdateringar</translation>
@@ -123,6 +124,7 @@ Tänk på detta:
 <translation id="571296537125272375">Chrome kan inte söka efter uppdateringar offline</translation>
 <translation id="5716154293141027663">Öppna Chrome varje gång du trycker på länkar i andra appar</translation>
 <translation id="5808435672482059465">Visa Chrome-historiken</translation>
+<translation id="589695154992054845">Öppnar Lösenordshantering i Chrome.</translation>
 <translation id="5998675059699164418">Organisationen kräver att du loggar in för att använda Chrome.</translation>
 <translation id="6054613632208573261">Använd Chrome som standard</translation>
 <translation id="6063091872902370735">Tillåt inloggning i Chrome</translation>
@@ -213,6 +215,7 @@ Tänk på detta:
 <ph name="BEGIN_INDENT" />  • Information om hur du använder Chrome skickas till Google men kopplas inte till dig.
   • Om Chrome kraschar kan personliga uppgifter finnas med i kraschinformationen.
   • Om du aktiverar synkronisering kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Öppnar inställningarna i Chrome.</translation>
 <translation id="9112744793181547300">Vill du ställa in Chrome som standardwebbläsare?</translation>
 <translation id="9122931302567044771">Detta betyder att datorversionen av webbplatsen begärs varje gång i Chrome.</translation>
 <translation id="9181628561061032322">Öppnar de senaste flikarna i Chrome.</translation>

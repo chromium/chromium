@@ -168,7 +168,6 @@
 <translation id="7674213385180944843">설정 &gt; 개인 정보 보호 &gt; 카메라 &gt; Chromium을 열고 카메라를 사용 설정하세요.</translation>
 <translation id="7710137812207066069">Chromium에서 새 탭을 엽니다.</translation>
 <translation id="7763454117143368771">Chromium을 기본 브라우저로 사용하여 위험한 사이트를 차단하고 비밀번호를 안전하게 보호합니다.</translation>
-<translation id="7812317783196516890">현재 로그인되어 있으며 <ph name="DOMAIN" />에서 관리하는 계정과 데이터를 동기화하려고 합니다. 이 도메인의 관리자는 이제 해당 계정에 적용되는 사용자 정책을 설정할 수 있으며 이로 인해 Chromium의 동작이 변경될 수 있습니다</translation>
 <translation id="7859018312476869945">주소 표시줄이나 검색창에 검색어를 입력하면 Chromium은 더 나은 추천 검색어를 제공하기 위해 사용자가 입력한 내용을 기본 검색엔진으로 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="786327964234957808">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chromium 데이터는 <ph name="DOMAIN" />에서 관리됩니다. 이 기기에서는 데이터가 삭제되지만 <ph name="USER_EMAIL1" />에 계속해서 데이터가 보관됩니다.</translation>
 <translation id="7890287942691234100">Chromium 스캐너 사용 시작</translation>

@@ -390,6 +390,7 @@
 <translation id="1733762317901693627">సాధారణంగా సురక్షితంగా భావించే సైట్‌లు కూడా కొన్నిసార్లు అటాక్ చేసే వారి బారిన పడతాయి. ప్రమాదాల గురించి మీకు పూర్తిగా తెలిసి ఉంటే మాత్రమే <ph name="BEGIN_LINK" />ఈ అసురక్షిత సైట్<ph name="END_LINK" />‌కు వెళ్లండి.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">సిస్టమ్ నిర్వాహకుడిని సంప్రదించి ప్రయత్నించండి.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> తేదీన గడువు ముగుస్తుంది</translation>
 <translation id="1736420071277903564">కంప్యూటర్</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode అనేది, <ph name="SECURE_DNS_MODE_SECURE" />గా సెట్ చేసి ఉన్నప్పుడు ఖచ్చితంగా పేర్కొనాలి, చెల్లుబాటు అయ్యే స్ట్రింగ్ అయి ఉండాలి.</translation>
 <translation id="1743393865165844832">పరుపులు &amp; దుప్పట్లు, దిండు గలేబాలు</translation>
@@ -684,6 +685,7 @@
 <translation id="2366689192918515749">మాంసం &amp; సీఫుడ్</translation>
 <translation id="2367567093518048410">స్థాయి</translation>
 <translation id="23703388716193220">గోల్ఫ్ ఎక్విప్‌మెంట్</translation>
+<translation id="2378084239755710604">సేవ్ చేసిన కార్డ్ సమాచారం మూసివేయబడింది.</translation>
 <translation id="2380886658946992094">చట్టపరం</translation>
 <translation id="2383455408879745299">Chrome సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించండి</translation>
 <translation id="2384307209577226199">ఎంటర్‌ప్రైజ్ డిఫాల్ట్</translation>
@@ -2249,6 +2251,7 @@
 <translation id="5653432653077411130">నీటి సరఫరా &amp; శుద్ధి చేయడం</translation>
 <translation id="5654927323611874862">అప్‌లోడ్ చేసిన క్రాష్ రిపోర్ట్ ID:</translation>
 <translation id="5659593005791499971">ఈమెయిల్‌</translation>
+<translation id="5660122698869360728">మీ షాపింగ్ పేజీలన్నింటినీ ఒకే చోట సేవ్ చేయడంలో, అలాగే ధరలను ఆటోమేటిక్‌గా ట్రాక్ చేయడం, ధరల గణాంకాలను పొందడం, అలాగే మరిన్నింటిని పొందడంలో మీకు సహాయపడే కొత్త స్మార్ట్ ఫోల్డర్.</translation>
 <translation id="5663955426505430495">ఈ పరికరం నిర్వాహకుడు అదనపు ఫంక్షన్‌ల కోసం ఎక్స్‌టెన్షన్‌లను ఇన్‌స్టాల్ చేశారు. మీ డేటాలో కొంత భాగానికి ఎక్స్‌టెన్షన్‌లు యాక్సెస్ కలిగి ఉంటాయి.</translation>
 <translation id="5666606186680807225">బీచ్‌లు &amp; దీవులు</translation>
 <translation id="5667827081946850877">ఆడియోబుక్స్</translation>
@@ -2261,6 +2264,7 @@
 <translation id="5689199277474810259">JSONకు ఎగుమతి చేయి</translation>
 <translation id="5689516760719285838">లొకేషన్</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates విలువ ఔచిత్యంగా లేదు, DnsOverHttpsMode విధానాన్ని <ph name="SECURE_DNS_MODE_AUTOMATIC" />కు లేదా <ph name="SECURE_DNS_MODE_SECURE" />కు సెట్ చేస్తే మినహా, అది ఉపయోగించబడదు.</translation>
+<translation id="5691848789297492617">సేవ్ చేసిన కార్డ్ సమాచారం స్క్రీన్ పూర్తిగా తెరవబడింది.</translation>
 <translation id="5695542892312572833">మీ కొనుగోలును వెరిఫై చేసి, పూర్తి చేయడానికి Windows Helloను ఉపయోగించాలా?</translation>
 <translation id="5699628521141772782">పాల ఉత్పత్తులు &amp; గుడ్లు</translation>
 <translation id="5701381305118179107">మధ్యకు</translation>
@@ -2700,7 +2704,7 @@
 <translation id="6643016212128521049">క్లియర్ చేయండి</translation>
 <translation id="6645291930348198241">కుక్కీలను, సైట్ డేటాను యాక్సెస్ చేయాలనుకుంటోంది.</translation>
 <translation id="6645478838938543427">ధర తగ్గింపు అలర్ట్‌లు <ph name="EMAIL_ADDRESS" />కు పంపబడతాయి</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{ఏవీ లేవు}=1{1 సైట్ నుండి (మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు)}other{# సైట్‌ల నుండి (మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు)}}</translation>
+<translation id="6646269444027925224">{COUNT,plural, =0{ఏవీ లేవు}=1{1 సైట్‌కు చెందినవి (మీ Google ఖాతా నుండి సైన్ అవుట్ అవ్వరు)}other{# సైట్‌లకు చెందినవి (మీ Google ఖాతా నుండి సైన్ అవుట్ అవ్వరు)}}</translation>
 <translation id="6648459603387803038">మీ అడ్మినిస్ట్రేట‌ర్ మీ బ్రౌజర్ సెటప్‌ను రిమోట్ విధానంలో మార్చవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల కూడా మేనేజ్ చేయవచ్చు.</translation>
 <translation id="6648524591329069940">Serif ఫాంట్</translation>
 <translation id="6649510485211003056">195 x 270 మి.మీ.</translation>
@@ -3011,6 +3015,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">రియర్ ట్రే</translation>
 <translation id="725866823122871198">మీ కంప్యూటర్ తేదీ మరియు సమయం (<ph name="DATE_AND_TIME" />) తప్పుగా ఉన్నందున <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />కు ఒక ప్రైవేట్ కనెక్షన్‌ను ఏర్పాటు చేయడం వీలుకాలేదు.</translation>
+<translation id="7260075294900977274">మీ షాపింగ్ పేజీలన్నింటినీ ఒకే చోట సేవ్ చేయడంలో, అలాగే ధరలను ఆటోమేటిక్‌గా ట్రాక్ చేయడం, ధరల గణాంకాలను పొందడం, అలాగే మరిన్నింటిని పొందడంలో మీకు సహాయపడే కొత్త స్మార్ట్ ఫోల్డర్</translation>
 <translation id="7265608370113700582">అడ్రస్ ఈ పరికరంలో మాత్రమే అందుబాటులో ఉంది</translation>
 <translation id="7275334191706090484">నిర్వహించబడిన బుక్‌మార్క్‌లు</translation>
 <translation id="7277998515889183784">మేకప్ &amp; సౌందర్య సాధనాలు</translation>
@@ -3235,6 +3240,7 @@
 <translation id="7676643023259824263">క్లిప్‌బోర్డ్ వచనం, <ph name="TEXT" /> కోసం వెతకండి</translation>
 <translation id="7679367271685653708">Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీని చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="7679947978757153706">బేస్‌బాల్</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> తేదీన గడువు ముగుస్తుంది</translation>
 <translation id="7681273392938116652">ఫాంటసీ క్రీడలు</translation>
 <translation id="7682287625158474539">ఓడ రవాణా</translation>
 <translation id="7682451652090915298">రగ్బీ</translation>
@@ -3312,6 +3318,7 @@
 <translation id="7822611063308883975">చేతితో పట్టుకుని ఆడగల గేమ్ కన్సోల్స్</translation>
 <translation id="7825558994363763489">మైక్రోవేవ్‌లు</translation>
 <translation id="782886543891417279">మీరు ఉపయోగిస్తున్న Wi-Fi (<ph name="WIFI_NAME" />)కు మీరు దాని లాగిన్ పేజీని సందర్శించడం అవసరం.</translation>
+<translation id="7831993212387676366">షాపింగ్ లిస్ట్ అంటే ఏమిటి?</translation>
 <translation id="7840103971441592723">స్క్రీన్ క్యాప్చర్ ప్రారంభమైంది</translation>
 <translation id="784137052867620416">షాపింగ్ గణాంకాలు</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ఏదీ వద్దు}=1{1 యాప్ (<ph name="EXAMPLE_APP_1" />)}=2{2 యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

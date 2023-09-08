@@ -200,11 +200,13 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1757857692711134412">Desativado até o pôr do sol</translation>
 <translation id="1768366657309696705">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + ponto final mudou. Para usar a tecla Insert, pressione <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Movido para a linha <ph name="ROW_NUMBER" />, coluna <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Abra <ph name="NAME" /> para configurar e personalizar seu dispositivo</translation>
 <translation id="1771761307086386028">Rolar para a direita</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, a data <ph name="DATE" /> está selecionada.</translation>
 <translation id="1775598828170459419">Mostrando <ph name="NUM_SHOWN_ITEMS" /> de <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Configurar a visualização de fotos, mídia e notificações recentes do smartphone</translation>
 <translation id="1787955149152357925">Desativado</translation>
+<translation id="1797271123677381264">Esqueci minha senha</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> de intensidade de sinal , gerenciada pelo seu administrador</translation>
 <translation id="1815245884418711390">Alterne o status do ponto de acesso. O ponto de acesso está desativado.</translation>
 <translation id="1816896987747843206">Dá acesso à câmera para todos os apps e sites com essa permissão</translation>
@@ -1192,6 +1194,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5876666360658629066">Digite o código de familiar responsável</translation>
 <translation id="5881540930187678962">Configurar o recurso "Seu smartphone" mais tarde</translation>
 <translation id="5881663018261910378">Desativada</translation>
+<translation id="5883017113634523865">Instale o app <ph name="NAME" /> pelo Google Play para conferir todos os recursos disponíveis</translation>
 <translation id="5887954372087850114">A janela <ph name="WINDOW_TITLE" /> foi atribuída a <ph name="DESK_TITLE" /> e não foi atribuída a nenhum outro espaço de trabalho</translation>
 <translation id="588817334757907802">Abrir arquivo no navegador Chrome</translation>
 <translation id="5895138241574237353">Reiniciar</translation>

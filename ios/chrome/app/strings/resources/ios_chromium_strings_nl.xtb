@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Je Chromium-geschiedenis bekijken</translation>
 <translation id="2052320862053429062">Chromium vergelijkt periodiek je wachtwoorden met lijsten die online zijn gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (inclusief Google) kunnen worden gelezen.</translation>
 <translation id="2054703085270098503">Blijf veilig met Chromium</translation>
+<translation id="2098023844024447022">Open Mijn nieuwste tabblad in Chromium.</translation>
 <translation id="2168108852149185974">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder de volgende add-ons:</translation>
 <translation id="2178608107313874732">Chromium kan je camera momenteel niet gebruiken</translation>
 <translation id="2195025571279539885">Wil je dat Chromium de volgende keer aanbiedt om pagina's in het <ph name="LANGUAGE_NAME" /> op deze site te vertalen?</translation>
@@ -168,7 +169,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7674213385180944843">Open Instellingen &gt; Privacy &gt; Camera &gt; Chromium en zet de camera aan.</translation>
 <translation id="7710137812207066069">Opent een nieuw tabblad in Chromium.</translation>
 <translation id="7763454117143368771">Gebruik Chromium als je standaardbrowser voor bescherming tegen gevaarlijke sites en om je wachtwoorden te beveiligen</translation>
-<translation id="7812317783196516890">Je bent ingelogd en synchroniseert je gegevens met een account dat wordt beheerd door <ph name="DOMAIN" />. De beheerder kan nu specifiek gebruikersbeleid voor dat account instellen om het gedrag van Chromium te wijzigen.</translation>
 <translation id="7859018312476869945">Als je in de adresbalk of het zoekvak typt, stuurt Chromium wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
 <translation id="786327964234957808">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chromium-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Chromium-scanner gebruiken</translation>
@@ -191,6 +191,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8663480472502753423">Houd Chromium up-to-date</translation>
 <translation id="8685813584220679697">Log in bij deze site en Chromium.</translation>
 <translation id="8730503818204408000">Opent de Chromium-instelling om Chromium in te stellen als standaardbrowser.</translation>
+<translation id="8742300022028858275">Mijn nieuwste tabblad openen in Chromium</translation>
 <translation id="8747378496147986285">Als dit aanstaat:
 <ph name="BEGIN_INDENT" />  • Help Chromium te verbeteren voor mensen die de browser gebruiken op dezelfde manier als jij.<ph name="END_INDENT" />
 

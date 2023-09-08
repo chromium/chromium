@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3272909651715601089">Non se puido abrir <ph name="PATH" /></translation>
 <translation id="3280431534455935878">Preparando</translation>
+<translation id="3280719573299097127">Estás nunha rede de pago por consumo. A sincronización de ficheiros púxose en pausa.</translation>
 <translation id="3280987981688031357">Disco de vinilo</translation>
 <translation id="3290356915286466215">Sen protección</translation>
 <translation id="3291218047831493686">Para cambiar a opción de configuración de bloqueo da SIM, conéctate a esta rede</translation>
@@ -631,6 +632,7 @@
 <translation id="5838451609423551646">Quitáronse todas as entradas da selección.</translation>
 <translation id="5838825566232597749">Internacional Workman estadounidense</translation>
 <translation id="5845721951356578987">Membro do persoal de enfermaría</translation>
+<translation id="5858478190805449225">O modo de aforro de batería está activado. Téntao de novo cando o modo estea desactivado.</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5861477046012235702">Persoa xogadora</translation>
 <translation id="5864471791310927901">Produciuse un erro na busca de DHCP</translation>
@@ -919,6 +921,7 @@
 <translation id="8087576439476816834">Descargar, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Compartido comigo</translation>
 <translation id="8116072619078571545">Auga xeada</translation>
+<translation id="8120392982188717723">Permitir sincronización en redes de pago por consumo</translation>
 <translation id="8124093710070495550">Problema de sincronización</translation>
 <translation id="8128733386027980860">Inglés (Reino Unido) con teclado Dvorak</translation>
 <translation id="8137331602592933310">Compartiuse "<ph name="FILENAME" />" contigo. Non podes eliminalo porque non es o propietario.</translation>

@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Kontrolišite pristup ovog sajta uređaju</translation>
-<translation id="6018815681665454784">Želite da obrišete i resetujete?</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Još</translation>
 <translation id="6064125863973209585">Dovršena preuzimanja</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Svi sajtovi</translation>
 <translation id="6320088164292336938">Vibracija</translation>
 <translation id="6367753977865761591">Blokirajte prijavljivanje trećih strana za određeni sajt.</translation>
-<translation id="6388207532828177975">Obriši i resetuj</translation>
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
 <translation id="640163077447496506">Ističe danas</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Ne dozvoljava sajtovima da koriste uređaj i podatke virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
-<translation id="6467852467360539617">Obriši podatke i resetuj dozvole</translation>
 <translation id="6500423977866688905">Kada je prozor uzak, zahtevaj prikaz za mobilne uređaje</translation>
 <translation id="6527303717912515753">Deli</translation>
 <translation id="652937045869844725">Probajte da dozvolite kolačiće treće strane, što znači slabiju zaštitu, ali veću verovatnoću da će funkcije sajta raditi</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Otkaži izbor</translation>
 <translation id="7882806643839505685">Dozvoli zvuk za određeni sajt.</translation>
 <translation id="789180354981963912">Blokirajte kolačiće trećih strana u režimu bez arhiviranja:</translation>
-<translation id="7895868624847501462">Ovom radnjom ćete obrisati sve lokalne podatke, uključujući kolačiće, i resetovati sve dozvole za <ph name="DOMAIN" /> i sve sajtove u okviru njega</translation>
 <translation id="7940722705963108451">Podseti me</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="FPS_OWNER" /> koja može da vidi vaše aktivnosti u grupi}one{<ph name="FPS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="FPS_OWNER" /> koja može da vidi vaše aktivnosti u grupi}few{<ph name="FPS_MEMBERS_COUNT" /> sajta u grupi sajtova vlasnika <ph name="FPS_OWNER" /> koja može da vidi vaše aktivnosti u grupi}other{<ph name="FPS_MEMBERS_COUNT" /> sajtova u grupi sajtova vlasnika <ph name="FPS_OWNER" /> koja može da vidi vaše aktivnosti u grupi}}</translation>
 <translation id="7986741934819883144">Izaberite kontakt</translation>
-<translation id="7999064672810608036">Želite li stvarno da obrišete sve lokalne podatke, uključujući kolačiće, i resetujete sve dozvole za ovaj veb-sajt?</translation>
 <translation id="8007176423574883786">Isključeno je za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8042586301629853791">Sortiraj prema:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Titl</translation>
 <translation id="8300705686683892304">Upravlja aplikacija</translation>
 <translation id="8324158725704657629">Ne pitaj ponovo</translation>
-<translation id="8338445138528827481">Ovom radnjom ćete obrisati sve lokalne podatke, uključujući kolačiće, i resetovati sve dozvole za <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Možete da uvećavate ili umanjujete prikaz sajtova koje posećujete</translation>
 <translation id="8372893542064058268">Dozvolite Sinhronizaciju u pozadini za određeni sajt.</translation>
 <translation id="8376384591331888629">Uključujući kolačiće trećih strana na ovom sajtu</translation>

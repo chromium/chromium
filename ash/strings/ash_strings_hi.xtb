@@ -200,11 +200,13 @@
 <translation id="1757857692711134412">यह सुविधा सूरज ढलने तक बंद रहेगी</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पीरियड कीबोर्ड शॉर्टकट बदल गया है. Insert बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + Shift + Backspace दबाएं.</translation>
 <translation id="1770726142253415363">लाइन <ph name="ROW_NUMBER" /> में, कॉलम संख्या <ph name="COLUMN_NUMBER" /> पर भेज दिया गया.</translation>
+<translation id="1771458705381257690">अपने डिवाइस को सेट अप और पसंद के मुताबिक बनाने के लिए <ph name="NAME" /> खोलें</translation>
 <translation id="1771761307086386028">दाईं तरफ़ स्क्रोल करें</translation>
 <translation id="1774796056689732716"><ph name="CURRENT_MONTH_YEAR" /> के कैलेंडर में फ़िलहाल <ph name="DATE" /> को चुना गया है.</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> में से <ph name="NUM_SHOWN_ITEMS" /> दिखाए जा रहे हैं</translation>
 <translation id="178347895271755507">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, और सूचनाओं को देखने की सुविधा सेट अप करें</translation>
 <translation id="1787955149152357925">बंद करें</translation>
+<translation id="1797271123677381264">क्या आपको पासवर्ड याद नहीं है</translation>
 <translation id="181103072419391116">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="1815245884418711390">हॉटस्पॉट का बटन टॉगल करें. हॉटस्पॉट बंद है.</translation>
 <translation id="1816896987747843206">यह ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा ऐक्सेस करने देता है जिनके पास इसकी अनुमति है</translation>
@@ -1193,6 +1195,7 @@
 <translation id="5876666360658629066">अभिभावक वाला कोड डालें</translation>
 <translation id="5881540930187678962">फ़ोन हब को बाद में सेट अप करें</translation>
 <translation id="5881663018261910378">बंद है</translation>
+<translation id="5883017113634523865">सभी उपलब्ध सुविधाएं देखने के लिए, Google Play से <ph name="NAME" /> के लिए ऐप्लिकेशन इंस्टॉल करें</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> विंडो, <ph name="DESK_TITLE" /> को असाइन किया गया. साथ ही, इसे अन्य सभी डेस्क से हटाया गया</translation>
 <translation id="588817334757907802">फ़ाइल को Chrome ब्राउज़र में खोलें</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>

@@ -428,6 +428,7 @@
 <translation id="1335929031622236846">Rekisteröi laite</translation>
 <translation id="133660899895084533">Lukea tietoja ja dataa Bluetooth-lisälaitteista</translation>
 <translation id="1336902454946927954">Suojausavaimesi on lukittu, koska sormenjälkeäsi ei voitu tunnistaa. Avaa lukitus lisäämällä PIN-koodisi.</translation>
+<translation id="1337066099824654054">Kontekstiapu on pois päältä</translation>
 <translation id="1338631221631423366">Laiteparia muodostetaan…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> haluaa avata tämän sovelluksen.</translation>
 <translation id="1338950911836659113">Poistetaan…</translation>
@@ -3458,6 +3459,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3738632186060045350">Laitteen (<ph name="DEVICE_TYPE" />) data poistetaan 24 tunnin päästä</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Avataanko <ph name="APPLICATION" />?</translation>
+<translation id="3740396996321407665">Saat kontekstiin liittyvää apua tietyiltä ominaisuuksilta</translation>
 <translation id="3740945083753997630">Pienennä näytön ja tekstin kokoa</translation>
 <translation id="3741056951918180319">Voit käyttää laajennusta millä tahansa sivustolla klikkaamalla sitä</translation>
 <translation id="3742235229730461951">Ulkoasu: korealainen näppäimistö</translation>
@@ -4190,6 +4192,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4322394346347055525">Sulje muut välilehdet</translation>
 <translation id="4324577459193912240">Tiedoston osia puuttuu</translation>
 <translation id="4325237902968425115">Poistetaan <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4325433082696797523">Tallennustila ja virta</translation>
 <translation id="4326146840124313313">Chromen tehokkain suojaus suojaa sinua entistä paremmin vaarallisilta sivustoilta, latauksilta ja laajennuksilta</translation>
 <translation id="4326484226728068206">Ostoskorissasi olevat tuotteet <ph name="DISCOUNT_TEXT" />, myyjä <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, katsottu <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Jäävesi</translation>
@@ -6418,6 +6421,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6173623053897475761">Kirjoita PIN-koodi uudelleen</translation>
 <translation id="6175314957787328458">Microsoftin toimialueen GUID-tunnus</translation>
 <translation id="6175910054050815932">Hae linkki</translation>
+<translation id="6176701216248282552">Kontekstiapu on päällä. Nämä ominaisuudet voivat lähettää avoimia sivuja Googlelle.</translation>
 <translation id="6177412385419165772">Poistetaan…</translation>
 <translation id="6178664161104547336">Valitse varmenne</translation>
 <translation id="6178682841350631965">Kirjautumisdatasi on päivitetty</translation>

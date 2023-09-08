@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">控管這個網站對裝置的存取權</translation>
-<translation id="6018815681665454784">要清除並重設嗎？</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6042308850641462728">更多</translation>
 <translation id="6064125863973209585">下載完成</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6320088164292336938">震動</translation>
 <translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>
-<translation id="6388207532828177975">清除並重設</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="640163077447496506">今天到期</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">禁止網站使用你的虛擬實境裝置和資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6467852467360539617">清除資料並重設權限</translation>
 <translation id="6500423977866688905">視窗縮小時要求使用行動裝置檢視畫面</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="652937045869844725">請嘗試允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易運作</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">全部取消選取</translation>
 <translation id="7882806643839505685">允許特定網站播放音訊。</translation>
 <translation id="789180354981963912">在無痕模式中封鎖第三方 Cookie：</translation>
-<translation id="7895868624847501462">這項操作會清除包括 Cookie 在內的所有本機資料，並重設 <ph name="DOMAIN" /> 和該網域中所有網站的所有權限</translation>
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{在 <ph name="FPS_OWNER" /> 的網站群組中，有 <ph name="FPS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="FPS_OWNER" /> 的網站群組中，有 <ph name="FPS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
-<translation id="7999064672810608036">確定要刪除這個網站儲存的所有本機資料 (包括 Cookie 在內)，並重設這個網站的所有權限嗎？</translation>
 <translation id="8007176423574883786">已在這個裝置上關閉</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8042586301629853791">排序依據：</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">由應用程式管理</translation>
 <translation id="8324158725704657629">不要再詢問</translation>
-<translation id="8338445138528827481">這項操作會清除包括 Cookie 在內的所有本機資料，並重設「<ph name="ORIGIN" />」的所有權限</translation>
 <translation id="8362795839483915693">你可以在瀏覽時縮放網站內容</translation>
 <translation id="8372893542064058268">允許特定網站執行背景同步處理作業。</translation>
 <translation id="8376384591331888629">包括這個網站上的第三方 Cookie</translation>

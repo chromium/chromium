@@ -7,12 +7,12 @@
 <translation id="1333745675627230582">Igraj igru Dinosaur na Chromeu</translation>
 <translation id="1352919863522755794">Google upravitelj zaporki nije uspio provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="1407843355326180937">Prijavite se na ovu web-lokaciju i Chrome kako biste imali pristup svojim oznakama i još toga na svim svojim uređajima.</translation>
+<translation id="1436059927646026729">Otvaranje moje najnovije kartice u Chromeu</translation>
 <translation id="1462727070346936664">Prijavite se da biste iskoristili sve prednosti Chromea.</translation>
 <translation id="1479202195792305274">Chrome može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
 <translation id="1491435845014430217">Uključite opciju "Zaključajte anonimne kartice pri zatvaranju Chromea".</translation>
 <translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da biste sinkronizirali kartice, zaporke i podatke o plaćanju na svim svojim uređajima</translation>
 <translation id="1504372625950710826">Chrome nije uspio provjeriti ima li ažuriranja. Provjerite internetsku vezu.</translation>
-<translation id="1511320244449497906">Prijavljeni ste i vaši se podaci sinkroniziraju s računom kojim upravlja web-lokacija <ph name="DOMAIN" />. Administrator sada može postaviti korisnička pravila koja se odnose na taj račun i koja mogu promijeniti ponašanje Chromea.</translation>
 <translation id="1516692594929310090">Otvara rešetku kartica u Chromeu.</translation>
 <translation id="1526327845902180576">Kad je uključeno:
 <ph name="BEGIN_INDENT" />  • Pomozite poboljšati Chrome za korisnike koji ga upotrebljavaju na isti način kao vi.<ph name="END_INDENT" />
@@ -176,6 +176,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="7855730255114109580">Google Chrome ažuriran je</translation>
 <translation id="7897703007638178753">Prikaz nedavnih kartica u Chromeu</translation>
 <translation id="7925119591961387184">Odaberite Chrome.</translation>
+<translation id="7933491483529363150">Otvori moju najnoviju karticu u Chromeu.</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da biste otvarali veze, pretraživali putem widgeta i automatski popunjavali zaporke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dopustite Chromeove obavijesti da biste primali upozorenja o sniženju cijena</translation>
 <translation id="81358522153858150">Chrome sada za vaš upravljani račun podržava korisnička pravila</translation>

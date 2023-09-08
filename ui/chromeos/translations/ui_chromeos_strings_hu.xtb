@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Kontextus</translation>
 <translation id="3272909651715601089">A(z) „<ph name="PATH" />” fájl nem nyitható meg</translation>
 <translation id="3280431534455935878">Előkészítés</translation>
+<translation id="3280719573299097127">Ön forgalomkorlátos hálózatot használ. A fájlszinkronizálás szünetel.</translation>
 <translation id="3280987981688031357">Bakelitlemez</translation>
 <translation id="3290356915286466215">Nem bizt.</translation>
 <translation id="3291218047831493686">A SIM-zárolási beállítás módosítása érdekében csatlakozzon ehhez a hálózathoz</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">Összes bejegyzés eltávolítva a kijelöltek közül.</translation>
 <translation id="5838825566232597749">USA „Workman” nemzetközi</translation>
 <translation id="5845721951356578987">Ápoló</translation>
+<translation id="5858478190805449225">Az Akkumulátorkímélő mód be van kapcsolva. Próbálkozzon újra, amikor ki van kapcsolva az Akkumulátorkímélő mód.</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5861477046012235702">Játékos</translation>
 <translation id="5864471791310927901">DHCP-keresés sikertelen</translation>
@@ -920,6 +922,7 @@
 <translation id="8087576439476816834">Letöltés, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Velem megosztott</translation>
 <translation id="8116072619078571545">Jeges víz</translation>
+<translation id="8120392982188717723">Szinkronizálás engedélyezése forgalomkorlátos hálózatokon</translation>
 <translation id="8124093710070495550">Szinkronizálási probléma</translation>
 <translation id="8128733386027980860">angol (Egyesült Királyság) billentyűzet Dvorak kiosztással</translation>
 <translation id="8137331602592933310">A következőt osztották meg Önnel: „<ph name="FILENAME" />”. Nem törölheti, mert nem az Ön tulajdonában áll.</translation>

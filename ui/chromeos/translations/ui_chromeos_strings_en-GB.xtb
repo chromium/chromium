@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Context</translation>
 <translation id="3272909651715601089">Could not open '<ph name="PATH" />'</translation>
 <translation id="3280431534455935878">Preparing</translation>
+<translation id="3280719573299097127">You are on a metered network. File sync has been paused.</translation>
 <translation id="3280987981688031357">Vinyl record</translation>
 <translation id="3290356915286466215">Unsecured</translation>
 <translation id="3291218047831493686">Connect to this network to change SIM lock setting</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">Removed all entries from selection.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
 <translation id="5845721951356578987">Nurse</translation>
+<translation id="5858478190805449225">Battery saver mode on. Try again when battery saver mode is turned off.</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP look-up failed</translation>

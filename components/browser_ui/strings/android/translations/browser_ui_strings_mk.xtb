@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Одзумирај</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Контролирајте го пристапот на сајтов до вашиот уред</translation>
-<translation id="6018815681665454784">Да се избрише и ресетира?</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6042308850641462728">Повеќе</translation>
 <translation id="6064125863973209585">Преземањата завршија</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Сите локации</translation>
 <translation id="6320088164292336938">Вибрации</translation>
 <translation id="6367753977865761591">Блокирајте најавување на трети лица за конкретен сајт.</translation>
-<translation id="6388207532828177975">Исчисти и ресетирај</translation>
 <translation id="6398765197997659313">Излези од цел екран</translation>
 <translation id="640163077447496506">Истекува денес</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Не дозволувај сајтовите да ги користат уредот и податоците за виртуелна реалност</translation>
 <translation id="6447842834002726250">Колачиња</translation>
-<translation id="6467852467360539617">Избриши податоци и ресетирај дозволи</translation>
 <translation id="6500423977866688905">Кога е тесен прозорецот, побарајте приказ на мобилен</translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="652937045869844725">Обидете се со дозволување колачиња од трети страни, што значи помала заштита, но поголема веројатност да функционираат функциите на сајтот</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7882806643839505685">Дозволете го звукот за одреден сајт.</translation>
 <translation id="789180354981963912">Блокирајте колачиња од трети страни во „Инкогнито“:</translation>
-<translation id="7895868624847501462">Со дејствово ќе се избришат сите локални податоци, што опфаќа и колачиња, а ќе се ресетираат и сите дозволи за <ph name="DOMAIN" />, како и сите сајтови под него</translation>
 <translation id="7940722705963108451">Потсети ме</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сајт во групата сајтови на <ph name="FPS_OWNER" /> што може да ја гледаат вашата активност во групата}one{<ph name="FPS_MEMBERS_COUNT" /> сајт во групата сајтови на <ph name="FPS_OWNER" /> што може да ја гледаат вашата активност во групата}other{<ph name="FPS_MEMBERS_COUNT" /> сајтови во групата сајтови на <ph name="FPS_OWNER" /> што може да ја гледаат вашата активност во групата}}</translation>
 <translation id="7986741934819883144">Изберете контакт</translation>
-<translation id="7999064672810608036">Дали сте сигурни дека сакате да ги исчистите сите локални податоци, вклучувајќи ги колачињата, и да ги ресетирате сите дозволи за веб-локацијата?</translation>
 <translation id="8007176423574883786">Исклучена за овој уред</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8042586301629853791">Подреди по:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Титлови</translation>
 <translation id="8300705686683892304">Управувани од апликација</translation>
 <translation id="8324158725704657629">Не прашувај повторно</translation>
-<translation id="8338445138528827481">Со дејствово ќе се избришат сите локални податоци, што опфаќа и колачиња, а ќе се ресетираат и сите дозволи за <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Можете да зумирате или да одзумирате на сајтовите што ги посетувате</translation>
 <translation id="8372893542064058268">Дозволи Синхронизација во заднина за одреден сајт.</translation>
 <translation id="8376384591331888629">Вклучувајќи колачиња од трети страни</translation>

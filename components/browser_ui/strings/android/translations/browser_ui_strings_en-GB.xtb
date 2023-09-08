@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Control this site's access to your device</translation>
-<translation id="6018815681665454784">Clear and reset?</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6042308850641462728">More</translation>
 <translation id="6064125863973209585">Completed downloads</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6320088164292336938">Vibrate</translation>
 <translation id="6367753977865761591">Block third-party sign-in for a specific site.</translation>
-<translation id="6388207532828177975">Clear &amp; reset</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="640163077447496506">Expires today</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6467852467360539617">Clear data and reset permissions</translation>
 <translation id="6500423977866688905">When the window is narrow, request mobile view</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="652937045869844725">Try allowing third-party cookies, which means less protection but that site features are more likely to work</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Cancel selection</translation>
 <translation id="7882806643839505685">Allow sound for a specific site.</translation>
 <translation id="789180354981963912">Block third-party cookies in Incognito:</translation>
-<translation id="7895868624847501462">This action will clear all local data, including cookies, and will reset all permissions for <ph name="DOMAIN" /> and all sites under it</translation>
 <translation id="7940722705963108451">Remind me</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site in <ph name="FPS_OWNER" />'s group of sites that can see your activity in the group}other{<ph name="FPS_MEMBERS_COUNT" /> sites in <ph name="FPS_OWNER" />'s group of sites that can see your activity in the group}}</translation>
 <translation id="7986741934819883144">Select a contact</translation>
-<translation id="7999064672810608036">Are you sure that you want to clear all local data, including cookies, and reset all permissions for this website?</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8042586301629853791">Sort by:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Captions</translation>
 <translation id="8300705686683892304">Managed by app</translation>
 <translation id="8324158725704657629">Don't ask again</translation>
-<translation id="8338445138528827481">This action will clear all local data, including cookies, and will reset all permissions for <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">You can zoom in or out on sites that you visit</translation>
 <translation id="8372893542064058268">Allow Background Sync for a specific site.</translation>
 <translation id="8376384591331888629">Including third-party cookies on this site</translation>

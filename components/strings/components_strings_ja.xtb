@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">通常は安全なサイトであっても、攻撃者によって侵害されることがあります。リスクを十分に理解している場合に限り、<ph name="BEGIN_LINK" />この安全でないサイト<ph name="END_LINK" />にアクセスしてください。</translation>
 <translation id="1734864079702812349">AMEX</translation>
 <translation id="1734878702283171397">システム管理者にお問い合わせください。</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />、<ph name="CARD_NETWORK_NAME" />、<ph name="CARD_LAST_FOUR_DIGITS" /> の有効期限は <ph name="CARD_EXPIRATION" /> です</translation>
 <translation id="1736420071277903564">パソコン</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
 <translation id="1743393865165844832">寝具</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">肉、魚介類</translation>
 <translation id="2367567093518048410">レベル</translation>
 <translation id="23703388716193220">ゴルフ用品</translation>
+<translation id="2378084239755710604">カード保存のメッセージを閉じました。</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome の設定でユーザー補助ツールをカスタマイズします</translation>
 <translation id="2384307209577226199">企業のデフォルト</translation>
@@ -2247,6 +2249,7 @@
 <translation id="5653432653077411130">上水道、水処理</translation>
 <translation id="5654927323611874862">アップロード済みのクラッシュ レポート ID:</translation>
 <translation id="5659593005791499971">メール</translation>
+<translation id="5660122698869360728">新しいスマート フォルダを使用すると、すべてのショッピング ページを 1 か所に保存して、価格のトラッキングや検討などを自動的に行えます。</translation>
 <translation id="5663955426505430495">このデバイスの管理者によって、機能を追加する拡張機能がインストールされました。この拡張機能では、ユーザーデータの一部にアクセスする場合があります。</translation>
 <translation id="5666606186680807225">ビーチ、島</translation>
 <translation id="5667827081946850877">オーディオブック</translation>
@@ -2259,6 +2262,7 @@
 <translation id="5689199277474810259">JSON にエクスポート</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates の値は関連するものでないため、使用されません。ただし、DnsOverHttpsMode ポリシーが「<ph name="SECURE_DNS_MODE_AUTOMATIC" />」または「<ph name="SECURE_DNS_MODE_SECURE" />」に設定されている場合は除きます。</translation>
+<translation id="5691848789297492617">カード保存のメッセージが画面全体に表示されています。</translation>
 <translation id="5695542892312572833">Windows Hello を使用して本人確認し、購入手続きを完了しますか？</translation>
 <translation id="5699628521141772782">乳製品、卵</translation>
 <translation id="5701381305118179107">中央揃え</translation>
@@ -3009,6 +3013,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">背面トレイ</translation>
 <translation id="725866823122871198">パソコンの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。</translation>
+<translation id="7260075294900977274">新しいスマート フォルダを使用すると、すべてのショッピング ページを 1 か所に保存して、価格のトラッキングや検討などを自動的に行えます</translation>
 <translation id="7265608370113700582">住所はこのデバイスでのみ使用できます</translation>
 <translation id="7275334191706090484">管理対象のブックマーク</translation>
 <translation id="7277998515889183784">メイク、化粧品</translation>
@@ -3233,6 +3238,7 @@
 <translation id="7676643023259824263">クリップボードにあるテキスト<ph name="TEXT" />を検索します</translation>
 <translation id="7679367271685653708">Chrome の設定で閲覧履歴を表示、管理します</translation>
 <translation id="7679947978757153706">野球</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />、<ph name="CARD_LAST_FOUR_DIGITS" /> の有効期限は <ph name="CARD_EXPIRATION" /> です</translation>
 <translation id="7681273392938116652">ファンタジー スポーツ</translation>
 <translation id="7682287625158474539">発送先</translation>
 <translation id="7682451652090915298">ラグビー</translation>
@@ -3310,6 +3316,7 @@
 <translation id="7822611063308883975">携帯ゲーム機</translation>
 <translation id="7825558994363763489">電子レンジ</translation>
 <translation id="782886543891417279">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、ログインページへのアクセスが必要な可能性があります。</translation>
+<translation id="7831993212387676366">ショッピング リストとは</translation>
 <translation id="7840103971441592723">スクリーン キャプチャを開始しました</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>

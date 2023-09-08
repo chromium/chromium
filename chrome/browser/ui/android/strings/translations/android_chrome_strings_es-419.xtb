@@ -58,6 +58,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
 <translation id="1246905108078336582">¿Quieres quitar la sugerencia del portapapeles?</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Ahora verás lo que publica <ph name="SITE_NAME" />, así como contenido sobre ese canal en Siguiendo. Los sitios y las búsquedas que sigues se guardan en tu Cuenta de Google. Puedes administrar lo que sigues en la configuración cuando quieras.</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1266864766717917324">No se pudo compartir <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Aquí encontrarás tu historial</translation>
@@ -136,6 +137,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="1671236975893690980">Descarga pendiente…</translation>
 <translation id="1672586136351118594">No volver a mostrar</translation>
 <translation id="1680919990519905526">Comprar con Google Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Pronto, verás lo que publica <ph name="SITE_NAME" />, así como contenido sobre ese sitio en Siguiendo. Los sitios y las búsquedas que sigues se guardan en tu Cuenta de Google. Puedes administrar lo que sigues en la configuración cuando quieras.</translation>
 <translation id="1702543251015153180">¿Quieres cambiar la configuración del Tema oscuro?</translation>
 <translation id="1702907158640575240">Navegador administrado</translation>
 <translation id="1710099199314114079">Cambiar o cerrar pestañas</translation>
@@ -1473,6 +1475,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8497242791509864205">Abrir opciones de orden</translation>
 <translation id="8497480609928300907">Explicación de la guía sobre privacidad</translation>
 <translation id="8497726226069778601">Aún no hay elementos para ver</translation>
+<translation id="8501423924927196358">Indicador de carga de las estadísticas de la página</translation>
 <translation id="8503559462189395349">Contraseñas de Chrome</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8505766168025405649">Consulta la notificación para conocer el estado de la descarga.</translation>

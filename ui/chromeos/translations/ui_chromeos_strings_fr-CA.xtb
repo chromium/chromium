@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Contexte</translation>
 <translation id="3272909651715601089">Impossible d'ouvrir « <ph name="PATH" /> »</translation>
 <translation id="3280431534455935878">Préparation en cours...</translation>
+<translation id="3280719573299097127">Vous êtes sur un réseau à connexion mesurée. La Synchronisation de fichiers a été suspendue.</translation>
 <translation id="3280987981688031357">Disque de vinyle</translation>
 <translation id="3290356915286466215">Non sécurisé</translation>
 <translation id="3291218047831493686">Connectez-vous à ce réseau pour modifier le paramètre de verrouillage de la carte SIM</translation>
@@ -633,6 +634,7 @@
 <translation id="5838451609423551646">Toutes les entrées ont été supprimées de la sélection.</translation>
 <translation id="5838825566232597749">Workman international américain</translation>
 <translation id="5845721951356578987">Infirmière</translation>
+<translation id="5858478190805449225">Le mode Économiseur de pile est activé. Réessayez lorsque le mode Économiseur de pile est désactivé.</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5861477046012235702">Joueur</translation>
 <translation id="5864471791310927901">Échec de la vérification DHCP</translation>
@@ -921,6 +923,7 @@
 <translation id="8087576439476816834">Téléchargement : <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Partagés avec moi</translation>
 <translation id="8116072619078571545">Eau glacée</translation>
+<translation id="8120392982188717723">Autoriser la synchronisation sur les réseaux mesurés</translation>
 <translation id="8124093710070495550">Problème de synchronisation</translation>
 <translation id="8128733386027980860">Anglais (R.-U.) avec clavier Dvorak</translation>
 <translation id="8137331602592933310">Le fichier « <ph name="FILENAME" /> » a été partagé avec vous. Vous ne pouvez pas le supprimer, car vous n'en êtes pas le propriétaire.</translation>

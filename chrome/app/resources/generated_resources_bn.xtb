@@ -429,6 +429,7 @@
 <translation id="1335929031622236846">আপনার ডিভাইস এনরোল করুন</translation>
 <translation id="133660899895084533">ব্লুটুথ পেরিফেরাল তথ্য ও ডেটা পড়ুন</translation>
 <translation id="1336902454946927954">আপনার 'নিরাপত্তা' কী লক করে রাখা হয়েছে, কারণ আপনার ফিঙ্গারপ্রিন্ট শনাক্ত করা যায়নি। এটি আনলক করতে, আপনার পিন এন্টার করুন।</translation>
+<translation id="1337066099824654054">প্রাসঙ্গিক সহায়তার সুবিধা বন্ধ আছে</translation>
 <translation id="1338631221631423366">পেয়ার করা হচ্ছে...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> এই অ্যাপ্লিকেশন খুলতে চায়।</translation>
 <translation id="1338950911836659113">মোছা হচ্ছে...</translation>
@@ -3460,6 +3461,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-এর ডেটা ২৪ ঘণ্টার মধ্যে মুছে যাবে</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> খুলবেন?</translation>
+<translation id="3740396996321407665">কিছু ফিচার থেকে প্রাসঙ্গিক সহায়তার সুবিধা পান</translation>
 <translation id="3740945083753997630">ডিসপ্লে ও টেক্সটের সাইজ ছোট করুন</translation>
 <translation id="3741056951918180319">যেকোনও সাইটে এক্সটেনশন ব্যবহার করার জন্য আপনি সবসময় সেটি ক্লিক করতে পারবেন</translation>
 <translation id="3742235229730461951">কোরীয়  কীবোর্ড লেআউট</translation>
@@ -6427,6 +6429,7 @@
 <translation id="6173623053897475761">আপনার পিনটি আবার লিখুন</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">একটি লিঙ্ক পান</translation>
+<translation id="6176701216248282552">প্রাসঙ্গিক সহায়তার সুবিধা চালু আছে। এইসব ফিচার, খোলা রয়েছে এমন পৃষ্ঠাগুলি Google-কে পাঠাতে পারবে।</translation>
 <translation id="6177412385419165772">সরানো হচ্ছে...</translation>
 <translation id="6178664161104547336">একটি সার্টিফিকেট বেছে নিন</translation>
 <translation id="6178682841350631965">আপনার সাইন-ইন ডেটা আপডেট করা হয়েছে</translation>

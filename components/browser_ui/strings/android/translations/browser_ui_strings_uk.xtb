@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5976059395673079613">"<ph name="PERMISSION" />" – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Керуйте доступом цього сайту до вашого пристрою</translation>
-<translation id="6018815681665454784">Очистити й скинути?</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6042308850641462728">Більше</translation>
 <translation id="6064125863973209585">Завершені завантаження</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6320088164292336938">Вібросигнал</translation>
 <translation id="6367753977865761591">Заблокувати вхід через сторонні сервіси для певного сайту.</translation>
-<translation id="6388207532828177975">Очистити та скинути</translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="640163077447496506">Строк дії закінчується сьогодні</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Заборонити сайтам доступ до даних і пристрою віртуальної реальності</translation>
 <translation id="6447842834002726250">Файли cookie</translation>
-<translation id="6467852467360539617">Очистити дані та скинути дозволи</translation>
 <translation id="6500423977866688905">Коли вікно завузьке, показувати мобільну версію</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="652937045869844725">Спробуйте дозволити сторонні файли cookie. Це зменшить рівень захисту, але функції сайту з більшою імовірністю працюватимуть.</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Скасувати вибір</translation>
 <translation id="7882806643839505685">Увімкнути звук для певного сайту.</translation>
 <translation id="789180354981963912">Блокувати сторонні файли cookie в анонімному режимі:</translation>
-<translation id="7895868624847501462">У результаті буде видалено всі локальні дані (зокрема файли cookie) і скинуто всі дозволи для домену <ph name="DOMAIN" /> та всіх сайтів у ньому</translation>
 <translation id="7940722705963108451">Нагадати мені</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сайт у групі сайту-власника <ph name="FPS_OWNER" />, який може переглядати ваші дії в групі}one{<ph name="FPS_MEMBERS_COUNT" /> сайт у групі сайту-власника <ph name="FPS_OWNER" />, який може переглядати ваші дії в групі}few{<ph name="FPS_MEMBERS_COUNT" /> сайти в групі сайту-власника <ph name="FPS_OWNER" />, які можуть переглядати ваші дії в групі}many{<ph name="FPS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="FPS_OWNER" />, які можуть переглядати ваші дії в групі}other{<ph name="FPS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="FPS_OWNER" />, які можуть переглядати ваші дії в групі}}</translation>
 <translation id="7986741934819883144">Виберіть контакт</translation>
-<translation id="7999064672810608036">Видалити всі локальні дані, зокрема файли cookie, і скинути всі дозволи для цього веб-сайту?</translation>
 <translation id="8007176423574883786">Вимкнено для цього пристрою</translation>
 <translation id="802154636333426148">Не вдалося завантажити</translation>
 <translation id="8042586301629853791">Порядок сортування:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Субтитри</translation>
 <translation id="8300705686683892304">Керуються додатком</translation>
 <translation id="8324158725704657629">Не запитувати знову</translation>
-<translation id="8338445138528827481">У результаті буде видалено всі локальні дані (зокрема файли cookie) і скинуто всі дозволи для сайту <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Ви можете наближати й віддаляти контент на сайтах, які відвідуєте</translation>
 <translation id="8372893542064058268">сайті.</translation>
 <translation id="8376384591331888629">Зокрема файли cookie третіх сторін на цьому сайті</translation>

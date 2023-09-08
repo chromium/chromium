@@ -200,11 +200,13 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1757857692711134412">Deaktiveret indtil solnedgang</translation>
 <translation id="1768366657309696705">Tastaturgenvejen <ph name="LAUNCHER_KEY_NAME" />+punktum er blevet ændret. Hvis du vil bruge Insert-knappen, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+Shift+Backspace.</translation>
 <translation id="1770726142253415363">Flyttet til række <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Åbn <ph name="NAME" /> for at konfigurere og tilpasse din enhed</translation>
 <translation id="1771761307086386028">Rul til højre</translation>
 <translation id="1774796056689732716">Kalender for <ph name="CURRENT_MONTH_YEAR" /> – <ph name="DATE" /> er valgt.</translation>
 <translation id="1775598828170459419">Viser <ph name="NUM_SHOWN_ITEMS" /> ud af <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Konfigurer visning af din telefons seneste billeder, medier og notifikationer</translation>
 <translation id="1787955149152357925">Fra</translation>
+<translation id="1797271123677381264">Glemt adgangskode</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="1815245884418711390">Slå hotspot til/fra. Hotspot er deaktiveret.</translation>
 <translation id="1816896987747843206">Dette giver alle apps og websites med kameratilladelse adgang til kameraet</translation>
@@ -1192,6 +1194,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5876666360658629066">Angiv forældrekode</translation>
 <translation id="5881540930187678962">Konfigurer Telefonstyring senere</translation>
 <translation id="5881663018261910378">Fra</translation>
+<translation id="5883017113634523865">Installer appen til <ph name="NAME" /> i Google Play for at se alle tilgængelige funktioner</translation>
 <translation id="5887954372087850114">Vinduet <ph name="WINDOW_TITLE" /> er tildelt til <ph name="DESK_TITLE" /> og er ikke tildelt nogen af alle de øvrige skriveborde</translation>
 <translation id="588817334757907802">Åbn filen i Chrome-browseren</translation>
 <translation id="5895138241574237353">Genstart</translation>

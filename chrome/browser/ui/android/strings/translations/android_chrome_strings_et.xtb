@@ -58,6 +58,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
 <translation id="1246905108078336582">Kas eemaldada soovitus lõikelaualt?</translation>
 <translation id="1258753120186372309">Google'i Doodle'i vigurlogo: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Nüüd näete jaotises „Jälgitav“ sisu, mis on pärit kanalilt <ph name="SITE_NAME" /> või puudutab seda kanalit. Jälgitavad saidid ja otsingud salvestatakse teie Google'i kontole. Saate oma jälgimisi igal ajal seadetes hallata.</translation>
 <translation id="1263231323834454256">Lugemisloend</translation>
 <translation id="1266864766717917324">Üksust <ph name="CONTENT_TYPE" /> ei õnnestunud jagada</translation>
 <translation id="1269129608791067105">Leiate oma ajaloo siit</translation>
@@ -136,6 +137,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="1671236975893690980">Allalaadimine on ootel …</translation>
 <translation id="1672586136351118594">Ära kuva uuesti</translation>
 <translation id="1680919990519905526">Ostke pilt Google Lensi abil <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Peagi näete jaotises „Jälgitav“ sisu, mis on pärit kanalilt <ph name="SITE_NAME" /> või puudutab seda kanalit. Jälgitavad saidid ja otsingud salvestatakse teie Google'i kontole. Saate oma jälgimisi igal ajal seadetes hallata.</translation>
 <translation id="1702543251015153180">Kas muuta tumeda teema seadeid?</translation>
 <translation id="1702907158640575240">Hallatud brauser</translation>
 <translation id="1710099199314114079">Vahelehtede vahetamine või sulgemine</translation>
@@ -1473,6 +1475,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8497242791509864205">Ava sortimisvalikud</translation>
 <translation id="8497480609928300907">Privaatsusjuhendi selgitus</translation>
 <translation id="8497726226069778601">Siin pole midagi vaadata ... veel</translation>
+<translation id="8501423924927196358">Lehe statistika laadimise näidik</translation>
 <translation id="8503559462189395349">Chrome'i paroolid</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8505766168025405649">Vaadake märguannet allalaadimise oleku kohta</translation>

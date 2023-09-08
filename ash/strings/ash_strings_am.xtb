@@ -200,11 +200,13 @@
 <translation id="1757857692711134412">ፀሐይ እስክትጠልቅ ድረስ ይጠፋል</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + የጊዜ የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። አስገባ ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + ቀያይር + የኋሊት መደምሰሻን ይጫኑ።</translation>
 <translation id="1770726142253415363">ወደ <ph name="ROW_NUMBER" /> ረድፍ፣ <ph name="COLUMN_NUMBER" /> አምድ ተንቀሳቅሷል።</translation>
+<translation id="1771458705381257690">መሣሪያዎን ለማዋቀር እና ለማበጀት <ph name="NAME" /> ይክፈቱ</translation>
 <translation id="1771761307086386028">ወደ ቀኝ ይሸብልሉ</translation>
 <translation id="1774796056689732716">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" />፣ በአሁኑ ጊዜ <ph name="DATE" /> ተመርጧል።</translation>
 <translation id="1775598828170459419">ከ<ph name="NUM_TOTAL_ITEMS" /> <ph name="NUM_SHOWN_ITEMS" /> በማሳየት ላይ</translation>
 <translation id="178347895271755507">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች ዕይታን ያዋቅሩ</translation>
 <translation id="1787955149152357925">አጥፋ</translation>
+<translation id="1797271123677381264">የይለፍ ቃል ረሱ</translation>
 <translation id="181103072419391116">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በየእርስዎ አስተዳዳሪ የሚተዳደር</translation>
 <translation id="1815245884418711390">መገናኛ ነጥብ ቀያይር። መገናኛ ነጥብ ጠፍቷል።</translation>
 <translation id="1816896987747843206">ይህ የካሜራ ፈቃድ ላላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የካሜራ መዳረሻ ይፈቅዳል</translation>
@@ -1192,6 +1194,7 @@
 <translation id="5876666360658629066">የወላጅ ኮድ ያስገቡ</translation>
 <translation id="5881540930187678962">የስልክ መገናኛን በኋላ ላይ ያቀናብሩ</translation>
 <translation id="5881663018261910378">ጠፍቷል</translation>
+<translation id="5883017113634523865">ሁሉንም የሚገኙ ባህሪያት ለመመልከት ለ<ph name="NAME" /> መተግበሪያውን ከGoogle Play ይጫኑ</translation>
 <translation id="5887954372087850114">መስኮት <ph name="WINDOW_TITLE" /> ለ<ph name="DESK_TITLE" /> የተመደበ እና ከሌሎች ሁሉም ዴስኮች ተመድቧል</translation>
 <translation id="588817334757907802">በChrome አሳሸ ውስጥ ፋይል ይክፈቱ</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>

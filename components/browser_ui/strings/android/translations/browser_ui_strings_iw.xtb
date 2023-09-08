@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
 <translation id="310297983047869047">לשקף הקודם</translation>
 <translation id="3109724472072898302">מכווץ</translation>
 <translation id="3114012059975132928">נגן וידאו</translation>
@@ -281,7 +282,6 @@
 <translation id="5975083100439434680">התרחקות</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">שליטה על הגישה של האתר הזה למכשיר שלך</translation>
-<translation id="6018815681665454784">לנקות ולאפס?</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6042308850641462728">עוד</translation>
 <translation id="6064125863973209585">הורדות שהושלמו</translation>
@@ -301,13 +301,11 @@
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6320088164292336938">רטט</translation>
 <translation id="6367753977865761591">חסימת הכניסה של צד שלישי לאתר ספציפי.</translation>
-<translation id="6388207532828177975">ניקוי ואיפוס</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="640163077447496506">התוקף יפוג היום</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">תיחסם האפשרות של אתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
-<translation id="6467852467360539617">ניקוי הנתונים ואיפוס ההרשאות</translation>
 <translation id="6500423977866688905">כשהחלון צר, אפשר לבקש תצוגת נייד.</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="652937045869844725">‏אפשר להפעיל קובצי cookie של צד שלישי. במצב כזה יש פחות הגנה, אבל סביר יותר שהתכונות באתר יפעלו</translation>
@@ -380,11 +378,9 @@
 <translation id="7846076177841592234">ביטול הבחירה</translation>
 <translation id="7882806643839505685">מתן הרשאה להשמעת צלילים באתר ספציפי.</translation>
 <translation id="789180354981963912">‏חסימת קובצי cookie של צד שלישי במצב פרטי:</translation>
-<translation id="7895868624847501462">‏הפעולה הזו תנקה את כל הנתונים המקומיים, כולל קובצי cookie, ותאפס את כל ההרשאות של <ph name="DOMAIN" /> ושל כל אתרי המשנה שלו</translation>
 <translation id="7940722705963108451">קבלת תזכורת</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{אתר אחד (<ph name="FPS_MEMBERS_COUNT" />) בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש לו הרשאה לראות את הפעילות שלך בקבוצה}one{<ph name="FPS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}two{<ph name="FPS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}other{<ph name="FPS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}}</translation>
 <translation id="7986741934819883144">בחירת איש קשר</translation>
-<translation id="7999064672810608036">‏בטוח שברצונך לנקות את כל הנתונים המקומיים, כולל קובצי Cookie, ולאפס את כל ההרשאות של האתר הזה?</translation>
 <translation id="8007176423574883786">כבוי בשביל המכשיר הזה</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8042586301629853791">מיון לפי:</translation>
@@ -408,7 +404,6 @@
 <translation id="8284326494547611709">כתוביות</translation>
 <translation id="8300705686683892304">מנוהלים על-ידי אפליקציה</translation>
 <translation id="8324158725704657629">לא לשאול שוב</translation>
-<translation id="8338445138528827481">‏הפעולה הזו תנקה את כל הנתונים המקומיים, כולל קובצי cookie, ותאפס את כל ההרשאות של <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">אפשר להגדיל או להקטין את התצוגה של האתרים שבהם מבקרים</translation>
 <translation id="8372893542064058268">אישור סנכרון ברקע לאתר ספציפי.</translation>
 <translation id="8376384591331888629">‏כולל קובצי cookie של צד שלישי באתר זה</translation>

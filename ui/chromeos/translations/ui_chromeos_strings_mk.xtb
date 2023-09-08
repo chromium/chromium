@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3272909651715601089">Не може да се отвори „<ph name="PATH" />“</translation>
 <translation id="3280431534455935878">Се подготвува</translation>
+<translation id="3280719573299097127">Поврзани сте на мрежа со ограничен интернет. Синхронизацијата на датотеки е паузирана.</translation>
 <translation id="3280987981688031357">Грамофонска плоча</translation>
 <translation id="3290356915286466215">Незаштитена</translation>
 <translation id="3291218047831493686">Поврзете се на мрежава за да ја промените поставката за заклучување на SIM-картичката</translation>
@@ -631,6 +632,7 @@
 <translation id="5838451609423551646">Ги отстранивте сите записи од изборот.</translation>
 <translation id="5838825566232597749">САД, меѓународна Workman</translation>
 <translation id="5845721951356578987">Медицинска сестра</translation>
+<translation id="5858478190805449225">Режимот „Штедач на батерија“ е вклучен. Обидете се повторно кога режимот „Штедач на батерија“ е исклучен.</translation>
 <translation id="5860491529813859533">Вклучи</translation>
 <translation id="5861477046012235702">Гејмер</translation>
 <translation id="5864471791310927901">Барањето за DHCP не успеа.</translation>
@@ -919,6 +921,7 @@
 <translation id="8087576439476816834">Преземање, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Споделено со мене</translation>
 <translation id="8116072619078571545">Вода со мраз</translation>
+<translation id="8120392982188717723">Дозволете синхронизација на мрежи со ограничен интернет</translation>
 <translation id="8124093710070495550">Проблем со синхронизација</translation>
 <translation id="8128733386027980860">англиски (САД) со тастатура Dvorak</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ е споделен со вас. Не може да го избришете затоа што не го поседувате.</translation>

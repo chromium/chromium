@@ -7,12 +7,12 @@
 <translation id="1333745675627230582">玩 Chrome 恐龙游戏</translation>
 <translation id="1352919863522755794">Google 密码管理工具无法检查您的密码。请尝试检查您的互联网连接。</translation>
 <translation id="1407843355326180937">登录此网站和 Chrome 即可获取您在所有设备上保存的书签及其他信息。</translation>
+<translation id="1436059927646026729">在 Chrome 中打开“我最近打开的标签页”</translation>
 <translation id="1462727070346936664">登录即可充分利用 Chrome。</translation>
 <translation id="1479202195792305274">您需要先登录 Google 账号才能使用 Chrome 的密码检查功能。</translation>
 <translation id="1491435845014430217">开启“在您关闭 Chrome 时锁定无痕式标签页”。</translation>
 <translation id="1493827051843127077">将 Chrome 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="1504372625950710826">Chrome 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
-<translation id="1511320244449497906">您已登录，且正在将您的数据同步到由 <ph name="DOMAIN" /> 管理的账号。此网域的管理员现在可以专门针对该账号设置用户规范，这可能会改变 Chrome 的行为。</translation>
 <translation id="1516692594929310090">打开 Chrome 标签页网格。</translation>
 <translation id="1526327845902180576">处于开启状态时：
 <ph name="BEGIN_INDENT" />  • 可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能获享更好的体验。<ph name="END_INDENT" />
@@ -72,6 +72,7 @@
 <translation id="3655656110921623717">这意味着 Chrome 每次都会对移动网站发出请求。</translation>
 <translation id="3720541637541300822">在您关闭 Chrome 时锁定无痕式标签页</translation>
 <translation id="3741995255368156336">打开 Chrome 阅读清单。</translation>
+<translation id="3744018071945602754">在 Chrome 中管理密码</translation>
 <translation id="3827545470516145620">此设备正在为您提供标准安全保护</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
 <translation id="3901001113120561395">最大限度利用 Chrome。</translation>
@@ -83,6 +84,7 @@
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，并在此设备上保存了书签、密码及其他设置。</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
+<translation id="4453284704333523777">管理 Chrome 设置</translation>
 <translation id="4508370294876102450">从任意应用内打开 Chrome</translation>
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
 <translation id="4633328489441962921">Chrome 无法检查是否有更新</translation>
@@ -119,6 +121,7 @@
 <translation id="571296537125272375">已离线，Chrome 无法检查是否有更新</translation>
 <translation id="5716154293141027663">每当您点按其他应用中的链接时，系统都会使用 Chrome 打开相应链接</translation>
 <translation id="5808435672482059465">查看您的 Chrome 历史记录</translation>
+<translation id="589695154992054845">在 Chrome 中打开密码管理工具。</translation>
 <translation id="5998675059699164418">根据贵单位的要求，您必须登录才能使用 Chrome。</translation>
 <translation id="6054613632208573261">默认使用 Chrome</translation>
 <translation id="6063091872902370735">允许登录 Chrome</translation>
@@ -166,6 +169,7 @@
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="7897703007638178753">查看最近使用 Chrome 打开的标签页</translation>
 <translation id="7925119591961387184">选择“Chrome”。</translation>
+<translation id="7933491483529363150">在 Chrome 中打开“我最近打开的标签页”。</translation>
 <translation id="8022947259858476807">默认使用 Chrome 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="804638182476029347">开启 Chrome 通知功能后才能接收降价提醒</translation>
 <translation id="81358522153858150">Chrome 现在支持为您的受管理账号设置用户规范</translation>
@@ -207,6 +211,7 @@
   • 如果 Chrome 崩溃了，崩溃事件的相关详情可能会包含一些个人信息。
 
   • 如果您开启了同步功能，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">在 Chrome 中打开“设置”。</translation>
 <translation id="9112744793181547300">将 Chrome 设为默认浏览器？</translation>
 <translation id="9122931302567044771">这意味着 Chrome 每次都会对桌面版网站发出请求。</translation>
 <translation id="9181628561061032322">打开最近使用 Chrome 打开的标签页。</translation>

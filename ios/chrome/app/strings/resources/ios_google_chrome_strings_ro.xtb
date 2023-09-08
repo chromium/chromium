@@ -12,7 +12,6 @@
 <translation id="1491435845014430217">Activează Blochează filele incognito când închizi Chrome.</translation>
 <translation id="1493827051843127077">Setează Chrome ca browser prestabilit pentru a sincroniza filele, parolele și informațiile de plată pe toate dispozitivele</translation>
 <translation id="1504372625950710826">Chrome nu a putut căuta actualizări. Verifică-ți conexiunea la internet.</translation>
-<translation id="1511320244449497906">Te-ai conectat și datele tale se sincronizează cu un cont gestionat de <ph name="DOMAIN" />, în care administratorul acestuia poate acum să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chrome.</translation>
 <translation id="1516692594929310090">Deschide Grila de file Chrome.</translation>
 <translation id="1526327845902180576">Când opțiunea este activă:
 <ph name="BEGIN_INDENT" /> • contribui la îmbunătățirea browserului Chrome pentru cei care-l folosesc în mod similar cu tine.<ph name="END_INDENT" />
@@ -73,6 +72,7 @@ De reținut:
 <translation id="3655656110921623717">Aceasta înseamnă că Chrome va solicita de fiecare dată site-ul mobil.</translation>
 <translation id="3720541637541300822">Blochează filele incognito când închizi Chrome</translation>
 <translation id="3741995255368156336">Deschide Lista de lecturi Chrome.</translation>
+<translation id="3744018071945602754">Gestionează parolele în Chrome</translation>
 <translation id="3827545470516145620">Beneficiezi de protecție de securitate standard pe acest dispozitiv</translation>
 <translation id="384394811301901750">Momentan, Google Chrome nu poate folosi camera foto</translation>
 <translation id="3901001113120561395">Profită din plin de Chrome</translation>
@@ -87,6 +87,7 @@ De reținut:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> folosea Chrome și marcajele, parolele și alte setări ale sale au rămas pe acest dispozitiv.</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4251174643044751591">Deschide pagina cu setări pentru metodele de plată în Chrome.</translation>
+<translation id="4453284704333523777">Gestionează setările Chrome</translation>
 <translation id="4508370294876102450">Deschide Chrome din orice aplicație</translation>
 <translation id="4523886039239821078">Unele suplimente determină blocarea browserului Chrome. Dezinstalează:</translation>
 <translation id="4633328489441962921">Chrome nu poate căuta actualizări</translation>
@@ -123,6 +124,7 @@ De reținut:
 <translation id="571296537125272375">Offline, Chrome nu poate căuta actualizări</translation>
 <translation id="5716154293141027663">Deschide Chrome când atingi linkuri în alte aplicații</translation>
 <translation id="5808435672482059465">Vezi istoricul Chrome</translation>
+<translation id="589695154992054845">Deschide Managerul de parole în Chrome.</translation>
 <translation id="5998675059699164418">Organizația îți solicită să te conectezi pentru a folosi Chrome.</translation>
 <translation id="6054613632208573261">Folosește Chrome în mod prestabilit</translation>
 <translation id="6063091872902370735">Permite conectarea la Chrome</translation>
@@ -215,6 +217,7 @@ De reținut
   • Dacă Chrome se blochează, detaliile despre blocare pot include unele informații cu caracter personal.
 
   • Dacă activezi sincronizarea, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Deschide Setările în Chrome.</translation>
 <translation id="9112744793181547300">Setezi Chrome ca browser prestabilit?</translation>
 <translation id="9122931302567044771">Aceasta înseamnă că Chrome va solicita de fiecare dată versiunea pentru desktop a site-urilor.</translation>
 <translation id="9181628561061032322">Deschide filele recente din Chrome.</translation>

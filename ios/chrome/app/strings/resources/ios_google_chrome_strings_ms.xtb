@@ -7,12 +7,12 @@
 <translation id="1333745675627230582">Main Permainan Dino Chrome</translation>
 <translation id="1352919863522755794">Google Password Manager tidak dapat menyemak kata laluan anda. Cuba periksa sambungan Internet anda.</translation>
 <translation id="1407843355326180937">Log masuk ke laman ini dan Chrome untuk mendapatkan penanda halaman anda dan banyak lagi pada semua peranti anda.</translation>
+<translation id="1436059927646026729">Buka Tab Terbaharu Saya dalam Chrome</translation>
 <translation id="1462727070346936664">Log masuk untuk memanfaatkan Chrome sepenuhnya.</translation>
 <translation id="1479202195792305274">Chrome boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
 <translation id="1491435845014430217">Hidupkan “Kunci Tab Inkognito Apabila Anda Menutup Chrome”.</translation>
 <translation id="1493827051843127077">Tetapkan Chrome sebagai penyemak imbas lalai untuk menyegerakkan tab, kata laluan dan maklumat pembayaran anda pada semua peranti anda</translation>
 <translation id="1504372625950710826">Chrome tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
-<translation id="1511320244449497906">Anda telah log masuk dan menyegerakkan data anda dengan akaun yang diurus oleh <ph name="DOMAIN" />. Kini pentadbirnya boleh menetapkan dasar pengguna khusus untuk akaun tersebut yang boleh mengubah gelagat Chrome.</translation>
 <translation id="1516692594929310090">Membuka Grid Tab Chrome.</translation>
 <translation id="1526327845902180576">Apabila dihidupkan:
 <ph name="BEGIN_INDENT" />  • Bantu jadikan Chrome lebih baik untuk orang yang menggunakan ciri ini seperti anda.<ph name="END_INDENT" />
@@ -73,6 +73,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="3655656110921623717">Ini bermakna Chrome akan meminta laman mudah alih setiap masa.</translation>
 <translation id="3720541637541300822">Kunci Tab Inkognito Apabila Anda Menutup Chrome</translation>
 <translation id="3741995255368156336">Membuka Senarai Bacaan Chrome.</translation>
+<translation id="3744018071945602754">Urus Kata Laluan dalam Chrome</translation>
 <translation id="3827545470516145620">Anda mendapat perlindungan keselamatan standard pada peranti ini</translation>
 <translation id="384394811301901750">Google Chrome tidak dapat menggunakan kamera anda sekarang</translation>
 <translation id="3901001113120561395">Manfaatkan Chrome sepenuhnya.</translation>
@@ -87,6 +88,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> menggunakan Chrome dan membiarkan penanda halaman, kata laluan dan tetapan lain pada peranti ini.</translation>
 <translation id="424864128008805179">Log keluar daripada Chrome?</translation>
 <translation id="4251174643044751591">Buka Halaman Tetapan Kaedah Pembayaran dalam Chrome.</translation>
+<translation id="4453284704333523777">Urus Tetapan Chrome</translation>
 <translation id="4508370294876102450">Buka Chrome Daripada Mana-mana Apl</translation>
 <translation id="4523886039239821078">Beberapa tambahan menyebabkan Chrome ranap. Sila nyahpasang:</translation>
 <translation id="4633328489441962921">Chrome tidak dapat menyemak kemas kini</translation>
@@ -123,6 +125,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="571296537125272375">Luar Talian, Chrome tidak dapat menyemak kemaskinian</translation>
 <translation id="5716154293141027663">Buka Chrome pada bila-bila masa anda mengetik pautan dalam apl lain</translation>
 <translation id="5808435672482059465">Lihat Sejarah Chrome Anda</translation>
+<translation id="589695154992054845">Buka Password Manager dalam Chrome.</translation>
 <translation id="5998675059699164418">Organisasi anda menghendaki anda log masuk untuk menggunakan Chrome.</translation>
 <translation id="6054613632208573261">Gunakan Chrome secara Lalai</translation>
 <translation id="6063091872902370735">Benarkan Log Masuk Chrome</translation>
@@ -173,6 +176,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="7855730255114109580">Google Chrome adalah yang terkini</translation>
 <translation id="7897703007638178753">Lihat Tab Terbaharu Chrome</translation>
 <translation id="7925119591961387184">Pilih "Chrome".</translation>
+<translation id="7933491483529363150">Buka Tab Terbaharu Saya dalam Chrome.</translation>
 <translation id="8022947259858476807">Gunakan Chrome secara lalai untuk membuka pautan, mencari daripada widget dan melengkapkan kata laluan secara automatik dalam apl lain</translation>
 <translation id="804638182476029347">Benarkan pemberitahuan Chrome untuk menerima makluman penurunan harga</translation>
 <translation id="81358522153858150">Kini Chrome menyokong dasar pengguna untuk akaun terurus anda</translation>
@@ -215,6 +219,7 @@ Perkara yang perlu dipertimbangkan:
   • Jika Chrome ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
 
   • Jika anda menghidupkan penyegerakan, metrik juga mungkin merangkumi maklumat tentang URL yang anda lawati.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Buka Tetapan dalam Chrome.</translation>
 <translation id="9112744793181547300">Tetapkan Chrome sebagai Penyemak Imbas Lalai?</translation>
 <translation id="9122931302567044771">Ini bermakna Chrome akan meminta laman desktop setiap masa.</translation>
 <translation id="9181628561061032322">Membuka Tab Terbaharu Chrome.</translation>

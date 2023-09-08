@@ -305,6 +305,7 @@
 <translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">ファイルを開けません</translation>
 <translation id="2718352093833049315">Wi-Fi接続時のみ</translation>
+<translation id="2738375676495545665">最新情報を非表示</translation>
 <translation id="2747003861858887689">前の項目</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> をフォローしました</translation>
 <translation id="2762000892062317888">たった今</translation>
@@ -486,8 +487,10 @@
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}}</translation>
 <translation id="3709582977625132201">未読にする</translation>
 <translation id="371230970611282515">危険なイベントの発生を予測して警告します。</translation>
+<translation id="371398631992790800">ブックマークを非表示</translation>
 <translation id="37207012422556617">急上昇ワード</translation>
 <translation id="3740397331642243698">入力された URL を Google Chrome のシークレット モードで開きます。</translation>
+<translation id="374357899112510277">ダウンロードを非表示</translation>
 <translation id="3762232513783804601">iPad 向けの設計</translation>
 <translation id="3768725474733206671">最後に閉じたタブを開く</translation>
 <translation id="3771033907050503522">シークレットタブ</translation>
@@ -838,6 +841,7 @@
 <translation id="581659025233126501">同期をオンにする</translation>
 <translation id="5817176759448082654">パスワード チェックアップ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="5827650163984030263">パスワード マネージャーを非表示</translation>
 <translation id="5833643789537100742">後で Chrome が自動入力できるように、パスワード、お支払い方法、住所を保存します。</translation>
 <translation id="5834415013958049700">コピーしたレンズの画像</translation>
 <translation id="5844284118433003733">ログイン中は、このデータを Google アカウントにリンクして、すべての Google サービスで保護します（セキュリティ インシデント後に Gmail で保護を強化するなど）。</translation>
@@ -1303,6 +1307,7 @@
 <translation id="8286036467436129157">ログイン</translation>
 <translation id="8299417921174340354">パスワードを使用するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="8299613349954694191">ウェブをプライベート モードで閲覧するにはシークレット タブを開きます。</translation>
+<translation id="8311853334103696030">価格のトラッキングを非表示</translation>
 <translation id="8316944564970119719">サイトとパスワードを入力し、保存する</translation>
 <translation id="8319076807703933069">新しく検索</translation>
 <translation id="8328777765163860529">すべて閉じる</translation>
@@ -1354,6 +1359,7 @@
 <translation id="8588404856427128947">オフ</translation>
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="8605219856220328675">タブを閉じる。</translation>
+<translation id="8613883225817609844">最近使ったタブを非表示</translation>
 <translation id="8620640915598389714">編集</translation>
 <translation id="8626393685701737946">[設定] &gt; [コンテンツの設定] で、デフォルトのサイトビューをデスクトップに変更できます</translation>
 <translation id="8636825310635137004">他のデバイスと同じタブを使用するには、同期を有効にします。</translation>
@@ -1453,6 +1459,7 @@
 <translation id="9120217828624527905">ページ全体の翻訳に切り替え</translation>
 <translation id="9124387962554796433">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
 <translation id="9137526406337347448">Google サービス</translation>
+<translation id="9144931028079269381">リーディング リストを非表示</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
 <translation id="9157836665414082580">ダイアログを表示しない</translation>
 <translation id="9162432979321511934">[パスワードを自動入力] をオンにする</translation>

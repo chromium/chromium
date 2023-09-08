@@ -200,11 +200,13 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1757857692711134412">Af tot sonsondergang</translation>
 <translation id="1768366657309696705">Die kortpadsleutel <ph name="LAUNCHER_KEY_NAME" /> + punt het verander. Om die Insert-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + Shift + Backspace druk.</translation>
 <translation id="1770726142253415363">Geskuif na ry <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Maak <ph name="NAME" /> oop om jou toestel op te stel en te pasmaak</translation>
 <translation id="1771761307086386028">Rollees regs</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> is tans gekies.</translation>
 <translation id="1775598828170459419">Wys tans <ph name="NUM_SHOWN_ITEMS" /> van <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Stel jou foon op om jou onlangse foto’s, media en kennisgewings te bekyk</translation>
 <translation id="1787955149152357925">Af</translation>
+<translation id="1797271123677381264">Wagwoord vergeet</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="1815245884418711390">Wissel warmkol. Warmkol is af.</translation>
 <translation id="1816896987747843206">Dit gee kameratoegang vir alle apps en webwerwe met die kameratoestemming</translation>
@@ -1193,6 +1195,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5876666360658629066">Voer ouerkode in</translation>
 <translation id="5881540930187678962">Stel Foonsentrum later op</translation>
 <translation id="5881663018261910378">Af</translation>
+<translation id="5883017113634523865">Installeer die app vir <ph name="NAME" /> vanaf Google Play om alle beskikbare kenmerke te sien</translation>
 <translation id="5887954372087850114">Venster <ph name="WINDOW_TITLE" /> is toegewys aan <ph name="DESK_TITLE" /> en is aan geen ander lessenaars toegewys nie.</translation>
 <translation id="588817334757907802">Maak lêer in Chrome-blaaier oop</translation>
 <translation id="5895138241574237353">Herbegin</translation>

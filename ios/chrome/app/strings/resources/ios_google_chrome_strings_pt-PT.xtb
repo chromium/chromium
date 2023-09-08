@@ -7,12 +7,12 @@
 <translation id="1333745675627230582">Jogar Chrome Dino</translation>
 <translation id="1352919863522755794">O Gestor de Palavras-passe da Google não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="1407843355326180937">Inicie sessão neste site e no Chrome para obter os seus marcadores e muito mais em todos os seus dispositivos.</translation>
+<translation id="1436059927646026729">Abrir separador mais recente no Chrome</translation>
 <translation id="1462727070346936664">Inicie sessão para tirar o máximo partido do Chrome.</translation>
 <translation id="1479202195792305274">O Chrome pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="1491435845014430217">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chrome".</translation>
 <translation id="1493827051843127077">Defina o Chrome como a predefinição para sincronizar os separadores, as palavras-chave e as informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">O Chrome não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
-<translation id="1511320244449497906">Tem sessão iniciada e está a sincronizar os seus dados com uma conta gerida pelo domínio <ph name="DOMAIN" />, onde o respetivo administrador pode agora definir Políticas do Utilizador específicas para essa conta que podem alterar o comportamento do Chrome.</translation>
 <translation id="1516692594929310090">Abre a grelha de separadores do Chrome.</translation>
 <translation id="1526327845902180576">Quando a opção está ativada:
 <ph name="BEGIN_INDENT" /> • Ajude a melhorar o Chrome para as pessoas que o usam de forma semelhante à sua.<ph name="END_INDENT" />
@@ -176,6 +176,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="7897703007638178753">Veja os separadores recentes do Chrome</translation>
 <translation id="7925119591961387184">Selecione "Chrome".</translation>
+<translation id="7933491483529363150">Abra o separador mais recente no Chrome.</translation>
 <translation id="8022947259858476807">Utilize o Chrome por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
 <translation id="804638182476029347">Permita que as notificações do Chrome recebam alertas de descida do preço</translation>
 <translation id="81358522153858150">O Chrome suporta agora Políticas do Utilizador para a sua conta gerida</translation>

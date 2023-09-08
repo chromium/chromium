@@ -282,7 +282,6 @@
 <translation id="5975083100439434680">Kicsinyítés</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">A webhelynek az eszközhöz való hozzáférésének vezérlése</translation>
-<translation id="6018815681665454784">Elvégzi a törlést és a visszaállítást?</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6042308850641462728">Továbbiak</translation>
 <translation id="6064125863973209585">Befejezett letöltések</translation>
@@ -302,13 +301,11 @@
 <translation id="6295158916970320988">Az összes webhely</translation>
 <translation id="6320088164292336938">Rezgés</translation>
 <translation id="6367753977865761591">Letilthatja a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
-<translation id="6388207532828177975">Törlés és visszaállítás</translation>
 <translation id="6398765197997659313">Kilépés a teljes képernyős módból</translation>
 <translation id="640163077447496506">Ma jár le</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">A virtuálisvalóság-eszközök és -adatok használatának letiltása a webhelyek számára</translation>
 <translation id="6447842834002726250">Cookie-k</translation>
-<translation id="6467852467360539617">Adatok törlése és engedélyek visszaállítása</translation>
 <translation id="6500423977866688905">Ha az ablak keskeny, kérjen mobilnézetet</translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="652937045869844725">Próbálja meg engedélyezni a harmadik féltől származó cookie-kat, ami kevesebb védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel fognak működni.</translation>
@@ -381,11 +378,9 @@
 <translation id="7846076177841592234">Kijelölés törlése</translation>
 <translation id="7882806643839505685">Egy adott webhely hangjának engedélyezése.</translation>
 <translation id="789180354981963912">Harmadik felektől származó cookie-k letiltása Inkognitó módban:</translation>
-<translation id="7895868624847501462">A művelet törli az összes helyi adatot, beleértve a cookie-kat is, és visszaállítja a(z) <ph name="DOMAIN" /> és az alá tartozó webhelyek összes engedélyét</translation>
 <translation id="7940722705963108451">Emlékeztessen</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{A(z) <ph name="FPS_OWNER" /> webhelycsoportjában <ph name="FPS_MEMBERS_COUNT" /> webhely található, amely láthatja az Ön által a csoportban végzett tevékenységeket}other{A(z) <ph name="FPS_OWNER" /> webhelycsoportjában <ph name="FPS_MEMBERS_COUNT" /> webhely található, amelyek láthatják az Ön által a csoportban végzett tevékenységeket}}</translation>
 <translation id="7986741934819883144">Válasszon ki egy névjegyet</translation>
-<translation id="7999064672810608036">Biztosan törli a webhellyel kapcsolatos összes helyi adatot (a cookie-kkal együtt), és visszaállítja az összes engedélyt?</translation>
 <translation id="8007176423574883786">Kikapcsolva ezen az eszközön</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
 <translation id="8042586301629853791">Rendezés:</translation>
@@ -409,7 +404,6 @@
 <translation id="8284326494547611709">Feliratok</translation>
 <translation id="8300705686683892304">Alkalmazás által kezelt</translation>
 <translation id="8324158725704657629">Ne jelenjen meg többé</translation>
-<translation id="8338445138528827481">A művelet törli az összes helyi adatot, beleértve a cookie-kat is, és visszaállítja a(z) <ph name="ORIGIN" /> összes engedélyét</translation>
 <translation id="8362795839483915693">A felkeresett webhelyeket felnagyíthatja és lekicsinyítheti</translation>
 <translation id="8372893542064058268">Háttérben történő szinkronizálás engedélyezése adott webhely esetében.</translation>
 <translation id="8376384591331888629">Az ezen a webhelyen található, harmadik felektől származó cookie-k is</translation>

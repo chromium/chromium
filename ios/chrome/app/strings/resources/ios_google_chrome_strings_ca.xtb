@@ -12,7 +12,6 @@
 <translation id="1491435845014430217">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chrome.</translation>
 <translation id="1493827051843127077">Configura Chrome com a navegador predeterminat per sincronitzar les pestanyes, les contrasenyes i la informació de pagament de tots els dispositius</translation>
 <translation id="1504372625950710826">Chrome no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
-<translation id="1511320244449497906">Tens la sessió iniciada i sincronitzes les teves dades amb un compte gestionat per <ph name="DOMAIN" />. L'administrador d'aquest compte ara pot definir polítiques dels usuaris específiques del compte que poden canviar el comportament de Chrome.</translation>
 <translation id="1516692594929310090">Obre la quadrícula de pestanyes de Chrome.</translation>
 <translation id="1526327845902180576">Quan aquesta opció està activada:
 <ph name="BEGIN_INDENT" />  • Ajuda a millorar Chrome per a les persones que el fan servir igual que tu.<ph name="END_INDENT" />
@@ -72,6 +71,7 @@ Aspectes que cal tenir en compte:
 <translation id="3655656110921623717">Això vol dir que Chrome sol·licitarà el lloc web per a mòbils cada vegada.</translation>
 <translation id="3720541637541300822">Bloqueja les pestanyes d'incògnit després de tancar Chrome</translation>
 <translation id="3741995255368156336">Obre la llista de lectura de Chrome.</translation>
+<translation id="3744018071945602754">Gestiona les contrasenyes a Chrome</translation>
 <translation id="3827545470516145620">Tindràs protecció de seguretat estàndard en aquest dispositiu</translation>
 <translation id="384394811301901750">Google Chrome no pot utilitzar la càmera en aquest moment</translation>
 <translation id="3901001113120561395">Treu el màxim profit de Chrome.</translation>
@@ -86,6 +86,7 @@ Aspectes que cal tenir en compte:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> ha utilitzat Chrome en aquest dispositiu i hi ha deixat adreces d'interès, contrasenyes i altres opcions de configuració.</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4251174643044751591">Obre la pàgina de configuració de les formes de pagament a Chrome.</translation>
+<translation id="4453284704333523777">Gestiona la configuració de Chrome</translation>
 <translation id="4508370294876102450">Obre Chrome des de qualsevol aplicació</translation>
 <translation id="4523886039239821078">Alguns complements fan que Chrome falli. Desinstal·la'ls.</translation>
 <translation id="4633328489441962921">Chrome no pot cercar actualitzacions</translation>
@@ -120,6 +121,7 @@ Aspectes que cal tenir en compte:
 <translation id="571296537125272375">Sense connexió; Chrome no pot cercar actualitzacions</translation>
 <translation id="5716154293141027663">Obre Chrome cada vegada que toquis enllaços en altres aplicacions</translation>
 <translation id="5808435672482059465">Mostra l'historial de Chrome</translation>
+<translation id="589695154992054845">Obre el gestor de contrasenyes a Chrome.</translation>
 <translation id="5998675059699164418">La teva organització requereix que iniciïs la sessió per utilitzar Chrome.</translation>
 <translation id="6054613632208573261">Utilitza Chrome de manera predeterminada</translation>
 <translation id="6063091872902370735">Permet l'inici de sessió a Chrome</translation>
@@ -209,6 +211,7 @@ Aspectes que cal tenir en compte:
 <ph name="BEGIN_INDENT" />  • S'envia informació a Google sobre l'ús que fas de Chrome, però no es relaciona amb tu.
   • Si Chrome falla, els detalls sobre el bloqueig poden incloure informació personal.
   • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Obre la configuració a Chrome.</translation>
 <translation id="9112744793181547300">Vols establir Chrome com a predeterminat?</translation>
 <translation id="9122931302567044771">Això vol dir que Chrome sol·licitarà el lloc web per a ordinadors cada vegada.</translation>
 <translation id="9181628561061032322">Obre les pestanyes recents de Chrome.</translation>

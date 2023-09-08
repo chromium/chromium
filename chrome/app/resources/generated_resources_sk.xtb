@@ -4181,6 +4181,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4322394346347055525">Zatvoriť ostatné karty</translation>
 <translation id="4324577459193912240">Súbor nie je úplný</translation>
 <translation id="4325237902968425115">Prebieha odinštalovanie aplikácie <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4325433082696797523">Priestor a napájanie</translation>
 <translation id="4326146840124313313">Najúčinnejšie zabezpečenie Chromu vás viac chráni pred nebezpečnými webmi, stiahnutými súbormi a rozšíreniami</translation>
 <translation id="4326484226728068206">Položky vo vašom košíku so zľavou <ph name="DISCOUNT_TEXT" /> od predajcu <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) zobrazené <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Voda s ľadom</translation>
@@ -5164,6 +5165,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5146896637028965135">Hlas systému</translation>
 <translation id="5147992672778369947">Používajte odporúčané heslo</translation>
 <translation id="5148277445782867161">Služby určovania polohy Google odhadujú polohu vášho zariadenia pomocou zdrojov, ako sú Wi-Fi a mobilné siete.</translation>
+<translation id="5148285448107770349">Heslo musí obsahovať aspoň osem znakov</translation>
 <translation id="5150254825601720210">Netscape – názov servera SSL certifikátu</translation>
 <translation id="5151354047782775295">Uvoľnite miesto na disku, inak môže dôjsť k automatickému odstráneniu vybraných údajov</translation>
 <translation id="5153234146675181447">Odstránenie telefónu</translation>
