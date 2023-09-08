@@ -57,11 +57,6 @@ class VideoBitstream final {
   bool HasKeyFrameLessResolutionChange() const {
     return metadata_.has_keyframeless_resolution_change;
   }
-  // Returns true if the sequence is meant to verify the show-existing-frame VP9
-  // functionality.
-  bool IsVP9ShowExistingFrameBistream() const {
-    return metadata_.is_vp9_show_existing_frame_bitstream;
-  }
 
   // Set the default path to the test video data.
   static void SetTestDataPath(const base::FilePath& test_data_path);
@@ -81,7 +76,6 @@ class VideoBitstream final {
     gfx::Size resolution;
     std::vector<std::string> frame_checksums;
     bool has_keyframeless_resolution_change;
-    bool is_vp9_show_existing_frame_bitstream;
   };
 
   VideoBitstream(std::unique_ptr<base::MemoryMappedFile> memory_mapped_file,

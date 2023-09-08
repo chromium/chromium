@@ -191,11 +191,6 @@ std::unique_ptr<VideoBitstream> VideoBitstream::Create(
       [filepath = data_file_path.value()](const char* substr) {
         return base::Contains(base::ToLowerASCII(filepath), substr);
       });
-
-  // Decide |is_vp9_show_existing_frame_bitstream| by looking at the file name.
-  metadata.is_vp9_show_existing_frame_bitstream = base::Contains(
-      base::ToLowerASCII(data_file_path.value()), "show_existing_frame");
-
   return base::WrapUnique(
       new VideoBitstream(std::move(memory_mapped_file), metadata));
 }

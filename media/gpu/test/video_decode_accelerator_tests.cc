@@ -485,10 +485,7 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
 // Flush the decoder somewhere mid-stream, then continue as normal. This is a
 // contrived use case to exercise important V4L2 stateful areas.
 TEST_F(VideoDecoderTest, FlushMidStream) {
-  // Skip this test on VP9 bitstreams exercising the show_existing_frame flag.
-  // This is because we cannot show frames from "before" the flush, see
-  // b/298028324.
-  if (g_env->Video()->IsVP9ShowExistingFrameBistream()) {
+  if (!base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
     GTEST_SKIP();
   }
 
