@@ -702,9 +702,6 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<NetworkFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<BluetoothFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<AccessibilityFeaturePodController>(this));
-  if (base::FeatureList::IsEnabled(features::kFocusMode)) {
-    AddFeaturePodItem(std::make_unique<FocusModeFeaturePodController>(this));
-  }
   AddFeaturePodItem(std::make_unique<QuietModeFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<RotationLockFeaturePodController>());
   AddFeaturePodItem(std::make_unique<PrivacyScreenFeaturePodController>());

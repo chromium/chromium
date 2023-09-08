@@ -36,7 +36,7 @@ class ASH_EXPORT FocusModeDetailedViewController
 
   // This is the view being controlled, which contains all the Focus Mode
   // settings and controls.
-  raw_ptr<FocusModeDetailedView> detailed_view_ = nullptr;
+  raw_ptr<FocusModeDetailedView, DanglingUntriaged> detailed_view_ = nullptr;
 };
 
 }  // namespace ash

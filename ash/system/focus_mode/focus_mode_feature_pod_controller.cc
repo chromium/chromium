@@ -24,6 +24,8 @@ namespace ash {
 FocusModeFeaturePodController::FocusModeFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
+  CHECK(features::IsQsRevampEnabled());
+  CHECK(features::IsFocusModeEnabled());
   FocusModeController::Get()->AddObserver(this);
 }
 
@@ -32,27 +34,24 @@ FocusModeFeaturePodController::~FocusModeFeaturePodController() {
 }
 
 FeaturePodButton* FocusModeFeaturePodController::CreateButton() {
-  CHECK(!button_);
-  CHECK(!features::IsQsRevampEnabled());
-  std::unique_ptr<FeaturePodButton> button =
-      std::make_unique<FeaturePodButton>(/*controller=*/this);
-  button_ = button.get();
-  button_->ShowDetailedViewArrow();
-  button_->SetVectorIcon(kCaptureModeIcon);
-  button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE));
-  button_->icon_button()->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE));
-  OnFocusModeChanged(FocusModeController::Get()->in_focus_session());
-  return button.release();
+  NOTREACHED();
+  return nullptr;
 }
 
 std::unique_ptr<FeatureTile> FocusModeFeaturePodController::CreateTile(
     bool compact) {
-  CHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FocusModeFeaturePodController::OnLabelPressed,
                           weak_factory_.GetWeakPtr()));
   tile_ = tile.get();
+
+  const bool target_visibility =
+      !Shell::Get()->session_controller()->IsUserSessionBlocked();
+  tile_->SetVisible(target_visibility);
+  if (target_visibility) {
+    TrackVisibilityUMA();
+  }
+
   tile_->SetIconClickable(true);
   tile_->SetIconClickCallback(
       base::BindRepeating(&FocusModeFeaturePodController::OnIconPressed,
@@ -82,14 +81,8 @@ void FocusModeFeaturePodController::OnLabelPressed() {
 }
 
 void FocusModeFeaturePodController::OnFocusModeChanged(bool in_focus_session) {
-  if (features::IsQsRevampEnabled()) {
-    CHECK(tile_);
-    tile_->SetToggled(in_focus_session);
-  } else {
-    CHECK(button_);
-    button_->SetToggled(in_focus_session);
-  }
-
+  CHECK(tile_);
+  tile_->SetToggled(in_focus_session);
   UpdateUI();
 }
 
@@ -100,6 +93,7 @@ void FocusModeFeaturePodController::OnTimerTick() {
 void FocusModeFeaturePodController::UpdateUI() {
   auto* controller = FocusModeController::Get();
   CHECK(controller);
+  CHECK(tile_);
 
   std::u16string sub_text;
   if (controller->in_focus_session()) {
@@ -117,10 +111,6 @@ void FocusModeFeaturePodController::UpdateUI() {
         base::FormatNumber(controller->session_duration().InMinutes()));
   }
 
-  if (features::IsQsRevampEnabled()) {
-    tile_->SetSubLabel(sub_text);
-  } else {
-    button_->SetSubLabel(sub_text);
-  }
+  tile_->SetSubLabel(sub_text);
 }
 }  // namespace ash

@@ -3418,6 +3418,7 @@ test("ash_unittests") {
     "system/firmware_update/firmware_update_notification_controller_unittest.cc",
     "system/focus_mode/focus_mode_controller_unittest.cc",
     "system/focus_mode/focus_mode_detailed_view_unittest.cc",
+    "system/focus_mode/focus_mode_feature_pod_controller_unittest.cc",
     "system/focus_mode/focus_mode_tray_unittest.cc",
     "system/geolocation/geolocation_controller_test_util.cc",
     "system/geolocation/geolocation_controller_test_util.h",
