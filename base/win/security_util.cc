@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/win/access_control_list.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_descriptor.h"
@@ -30,6 +31,8 @@ bool AddACEToPath(const FilePath& path,
   if (sids.empty()) {
     return true;
   }
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
 
   absl::optional<SecurityDescriptor> sd =
       SecurityDescriptor::FromFile(path, DACL_SECURITY_INFORMATION);
