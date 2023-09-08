@@ -1492,6 +1492,13 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     // before the task environment is destroyed (in
     // `RenderViewHostTestHarness::TearDown()`).
     auction_runner_.reset();
+
+    // Clear pointers into things owned by `interest_group_manager_`.
+    mock_auction_process_manager_ = nullptr;
+    same_process_auction_process_manager_ = nullptr;
+    // And this points into the process manager as well.
+    auction_worklet_manager_.reset();
+
     interest_group_manager_.reset();
     auction_nonce_manager_.reset();
 
@@ -1693,9 +1700,26 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
           component_auction);
     }
 
-    // Need to clear `same_process_auction_process_manager_` since underlying
-    // object may be owned by `interest_group_manager_`.
+    // `same_process_auction_process_manager_` may point to an object that
+    // that's owned by `interest_group_manager_`, so avoid a dangling pointer
+    // to it once `interest_group_manager_` is reset further below.
     same_process_auction_process_manager_ = nullptr;
+
+    // `mock_auction_process_manager_` is similar to
+    // `same_process_auction_process_manager_`, except it's usually set before
+    // the call to StartAuction() by UseMockWorkletService(), and we need it
+    // around afterwards. Luckily, tests that use it shouldn't have an
+    // `interest_group_manager_` at this point.
+    if (same_process_auction_process_manager_) {
+      DCHECK(!interest_group_manager_);
+    }
+
+    // `auction_worklet_manager_` points to the process manager, which is owned
+    // by `interest_group_manager_`, so resetting that may leave
+    // `auction_worklet_manager_` with a dangling process manager pointer.
+    // So destroy it now, since we are going to make a new one shortly anyway.
+    auction_worklet_manager_.reset();
+
     interest_group_manager_ = std::make_unique<TestInterestGroupManagerImpl>(
         frame_origin_, GetClientSecurityState(),
         dummy_report_shared_url_loader_factory_);
@@ -2944,13 +2968,12 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // Set by UseMockWorkletService(). Non-owning reference to the
   // AuctionProcessManager that will be / has been passed to the
   // InterestGroupManager.
-  raw_ptr<MockAuctionProcessManager, DanglingUntriaged>
-      mock_auction_process_manager_ = nullptr;
+  raw_ptr<MockAuctionProcessManager> mock_auction_process_manager_ = nullptr;
 
   // If StartAuction() created a SameProcessAuctionProcessManager for
   // `auction_process_manager_`, this alises it.
   // Reset by other things that set `auction_process_manager_`.
-  raw_ptr<SameProcessAuctionProcessManager, DanglingUntriaged>
+  raw_ptr<SameProcessAuctionProcessManager>
       same_process_auction_process_manager_ = nullptr;
 
   // The TestInterestGroupManager is recreated and repopulated for each auction.

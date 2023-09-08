@@ -738,6 +738,11 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          https_server_->GetOrigin("c.test")});
   }
 
+  void TearDownOnMainThread() override {
+    manager_ = nullptr;  // don't dangle once StoragePartition cleans it up.
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
   virtual std::unique_ptr<NetworkResponder> CreateNetworkResponder() {
     return std::make_unique<NetworkResponder>(*https_server_);
   }
@@ -1553,7 +1558,7 @@ function provideAdditionalBids(seller, nonce, bidStringList,
   std::unique_ptr<AllowlistedOriginContentBrowserClient>
       content_browser_client_;
   std::unique_ptr<TestInterestGroupObserver> observer_;
-  raw_ptr<InterestGroupManagerImpl, DanglingUntriaged> manager_;
+  raw_ptr<InterestGroupManagerImpl> manager_;
   base::Lock requests_lock_;
   std::set<GURL> received_https_test_server_requests_
       GUARDED_BY(requests_lock_);

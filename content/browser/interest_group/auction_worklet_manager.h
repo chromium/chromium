@@ -294,8 +294,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
   const url::Origin& frame_origin() const { return frame_origin_; }
   Delegate* delegate() { return delegate_; }
 
-  const raw_ptr<AuctionProcessManager, DanglingUntriaged>
-      auction_process_manager_;
+  const raw_ptr<AuctionProcessManager> auction_process_manager_;
   const url::Origin top_window_origin_;
   const url::Origin frame_origin_;
   raw_ptr<Delegate> const delegate_;
