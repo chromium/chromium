@@ -15,6 +15,9 @@ import android.net.Uri;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningSheetStateAtClosing;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningUserActions;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -108,6 +111,23 @@ class PasswordMigrationWarningMediator
         }
         PrefService prefService = UserPrefs.get(mProfile);
         prefService.setBoolean(Pref.LOCAL_PASSWORD_MIGRATION_WARNING_SHOWN_AT_STARTUP, true);
+    }
+
+    /**
+     * Called when BottomSheetObserver.onSheetClosed is invoked.
+     * This is not the same as onDismissed, which is called in both onSheetClosed and in
+     * onSheetStateChanged. This is because sometimes, if the BottomSheet was interrupted,
+     * onSheetClosed won't get called.
+     *
+     * @param reason is the cause for the sheet to change its state.
+     * @param setFragmentWasCalled indicates that the PasswordMigrationWarningView.setFragment()
+     *         method was called.
+     */
+    void onSheetClosed(
+            @BottomSheetController.StateChangeReason int reason, boolean setFragmentWasCalled) {
+        recordEmptySheetTrigger(mReferrer);
+        resetTimestamp();
+        recordSheetStateAtClosing(reason, setFragmentWasCalled);
     }
 
     void onDismissed(@StateChangeReason int reason) {
@@ -218,5 +238,44 @@ class PasswordMigrationWarningMediator
         if (syncService.isSyncDisabledByEnterprisePolicy()) return false;
         if (syncService.isTypeManagedByPolicy(UserSelectableType.PASSWORDS)) return false;
         return true;
+    }
+
+    private void resetTimestamp() {
+        PrefService prefService = UserPrefs.get(mProfile);
+        prefService.setString(Pref.LOCAL_PASSWORDS_MIGRATION_WARNING_SHOWN_TIMESTAMP, "0");
+    }
+
+    private void recordEmptySheetTrigger(@PasswordMigrationWarningTriggers int referrer) {
+        RecordHistogram.recordEnumeratedHistogram(
+                PasswordMetricsUtil.PASSWORD_MIGRATION_WARNING_EMPTY_SHEET_TRIGGER, referrer,
+                PasswordMigrationWarningTriggers.MAX_VALUE);
+    }
+
+    private void recordSheetStateAtClosing(
+            @BottomSheetController.StateChangeReason int reason, boolean setFragmentWasCalled) {
+        RecordHistogram.recordEnumeratedHistogram(
+                PasswordMetricsUtil.PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                getSheetStateAtClosingBucket(reason, setFragmentWasCalled),
+                PasswordMigrationWarningSheetStateAtClosing.COUNT);
+    }
+
+    @PasswordMigrationWarningSheetStateAtClosing
+    private int getSheetStateAtClosingBucket(
+            @BottomSheetController.StateChangeReason int reason, boolean setFragmentWasCalled) {
+        if (setFragmentWasCalled) {
+            return PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED;
+        }
+        switch (reason) {
+            case StateChangeReason.SWIPE:
+            case StateChangeReason.BACK_PRESS:
+            case StateChangeReason.TAP_SCRIM:
+            case StateChangeReason.NAVIGATION:
+            case StateChangeReason.OMNIBOX_FOCUS:
+                return PasswordMigrationWarningSheetStateAtClosing
+                        .EMPTY_SHEET_CLOSED_BY_USER_INTERACTION;
+            default:
+                return PasswordMigrationWarningSheetStateAtClosing
+                        .EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION;
+        }
     }
 }

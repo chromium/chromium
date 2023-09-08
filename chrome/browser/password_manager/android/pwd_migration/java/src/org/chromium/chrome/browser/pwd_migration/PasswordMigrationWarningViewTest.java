@@ -45,16 +45,14 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
-import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningSheetStateAtClosing;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -81,6 +79,8 @@ public class PasswordMigrationWarningViewTest {
     private Callback<Integer> mDismissCallback;
     @Mock
     private PasswordMigrationWarningOnClickHandler mOnClickHandler;
+    @Mock
+    private PasswordMigrationWarningView.OnSheetClosedCallback mOnSheetClosedCallback;
 
     private BottomSheetController mBottomSheetController;
     private PasswordMigrationWarningView mView;
@@ -99,7 +99,8 @@ public class PasswordMigrationWarningViewTest {
             mModel = PasswordMigrationWarningProperties.createDefaultModel(
                     mOnShowEventListener, mDismissCallback, mOnClickHandler);
             mView = new PasswordMigrationWarningView(mActivityTestRule.getActivity(),
-                    mBottomSheetController, () -> {}, (Throwable exception) -> fail());
+                    mBottomSheetController,
+                    () -> {}, (Throwable exception) -> fail(), mOnSheetClosedCallback);
             PropertyModelChangeProcessor.create(mModel, mView,
                     PasswordMigrationWarningViewBinder::bindPasswordMigrationWarningView);
         });
@@ -117,6 +118,7 @@ public class PasswordMigrationWarningViewTest {
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
         assertThat(mView.getContentView().isShown(), is(false));
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.NONE, false);
     }
 
     @Test
@@ -130,7 +132,6 @@ public class PasswordMigrationWarningViewTest {
                              -> mActivityTestRule.getActivity().findViewById(
                                         R.id.acknowledge_password_migration_button)
                         != null);
-        verify(mOnShowEventListener).run();
     }
 
     @Test
@@ -145,6 +146,7 @@ public class PasswordMigrationWarningViewTest {
 
         // The dismiss callback was called.
         verify(mDismissCallback).onResult(BottomSheetController.StateChangeReason.NONE);
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.NONE, false);
     }
 
     @Test
@@ -322,53 +324,29 @@ public class PasswordMigrationWarningViewTest {
 
     @Test
     @MediumTest
-    public void testEmptySheetClosedWithoutUserInteractionIsLogged() {
-        var histogram = HistogramWatcher.newBuilder()
-                                .expectIntRecords(
-                                        PasswordMetricsUtil
-                                                .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
-                                        PasswordMigrationWarningSheetStateAtClosing
-                                                .EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION)
-                                .build();
-
+    public void testEmptySheetClosedWithoutUserInteractionCallsOnSheetClosedCallback() {
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
 
-        histogram.assertExpected();
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.NONE, false);
     }
 
     @Test
     @MediumTest
-    public void testEmptySheetClosedByUserInteractionIsLogged() {
-        var histogram = HistogramWatcher.newBuilder()
-                                .expectIntRecords(
-                                        PasswordMetricsUtil
-                                                .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
-                                        PasswordMigrationWarningSheetStateAtClosing
-                                                .EMPTY_SHEET_CLOSED_BY_USER_INTERACTION)
-                                .build();
-
+    public void testEmptySheetClosedByUserInteractionCallsOnSheetClosedCallback() {
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         Espresso.pressBack();
         BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
 
-        histogram.assertExpected();
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.BACK_PRESS, false);
     }
 
     @Test
     @MediumTest
-    public void testClosingTheSheetWithFullContentIsLogged() {
-        var histogram =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                PasswordMetricsUtil
-                                        .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
-                                PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED)
-                        .build();
-
+    public void testClosingTheSheetWithFullContentCallsOnSheetClosedCallback() {
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -379,7 +357,7 @@ public class PasswordMigrationWarningViewTest {
         Espresso.pressBack();
         BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
 
-        histogram.assertExpected();
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.BACK_PRESS, true);
     }
 
     private @SheetState int getBottomSheetState() {

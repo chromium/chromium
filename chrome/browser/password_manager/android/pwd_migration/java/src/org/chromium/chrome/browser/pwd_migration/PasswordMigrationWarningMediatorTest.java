@@ -36,6 +36,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningSheetStateAtClosing;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningUserActions;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -120,6 +122,7 @@ public class PasswordMigrationWarningMediatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         mMediator = new PasswordMigrationWarningMediator(
                 mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.CHROME_STARTUP);
         mModel = PasswordMigrationWarningProperties.createDefaultModel(
@@ -210,7 +213,6 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testOnAcknowledgeHidesTheSheet() {
-        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         mModel.set(VISIBLE, true);
         mMediator.onAcknowledge(mBottomSheetController);
         assertFalse(mModel.get(VISIBLE));
@@ -224,7 +226,6 @@ public class PasswordMigrationWarningMediatorTest {
                                 PasswordMigrationWarningUserActions.GOT_IT)
                         .build();
 
-        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         mMediator.onAcknowledge(mBottomSheetController);
 
         histogram.assertExpected();
@@ -232,7 +233,6 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testAcknowledgementIsSavedInPrefs() {
-        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         mMediator.onAcknowledge(mBottomSheetController);
         verify(mPrefService)
                 .setBoolean(eq(Pref.USER_ACKNOWLEDGED_LOCAL_PASSWORDS_MIGRATION_WARNING), eq(true));
@@ -398,21 +398,83 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testOnShownSetsPreForStartup() {
-        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
-        PasswordMigrationWarningMediator mediator = new PasswordMigrationWarningMediator(
-                mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.CHROME_STARTUP);
-        mediator.onShown();
+        mMediator.onShown();
         verify(mPrefService)
                 .setBoolean(Pref.LOCAL_PASSWORD_MIGRATION_WARNING_SHOWN_AT_STARTUP, true);
     }
 
     @Test
     public void testOnShownDoesntSetPrefIfNotOnStartup() {
-        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         PasswordMigrationWarningMediator mediator = new PasswordMigrationWarningMediator(
                 mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.TOUCH_TO_FILL);
         mediator.onShown();
         verify(mPrefService, never())
                 .setBoolean(Pref.LOCAL_PASSWORD_MIGRATION_WARNING_SHOWN_AT_STARTUP, true);
+    }
+
+    @Test
+    public void testResetTimestampSetsTheWarningShownTimestampToZero() {
+        mMediator.onSheetClosed(StateChangeReason.NONE, false);
+
+        verify(mPrefService).setString(Pref.LOCAL_PASSWORDS_MIGRATION_WARNING_SHOWN_TIMESTAMP, "0");
+    }
+
+    @Test
+    public void testRecordEmptySheetTriggerWritesToTheHistogram() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                PasswordMetricsUtil.PASSWORD_MIGRATION_WARNING_EMPTY_SHEET_TRIGGER,
+                                PasswordMigrationWarningTriggers.CHROME_STARTUP)
+                        .build();
+
+        mMediator.onSheetClosed(StateChangeReason.NONE, true);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordSheetStateAtClosingRecordsEmptySheetClosedWithoutUserInteraction() {
+        var histogram = HistogramWatcher.newBuilder()
+                                .expectIntRecords(
+                                        PasswordMetricsUtil
+                                                .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                                        PasswordMigrationWarningSheetStateAtClosing
+                                                .EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION)
+                                .build();
+
+        mMediator.onSheetClosed(StateChangeReason.NONE, false);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordSheetStateAtClosingRecordsEmptySheetClosedByUserInteraction() {
+        var histogram = HistogramWatcher.newBuilder()
+                                .expectIntRecords(
+                                        PasswordMetricsUtil
+                                                .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                                        PasswordMigrationWarningSheetStateAtClosing
+                                                .EMPTY_SHEET_CLOSED_BY_USER_INTERACTION)
+                                .build();
+
+        mMediator.onSheetClosed(StateChangeReason.BACK_PRESS, false);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordSheetStateAtClosingRecordsClosingTheSheetWithFullContent() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                PasswordMetricsUtil
+                                        .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                                PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED)
+                        .build();
+
+        mMediator.onSheetClosed(StateChangeReason.BACK_PRESS, true);
+
+        histogram.assertExpected();
     }
 }

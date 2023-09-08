@@ -73,8 +73,13 @@ public class PasswordMigrationWarningCoordinator
                 mMediator::onShown, mMediator::onDismissed, mMediator);
         mMediator.initializeModel(model);
         passwordListObserverCallback.onResult(mMediator);
-        mView = new PasswordMigrationWarningView(
-                context, sheetController, () -> { mExportFlow.onResume(); }, exceptionReporter);
+        mView = new PasswordMigrationWarningView(context, sheetController,
+                ()
+                        -> { mExportFlow.onResume(); },
+                exceptionReporter,
+                (reason, setFragmentWasCalled) -> {
+                    mMediator.onSheetClosed(reason, setFragmentWasCalled);
+                });
         setUpModelChangeProcessors(model, mView);
     }
 
