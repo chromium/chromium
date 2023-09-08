@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
           features::kAutofillEnableSupportForHonorificPrefixes)) {
     data_present = "1f7e0003f80000080004000001c424180002";
   } else {
-    data_present = "1f7e0003f80000080004000001c420780002";
+    data_present = "1f7e0003f80000080004000001c420180002";
   }
 
   // TODO(crbug.com/1311937): Additional phone number trunk types are present
