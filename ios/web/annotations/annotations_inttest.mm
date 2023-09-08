@@ -90,6 +90,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
   int clicks() const { return clicks_; }
   int seq_id() const { return seq_id_; }
   const base::Value::Dict& metadata() const { return metadata_; }
+  void SetAnnotations(int count) { annotations_ = count; }
 
  private:
   std::string extracted_text_;
@@ -226,7 +227,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     }));
   }
 
-  // Simultates clicking on annotation at given `index`.
+  // Simulates clicking on annotation at given `index`.
   void ClickAnnotation(int index) {
     const base::TimeDelta kCallJavascriptFunctionTimeout =
         kWaitForJSCompletionTimeout;
@@ -239,6 +240,26 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
           ASSERT_TRUE(result);
           ASSERT_TRUE(result->is_bool());
           EXPECT_TRUE(result->GetBool());
+          message_received = true;
+        }),
+        kCallJavascriptFunctionTimeout);
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+      return message_received;
+    }));
+  }
+
+  // Updates count of annotations in observer.
+  void CountAnnotation() {
+    const base::TimeDelta kCallJavascriptFunctionTimeout =
+        kWaitForJSCompletionTimeout;
+    __block bool message_received = false;
+    base::Value::List params;
+    MainWebFrame()->CallJavaScriptFunctionInContentWorld(
+        "annotationsTest.countAnnotations", params, content_world_,
+        base::BindOnce(^(const base::Value* result) {
+          ASSERT_TRUE(result);
+          ASSERT_TRUE(result->is_double());
+          observer_.SetAnnotations(result->GetDouble());
           message_received = true;
         }),
         kCallJavascriptFunctionTimeout);
@@ -461,6 +482,9 @@ TEST_F(AnnotationTextManagerTest, RemoveDecorationTypeTest) {
             "<p>zzzzz <chrome_annotation>klm</chrome_annotation> zzzzz</p>"
             "</body></html>");
 
+  CountAnnotation();
+  ASSERT_EQ(observer()->annotations(), 4);
+
   ClickAnnotation(0);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return observer()->clicks() == 1;
@@ -484,24 +508,20 @@ TEST_F(AnnotationTextManagerTest, RemoveDecorationTypeTest) {
   manager->RemoveDecorationsWithType("type1");
   // Check the resulting html is annotating at the right place.
   CheckHtml("<html><body>"
-            "<p><chrome_annotation>abc</chrome_annotation> "
-            "<chrome_annotation>def</chrome_annotation></p>"
+            "<p>abc <chrome_annotation>def</chrome_annotation></p>"
             "<p>zzzzz ghi zzzzz</p>"
             "<p>zzzzz <chrome_annotation>klm</chrome_annotation> zzzzz</p>"
             "</body></html>");
 
-  // First annotation should be inactive
-  ClickAnnotation(0);
-  ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 5;
-  }));
+  CountAnnotation();
+  ASSERT_EQ(observer()->annotations(), 2);
 
-  ClickAnnotation(1);
+  ClickAnnotation(0);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return observer()->clicks() == 5;
   }));
 
-  ClickAnnotation(2);
+  ClickAnnotation(1);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return observer()->clicks() == 6;
   }));

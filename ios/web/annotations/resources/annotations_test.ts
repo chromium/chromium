@@ -16,6 +16,14 @@ const NO_END_TAGS_NODE_NAMES = new Set([
 ]);
 
 /**
+ * Returns count of <chrome_annotation>s.
+ */
+function countAnnotations(): number {
+  let nodes = document.querySelectorAll("chrome_annotation");
+  return nodes.length;
+}
+
+/**
  * Simulate clicking annotation at given `index`.
  */
 function clickAnnotation(index: number): boolean {
@@ -73,5 +81,6 @@ function clickAnnotation(index: number): boolean {
 
 gCrWeb.annotationsTest = {
   getPageTaggedText,
+  countAnnotations,
   clickAnnotation,
 };

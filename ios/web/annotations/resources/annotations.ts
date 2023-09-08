@@ -325,7 +325,7 @@ function removeDecorations(): void {
  * @param type - the type of annotations to remove.
  */
 function removeDecorationsWithType(type: string): void {
-  var remainingDecorations = [];
+  var remainingDecorations : Decoration[] = [];
   for (let decoration of decorations) {
     const replacements = decoration.replacements;
     const parentNode = replacements[0]!.parentNode;
@@ -361,22 +361,25 @@ function removeDecorationsWithType(type: string): void {
       continue;
     }
 
-    // The decoration is of mixed type. Just remove the style of the replacement
-    // of the needed type as realtering the DOM would have greater effect in
-    // the page.
+    // The decoration is of mixed type. Just replace the <chrome_annotation>
+    // of `type` by a text node with same text content.
+    let newReplacements: Node[] = [];
     for (let replacement of replacements) {
       if (!(replacement instanceof HTMLElement)) {
+        newReplacements.push(replacement);
         continue;
       }
       var element = replacement as HTMLElement;
       var replacementType = element.getAttribute('data-type');
       if (replacementType !== type) {
+        newReplacements.push(replacement);
         continue;
       }
-      element.removeAttribute('role');
-      element.removeAttribute('style');
-      element.setAttribute('data-disabled', 'true');
+      let text = document.createTextNode(element.textContent ?? "");
+      parentNode.replaceChild(text, element);
+      newReplacements.push(text);
     }
+    decoration.replacements = newReplacements;
     remainingDecorations.push(decoration);
   }
   decorations = remainingDecorations;
@@ -539,7 +542,6 @@ function handleTopTap(event: Event) {
   // Nothing happened to the page between `handleTap` and `handleTopTap`.
   if (event.target instanceof HTMLElement &&
       event.target.tagName === 'CHROME_ANNOTATION' &&
-      event.target.getAttribute('data-disabled') !== 'true' &&
       mutationDuringClickObserver &&
       !mutationDuringClickObserver.hasPreventativeActivity(event)) {
     const annotation = event.target;
