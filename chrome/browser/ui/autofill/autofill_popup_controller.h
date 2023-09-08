@@ -96,7 +96,8 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // the parent dies the child dies also.
   virtual base::WeakPtr<AutofillPopupController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
-      std::vector<Suggestion> suggestions) = 0;
+      std::vector<Suggestion> suggestions,
+      AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
 
   // Hides open by `OpenSubPopup()` popup, noop if there is no open sub-popup.
   virtual void HideSubPopup() = 0;

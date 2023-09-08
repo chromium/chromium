@@ -94,7 +94,8 @@ class AutofillPopupControllerImpl
 
   // Shows the popup, or updates the existing popup with the given values.
   virtual void Show(std::vector<Suggestion> suggestions,
-                    AutofillSuggestionTriggerSource trigger_source);
+                    AutofillSuggestionTriggerSource trigger_source,
+                    AutoselectFirstSuggestion autoselect_first_suggestion);
 
   // Updates the data list values currently shown with the popup.
   virtual void UpdateDataListValues(const std::vector<std::u16string>& values,
@@ -124,7 +125,8 @@ class AutofillPopupControllerImpl
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
   base::WeakPtr<AutofillPopupController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
-      std::vector<Suggestion> suggestions) override;
+      std::vector<Suggestion> suggestions,
+      AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void HideSubPopup() override;
 
   // Disables show thresholds. See the documentation of the member for details.

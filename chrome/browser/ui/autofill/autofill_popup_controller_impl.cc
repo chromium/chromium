@@ -160,7 +160,8 @@ void AutofillPopupControllerImpl::OnVisibilityChanged(
 
 void AutofillPopupControllerImpl::Show(
     std::vector<Suggestion> suggestions,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
@@ -199,11 +200,7 @@ void AutofillPopupControllerImpl::Show(
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                    !suggestions_.empty());
 #endif
-    if (!view_
-             .Call(&AutofillPopupView::Show,
-                   AutoselectFirstSuggestion(trigger_source ==
-                                             AutofillSuggestionTriggerSource::
-                                                 kTextFieldDidReceiveKeyDown))
+    if (!view_.Call(&AutofillPopupView::Show, autoselect_first_suggestion)
              .value_or(false)) {
       return;
     }
@@ -471,8 +468,10 @@ std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {
 }
 
 base::WeakPtr<AutofillPopupController>
-AutofillPopupControllerImpl::OpenSubPopup(const gfx::RectF& anchor_bounds,
-                                          std::vector<Suggestion> suggestions) {
+AutofillPopupControllerImpl::OpenSubPopup(
+    const gfx::RectF& anchor_bounds,
+    std::vector<Suggestion> suggestions,
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate_, web_contents(), controller_common_.container_view,
       anchor_bounds, controller_common_.text_direction, base::DoNothing(),
@@ -481,7 +480,8 @@ AutofillPopupControllerImpl::OpenSubPopup(const gfx::RectF& anchor_bounds,
   // Show() can fail and cause controller deletion. Therefore store the weak
   // pointer before, so that this method returns null when that happens.
   sub_popup_controller_ = controller->GetWeakPtr();
-  controller->Show(std::move(suggestions), trigger_source_);
+  controller->Show(std::move(suggestions), trigger_source_,
+                   autoselect_first_suggestion);
   return sub_popup_controller_;
 }
 

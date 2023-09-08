@@ -96,7 +96,8 @@ class MockAutofillPopupController
   MOCK_METHOD(base::WeakPtr<AutofillPopupController>,
               OpenSubPopup,
               (const gfx::RectF& anchor_bounds,
-               std::vector<Suggestion> suggestions),
+               std::vector<Suggestion> suggestions,
+               AutoselectFirstSuggestion autoselect_first_suggestion),
               (override));
   MOCK_METHOD(void, HideSubPopup, (), (override));
   void set_suggestions(const std::vector<PopupItemId>& ids) {

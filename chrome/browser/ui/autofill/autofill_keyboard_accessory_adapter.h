@@ -111,7 +111,8 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
   base::WeakPtr<AutofillPopupController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
-      std::vector<Suggestion> suggestions) override;
+      std::vector<Suggestion> suggestions,
+      AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void HideSubPopup() override;
   void Hide(PopupHidingReason reason) override;
   void ViewDestroyed() override;

@@ -163,6 +163,14 @@
 
 namespace autofill {
 
+namespace {
+AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
+    AutofillSuggestionTriggerSource source) {
+  return AutoselectFirstSuggestion(
+      source == AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
+}
+}  // namespace
+
 // static
 void ChromeAutofillClient::CreateForWebContents(
     content::WebContents* web_contents) {
@@ -959,7 +967,9 @@ void ChromeAutofillClient::ShowAutofillPopup(
       web_contents()->GetNativeView(), element_bounds_in_screen_space,
       open_args.text_direction);
 
-  popup_controller_->Show(open_args.suggestions, open_args.trigger_source);
+  popup_controller_->Show(
+      open_args.suggestions, open_args.trigger_source,
+      ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source));
 
   // When testing, try to keep popup open when the reason to hide is from an
   // external browser frame resize that is extraneous to our testing goals.
@@ -1021,7 +1031,9 @@ void ChromeAutofillClient::UpdatePopup(
   }
 
   // Calling show will reuse the existing view automatically.
-  popup_controller_->Show(suggestions, trigger_source);
+  popup_controller_->Show(
+      suggestions, trigger_source,
+      ShouldAutofillPopupAutoselectFirstSuggestion(trigger_source));
 }
 
 void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {

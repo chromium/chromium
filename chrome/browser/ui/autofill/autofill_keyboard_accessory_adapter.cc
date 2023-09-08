@@ -195,7 +195,8 @@ bool AutofillKeyboardAccessoryAdapter::
 base::WeakPtr<AutofillPopupController>
 AutofillKeyboardAccessoryAdapter::OpenSubPopup(
     const gfx::RectF& anchor_bounds,
-    std::vector<Suggestion> suggestions) {
+    std::vector<Suggestion> suggestions,
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
   NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
   return nullptr;
 }

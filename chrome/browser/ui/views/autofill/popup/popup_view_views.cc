@@ -783,7 +783,8 @@ void PopupViewViews::SetCellWithOpenSubPopup(
     PopupRowView& row = GetPopupRowViewAt(cell_index->first);
 
     if (controller_->OpenSubPopup(row.GetCellBounds(cell_index->second),
-                                  suggestion.children)) {
+                                  suggestion.children,
+                                  AutoselectFirstSuggestion(false))) {
       row.SetCellPermanentlyHighlighted(cell_index->second, true);
       open_sub_popup_cell_ = cell_index;
     }

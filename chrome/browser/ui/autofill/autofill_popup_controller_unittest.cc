@@ -274,14 +274,16 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     for (PopupItemId popup_item_id : popup_item_ids) {
       suggestions.emplace_back(u"", popup_item_id);
     }
-    popup_controller().Show(std::move(suggestions), trigger_source);
+    popup_controller().Show(std::move(suggestions), trigger_source,
+                            AutoselectFirstSuggestion(false));
   }
 
   void ShowSuggestions(
       std::vector<Suggestion> suggestions,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kFormControlElementClicked) {
-    popup_controller().Show(std::move(suggestions), trigger_source);
+    popup_controller().Show(std::move(suggestions), trigger_source,
+                            AutoselectFirstSuggestion(false));
   }
 
   TestAutofillPopupController& popup_controller() {
@@ -769,7 +771,8 @@ TEST_F(AutofillPopupControllerUnitTest, SubPopupIsCreatedWithViewFromParent) {
   EXPECT_CALL(*autofill_popup_view(), CreateSubPopupView)
       .WillRepeatedly(Return(autofill_popup_sub_view.GetWeakPtr()));
   base::WeakPtr<AutofillPopupController> sub_controller =
-      popup_controller().OpenSubPopup({0, 0, 10, 10}, {});
+      popup_controller().OpenSubPopup({0, 0, 10, 10}, {},
+                                      AutoselectFirstSuggestion(false));
   EXPECT_TRUE(sub_controller);
 }
 #endif
