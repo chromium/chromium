@@ -77,18 +77,6 @@ if (toolchain_has_rust) {
     "unwind",
   ]
 
-  if (is_win) {
-    # These are no longer present in the Windows toolchain.
-    stdlib_files -= [
-      "addr2line",
-      "adler",
-      "gimli",
-      "memchr",
-      "miniz_oxide",
-      "object",
-    ]
-  }
-
   if (toolchain_for_rust_host_build_tools) {
     # When building proc macros, include the proc_macro crate in what should be
     # copied with find_stdlib. Otherwise it is not copied since it will be
