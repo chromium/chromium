@@ -4,6 +4,9 @@
 
 package org.chromium.android.commands.unzip;
 
+import android.system.ErrnoException;
+import android.system.Os;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -66,11 +69,12 @@ public class Unzip {
                         total_bytes += actual_bytes;
                     }
                     out.close();
+                    Os.chmod(ze.getName(), 0777);
                 }
                 zis.closeEntry();
             }
 
-        } catch (IOException e) {
+        } catch (IOException | ErrnoException e) {
             throw new RuntimeException("Error while unzipping", e);
         } finally {
             try {
