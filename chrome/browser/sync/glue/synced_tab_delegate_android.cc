@@ -33,6 +33,9 @@ bool SyncedTabDelegateAndroid::IsPlaceholderTab() const {
   return web_contents() == nullptr;
 }
 
+// This function creates a synced tab delegate for a tab that was previously
+// known as a placeholder tab. After the new synced tab delegate has been
+// created, the associated tab should no longer be seen as a placeholder tab.
 std::unique_ptr<sync_sessions::SyncedTabDelegate>
 SyncedTabDelegateAndroid::CreatePlaceholderTabSyncedTabDelegate() {
   std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer =
@@ -44,7 +47,7 @@ SyncedTabDelegateAndroid::CreatePlaceholderTabSyncedTabDelegate() {
     return nullptr;
   }
 
-  return std::make_unique<browser_sync::WebContentsStateSyncedTabDelegate>(
+  return browser_sync::WebContentsStateSyncedTabDelegate::Create(
       tab_android_, std::move(web_contents_byte_buffer));
 }
 
