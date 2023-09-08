@@ -592,8 +592,8 @@ void WebApp::SetLastLaunchTime(const base::Time& time) {
   last_launch_time_ = time;
 }
 
-void WebApp::SetInstallTime(const base::Time& time) {
-  install_time_ = time;
+void WebApp::SetFirstInstallTime(const base::Time& time) {
+  first_install_time_ = time;
 }
 
 void WebApp::SetManifestUpdateTime(const base::Time& time) {
@@ -736,6 +736,10 @@ bool WebApp::RemoveInstallUrlForSource(WebAppManagement::Type type,
 
 void WebApp::SetAlwaysShowToolbarInFullscreen(bool show) {
   always_show_toolbar_in_fullscreen_ = show;
+}
+
+void WebApp::SetLatestInstallTime(const base::Time& latest_install_time) {
+  latest_install_time_ = latest_install_time;
 }
 
 WebApp::ClientData::ClientData() = default;
@@ -936,7 +940,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.note_taking_new_note_url_,
         app.last_badging_time_,
         app.last_launch_time_,
-        app.install_time_,
+        app.first_install_time_,
         app.manifest_update_time_,
         app.run_on_os_login_mode_,
         app.run_on_os_login_os_integration_state_,
@@ -961,7 +965,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.always_show_toolbar_in_fullscreen_,
         app.current_os_integration_states_,
         app.isolation_data_,
-        app.is_user_selected_app_for_capturing_links_
+        app.is_user_selected_app_for_capturing_links_,
+        app.latest_install_time_
         // clang-format on
     );
   };
@@ -1058,7 +1063,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("management_type_to_external_configuration_map",
            std::move(external_map));
 
-  root.Set("install_time", base::ToString(install_time_));
+  root.Set("first_install_time", base::ToString(first_install_time_));
 
   root.Set("is_generated_icon", is_generated_icon_);
 
@@ -1174,6 +1179,8 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("is_user_selected_app_for_capturing_links",
            is_user_selected_app_for_capturing_links_);
+
+  root.Set("latest_install_time", base::ToString(latest_install_time_));
 
   return base::Value(std::move(root));
 }

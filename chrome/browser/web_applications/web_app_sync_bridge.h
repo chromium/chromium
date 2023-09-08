@@ -119,7 +119,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void SetAppLastLaunchTime(const AppId& app_id, const base::Time& time);
 
-  void SetAppInstallTime(const AppId& app_id, const base::Time& time);
+  void SetAppFirstInstallTime(const AppId& app_id, const base::Time& time);
 
   void SetAppManifestUpdateTime(const AppId& app_id, const base::Time& time);
 

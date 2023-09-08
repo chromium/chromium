@@ -277,16 +277,16 @@ void WebAppSyncBridge::SetAppLastLaunchTime(const AppId& app_id,
   registrar_->NotifyWebAppLastLaunchTimeChanged(app_id, time);
 }
 
-void WebAppSyncBridge::SetAppInstallTime(const AppId& app_id,
-                                         const base::Time& time) {
+void WebAppSyncBridge::SetAppFirstInstallTime(const AppId& app_id,
+                                              const base::Time& time) {
   {
     ScopedRegistryUpdate update = BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
     if (web_app) {
-      web_app->SetInstallTime(time);
+      web_app->SetFirstInstallTime(time);
     }
   }
-  registrar_->NotifyWebAppInstallTimeChanged(app_id, time);
+  registrar_->NotifyWebAppFirstInstallTimeChanged(app_id, time);
 }
 
 void WebAppSyncBridge::SetAppManifestUpdateTime(const AppId& app_id,

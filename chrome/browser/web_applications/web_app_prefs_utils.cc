@@ -89,6 +89,7 @@ void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
 //       microseconds since the Windows epoch, using base::TimeToValue().
 //       "ML_last_time_install_dismissed": "13249617864945580",
 //       "ML_num_of_consecutive_not_accepted": 2,
+//       "error_loaded_policy_app_migrated": true
 //     },
 //   },
 //   "app_agnostic_ml_state": {
@@ -125,6 +126,8 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
   registry->RegisterDictionaryPref(::prefs::kWebAppsAppAgnosticMlState);
   registry->RegisterBooleanPref(::prefs::kShouldGarbageCollectStoragePartitions,
                                 false);
+  registry->RegisterBooleanPref(
+      ::prefs::kErrorLoadedPolicyAppMigrationCompleted, false);
 }
 
 absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,

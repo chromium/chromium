@@ -111,12 +111,13 @@ void InstallAppLocallyCommand::OnOsHooksInstalled(
     ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
     WebApp* web_app_to_update = update->UpdateApp(app_id_);
     if (web_app_to_update) {
-      web_app_to_update->SetInstallTime(install_time);
+      web_app_to_update->SetFirstInstallTime(install_time);
     }
   }
 
   app_lock_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id_);
-  app_lock_->registrar().NotifyWebAppInstallTimeChanged(app_id_, install_time);
+  app_lock_->registrar().NotifyWebAppFirstInstallTimeChanged(app_id_,
+                                                             install_time);
   debug_log_.Set("command_result", "success");
   ReportResultAndShutdown(CommandResult::kSuccess);
 }

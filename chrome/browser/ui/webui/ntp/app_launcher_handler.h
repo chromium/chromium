@@ -113,8 +113,8 @@ class AppLauncherHandler
   void OnWebAppInstallManagerDestroyed() override;
 
   // web_app::WebAppRegistrarObserver:
-  void OnWebAppInstallTimeChanged(const web_app::AppId& app_id,
-                                  const base::Time& time) override;
+  void OnWebAppFirstInstallTimeChanged(const web_app::AppId& app_id,
+                                       const base::Time& time) override;
   void OnAppRegistrarDestroyed() override;
   void OnWebAppRunOnOsLoginModeChanged(
       const web_app::AppId& app_id,

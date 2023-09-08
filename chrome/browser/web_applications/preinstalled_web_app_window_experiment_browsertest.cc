@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
   auto& fake_provider = static_cast<FakeWebAppProvider&>(provider());
   WebApp* app = fake_provider.GetRegistrarMutable().GetAppByIdMutable(app_id);
   DCHECK(app);
-  app->SetInstallTime(base::Time::UnixEpoch());
+  app->SetFirstInstallTime(base::Time::UnixEpoch());
 
   // Allow eligibility check to happen.
   SimulateSyncReady();

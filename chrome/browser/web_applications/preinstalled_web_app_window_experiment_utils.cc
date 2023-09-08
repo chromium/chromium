@@ -176,8 +176,8 @@ constexpr base::Time kOldestAllowedInstallTime =
 bool AllWebAppsInstalledRecently(WebAppRegistrar& registrar) {
   for (const WebApp& web_app : registrar.GetApps()) {
     // Some old web apps may not have an install_time set.
-    if (web_app.install_time().is_null() ||
-        web_app.install_time() < kOldestAllowedInstallTime) {
+    if (web_app.first_install_time().is_null() ||
+        web_app.first_install_time() < kOldestAllowedInstallTime) {
       return false;
     }
   }

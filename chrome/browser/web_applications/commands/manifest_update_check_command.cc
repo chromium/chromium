@@ -422,8 +422,8 @@ ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
           features::kWebAppSyncGeneratedIconUpdateFix) &&
       web_app.is_generated_icon() &&
       web_app.latest_install_source() == webapps::WebappInstallSource::SYNC &&
-      check_time_ <
-          (web_app.install_time() + kSyncGeneratedIconFixWindowDuration)) {
+      check_time_ < (web_app.first_install_time() +
+                     kSyncGeneratedIconFixWindowDuration)) {
     return IdentityUpdateDecision::kSilentlyAllow;
   }
 

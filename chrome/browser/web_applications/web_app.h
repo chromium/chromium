@@ -149,7 +149,7 @@ class WebApp {
   // Represents the last time this app is launched.
   const base::Time& last_launch_time() const { return last_launch_time_; }
   // Represents the time when this app is installed.
-  const base::Time& install_time() const { return install_time_; }
+  const base::Time& first_install_time() const { return first_install_time_; }
   // Represents the time when this app is updated.
   const base::Time& manifest_update_time() const {
     return manifest_update_time_;
@@ -410,6 +410,8 @@ class WebApp {
     return is_user_selected_app_for_capturing_links_;
   }
 
+  const base::Time& latest_install_time() const { return latest_install_time_; }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -478,7 +480,7 @@ class WebApp {
   void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
   void SetLastLaunchTime(const base::Time& time);
-  void SetInstallTime(const base::Time& time);
+  void SetFirstInstallTime(const base::Time& time);
   void SetManifestUpdateTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
   void SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode os_integration_state);
@@ -529,6 +531,8 @@ class WebApp {
   // Only used on Mac, determines if the toolbar should be permanently shown
   // when in fullscreen.
   void SetAlwaysShowToolbarInFullscreen(bool show);
+
+  void SetLatestInstallTime(const base::Time& latest_install_time);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -590,7 +594,7 @@ class WebApp {
   GURL note_taking_new_note_url_;
   base::Time last_badging_time_;
   base::Time last_launch_time_;
-  base::Time install_time_;
+  base::Time first_install_time_;
   base::Time manifest_update_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
   // Tracks if the app run on os login mode has been registered with the OS.
@@ -641,6 +645,8 @@ class WebApp {
   absl::optional<IsolationData> isolation_data_;
 
   bool is_user_selected_app_for_capturing_links_ = false;
+
+  base::Time latest_install_time_;
 
   // New fields must be added to:
   //  - |operator==|

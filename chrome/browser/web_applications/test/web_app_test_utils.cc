@@ -663,7 +663,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   const base::Time install_time =
       base::Time::UnixEpoch() + base::Milliseconds(random.next_uint());
-  app->SetInstallTime(install_time);
+  app->SetFirstInstallTime(install_time);
 
   const DisplayMode display_modes[4] = {
       DisplayMode::kBrowser, DisplayMode::kMinimalUi, DisplayMode::kStandalone,
@@ -929,6 +929,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   }
 
   app->SetIsUserSelectedAppForSupportedLinks(random.next_bool());
+
+  const base::Time latest_install_time =
+      base::Time::UnixEpoch() + base::Milliseconds(random.next_uint());
+  app->SetLatestInstallTime(latest_install_time);
   return app;
 }
 

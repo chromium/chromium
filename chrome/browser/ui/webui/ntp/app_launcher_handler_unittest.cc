@@ -127,8 +127,8 @@ class AppLauncherHandlerTest
 
     provider()->sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
         installed_app_id, false);
-    provider()->sync_bridge_unsafe().SetAppInstallTime(installed_app_id,
-                                                       base::Time::Min());
+    provider()->sync_bridge_unsafe().SetAppFirstInstallTime(installed_app_id,
+                                                            base::Time::Min());
     return installed_app_id;
   }
 

@@ -192,10 +192,11 @@ void WebAppRegistrar::NotifyWebAppLastLaunchTimeChanged(
   }
 }
 
-void WebAppRegistrar::NotifyWebAppInstallTimeChanged(const AppId& app_id,
-                                                     const base::Time& time) {
+void WebAppRegistrar::NotifyWebAppFirstInstallTimeChanged(
+    const AppId& app_id,
+    const base::Time& time) {
   for (WebAppRegistrarObserver& observer : observers_) {
-    observer.OnWebAppInstallTimeChanged(app_id, time);
+    observer.OnWebAppFirstInstallTimeChanged(app_id, time);
   }
 }
 
@@ -1256,9 +1257,9 @@ base::Time WebAppRegistrar::GetAppLastLaunchTime(const AppId& app_id) const {
   return web_app ? web_app->last_launch_time() : base::Time();
 }
 
-base::Time WebAppRegistrar::GetAppInstallTime(const AppId& app_id) const {
+base::Time WebAppRegistrar::GetAppFirstInstallTime(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->install_time() : base::Time();
+  return web_app ? web_app->first_install_time() : base::Time();
 }
 
 absl::optional<webapps::WebappInstallSource>

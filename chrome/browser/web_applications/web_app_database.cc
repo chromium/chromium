@@ -524,9 +524,9 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     local_data->set_last_launch_time(
         syncer::TimeToProtoTime(web_app.last_launch_time()));
   }
-  if (!web_app.install_time().is_null()) {
-    local_data->set_install_time(
-        syncer::TimeToProtoTime(web_app.install_time()));
+  if (!web_app.first_install_time().is_null()) {
+    local_data->set_first_install_time(
+        syncer::TimeToProtoTime(web_app.first_install_time()));
   }
   if (!web_app.manifest_update_time().is_null()) {
     local_data->set_manifest_update_time(
@@ -892,6 +892,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_is_user_selected_app_for_capturing_links(
       web_app.is_user_selected_app_for_capturing_links());
 
+  if (!web_app.latest_install_time().is_null()) {
+    local_data->set_latest_install_time(
+        syncer::TimeToProtoTime(web_app.latest_install_time()));
+  }
+
   return local_data;
 }
 
@@ -1114,8 +1119,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         syncer::ProtoTimeToTime(local_data.manifest_update_time()));
   }
 
-  if (local_data.has_install_time()) {
-    web_app->SetInstallTime(syncer::ProtoTimeToTime(local_data.install_time()));
+  if (local_data.has_first_install_time()) {
+    web_app->SetFirstInstallTime(
+        syncer::ProtoTimeToTime(local_data.first_install_time()));
   }
 
   absl::optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =
@@ -1642,6 +1648,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_is_user_selected_app_for_capturing_links()) {
     web_app->SetIsUserSelectedAppForSupportedLinks(
         local_data.is_user_selected_app_for_capturing_links());
+  }
+
+  if (local_data.has_latest_install_time()) {
+    web_app->SetLatestInstallTime(
+        syncer::ProtoTimeToTime(local_data.latest_install_time()));
+  } else if (local_data.has_first_install_time()) {
+    web_app->SetLatestInstallTime(
+        syncer::ProtoTimeToTime(local_data.first_install_time()));
   }
 
   return web_app;

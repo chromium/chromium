@@ -269,7 +269,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
 }
 
 TEST_P(WebAppInstallFinalizerUnitTest,
-       NonLocalThenLocalInstallSetsInstallTime) {
+       NonLocalThenLocalInstallSetsBothInstallTime) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
@@ -289,7 +289,8 @@ TEST_P(WebAppInstallFinalizerUnitTest,
         registrar().GetAppById(result.installed_app_id);
 
     EXPECT_FALSE(installed_app->is_locally_installed());
-    EXPECT_TRUE(installed_app->install_time().is_null());
+    EXPECT_TRUE(installed_app->first_install_time().is_null());
+    EXPECT_TRUE(installed_app->latest_install_time().is_null());
   }
 
   options.locally_installed = true;
@@ -302,7 +303,59 @@ TEST_P(WebAppInstallFinalizerUnitTest,
         registrar().GetAppById(result.installed_app_id);
 
     EXPECT_TRUE(installed_app->is_locally_installed());
-    EXPECT_FALSE(installed_app->install_time().is_null());
+    EXPECT_FALSE(installed_app->first_install_time().is_null());
+    EXPECT_FALSE(installed_app->latest_install_time().is_null());
+    EXPECT_EQ(installed_app->first_install_time(),
+              installed_app->latest_install_time());
+  }
+}
+
+TEST_P(WebAppInstallFinalizerUnitTest,
+       LatestInstallTimeAlwaysUpdatedIfReinstalled) {
+  auto info = std::make_unique<WebAppInstallInfo>();
+  info->start_url = GURL("https://foo.example");
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  options.locally_installed = false;
+  // OS Hooks must be disabled for non-locally installed app.
+  options.add_to_applications_menu = false;
+  options.add_to_desktop = false;
+  options.add_to_quick_launch_bar = false;
+  options.locally_installed = true;
+
+  base::Time old_first_install_time;
+  base::Time old_latest_install_time;
+
+  {
+    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+    ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+    const WebApp* installed_app =
+        registrar().GetAppById(result.installed_app_id);
+
+    EXPECT_TRUE(installed_app->is_locally_installed());
+    old_first_install_time = installed_app->first_install_time();
+    old_latest_install_time = installed_app->latest_install_time();
+    EXPECT_FALSE(old_first_install_time.is_null());
+    EXPECT_FALSE(old_latest_install_time.is_null());
+    EXPECT_EQ(old_first_install_time, old_latest_install_time);
+  }
+
+  // Try reinstalling the same app again, the latest install time should be
+  // updated but the first install time should still stay the same.
+  {
+    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+    ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+    const WebApp* installed_app =
+        registrar().GetAppById(result.installed_app_id);
+
+    EXPECT_TRUE(installed_app->is_locally_installed());
+    EXPECT_FALSE(installed_app->first_install_time().is_null());
+    EXPECT_FALSE(installed_app->latest_install_time().is_null());
+    EXPECT_EQ(installed_app->first_install_time(), old_first_install_time);
+    EXPECT_NE(installed_app->latest_install_time(), old_latest_install_time);
   }
 }
 

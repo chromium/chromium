@@ -560,7 +560,7 @@ void AppLauncherHandler::OnWebAppInstalled(const web_app::AppId& app_id) {
                                          CreateWebAppInfo(app_id), highlight);
 }
 
-void AppLauncherHandler::OnWebAppInstallTimeChanged(
+void AppLauncherHandler::OnWebAppFirstInstallTimeChanged(
     const web_app::AppId& app_id,
     const base::Time& time) {
   // Use the appAdded to update the app icon's color to no longer be

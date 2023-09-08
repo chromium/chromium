@@ -66,10 +66,10 @@ const AppId& SelectWebAppToDedupeInto(
         (best_looks_like_placeholder && !candidate_looks_like_placeholder) ||
         // Is the candidate more recently installed and not a downgrade?
         (best_looks_like_placeholder == candidate_looks_like_placeholder &&
-         candidate.install_time() > best_install_time)) {
+         candidate.latest_install_time() > best_install_time)) {
       best = &app_id;
       best_looks_like_placeholder = candidate_looks_like_placeholder;
-      best_install_time = candidate.install_time();
+      best_install_time = candidate.latest_install_time();
     }
   }
 

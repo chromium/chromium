@@ -46,8 +46,8 @@ class WebAppRegistrarObserver : public base::CheckedObserver {
                                               const base::Time& time) {}
   virtual void OnWebAppLastLaunchTimeChanged(const AppId& app_id,
                                              const base::Time& time) {}
-  virtual void OnWebAppInstallTimeChanged(const AppId& app_id,
-                                          const base::Time& time) {}
+  virtual void OnWebAppFirstInstallTimeChanged(const AppId& app_id,
+                                               const base::Time& time) {}
   virtual void OnWebAppUserDisplayModeChanged(
       const AppId& app_id,
       mojom::UserDisplayMode user_display_mode) {}

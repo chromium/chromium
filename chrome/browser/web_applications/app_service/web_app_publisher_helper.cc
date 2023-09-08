@@ -692,7 +692,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
       std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
 
   app->last_launch_time = web_app->last_launch_time();
-  app->install_time = web_app->install_time();
+  app->install_time = web_app->first_install_time();
 
   // For system web apps (only), the install source is |kSystem|.
   DCHECK_EQ(web_app->IsSystemApp(),

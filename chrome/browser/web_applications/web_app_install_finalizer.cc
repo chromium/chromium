@@ -203,8 +203,16 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   web_app->SetIsLocallyInstalled(web_app->is_locally_installed() ||
                                  options.locally_installed);
 
-  if (options.locally_installed && web_app->install_time().is_null()) {
-    web_app->SetInstallTime(base::Time::Now());
+  // The last install time is always updated if the app has been locally
+  // installed, but the first install time is updated only once.
+  const base::Time now_time = base::Time::Now();
+  if (options.locally_installed && web_app->first_install_time().is_null()) {
+    web_app->SetFirstInstallTime(now_time);
+  }
+
+  // The last install time is updated whenever we (re)install/update.
+  if (options.locally_installed) {
+    web_app->SetLatestInstallTime(now_time);
   }
 
   if (!web_app->run_on_os_login_os_integration_state()) {
@@ -462,10 +470,11 @@ void WebAppInstallFinalizer::CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
       provider_->sync_bridge_unsafe().BeginUpdate(std::move(commit_callback));
 
   WebApp* app_to_override = update->UpdateApp(app_id);
-  if (app_to_override)
+  if (app_to_override) {
     *app_to_override = std::move(*web_app);
-  else
+  } else {
     update->CreateApp(std::move(web_app));
+  }
 }
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(

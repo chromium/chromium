@@ -251,7 +251,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   base::Time GetAppLastBadgingTime(const AppId& app_id) const;
   base::Time GetAppLastLaunchTime(const AppId& app_id) const;
-  base::Time GetAppInstallTime(const AppId& app_id) const;
+  base::Time GetAppFirstInstallTime(const AppId& app_id) const;
 
   absl::optional<webapps::WebappInstallSource> GetLatestAppInstallSource(
       const AppId& app_id) const;
@@ -431,8 +431,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
                                           const base::Time& time);
   void NotifyWebAppLastLaunchTimeChanged(const AppId& app_id,
                                          const base::Time& time);
-  void NotifyWebAppInstallTimeChanged(const AppId& app_id,
-                                      const base::Time& time);
+  void NotifyWebAppFirstInstallTimeChanged(const AppId& app_id,
+                                           const base::Time& time);
   void NotifyWebAppUserDisplayModeChanged(
       const AppId& app_id,
       mojom::UserDisplayMode user_display_mode);
