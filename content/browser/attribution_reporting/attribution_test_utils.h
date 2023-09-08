@@ -547,6 +547,10 @@ MATCHER_P(ReportURLIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.ReportURL(), result_listener);
 }
 
+MATCHER_P(ReportOriginIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.GetReportingOrigin(), result_listener);
+}
+
 MATCHER_P(ReportTypeIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.GetReportType(), result_listener);
 }
