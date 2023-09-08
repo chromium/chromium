@@ -250,6 +250,72 @@
                 </dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Weak Passwords Count (Safety Check)</string>
+			<key>Key</key>
+			<string>SafetyCheckWeakPasswordsCountOverride</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>1</string>
+				<string>2</string>
+			</array>
+		</dict>
+                <dict>
+                        <key>Type</key>
+                        <string>PSMultiValueSpecifier</string>
+                        <key>Title</key>
+                        <string>Reused Passwords Count (Safety Check)</string>
+                        <key>Key</key>
+                        <string>SafetyCheckReusedPasswordsCountOverride</string>
+                        <key>DefaultValue</key>
+                        <integer>0</integer>
+                        <key>Values</key>
+                        <array>
+                                <integer>0</integer>
+                                <integer>1</integer>
+                                <integer>2</integer>
+                        </array>
+                        <key>Titles</key>
+                        <array>
+                                <string>Unset</string>
+                                <string>1</string>
+                                <string>2</string>
+                        </array>
+                </dict>
+                <dict>
+                        <key>Type</key>
+                        <string>PSMultiValueSpecifier</string>
+                        <key>Title</key>
+                        <string>Compromised Passwords Count (Safety Check)</string>
+                        <key>Key</key>
+                        <string>SafetyCheckCompromisedPasswordsCountOverride</string>
+                        <key>DefaultValue</key>
+                        <integer>0</integer>
+                        <key>Values</key>
+                        <array>
+                                <integer>0</integer>
+                                <integer>1</integer>
+                                <integer>2</integer>
+                        </array>
+                        <key>Titles</key>
+                        <array>
+                                <string>Unset</string>
+                                <string>1</string>
+                                <string>2</string>
+                        </array>
+                </dict>
+		<dict>
+			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
 			<string>WidgetKit refresh 5 minutes</string>

@@ -105,6 +105,18 @@ absl::optional<PasswordSafetyCheckState> GetPasswordSafetyCheckState();
 // (Magic Stack) module.
 absl::optional<SafeBrowsingSafetyCheckState> GetSafeBrowsingSafetyCheckState();
 
+// Returns the forced number of weak passwords for the Safety Check (Magic
+// Stack) module.
+absl::optional<int> GetSafetyCheckWeakPasswordsCount();
+
+// Returns the forced number of reused passwords for the Safety Check (Magic
+// Stack) module.
+absl::optional<int> GetSafetyCheckReusedPasswordsCount();
+
+// Returns the forced number of compromised passwords for the Safety Check
+// (Magic Stack) module.
+absl::optional<int> GetSafetyCheckCompromisedPasswordsCount();
+
 // Returns the selected device segment the user wants to simulate as a string;
 // the string should either be nil or one of the options from synthetic trial
 // "Segmentation_DeviceSwitcher."

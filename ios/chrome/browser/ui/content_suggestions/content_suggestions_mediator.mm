@@ -774,46 +774,59 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           _browser->GetBrowserState());
 
   // Update Chrome check.
-  state.updateChromeState = safetyCheckManager->GetUpdateChromeCheckState();
-
   absl::optional<UpdateChromeSafetyCheckState> overrideUpdateChromeState =
       experimental_flags::GetUpdateChromeSafetyCheckState();
 
-  if (overrideUpdateChromeState.has_value()) {
-    state.updateChromeState = overrideUpdateChromeState.value();
-  }
+  state.updateChromeState = overrideUpdateChromeState.value_or(
+      safetyCheckManager->GetUpdateChromeCheckState());
 
   // Password check.
-  state.passwordState = safetyCheckManager->GetPasswordCheckState();
-
   absl::optional<PasswordSafetyCheckState> overridePasswordState =
       experimental_flags::GetPasswordSafetyCheckState();
 
-  if (overridePasswordState.has_value()) {
-    state.passwordState = overridePasswordState.value();
-  }
+  state.passwordState = overridePasswordState.value_or(
+      safetyCheckManager->GetPasswordCheckState());
 
   // Safe Browsing check.
-  state.safeBrowsingState = safetyCheckManager->GetSafeBrowsingCheckState();
-
   absl::optional<SafeBrowsingSafetyCheckState> overrideSafeBrowsingState =
       experimental_flags::GetSafeBrowsingSafetyCheckState();
 
-  if (overrideSafeBrowsingState.has_value()) {
-    state.safeBrowsingState = overrideSafeBrowsingState.value();
-  }
+  state.safeBrowsingState = overrideSafeBrowsingState.value_or(
+      safetyCheckManager->GetSafeBrowsingCheckState());
 
   // Insecure credentials.
-  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-      safetyCheckManager->GetInsecureCredentials();
+  absl::optional<int> overrideWeakPasswordsCount =
+      experimental_flags::GetSafetyCheckWeakPasswordsCount();
 
-  password_manager::InsecurePasswordCounts counts =
-      password_manager::CountInsecurePasswordsPerInsecureType(
-          insecureCredentials);
+  absl::optional<int> overrideReusedPasswordsCount =
+      experimental_flags::GetSafetyCheckReusedPasswordsCount();
 
-  state.weakPasswordsCount = counts.weak_count;
-  state.reusedPasswordsCount = counts.reused_count;
-  state.compromisedPasswordsCount = counts.compromised_count;
+  absl::optional<int> overrideCompromisedPasswordsCount =
+      experimental_flags::GetSafetyCheckCompromisedPasswordsCount();
+
+  bool passwordCountsOverride = overrideWeakPasswordsCount.has_value() ||
+                                overrideReusedPasswordsCount.has_value() ||
+                                overrideCompromisedPasswordsCount.has_value();
+
+  // NOTE: If any password counts are overriden via Experimental
+  // settings, all password counts will be considered overriden.
+  if (passwordCountsOverride) {
+    state.weakPasswordsCount = overrideWeakPasswordsCount.value_or(0);
+    state.reusedPasswordsCount = overrideReusedPasswordsCount.value_or(0);
+    state.compromisedPasswordsCount =
+        overrideCompromisedPasswordsCount.value_or(0);
+  } else {
+    std::vector<password_manager::CredentialUIEntry> insecureCredentials =
+        safetyCheckManager->GetInsecureCredentials();
+
+    password_manager::InsecurePasswordCounts counts =
+        password_manager::CountInsecurePasswordsPerInsecureType(
+            insecureCredentials);
+
+    state.weakPasswordsCount = counts.weak_count;
+    state.reusedPasswordsCount = counts.reused_count;
+    state.compromisedPasswordsCount = counts.compromised_count;
+  }
 
   // Last run time.
   base::Time lastRunTimeViaModule =
