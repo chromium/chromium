@@ -5,3 +5,4 @@ based_on_style = pep8
 column_limit = 80
 indent_width = 2
 allow_multiline_dictionary_keys = true
+allow_split_before_dict_value = false

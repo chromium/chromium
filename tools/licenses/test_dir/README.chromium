@@ -13,3 +13,21 @@ in tools/licenses.py
 
 Local Modifications:
 N/A.
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: License tools directory parsing test for multiple
+Short Name: tools-licenses-parse-dir-test-multi
+URL: https://chromium.tools.licenses.test/multi/src.git
+Version: 0
+Revision: v1.0.0
+License: FAKE
+Shipped: no
+Security Critical: no
+
+Description:
+This package contains only dummy files to test the ParseDir function
+in tools/licenses.py
+
+Local Modifications:
+N/A.

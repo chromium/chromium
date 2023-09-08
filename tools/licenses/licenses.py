@@ -186,8 +186,8 @@ SPECIAL_CASES = {
     },
     os.path.join('third_party', 'ipcz'): {
         "Name": "ipcz",
-        "URL":
-        "https://chromium.googlesource.com/chromium/src/third_party/ipcz",
+        "URL": (
+            "https://chromium.googlesource.com/chromium/src/third_party/ipcz"),
         "Shipped": "yes",
         "License": "BSD",
         "License File": ["//third_party/ipcz/LICENSE"],
@@ -222,8 +222,8 @@ SPECIAL_CASES = {
         "License": "MIT",
         "License File": ["//third_party/jsoncpp/LICENSE"],
     },
-    os.path.join('third_party', 'openscreen', 'src', 'third_party', 'mozilla'):
-    {
+    os.path.join('third_party', 'openscreen', 'src', 'third_party',
+                 'mozilla'): {
         "Name": "mozilla",
         "URL": "https://github.com/mozilla",
         "Shipped": "yes",
@@ -255,14 +255,10 @@ SPECIAL_CASES = {
     },
     os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
                  'getopt'): {
-        "Name":
-        "getopt",
-        "URL":
-        "https://sourceware.org/ml/newlib/2005/msg00758.html",
-        "Shipped":
-        "yes",
-        "License":
-        "Public domain",
+        "Name": "getopt",
+        "URL": "https://sourceware.org/ml/newlib/2005/msg00758.html",
+        "Shipped": "yes",
+        "License": "Public domain",
         "License File": [
             "//third_party/crashpad/crashpad/third_party/getopt/LICENSE",
         ],
@@ -370,28 +366,20 @@ SPECIAL_CASES = {
         "License File": ["//third_party/swiftshader/LICENSE.txt"],
     },
     os.path.join('third_party', 'swiftshader', 'third_party', 'SPIRV-Tools'): {
-        "Name":
-        "SPIRV-Tools",
-        "URL":
-        "https://github.com/KhronosGroup/SPIRV-Tools",
-        "Shipped":
-        "yes",
-        "License":
-        "Apache 2.0",
+        "Name": "SPIRV-Tools",
+        "URL": "https://github.com/KhronosGroup/SPIRV-Tools",
+        "Shipped": "yes",
+        "License": "Apache 2.0",
         "License File": [
             "//third_party/swiftshader/third_party/SPIRV-Tools/LICENSE",
         ],
     },
     os.path.join('third_party', 'swiftshader', 'third_party',
                  'SPIRV-Headers'): {
-        "Name":
-        "SPIRV-Headers",
-        "URL":
-        "https://github.com/KhronosGroup/SPIRV-Headers",
-        "Shipped":
-        "yes",
-        "License":
-        "Apache 2.0",
+        "Name": "SPIRV-Headers",
+        "URL": "https://github.com/KhronosGroup/SPIRV-Headers",
+        "Shipped": "yes",
+        "License": "Apache 2.0",
         "License File": [
             "//third_party/swiftshader/third_party/SPIRV-Headers/LICENSE",
         ],
@@ -451,6 +439,9 @@ MANDATORY_FIELDS = {
 MULTIVALUE_FIELDS = {
     "License File",
 }
+
+# Line used to separate dependencies within the same metadata file.
+PATTERN_DEPENDENCY_DIVIDER = re.compile(r"^-{20} DEPENDENCY DIVIDER -{20}$")
 
 # The delimiter used to separate multiple values for one metadata field.
 VALUE_DELIMITER = ","
@@ -555,18 +546,23 @@ def AbsolutePath(path, filename, root):
 
 
 def ParseMetadataFile(filepath: str,
-                      optional_fields: List[str] = []) -> Dict[str, Any]:
+                      optional_fields: List[str] = []) -> List[Dict[str, Any]]:
   """Parses the metadata from the file.
 
   Args:
     filepath: the path to a file from which to parse metadata.
     optional_fields: list of optional metadata fields.
 
-  Returns: a mapping of the metadata fields and values in the file.
+  Returns: the metadata for all dependencies described in the file.
+
+  Raises:
+    InvalidMetadata - if the metadata in the file has duplicate fields
+                      for a dependency.
   """
   known_fields = list(MANDATORY_FIELDS) + optional_fields
   field_lookup = {name.lower(): name for name in known_fields}
 
+  dependencies = []
   metadata = {}
   with codecs.open(filepath, encoding="utf-8") as readme:
     for line in readme:
@@ -574,17 +570,24 @@ def ParseMetadataFile(filepath: str,
       # Skip empty lines.
       if not line:
         continue
-      # Try to parse the field name and field value.
+
+      # Check if a new dependency will be described.
+      if re.match(PATTERN_DEPENDENCY_DIVIDER, line):
+        # Save the metadata for the previous dependency.
+        if metadata:
+          dependencies.append(metadata)
+        metadata = {}
+        continue
+
+      # Otherwise, try to parse the field name and field value.
       parts = line.split(": ", 1)
       if len(parts) == 2:
         raw_field, value = parts
         field = field_lookup.get(raw_field.lower())
         if field:
           if field in metadata:
-            # Duplicate field in the file. For now, preserve the first
-            # value found.
-            continue
-
+            # Duplicate field for this dependency.
+            raise InvalidMetadata(f"duplicate '{field}' in {filepath}")
           if field in MULTIVALUE_FIELDS:
             metadata[field] = [
                 entry.strip() for entry in value.split(VALUE_DELIMITER)
@@ -592,7 +595,12 @@ def ParseMetadataFile(filepath: str,
           else:
             metadata[field] = value
 
-  return metadata
+    # The end of the file has been reached. Save the metadata for the
+    # last dependency, if available.
+    if metadata:
+      dependencies.append(metadata)
+
+  return dependencies
 
 
 def ProcessMetadata(metadata: Dict[str, Any],
@@ -680,9 +688,13 @@ def ParseDir(path,
              require_license_file=True,
              optional_keys=[],
              enable_warnings=False):
-  """Examine a third_party/foo component and extract its metadata."""
+  """Examine a third_party path and extract that directory's metadata.
+
+  Note: directory metadata can contain metadata for multiple
+  dependencies.
+  """
   if path in THIRD_PARTY_FOR_BUILD_FILES_ONLY:
-    return {}
+    return []
 
   # Get the metadata values, from
   # (a) looking up the path in SPECIAL_CASES; or
@@ -690,7 +702,7 @@ def ParseDir(path,
   readme_path = ""
   if path in SPECIAL_CASES:
     readme_path = f"licenses.py SPECIAL_CASES entry for {path}"
-    metadata = dict(SPECIAL_CASES[path])
+    directory_metadata = [dict(SPECIAL_CASES[path])]
   else:
     # Try to find README.chromium.
     readme_path = os.path.join(root, path, "README.chromium")
@@ -699,21 +711,27 @@ def ParseDir(path,
                          "SPECIAL_CASES entry in %s\n" % path)
 
     try:
-      metadata = ParseMetadataFile(readme_path, optional_fields=optional_keys)
+      directory_metadata = ParseMetadataFile(readme_path,
+                                             optional_fields=optional_keys)
     except InvalidMetadata as e:
       raise LicenseError(f"Invalid metadata file: {e}")
 
-  # Process the metadata for licensing info.
-  errors = ProcessMetadata(metadata,
-                           readme_path,
-                           path,
-                           root,
-                           require_license_file=require_license_file,
-                           enable_warnings=enable_warnings)
+  errors = []
+  for dependency_metadata in directory_metadata:
+    # Process the metadata for licensing info.
+    dependency_errors = ProcessMetadata(
+        dependency_metadata,
+        readme_path,
+        path,
+        root,
+        require_license_file=require_license_file,
+        enable_warnings=enable_warnings)
+    errors.extend(dependency_errors)
+
   if errors:
     raise LicenseError("Errors in %s:\n %s\n" % (path, ";\n ".join(errors)))
 
-  return metadata
+  return directory_metadata
 
 
 def process_license_files(
@@ -1042,33 +1060,37 @@ def GenerateCredits(file_template_file,
   entries_by_name = {}
   for path in third_party_dirs:
     try:
-      metadata = ParseDir(path,
-                          _REPOSITORY_ROOT,
-                          enable_warnings=enable_warnings)
-      if not metadata:
+      # Directory metadata can be for multiple dependencies.
+      directory_metadata = ParseDir(path,
+                                    _REPOSITORY_ROOT,
+                                    enable_warnings=enable_warnings)
+      if not directory_metadata:
         continue
     except LicenseError:
       # TODO(phajdan.jr): Convert to fatal error (http://crbug.com/39240).
       continue
-    if metadata['Shipped'] == NO:
-      continue
-    if target_os == 'ios' and not gn_target:
-      # Skip over files that are known not to be used on iOS. But
-      # skipping is unnecessary if GN was used to query the actual
-      # dependencies.
-      # TODO(lambroslambrou): Remove this step once the iOS build is
-      # updated to provide --gn-target to this script.
-      if path in KNOWN_NON_IOS_LIBRARIES:
+
+    for dep_metadata in directory_metadata:
+      if dep_metadata['Shipped'] == NO:
+        continue
+      if target_os == 'ios' and not gn_target:
+        # Skip over files that are known not to be used on iOS. But
+        # skipping is unnecessary if GN was used to query the actual
+        # dependencies.
+        # TODO(lambroslambrou): Remove this step once the iOS build is
+        # updated to provide --gn-target to this script.
+        if path in KNOWN_NON_IOS_LIBRARIES:
+          continue
+
+      new_entry = MetadataToTemplateEntry(dep_metadata, entry_template)
+      # Skip entries that we've already seen (it exists in multiple
+      # directories).
+      prev_entry = entries_by_name.setdefault(new_entry['name'], new_entry)
+      if prev_entry is not new_entry and (prev_entry['content']
+                                          == new_entry['content']):
         continue
 
-    new_entry = MetadataToTemplateEntry(metadata, entry_template)
-    # Skip entries that we've already seen (it exists in multiple directories).
-    prev_entry = entries_by_name.setdefault(new_entry['name'], new_entry)
-    if prev_entry is not new_entry and (prev_entry['content']
-                                        == new_entry['content']):
-      continue
-
-    entries.append(new_entry)
+      entries.append(new_entry)
 
   entries.sort(key=lambda entry: (entry['name'].lower(), entry['content']))
   for entry_id, entry in enumerate(entries):
@@ -1147,12 +1169,12 @@ def GenerateLicenseFile(args: argparse.Namespace):
   metadatas = {}
   for d in third_party_dirs:
     try:
-      md = ParseDir(d,
-                    _REPOSITORY_ROOT,
-                    require_license_file=True,
-                    enable_warnings=args.enable_warnings)
-      if md:
-        metadatas[d] = md
+      directory_metadata = ParseDir(d,
+                                    _REPOSITORY_ROOT,
+                                    require_license_file=True,
+                                    enable_warnings=args.enable_warnings)
+      if directory_metadata:
+        metadatas[d] = directory_metadata
     except LicenseError as lic_exp:
       # TODO(phajdan.jr): Convert to fatal error (http://crbug.com/39240).
       print(f"Error: {lic_exp}")
@@ -1179,7 +1201,7 @@ def GenerateLicenseFile(args: argparse.Namespace):
 
 
 def GenerateLicenseFileCsv(
-    metadata: Dict[str, Dict[str, Any]],
+    metadata: Dict[str, List[Dict[str, Any]]],
     repo_root: str = _REPOSITORY_ROOT,
 ) -> str:
   """Generates a CSV formatted file which contains license data to be used as
@@ -1216,39 +1238,39 @@ def GenerateLicenseFileCsv(
   # Add necessary third_party.
   for directory in sorted(metadata):
     dir_metadata = metadata[directory]
+    for dep_metadata in dir_metadata:
+      # Only third party libraries which are shipped as part of a final
+      # product are in scope for license review.
+      if dep_metadata['Shipped'] == NO:
+        continue
 
-    # Only third party libraries which are shipped as part of a final product
-    # are in scope for license review.
-    if dir_metadata['Shipped'] == NO:
-      continue
+      data_row = [dep_metadata['Name'] or "UNKNOWN"]
 
-    data_row = [dir_metadata['Name'] or "UNKNOWN"]
+      urls = []
+      for lic in dep_metadata['License File']:
+        # The review process requires that a link is provided to each license
+        # which is included. We can achieve this by combining a static
+        # Chromium googlesource URL with the relative path to the license
+        # file from the top level Chromium src directory.
+        lic_url = (
+            "https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/"
+            + os.path.relpath(lic, repo_root))
 
-    urls = []
-    for lic in dir_metadata['License File']:
-      # The review process requires that a link is provided to each license
-      # which is included. We can achieve this by combining a static
-      # Chromium googlesource URL with the relative path to the license
-      # file from the top level Chromium src directory.
-      lic_url = (
-          "https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/"
-          + os.path.relpath(lic, repo_root))
+        # Since these are URLs and not paths, replace any Windows path `\`
+        # separators with a `/`
+        urls.append(lic_url.replace("\\", "/"))
 
-      # Since these are URLs and not paths, replace any Windows path `\`
-      # separators with a `/`
-      urls.append(lic_url.replace("\\", "/"))
+      data_row.append(", ".join(urls) or "UNKNOWN")
+      data_row.append(dep_metadata["License"] or "UNKNOWN")
 
-    data_row.append(", ".join(urls) or "UNKNOWN")
-    data_row.append(dir_metadata["License"] or "UNKNOWN")
-
-    # Join the default data which applies to each row
-    csv_writer.writerow(data_row + static_data)
+      # Join the default data which applies to each row
+      csv_writer.writerow(data_row + static_data)
 
   return csv_content.getvalue()
 
 
 def GenerateLicenseFilePlainText(
-    metadata: Dict[str, Dict[str, Any]],
+    metadata: Dict[str, List[Dict[str, Any]]],
     repo_root: str = _REPOSITORY_ROOT,
     read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')
 ) -> str:
@@ -1264,20 +1286,21 @@ def GenerateLicenseFilePlainText(
   # Add necessary third_party.
   for directory in sorted(metadata):
     dir_metadata = metadata[directory]
-    shipped = dir_metadata['Shipped']
-    license_files = dir_metadata['License File']
-    if shipped == YES and license_files:
-      content.append('-' * 20)
-      content.append(dir_metadata["Name"])
-      content.append('-' * 20)
-      for license_file in license_files:
-        content.append(read_file(os.path.join(repo_root, license_file)))
+    for dep_metadata in dir_metadata:
+      shipped = dep_metadata['Shipped']
+      license_files = dep_metadata['License File']
+      if shipped == YES and license_files:
+        content.append('-' * 20)
+        content.append(dep_metadata["Name"])
+        content.append('-' * 20)
+        for license_file in license_files:
+          content.append(read_file(os.path.join(repo_root, license_file)))
 
   return '\n'.join(content)
 
 
 def GenerateLicenseFileSpdx(
-    metadata: Dict[str, Dict[str, Any]],
+    metadata: Dict[str, List[Dict[str, Any]]],
     spdx_link_prefix: str,
     spdx_root: str,
     doc_name: Optional[str],
@@ -1309,12 +1332,13 @@ def GenerateLicenseFileSpdx(
   # Add all third party libraries
   for directory in sorted(metadata):
     dir_metadata = metadata[directory]
-    shipped = dir_metadata['Shipped']
-    license_files = dir_metadata['License File']
-    if shipped == YES and license_files:
-      for license_file in license_files:
-        license_path = os.path.join(repo_root, license_file)
-        spdx_writer.add_package(dir_metadata['Name'], license_path)
+    for dep_metadata in dir_metadata:
+      shipped = dep_metadata['Shipped']
+      license_files = dep_metadata['License File']
+      if shipped == YES and license_files:
+        for license_file in license_files:
+          license_path = os.path.join(repo_root, license_file)
+          spdx_writer.add_package(dep_metadata['Name'], license_path)
 
   return spdx_writer.write()
 
