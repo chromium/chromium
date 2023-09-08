@@ -7084,8 +7084,8 @@
   },
   {
     "name": "render-arc-notifications-by-chrome",
-    "owners": [ "shuminghao", "arc-framework@google.com" ],
-    "expiry_milestone": 118
+    "owners": [ "shuminghao@google.com", "arc-framework@google.com" ],
+    "expiry_milestone": 128
   },
   {
     "name": "render-document",
