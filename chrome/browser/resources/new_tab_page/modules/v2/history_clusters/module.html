@@ -141,7 +141,7 @@
       on-done-button-click="onDoneButtonClick_"
       on-info-button-click="onInfoButtonClick_"
       on-show-all-button-click="onShowAllButtonClick_"
-      on-suggest-click="onSuggestClick_"
+      on-suggest-click="recordClick_"
       cluster-label="[[computeLabel_()]]"
       normalized-url="[[cluster.visits.0.normalizedUrl]]"
       format$="[[format]]"
@@ -156,7 +156,7 @@
   <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
     <ntp-history-clusters-cart-tile-v2
         id="last-tile" cart="[[cart]]"
-        on-click="onCartTileClick_" on-aux-click="onCartTileClick_"
+        on-click="recordClick_" on-aux-click="recordClick_"
         format="[[format]]" show-related-searches$="[[showRelatedSearches]]">
     </ntp-history-clusters-cart-tile-v2>
   </template>
