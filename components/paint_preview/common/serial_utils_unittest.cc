@@ -35,7 +35,8 @@ namespace paint_preview {
 TEST(PaintPreviewSerialUtils, TestMakeEmptyPicture) {
   sk_sp<SkPicture> pic = MakeEmptyPicture();
   ASSERT_NE(pic, nullptr);
-  auto data = pic->serialize();
+  SkSerialProcs default_procs;
+  auto data = pic->serialize(&default_procs);
   ASSERT_NE(data, nullptr);
   EXPECT_GE(data->size(), 0U);
 }

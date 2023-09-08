@@ -13,14 +13,20 @@
 #include "base/base64.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkPicture.h"
-#include "ui/gfx/codec/jpeg_codec.h"
-#include "ui/gfx/codec/png_codec.h"
+#include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace cc {
 
 void PictureDebugUtil::SerializeAsBase64(const SkPicture* picture,
                                          std::string* output) {
-  sk_sp<SkData> data = picture->serialize();
+  SkSerialProcs procs{.fImageProc = [](SkImage* img, void*) -> sk_sp<SkData> {
+    // Note: if the picture contains texture-backed (gpu) images, they will fail
+    // to be read-back and therefore fail to be encoded unless we can thread the
+    // correct GrDirectContext through to here.
+    return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
+  }};
+  sk_sp<SkData> data = picture->serialize(&procs);
   base::Base64Encode(
       base::StringPiece(static_cast<const char*>(data->data()), data->size()),
       output);

@@ -62,8 +62,10 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/docs/SkXPSDocument.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 // Note that headers in third_party/skia/src are fragile.  This is
 // an experimental, fragile, and diagnostic-only document type.
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
@@ -182,7 +184,14 @@ class SkPictureSerializer {
       SkFILEWStream file(filepath.c_str());
       DCHECK(file.isValid());
 
-      auto data = picture->serialize();
+      SkSerialProcs procs{
+          .fImageProc = [](SkImage* img, void*) -> sk_sp<SkData> {
+            // Note: if the picture contains texture-backed (gpu) images, they
+            // will fail to be read-back and therefore fail to be encoded unless
+            // we can thread the correct GrDirectContext through to here.
+            return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
+          }};
+      auto data = picture->serialize(&procs);
       file.write(data->data(), data->size());
       file.fsync();
     }
