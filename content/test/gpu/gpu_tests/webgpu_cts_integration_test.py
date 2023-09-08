@@ -395,13 +395,13 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if self._use_webgpu_compat_mode:
       self._query += '&compatibility=1'
 
+    if self._run_in_worker:
+      self._query += '&worker=1'
+
     try:
       first_load = self._NavigateIfNecessary(test_path)
       WebGpuCtsIntegrationTest.websocket_server.Send(
-          json.dumps({
-              'q': self._query,
-              'w': self._run_in_worker
-          }))
+          json.dumps({'q': self._query}))
       result = self.HandleMessageLoop(first_load)
 
       log_str = ''.join(result.log_pieces)
