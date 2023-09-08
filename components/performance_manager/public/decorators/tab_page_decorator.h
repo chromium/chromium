@@ -99,6 +99,15 @@ class TabPageObserver : public base::CheckedObserver {
   virtual void OnBeforeTabRemoved(TabPageDecorator::TabHandle* tab_handle) = 0;
 };
 
+class TabPageObserverDefaultImpl : public TabPageObserver {
+ public:
+  void OnTabAdded(TabPageDecorator::TabHandle* tab_handle) override {}
+  void OnTabAboutToBeDiscarded(
+      const PageNode* old_page_node,
+      TabPageDecorator::TabHandle* tab_handle) override {}
+  void OnBeforeTabRemoved(TabPageDecorator::TabHandle* tab_handle) override {}
+};
+
 }  // namespace performance_manager
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_TAB_PAGE_DECORATOR_H_
