@@ -143,7 +143,7 @@ bool TraceReportDatabase::OpenDatabaseIfExists(const base::FilePath& path) {
 
 bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return false;
   }
 
@@ -175,7 +175,7 @@ bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
 
 bool TraceReportDatabase::UserRequestedUpload(const base::Uuid& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return false;
   }
 
@@ -198,7 +198,7 @@ bool TraceReportDatabase::UploadComplete(const base::Uuid& uuid,
                                          base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return false;
   }
 
@@ -220,7 +220,7 @@ bool TraceReportDatabase::UploadComplete(const base::Uuid& uuid,
 absl::optional<std::string> TraceReportDatabase::GetProtoValue(
     const base::Uuid& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return absl::nullopt;
   }
 
@@ -247,7 +247,7 @@ absl::optional<std::string> TraceReportDatabase::GetProtoValue(
 
 bool TraceReportDatabase::DeleteTrace(const base::Uuid& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return false;
   }
 
@@ -263,7 +263,7 @@ bool TraceReportDatabase::DeleteTrace(const base::Uuid& uuid) {
 
 bool TraceReportDatabase::DeleteAllTraces() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return false;
   }
 
@@ -278,7 +278,7 @@ bool TraceReportDatabase::DeleteAllTraces() {
 bool TraceReportDatabase::DeleteTracesInDateRange(const base::Time start,
                                                   const base::Time end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return false;
   }
 
@@ -296,7 +296,7 @@ bool TraceReportDatabase::DeleteTracesInDateRange(const base::Time start,
 
 bool TraceReportDatabase::DeleteTracesOlderThan(base::TimeDelta days_old) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return false;
   }
 
@@ -352,7 +352,7 @@ std::vector<ClientTraceReport> TraceReportDatabase::GetAllReports() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ClientTraceReport> all_reports;
 
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return all_reports;
   }
 
@@ -371,7 +371,7 @@ std::vector<ClientTraceReport> TraceReportDatabase::GetAllReports() {
 absl::optional<ClientTraceReport>
 TraceReportDatabase::GetNextReportPendingUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return absl::nullopt;
   }
 
@@ -392,7 +392,7 @@ TraceReportDatabase::GetNextReportPendingUpload() {
 absl::optional<size_t> TraceReportDatabase::UploadCountSince(
     std::string scenario_name,
     base::Time since) {
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return absl::nullopt;
   }
 
@@ -412,7 +412,7 @@ absl::optional<size_t> TraceReportDatabase::UploadCountSince(
 
 base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCounts() {
   base::flat_map<std::string, size_t> scenario_counts;
-  if (!database_.is_open()) {
+  if (!is_initialized()) {
     return scenario_counts;
   }
 
