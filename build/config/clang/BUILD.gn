@@ -30,6 +30,11 @@ config("find_bad_constructs") {
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
       "check-stack-allocated",
+
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "check-raw-ptr-to-stack-allocated",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
