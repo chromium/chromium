@@ -167,7 +167,9 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     ASSERT_TRUE(LoadHtml(html));
     ASSERT_TRUE(WaitForWebFramesCount(1));
 
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    // Wait for text extracted, background parsing and decoration.
+    // Make timeout 3 times the regular action timeout to reduce flakiness.
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(3 * kWaitForActionTimeout, ^{
       return observer()->seq_id() > seq_id;
     }));
   }
