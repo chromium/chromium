@@ -234,7 +234,8 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     DCHECK(update_vsync_params_callback_);
     update_vsync_params_callback_.Run(frame_time, interval);
   } else if (!just_started_begin_frame_) {
-    base::TimeDelta delta = frame_time - (last_frame_time_ + last_interval_);
+    base::TimeDelta delta =
+        base::TimeTicks::Now() - (last_frame_time_ + last_interval_);
     RecordBeginFrameSourceAccuracy(delta);
   }
   just_started_begin_frame_ = false;
