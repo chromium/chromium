@@ -17,7 +17,7 @@ void WontCompile() {
   [[maybe_unused]] raw_ref<int> ref2(ref);
 }
 
-#elif defined(NCTEST_CROSS_KIND_CONVERSION_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)5U == \(\(base::RawPtrTraits\)36U | RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_CONVERSION_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)5U == \(\(base::RawPtrTraits\)2052U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   int x = 123;
@@ -25,7 +25,7 @@ void WontCompile() {
   [[maybe_unused]] raw_ref<int, base::RawPtrTraits::kMayDangle> ref2(ref);
 }
 
-#elif defined(NCTEST_CROSS_KIND_CONVERSION_MOVE_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)4U == \(\(base::RawPtrTraits\)5U | RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_CONVERSION_MOVE_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)4U == \(\(base::RawPtrTraits\)5U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   int x = 123;
@@ -33,7 +33,7 @@ void WontCompile() {
   [[maybe_unused]] raw_ref<int> ref2(std::move(ref));
 }
 
-#elif defined(NCTEST_CROSS_KIND_CONVERSION_MOVE_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)5U == \(\(base::RawPtrTraits\)36U | RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_CONVERSION_MOVE_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)5U == \(\(base::RawPtrTraits\)2052U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   int x = 123;
@@ -41,7 +41,7 @@ void WontCompile() {
   [[maybe_unused]] raw_ref<int, base::RawPtrTraits::kMayDangle> ref2(std::move(ref));
 }
 
-#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)4U == \(\(base::RawPtrTraits\)5U | RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)4U == \(\(base::RawPtrTraits\)5U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   int x = 123;
@@ -50,7 +50,7 @@ void WontCompile() {
   ref2 = ref;
 }
 
-#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)5U == \(\(base::RawPtrTraits\)36U | RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)5U == \(\(base::RawPtrTraits\)2052U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   int x = 123;
@@ -59,7 +59,7 @@ void WontCompile() {
   ref2 = ref;
 }
 
-#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_MOVE_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)4U == \(\(base::RawPtrTraits\)5U | RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_MOVE_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)4U == \(\(base::RawPtrTraits\)5U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   int x = 123;
@@ -68,7 +68,7 @@ void WontCompile() {
   ref2 = std::move(ref);
 }
 
-#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_MOVE_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)5U == \(\(base::RawPtrTraits\)36U | RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_MOVE_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)5U == \(\(base::RawPtrTraits\)2052U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   int x = 123;
