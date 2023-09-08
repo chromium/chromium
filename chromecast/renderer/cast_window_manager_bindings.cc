@@ -16,7 +16,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "gin/data_object_builder.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 
@@ -133,7 +133,8 @@ void CastWindowManagerBindings::Install(v8::Local<v8::Object> cast_platform,
 v8::Local<v8::Value> CastWindowManagerBindings::SetV8Callback(
     v8::UniquePersistent<v8::Function>* callback_function,
     v8::Local<v8::Function> callback) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
 
   *callback_function = v8::UniquePersistent<v8::Function>(isolate, callback);
 
@@ -171,7 +172,8 @@ void CastWindowManagerBindings::OnTouchInputSupportSet(
     bool resolve_promise,
     bool display_controls) {
   DVLOG(2) << __FUNCTION__;
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = original_context.Get(isolate);
   v8::MicrotasksScope microtasks_scope(
@@ -223,9 +225,9 @@ void CastWindowManagerBindings::InvokeV8Callback(
     return;
   }
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::HandleScope handle_scope(isolate);
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> handler =
@@ -247,9 +249,9 @@ void CastWindowManagerBindings::InvokeV8Callback(
     return;
   }
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::HandleScope handle_scope(isolate);
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> handler =
@@ -279,9 +281,9 @@ void CastWindowManagerBindings::OnBackGesture(
     return;
   }
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::HandleScope handle_scope(isolate);
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> handler = v8::Local<v8::Function>::New(

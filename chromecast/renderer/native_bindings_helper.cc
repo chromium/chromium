@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/converter.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace chromecast {
@@ -67,7 +67,7 @@ void CastBinding::TryInstall() {
   if (!web_frame)
     return;
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   if (!isolate)
     return;
 

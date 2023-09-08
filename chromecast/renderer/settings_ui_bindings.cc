@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace chromecast {
@@ -44,9 +44,9 @@ void SettingsUiBindings::HandleSideSwipe(
     return;
   }
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::HandleScope handle_scope(isolate);
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   v8::MicrotasksScope microtasks_scope(
       context, v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -80,9 +80,9 @@ void SettingsUiBindings::SendPlatformInfo(
     return;
   }
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::HandleScope handle_scope(isolate);
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   v8::MicrotasksScope microtasks_scope(
       context, v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -123,14 +123,16 @@ void SettingsUiBindings::Install(v8::Local<v8::Object> cast_platform,
 
 void SettingsUiBindings::SetSideSwipeHandler(
     v8::Local<v8::Function> side_swipe_handler) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   side_swipe_handler_ =
       v8::UniquePersistent<v8::Function>(isolate, side_swipe_handler);
 }
 
 void SettingsUiBindings::SetPlatformInfoHandler(
     v8::Local<v8::Function> platform_info_handler) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   platform_info_handler_ =
       v8::UniquePersistent<v8::Function>(isolate, platform_info_handler);
   if (!pending_platform_info_json_.empty()) {
