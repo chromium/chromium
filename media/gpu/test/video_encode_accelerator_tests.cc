@@ -412,6 +412,38 @@ TEST_F(VideoEncoderTest, ForceKeyFrame) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
+// Test forcing key frame to the first and second frames.
+TEST_F(VideoEncoderTest, ForceTheFirstAndSecondKeyFrames) {
+  if (g_env->SpatialLayers().size() > 1) {
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  }
+
+  auto config = GetDefaultConfig();
+  CHECK_GT(config.num_frames_to_encode, 1u);
+
+  // The two keyframes impairs the video quality. We use the default tolerance
+  // in order to keep the psnr threshold high that is specified by
+  // --psnr_threshold in video.EncodeAccel tast tests.
+  auto encoder = CreateVideoEncoder(g_env->Video(), config,
+                                    PSNRVideoFrameValidator::kDefaultTolerance);
+
+  // Encode until the first frame and request force_keyframe.
+  encoder->EncodeUntil(VideoEncoder::kFrameReleased, 1u);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
+  encoder->ForceKeyFrame();
+  // Check if the first and second frames are key frames.
+  encoder->EncodeUntil(VideoEncoder::kBitstreamReady, 2u);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
+  EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 2u);
+
+  // Encode until the end of stream.
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+}
+
 // Encode video from start to end. Multiple buffer encodes will be queued in the
 // encoder, without waiting for the result of the previous encode requests.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleOutstandingEncodes) {

@@ -501,10 +501,10 @@ bool VP9Validator::ValidateVanillaStream(
 #if BUILDFLAG(USE_VAAPI)
     // TODO(b/297226972): Remove the workaround once the iHD driver is fixed.
     LOG(WARNING) << "Frame context should be refreshed if neither spatial nor "
-                    "nor temporal scalablity is enabled";
+                    "temporal scalablity is enabled";
 #else
     LOG(ERROR) << "Frame context should be refreshed if neither spatial nor "
-                  "nor temporal scalablity is enabled";
+                  "temporal scalablity is enabled";
     return false;
 #endif
   }
