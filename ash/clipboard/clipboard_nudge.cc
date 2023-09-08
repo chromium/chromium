@@ -25,6 +25,8 @@ namespace ash {
 
 namespace {
 
+// Constants -------------------------------------------------------------------
+
 // The size of the clipboard icon.
 constexpr int kClipboardIconSize = 20;
 
@@ -41,6 +43,21 @@ constexpr int kIconLabelSpacing = 16;
 constexpr int kNudgePadding = 16;
 
 constexpr char kClipboardNudgeName[] = "ClipboardContextualNudge";
+
+// Helpers ---------------------------------------------------------------------
+
+int GetNudgeStringId(ClipboardNudgeType nudge_type) {
+  switch (nudge_type) {
+    case ClipboardNudgeType::kDuplicateCopyNudge:
+      return IDS_ASH_MULTIPASTE_DUPLICATE_COPY_NUDGE;
+    case ClipboardNudgeType::kOnboardingNudge:
+      return IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE;
+    case ClipboardNudgeType::kScreenshotNotificationNudge:
+      return IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE;
+    case ClipboardNudgeType::kZeroStateNudge:
+      return IDS_ASH_MULTIPASTE_ZERO_STATE_CONTEXTUAL_NUDGE;
+  }
+}
 
 }  // namespace
 
@@ -59,24 +76,10 @@ std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
   const std::u16string shortcut_key =
       clipboard_history_util::GetShortcutKeyName();
 
-  size_t text_id = 0;
-  switch (nudge_type_) {
-    case ClipboardNudgeType::kOnboardingNudge:
-      text_id = IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE;
-      break;
-    case ClipboardNudgeType::kZeroStateNudge:
-      text_id = IDS_ASH_MULTIPASTE_ZERO_STATE_CONTEXTUAL_NUDGE;
-      break;
-    case ClipboardNudgeType::kScreenshotNotificationNudge:
-      NOTREACHED_NORETURN();
-    case ClipboardNudgeType::kDuplicateCopyNudge:
-      text_id = IDS_ASH_MULTIPASTE_DUPLICATE_COPY_NUDGE;
-      break;
-  }
-
   size_t offset;
   auto label = std::make_unique<SystemNudgeLabel>(
-      l10n_util::GetStringFUTF16(text_id, shortcut_key, &offset),
+      l10n_util::GetStringFUTF16(GetNudgeStringId(nudge_type_), shortcut_key,
+                                 &offset),
       kMinLabelWidth);
   offset = offset + shortcut_key.length();
 
@@ -99,8 +102,9 @@ const gfx::VectorIcon& ClipboardNudge::GetIcon() const {
 }
 
 std::u16string ClipboardNudge::GetAccessibilityText() const {
-  // TODO(crbug.com/1256854): Calculate text for screen readers.
-  return u"";
+  return l10n_util::GetStringFUTF16(
+      GetNudgeStringId(nudge_type_),
+      clipboard_history_util::GetShortcutKeyName());
 }
 
 }  // namespace ash
