@@ -210,6 +210,8 @@ public class ChromeStrictMode {
         threadInterceptor.ignoreExternalClass(
                 Violation.DETECT_DISK_IO, "android.app.SharedPreferencesImpl");
         threadInterceptor.ignoreExternalMethod(
+                Violation.DETECT_DISK_IO, "android.app.SharedPreferencesImpl$EditorImpl#apply");
+        threadInterceptor.ignoreExternalMethod(
                 Violation.DETECT_DISK_IO, "android.app.ContextImpl#getSharedPreferences");
 
         // Ignore strict mode violations due to xposed.
