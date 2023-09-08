@@ -650,6 +650,7 @@ if (current_toolchain == default_toolchain) {
       "//ui/base/mojom:mojom_java",
       "//ui/gfx/geometry/mojom:mojom_java",
       "//url:gurl_java",
+      "//url:origin_java",
       "//url/mojom:url_mojom_gurl_java",
     ]
 
@@ -1210,6 +1211,7 @@ if (current_toolchain == default_toolchain) {
       "//ui/base/mojom:mojom_java",
       "//url:gurl_java",
       "//url:gurl_junit_test_support",
+      "//url:origin_java",
       "//url/mojom:url_mojom_gurl_java",
       "//url/mojom:url_mojom_origin_java",
     ]
@@ -1469,6 +1471,7 @@ if (current_toolchain == default_toolchain) {
       "//url:android_test_helper_java",
       "//url:gurl_java",
       "//url:gurl_junit_test_support",
+      "//url:origin_java",
       "//url:url_java_unit_tests",
     ]
 
@@ -1843,6 +1846,7 @@ if (current_toolchain == default_toolchain) {
       "//url:android_test_helper_java",
       "//url:gurl_java",
       "//url:gurl_junit_test_support",
+      "//url:origin_java",
       "//url/mojom:url_mojom_gurl_java",
       "//url/mojom:url_mojom_origin_java",
     ]
@@ -2441,6 +2445,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/junit",
       "//url:android_test_helper_java",
       "//url:gurl_java",
+      "//url:origin_java",
     ]
   }
 

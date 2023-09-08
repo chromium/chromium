@@ -110,6 +110,7 @@ android_library("java") {
     "//ui/android:ui_full_java",
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
+    "//url:origin_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.tab"

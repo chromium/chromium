@@ -168,6 +168,11 @@ if (is_android && !is_cronet_build) {
       "//url/mojom:url_mojom_origin_java",
     ]
   }
+
+  # TODO(agrieve): Inline this target.
+  java_group("origin_java") {
+    deps = [ ":gurl_java" ]
+  }
 }
 
 source_set("url_test_support") {
@@ -297,6 +302,7 @@ if (is_android && !is_cronet_build) {
     ]
     deps = [
       ":gurl_java",
+      ":origin_java",
       "//base:base_java_test_support",
       "//base:jni_java",
     ]
@@ -320,6 +326,7 @@ if (is_android && !is_cronet_build) {
       ":android_test_helper_java",
       ":gurl_java",
       ":gurl_junit_test_support",
+      ":origin_java",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:jni_java",

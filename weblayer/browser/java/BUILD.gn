@@ -298,6 +298,7 @@ android_library("java") {
     "//ui/android:ui_full_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
+    "//url:origin_java",
   ]
 
   if (enable_arcore) {
@@ -376,6 +377,7 @@ android_library("test_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_full_java",
+    "//url:origin_java",
   ]
 }
 
@@ -396,6 +398,7 @@ robolectric_library("junit_test_support") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
+    "//url:origin_java",
   ]
   sources = [ "org/chromium/weblayer_private/payments/test_support/WebLayerPaymentRequestBuilder.java" ]
 }
