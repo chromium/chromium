@@ -65,7 +65,7 @@ class UrlBarViewBinder {
             view.setIgnoreTextChangesForAutocomplete(true);
 
             try (TraceEvent te1 = TraceEvent.scoped("UrlBarViewBinder.setText")) {
-                try (TimingMetric t = TimingMetric.shortUptime("Ominbox.SetText.Duration")) {
+                try (TimingMetric t = TimingMetric.shortUptime("Omnibox.SetText.Duration")) {
                     if (OmniboxFeatures.shouldTruncateVisibleUrl()) {
                         view.setTextWithTruncation(
                                 state.text, state.scrollType, state.scrollToIndex);
