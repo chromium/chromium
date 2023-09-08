@@ -736,6 +736,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kLayerBlock:
       case StyleRule::kFontFeatureValues:
       case StyleRule::kPositionFallback:
+      case StyleRule::kProperty:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -775,6 +776,9 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
     return position_fallback_rule->cssRules();
   }
 
+  if (auto* property_rule = DynamicTo<CSSPropertyRule>(rule))
+    return property_rule->cssRules();
+
   return nullptr;
 }
 
@@ -809,6 +813,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kLayerBlockRule:
       case CSSRule::kFontFeatureValuesRule:
       case CSSRule::kPositionFallbackRule:
+      case CSSRule::kPropertyRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
         break;
@@ -1315,7 +1320,7 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
   CSSRule* rule = RuleForSourceData(source_data);
   if (!rule || !rule->parentStyleSheet() ||
       (!IsA<CSSStyleRule>(rule) && !IsA<CSSKeyframeRule>(rule) &&
-       !IsA<CSSTryRule>(rule))) {
+       !IsA<CSSPropertyRule>(rule) && !IsA<CSSTryRule>(rule))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
         "Source range didn't match existing style source range");
@@ -1327,6 +1332,8 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
     style = style_rule->style();
   } else if (auto* try_rule = DynamicTo<CSSTryRule>(rule)) {
     style = try_rule->style();
+  } else if (auto* property_rule = DynamicTo<CSSPropertyRule>(rule)) {
+    style = property_rule->Style();
   } else {
     style = To<CSSKeyframeRule>(rule)->style();
   }

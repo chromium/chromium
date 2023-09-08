@@ -90,8 +90,8 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
 
   bool HasProperties() const {
     return type == StyleRule::kStyle || type == StyleRule::kFontFace ||
-           type == StyleRule::kPage || type == StyleRule::kKeyframe ||
-           type == StyleRule::kTry;
+           type == StyleRule::kPage || type == StyleRule::kProperty ||
+           type == StyleRule::kKeyframe || type == StyleRule::kTry;
   }
 
   bool HasMedia() const {

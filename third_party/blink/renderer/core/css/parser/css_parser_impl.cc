@@ -121,6 +121,8 @@ StyleRule::RuleType RuleTypeForMutableDeclaration(
       return StyleRule::kFontFace;
     case kCSSKeyframeRuleMode:
       return StyleRule::kKeyframe;
+    case kCSSPropertyRuleMode:
+      return StyleRule::kProperty;
     default:
       return StyleRule::kStyle;
   }
@@ -1493,7 +1495,8 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
   return MakeGarbageCollected<StyleRuleProperty>(
-      name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+      name,
+      CreateCSSPropertyValueSet(parsed_properties_, kCSSPropertyRuleMode));
 }
 
 StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
@@ -2324,7 +2327,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
 
   if (observer_ &&
       (rule_type == StyleRule::kStyle || rule_type == StyleRule::kKeyframe ||
-       rule_type == StyleRule::kTry)) {
+       rule_type == StyleRule::kProperty || rule_type == StyleRule::kTry)) {
     if (!stream.AtEnd()) {
       // If we skipped the main call to ConsumeValue due to an invalid
       // property/descriptor, the inspector still needs to know the offset

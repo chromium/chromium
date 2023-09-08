@@ -1,0 +1,97 @@
+Test that properties of property rules are editable
+Original color:
+{
+    name : color
+    value : rgb(255, 0, 0)
+}
+Edit:
+{
+    range : {
+        endColumn : 2
+        endLine : 10
+        startColumn : 20
+        startLine : 6
+    }
+    styleSheetId : <string>
+    text :      syntax: "<color>";     inherits: false;     initial-value: blue; 
+}
+Edit result:
+{
+    id : <number>
+    result : {
+        styles : [
+            [0] : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : syntax
+                        range : {
+                            endColumn : 22
+                            endLine : 7
+                            startColumn : 4
+                            startLine : 7
+                        }
+                        text : syntax: "<color>";
+                        value : "<color>"
+                    }
+                    [1] : {
+                        disabled : false
+                        implicit : false
+                        name : inherits
+                        range : {
+                            endColumn : 20
+                            endLine : 8
+                            startColumn : 4
+                            startLine : 8
+                        }
+                        text : inherits: false;
+                        value : false
+                    }
+                    [2] : {
+                        disabled : false
+                        implicit : false
+                        name : initial-value
+                        range : {
+                            endColumn : 24
+                            endLine : 9
+                            startColumn : 4
+                            startLine : 9
+                        }
+                        text : initial-value: blue;
+                        value : blue
+                    }
+                    [3] : {
+                        name : syntax
+                        value : "<color>"
+                    }
+                    [4] : {
+                        name : inherits
+                        value : false
+                    }
+                    [5] : {
+                        name : initial-value
+                        value : blue
+                    }
+                ]
+                cssText :      syntax: "<color>";     inherits: false;     initial-value: blue; 
+                range : {
+                    endColumn : 0
+                    endLine : 10
+                    startColumn : 20
+                    startLine : 6
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Modified color:
+{
+    name : color
+    value : rgb(0, 0, 255)
+}
+

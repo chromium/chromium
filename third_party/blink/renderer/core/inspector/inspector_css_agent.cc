@@ -433,6 +433,9 @@ class InspectorCSSAgent::ModifyRuleAction final
     if (auto* try_rule = DynamicTo<CSSTryRule>(rule)) {
       return style_sheet_->BuildObjectForStyle(try_rule->style());
     }
+    if (auto* property_rule = DynamicTo<CSSPropertyRule>(rule)) {
+      return style_sheet_->BuildObjectForStyle(property_rule->Style());
+    }
     return nullptr;
   }
 
