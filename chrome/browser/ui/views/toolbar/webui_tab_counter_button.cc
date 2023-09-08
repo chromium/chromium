@@ -61,6 +61,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
@@ -101,8 +102,8 @@ class NumberLabel : public views::Label {
   METADATA_HEADER(NumberLabel);
   NumberLabel() : Label(std::u16string(), CONTEXT_TAB_COUNTER) {
     single_digit_font_ = font_list();
-    double_digit_font_ = views::style::GetFont(CONTEXT_TAB_COUNTER,
-                                               views::style::STYLE_SECONDARY);
+    double_digit_font_ = views::TypographyProvider::Get().GetFont(
+        CONTEXT_TAB_COUNTER, views::style::STYLE_SECONDARY);
   }
 
   ~NumberLabel() override = default;

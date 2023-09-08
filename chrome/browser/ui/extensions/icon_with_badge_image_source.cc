@@ -30,6 +30,7 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace {
 
@@ -101,8 +102,8 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
   gfx::FontList base_font =
       features::IsChromeRefresh2023()
-          ? views::style::GetFont(views::style::CONTEXT_BADGE,
-                                  views::style::STYLE_SECONDARY)
+          ? views::TypographyProvider::Get().GetFont(
+                views::style::CONTEXT_BADGE, views::style::STYLE_SECONDARY)
           : rb->GetFontList(ui::ResourceBundle::BaseFont)
                 .DeriveWithHeightUpperBound(badge_height);
   std::u16string utf16_text = base::UTF8ToUTF16(badge_->text);

@@ -17,6 +17,8 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/widget/widget.h"
 
 namespace ui::ime {
@@ -209,7 +211,8 @@ void CandidateView::StateChanged(ButtonState old_state) {
   int text_style = GetState() == STATE_DISABLED ? views::style::STYLE_DISABLED
                                                 : views::style::STYLE_PRIMARY;
   shortcut_label_->SetEnabledColorId(
-      views::style::GetColorId(views::style::CONTEXT_LABEL, text_style));
+      views::TypographyProvider::Get().GetColorId(views::style::CONTEXT_LABEL,
+                                                  text_style));
   if (GetState() == STATE_PRESSED)
     SetHighlighted(true);
 }

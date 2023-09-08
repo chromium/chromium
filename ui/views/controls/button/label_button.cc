@@ -31,6 +31,8 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -46,9 +48,11 @@ LabelButton::LabelButton(PressedCallback callback,
                          int button_context)
     : Button(std::move(callback)),
       cached_normal_font_list_(
-          style::GetFont(button_context, style::STYLE_PRIMARY)),
-      cached_default_button_font_list_(
-          style::GetFont(button_context, style::STYLE_DIALOG_BUTTON_DEFAULT)) {
+          TypographyProvider::Get().GetFont(button_context,
+                                            style::STYLE_PRIMARY)),
+      cached_default_button_font_list_(TypographyProvider::Get().GetFont(
+          button_context,
+          style::STYLE_DIALOG_BUTTON_DEFAULT)) {
   ink_drop_container_ = AddChildView(std::make_unique<InkDropContainerView>());
   ink_drop_container_->SetVisible(false);
 
@@ -511,9 +515,9 @@ PropertyEffects LabelButton::UpdateStyleToIndicateDefaultStatus() {
   // never be given default status.
   DCHECK_EQ(cached_normal_font_list_.GetFontSize(),
             label()->font_list().GetFontSize());
-  // TODO(tapted): This should use style::GetFont(), but this part can just be
-  // deleted when default buttons no longer go bold. Colors will need updating
-  // still.
+  // TODO(tapted): This should use TypographyProvider::Get().GetFont(), but this
+  // part can just be deleted when default buttons no longer go bold. Colors
+  // will need updating still.
   label_->SetFontList(GetIsDefault() ? cached_default_button_font_list_
                                      : cached_normal_font_list_);
   ResetLabelEnabledColor();

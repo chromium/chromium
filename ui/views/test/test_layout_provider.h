@@ -41,8 +41,8 @@ class TestLayoutProvider : public LayoutProvider, public TypographyProvider {
   int GetSnappedDialogWidth(int min_width) const override;
 
   // TypographyProvider:
-  ui::ResourceBundle::FontDetails GetFontDetails(int context,
-                                                 int style) const override;
+  ui::ResourceBundle::FontDetails GetFontDetailsImpl(int context,
+                                                     int style) const override;
 
  private:
   std::map<int, int> distance_metrics_;

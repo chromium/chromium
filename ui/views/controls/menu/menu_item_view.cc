@@ -53,6 +53,7 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -882,7 +883,8 @@ const gfx::FontList MenuItemView::GetFontList() const {
   }
   auto* menu_controller = GetMenuController();
   if (menu_controller && menu_controller->use_ash_system_ui_layout()) {
-    return style::GetFont(style::CONTEXT_TOUCH_MENU, style::STYLE_PRIMARY);
+    return TypographyProvider::Get().GetFont(style::CONTEXT_TOUCH_MENU,
+                                             style::STYLE_PRIMARY);
   }
   return menu_controller && menu_controller->IsContextMenu()
              ? MenuConfig::instance().context_menu_font_list
@@ -1137,7 +1139,8 @@ SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
     text_style = style::STYLE_SECONDARY;
   }
 
-  return GetColorProvider()->GetColor(style::GetColorId(context, text_style));
+  return GetColorProvider()->GetColor(
+      TypographyProvider::Get().GetColorId(context, text_style));
 }
 
 MenuItemView::Colors MenuItemView::CalculateColors(

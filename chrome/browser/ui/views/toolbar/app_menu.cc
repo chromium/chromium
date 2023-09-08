@@ -97,6 +97,8 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -1023,8 +1025,9 @@ absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
   return GetLabelFontList(command_id)
              ? absl::make_optional(
                    root_->GetSubmenu()->GetColorProvider()->GetColor(
-                       views::style::GetColorId(views::style::CONTEXT_MENU,
-                                                views::style::STYLE_PRIMARY)))
+                       views::TypographyProvider::Get().GetColorId(
+                           views::style::CONTEXT_MENU,
+                           views::style::STYLE_PRIMARY)))
              : absl::nullopt;
 }
 

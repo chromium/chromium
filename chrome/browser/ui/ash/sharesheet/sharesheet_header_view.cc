@@ -57,6 +57,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -403,8 +405,8 @@ SharesheetHeaderView::ExtractShareText() {
       // Format URL to be elided correctly to prevent origin spoofing.
       auto elided_url = url_formatter::ElideUrl(
           extracted_text.url,
-          views::style::GetFont(CONTEXT_SHARESHEET_BUBBLE_BODY,
-                                views::style::STYLE_PRIMARY),
+          views::TypographyProvider::Get().GetFont(
+              CONTEXT_SHARESHEET_BUBBLE_BODY, views::style::STYLE_PRIMARY),
           available_width);
       auto url_label = CreatePreviewLabel(elided_url);
 

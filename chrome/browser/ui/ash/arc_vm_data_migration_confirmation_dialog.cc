@@ -27,6 +27,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -143,8 +144,9 @@ void ArcVmDataMigrationConfirmationDialog::InitializeView(
           .SetText(
               l10n_util::GetStringUTF16(IDS_ARC_VM_DATA_MIGRATION_DIALOG_TITLE))
           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-          .SetFontList(views::style::GetFont(views::style::CONTEXT_DIALOG_TITLE,
-                                             views::style::STYLE_PRIMARY)
+          .SetFontList(views::TypographyProvider::Get()
+                           .GetFont(views::style::CONTEXT_DIALOG_TITLE,
+                                    views::style::STYLE_PRIMARY)
                            .DeriveWithWeight(gfx::Font::Weight::BOLD))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetMultiLine(true)

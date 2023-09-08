@@ -10,6 +10,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace ash {
 
@@ -48,8 +50,8 @@ ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text,
     if (chromeos::features::IsJellyEnabled()) {
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1, *this);
     } else {
-      SetFontList(views::style::GetFont(views::style::CONTEXT_TOUCH_MENU,
-                                        views::style::STYLE_PRIMARY));
+      SetFontList(views::TypographyProvider::Get().GetFont(
+          views::style::CONTEXT_TOUCH_MENU, views::style::STYLE_PRIMARY));
     }
   }
 }

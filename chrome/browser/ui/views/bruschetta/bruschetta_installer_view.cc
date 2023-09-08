@@ -33,6 +33,8 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -95,9 +97,10 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
     : profile_(profile), observation_(this), guest_id_(guest_id) {
   // Layout constants from the spec used for the plugin vm installer.
   constexpr auto kDialogInsets = gfx::Insets::TLBR(60, 64, 0, 64);
-  const int kPrimaryMessageHeight = views::style::GetLineHeight(
+  const auto& typography_provider = views::TypographyProvider::Get();
+  const int kPrimaryMessageHeight = typography_provider.GetLineHeight(
       CONTEXT_HEADLINE, views::style::STYLE_PRIMARY);
-  const int kSecondaryMessageHeight = views::style::GetLineHeight(
+  const int kSecondaryMessageHeight = typography_provider.GetLineHeight(
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   constexpr int kProgressBarHeight = 5;
   constexpr int kProgressBarTopMargin = 32;

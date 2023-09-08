@@ -25,6 +25,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace {
 
@@ -272,7 +274,7 @@ std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
   render_text->SetDisplayRect(gfx::Rect(gfx::Size(INT_MAX, 0)));
   render_text->SetCursorEnabled(false);
   render_text->SetElideBehavior(gfx::ELIDE_TAIL);
-  const gfx::FontList& font = views::style::GetFont(
+  const gfx::FontList& font = views::TypographyProvider::Get().GetFont(
       (use_deemphasized_font_ ? CONTEXT_OMNIBOX_DEEMPHASIZED
                               : CONTEXT_OMNIBOX_POPUP),
       kTextStyle);

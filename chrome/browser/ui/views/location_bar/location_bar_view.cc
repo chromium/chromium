@@ -142,6 +142,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -222,18 +223,19 @@ void LocationBarView::Init() {
 
   CreateChip();
 
-  const gfx::FontList& font_list = views::style::GetFont(
+  const auto& typography_provider = views::TypographyProvider::Get();
+  const gfx::FontList& font_list = typography_provider.GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
 
   const gfx::FontList& omnibox_chip_font_list =
       OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-          ? views::style::GetFont(CONTEXT_OMNIBOX_PRIMARY,
-                                  views::style::STYLE_BODY_4_EMPHASIS)
+          ? typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
+                                        views::style::STYLE_BODY_4_EMPHASIS)
           : font_list;
   const gfx::FontList& page_action_font_list =
       OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-          ? views::style::GetFont(CONTEXT_OMNIBOX_PRIMARY,
-                                  views::style::STYLE_BODY_3_EMPHASIS)
+          ? typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
+                                        views::style::STYLE_BODY_3_EMPHASIS)
           : font_list;
 
   auto location_icon_view =
@@ -1507,7 +1509,7 @@ void LocationBarView::FocusAndSelectAll() {
 }
 
 void LocationBarView::OnTouchUiChanged() {
-  const gfx::FontList& font_list = views::style::GetFont(
+  const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
   location_icon_view_->SetFontList(font_list);
   omnibox_view_->SetFontList(font_list);

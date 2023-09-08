@@ -38,6 +38,8 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/selection_controller.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace {
 
@@ -77,7 +79,8 @@ Label::Label(const std::u16string& text,
     : text_context_(text_context),
       text_style_(text_style),
       context_menu_contents_(this) {
-  Init(text, style::GetFont(text_context, text_style), directionality_mode);
+  Init(text, TypographyProvider::Get().GetFont(text_context, text_style),
+       directionality_mode);
 }
 
 Label::Label(const std::u16string& text, const CustomFont& font)
@@ -91,7 +94,8 @@ Label::~Label() = default;
 
 // static
 const gfx::FontList& Label::GetDefaultFontList() {
-  return style::GetFont(style::CONTEXT_LABEL, style::STYLE_PRIMARY);
+  return TypographyProvider::Get().GetFont(style::CONTEXT_LABEL,
+                                           style::STYLE_PRIMARY);
 }
 
 void Label::SetFontList(const gfx::FontList& font_list) {
@@ -136,7 +140,8 @@ void Label::SetTextContext(int text_context) {
   if (text_context == text_context_)
     return;
   text_context_ = text_context;
-  full_text_->SetFontList(style::GetFont(text_context_, text_style_));
+  full_text_->SetFontList(
+      TypographyProvider::Get().GetFont(text_context_, text_style_));
   full_text_->SetMinLineHeight(GetLineHeight());
   ClearDisplayText();
   if (GetWidget())
@@ -162,7 +167,8 @@ void Label::SetTextStyle(int style) {
 }
 
 void Label::ApplyBaselineTextStyle() {
-  full_text_->SetFontList(style::GetFont(text_context_, text_style_));
+  full_text_->SetFontList(
+      TypographyProvider::Get().GetFont(text_context_, text_style_));
   full_text_->SetMinLineHeight(GetLineHeight());
   ClearDisplayText();
   if (GetWidget())
@@ -176,13 +182,16 @@ void Label::SetTextStyleRange(int style, const gfx::Range& range) {
     return;
   }
 
-  const auto details = style::GetFontDetails(text_context_, style);
+  const auto& typography_provider = TypographyProvider::Get();
+  const auto details = typography_provider.GetFontDetails(text_context_, style);
   // This function is not prepared to handle style requests that vary by
   // anything other than weight.
-  DCHECK_EQ(details.typeface,
-            style::GetFontDetails(text_context_, text_style_).typeface);
+  DCHECK_EQ(
+      details.typeface,
+      typography_provider.GetFontDetails(text_context_, text_style_).typeface);
   DCHECK_EQ(details.size_delta,
-            style::GetFontDetails(text_context_, text_style_).size_delta);
+            typography_provider.GetFontDetails(text_context_, text_style_)
+                .size_delta);
   full_text_->ApplyWeight(details.weight, range);
   ClearDisplayText();
   PreferredSizeChanged();
@@ -358,9 +367,9 @@ void Label::SetVerticalAlignment(gfx::VerticalAlignment alignment) {
 int Label::GetLineHeight() const {
   // TODO(pkasting): If we can replace SetFontList() with context/style setter
   // calls, we can eliminate the reference to font_list().GetHeight() here.
-  return line_height_.value_or(
-      std::max(style::GetLineHeight(text_context_, text_style_),
-               font_list().GetHeight()));
+  return line_height_.value_or(std::max(
+      TypographyProvider::Get().GetLineHeight(text_context_, text_style_),
+      font_list().GetHeight()));
 }
 
 void Label::SetLineHeight(int line_height) {
@@ -1263,7 +1272,7 @@ void Label::UpdateColorsFromTheme() {
         GetCascadingProperty(this, kCascadingLabelEnabledColor);
     requested_enabled_color_ =
         cascading_color.value_or(GetColorProvider()->GetColor(
-            style::GetColorId(text_context_, text_style_)));
+            TypographyProvider::Get().GetColorId(text_context_, text_style_)));
   }
 
   if (background_color_id_.has_value()) {

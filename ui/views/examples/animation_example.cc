@@ -58,9 +58,8 @@ class AnimatingSquare : public View {
   int index_;
   int paint_counter_ = 0;
   gfx::FontList font_list_ =
-      LayoutProvider::Get()->GetTypographyProvider().GetFont(
-          style::CONTEXT_DIALOG_TITLE,
-          style::STYLE_PRIMARY);
+      TypographyProvider::Get().GetFont(style::CONTEXT_DIALOG_TITLE,
+                                        style::STYLE_PRIMARY);
 };
 
 AnimatingSquare::AnimatingSquare(size_t index) : index_(index) {

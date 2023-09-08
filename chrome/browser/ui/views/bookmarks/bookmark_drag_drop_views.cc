@@ -158,7 +158,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
         kContainerRadius + kIconContainerRadius - kIconSize / 2);
 
     // Draw bookmark title.
-    gfx::FontList font_list = views::style::GetFont(
+    gfx::FontList font_list = views::TypographyProvider::Get().GetFont(
         views::style::CONTEXT_LABEL, features::IsChromeRefresh2023()
                                          ? views::style::STYLE_BODY_4_EMPHASIS
                                          : views::style::STYLE_PRIMARY);

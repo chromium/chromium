@@ -9,6 +9,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace views::internal {
 
@@ -82,10 +84,9 @@ void LabelButtonLabel::SetColorForEnableState() {
     Label::SetEnabledColorId(absl::get<ui::ColorId>(color));
   } else {
     // Get default color Id.
-    const ui::ColorId default_color_id =
-        LayoutProvider::Get()->GetTypographyProvider().GetColorId(
-            GetTextContext(),
-            GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED);
+    const ui::ColorId default_color_id = TypographyProvider::Get().GetColorId(
+        GetTextContext(),
+        GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED);
     // Set default color Id.
     Label::SetEnabledColorId(default_color_id);
   }

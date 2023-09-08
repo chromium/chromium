@@ -11,6 +11,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace {
 
@@ -35,8 +37,9 @@ void BulletView::OnPaint(gfx::Canvas* canvas) {
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(GetColorProvider()->GetColor(views::style::GetColorId(
-      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY)));
+  flags.setColor(
+      GetColorProvider()->GetColor(views::TypographyProvider::Get().GetColorId(
+          views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY)));
   flags.setAntiAlias(true);
 
   canvas->DrawPath(path, flags);

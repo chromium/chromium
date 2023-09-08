@@ -26,6 +26,8 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "url/gurl.h"
 
 namespace {
@@ -104,10 +106,11 @@ PasspointDialogView::PasspointDialogView(
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetAllowCharacterBreak(true)
-          .SetFontList(views::style::GetFont(
-                           views::style::TextContext::CONTEXT_DIALOG_TITLE,
+          .SetFontList(
+              views::TypographyProvider::Get()
+                  .GetFont(views::style::TextContext::CONTEXT_DIALOG_TITLE,
                            views::style::TextStyle::STYLE_PRIMARY)
-                           .DeriveWithWeight(gfx::Font::Weight::MEDIUM))
+                  .DeriveWithWeight(gfx::Font::Weight::MEDIUM))
           .Build());
 
   AddChildView(

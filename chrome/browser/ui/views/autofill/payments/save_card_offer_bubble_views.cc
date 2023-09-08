@@ -52,6 +52,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace {
 
@@ -65,7 +66,7 @@ ui::ImageModel GetProfileAvatar(AccountInfo account_info) {
         profiles::GetPlaceholderAvatarIconResourceID());
   }
 
-  int avatar_size = views::style::GetLineHeight(
+  int avatar_size = views::TypographyProvider::Get().GetLineHeight(
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
 
   return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(

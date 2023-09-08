@@ -65,6 +65,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -73,8 +74,8 @@ namespace {
 int ComboboxIconSize() {
   // Use the line height of the body small text. This allows the icons to adapt
   // if the user changes the font size.
-  return views::style::GetLineHeight(views::style::CONTEXT_MENU,
-                                     views::style::STYLE_PRIMARY);
+  return views::TypographyProvider::Get().GetLineHeight(
+      views::style::CONTEXT_MENU, views::style::STYLE_PRIMARY);
 }
 
 std::unique_ptr<views::View> CreateRow() {

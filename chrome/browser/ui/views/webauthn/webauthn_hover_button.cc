@@ -15,6 +15,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -88,7 +89,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
                    /*min_width=*/0);
   }
 
-  const int row_height = views::style::GetLineHeight(
+  const int row_height = views::TypographyProvider::Get().GetLineHeight(
       views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
   const bool is_two_line = !subtitle_text.empty() || force_two_line;
   const int icon_row_span = is_two_line ? 2 : 1;

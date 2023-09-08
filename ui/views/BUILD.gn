@@ -462,7 +462,6 @@ component("views") {
     "round_rect_painter.cc",
     "selection_controller.cc",
     "style/platform_style.cc",
-    "style/typography.cc",
     "style/typography_provider.cc",
     "view.cc",
     "view_class_properties.cc",

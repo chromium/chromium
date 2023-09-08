@@ -24,6 +24,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 
 namespace autofill {
@@ -256,8 +257,8 @@ void PopupCellView::RefreshStyle() {
                     ? (GetSelected() ? views::style::STYLE_SELECTED
                                      : label->GetTextStyle())
                     : views::style::STYLE_DISABLED;
-    label->SetEnabledColorId(
-        views::style::GetColorId(label->GetTextContext(), style));
+    label->SetEnabledColorId(views::TypographyProvider::Get().GetColorId(
+        label->GetTextContext(), style));
   }
 
   SchedulePaint();

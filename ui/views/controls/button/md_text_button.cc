@@ -34,6 +34,7 @@
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace views {
 
@@ -263,8 +264,9 @@ void MdTextButton::UpdateTextColor() {
   }
 
   const ui::ColorProvider* color_provider = GetColorProvider();
+  const auto& typography_provider = TypographyProvider::Get();
   SkColor enabled_text_color = color_provider->GetColor(
-      style::GetColorId(label()->GetTextContext(), text_style));
+      typography_provider.GetColorId(label()->GetTextContext(), text_style));
   const auto colors = explicitly_set_colors();
   LabelButton::SetEnabledTextColors(enabled_text_color);
   // Disabled buttons need the disabled color explicitly set.
@@ -273,7 +275,7 @@ void MdTextButton::UpdateTextColor() {
   // since a descendant could have overridden the label enabled color.
   if (GetState() == STATE_DISABLED) {
     LabelButton::SetTextColor(
-        STATE_DISABLED, color_provider->GetColor(style::GetColorId(
+        STATE_DISABLED, color_provider->GetColor(typography_provider.GetColorId(
                             label()->GetTextContext(), style::STYLE_DISABLED)));
   }
   set_explicitly_set_colors(colors);

@@ -33,6 +33,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 OmniboxHeaderView::OmniboxHeaderView(OmniboxPopupViewViews* popup_view,
                                      size_t model_index)
@@ -55,8 +56,8 @@ OmniboxHeaderView::OmniboxHeaderView(OmniboxPopupViewViews* popup_view,
   header_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   const gfx::FontList& font =
-      views::style::GetFont(CONTEXT_OMNIBOX_SECTION_HEADER,
-                            views::style::STYLE_PRIMARY)
+      views::TypographyProvider::Get()
+          .GetFont(CONTEXT_OMNIBOX_SECTION_HEADER, views::style::STYLE_PRIMARY)
           .DeriveWithWeight(gfx::Font::Weight::MEDIUM);
   header_label_->SetFontList(font);
 

@@ -168,8 +168,9 @@ class CustomTabBarTitleOriginView : public views::View {
 
   SkColor GetLocationColor() const {
     return GetColorProvider()->GetColor(
-        views::style::GetColorId(CONTEXT_DIALOG_BODY_TEXT_SMALL,
-                                 views::style::TextStyle::STYLE_PRIMARY));
+        views::TypographyProvider::Get().GetColorId(
+            CONTEXT_DIALOG_BODY_TEXT_SMALL,
+            views::style::TextStyle::STYLE_PRIMARY));
   }
 
   // views::View:
@@ -209,7 +210,7 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
     : delegate_(delegate), browser_(browser_view->browser()) {
   set_context_menu_controller(this);
 
-  const gfx::FontList& font_list = views::style::GetFont(
+  const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
 
   close_button_ =

@@ -16,12 +16,13 @@ class ChromeTypographyProvider : public views::TypographyProvider {
   ChromeTypographyProvider(const ChromeTypographyProvider&) = delete;
   ChromeTypographyProvider& operator=(const ChromeTypographyProvider&) = delete;
 
+ protected:
   // TypographyProvider:
-  ui::ResourceBundle::FontDetails GetFontDetails(int context,
-                                                 int style) const override;
-  ui::ColorId GetColorId(int context, int style) const override;
-  int GetLineHeight(int context, int style) const override;
   bool StyleAllowedForContext(int context, int style) const override;
+  ui::ResourceBundle::FontDetails GetFontDetailsImpl(int context,
+                                                     int style) const override;
+  ui::ColorId GetColorIdImpl(int context, int style) const override;
+  int GetLineHeightImpl(int context, int style) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_PROVIDER_H_

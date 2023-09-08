@@ -70,6 +70,8 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
@@ -412,8 +414,9 @@ bool Textfield::HasSelection(bool primary_only) const {
 }
 
 SkColor Textfield::GetTextColor() const {
-  return text_color_.value_or(GetColorProvider()->GetColor(
-      style::GetColorId(style::CONTEXT_TEXTFIELD, GetTextStyle())));
+  return text_color_.value_or(
+      GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
+          style::CONTEXT_TEXTFIELD, GetTextStyle())));
 }
 
 void Textfield::SetTextColor(SkColor color) {
@@ -2676,7 +2679,7 @@ void Textfield::PaintTextAndCursor(gfx::Canvas* canvas) {
     canvas->DrawStringRectWithFlags(
         GetPlaceholderText(), placeholder_font_list_.value_or(GetFontList()),
         placeholder_text_color_.value_or(
-            GetColorProvider()->GetColor(style::GetColorId(
+            GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
                 style::CONTEXT_TEXTFIELD_PLACEHOLDER,
                 GetInvalid() ? style::STYLE_INVALID : style::STYLE_PRIMARY))),
         render_text->display_rect(), placeholder_text_draw_flags);

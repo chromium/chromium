@@ -69,6 +69,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -268,7 +269,7 @@ class MonthHeaderView : public views::View {
       label->SetElideBehavior(gfx::NO_ELIDE);
       label->SetSubpixelRenderingEnabled(false);
       if (!features::IsCalendarJellyEnabled()) {
-        label->SetFontList(views::style::GetFont(
+        label->SetFontList(views::TypographyProvider::Get().GetFont(
             CONTEXT_CALENDAR_DATE, views::style::STYLE_EMPHASIZED));
       }
 

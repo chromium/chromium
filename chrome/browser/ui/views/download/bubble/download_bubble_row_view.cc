@@ -59,6 +59,7 @@
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/root_view.h"
@@ -409,8 +410,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
     views::InkDrop::Get(this)->SetBaseColorId(kColorDownloadBubbleRowHover);
     views::InkDrop::Get(this)->SetHighlightOpacity(1.0f);
   } else {
-    views::InkDrop::Get(this)->SetBaseColorId(views::style::GetColorId(
-        views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
+    views::InkDrop::Get(this)->SetBaseColorId(
+        views::TypographyProvider::Get().GetColorId(
+            views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
   }
 
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -890,8 +892,8 @@ views::ImageButton* DownloadBubbleRowView::AddQuickAction(
   quick_action->SetProperty(views::kMarginsKey, kRowInterElementPadding);
   quick_action->SetVisible(false);
   views::InkDrop::Get(quick_action)
-      ->SetBaseColorId(views::style::GetColorId(views::style::CONTEXT_BUTTON,
-                                                views::style::STYLE_SECONDARY));
+      ->SetBaseColorId(views::TypographyProvider::Get().GetColorId(
+          views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
   return quick_action;
 }
 

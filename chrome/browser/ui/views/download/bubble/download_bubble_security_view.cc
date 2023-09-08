@@ -39,6 +39,8 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -152,7 +154,8 @@ class ParagraphsView : public views::View {
   }
 
   int GetLineHeight() {
-    return views::style::GetLineHeight(text_context_, default_text_style_);
+    return views::TypographyProvider::Get().GetLineHeight(text_context_,
+                                                          default_text_style_);
   }
 
   void SetAfterParagraph(int spacing) {
