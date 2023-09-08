@@ -18,6 +18,7 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.update_metadata import (
     UpdateAbortError,
     UpdateMetadata,
+    UpdateProperties,
     MetadataUpdater,
     load_and_update_manifests,
     sort_metadata_ast,
@@ -621,6 +622,26 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             self.assertEqual(mac_virtual['os'], 'mac')
             self.assertEqual(mac_virtual['virtual_suite'], 'fake-vts')
 
+    def test_update_properties(self):
+        self.tool.builders = BuilderList({
+            'test-linux-wpt-rel': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+            },
+            'test-linux-wpt-dbg': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Debug'],
+            },
+        })
+        update_properties = self.command.update_properties(
+            [Build('test-linux-wpt-rel')])
+        self.assertEqual(update_properties.primary_properties, ['product'])
+        update_properties = self.command.update_properties(
+            [Build('test-linux-wpt-rel'),
+             Build('test-linux-wpt-dbg')])
+        self.assertEqual(update_properties.primary_properties,
+                         ['product', 'debug'])
+
 
 class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
     """Verify the metadata ASTs are manipulated and written correctly.
@@ -672,6 +693,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 io.StringIO(json.dumps(report)) for report in reports)
             for test_file in updater.test_files_to_update():
                 updater.update(test_file)
+            return updater
 
     def write_contents(self, path_to_metadata, contents):
         path = self.finder.path_from_web_tests(path_to_metadata)
@@ -706,19 +728,28 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             """)
 
     def test_missing_update_properties(self):
-        with self.assertRaisesRegex(UpdateAbortError, 'missing1, missing2'):
-            self.update(
-                {
+        # Create a `MetadataUpdater` with one configuration.
+        updater = self.update(
+            {
+                'run_info': {
+                    'missing1': '',
+                    'missing2': '',
+                },
+                'results': [],
+            },
+            update_properties=UpdateProperties(['missing1'],
+                                               {'missing1': ['missing2']}))
+        with self._patch_builtins():
+            with self.assertRaisesRegex(UpdateAbortError,
+                                        'missing1, missing2'):
+                bad_report = {
+                    'run_info': {},
                     'subsuites': {
                         '': {},
                     },
-                    'results': [{
-                        'test': '/fail.html',
-                        'status': 'FAIL',
-                    }],
-                },
-                primary_properties=['missing1'],
-                dependent_properties={'missing1': ['missing2']})
+                    'results': [],
+                }
+                updater.collect_results([io.StringIO(json.dumps(bad_report))])
 
     def test_migrate_comments(self):
         self.write_contents(
@@ -1648,6 +1679,38 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               expected: FAIL
             """)
 
+    def test_no_fill_for_config_with_same_canonicalization(self):
+        self.write_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected:
+                if debug: FAIL
+            """)
+        self.update(
+            {
+                'run_info': {
+                    'debug': False,
+                },
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'FAIL',
+                    'expected': 'PASS',
+                }],
+            }, {
+                'run_info': {
+                    'debug': True,
+                },
+                'results': [],
+            })
+        # `debug` is not an update property, so both the debug and release
+        # configs should be considered equivalent (i.e., this does not generate
+        # a `[FAIL, PASS]` expectation).
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: FAIL
+            """)
+
     def test_condition_initialization_without_starting_metadata(self):
         self.update(
             {
@@ -1714,7 +1777,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               [subtest]
                 expected: FAIL
             """)
-        self.update()
+        self.update({'results': []})
         self.assert_contents(
             'external/wpt/variant.html.ini', """\
             [variant.html?foo=baz]
