@@ -441,6 +441,54 @@ std::vector<std::string> ResourcePrefetchPredictor::PredictLcpElementLocators(
   return lcp_element_locators;
 }
 
+std::vector<GURL> ResourcePrefetchPredictor::PredictLcpInfluencerScripts(
+    const GURL& url) const {
+  // TODO(crbug.com/1419756): PredictLcp* functions can be refactored into
+  // a unified read path.
+
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // The `initialization_state_` can be not `INITIALIZED` in the very first
+  // navigation on browser startup. Because this object is initialized on the
+  // first navigation.
+
+  if (initialization_state_ != INITIALIZED) {
+    return {};
+  }
+
+  if (!url.is_valid() || url.host().empty()) {
+    return {};
+  }
+
+  LcppData data;
+  if (!lcpp_data_->TryGetData(url.host(), &data)) {
+    return {};
+  }
+
+  const auto& buckets =
+      data.lcpp_stat().lcp_script_url_stat().lcp_script_url_buckets();
+  std::vector<std::pair<double, std::string>> lcp_script_urls_with_frequency;
+  lcp_script_urls_with_frequency.reserve(buckets.size());
+  for (const auto& [script_url, frequency] : buckets) {
+    lcp_script_urls_with_frequency.emplace_back(frequency, script_url);
+  }
+
+  std::sort(lcp_script_urls_with_frequency.rbegin(),
+            lcp_script_urls_with_frequency.rend());
+
+  std::vector<GURL> lcp_script_urls;
+  lcp_script_urls.reserve(lcp_script_urls_with_frequency.size());
+  for (const auto& [frequency, script_url] : lcp_script_urls_with_frequency) {
+    GURL parsed_url(script_url);
+    if (parsed_url.is_empty() || !parsed_url.is_valid() ||
+        !parsed_url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+
+    lcp_script_urls.push_back(std::move(parsed_url));
+  }
+  return lcp_script_urls;
+}
+
 void ResourcePrefetchPredictor::CreateCaches(
     std::unique_ptr<RedirectDataMap> host_redirect_data,
     std::unique_ptr<OriginDataMap> origin_data,

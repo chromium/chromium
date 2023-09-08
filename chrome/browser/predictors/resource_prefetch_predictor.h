@@ -200,6 +200,11 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   // frequent one comes first). If there is no data, it returns an empty vector.
   std::vector<std::string> PredictLcpElementLocators(const GURL& url) const;
 
+  // Returns LCP influencer scripts from past loads for a given `url`.
+  // The returned script urls are ordered by descending frequency (the most
+  // frequent one comes first). If there is no data, it returns an empty vector.
+  std::vector<GURL> PredictLcpInfluencerScripts(const GURL& url) const;
+
   // Called by the collector after a page has finished loading resources and
   // assembled a PageRequestSummary.
   virtual void RecordPageRequestSummary(
