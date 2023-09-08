@@ -469,16 +469,16 @@ static_library("toytoolkit") {
   ]
 }
 
-shared_library("weston_test") {
+shared_library("ui_controls") {
   output_prefix_override = true
-  output_name = "test-plugin"
+  output_name = "ui-controls"
 
-  sources = [ "src/tests/weston-test.c" ]
+  sources = [ "src/tests/ui-controls.c" ]
 
   deps = [
     ":compositor",
     ":libweston",
-    "//third_party/wayland-protocols:weston_test",
+    "//third_party/wayland-protocols:ui_controls_protocol",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -491,8 +491,6 @@ shared_library("weston_test") {
     "src/libweston",
     "src/compositor",
   ]
-
-  public_configs = [ ":pixman" ]
 }
 
 shared_library("weston_systemd_notify") {
@@ -629,12 +627,12 @@ executable("weston") {
     ":desktop_shell",
     ":gl_renderer",
     ":headless_backend",
+    ":ui_controls",
     ":wayland_backend",
     ":weston_desktop_shell",
     ":weston_keyboard",
     ":weston_screenshooter",
     ":weston_systemd_notify",
-    ":weston_test",
   ]
 
   configs += [ ":weston_config" ]

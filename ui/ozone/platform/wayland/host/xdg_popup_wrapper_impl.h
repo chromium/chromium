@@ -41,6 +41,8 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   void SetScaleFactor(float scale_factor) override;
   XDGPopupWrapperImpl* AsXDGPopupWrapper() override;
 
+  XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
+
  private:
   wl::Object<xdg_positioner> CreatePositioner();
 
@@ -53,8 +55,6 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
                           int32_t height);
   static void OnPopupDone(void* data, xdg_popup* popup);
   static void OnRepositioned(void* data, xdg_popup* popup, uint32_t token);
-
-  XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
   // Non-owned WaylandWindow that uses this popup.
   const raw_ptr<WaylandWindow> wayland_window_;

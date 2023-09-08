@@ -682,20 +682,20 @@ fuzzer_test("wayland_buffer_fuzzer") {
 source_set("ui_test_support") {
   testonly = true
 
-  # weston_test is used on Linux/Weston and for Lacros/Exo version skew tests.
   sources = [
-    "emulate/weston_test_input_emulate.cc",
-    "emulate/weston_test_input_emulate.h",
+    "emulate/wayland_input_emulate.cc",
+    "emulate/wayland_input_emulate.h",
     "test/ozone_ui_controls_test_helper.cc",
-    "test/weston_test_ozone_ui_controls_test_helper.cc",
-    "test/weston_test_ozone_ui_controls_test_helper.h",
+    "test/wayland_ozone_ui_controls_test_helper.cc",
+    "test/wayland_ozone_ui_controls_test_helper.h",
   ]
 
   deps = [
     ":wayland_proxy",
     "//base",
     "//third_party/wayland:wayland_client",
-    "//third_party/wayland-protocols:weston_test",
+    "//third_party/wayland-protocols:ui_controls_protocol",
+    "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/base:test_support",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
@@ -705,21 +705,6 @@ source_set("ui_test_support") {
     "//ui/ozone/platform/wayland",
     "//ui/platform_window/common",
   ]
-
-  # ui_controls is Lacros-only for now, as Weston doesn't implement it yet.
-  if (is_chromeos_lacros) {
-    sources += [
-      "emulate/wayland_input_emulate.cc",
-      "emulate/wayland_input_emulate.h",
-      "test/wayland_ozone_ui_controls_test_helper.cc",
-      "test/wayland_ozone_ui_controls_test_helper.h",
-    ]
-
-    deps += [
-      "//third_party/wayland-protocols:ui_controls_protocol",
-      "//third_party/wayland-protocols:xdg_shell_protocol",
-    ]
-  }
 }
 
 component("wayland_proxy") {

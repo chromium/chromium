@@ -313,14 +313,14 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
     # to enter idle state. Otherwise, Weston stops to send frame callbacks,
     # and tests start to time out (this typically happens after 300 seconds -
     # the default time after which Weston enters the idle state).
-    # 3) --modules=test-plugin.so,systemd-notify.so - enables support for the
-    # weston-test Wayland protocol extension and the systemd-notify protocol.
+    # 3) --modules=ui-controls.so,systemd-notify.so - enables support for the
+    # ui-controls Wayland protocol extension and the systemd-notify protocol.
     # 4) --width && --height set size of a virtual display: we need to set
     # an adequate size so that tests can have more room for managing size
     # of windows.
     # 5) --config=... - tells Weston to use our custom config.
     weston_cmd = ['./weston', '--backend=headless-backend.so', '--idle-time=0',
-          '--modules=test-plugin.so,systemd-notify.so', '--width=1280',
+          '--modules=ui-controls.so,systemd-notify.so', '--width=1280',
           '--height=800', '--config=' + _weston_config_file_path()]
 
     if '--weston-use-gl' in cmd:
