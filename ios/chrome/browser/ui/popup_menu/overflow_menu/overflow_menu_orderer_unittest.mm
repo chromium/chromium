@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 
 #import "base/strings/string_number_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -1852,4 +1853,283 @@ TEST_F(OverflowMenuOrdererTest, SaveBadgeDataToPrefs) {
       *badge_data.FindDict(new_destination_string)->FindString("badge_type"));
   EXPECT_EQ(false, badge_data.FindDict(new_destination_string)
                        ->FindBool("is_feature_driven_badge"));
+}
+
+// Tests that correct metrics are fired when the menu is reordered due to a new
+// badge.
+TEST_F(OverflowMenuOrdererTest, Customization_NewBadgeReorderingMetrics) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  DestinationRanking all_destinations = SampleDestinations();
+  DestinationRanking current_destinations = {
+      all_destinations[0], all_destinations[1], all_destinations[2],
+      all_destinations[3], all_destinations[4], all_destinations[5],
+  };
+
+  // Initializes `OverflowMenuOrderer` with initial ranking
+  // `current_destinations`.
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
+
+  DestinationRanking updated_destinations = {
+      all_destinations[0],
+      all_destinations[1],
+      all_destinations[2],
+      all_destinations[3],
+      all_destinations[4],
+      all_destinations[5],
+      // New destinations
+      all_destinations[6],
+  };
+
+  destination_provider_.baseDestinations = updated_destinations;
+
+  base::HistogramTester tester;
+
+  [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
+
+  // There was one new destination and one with an error badge.
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.DestinationsOrderChangedProgrammatically", 1, 1);
+}
+
+// Tests that correct metrics are fired when the menu is reordered due to an
+// error badge.
+TEST_F(OverflowMenuOrdererTest, Customization_ErrorBadgeReorderingMetrics) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  DestinationRanking all_destinations = SampleDestinations();
+  DestinationRanking current_destinations = {
+      all_destinations[0], all_destinations[1], all_destinations[2],
+      all_destinations[3], all_destinations[4], all_destinations[5],
+  };
+
+  // Initializes `OverflowMenuOrderer` with initial ranking
+  // `current_destinations`.
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
+
+  OverflowMenuDestination* destination =
+      CreateOverflowMenuDestination(all_destinations[4]);
+  destination.badge = BadgeTypeError;
+  [destination_provider_ storeCustomDestination:destination
+                             forDestinationType:all_destinations[4]];
+
+  base::HistogramTester tester;
+
+  [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
+
+  // There was one destination with an error badge.
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.DestinationsOrderChangedProgrammatically", 0, 1);
+}
+
+// Tests that correct metrics are fired when the menu is reordered due to both a
+// new and error badge.
+TEST_F(OverflowMenuOrdererTest,
+       Customization_NewAndErrorBadgeReorderingMetrics) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  DestinationRanking all_destinations = SampleDestinations();
+  DestinationRanking current_destinations = {
+      all_destinations[0], all_destinations[1], all_destinations[2],
+      all_destinations[3], all_destinations[4], all_destinations[5],
+  };
+
+  // Initializes `OverflowMenuOrderer` with initial ranking
+  // `current_destinations`.
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
+
+  DestinationRanking updated_destinations = {
+      all_destinations[0],
+      all_destinations[1],
+      all_destinations[2],
+      all_destinations[3],
+      all_destinations[4],
+      all_destinations[5],
+      // New destinations
+      all_destinations[6],
+  };
+
+  OverflowMenuDestination* destination =
+      CreateOverflowMenuDestination(all_destinations[4]);
+  destination.badge = BadgeTypeError;
+  [destination_provider_ storeCustomDestination:destination
+                             forDestinationType:all_destinations[4]];
+
+  destination_provider_.baseDestinations = updated_destinations;
+
+  base::HistogramTester tester;
+
+  [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
+
+  // There was one new destination and one with an error badge.
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.DestinationsOrderChangedProgrammatically", 2, 1);
+}
+
+// Tests that no metrics are fired when there are badges, but they do not cause
+// the menu to be re-ordered.
+TEST_F(OverflowMenuOrdererTest, Customization_BadgeReorderingMetricsNotFired) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  DestinationRanking all_destinations = SampleDestinations();
+  DestinationRanking current_destinations = {
+      all_destinations[0], all_destinations[1], all_destinations[2],
+      all_destinations[3], all_destinations[4], all_destinations[5],
+  };
+
+  // Initializes `OverflowMenuOrderer` with initial ranking
+  // `current_destinations`.
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
+
+  OverflowMenuDestination* destination =
+      CreateOverflowMenuDestination(all_destinations[0]);
+  destination.badge = BadgeTypeError;
+  [destination_provider_ storeCustomDestination:destination
+                             forDestinationType:all_destinations[0]];
+
+  base::HistogramTester tester;
+
+  [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
+
+  // The badge did not cause the menu to change order.
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.DestinationsOrderChangedProgrammatically", 0, 0);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.DestinationsOrderChangedProgrammatically", 1, 0);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.DestinationsOrderChangedProgrammatically", 2, 0);
+}
+
+// Tests that the proper metrics are fired when destination customization
+// completes.
+TEST_F(OverflowMenuOrdererTest, DestinationCustomizationFiresMetrics) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  DestinationRanking all_destinations = SampleDestinations();
+  DestinationRanking current_destinations = {
+      all_destinations[0], all_destinations[1], all_destinations[2],
+      all_destinations[3], all_destinations[4], all_destinations[5],
+  };
+
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
+
+  // Hide destinations 4 and 5.
+  DestinationCustomizationModel* destinationModel =
+      overflow_menu_orderer_.destinationCustomizationModel;
+
+  OverflowMenuDestination* destination4 = destinationModel.shownDestinations[4];
+  OverflowMenuDestination* destination5 = destinationModel.shownDestinations[5];
+  destination4.shown = NO;
+  destination5.shown = NO;
+
+  base::HistogramTester tester;
+
+  [overflow_menu_orderer_ commitDestinationsUpdate];
+
+  tester.ExpectBucketCount("IOS.OverflowMenu.SmartSortingStateChange", 1, 1);
+
+  tester.ExpectBucketCount("IOS.OverflowMenu.Customization.DestinationRemoved",
+                           4, 1);
+  tester.ExpectBucketCount("IOS.OverflowMenu.Customization.DestinationRemoved",
+                           5, 1);
+
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.FirstPosition", 0,
+      1);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.SecondPosition", 1,
+      1);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.ThirdPosition", 2,
+      1);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition", 3,
+      1);
+
+  // Now turn destination 4 (the first hidden destination) back on and also turn
+  // destination usage history back on.
+  destinationModel = overflow_menu_orderer_.destinationCustomizationModel;
+  destinationModel.hiddenDestinations[0].shown = YES;
+  destinationModel.destinationUsageEnabled = YES;
+
+  [overflow_menu_orderer_ commitDestinationsUpdate];
+
+  tester.ExpectBucketCount("IOS.OverflowMenu.SmartSortingStateChange", 0, 1);
+
+  tester.ExpectBucketCount("IOS.OverflowMenu.Customization.DestinationAdded", 4,
+                           1);
+
+  // Destinations are added to the front of the list, so the new one now
+  // occupies the first position.
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.FirstPosition", 4,
+      1);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.SecondPosition", 0,
+      1);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.ThirdPosition", 1,
+      1);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition", 2,
+      1);
+}
+
+// Tests that the proper metrics are fired when action customization completes.
+TEST_F(OverflowMenuOrdererTest, ActionCustomizationFiresMetrics) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  ActionRanking all_actions = SampleActions();
+  ActionRanking current_actions = {
+      all_actions[0], all_actions[1], all_actions[2],
+      all_actions[3], all_actions[4], all_actions[5],
+  };
+
+  InitializeOverflowMenuOrderer(NO);
+  action_provider_.basePageActions = current_actions;
+  [overflow_menu_orderer_ updatePageActions];
+
+  // Hide actions 4 and 5.
+  ActionCustomizationModel* actionModel =
+      overflow_menu_orderer_.actionCustomizationModel;
+
+  OverflowMenuAction* action4 = actionModel.shownActions[4];
+  OverflowMenuAction* action5 = actionModel.shownActions[5];
+  action4.shown = NO;
+  action5.shown = NO;
+
+  base::HistogramTester tester;
+
+  [overflow_menu_orderer_ commitActionsUpdate];
+
+  tester.ExpectBucketCount("IOS.OverflowMenu.Customization.ActionRemoved", 8,
+                           1);
+  tester.ExpectBucketCount("IOS.OverflowMenu.Customization.ActionRemoved", 9,
+                           1);
+
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition", 4, 1);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition", 5, 1);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition", 6, 1);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition", 7, 1);
+
+  // Now turn action 4 (the first hidden action) back on.
+  actionModel = overflow_menu_orderer_.actionCustomizationModel;
+  actionModel.hiddenActions[0].shown = YES;
+
+  [overflow_menu_orderer_ commitActionsUpdate];
+
+  tester.ExpectBucketCount("IOS.OverflowMenu.Customization.ActionAdded", 8, 1);
+
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition", 4, 2);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition", 5, 2);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition", 6, 2);
+  tester.ExpectBucketCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition", 7, 2);
 }

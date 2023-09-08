@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_metrics.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler.h"
@@ -77,20 +78,6 @@
 
 using base::RecordAction;
 using base::UserMetricsAction;
-
-namespace {
-
-// Enum for IOS.OverflowMenu.ActionType histogram.
-// Entries should not be renumbered and numeric values should never be reused.
-enum class IOSOverflowMenuActionType {
-  kNoScrollNoAction = 0,
-  kScrollNoAction = 1,
-  kNoScrollAction = 2,
-  kScrollAction = 3,
-  kMaxValue = kScrollAction,
-};
-
-}  // namespace
 
 @interface PopupMenuCoordinator () <MenuCustomizationEventHandler,
                                     OverflowMenuCustomizationCommands,
@@ -124,6 +111,11 @@ enum class IOSOverflowMenuActionType {
 @property(nonatomic, assign) BOOL toolsMenuWasScrolledHorizontally;
 // Whether the user took an action on the tools menu while it was open.
 @property(nonatomic, assign) BOOL toolsMenuUserTookAction;
+// Whether the user selected an Action on the overflow menu (the vertical list).
+@property(nonatomic, assign) BOOL overflowMenuUserSelectedAction;
+// Whether the user selected a Destination on the overflow menu (the horizontal
+// list).
+@property(nonatomic, assign) BOOL overflowMenuUserSelectedDestination;
 
 @property(nonatomic, strong) PopupMenuHelpCoordinator* popupMenuHelpCoordinator;
 
@@ -466,6 +458,15 @@ enum class IOSOverflowMenuActionType {
     base::TimeDelta elapsed = base::Seconds(
         [NSDate timeIntervalSinceReferenceDate] - self.toolsMenuOpenTime);
     UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen", elapsed);
+    if (self.toolsMenuUserTookAction && self.overflowMenuUserSelectedAction) {
+      UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen.ActionChosen",
+                                 elapsed);
+    } else if (self.toolsMenuUserTookAction &&
+               self.overflowMenuUserSelectedDestination) {
+      UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen.DestinationChosen",
+                                 elapsed);
+    }
+
     // Reset the start time to ensure that whatever happens, we only record
     // this once.
     self.toolsMenuOpenTime = 0;
@@ -493,6 +494,8 @@ enum class IOSOverflowMenuActionType {
     self.toolsMenuWasScrolledVertically = NO;
     self.toolsMenuWasScrolledHorizontally = NO;
     self.toolsMenuUserTookAction = NO;
+    self.overflowMenuUserSelectedAction = NO;
+    self.overflowMenuUserSelectedDestination = NO;
   }
 
   if (self.overflowMenuMediator) {
@@ -623,6 +626,14 @@ enum class IOSOverflowMenuActionType {
 
 - (void)popupMenuTookAction {
   self.toolsMenuUserTookAction = YES;
+}
+
+- (void)popupMenuUserSelectedAction {
+  self.overflowMenuUserSelectedAction = YES;
+}
+
+- (void)popupMenuUserSelectedDestination {
+  self.overflowMenuUserSelectedDestination = YES;
 }
 
 #pragma mark - Notification callback

@@ -175,6 +175,7 @@ struct OverflowMenuDestinationView: View {
       Button(
         action: {
           metricsHandler?.popupMenuTookAction()
+          metricsHandler?.popupMenuUserSelectedDestination()
           destination.handler()
         },
         label: {

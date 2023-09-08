@@ -13,11 +13,18 @@
 - (void)popupMenuScrolledVertically;
 
 // Called when the popup menu is scrolled horizontally. This is only fired on
-// the new popup menu. The ond one doesn't have a horizontal scroll.
+// the new popup menu. The old one doesn't have a horizontal scroll.
 - (void)popupMenuScrolledHorizontally;
 
 // Called when the user takes an action in the popup menu.
 - (void)popupMenuTookAction;
+
+// Called when the user uses an Action (an element from the vertical list).
+- (void)popupMenuUserSelectedAction;
+
+// Called when the user uses a Destination (an element from the horizontal
+// list).
+- (void)popupMenuUserSelectedDestination;
 
 @end
 

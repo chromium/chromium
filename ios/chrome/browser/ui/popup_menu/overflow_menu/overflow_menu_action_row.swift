@@ -130,6 +130,7 @@ struct OverflowMenuActionRow: View {
       Button(
         action: {
           metricsHandler?.popupMenuTookAction()
+          metricsHandler?.popupMenuUserSelectedAction()
           action.handler()
         },
         label: {

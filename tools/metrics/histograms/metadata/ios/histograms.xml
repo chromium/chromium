@@ -1710,11 +1710,162 @@ chromium-metrics-reviews@google.com.
   <summary>The type of action the user took in the overflow/tools menu</summary>
 </histogram>
 
+<histogram name="IOS.OverflowMenu.Customization.ActionAdded"
+    enum="IOSOverflowMenuAction" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>The action added during an overflow menu customization.</summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.Customization.ActionRemoved"
+    enum="IOSOverflowMenuAction" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>The action removed during an overflow menu customization.</summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition"
+    enum="IOSOverflowMenuAction" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>The action in the first position after reordering the menu.</summary>
+</histogram>
+
+<histogram
+    name="IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition"
+    enum="IOSOverflowMenuAction" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The action in the fourth position after customizing the menu.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition"
+    enum="IOSOverflowMenuAction" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The action in the second position after customizing the menu.
+  </summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition"
+    enum="IOSOverflowMenuAction" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The action in the third position after customizing the menu.
+  </summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.Customization.DestinationAdded"
+    enum="IOSOverflowMenuDestination" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The destination added during an overflow menu customization.
+  </summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.Customization.DestinationRemoved"
+    enum="IOSOverflowMenuDestination" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The destination removed during an overflow menu customization.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.OverflowMenu.Customization.DestinationsReordered.FirstPosition"
+    enum="IOSOverflowMenuDestination" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The destination in the first position after the user manually reordered the
+    menu.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition"
+    enum="IOSOverflowMenuDestination" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The destination in the fourth position after the user manually reordered the
+    menu.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.OverflowMenu.Customization.DestinationsReordered.SecondPosition"
+    enum="IOSOverflowMenuDestination" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The destination in the second position after the user manually reordered the
+    menu.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.OverflowMenu.Customization.DestinationsReordered.ThirdPosition"
+    enum="IOSOverflowMenuDestination" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The destination in the third position after the user manually reordered the
+    menu.
+  </summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.DestinationsOrderChangedProgrammatically"
+    enum="IOSOverflowMenuReorderingReason" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The cause of the overflow menu being programatically reordered when it is
+    reordered.
+  </summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.SmartSortingStateChange"
+    enum="IOSOverflowMenuSmartSortingChange" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Whether Smart Sorting was newly enabled or disabled when the state changed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.OverflowMenu.TimeOpen" units="ms"
     expires_after="2024-02-11">
   <owner>rkgibson@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>The amount of time the overflow/tools menu is open.</summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.TimeOpen.ActionChosen" units="ms"
+    expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The amount of time the overflow/tools menu is open and an action (the
+    vertical list) is selected.
+  </summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.TimeOpen.DestinationChosen" units="ms"
+    expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The amount of time the overflow/tools menu is open and a destination (the
+    horizontal list) is selected.
+  </summary>
 </histogram>
 
 <histogram name="IOS.PageLoad.DefaultModeMobile" enum="Boolean"

@@ -55964,11 +55964,55 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Go forward"/>
 </enum>
 
+<enum name="IOSOverflowMenuAction">
+  <int value="0" label="Reload"/>
+  <int value="1" label="NewTab"/>
+  <int value="2" label="NewIncognitoTab"/>
+  <int value="3" label="NewWindow"/>
+  <int value="4" label="Follow"/>
+  <int value="5" label="Bookmark"/>
+  <int value="6" label="ReadingList"/>
+  <int value="7" label="ClearBrowsingData"/>
+  <int value="8" label="Translate"/>
+  <int value="9" label="DesktopSite"/>
+  <int value="10" label="FindInPage"/>
+  <int value="11" label="TextZoom"/>
+  <int value="12" label="ReportAnIssue"/>
+  <int value="13" label="Help"/>
+  <int value="14" label="ShareChrome"/>
+  <int value="15" label="EditActions"/>
+</enum>
+
 <enum name="IOSOverflowMenuActionType">
   <int value="0" label="No scroll, no action"/>
   <int value="1" label="Scroll, no action"/>
   <int value="2" label="No scroll, action"/>
   <int value="3" label="Scroll, action"/>
+</enum>
+
+<enum name="IOSOverflowMenuDestination">
+  <int value="0" label="Bookmarks"/>
+  <int value="1" label="History"/>
+  <int value="2" label="ReadingList"/>
+  <int value="3" label="Passwords"/>
+  <int value="4" label="Downloads"/>
+  <int value="5" label="RecentTabs"/>
+  <int value="6" label="SiteInfo"/>
+  <int value="7" label="Settings"/>
+  <int value="8" label="WhatsNew"/>
+  <int value="9" label="SpotlightDebugger"/>
+  <int value="10" label="PriceNotifications"/>
+</enum>
+
+<enum name="IOSOverflowMenuReorderingReason">
+  <int value="0" label="Error Badge"/>
+  <int value="1" label="New Badge"/>
+  <int value="2" label="Both Badges"/>
+</enum>
+
+<enum name="IOSOverflowMenuSmartSortingChange">
+  <int value="0" label="Newly Enabled"/>
+  <int value="1" label="Newly Disabled"/>
 </enum>
 
 <enum name="IOSPageLoadCountNavigationType">
