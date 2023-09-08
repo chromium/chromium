@@ -634,8 +634,8 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
 
 absl::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,
                                                 Profile* profile) {
-  DCHECK(state_snapshot);
-  DCHECK(profile);
+  CHECK(state_snapshot);
+  CHECK(profile);
   auto it = state_snapshot->profiles.find(profile);
   return it == state_snapshot->profiles.end()
              ? absl::nullopt
@@ -663,7 +663,7 @@ absl::optional<TabState> GetStateForActiveTab(BrowserState browser_state) {
   }
 
   auto it = browser_state.tabs.find(browser_state.active_tab);
-  DCHECK(it != browser_state.tabs.end());
+  CHECK(it != browser_state.tabs.end());
   return absl::make_optional<TabState>(it->second);
 }
 
@@ -696,8 +696,8 @@ AppManagementPageHandler CreateAppManagementPageHandler(Profile* profile) {
 
 void ActivateBrowserAndWait(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(browser);
-  DCHECK(browser->window());
+  CHECK(browser);
+  ASSERT_TRUE(browser->window());
   auto waiter = ui_test_utils::BrowserActivationWaiter(browser);
   browser->window()->Activate();
   waiter.WaitForActivation();
@@ -922,7 +922,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
         UninstallPolicyAppById(profile, app_id);
       }
       if (provider->registrar_unsafe().IsInstalled(app_id)) {
-        DCHECK(app->CanUserUninstallWebApp());
+        ASSERT_TRUE(app->CanUserUninstallWebApp());
         UninstallCompleteWaiter uninstall_waiter(profile, app_id);
         base::test::TestFuture<webapps::UninstallResultCode> future;
         provider->scheduler().UninstallWebApp(
@@ -1233,7 +1233,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
 
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
 
-  DCHECK_NE(site, InstallableSite::kScreenshots)
+  CHECK_NE(site, InstallableSite::kScreenshots)
       << "Installing via menu option with detailed dialog not supported, as "
          "waiting for a worker is impossible here. https://crbug.com/1368324.";
   WaitForAndAcceptInstallDialogForSite(site);
@@ -1307,7 +1307,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
   active_app_id_ = install_observer.Wait();
-  DCHECK_EQ(app_id, active_app_id_);
+  ASSERT_EQ(app_id, active_app_id_);
   ActivateBrowserAndWait(app_browser_);
   apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
@@ -1855,7 +1855,7 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
-  DCHECK(web_contents);
+  ASSERT_TRUE(web_contents);
   test_web_ui.set_web_contents(web_contents);
   webapps::AppHomePageHandler app_home_page_handler =
       GetTestAppHomePageHandler(&test_web_ui);
@@ -1900,7 +1900,7 @@ void WebAppIntegrationTestDriver::CreateShortcutsFromList(Site site) {
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
-  DCHECK(web_contents);
+  ASSERT_TRUE(web_contents);
   test_web_ui.set_web_contents(web_contents);
   webapps::AppHomePageHandler app_home_page_handler =
       GetTestAppHomePageHandler(&test_web_ui);
@@ -2080,6 +2080,7 @@ void WebAppIntegrationTestDriver::NavigatePwa(Site pwa, Site to) {
     return;
   }
   app_browser_ = GetAppBrowserForSite(pwa);
+  ASSERT_TRUE(app_browser_);
 
   content::TestNavigationObserver url_observer(GetUrlForSite(to));
   url_observer.StartWatchingNewWebContents();
@@ -2325,9 +2326,9 @@ void WebAppIntegrationTestDriver::SwitchProfileClients(ProfileClient client) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(active_profile_);
+  CHECK(active_profile_);
   active_profile_ = delegate_->GetProfileClient(client);
-  DCHECK(active_profile_)
+  CHECK(active_profile_)
       << "Cannot switch profile clients if delegate only supports one profile";
   delegate_->AwaitWebAppQuiescence();
   AfterStateChangeAction();
@@ -2489,7 +2490,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
   GURL url = GetUrlForSite(site);
   auto policy_app = GetAppBySiteMode(before_state_change_action_state_.get(),
                                      profile(), site);
-  DCHECK(policy_app);
+  ASSERT_TRUE(policy_app);
   base::RunLoop run_loop;
 
   UninstallCompleteWaiter uninstall_waiter(
@@ -2819,7 +2820,7 @@ void WebAppIntegrationTestDriver::CheckAppTabCreated() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(before_state_change_action_state_);
+  CHECK(before_state_change_action_state_);
   absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), app_browser());
   absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
@@ -3090,7 +3091,7 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
         if (base::EndsWith(url_str, kFooHandler)) {
           found_foo_files.push_back(test_content.GetString());
         } else {
-          DCHECK(base::EndsWith(url_str, kBarHandler));
+          CHECK(base::EndsWith(url_str, kBarHandler));
           found_bar_files.push_back(test_content.GetString());
         }
       }
@@ -3161,7 +3162,7 @@ void WebAppIntegrationTestDriver::CheckTabCreated(Number number) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(before_state_change_action_state_);
+  CHECK(before_state_change_action_state_);
   absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
   absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
@@ -3193,7 +3194,7 @@ void WebAppIntegrationTestDriver::CheckTabNotCreated() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(before_state_change_action_state_);
+  CHECK(before_state_change_action_state_);
   absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
   absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
@@ -3390,7 +3391,7 @@ void WebAppIntegrationTestDriver::CheckWindowClosed() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(before_state_change_action_state_);
+  CHECK(before_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile());
   absl::optional<ProfileState> before_action_profile =
@@ -3406,7 +3407,7 @@ void WebAppIntegrationTestDriver::CheckWindowCreated() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(before_state_change_action_state_);
+  CHECK(before_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile());
   absl::optional<ProfileState> before_action_profile =
@@ -3433,7 +3434,7 @@ void WebAppIntegrationTestDriver::CheckPwaWindowCreated(Site site,
 void WebAppIntegrationTestDriver::CheckPwaWindowCreatedImpl(Profile* profile,
                                                             Site site,
                                                             Number number) {
-  DCHECK(before_state_change_action_state_);
+  CHECK(before_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile);
   absl::optional<ProfileState> before_action_profile =
@@ -3475,7 +3476,7 @@ void WebAppIntegrationTestDriver::CheckWindowNotCreated() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(before_state_change_action_state_);
+  CHECK(before_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile());
   absl::optional<ProfileState> before_action_profile =
@@ -3551,17 +3552,17 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayMinimal() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(app_browser());
+  ASSERT_TRUE(app_browser());
   web_app::AppBrowserController* app_controller =
       app_browser()->app_controller();
-  DCHECK(app_controller->AsWebAppBrowserController());
+  ASSERT_TRUE(app_controller->AsWebAppBrowserController());
   absl::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
 
   content::WebContents* web_contents =
       app_browser()->tab_strip_model()->GetActiveWebContents();
-  DCHECK(web_contents);
+  ASSERT_TRUE(web_contents);
   DisplayMode window_display_mode =
       web_contents->GetDelegate()->GetDisplayMode(web_contents);
 
@@ -3578,18 +3579,18 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayTabbed() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(app_browser());
+  ASSERT_TRUE(app_browser());
 
   web_app::AppBrowserController* app_controller =
       app_browser()->app_controller();
-  DCHECK(app_controller->AsWebAppBrowserController());
+  ASSERT_TRUE(app_controller->AsWebAppBrowserController());
   absl::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
 
   content::WebContents* web_contents =
       app_browser()->tab_strip_model()->GetActiveWebContents();
-  DCHECK(web_contents);
+  ASSERT_TRUE(web_contents);
   DisplayMode window_display_mode =
       web_contents->GetDelegate()->GetDisplayMode(web_contents);
 
@@ -3606,18 +3607,18 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayStandalone() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  DCHECK(app_browser());
+  ASSERT_TRUE(app_browser());
 
   web_app::AppBrowserController* app_controller =
       app_browser()->app_controller();
-  DCHECK(app_controller->AsWebAppBrowserController());
+  ASSERT_TRUE(app_controller->AsWebAppBrowserController());
   absl::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
 
   content::WebContents* web_contents =
       app_browser()->tab_strip_model()->GetActiveWebContents();
-  DCHECK(web_contents);
+  ASSERT_TRUE(web_contents);
   DisplayMode window_display_mode =
       web_contents->GetDelegate()->GetDisplayMode(web_contents);
 
@@ -3729,12 +3730,12 @@ void WebAppIntegrationTestDriver::CheckAppLoadedInTab(Site site) {
 
 void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(const AppId& app_id) {
   LOG(INFO) << "Manifest update received for " << app_id << ".";
-  DCHECK(!delegate_->IsSyncTest())
+  CHECK(!delegate_->IsSyncTest())
       << "Manifest update waiting only supported on non-sync tests.";
 
   previous_manifest_updates_.insert(app_id);
   if (waiting_for_update_id_ == app_id) {
-    DCHECK(waiting_for_update_run_loop_);
+    CHECK(waiting_for_update_run_loop_);
     waiting_for_update_run_loop_->Quit();
     waiting_for_update_id_ = absl::nullopt;
     // The `BeforeState*Action()` methods check that the
@@ -3772,7 +3773,7 @@ void WebAppIntegrationTestDriver::OnWebAppUninstalled(
 
 bool WebAppIntegrationTestDriver::BeforeStateChangeAction(
     const char* function) {
-  DCHECK(!base::StartsWith(function, "Check"));
+  CHECK(!base::StartsWith(function, "Check"));
   if (testing::Test::HasFatalFailure() && !in_tear_down_) {
     return false;
   }
@@ -3781,7 +3782,7 @@ bool WebAppIntegrationTestDriver::BeforeStateChangeAction(
   ++executing_action_level_;
   std::unique_ptr<StateSnapshot> current_state = ConstructStateSnapshot();
   if (after_state_change_action_state_) {
-    DCHECK_EQ(*after_state_change_action_state_, *current_state)
+    CHECK_EQ(*after_state_change_action_state_, *current_state)
         << "State cannot be changed outside of state change actions.";
     before_state_change_action_state_ =
         std::move(after_state_change_action_state_);
@@ -3792,7 +3793,7 @@ bool WebAppIntegrationTestDriver::BeforeStateChangeAction(
 }
 
 void WebAppIntegrationTestDriver::AfterStateChangeAction() {
-  DCHECK(executing_action_level_ > 0);
+  CHECK(executing_action_level_ > 0);
   --executing_action_level_;
 #if BUILDFLAG(IS_MAC)
   std::map<AppId, size_t> open_browsers_per_app;
@@ -3864,7 +3865,7 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
 }
 
 bool WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
-  DCHECK(base::StartsWith(function, "Check"));
+  CHECK(base::StartsWith(function, "Check"));
   if (testing::Test::HasFatalFailure() && !in_tear_down_) {
     return false;
   }
@@ -3872,17 +3873,17 @@ bool WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   LOG(INFO) << "BeforeStateCheckAction: "
             << std::string(executing_action_level_, ' ') << function;
-  DCHECK(after_state_change_action_state_);
+  CHECK(after_state_change_action_state_);
   return true;
 }
 
 void WebAppIntegrationTestDriver::AfterStateCheckAction() {
-  DCHECK(executing_action_level_ > 0);
+  CHECK(executing_action_level_ > 0);
   --executing_action_level_;
   if (!after_state_change_action_state_) {
     return;
   }
-  DCHECK_EQ(*after_state_change_action_state_, *ConstructStateSnapshot());
+  ASSERT_EQ(*after_state_change_action_state_, *ConstructStateSnapshot());
 }
 
 void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
@@ -3927,7 +3928,7 @@ AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
   std::string manifest_id = site_config.relative_manifest_id;
   auto relative_url = site_config.relative_url;
   GURL start_url = GetTestServerForSiteMode(site).GetURL(relative_url);
-  DCHECK(start_url.is_valid());
+  CHECK(start_url.is_valid());
 
   return GenerateAppId(manifest_id, start_url);
 }
@@ -3974,7 +3975,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
       base::flat_map<content::WebContents*, TabState> tab_state_map;
       for (int i = 0; i < tabs->count(); ++i) {
         content::WebContents* tab = tabs->GetWebContentsAt(i);
-        DCHECK(tab);
+        CHECK(tab);
         GURL url = tab->GetURL();
         tab_state_map.emplace(tab, TabState(url));
       }
@@ -4212,7 +4213,7 @@ void WebAppIntegrationTestDriver::MaybeNavigateTabbedBrowserInScope(Site site) {
 void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
     const GURL& url,
     NavigationMode mode) {
-  DCHECK(browser());
+  ASSERT_TRUE(browser());
   content::TestNavigationObserver url_observer(url);
   if (mode == NavigationMode::kNewTab) {
     url_observer.StartWatchingNewWebContents();
@@ -4233,13 +4234,19 @@ Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
   StateSnapshot* state = after_state_change_action_state_
                              ? after_state_change_action_state_.get()
                              : before_state_change_action_state_.get();
-  DCHECK(state);
+  CHECK(state);
   absl::optional<AppState> app_state = GetAppBySiteMode(state, profile(), site);
-  DCHECK(app_state) << "Could not find installed app for site "
-                    << static_cast<int>(site);
+  EXPECT_TRUE(app_state) << "Could not find installed app for site "
+                         << static_cast<int>(site);
+  if (!app_state) {
+    return nullptr;
+  }
 
   auto profile_state = GetStateForProfile(state, profile());
-  DCHECK(profile_state);
+  EXPECT_TRUE(profile_state);
+  if (!profile_state) {
+    return nullptr;
+  }
   for (const auto& browser_state_pair : profile_state->browsers) {
     if (browser_state_pair.second.app_id == app_state->id) {
       return browser_state_pair.second.browser;
@@ -4487,7 +4494,7 @@ bool WebAppIntegrationTestDriver::LaunchFromAppShim(
 Browser* WebAppIntegrationTestDriver::browser() {
   Browser* browser =
       chrome::FindTabbedBrowser(profile(), /*match_original_profiles=*/false);
-  DCHECK(browser);
+  CHECK(browser);
   if (!browser->tab_strip_model()->count()) {
     delegate_->AddBlankTabAndShow(browser);
   }
@@ -4518,7 +4525,7 @@ PageActionIconView* WebAppIntegrationTestDriver::pwa_install_view() {
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar_button_provider()
           ->GetPageActionIconView(PageActionIconType::kPwaInstall);
-  DCHECK(pwa_install_view);
+  CHECK(pwa_install_view);
   return pwa_install_view;
 }
 
@@ -4527,7 +4534,7 @@ PageActionIconView* WebAppIntegrationTestDriver::intent_picker_view() {
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar_button_provider()
           ->GetPageActionIconView(PageActionIconType::kIntentPicker);
-  DCHECK(intent_picker_view);
+  CHECK(intent_picker_view);
   return intent_picker_view;
 }
 
