@@ -7,6 +7,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -26,6 +27,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -70,6 +72,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -85,6 +88,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -104,6 +108,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -119,6 +124,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -138,6 +144,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -153,6 +160,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -172,6 +180,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -187,6 +196,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -206,6 +216,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -221,6 +232,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -240,6 +252,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -255,6 +268,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -274,6 +288,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -289,6 +304,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -308,6 +324,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -323,6 +340,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -342,6 +360,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -357,6 +376,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -376,6 +396,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -391,6 +412,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -420,6 +442,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -436,6 +459,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -456,6 +480,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -472,6 +497,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -492,6 +518,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -508,6 +535,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -528,6 +556,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -544,6 +573,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_win_uac",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -563,6 +593,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -579,6 +610,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -599,6 +631,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -615,6 +648,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_win_uac",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -634,6 +668,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -650,6 +685,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_win_uac",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -669,6 +705,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -685,6 +722,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",

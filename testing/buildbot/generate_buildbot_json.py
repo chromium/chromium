@@ -12,7 +12,6 @@ import ast
 import collections
 import copy
 import difflib
-import functools
 import glob
 import itertools
 import json
@@ -43,30 +42,7 @@ class BaseGenerator(object):  # pylint: disable=useless-object-inheritance
     self.bb_gen = bb_gen
 
   def generate(self, waterfall, tester_name, tester_config, input_tests):
-    raise NotImplementedError()
-
-  def sort(self, tests):
-    raise NotImplementedError()
-
-
-def custom_cmp(a, b):
-  return int(a > b) - int(a < b)
-
-
-def cmp_tests(a, b):
-  # Prefer to compare based on the "test" key.
-  val = custom_cmp(a['test'], b['test'])
-  if val != 0:
-    return val
-  if 'name' in a and 'name' in b:
-    return custom_cmp(a['name'], b['name'])  # pragma: no cover
-  if 'name' not in a and 'name' not in b:
-    return 0 # pragma: no cover
-  # Prefer to put variants of the same test after the first one.
-  if 'name' in a:
-    return 1
-  # 'name' is in b.
-  return -1 # pragma: no cover
+    raise NotImplementedError()  # pragma: no cover
 
 
 class GPUTelemetryTestGenerator(BaseGenerator):
@@ -93,9 +69,6 @@ class GPUTelemetryTestGenerator(BaseGenerator):
           isolated_scripts.append(test)
 
     return isolated_scripts
-
-  def sort(self, tests):
-    return sorted(tests, key=lambda x: x['name'])
 
 
 class SkylabGPUTelemetryTestGenerator(GPUTelemetryTestGenerator):
@@ -148,9 +121,6 @@ class GTestGenerator(BaseGenerator):
           gtests.append(test)
     return gtests
 
-  def sort(self, tests):
-    return sorted(tests, key=functools.cmp_to_key(cmp_tests))
-
 
 class IsolatedScriptTestGenerator(BaseGenerator):
   def __init__(self, bb_gen):
@@ -171,9 +141,6 @@ class IsolatedScriptTestGenerator(BaseGenerator):
           isolated_scripts.append(test)
     return isolated_scripts
 
-  def sort(self, tests):
-    return sorted(tests, key=lambda x: x['name'])
-
 
 class ScriptGenerator(BaseGenerator):
   def __init__(self, bb_gen):
@@ -188,9 +155,6 @@ class ScriptGenerator(BaseGenerator):
         scripts.append(test)
     return scripts
 
-  def sort(self, tests):
-    return sorted(tests, key=lambda x: x['name'])
-
 
 class JUnitGenerator(BaseGenerator):
   def __init__(self, bb_gen):
@@ -204,9 +168,6 @@ class JUnitGenerator(BaseGenerator):
       if test:
         scripts.append(test)
     return scripts
-
-  def sort(self, tests):
-    return sorted(tests, key=lambda x: x['test'])
 
 
 class SkylabGenerator(BaseGenerator):
@@ -223,9 +184,6 @@ class SkylabGenerator(BaseGenerator):
         if test:
           scripts.append(test)
     return scripts
-
-  def sort(self, tests):
-    return sorted(tests, key=lambda x: x['test'])
 
 
 def check_compound_references(other_test_suites=None,
@@ -483,21 +441,14 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     return (tester_config.get('os_type') == 'win' and
         tester_config.get('browser_config') == 'release_x64')
 
-  def get_exception_for_test(self, test_name, test_config):
-    # gtests may have both "test" and "name" fields, and usually, if the "name"
-    # field is specified, it means that the same test is being repurposed
-    # multiple times with different command line arguments. To handle this case,
-    # prefer to lookup per the "name" field of the test itself, as opposed to
-    # the "test_name", which is actually the "test" field.
-    if 'name' in test_config:
-      return self.exceptions.get(test_config['name'])
-    return self.exceptions.get(test_name)
+  def get_exception_for_test(self, test_config):
+    return self.exceptions.get(test_config['name'])
 
-  def should_run_on_tester(self, waterfall, tester_name,test_name, test_config):
+  def should_run_on_tester(self, waterfall, tester_name, test_config):
     # Currently, the only reason a test should not run on a given tester is that
     # it's in the exceptions. (Once the GPU waterfall generation script is
     # incorporated here, the rules will become more complex.)
-    exception = self.get_exception_for_test(test_name, test_config)
+    exception = self.get_exception_for_test(test_config)
     if not exception:
       return True
     remove_from = None
@@ -516,14 +467,14 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
               not in remove_from) # pragma: no cover
     return True
 
-  def get_test_modifications(self, test, test_name, tester_name):
-    exception = self.get_exception_for_test(test_name, test)
+  def get_test_modifications(self, test, tester_name):
+    exception = self.get_exception_for_test(test)
     if not exception:
       return None
     return exception.get('modifications', {}).get(tester_name)
 
-  def get_test_replacements(self, test, test_name, tester_name):
-    exception = self.get_exception_for_test(test_name, test)
+  def get_test_replacements(self, test, tester_name):
+    exception = self.get_exception_for_test(test)
     if not exception:
       return None
     return exception.get('replacements', {}).get(tester_name)
@@ -704,7 +655,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         test, waterfall, tester_name, tester_config)
     # See if there are any exceptions that need to be merged into this
     # test's specification.
-    modifications = self.get_test_modifications(test, test_name, tester_name)
+    modifications = self.get_test_modifications(test, tester_name)
     if modifications:
       test = self.dictionary_merge(test, modifications)
     if (swarming_dict := test.get('swarming')) is not None:
@@ -726,8 +677,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     return test
 
   def replace_test_args(self, test, test_name, tester_name):
-    replacements = self.get_test_replacements(
-        test, test_name, tester_name) or {}
+    replacements = self.get_test_replacements(test, tester_name) or {}
     valid_replacement_keys = ['args', 'non_precommit_args', 'precommit_args']
     for key, replacement_dict in replacements.items():
       if key not in valid_replacement_keys:
@@ -769,21 +719,21 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           'script': '//testing/trigger_scripts/chromeos_device_trigger.py',
         }
 
-  def add_android_presentation_args(self, tester_config, test_name, result):
+  def add_android_presentation_args(self, tester_config, result):
     args = result.get('args', [])
     bucket = tester_config.get('results_bucket', 'chromium-result-details')
     args.append('--gs-results-bucket=%s' % bucket)
     if (result['swarming']['can_use_on_swarming_builders'] and not
         tester_config.get('skip_merge_script', False)):
       result['merge'] = {
-        'args': [
-          '--bucket',
-          bucket,
-          '--test-name',
-          result.get('name', test_name)
-        ],
-        'script': '//build/android/pylib/results/presentation/'
-          'test_results_presentation.py',
+          'args': [
+              '--bucket',
+              bucket,
+              '--test-name',
+              result['name'],
+          ],
+          'script': ('//build/android/pylib/results/presentation/'
+                     'test_results_presentation.py'),
       }
     if not tester_config.get('skip_output_links', False):
       result['swarming']['output_links'] = [
@@ -801,15 +751,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
   def generate_gtest(self, waterfall, tester_name, tester_config, test_name,
                      test_config):
-    if not self.should_run_on_tester(
-        waterfall, tester_name, test_name, test_config):
+    if not self.should_run_on_tester(waterfall, tester_name, test_config):
       return None
     result = copy.deepcopy(test_config)
-    if 'test' in result:
-      if 'name' not in result:
-        result['name'] = test_name
-    else:
-      result['test'] = test_name
+    # Use test_name here instead of test['name'] because test['name'] will be
+    # modified with the variant identifier in a matrix compound suite
+    result.setdefault('test', test_name)
     self.initialize_swarming_dictionary_for_test(result, tester_config)
 
     self.initialize_args_for_test(
@@ -819,7 +766,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       if not test_config.get('use_isolated_scripts_api', False):
         # TODO(https://crbug.com/1137998) make Android presentation work with
         # isolated scripts in test_results_presentation.py merge script
-        self.add_android_presentation_args(tester_config, test_name, result)
+        self.add_android_presentation_args(tester_config, result)
         result['args'] = result.get('args', []) + ['--recover-devices']
 
     result = self.update_and_cleanup_test(
@@ -840,12 +787,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
   def generate_isolated_script_test(self, waterfall, tester_name, tester_config,
                                     test_name, test_config):
-    if not self.should_run_on_tester(waterfall, tester_name, test_name,
-                                     test_config):
+    if not self.should_run_on_tester(waterfall, tester_name, test_config):
       return None
     result = copy.deepcopy(test_config)
+    # Use test_name here instead of test['name'] because test['name'] will be
+    # modified with the variant identifier in a matrix compound suite
     result['isolate_name'] = result.get('isolate_name', test_name)
-    result['name'] = result.get('name', test_name)
     self.initialize_swarming_dictionary_for_test(result, tester_config)
     self.initialize_args_for_test(result, tester_config)
     if self.is_android(tester_config) and tester_config.get(
@@ -853,7 +800,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       if tester_config.get('use_android_presentation', False):
         # TODO(https://crbug.com/1137998) make Android presentation work with
         # isolated scripts in test_results_presentation.py merge script
-        self.add_android_presentation_args(tester_config, test_name, result)
+        self.add_android_presentation_args(tester_config, result)
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
     self.add_common_test_properties(result, tester_config)
@@ -875,12 +822,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         waterfall['machines'][tester_name].get('forbid_script_tests', False)):
       raise BBGenErr('Attempted to generate a script test on tester ' +
                      tester_name + ', which explicitly forbids script tests')
-    if not self.should_run_on_tester(waterfall, tester_name, test_name,
-                                     test_config):
+    if not self.should_run_on_tester(waterfall, tester_name, test_config):
       return None
     result = {
-      'name': test_name,
-      'script': test_config['script']
+        'name': test_config['name'],
+        'script': test_config['script'],
     }
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
@@ -889,14 +835,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
   def generate_junit_test(self, waterfall, tester_name, tester_config,
                           test_name, test_config):
-    if not self.should_run_on_tester(waterfall, tester_name, test_name,
-                                     test_config):
+    if not self.should_run_on_tester(waterfall, tester_name, test_config):
       return None
     result = copy.deepcopy(test_config)
-    result.update({
-      'name': test_name,
-      'test': test_config.get('test', test_name),
-    })
+    # Use test_name here instead of test['name'] because test['name'] will be
+    # modified with the variant identifier in a matrix compound suite
+    result.setdefault('test', test_name)
     self.initialize_args_for_test(result, tester_config)
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
@@ -905,13 +849,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
   def generate_skylab_test(self, waterfall, tester_name, tester_config,
                            test_name, test_config):
-    if not self.should_run_on_tester(waterfall, tester_name, test_name,
-                                     test_config):
+    if not self.should_run_on_tester(waterfall, tester_name, test_config):
       return None
     result = copy.deepcopy(test_config)
-    result.update({
-        'test': test_name,
-    })
+    # Use test_name here instead of test['name'] because test['name'] will be
+    # modified with the variant identifier in a matrix compound suite
+    result['test'] = test_name
     self.initialize_args_for_test(result, tester_config)
     result = self.update_and_cleanup_test(result, test_name, tester_name,
                                           tester_config, waterfall)
@@ -951,9 +894,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if not (test_name.endswith('test') or test_name.endswith('tests')):
       raise BBGenErr(
           f'telemetry test names must end with test or tests, got {test_name}')
-    step_name = test_config.get('name', test_name)
-    result = self.generate_isolated_script_test(
-      waterfall, tester_name, tester_config, step_name, test_config)
+    result = self.generate_isolated_script_test(waterfall, tester_name,
+                                                tester_config, test_name,
+                                                test_config)
     if not result:
       return None
     result['isolate_name'] = test_config.get(
@@ -965,6 +908,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result['test_id_prefix'] = 'ninja:%s/' % gn_entry['label']
 
     args = result.get('args', [])
+    # Use test_name here instead of test['name'] because test['name'] will be
+    # modified with the variant identifier in a matrix compound suite
     test_to_run = result.pop('telemetry_test_name', test_name)
 
     # These tests upload and download results from cloud storage and therefore
@@ -1304,6 +1249,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
               f'The name field is set in test {test_name} in basic suite '
               f'{suite_name}, this is not supported, the test name is the key '
               'within the basic suite')
+        # When a test is expanded with variants, this will be overwritten, but
+        # this ensures every test definition has the name field set
+        test['name'] = test_name
 
   def resolve_dimension_sets(self):
 
@@ -1371,7 +1319,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       if not isinstance(mixins, list):
         raise BBGenErr("'%s' in %s '%s' must be a list" % (mixins, typ, name))
 
-    test_name = test.get('name')
+    test_name = test['name']
     remove_mixins = set()
     if 'remove_mixins' in builder:
       must_be_list(builder['remove_mixins'], 'builder', builder_name)
@@ -1404,11 +1352,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if not 'mixins' in test:
       return test
 
-    if not test_name:
-      test_name = test.get('test')
-    if not test_name: # pragma: no cover
-      # Not the best name, but we should say something.
-      test_name = str(test)
     must_be_list(test['mixins'], 'test', test_name)
     for mixin in test['mixins']:
       # We don't bother checking if the given mixin is in remove_mixins here
@@ -1542,8 +1485,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       new_tests = test_generator.generate(
         waterfall, name, config, input_tests)
       remapped_test_type = test_type_remapper.get(test_type, test_type)
-      tests[remapped_test_type] = test_generator.sort(
-        tests.get(remapped_test_type, []) + new_tests)
+      tests.setdefault(remapped_test_type, []).extend(new_tests)
+
+    for test_type, tests_for_type in tests.items():
+      if test_type == 'additional_compile_targets':
+        continue
+      tests[test_type] = sorted(tests_for_type, key=lambda t: t['name'])
 
     return tests
 
@@ -1588,15 +1535,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           for test_dict in test_list:
             # Suites that apply variants or other customizations will create
             # test_dicts that have "name" value that is different from the
-            # "test" value. Regular suites without any variations will only have
-            # "test" and no "name".
+            # "test" value.
             # e.g. name = vulkan_swiftshader_content_browsertests, but
             # test = content_browsertests and
             # test_id_prefix = "ninja://content/test:content_browsertests/"
-            # Check for "name" first and then fallback to "test"
-            test_name = test_dict.get('name') or test_dict.get('test')
-            if not test_name:
-              continue
+            test_name = test_dict['name']
             shard_info = autoshards.get(waterfall['name'],
                                         {}).get(builder, {}).get(test_name)
             if shard_info:
@@ -2078,11 +2021,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     for builder_group, builders in outputs.items():
       for builder, step_types in builders.items():
         for step_data in step_types.get('gtest_tests', []):
-          step_name = step_data.get('name', step_data['test'])
+          step_name = step_data['name']
           self._check_swarming_config(builder_group, builder, step_name,
                                       step_data)
         for step_data in step_types.get('isolated_scripts', []):
-          step_name = step_data.get('name', step_data['isolate_name'])
+          step_name = step_data['name']
           self._check_swarming_config(builder_group, builder, step_name,
                                       step_data)
 
@@ -2180,11 +2123,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       bot_info = bots[bot]
       tests = self.flatten_tests_for_bot(bot_info)
       for test_info in tests:
-        test_name = ""
-        if 'name' in test_info:
-          test_name = test_info['name']
-        elif 'test' in test_info:
-          test_name = test_info['test']
+        test_name = test_info['name']
         if not test_name == test:
           continue
         matching_bots.append(bot)

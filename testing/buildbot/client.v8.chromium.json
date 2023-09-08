@@ -10,6 +10,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "app_shell_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -23,6 +24,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "browser_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -37,6 +39,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "chrome_app_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -50,6 +53,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "chromedriver_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -63,6 +67,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -76,6 +81,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -89,6 +95,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "compositor_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -102,6 +109,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -115,6 +123,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -128,6 +137,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "device_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -141,6 +151,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "extensions_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -154,6 +165,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "extensions_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -167,6 +179,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gcm_unit_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -180,6 +193,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gin_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -193,6 +207,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "google_apis_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -206,6 +221,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gpu_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -219,6 +235,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -232,6 +249,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -245,6 +263,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -258,6 +277,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "nacl_loader_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -271,6 +291,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -284,6 +305,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "pdf_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -297,6 +319,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ppapi_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -310,6 +333,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "remoting_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -323,6 +347,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "services_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -336,6 +361,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "sync_integration_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -350,6 +376,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "unit_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -454,6 +481,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "app_shell_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -467,6 +495,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "browser_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -481,6 +510,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "chrome_app_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -494,6 +524,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "chromedriver_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -507,6 +538,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -520,6 +552,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -533,6 +566,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "compositor_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -546,6 +580,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -559,6 +594,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -572,6 +608,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "device_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -585,6 +622,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "extensions_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -598,6 +636,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "extensions_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -611,6 +650,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gcm_unit_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -624,6 +664,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gin_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -637,6 +678,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "google_apis_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -650,6 +692,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gpu_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -663,6 +706,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -676,6 +720,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -689,6 +734,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -703,6 +749,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "nacl_loader_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -716,6 +763,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -729,6 +777,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "pdf_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -742,6 +791,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ppapi_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -755,6 +805,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "remoting_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -768,6 +819,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "services_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -781,6 +833,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "sync_integration_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -795,6 +848,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "unit_tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
