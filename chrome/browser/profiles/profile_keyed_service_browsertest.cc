@@ -208,6 +208,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "CleanupManagerLacros",
     "DownloadBubbleUpdateService",
     "DownloadCoreService",
+    "MediaNotificationService",
 #else
     "LiveCaptionController",
 #endif // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -293,10 +294,12 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   // clang-format off
   std::set<std::string> guest_active_services {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "CastNotificationControllerLacros",
     "CleanupManagerLacros",
     "ClipboardAPI",
     "ExternalLogoutRequestEventHandler",
     "ManualTestHeartbeatEvent",
+    "MediaNotificationService",
     "SessionStateChangedEventDispatcher",
 #else // !BUILDFLAG(IS_CHROMEOS_LACROS)
     "SystemIndicatorManager",
@@ -354,9 +357,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "BookmarksApiWatcher",
     "BrailleDisplayPrivateAPI",
     "BrowsingTopicsService",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "CastNotificationControllerLacros",
-#endif  // BUIDLFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "ChildAccountService",
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
