@@ -23,6 +23,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace ash {
@@ -302,6 +303,54 @@ TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDecorativeDrillIn) {
   EXPECT_EQ(tile, focus_manager->GetFocusedView());
   PressTab();
   EXPECT_EQ(tile, focus_manager->GetFocusedView());
+}
+
+TEST_F(FeatureTileTest, PrimaryTile_WithSubLabel) {
+  FeatureTile primary_tile_with_sub_label(base::DoNothing(),
+                                          /*is_togglable=*/true,
+                                          FeatureTile::TileType::kPrimary);
+  primary_tile_with_sub_label.SetLabel(u"Button label");
+  primary_tile_with_sub_label.SetSubLabel(u"Sub label");
+
+  EXPECT_EQ(primary_tile_with_sub_label.label()->GetHorizontalAlignment(),
+            gfx::ALIGN_LEFT);
+  EXPECT_EQ(primary_tile_with_sub_label.label()->GetMultiLine(), false);
+  EXPECT_EQ((int)primary_tile_with_sub_label.label()->GetMaxLines(), 0);
+}
+
+TEST_F(FeatureTileTest, CompactTile_AddedAndRemoveSubLabel) {
+  // Create initial compact `FeatureTile` without a sub-label and verify default
+  // parameters.
+  FeatureTile compact_tile_with_sub_label(base::DoNothing(),
+                                          /*is_togglable=*/true,
+                                          FeatureTile::TileType::kCompact);
+  compact_tile_with_sub_label.SetLabel(u"Button label");
+
+  EXPECT_FALSE(compact_tile_with_sub_label.sub_label()->GetVisible());
+  EXPECT_EQ(compact_tile_with_sub_label.label()->GetHorizontalAlignment(),
+            gfx::ALIGN_CENTER);
+  EXPECT_EQ(compact_tile_with_sub_label.label()->GetMultiLine(), true);
+  EXPECT_EQ((int)compact_tile_with_sub_label.label()->GetMaxLines(), 2);
+
+  // Add a sub-label, update visibility, and verify parameters are updated.
+  compact_tile_with_sub_label.SetSubLabel(u"Sub label");
+  compact_tile_with_sub_label.SetSubLabelVisibility(true);
+
+  EXPECT_EQ(compact_tile_with_sub_label.label()->GetText(), u"Button label");
+  EXPECT_EQ(compact_tile_with_sub_label.label()->GetHorizontalAlignment(),
+            gfx::ALIGN_CENTER);
+  EXPECT_EQ(compact_tile_with_sub_label.label()->GetMultiLine(), false);
+  EXPECT_EQ((int)compact_tile_with_sub_label.label()->GetMaxLines(), 1);
+  EXPECT_TRUE(compact_tile_with_sub_label.sub_label()->GetVisible());
+
+  // Hide sub-label and verify parameters are back to defaults.
+  compact_tile_with_sub_label.SetSubLabelVisibility(false);
+
+  EXPECT_FALSE(compact_tile_with_sub_label.sub_label()->GetVisible());
+  EXPECT_EQ(compact_tile_with_sub_label.label()->GetHorizontalAlignment(),
+            gfx::ALIGN_CENTER);
+  EXPECT_EQ(compact_tile_with_sub_label.label()->GetMultiLine(), true);
+  EXPECT_EQ((int)compact_tile_with_sub_label.label()->GetMaxLines(), 2);
 }
 
 TEST_F(FeatureTileTest, CompactTile_LaunchSurface) {

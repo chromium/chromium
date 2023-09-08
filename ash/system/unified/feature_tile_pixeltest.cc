@@ -168,6 +168,22 @@ TEST_F(FeatureTilePixelTest, CompactTile) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "one_line",
       /*revision_number=*/0, widget_.get()));
+
+  // Test one-line labels with one-line sub-labels.
+  tile->SetLabel(u"One line");
+  tile->SetSubLabel(u"One line");
+  tile->SetSubLabelVisibility(true);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "one_line_with_sub_label",
+      /*revision_number=*/0, widget_.get()));
+
+  // Test eliding with sub-labels.
+  tile->SetLabel(u"A very very long label");
+  tile->SetSubLabel(u"A very very long sub-label");
+  tile->SetSubLabelVisibility(true);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "elided_with_sub_label",
+      /*revision_number=*/0, widget_.get()));
 }
 
 }  // namespace

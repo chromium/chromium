@@ -58,9 +58,11 @@ constexpr gfx::Size kCompactSize(kCompactWidth, kFeatureTileHeight);
 constexpr gfx::Size kCompactIconButtonSize(kIconSize, kIconSize);
 constexpr gfx::Insets kCompactIconButtonMargins =
     gfx::Insets::TLBR(6, 22, 4, 22);
-constexpr gfx::Size kCompactTitleLabelSize(kCompactWidth - 24,
-                                           kCompactTitleLineHeight * 2);
-constexpr gfx::Insets kCompactTitleLabelMargins =
+constexpr gfx::Size kCompactOneRowTitleLabelSize(kCompactWidth - 24,
+                                                 kCompactTitleLineHeight);
+constexpr gfx::Size kCompactTwoRowTitleLabelSize(kCompactWidth - 24,
+                                                 kCompactTitleLineHeight * 2);
+constexpr gfx::Insets kCompactTitlesContainerMargins =
     gfx::Insets::TLBR(0, 12, 6, 12);
 
 // Creates an ink drop hover highlight for `host` with `color_id`.
@@ -150,38 +152,45 @@ void FeatureTile::CreateChildViews() {
   icon_button_->SetEnabled(false);
   icon_button_->SetCanProcessEventsWithinSubtree(false);
 
-  if (is_compact) {
-    label_ = AddChildView(std::make_unique<views::Label>());
-    label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    label_->SetAutoColorReadabilityEnabled(false);
-    label_->SetPreferredSize(kCompactTitleLabelSize);
-    label_->SetProperty(views::kMarginsKey, kCompactTitleLabelMargins);
-    label_->SetMultiLine(true);
-    label_->SetMaxLines(2);  // Elide after 2 lines.
-    // Compact labels use kCrosAnnotation2 with a shorter custom line height.
-    label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-        TypographyToken::kCrosAnnotation2));
-    label_->SetLineHeight(kCompactTitleLineHeight);
-    return;
-  }
-
   auto* title_container = AddChildView(std::make_unique<FlexLayoutView>());
   title_container->SetCanProcessEventsWithinSubtree(false);
   title_container->SetOrientation(views::LayoutOrientation::kVertical);
   title_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   title_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  title_container->SetPreferredSize(kTitlesContainerSize);
 
   label_ = title_container->AddChildView(std::make_unique<views::Label>());
-  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetAutoColorReadabilityEnabled(false);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
 
   sub_label_ = title_container->AddChildView(std::make_unique<views::Label>());
-  sub_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  sub_label_->SetHorizontalAlignment(is_compact ? gfx::ALIGN_CENTER
+                                                : gfx::ALIGN_LEFT);
   sub_label_->SetAutoColorReadabilityEnabled(false);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                        *sub_label_);
+
+  if (is_compact) {
+    title_container->SetProperty(views::kMarginsKey,
+                                 kCompactTitlesContainerMargins);
+    label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
+    label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+
+    // By default, assume compact tiles will not support sub-labels.
+    SetCompactTileLabelPreferences(/*add_sub_label=*/false);
+
+    // Compact labels use kCrosAnnotation2 with a shorter custom line height.
+    const auto font_list = TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosAnnotation2);
+    label_->SetFontList(font_list);
+    label_->SetLineHeight(kCompactTitleLineHeight);
+    sub_label_->SetFontList(font_list);
+    sub_label_->SetLineHeight(kCompactTitleLineHeight);
+    sub_label_->SetVisible(false);
+  } else {
+    title_container->SetPreferredSize(kTitlesContainerSize);
+    label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *label_);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                          *sub_label_);
+  }
 }
 
 void FeatureTile::SetIconClickable(bool clickable) {
@@ -308,13 +317,26 @@ int FeatureTile::GetSubLabelMaxWidth() const {
 }
 
 void FeatureTile::SetSubLabel(const std::u16string& sub_label) {
+  DCHECK(!sub_label.empty())
+      << "Attempting to set an empty sub-label. Did you mean to call "
+         "SubLabelVisibility(false) instead?";
   sub_label_->SetText(sub_label);
 }
 
 void FeatureTile::SetSubLabelVisibility(bool visible) {
-  // Only primary tiles have a sub-label.
-  DCHECK(sub_label_);
+  const bool is_compact = type_ == TileType::kCompact;
+  DCHECK(!(is_compact && visible && sub_label_->GetText().empty()))
+      << "Attempting to make the compact tile's sub-label visible when it "
+         "wasn't set.";
   sub_label_->SetVisible(visible);
+  if (is_compact) {
+    // When updating a compact tile's `sub_label_` visibility, `label_` needs to
+    // also be changed to make room for the sub-label. If making a sub-label
+    // visible, the primary label and sub-label have one line each to display
+    // text. If disabling sub-label visibility, reset `label_` to allow its text
+    // to display on two lines.
+    SetCompactTileLabelPreferences(/*add_sub_label=*/visible);
+  }
 }
 
 void FeatureTile::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -383,6 +405,14 @@ void FeatureTile::UpdateDrillInArrowColor() {
   CHECK(drill_in_arrow_);
   drill_in_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kQuickSettingsRightArrowIcon, GetIconColorId()));
+}
+
+void FeatureTile::SetCompactTileLabelPreferences(bool has_sub_label) {
+  label_->SetPreferredSize(has_sub_label ? kCompactOneRowTitleLabelSize
+                                         : kCompactTwoRowTitleLabelSize);
+  label_->SetMultiLine(!has_sub_label);
+  // Elide after 2 lines if there's no sub-label. Otherwise, 1 line.
+  label_->SetMaxLines(has_sub_label ? 1 : 2);
 }
 
 BEGIN_METADATA(FeatureTile, views::Button)

@@ -117,7 +117,7 @@ TEST_F(CastFeaturePodControllerTest, CompactTileStateWhenCastingScreen) {
   std::unique_ptr<FeatureTile> tile = controller_->CreateTile(/*compact=*/true);
   EXPECT_TRUE(tile->IsToggled());
   EXPECT_EQ(tile->label()->GetText(), u"Casting screen");
-  EXPECT_FALSE(tile->sub_label());
+  EXPECT_FALSE(tile->sub_label()->GetVisible());
 }
 
 TEST_F(CastFeaturePodControllerTest, TileStateWhenCastingTab) {

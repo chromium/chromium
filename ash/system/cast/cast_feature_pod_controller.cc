@@ -204,8 +204,11 @@ void CastFeaturePodController::UpdateFeatureTile() {
     if (tile_->tile_type() == FeatureTile::TileType::kPrimary) {
       // If the sink has a name ("Sony TV") then show it as a sub-label.
       const std::string& active_sink_name = sink_and_route.sink.name;
-      tile_->SetSubLabel(base::UTF8ToUTF16(active_sink_name));
-      tile_->SetSubLabelVisibility(!active_sink_name.empty());
+      bool has_name = !active_sink_name.empty();
+      if (has_name) {
+        tile_->SetSubLabel(base::UTF8ToUTF16(active_sink_name));
+      }
+      tile_->SetSubLabelVisibility(has_name);
     }
     return;
   }

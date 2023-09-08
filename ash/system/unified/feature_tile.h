@@ -148,6 +148,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Updates the color of `drill_in_arrow_` for better visibility.
   void UpdateDrillInArrowColor();
 
+  // Updates `label_` attributes depending on whether a sub-label will be
+  // visible.
+  void SetCompactTileLabelPreferences(bool has_sub_label);
+
   // Ensures the ink drop is painted above the button's background.
   raw_ptr<views::InkDropContainerView, ExperimentalAsh> ink_drop_container_ =
       nullptr;
