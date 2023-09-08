@@ -357,20 +357,6 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "content_nocompile_tests",
-        "test_id_prefix": "ninja://content/test:content_nocompile_tests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-10.15"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "content_unittests",
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
@@ -1790,21 +1776,6 @@
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-11|Mac-10.16"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_nocompile_tests",
-        "test_id_prefix": "ninja://content/test:content_nocompile_tests/"
       },
       {
         "isolate_profile_data": true,
@@ -3332,21 +3303,6 @@
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-12"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_nocompile_tests",
-        "test_id_prefix": "ninja://content/test:content_nocompile_tests/"
       },
       {
         "isolate_profile_data": true,
@@ -6475,20 +6431,6 @@
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_nocompile_tests",
-        "test_id_prefix": "ninja://content/test:content_nocompile_tests/"
       },
       {
         "merge": {
@@ -23633,6 +23575,20 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "openscreen_unittests",
+        "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-11"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
         "test": "pdf_unittests",
         "test_id_prefix": "ninja://pdf:pdf_unittests/"
       },
@@ -25032,6 +24988,21 @@
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
+      },
+      {
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "openscreen_unittests",
+        "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
       },
       {
         "ci_only": true,
@@ -26480,6 +26451,21 @@
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
+      },
+      {
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "openscreen_unittests",
+        "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
       },
       {
         "ci_only": true,

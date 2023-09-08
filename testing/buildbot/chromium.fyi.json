@@ -911,6 +911,20 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "openscreen_unittests",
+        "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
         "test": "pdf_unittests",
         "test_id_prefix": "ninja://pdf:pdf_unittests/"
       },
@@ -4741,54 +4755,6 @@
         },
         "test_id_prefix": "ninja://content/test:content_browsertests/",
         "timeout_sec": 14400,
-        "variant_id": "iPhone 14 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "17.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5229m",
-          "--xctest"
-        ],
-        "isolate_name": "content_nocompile_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "content_nocompile_tests iPhone 14 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-13"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5229m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:content_nocompile_tests/",
         "variant_id": "iPhone 14 17.0"
       },
       {
@@ -48115,21 +48081,6 @@
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13"
-          },
-          "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_nocompile_tests",
-        "test_id_prefix": "ninja://content/test:content_nocompile_tests/"
       },
       {
         "merge": {

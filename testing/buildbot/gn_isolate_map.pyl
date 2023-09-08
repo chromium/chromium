@@ -133,6 +133,10 @@
     "label": "//base:base_junit_tests",
     "type": "generated_script",
   },
+  "base_nocompile_tests": {
+    "label": "//base:base_nocompile_tests",
+    "type": "additional_compile_target",
+  },
   "base_perftests": {
     "label": "//base:base_perftests",
     "type": "script",
@@ -162,9 +166,17 @@
     "label": "//third_party/blink/renderer/platform/heap:blink_heap_unittests",
     "type": "console_test_launcher",
   },
+  "blink_platform_nocompile_tests": {
+    "label": "//third_party/blink/renderer/platform:blink_platform_nocompile_tests",
+    "type": "additional_compile_target",
+  },
   "blink_platform_unittests": {
     "label": "//third_party/blink/renderer/platform:blink_platform_unittests",
     "type": "console_test_launcher",
+  },
+  "blink_probes_nocompile_tests": {
+    "label": "//third_party/blink/renderer/core/probe:blink_probes_nocompile_tests",
+    "type": "additional_compile_target",
   },
   "blink_python_tests": {
     "label": "//:blink_python_tests",
@@ -626,7 +638,7 @@
   },
   "content_nocompile_tests": {
     "label": "//content/test:content_nocompile_tests",
-    "type": "console_test_launcher",
+    "type": "additional_compile_target",
   },
   "content_shell_crash_test": {
     "label": "//content/shell:content_shell_crash_test",

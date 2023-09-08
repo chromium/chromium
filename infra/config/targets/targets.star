@@ -164,6 +164,11 @@ targets.generated_script(
     label = "//base:base_junit_tests",
 )
 
+targets.compile_target(
+    name = "base_nocompile_tests",
+    label = "//base:base_nocompile_tests",
+)
+
 targets.script(
     name = "base_perftests",
     label = "//base:base_perftests",
@@ -198,9 +203,19 @@ targets.console_test_launcher(
     label = "//third_party/blink/renderer/platform/heap:blink_heap_unittests",
 )
 
+targets.compile_target(
+    name = "blink_platform_nocompile_tests",
+    label = "//third_party/blink/renderer/platform:blink_platform_nocompile_tests",
+)
+
 targets.console_test_launcher(
     name = "blink_platform_unittests",
     label = "//third_party/blink/renderer/platform:blink_platform_unittests",
+)
+
+targets.compile_target(
+    name = "blink_probes_nocompile_tests",
+    label = "//third_party/blink/renderer/core/probe:blink_probes_nocompile_tests",
 )
 
 targets.generated_script(
@@ -775,7 +790,7 @@ targets.generated_script(
     label = "//content/public/android:content_junit_tests",
 )
 
-targets.console_test_launcher(
+targets.compile_target(
     name = "content_nocompile_tests",
     label = "//content/test:content_nocompile_tests",
 )

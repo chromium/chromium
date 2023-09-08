@@ -84,9 +84,8 @@ if (is_win) {
 }
 
 declare_args() {
-  # TODO(crbug.com/1442625): Enable for Windows.
-  enable_nocompile_tests = (is_linux || is_chromeos || is_apple) && is_clang &&
-                           host_cpu == target_cpu
+  enable_nocompile_tests = (is_linux || is_chromeos || is_apple || is_win) &&
+                           is_clang && host_cpu == target_cpu
 }
 
 if (enable_nocompile_tests) {

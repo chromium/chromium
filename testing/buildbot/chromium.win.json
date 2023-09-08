@@ -85,6 +85,10 @@
   },
   "Win x64 Builder": {
     "additional_compile_targets": [
+      "base_nocompile_tests",
+      "blink_platform_nocompile_tests",
+      "blink_probes_nocompile_tests",
+      "content_nocompile_tests",
       "pdf_fuzzers"
     ],
     "scripts": [

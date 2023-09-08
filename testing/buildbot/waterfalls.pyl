@@ -3256,7 +3256,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
+          'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         }
       },
@@ -5088,9 +5088,9 @@
         ],
         'test_suites': {
           # TODO(crbug.com/1444855): Switch this back to
-          # 'chromium_mac_gtests_no_nacl_no_nocompile' after the
-          # ChromeRefresh2023 is fully rolled out.
-          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile_once',
+          # 'chromium_mac_gtests_no_nacl' after the ChromeRefresh2023 is fully
+          # rolled out.
+          'gtest_tests': 'chromium_mac_gtests_no_nacl_once',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts_once',
         },
       },
@@ -5187,7 +5187,7 @@
             'mac_11_arm64',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
+          'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
@@ -5198,7 +5198,7 @@
             'mac_12_arm64',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
+          'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
@@ -5209,7 +5209,7 @@
             'mac_13_arm64',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
+          'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
@@ -6312,6 +6312,10 @@
       },
       'Win x64 Builder': {
         'additional_compile_targets': [
+          'base_nocompile_tests',
+          'blink_platform_nocompile_tests',
+          'blink_probes_nocompile_tests',
+          'content_nocompile_tests',
           'pdf_fuzzers'
         ],
         'test_suites': {
