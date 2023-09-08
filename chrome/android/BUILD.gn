@@ -420,6 +420,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/hats:factory_java",
       "//chrome/browser/ui/android/hats:java",
+      "//chrome/browser/ui/android/hats:message_ui_delegate_java",
       "//chrome/browser/ui/android/hats/internal:controller_java",
       "//chrome/browser/ui/android/layouts:java",
       "//chrome/browser/ui/android/layouts/glue:java",

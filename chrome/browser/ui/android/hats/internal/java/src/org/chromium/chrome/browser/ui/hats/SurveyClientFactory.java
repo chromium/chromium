@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.ui.hats;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.ui.hats.SurveyClient.SurveyUiDelegate;
-
 /**
  * Factory class used to create SurveyClient.
  */

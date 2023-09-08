@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ui.hats.SurveyClient.SurveyUiDelegate;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class SurveyClientUnitTest {
@@ -18,7 +17,15 @@ public class SurveyClientUnitTest {
     public void smokeTest() {
         SurveyConfig config = new SurveyConfig(
                 "trigger", "trigger_id", 0.99, false, new String[0], new String[0]);
-        SurveyUiDelegate uiDelegate = (onSurveyAccepted, onSurveyDeclined) -> {};
+        SurveyUiDelegate uiDelegate = new SurveyUiDelegate() {
+            @Override
+            public void showSurveyInvitation(Runnable onSurveyAccepted, Runnable onSurveyDeclined,
+                    Runnable onSurveyPresentationFailed) {}
+
+            @Override
+            public void dismiss() {}
+        };
+
         SurveyClient client = SurveyClientFactory.getInstance().createClient(config, uiDelegate);
 
         if (!(client instanceof SurveyClientImpl)) {
