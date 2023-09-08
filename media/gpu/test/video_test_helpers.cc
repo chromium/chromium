@@ -163,8 +163,9 @@ EncodedDataHelper::~EncodedDataHelper() {
 }
 
 bool EncodedDataHelper::IsNALHeader(const std::string& data, size_t pos) {
-  return data[pos] == 0 && data[pos + 1] == 0 && data[pos + 2] == 0 &&
-         data[pos + 3] == 1;
+  return (data[pos] == 0x00 && data[pos + 1] == 0x00 && data[pos + 2] == 0x1) ||
+         (data[pos] == 0x00 && data[pos + 1] == 0x00 && data[pos + 2] == 0x0 &&
+          data[pos + 3] == 0x01);
 }
 
 scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
@@ -203,18 +204,20 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFragment() {
 
 size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
   size_t pos = start_pos;
-  if (pos + 4 > data_.size())
+  if (pos + 3 > data_.size()) {
     return pos;
+  }
   if (!IsNALHeader(data_, pos)) {
     ADD_FAILURE();
     return std::numeric_limits<std::size_t>::max();
   }
-  pos += 4;
-  while (pos + 4 <= data_.size() && !IsNALHeader(data_, pos)) {
+  pos += 3;
+  while (pos + 3 <= data_.size() && !IsNALHeader(data_, pos)) {
     ++pos;
   }
-  if (pos + 3 >= data_.size())
+  if (pos + 2 >= data_.size()) {
     pos = data_.size();
+  }
   return pos;
 }
 
