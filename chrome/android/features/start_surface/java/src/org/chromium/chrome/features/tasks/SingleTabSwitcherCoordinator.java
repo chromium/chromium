@@ -138,6 +138,11 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             }
 
             @Override
+            public void prepareTabGridView() {
+                assert false : "should not reach here";
+            }
+
+            @Override
             public boolean prepareTabSwitcherView() {
                 return true;
             }

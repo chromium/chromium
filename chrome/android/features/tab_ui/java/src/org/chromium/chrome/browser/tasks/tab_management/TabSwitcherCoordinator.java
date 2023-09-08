@@ -581,6 +581,11 @@ public class TabSwitcherCoordinator
     }
 
     @Override
+    public void prepareTabGridView() {
+        mTabListCoordinator.prepareTabGridView();
+    }
+
+    @Override
     public boolean prepareTabSwitcherView() {
         boolean quick = mMediator.prepareTabSwitcherView();
         mTabListCoordinator.prepareTabSwitcherView();
