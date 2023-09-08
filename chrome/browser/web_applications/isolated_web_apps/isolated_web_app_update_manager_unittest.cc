@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "base/test/to_vector.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -61,11 +62,13 @@ using base::test::DictionaryHasValue;
 using base::test::ToVector;
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::ExplainMatchResult;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::Optional;
+using ::testing::Property;
 using ::testing::SizeIs;
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
@@ -80,6 +83,12 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
   manifest->version = base::UTF8ToUTF16(version.GetString());
 
   return manifest;
+}
+
+MATCHER_P(IsDict, dict_matcher, "") {
+  return ExplainMatchResult(
+      Property("GetDict", &base::Value::GetDict, dict_matcher), arg,
+      result_listener);
 }
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -112,6 +121,17 @@ class IsolatedWebAppUpdateManagerTest : public WebAppTest {
     // Clearing Cache will clear PNACL cache, which needs this delegate set.
     nacl_browser_delegate_.Init(profile_manager().profile_manager());
 #endif  // BUILDFLAG(ENABLE_NACL)
+  }
+
+  void TearDown() override {
+    // TODO(b/299074540): Without this line, subsequent tests are unable to use
+    // `test::UninstallWebApp`, which will hang forever. This has something to
+    // do with the combination of `MOCK_TIME` and NaCl, because the code ends up
+    // hanging forever in `PnaclTranslationCache::DoomEntriesBetween`. A simple
+    // `FastForwardBy` here seems to alleviate this issue.
+    task_environment()->FastForwardBy(TestTimeouts::tiny_timeout());
+
+    WebAppTest::TearDown();
   }
 
  protected:
@@ -254,6 +274,14 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
+  base::Value::List UpdateDiscoveryTasks() {
+    return debug_log()
+        .GetDict()
+        .FindDict("task_queue")
+        ->FindList("update_discovery_tasks")
+        ->Clone();
+  }
+
   base::Value::List UpdateApplyLog() {
     return debug_log()
         .GetDict()
@@ -262,7 +290,15 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
-  base::Value::List UpdateApplyWaitersLog() {
+  base::Value::List UpdateApplyTasks() {
+    return debug_log()
+        .GetDict()
+        .FindDict("task_queue")
+        ->FindList("update_apply_tasks")
+        ->Clone();
+  }
+
+  base::Value::List UpdateApplyWaiters() {
     return debug_log().GetDict().FindList("update_apply_waiters")->Clone();
   }
 
@@ -322,21 +358,21 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   task_environment()->FastForwardBy(base::Hours(5));
   task_environment()->RunUntilIdle();
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info1_->url_info.app_id()),
-              IwaIs(Eq("installed iwa 1"),
-                    test::IsolationDataIs(Eq(iwa_info1_->installed_location),
-                                          Eq(iwa_info1_->installed_version),
-                                          /*controlled_frame_partitions=*/_,
-                                          test::PendingUpdateInfoIs(
-                                              UpdateLocationMatcher(),
-                                              Eq(base::Version("2.0.0"))))));
-
-  ASSERT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(
-      UpdateDiscoveryLog()[0].GetDict(),
-      DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")));
+      fake_provider().registrar_unsafe().GetAppById(
+          iwa_info1_->url_info.app_id()),
+      test::IwaIs(Eq("installed iwa 1"),
+                  test::IsolationDataIs(
+                      Eq(iwa_info1_->installed_location),
+                      Eq(iwa_info1_->installed_version),
+                      /*controlled_frame_partitions=*/_,
+                      test::PendingUpdateInfoIs(UpdateLocationMatcher(),
+                                                Eq(base::Version("2.0.0"))))));
+
+  EXPECT_THAT(
+      UpdateDiscoveryLog(),
+      UnorderedElementsAre(IsDict(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 
   // Temporary fix for crbug.com/1469880
@@ -360,35 +396,34 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   EXPECT_THAT(
       fake_provider().registrar_unsafe().GetAppById(
           iwa_info1_->url_info.app_id()),
-      IwaIs(Eq("installed app"),
-            test::IsolationDataIs(
-                Eq(iwa_info1_->installed_location),
-                Eq(iwa_info1_->installed_version),
-                /*controlled_frame_partitions=*/_,
-                test::PendingUpdateInfoIs(UpdateLocationMatcher(),
-                                          Eq(iwa_info1_->update_version)))));
+      test::IwaIs(Eq("installed app"),
+                  test::IsolationDataIs(Eq(iwa_info1_->installed_location),
+                                        Eq(iwa_info1_->installed_version),
+                                        /*controlled_frame_partitions=*/_,
+                                        test::PendingUpdateInfoIs(
+                                            UpdateLocationMatcher(),
+                                            Eq(iwa_info1_->update_version)))));
 
-  ASSERT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(
-      UpdateDiscoveryLog()[0].GetDict(),
-      DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")));
+      UpdateDiscoveryLog(),
+      UnorderedElementsAre(IsDict(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 0);
   task_environment()->RunUntilIdle();
 
-  ASSERT_THAT(UpdateApplyLog(), SizeIs(1));
-  EXPECT_THAT(UpdateApplyLog()[0].GetDict(),
-              DictionaryHasValue("result", base::Value("Success")));
+  EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(IsDict(DictionaryHasValue(
+                                    "result", base::Value("Success")))));
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info1_->url_info.app_id()),
-              IwaIs(iwa_info1_->update_app_name,
-                    test::IsolationDataIs(
-                        UpdateLocationMatcher(), Eq(iwa_info1_->update_version),
-                        /*controlled_frame_partitions=*/_,
-                        /*pending_update_info=*/Eq(absl::nullopt))));
+  EXPECT_THAT(
+      fake_provider().registrar_unsafe().GetAppById(
+          iwa_info1_->url_info.app_id()),
+      test::IwaIs(iwa_info1_->update_app_name,
+                  test::IsolationDataIs(
+                      UpdateLocationMatcher(), Eq(iwa_info1_->update_version),
+                      /*controlled_frame_partitions=*/_,
+                      /*pending_update_info=*/Eq(absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -411,21 +446,21 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   auto update_discovery_log = UpdateDiscoveryLog();
   auto update_apply_log = UpdateApplyLog();
 
-  ASSERT_THAT(update_discovery_log, SizeIs(2));
   EXPECT_THAT(
-      update_discovery_log[0].GetDict(),
-      DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")));
-  EXPECT_THAT(
-      update_discovery_log[1].GetDict(),
-      DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")));
+      update_discovery_log,
+      UnorderedElementsAre(
+          IsDict(DictionaryHasValue(
+              "result",
+              base::Value("Success::kUpdateFoundAndDryRunSuccessful"))),
+          IsDict(DictionaryHasValue(
+              "result",
+              base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
 
-  ASSERT_THAT(update_apply_log, SizeIs(2));
-  EXPECT_THAT(update_apply_log[0].GetDict(),
-              DictionaryHasValue("result", base::Value("Success")));
-  EXPECT_THAT(update_apply_log[1].GetDict(),
-              DictionaryHasValue("result", base::Value("Success")));
+  EXPECT_THAT(
+      update_apply_log,
+      UnorderedElementsAre(
+          IsDict(DictionaryHasValue("result", base::Value("Success"))),
+          IsDict(DictionaryHasValue("result", base::Value("Success")))));
 
   std::vector<base::Value*> times(
       {update_discovery_log[0].GetDict().Find("start_time"),
@@ -443,20 +478,22 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
               IsTrue())
       << base::JoinString(ToVector(times, &base::Value::DebugString), ", ");
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info1_->url_info.app_id()),
-              IwaIs(iwa_info1_->update_app_name,
-                    test::IsolationDataIs(
-                        UpdateLocationMatcher(), Eq(iwa_info1_->update_version),
-                        /*controlled_frame_partitions=*/_,
-                        /*pending_update_info=*/Eq(absl::nullopt))));
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info2_->url_info.app_id()),
-              IwaIs(iwa_info2_->update_app_name,
-                    test::IsolationDataIs(
-                        UpdateLocationMatcher(), Eq(iwa_info2_->update_version),
-                        /*controlled_frame_partitions=*/_,
-                        /*pending_update_info=*/Eq(absl::nullopt))));
+  EXPECT_THAT(
+      fake_provider().registrar_unsafe().GetAppById(
+          iwa_info1_->url_info.app_id()),
+      test::IwaIs(iwa_info1_->update_app_name,
+                  test::IsolationDataIs(
+                      UpdateLocationMatcher(), Eq(iwa_info1_->update_version),
+                      /*controlled_frame_partitions=*/_,
+                      /*pending_update_info=*/Eq(absl::nullopt))));
+  EXPECT_THAT(
+      fake_provider().registrar_unsafe().GetAppById(
+          iwa_info2_->url_info.app_id()),
+      test::IwaIs(iwa_info2_->update_app_name,
+                  test::IsolationDataIs(
+                      UpdateLocationMatcher(), Eq(iwa_info2_->update_version),
+                      /*controlled_frame_partitions=*/_,
+                      /*pending_update_info=*/Eq(absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
@@ -472,21 +509,19 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
   task_environment()->FastForwardBy(base::Hours(5));
   task_environment()->RunUntilIdle();
 
-  ASSERT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(
-      UpdateDiscoveryLog()[0].GetDict(),
-      DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")));
+      UpdateDiscoveryLog(),
+      UnorderedElementsAre(IsDict(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+  EXPECT_THAT(UpdateApplyWaiters(),
+              UnorderedElementsAre(IsDict(DictionaryHasValue(
+                  "app_id", base::Value(iwa_info1_->url_info.app_id())))));
 
-  ASSERT_THAT(UpdateApplyWaitersLog(), SizeIs(1));
-  EXPECT_THAT(
-      UpdateApplyWaitersLog()[0].GetDict(),
-      DictionaryHasValue("app_id", base::Value(iwa_info1_->url_info.app_id())));
+  test::UninstallWebApp(profile(), iwa_info1_->url_info.app_id());
 
-  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 0);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_THAT(UpdateApplyWaitersLog(), IsEmpty());
+  EXPECT_THAT(UpdateApplyWaiters(), IsEmpty());
+  EXPECT_THAT(UpdateApplyTasks(), IsEmpty());
+  EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 }
 
 class IsolatedWebAppUpdateManagerDiscoveryTimerTest
