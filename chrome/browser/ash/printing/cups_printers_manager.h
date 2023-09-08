@@ -108,8 +108,6 @@ class CupsPrintersManager : public PrinterInstallationManager,
 
   // Implementation of PrinterInstallationManager interface.
   bool IsPrinterInstalled(const chromeos::Printer& printer) const override = 0;
-  void PrinterIsNotAutoconfigurable(const chromeos::Printer& printer) override =
-      0;
   void SetUpPrinter(const chromeos::Printer& printer,
                     bool is_automatic_installation,
                     PrinterSetupCallback callback) override = 0;

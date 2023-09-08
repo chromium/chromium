@@ -32,7 +32,6 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
   void RemoveObserver(Observer* observer) override {}
 
   bool IsPrinterInstalled(const chromeos::Printer& printer) const override;
-  void PrinterIsNotAutoconfigurable(const chromeos::Printer& printer) override;
   void SetUpPrinter(const chromeos::Printer& printer,
                     bool is_automatic_installation,
                     PrinterSetupCallback callback) override;
@@ -57,7 +56,7 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
   void MarkInstalled(const std::string& printer_id);
   void SetPrinterSetupResult(const std::string& printer_id,
                              PrinterSetupResult result);
-  bool IsMarkedAsNotAutoconfigurable(const chromeos::Printer& printer);
+  void MarkPrinterAsNotAutoconfigurable(const std::string& printer_id);
   void QueryPrinterForAutoConf(
       const chromeos::Printer& printer,
       base::OnceCallback<void(bool)> callback) override;

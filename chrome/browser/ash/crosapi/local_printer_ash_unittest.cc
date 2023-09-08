@@ -525,7 +525,7 @@ TEST_F(LocalPrinterAshTest, GetCapabilityForNonInstalledPrinters) {
   printers_manager().AddPrinter(autoconf_printer, PrinterClass::kDiscovered);
   printers_manager().AddPrinter(non_autoconf_printer,
                                 PrinterClass::kDiscovered);
-  printers_manager().PrinterIsNotAutoconfigurable(non_autoconf_printer);
+  printers_manager().MarkPrinterAsNotAutoconfigurable(non_autoconf_printer_id);
 
   // Add printer capabilities to `test_backend_`.
   AddPrinter(autoconf_printer_id, "discovered", "description1",

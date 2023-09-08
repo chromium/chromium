@@ -21,12 +21,6 @@ class PrinterInstallationManager {
   // configuration.
   virtual bool IsPrinterInstalled(const chromeos::Printer& printer) const = 0;
 
-  // Record that a requested printer installation failed because the printer
-  // is not autoconfigurable (does not meet IPP Everywhere requirements).
-  // This results in shifting the printer from automatic to discovered class.
-  virtual void PrinterIsNotAutoconfigurable(
-      const chromeos::Printer& printer) = 0;
-
   // Install `printer` in CUPS. The result is returned by `callback`.
   // Parameter `is_automatic_installation` should be set to true if the printer
   // was set up automatically (without requesting additional information from

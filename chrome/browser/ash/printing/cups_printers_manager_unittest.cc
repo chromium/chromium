@@ -937,9 +937,36 @@ TEST_F(CupsPrintersManagerTest, AutomaticUsbPrinterIsInstalledAutomatically) {
   EXPECT_TRUE(manager_->IsPrinterInstalled(*printer));
 }
 
-// Automatic USB Printer is *not* configured if |UserPrintersAllowed|
+// Can handle four different USB printers at the same time.
+TEST_F(CupsPrintersManagerTest, CanHandleManyUsbPrinters) {
+  // Printer without PPD file and not supporting IPPUSB.
+  auto p1 = MakeUsbDiscoveredPrinter("id1");
+  // Printer with PPD file but not supporting IPPUSB.
+  auto p2 = MakeUsbDiscoveredPrinter("id2");
+  p2.ppd_search_data.make_and_model.push_back("make-and-model");
+  // Printer without PPD file but supporting IPPUSB.
+  auto p3 = MakeUsbDiscoveredPrinter("id3");
+  p3.printer.set_supports_ippusb(true);
+  // Printer with PPD file and supporting IPPUSB.
+  auto p4 = MakeUsbDiscoveredPrinter("id4");
+  p4.ppd_search_data.make_and_model.push_back("make-and-model");
+  p4.printer.set_supports_ippusb(true);
+
+  usb_detector_->AddDetections({p1, p2, p3, p4});
+
+  task_environment_.RunUntilIdle();
+
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"id1"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"id2", "id3", "id4"});
+  EXPECT_FALSE(manager_->IsPrinterInstalled(*manager_->GetPrinter("id1")));
+  EXPECT_TRUE(manager_->IsPrinterInstalled(*manager_->GetPrinter("id2")));
+  EXPECT_TRUE(manager_->IsPrinterInstalled(*manager_->GetPrinter("id3")));
+  EXPECT_TRUE(manager_->IsPrinterInstalled(*manager_->GetPrinter("id4")));
+}
+
+// Automatic Printer is *not* configured if |UserPrintersAllowed|
 // pref is set to false.
-TEST_F(CupsPrintersManagerTest, AutomaticUsbPrinterNotInstalledAutomatically) {
+TEST_F(CupsPrintersManagerTest, AutomaticPrinterNotInstalledAutomatically) {
   // Disable the use of non-enterprise printers.
   UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
 

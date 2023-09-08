@@ -9,9 +9,7 @@
 namespace ash {
 
 PpdResolutionState::PpdResolutionState()
-    : is_inflight_(true),
-      is_ppd_resolution_successful_(false),
-      is_not_autoconfigurable_(false) {}
+    : is_inflight_(true), is_ppd_resolution_successful_(false) {}
 PpdResolutionState::PpdResolutionState(PpdResolutionState&& other) = default;
 PpdResolutionState& PpdResolutionState::operator=(PpdResolutionState&& rhs) =
     default;
@@ -59,14 +57,6 @@ bool PpdResolutionState::IsInflight() const {
 
 bool PpdResolutionState::WasResolutionSuccessful() const {
   return is_ppd_resolution_successful_;
-}
-
-void PpdResolutionState::MarkPrinterAsNotAutoconfigurable() {
-  is_not_autoconfigurable_ = true;
-}
-
-bool PpdResolutionState::IsMarkedAsNotAutoconfigurable() const {
-  return is_not_autoconfigurable_;
 }
 
 }  // namespace ash

@@ -40,11 +40,6 @@ bool FakeCupsPrintersManager::IsPrinterInstalled(
   return installed_.contains(printer.id());
 }
 
-void FakeCupsPrintersManager::PrinterIsNotAutoconfigurable(
-    const chromeos::Printer& printer) {
-  printers_marked_as_not_autoconf_.insert(printer.id());
-}
-
 void FakeCupsPrintersManager::SetUpPrinter(const chromeos::Printer& printer,
                                            bool is_automatic_installation,
                                            PrinterSetupCallback callback) {
@@ -94,21 +89,22 @@ void FakeCupsPrintersManager::MarkInstalled(const std::string& printer_id) {
   installed_.insert(printer_id);
 }
 
+void FakeCupsPrintersManager::MarkPrinterAsNotAutoconfigurable(
+    const std::string& printer_id) {
+  printers_marked_as_not_autoconf_.insert(printer_id);
+}
+
 void FakeCupsPrintersManager::SetPrinterSetupResult(
     const std::string& printer_id,
     PrinterSetupResult result) {
   assigned_results_[printer_id] = result;
 }
 
-bool FakeCupsPrintersManager::IsMarkedAsNotAutoconfigurable(
-    const chromeos::Printer& printer) {
-  return printers_marked_as_not_autoconf_.contains(printer.id());
-}
-
 void FakeCupsPrintersManager::QueryPrinterForAutoConf(
     const Printer& printer,
     base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(!IsMarkedAsNotAutoconfigurable(printer));
+  std::move(callback).Run(
+      !printers_marked_as_not_autoconf_.contains(printer.id()));
 }
 
 }  // namespace ash

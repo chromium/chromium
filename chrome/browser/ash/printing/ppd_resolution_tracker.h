@@ -59,14 +59,6 @@ class PpdResolutionTracker {
   const chromeos::Printer::PpdReference& GetPpdReference(
       const std::string& printer_id) const;
 
-  // Mark the printer as not autconfigurable. It is set when the configuration
-  // of IPP USB printer fails because the printer does not meet the IPP
-  // Everywhere requirements.
-  void MarkPrinterAsNotAutoconfigurable(const std::string& printer_id);
-
-  // Returns true <=> the function above was called for |printer_id|.
-  bool IsMarkedAsNotAutoconfigurable(const std::string& printer_id) const;
-
  private:
   // Returns true if |printer_id| exists in |printer_state_|.
   bool PrinterStateExists(const std::string& printer_id) const;

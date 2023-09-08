@@ -10,10 +10,11 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printers_map.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
+#include "chromeos/printing/ppd_provider.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,75 +24,29 @@ namespace {
 using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
 
-Printer CreateUsbPrinter(const std::string& id) {
-  Printer printer;
-  printer.set_id(id);
-  printer.SetUri("usb://usb/printer");
-  return printer;
+PrinterDetector::DetectedPrinter CreateUsbPrinter(
+    const std::string& id,
+    const std::string& make_and_model) {
+  PrinterDetector::DetectedPrinter detected;
+  detected.printer.set_id(id);
+  detected.printer.SetUri("usb://usb/printer");
+  detected.printer.set_supports_ippusb(false);
+  detected.ppd_search_data.make_and_model.push_back(make_and_model);
+  return detected;
 }
 
-Printer CreateIppUsbPrinter(const std::string& id) {
-  Printer printer;
-  printer.set_id(id);
-  printer.SetUri("ippusb://usb/printer");
-  return printer;
-}
-
-Printer CreateIppPrinter(const std::string& id) {
-  Printer printer;
-  printer.set_id(id);
-  printer.SetUri("ipp://usb/printer");
-  return printer;
+PrinterDetector::DetectedPrinter CreateIppUsbPrinter(
+    const std::string& id,
+    const std::string& make_and_model) {
+  PrinterDetector::DetectedPrinter detected;
+  detected.printer.set_id(id);
+  detected.printer.SetUri("usb://usb/printer");
+  detected.printer.set_supports_ippusb(true);
+  detected.ppd_search_data.make_and_model.push_back(make_and_model);
+  return detected;
 }
 
 }  // namespace
-
-// Provides a mechanism to interact with AutomaticPrinterConfigurer.
-// Adding a printer causes the observer's OnPrintersChanged() method to run.
-class FakeObservablePrintersManager {
- public:
-  void SetObserver(CupsPrintersManager::Observer* observer) {
-    DCHECK(observer);
-    observer_ = observer;
-  }
-
-  // Simulates a nearby kAutomatic printer.
-  void AddNearbyAutomaticPrinter(const Printer& printer) {
-    AddPrinter(PrinterClass::kAutomatic, printer);
-  }
-
-  // Simulates a nearby kDiscovered printer.
-  void AddNearbyDiscoveredPrinter(const Printer& printer) {
-    AddPrinter(PrinterClass::kDiscovered, printer);
-  }
-
-  void RemoveAutomaticPrinter(const std::string& printer_id) {
-    RemovePrinter(PrinterClass::kAutomatic, printer_id);
-  }
-
-  void RemoveDiscoveredPrinter(const std::string& printer_id) {
-    RemovePrinter(PrinterClass::kDiscovered, printer_id);
-  }
-
- private:
-  // Add |printer| to the corresponding list in |printers_| bases on the given
-  // |printer_class|.
-  void AddPrinter(PrinterClass printer_class, const Printer& printer) {
-    printers_.Insert(printer_class, printer);
-    observer_->OnPrintersChanged(printer_class, printers_.Get(printer_class));
-  }
-
-  // Remove |printer_id| from |printer_class|.
-  void RemovePrinter(PrinterClass printer_class,
-                     const std::string& printer_id) {
-    printers_.Remove(printer_class, printer_id);
-    observer_->OnPrintersChanged(printer_class, printers_.Get(printer_class));
-  }
-
-  raw_ptr<CupsPrintersManager::Observer, DanglingUntriaged | ExperimentalAsh>
-      observer_;
-  PrintersMap printers_;
-};
 
 class FakeUsbPrinterNotificationController
     : public UsbPrinterNotificationController {
@@ -123,21 +78,65 @@ class FakeUsbPrinterNotificationController
   base::flat_set<std::string> open_notifications_;
 };
 
+// Fake PpdProvider backend.
+class FakePpdProvider : public chromeos::PpdProvider {
+ public:
+  FakePpdProvider() = default;
+
+  void SetPpd(const std::string& make_and_model,
+              const std::string& effective_make_and_model) {
+    ppds_[make_and_model] = effective_make_and_model;
+  }
+
+  void ResolvePpdReference(const chromeos::PrinterSearchData& search_data,
+                           ResolvePpdReferenceCallback cb) override {
+    chromeos::PpdProvider::CallbackResultCode code =
+        chromeos::PpdProvider::NOT_FOUND;
+    Printer::PpdReference ret;
+
+    for (const std::string& make_and_model : search_data.make_and_model) {
+      auto it = ppds_.find(make_and_model);
+      if (it != ppds_.end()) {
+        code = chromeos::PpdProvider::SUCCESS;
+        ret.effective_make_and_model = it->second;
+        break;
+      }
+    }
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(cb), code, ret, /*usb_manufacturer=*/""));
+  }
+
+  void ResolvePpd(const chromeos::Printer::PpdReference& reference,
+                  ResolvePpdCallback cb) override {
+    for (auto kv : ppds_) {
+      if (kv.second == reference.effective_make_and_model) {
+        std::move(cb).Run(chromeos::PpdProvider::CallbackResultCode::SUCCESS,
+                          "ppd content");
+        return;
+      }
+    }
+    std::move(cb).Run(chromeos::PpdProvider::CallbackResultCode::NOT_FOUND, "");
+  }
+
+  // These methods are not used by AutomaticUsbPrinterConfigurer.
+  void ResolveManufacturers(ResolveManufacturersCallback cb) override {}
+  void ResolvePrinters(const std::string& manufacturer,
+                       ResolvePrintersCallback cb) override {}
+  void ResolvePpdLicense(base::StringPiece effective_make_and_model,
+                         ResolvePpdLicenseCallback cb) override {}
+  void ReverseLookup(const std::string& effective_make_and_model,
+                     ReverseLookupCallback cb) override {}
+
+ private:
+  ~FakePpdProvider() override {}
+  base::flat_map<std::string, std::string> ppds_;
+};
+
 class AutomaticUsbPrinterConfigurerTest : public testing::Test {
  public:
-  AutomaticUsbPrinterConfigurerTest() {
-    fake_installation_manager_ = std::make_unique<FakeCupsPrintersManager>();
-    fake_notification_controller_ =
-        std::make_unique<FakeUsbPrinterNotificationController>();
-
-    auto_usb_printer_configurer_ =
-        std::make_unique<AutomaticUsbPrinterConfigurer>(
-            fake_installation_manager_.get(),
-            fake_notification_controller_.get());
-
-    fake_observable_printers_manager_.SetObserver(
-        auto_usb_printer_configurer_.get());
-  }
+  AutomaticUsbPrinterConfigurerTest() = default;
 
   AutomaticUsbPrinterConfigurerTest(const AutomaticUsbPrinterConfigurerTest&) =
       delete;
@@ -147,130 +146,134 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
   ~AutomaticUsbPrinterConfigurerTest() override = default;
 
  protected:
-  FakeObservablePrintersManager fake_observable_printers_manager_;
-  std::unique_ptr<FakeCupsPrintersManager> fake_installation_manager_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<FakeCupsPrintersManager> fake_installation_manager_ =
+      std::make_unique<FakeCupsPrintersManager>();
   std::unique_ptr<FakeUsbPrinterNotificationController>
-      fake_notification_controller_;
-  std::unique_ptr<AutomaticUsbPrinterConfigurer> auto_usb_printer_configurer_;
+      fake_notification_controller_ =
+          std::make_unique<FakeUsbPrinterNotificationController>();
+  scoped_refptr<FakePpdProvider> fake_ppd_provider_ =
+      base::MakeRefCounted<FakePpdProvider>();
+  std::unique_ptr<AutomaticUsbPrinterConfigurer> auto_usb_printer_configurer_ =
+      std::make_unique<AutomaticUsbPrinterConfigurer>(
+          fake_installation_manager_.get(),
+          fake_notification_controller_.get(),
+          fake_ppd_provider_.get(),
+          base::DoNothing());
 };
 
 TEST_F(AutomaticUsbPrinterConfigurerTest,
        AutoUsbPrinterInstalledAutomatically) {
   const std::string printer_id = "id";
-  const Printer printer = CreateUsbPrinter(printer_id);
+  const PrinterDetector::DetectedPrinter printer =
+      CreateUsbPrinter(printer_id, "make-and-model");
 
-  // Adding an automatic USB printer should result in the printer becoming
+  // Adding a USB printer should result in the printer becoming
   // configured and getting marked as installed.
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
+  fake_ppd_provider_->SetPpd("make-and-model", "effective-make-and-model");
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters({printer});
+  task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(fake_installation_manager_->IsPrinterInstalled(printer));
+  EXPECT_TRUE(fake_installation_manager_->IsPrinterInstalled(printer.printer));
+  ASSERT_TRUE(auto_usb_printer_configurer_->ConfiguredPrintersIds().contains(
+      printer_id));
+  const chromeos::Printer::PpdReference& ppd_ref =
+      auto_usb_printer_configurer_->Printer(printer_id).ppd_reference();
+  EXPECT_EQ(ppd_ref.effective_make_and_model, "effective-make-and-model");
+  EXPECT_TRUE(ppd_ref.user_supplied_ppd_url.empty());
+  EXPECT_FALSE(ppd_ref.autoconf);
 }
 
 TEST_F(AutomaticUsbPrinterConfigurerTest,
        AutoIppUsbPrinterInstalledAutomatically) {
   const std::string printer_id = "id";
-  const Printer printer = CreateIppUsbPrinter(printer_id);
+  const PrinterDetector::DetectedPrinter printer =
+      CreateIppUsbPrinter(printer_id, "make-and-model");
 
   // Adding an automatic IPPUSB printer should result in the printer becoming
   // configured and getting marked as installed.
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters({printer});
+  task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(fake_installation_manager_->IsPrinterInstalled(printer));
-}
-
-TEST_F(AutomaticUsbPrinterConfigurerTest, AutoIppPrinterNotInstalled) {
-  const std::string printer_id = "id";
-  const Printer printer = CreateIppPrinter(printer_id);
-
-  // Adding an automatic Ipp printer should *not* result in the printer becoming
-  // configured and getting marked as installed.
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
-
-  EXPECT_FALSE(fake_installation_manager_->IsPrinterInstalled(printer));
+  EXPECT_TRUE(fake_installation_manager_->IsPrinterInstalled(printer.printer));
+  ASSERT_TRUE(auto_usb_printer_configurer_->ConfiguredPrintersIds().contains(
+      printer_id));
+  const chromeos::Printer::PpdReference& ppd_ref =
+      auto_usb_printer_configurer_->Printer(printer_id).ppd_reference();
+  EXPECT_TRUE(ppd_ref.effective_make_and_model.empty());
+  EXPECT_TRUE(ppd_ref.user_supplied_ppd_url.empty());
+  EXPECT_TRUE(ppd_ref.autoconf);
 }
 
 TEST_F(AutomaticUsbPrinterConfigurerTest, DiscoveredUsbPrinterNotInstalled) {
   const std::string printer_id = "id";
-  const Printer printer = CreateUsbPrinter(printer_id);
+  const PrinterDetector::DetectedPrinter printer =
+      CreateUsbPrinter(printer_id, "make-and-model");
 
   // Adding a discovered USB printer should not result in the printer getting
   // installed.
-  fake_observable_printers_manager_.AddNearbyDiscoveredPrinter(printer);
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters({printer});
+  task_environment_.RunUntilIdle();
 
-  EXPECT_FALSE(fake_installation_manager_->IsPrinterInstalled(printer));
-}
-
-TEST_F(AutomaticUsbPrinterConfigurerTest,
-       ConfiguredAutoUsbPrinterGetsInstalled) {
-  const std::string printer_id = "id";
-  const Printer printer = CreateUsbPrinter(printer_id);
-
-  // Adding an automatic USB printer that's already configured should still
-  // result in the printer getting marked as installed.
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
-
-  EXPECT_TRUE(fake_installation_manager_->IsPrinterInstalled(printer));
+  EXPECT_FALSE(fake_installation_manager_->IsPrinterInstalled(printer.printer));
 }
 
 TEST_F(AutomaticUsbPrinterConfigurerTest, UsbPrinterAddedToSet) {
   const std::string automatic_printer_id = "auto_id";
-  const Printer automatic_printer = CreateUsbPrinter(automatic_printer_id);
+  const PrinterDetector::DetectedPrinter automatic_printer =
+      CreateIppUsbPrinter(automatic_printer_id, "");
 
   const std::string discovered_printer_id = "disco_id";
-  const Printer discovered_printer = CreateUsbPrinter(discovered_printer_id);
+  const PrinterDetector::DetectedPrinter discovered_printer =
+      CreateUsbPrinter(discovered_printer_id, "");
 
-  // Adding an automatic USB printer should result in the printer getting added
-  // to |auto_usb_printer_configurer_::configured_printers_|.
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(
-      automatic_printer);
+  // Adding an IPP USB printer should result in the printer getting added
+  // to the list of configured printers.
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters(
+      {automatic_printer});
+  task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(auto_usb_printer_configurer_->configured_printers_.contains(
+  EXPECT_TRUE(auto_usb_printer_configurer_->ConfiguredPrintersIds().contains(
       automatic_printer_id));
+  EXPECT_TRUE(auto_usb_printer_configurer_->UnconfiguredPrintersIds().empty());
 
-  // Adding a discovered USB printer should result in the printer getting added
-  // to |auto_usb_printer_configurer_::unconfigured_printers_|.
-  fake_observable_printers_manager_.AddNearbyDiscoveredPrinter(
-      discovered_printer);
+  // Adding a non-IPP USB printer should result in the printer getting added
+  // to the list of unconfigured printers (no PPDs are available).
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters(
+      {automatic_printer, discovered_printer});
+  task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(auto_usb_printer_configurer_->unconfigured_printers_.contains(
+  EXPECT_TRUE(auto_usb_printer_configurer_->ConfiguredPrintersIds().contains(
+      automatic_printer_id));
+  EXPECT_TRUE(auto_usb_printer_configurer_->UnconfiguredPrintersIds().contains(
       discovered_printer_id));
 
-  EXPECT_EQ(1u, auto_usb_printer_configurer_->configured_printers_.size());
-  EXPECT_EQ(1u, auto_usb_printer_configurer_->unconfigured_printers_.size());
+  EXPECT_EQ(1u, auto_usb_printer_configurer_->ConfiguredPrintersIds().size());
+  EXPECT_EQ(1u, auto_usb_printer_configurer_->UnconfiguredPrintersIds().size());
 
-  // Removing the automatic printer should result in the printer getting
-  // removed from |auto_usb_printer_configurer_::unconfigured_printers_|.
-  fake_observable_printers_manager_.RemoveDiscoveredPrinter(
-      discovered_printer_id);
+  // Removing the non-IPP printer should result in the printer getting
+  // removed from the list of unconfigured printers.
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters(
+      {automatic_printer});
+  task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(0u, auto_usb_printer_configurer_->unconfigured_printers_.size());
+  EXPECT_EQ(0u, auto_usb_printer_configurer_->UnconfiguredPrintersIds().size());
 
-  // Removing the automatic printer should result in the printer getting
-  // removed from |auto_usb_printer_configurer_::configured_printers_|.
-  fake_observable_printers_manager_.RemoveAutomaticPrinter(
-      automatic_printer_id);
+  // Removing the IPP printer should result in the printer getting
+  // removed from the list of configured printers.
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters({});
+  task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(0u, auto_usb_printer_configurer_->configured_printers_.size());
+  EXPECT_EQ(0u, auto_usb_printer_configurer_->ConfiguredPrintersIds().size());
 }
 
 TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationOpenedForNewAutomatic) {
   const std::string printer_id = "id";
-  const Printer printer = CreateUsbPrinter(printer_id);
+  const PrinterDetector::DetectedPrinter printer =
+      CreateIppUsbPrinter(printer_id, "");
 
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
-
-  EXPECT_TRUE(
-      fake_notification_controller_->IsNotificationDisplayed(printer_id));
-}
-
-TEST_F(AutomaticUsbPrinterConfigurerTest,
-       NotificationOpenedForPreviouslyConfigured) {
-  const std::string printer_id = "id";
-  const Printer printer = CreateUsbPrinter(printer_id);
-
-  // Even though the printer is already configured, adding the printer should
-  // result in a notification being shown.
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters({printer});
+  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(
       fake_notification_controller_->IsNotificationDisplayed(printer_id));
@@ -278,14 +281,17 @@ TEST_F(AutomaticUsbPrinterConfigurerTest,
 
 TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationClosed) {
   const std::string printer_id = "id";
-  const Printer printer = CreateUsbPrinter(printer_id);
+  const PrinterDetector::DetectedPrinter printer =
+      CreateIppUsbPrinter(printer_id, "");
 
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters({printer});
+  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(
       fake_notification_controller_->IsNotificationDisplayed(printer_id));
 
-  fake_observable_printers_manager_.RemoveAutomaticPrinter(printer_id);
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters({});
+  task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(
       fake_notification_controller_->IsNotificationDisplayed(printer_id));
@@ -293,30 +299,14 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationClosed) {
 
 TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationOpenedForNewDiscovered) {
   const std::string printer_id = "id";
-  const Printer printer = CreateUsbPrinter(printer_id);
+  const PrinterDetector::DetectedPrinter printer =
+      CreateUsbPrinter(printer_id, "");
 
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters({printer});
+  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(
       fake_notification_controller_->IsNotificationDisplayed(printer_id));
-}
-
-TEST_F(AutomaticUsbPrinterConfigurerTest, RegisterAutoconfFailureForIppUsb) {
-  const std::string printer1_id = "id1";
-  const std::string printer2_id = "id2";
-  const Printer printer1 = CreateIppUsbPrinter(printer1_id);
-  const Printer printer2 = CreateIppUsbPrinter(printer2_id);
-
-  fake_installation_manager_->SetPrinterSetupResult(
-      printer1_id, PrinterSetupResult::kPrinterIsNotAutoconfigurable);
-
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer1);
-  fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer2);
-
-  EXPECT_TRUE(
-      fake_installation_manager_->IsMarkedAsNotAutoconfigurable(printer1));
-  EXPECT_FALSE(
-      fake_installation_manager_->IsMarkedAsNotAutoconfigurable(printer2));
 }
 
 }  // namespace ash
