@@ -215,6 +215,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessExpectedCookieSet) {
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), Result::kSuccess);
   VerifyMetricRecorded(Result::kSuccess);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.BoundSessionCredentials."
+      "CookieRotationGenerateAssertionDuration",
+      0);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -404,6 +408,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), Result::kSuccess);
   VerifyMetricRecorded(Result::kSuccess);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.BoundSessionCredentials."
+      "CookieRotationGenerateAssertionDuration",
+      1);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -414,6 +422,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
 
   SimulateChallengeRequired(CreateChallengeHeaderValue("\xF0\x8F\xBF\xBE"));
   EXPECT_EQ(future.Get(), Result::kChallengeRequiredUnexpectedFormat);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.BoundSessionCredentials."
+      "CookieRotationGenerateAssertionDuration",
+      0);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -424,6 +436,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   SimulateChallengeRequired("");
   EXPECT_EQ(future.Get(), Result::kChallengeRequiredUnexpectedFormat);
   VerifyMetricRecorded(Result::kChallengeRequiredUnexpectedFormat);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.BoundSessionCredentials."
+      "CookieRotationGenerateAssertionDuration",
+      0);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -433,6 +449,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   fetcher_->Start(future.GetCallback());
   SimulateChallengeRequired("session_id=12345;");
   EXPECT_EQ(future.Get(), Result::kChallengeRequiredUnexpectedFormat);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.BoundSessionCredentials."
+      "CookieRotationGenerateAssertionDuration",
+      0);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -443,6 +463,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   SimulateChallengeRequired(CreateChallengeHeaderValue(""));
   EXPECT_EQ(future.Get(), Result::kChallengeRequiredUnexpectedFormat);
   VerifyMetricRecorded(Result::kChallengeRequiredUnexpectedFormat);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.BoundSessionCredentials."
+      "CookieRotationGenerateAssertionDuration",
+      0);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -462,6 +486,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   } while (!future.IsReady());
   EXPECT_EQ(future.Get(), Result::kChallengeRequiredLimitExceeded);
   VerifyMetricRecorded(Result::kChallengeRequiredLimitExceeded);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.BoundSessionCredentials."
+      "CookieRotationGenerateAssertionDuration",
+      assertion_requests - 1);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, SignChallengeFailed) {
@@ -481,6 +509,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SignChallengeFailed) {
   SimulateChallengeRequired(CreateChallengeHeaderValue(kChallenge));
   EXPECT_EQ(future.Get(), Result::kSignChallengeFailed);
   VerifyMetricRecorded(Result::kSignChallengeFailed);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.BoundSessionCredentials."
+      "CookieRotationGenerateAssertionDuration",
+      1);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,

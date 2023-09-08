@@ -12,6 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -289,15 +290,22 @@ void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
       challenge, GaiaUrls::GetInstance()->rotate_bound_cookies_url(),
       base::BindOnce(
           &BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer()));
 }
 
 void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
+    base::ElapsedTimer generate_assertion_timer,
     std::string assertion) {
+  base::UmaHistogramMediumTimes(
+      "Signin.BoundSessionCredentials."
+      "CookieRotationGenerateAssertionDuration",
+      generate_assertion_timer.Elapsed());
+
   if (assertion.empty()) {
     CompleteRequestAndReportRefreshResult(Result::kSignChallengeFailed);
     return;
   }
+
   wait_for_network_callback_helper_->DelayNetworkCall(
       base::BindOnce(&BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest,
                      weak_ptr_factory_.GetWeakPtr(), std::move(assertion)));
