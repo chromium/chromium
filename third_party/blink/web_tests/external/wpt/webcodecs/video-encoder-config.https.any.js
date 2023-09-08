@@ -90,6 +90,14 @@ const validButUnsupportedConfigs = [
     },
   },
   {
+    comment: 'Codec with bad casing',
+    config: {
+      codec: 'vP8',
+      width: 640,
+      height: 480,
+    },
+  },
+  {
     comment: 'Width is too large',
     config: {
       codec: 'vp8',
@@ -251,12 +259,7 @@ validConfigs.forEach(config => {
       assert_equals(new_config.latencyMode, config.latencyMode);
     if (config.alpha)
       assert_equals(new_config.alpha, config.alpha);
-    if (config.codec.startsWith('avc')) {
-      if (config.avc) {
-        assert_equals(new_config.avc.format, config.avc.format);
-      }
-    } else {
-      assert_equals(new_config.avc, undefined);
-    }
+    if (config.avc)
+      assert_equals(new_config.avc.format, config.avc.format);
   }, "VideoEncoder.isConfigSupported() supports:" + JSON.stringify(config));
 });

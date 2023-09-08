@@ -772,6 +772,30 @@ def test_wheel_action_scroll_origin_invalid_value(session, value):
     assert_error(response, "invalid argument")
 
 
+def test_wheel_action_scroll_origin_pointer_not_supported(session):
+    # Pointer origin isn't currently supported for wheel input source
+    # See: https://github.com/w3c/webdriver/issues/1758
+
+    actions = [
+        {
+            "type": "wheel",
+            "id": "foo",
+            "actions": [
+                {
+                    "type": "scroll",
+                    "x": 0,
+                    "y": 0,
+                    "deltaX": 0,
+                    "deltaY": 0,
+                    "origin": "pointer",
+                }
+            ],
+        }
+    ]
+    response = perform_actions(session, actions)
+    assert_error(response, "invalid argument")
+
+
 @pytest.mark.parametrize(
     "value",
     [

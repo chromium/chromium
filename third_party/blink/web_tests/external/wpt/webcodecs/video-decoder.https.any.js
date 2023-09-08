@@ -59,6 +59,10 @@ const validButUnsupportedConfigs = [
     config: {codec: 'vp9'},
   },
   {
+    comment: 'Codec with bad casing',
+    config: {codec: 'Vp09.00.10.08'},
+  },
+  {
     comment: 'Codec with MIME type',
     config: {codec: 'video/webm; codecs="vp8"'},
   },

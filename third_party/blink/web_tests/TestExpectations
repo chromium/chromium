@@ -6700,7 +6700,7 @@ crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failur
 crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-event-fired.html [ Failure Pass ]
 
 # Gardener 2023-09-07
-crbug.com/1480070 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary.html [ Pass Failure ]
-crbug.com/1480070 [ Win ] virtual/threaded/external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary.html [ Pass Failure ]
-crbug.com/1479983 [ Mac ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout Failure Pass ]
-crbug.com/1480072 virtual/threaded/http/tests/devtools/tracing/timeline-js/compile-script.js [ Pass Failure ]
+crbug.com/1480070 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary.html [ Failure Pass ]
+crbug.com/1480070 [ Win ] virtual/threaded/external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary.html [ Failure Pass ]
+crbug.com/1479983 [ Mac ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Pass Timeout ]
+crbug.com/1480072 virtual/threaded/http/tests/devtools/tracing/timeline-js/compile-script.js [ Failure Pass ]

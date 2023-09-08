@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config: Missing codec
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config: Empty codec
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config: Width is 0
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config: Height is 0
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config: displayWidth is 0
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config: displayHeight is 0
+PASS Test that VideoEncoder.configure() rejects invalid config: Missing codec
+PASS Test that VideoEncoder.configure() rejects invalid config: Empty codec
+PASS Test that VideoEncoder.configure() rejects invalid config: Width is 0
+PASS Test that VideoEncoder.configure() rejects invalid config: Height is 0
+PASS Test that VideoEncoder.configure() rejects invalid config: displayWidth is 0
+PASS Test that VideoEncoder.configure() rejects invalid config: displayHeight is 0
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Invalid scalability mode
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Unrecognized codec
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Codec with bad casing
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Width is too large
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Height is too large
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Too strenuous accelerated encoding parameters
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Odd sized frames for H264
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Possible future H264 codec string
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Possible future HEVC codec string
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Possible future VP9 codec string
+PASS Test that VideoEncoder.isConfigSupported() doesn't support config: Possible future AV1 codec string
+PASS Test that VideoEncoder.configure() doesn't support config: Invalid scalability mode
+PASS Test that VideoEncoder.configure() doesn't support config: Unrecognized codec
+PASS Test that VideoEncoder.configure() doesn't support config: Codec with bad casing
+PASS Test that VideoEncoder.configure() doesn't support config: Width is too large
+PASS Test that VideoEncoder.configure() doesn't support config: Height is too large
+PASS Test that VideoEncoder.configure() doesn't support config: Too strenuous accelerated encoding parameters
+PASS Test that VideoEncoder.configure() doesn't support config: Odd sized frames for H264
+PASS Test that VideoEncoder.configure() doesn't support config: Possible future H264 codec string
+PASS Test that VideoEncoder.configure() doesn't support config: Possible future HEVC codec string
+PASS Test that VideoEncoder.configure() doesn't support config: Possible future VP9 codec string
+PASS Test that VideoEncoder.configure() doesn't support config: Possible future AV1 codec string
+PASS VideoEncoder.isConfigSupported() supports:{"codec":"avc1.42001E","hardwareAcceleration":"no-preference","width":640,"height":480,"bitrate":5000000,"framerate":24,"avc":{"format":"annexb"},"futureConfigFeature":"foo"}
+FAIL VideoEncoder.isConfigSupported() supports:{"codec":"vp8","hardwareAcceleration":"no-preference","width":800,"height":600,"bitrate":7000000,"bitrateMode":"variable","framerate":60,"scalabilityMode":"L1T2","futureConfigFeature":"foo","latencyMode":"quality","avc":{"format":"annexb"}} promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'format')"
+PASS VideoEncoder.isConfigSupported() supports:{"codec":"vp09.00.10.08","hardwareAcceleration":"no-preference","width":1280,"height":720,"bitrate":7000000,"bitrateMode":"constant","framerate":25,"futureConfigFeature":"foo","latencyMode":"realtime","alpha":"discard"}
+Harness: the test ran to completion.
+

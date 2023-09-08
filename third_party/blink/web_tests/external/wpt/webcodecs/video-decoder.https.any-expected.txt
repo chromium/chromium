@@ -7,6 +7,7 @@ PASS Test that VideoDecoder.isConfigSupported() doesn't support config: Unrecogn
 PASS Test that VideoDecoder.isConfigSupported() doesn't support config: Unrecognized codec with dataview description
 PASS Test that VideoDecoder.isConfigSupported() doesn't support config: Audio codec
 PASS Test that VideoDecoder.isConfigSupported() doesn't support config: Ambiguous codec
+PASS Test that VideoDecoder.isConfigSupported() doesn't support config: Codec with bad casing
 PASS Test that VideoDecoder.isConfigSupported() doesn't support config: Codec with MIME type
 PASS Test that VideoDecoder.isConfigSupported() doesn't support config: Possible future H264 codec string
 PASS Test that VideoDecoder.isConfigSupported() doesn't support config: Possible future HEVC codec string
@@ -16,6 +17,7 @@ FAIL Test that VideoDecoder.configure() doesn't support config: Unrecognized cod
 FAIL Test that VideoDecoder.configure() doesn't support config: Unrecognized codec with dataview description promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'configure' on 'VideoDecoder': Unknown or ambiguous codec name."
 FAIL Test that VideoDecoder.configure() doesn't support config: Audio codec promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'configure' on 'VideoDecoder': Unknown or ambiguous codec name."
 FAIL Test that VideoDecoder.configure() doesn't support config: Ambiguous codec promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'configure' on 'VideoDecoder': Unknown or ambiguous codec name."
+FAIL Test that VideoDecoder.configure() doesn't support config: Codec with bad casing promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'configure' on 'VideoDecoder': Unknown or ambiguous codec name."
 FAIL Test that VideoDecoder.configure() doesn't support config: Codec with MIME type promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'configure' on 'VideoDecoder': Unknown or ambiguous codec name."
 FAIL Test that VideoDecoder.configure() doesn't support config: Possible future H264 codec string promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'configure' on 'VideoDecoder': Unknown or ambiguous codec name."
 FAIL Test that VideoDecoder.configure() doesn't support config: Possible future HEVC codec string promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'configure' on 'VideoDecoder': Unknown or ambiguous codec name."
