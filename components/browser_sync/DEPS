@@ -23,5 +23,6 @@ include_rules = [
   "+components/version_info",
   "+components/webdata/common",
   "+components/webdata_services",
+  "+net/base",
   "+services/network/test",
 ]

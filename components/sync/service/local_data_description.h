@@ -37,6 +37,11 @@ struct LocalDataDescription {
   ~LocalDataDescription();
 };
 
+bool operator==(const LocalDataDescription& lhs,
+                const LocalDataDescription& rhs);
+bool operator!=(const LocalDataDescription& lhs,
+                const LocalDataDescription& rhs);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_SERVICE_LOCAL_DATA_DESCRIPTION_H_

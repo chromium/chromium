@@ -31,4 +31,15 @@ LocalDataDescription& LocalDataDescription::operator=(LocalDataDescription&&) =
 
 LocalDataDescription::~LocalDataDescription() = default;
 
+bool operator==(const LocalDataDescription& lhs,
+                const LocalDataDescription& rhs) {
+  return lhs.type == rhs.type && lhs.item_count == rhs.item_count &&
+         lhs.domains == rhs.domains && lhs.domain_count == rhs.domain_count;
+}
+
+bool operator!=(const LocalDataDescription& lhs,
+                const LocalDataDescription& rhs) {
+  return !(lhs == rhs);
+}
+
 }  // namespace syncer
