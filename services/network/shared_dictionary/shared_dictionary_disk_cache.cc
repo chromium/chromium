@@ -4,6 +4,8 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
 
+#include <limits>
+
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 
@@ -68,15 +70,18 @@ disk_cache::BackendResult SharedDictionaryDiskCache::CreateCacheBackend(
     scoped_refptr<disk_cache::BackendFileOperationsFactory>
         file_operations_factory,
     disk_cache::BackendResultCallback callback) {
+  CHECK(!cache_directory_path.empty());
+
   // We use APP_CACHE to avoid the auto-eviction.
+  // Also we use std::numeric_limits<int64_t>::max() for `max_bytes`, because
+  // the cache size is controlled by the SharedDictionaryManagerOnDisk.
   return disk_cache::CreateCacheBackend(
-      cache_directory_path.empty() ? net::MEMORY_CACHE : net::APP_CACHE,
-      net::CACHE_BACKEND_SIMPLE, file_operations_factory.get(),
-      cache_directory_path, /*max_bytes=*/0,
-      disk_cache::ResetHandling::kResetOnError, /*net_log=*/nullptr,
-      std::move(callback)
+      net::APP_CACHE, net::CACHE_BACKEND_SIMPLE, file_operations_factory.get(),
+      cache_directory_path, /*max_bytes=*/std::numeric_limits<int64_t>::max(),
+      disk_cache::ResetHandling::kResetOnError,
+      /*net_log=*/nullptr, std::move(callback)
 #if BUILDFLAG(IS_ANDROID)
-          ,
+                               ,
       app_status_listener
 #endif  // BUILDFLAG(IS_ANDROID));
   );
