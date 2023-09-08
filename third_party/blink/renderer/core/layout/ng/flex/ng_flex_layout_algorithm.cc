@@ -832,9 +832,12 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (!layout_result) {
         NGConstraintSpace child_space =
             BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
-        absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+        // TODO(crbug.com/1272533): This shouldn't return border/padding for
+        // children which are layout-clean. More cache slots are needed to
+        // handle the performance degradation to allow a layout within the
+        // min/max sizing pass.
         if (phase != Phase::kLayout && !Node().GetLayoutBox()->NeedsLayout()) {
-          disable_side_effects.emplace();
+          return border_padding_in_child_writing_mode.BlockSum();
         }
         layout_result = child.Layout(child_space, /* break_token */ nullptr);
         DCHECK(layout_result);
@@ -1318,16 +1321,11 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
           flex_item.cross_axis_size_ = ComputeInlineSizeForFragment(
               child_space, flex_item.ng_input_node_, border + padding);
         }
+      } else if (is_computing_multiline_column_intrinsic_size) {
+        flex_item.cross_axis_size_ = *flex_item.max_content_contribution_;
       } else {
         DCHECK((child_space.CacheSlot() == NGCacheSlot::kLayout) ||
-               !flex_item.layout_result_)
-            << "If we already have a 'measure' result from "
-               "ConstructAndAppendFlexItems, we don't want to evict it.";
-        absl::optional<NGDisableSideEffectsScope> disable_side_effects;
-        if (is_computing_multiline_column_intrinsic_size &&
-            !flex_item.ng_input_node_.GetLayoutBox()->NeedsLayout()) {
-          disable_side_effects.emplace();
-        }
+               !flex_item.layout_result_);
         flex_item.layout_result_ = flex_item.ng_input_node_.Layout(
             child_space, nullptr /*break token*/);
         // TODO(layout-dev): Handle abortions caused by block fragmentation.
