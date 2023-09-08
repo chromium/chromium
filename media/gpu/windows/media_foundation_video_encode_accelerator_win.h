@@ -111,6 +111,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   struct OutOfBandMetadata {
     gfx::ColorSpace color_space;
     bool discard_output = false;
+    absl::optional<int> qp;
   };
 
   // Encoder state.
