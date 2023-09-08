@@ -43,7 +43,14 @@ SidePanelEntry* SidePanelRegistry::GetEntryForKey(
 }
 
 void SidePanelRegistry::ResetActiveEntry() {
-  active_entry_.reset();
+  if (active_entry_.has_value()) {
+    last_active_entry_ = active_entry_;
+    active_entry_.reset();
+  }
+}
+
+void SidePanelRegistry::ResetLastActiveEntry() {
+  last_active_entry_.reset();
 }
 
 void SidePanelRegistry::ClearCachedEntryViews() {
@@ -94,6 +101,10 @@ std::unique_ptr<SidePanelEntry> SidePanelRegistry::DeregisterAndReturnEntry(
   if (active_entry_.has_value() &&
       entry->key() == active_entry_.value()->key()) {
     active_entry_.reset();
+  }
+  if (last_active_entry_.has_value() &&
+      entry->key() == last_active_entry_.value()->key()) {
+    last_active_entry_.reset();
   }
 
   // If `entry` is currently shown, then its view is owned by the browser's side

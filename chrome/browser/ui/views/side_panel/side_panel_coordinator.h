@@ -167,10 +167,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // entry exists.
   absl::optional<SidePanelEntry::Key> GetLastActiveEntryKey() const;
 
-  // Returns the last active global entry or the default entry if no last active
-  // global entry exists.
-  absl::optional<SidePanelEntry::Key> GetLastActiveGlobalEntryKey() const;
-
   // Returns the currently selected id in the combobox, if one is shown.
   absl::optional<SidePanelEntry::Key> GetSelectedKey() const;
 
@@ -237,7 +233,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   const raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
   raw_ptr<SidePanelRegistry> global_registry_;
-  absl::optional<SidePanelEntry::Key> last_active_global_entry_key_;
 
   // current_entry_ tracks the entry that currently has its view hosted by the
   // side panel. It is necessary as current_entry_ may belong to a contextual
