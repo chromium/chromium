@@ -26,6 +26,11 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type);
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
                                         HtmlFieldMode field_mode);
 
+// Helper method that takes a `FieldTypeGroup` and returns a
+// `ServerFieldTypeSet` containing all `ServerFieldType`(s) that matches the
+// target group.
+ServerFieldTypeSet GetServerFieldTypesOfGroup(FieldTypeGroup group);
+
 // The high-level description of Autofill types, used to categorize form fields
 // and for associating form fields with form values in the Web Database.
 class AutofillType {

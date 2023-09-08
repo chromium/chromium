@@ -98,6 +98,8 @@ static_library("browser") {
     "autofill_feedback_data.h",
     "autofill_field.cc",
     "autofill_field.h",
+    "autofill_granular_filling_utils.cc",
+    "autofill_granular_filling_utils.h",
     "autofill_manager.cc",
     "autofill_manager.h",
     "autofill_observer.cc",

@@ -16,6 +16,16 @@
 
 namespace autofill {
 
+ServerFieldTypeSet GetServerFieldTypesOfGroup(FieldTypeGroup group) {
+  ServerFieldTypeSet fields_matching_group;
+  for (ServerFieldType server_field_type : kAllServerFieldTypes) {
+    if (AutofillType(server_field_type).group() == group) {
+      fields_matching_group.insert(server_field_type);
+    }
+  }
+  return fields_matching_group;
+}
+
 FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
   switch (field_type) {
     case NAME_HONORIFIC_PREFIX:
