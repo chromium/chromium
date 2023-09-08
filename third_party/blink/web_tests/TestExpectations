@@ -5348,7 +5348,6 @@ crbug.com/1197296 [ Debug Linux ] external/wpt/feature-policy/feature-policy-fra
 # Sheriff 2022-03-28
 crbug.com/1311015 [ Mac10.15 Release ] external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html [ Failure Pass ]
 crbug.com/1311015 [ Mac11-arm64 Release ] external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html [ Failure Pass ]
-crbug.com/1311128 [ Mac11-arm64 Release ] external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.html [ Crash Failure Pass Timeout ]
 
 # Scroll Unification known issues (go/su-web-tests) for enabling in test:
 crbug.com/1311431 [ Debug Mac13-arm64 ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
