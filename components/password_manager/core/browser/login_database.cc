@@ -988,6 +988,26 @@ bool ShouldReturnPartialPasswords() {
 #endif
 }
 
+std::unique_ptr<sync_pb::EntityMetadata> DecryptAndParseSyncEntityMetadata(
+    const std::string& encrypted_serialized_metadata) {
+  std::string decrypted_serialized_metadata;
+  if (!OSCrypt::DecryptString(encrypted_serialized_metadata,
+                              &decrypted_serialized_metadata)) {
+    DLOG(WARNING) << "Failed to decrypt PASSWORD model type "
+                     "sync_pb::EntityMetadata.";
+    return nullptr;
+  }
+
+  auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
+  if (!entity_metadata->ParseFromString(decrypted_serialized_metadata)) {
+    DLOG(WARNING) << "Failed to deserialize PASSWORD model type "
+                     "sync_pb::EntityMetadata.";
+    return nullptr;
+  }
+
+  return entity_metadata;
+}
+
 }  // namespace
 
 struct LoginDatabase::PrimaryKeyAndPassword {
@@ -1938,23 +1958,12 @@ LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
   while (s.Step()) {
     int storage_key_int = s.ColumnInt(0);
     std::string storage_key = base::NumberToString(storage_key_int);
-    std::string encrypted_serialized_metadata = s.ColumnString(1);
-    std::string decrypted_serialized_metadata;
-    if (!OSCrypt::DecryptString(encrypted_serialized_metadata,
-                                &decrypted_serialized_metadata)) {
-      DLOG(WARNING) << "Failed to decrypt PASSWORD model type "
-                       "sync_pb::EntityMetadata.";
+    std::unique_ptr<sync_pb::EntityMetadata> entity_metadata =
+        DecryptAndParseSyncEntityMetadata(s.ColumnString(1));
+    if (!entity_metadata) {
       return nullptr;
     }
-
-    auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
-    if (entity_metadata->ParseFromString(decrypted_serialized_metadata)) {
-      metadata_batch->AddMetadata(storage_key, std::move(entity_metadata));
-    } else {
-      DLOG(WARNING) << "Failed to deserialize PASSWORD model type "
-                       "sync_pb::EntityMetadata.";
-      return nullptr;
-    }
+    metadata_batch->AddMetadata(storage_key, std::move(entity_metadata));
   }
   if (!s.Succeeded()) {
     return nullptr;
@@ -2140,18 +2149,24 @@ void LoginDatabase::SyncMetadataStore::SetPasswordDeletionsHaveSyncedCallback(
 bool LoginDatabase::SyncMetadataStore::HasUnsyncedPasswordDeletions() {
   TRACE_EVENT0("passwords", "SyncMetadataStore::HasUnsyncedDeletions");
 
-  std::unique_ptr<syncer::MetadataBatch> batch =
-      GetAllSyncEntityMetadata(syncer::PASSWORDS);
-  if (!batch) {
-    return false;
-  }
-  for (const auto& metadata_entry : batch->GetAllMetadata()) {
+  sql::Statement s(db_->GetCachedStatement(
+      SQL_FROM_HERE, base::StringPrintf("SELECT metadata FROM %s",
+                                        kPasswordsSyncEntitiesMetadataTableName)
+                         .c_str()));
+
+  while (s.Step()) {
+    std::unique_ptr<sync_pb::EntityMetadata> entity_metadata =
+        DecryptAndParseSyncEntityMetadata(s.ColumnString(0));
+    if (!entity_metadata) {
+      return false;
+    }
     // Note: No need for an explicit "is unsynced" check: Once the deletion is
     // committed, the metadata entry is removed.
-    if (metadata_entry.second->is_deleted()) {
+    if (entity_metadata->is_deleted()) {
       return true;
     }
   }
+
   return false;
 }
 
