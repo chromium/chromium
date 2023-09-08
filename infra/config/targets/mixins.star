@@ -829,30 +829,6 @@ targets.mixin(
     ),
 )
 
-# TODO(crbug.com/1464635): Remove this once Mac13.4 upgrade
-# is complete. This is only a temp workaround to roll Xcode 15.
-targets.mixin(
-    name = "mac_13.4_arm64",
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "arm64",
-            "os": "Mac-13.4",
-        },
-    ),
-)
-
-# TODO(crbug.com/1464635): Remove this once Mac13.4 upgrade
-# is complete. This is only a temp workaround to roll Xcode 15.
-targets.mixin(
-    name = "mac_13.4_x64",
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "x86-64",
-            "os": "Mac-13.4",
-        },
-    ),
-)
-
 targets.mixin(
     name = "mac_13_arm64",
     swarming = targets.swarming(
