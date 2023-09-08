@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -728,9 +729,16 @@ WebDatabase::State AutofillWebDataBackendImpl::AddServerCvc(
     const std::u16string& cvc,
     WebDatabase* db) {
   CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (AutofillTable::FromWebDatabase(db)->AddServerCvc(
-          ServerCvc{instrument_id, cvc,
-                    /*last_updated_timestamp=*/AutofillClock::Now()})) {
+  const ServerCvc server_cvc{instrument_id, cvc,
+                             /*last_updated_timestamp=*/AutofillClock::Now()};
+  if (AutofillTable::FromWebDatabase(db)->AddServerCvc(server_cvc)) {
+    const ServerCvcChange change{
+        ServerCvcChange::ADD, base::NumberToString(instrument_id), server_cvc};
+    for (auto& db_observer : db_observer_list_) {
+      // TODO(crbug/1477924): Add integration tests for Add, Remove and Update
+      // for Wallet Credential data.
+      db_observer.ServerCvcChanged(change);
+    }
     ReportResult(Result::kAddServerCvc_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
@@ -743,9 +751,15 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCvc(
     const std::u16string& cvc,
     WebDatabase* db) {
   CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (AutofillTable::FromWebDatabase(db)->UpdateServerCvc(
-          ServerCvc{instrument_id, cvc,
-                    /*last_updated_timestamp=*/AutofillClock::Now()})) {
+  const ServerCvc server_cvc{instrument_id, cvc,
+                             /*last_updated_timestamp=*/AutofillClock::Now()};
+  if (AutofillTable::FromWebDatabase(db)->UpdateServerCvc(server_cvc)) {
+    const ServerCvcChange change{ServerCvcChange::UPDATE,
+                                 base::NumberToString(instrument_id),
+                                 server_cvc};
+    for (auto& db_observer : db_observer_list_) {
+      db_observer.ServerCvcChanged(change);
+    }
     ReportResult(Result::kUpdateServerCvc_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
@@ -758,6 +772,14 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveServerCvc(
     WebDatabase* db) {
   CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (AutofillTable::FromWebDatabase(db)->RemoveServerCvc(instrument_id)) {
+    // Remove doesn't require `ServerCvc` struct data, so an empty data is
+    // passed to the ServerCvcChange
+    const ServerCvcChange change{ServerCvcChange::REMOVE,
+                                 base::NumberToString(instrument_id),
+                                 ServerCvc{}};
+    for (auto& db_observer : db_observer_list_) {
+      db_observer.ServerCvcChanged(change);
+    }
     ReportResult(Result::kRemoveServerCvc_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
@@ -768,7 +790,21 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveServerCvc(
 WebDatabase::State AutofillWebDataBackendImpl::ClearServerCvcs(
     WebDatabase* db) {
   CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<std::unique_ptr<ServerCvc>> server_cvc_list =
+      AutofillTable::FromWebDatabase(db)->GetAllServerCvcs();
   if (AutofillTable::FromWebDatabase(db)->ClearServerCvcs()) {
+    for (const std::unique_ptr<ServerCvc>& server_cvc_from_list :
+         server_cvc_list) {
+      // Remove doesn't require `ServerCvc` struct data, so an empty data is
+      // passed to the ServerCvcChange
+      const ServerCvcChange change{
+          ServerCvcChange::REMOVE,
+          base::NumberToString(server_cvc_from_list->instrument_id),
+          ServerCvc{}};
+      for (auto& db_observer : db_observer_list_) {
+        db_observer.ServerCvcChanged(change);
+      }
+    }
     ReportResult(Result::kClearServerCvcs_Success);
     return WebDatabase::COMMIT_NEEDED;
   }

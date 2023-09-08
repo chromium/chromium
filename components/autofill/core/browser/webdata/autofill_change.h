@@ -82,7 +82,9 @@ class AutofillDataModelChange : public GenericAutofillChange<std::string> {
                           DataType data_model)
       : GenericAutofillChange<std::string>(type, key),
         data_model_(std::move(data_model)) {
-    CHECK(DataModelEntryMatchesKey(data_model_, key));
+    // For `REMOVE`, the `data_model_` isn't needed (because for deletions,
+    // Sync doesn't send the data to the server).
+    CHECK(type == REMOVE || DataModelEntryMatchesKey(data_model_, key));
   }
 
   ~AutofillDataModelChange() override = default;

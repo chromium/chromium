@@ -60,6 +60,7 @@ AutofillWalletCredentialSyncBridge::AutofillWalletCredentialSyncBridge(
       web_data_backend_(web_data_backend) {
   CHECK(web_data_backend_);
   CHECK(GetAutofillTable());
+  scoped_observation_.Observe(web_data_backend_.get());
   LoadMetadata();
 }
 
@@ -188,6 +189,8 @@ void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // For this data type, we want to delete all the data (not just the metadata)
   // when the type is disabled!
+  // Note- This only clears the data from the local database and doesn't trigger
+  // a `REMOVE` call to the Chrome Sync server.
   if (AutofillTable* table = GetAutofillTable();
       !table || !table->ClearServerCvcs()) {
     change_processor()->ReportError(
