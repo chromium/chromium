@@ -796,7 +796,8 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
 
   // Exclude 1-symbol inputs, as they are unlikely to be usernames and likely
   // to be characters/digits of OTPs.
-  if (element_value.size() == 1) {
+  // Exclude too large inputs, as they are usually not usernames.
+  if (element_value.size() == 1 || element_value.size() > 100) {
     return;
   }
 

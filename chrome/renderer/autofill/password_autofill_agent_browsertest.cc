@@ -4373,6 +4373,17 @@ TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordFieldOneSymbol) {
   SimulateUsernameTyping("1");
 }
 
+// Tests that inputting 101 symbols into a non-password field does not notify
+// the browser.
+TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordFieldTooManySymbols) {
+  LoadHTML(kSingleUsernameFormHTML);
+  UpdateOnlyUsernameElement();
+
+  EXPECT_CALL(fake_driver_, UserModifiedNonPasswordField).Times(0);
+  std::string not_username(101, 'a');
+  SimulateUsernameTyping(not_username);
+}
+
 // Tests that user modifying a text field with an OTP autocomplete attribute
 // results in notifying the browser correspondingly.
 TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordFieldOTPAutocomplete) {
