@@ -5638,6 +5638,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "new-confirmation-bubble-for-generated-passwords",
+    "owners": ["sygiet@google.com", "vasilii"],
+    "expiry_milestone": 123
+  },
+  {
     "name": "new-ntp-omnibox-layout",
     "owners": [ "hujasonx", "schechter" ],
     "expiry_milestone": 116

@@ -61,6 +61,14 @@ BASE_FEATURE(kFillOnAccountSelect,
              "fill-on-account-select",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Enables new confirmation bubble flow if generated password was used in a
+// form.
+BASE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords,
+             "kNewConfirmationBubbleForGeneratedPasswords",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // Enables the notification UI that is displayed to the user when visiting a
 // website for which a stored password has been shared by another user.
 BASE_FEATURE(kSharedPasswordNotificationUI,

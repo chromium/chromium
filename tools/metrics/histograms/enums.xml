@@ -66443,6 +66443,8 @@ from previous Chrome versions.
   <int value="909685129" label="ReduceUserAgentMinorVersion:disabled"/>
   <int value="910363543" label="ArcSyncInstallPriority:disabled"/>
   <int value="910725730" label="WebRtcHWVP9Encoding:disabled"/>
+  <int value="911139083"
+      label="kNewConfirmationBubbleForGeneratedPasswords:enabled"/>
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>
   <int value="913138924" label="RecurrentInterstitialFeature:disabled"/>
@@ -68865,6 +68867,8 @@ from previous Chrome versions.
   <int value="2100547979" label="AdaptiveCharging:enabled"/>
   <int value="2101124624" label="WebUIDownloadShelf:disabled"/>
   <int value="2101151142" label="disable-direct-write"/>
+  <int value="2103384854"
+      label="kNewConfirmationBubbleForGeneratedPasswords:disabled"/>
   <int value="2104245260" label="OmniboxSteadyStateBackgroundColor:disabled"/>
   <int value="2104340988" label="CrostiniUsername:disabled"/>
   <int value="2104439359"

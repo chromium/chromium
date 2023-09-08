@@ -10938,6 +10938,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"new-confirmation-bubble-for-generated-passwords",
+     flag_descriptions::kNewConfirmationBubbleForGeneratedPasswordsName,
+     flag_descriptions::kNewConfirmationBubbleForGeneratedPasswordsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kNewConfirmationBubbleForGeneratedPasswords)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

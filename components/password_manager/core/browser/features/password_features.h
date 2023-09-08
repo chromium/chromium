@@ -33,6 +33,10 @@ BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);
 
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 BASE_DECLARE_FEATURE(kSharedPasswordNotificationUI);
 
 BASE_DECLARE_FEATURE(kPasswordManagerEnableReceiverService);
