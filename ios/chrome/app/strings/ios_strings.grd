@@ -4289,11 +4289,6 @@ Try to use a unique password for every site.
 
 To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
-      <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_INFO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
-        Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
-
-Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
-      </message>
       <message name="IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
         Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
 

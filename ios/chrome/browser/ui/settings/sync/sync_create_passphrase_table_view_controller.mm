@@ -35,18 +35,12 @@ using sync_encryption_passphrase::SectionIdentifierPassphrase;
     self.title =
         l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_CREATE_PASSPHRASE);
     self.headerMessage = nil;
-    if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
-      self.footerMessage =
-          base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)
-              ? l10n_util::GetNSString(
-                    IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO)
-              : l10n_util::GetNSString(
-                    IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO);
-    } else {
-      self.footerMessage =
-          l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_INFO);
-    }
+    self.footerMessage =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? l10n_util::GetNSString(
+                  IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO)
+            : l10n_util::GetNSString(
+                  IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO);
     self.processingMessage =
         l10n_util::GetNSString(IDS_IOS_SYNC_PASSPHRASE_ENCRYPTING);
 
