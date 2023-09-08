@@ -1651,11 +1651,8 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
 TEST_F(RenderViewContextMenuPrefsTest,
        CompanionNewBadgeEnabledForRegionSearchContextMenuItem) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{companion::features::internal::kSidePanelCompanion,
-        {{"open-companion-for-image-search", "true"}}},
-       {companion::features::kCompanionEnableNewBadgesInContextMenu, {}}},
-      {});
+  features.InitAndEnableFeature(
+      companion::features::kCompanionEnableNewBadgesInContextMenu);
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
@@ -1678,10 +1675,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
 TEST_F(RenderViewContextMenuPrefsTest,
        CompanionNewBadgeDisabledForRegionSearchContextMenuItem) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{companion::features::internal::kSidePanelCompanion,
-        {{"open-companion-for-image-search", "true"}}}},
-      {companion::features::kCompanionEnableNewBadgesInContextMenu});
+  features.InitAndDisableFeature(
+      companion::features::kCompanionEnableNewBadgesInContextMenu);
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
@@ -1704,11 +1699,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
 TEST_F(RenderViewContextMenuPrefsTest,
        CompanionNewBadgeEnabledForImageSearchContextMenuItems) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{companion::features::internal::kSidePanelCompanion,
-        {{"open-companion-for-image-search", "true"}}},
-       {companion::features::kCompanionEnableNewBadgesInContextMenu, {}}},
-      {});
+  features.InitAndEnableFeature(
+      companion::features::kCompanionEnableNewBadgesInContextMenu);
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
@@ -1735,10 +1727,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
 TEST_F(RenderViewContextMenuPrefsTest,
        CompanionNewBadgeDisabledForImageSearchContextMenuItems) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{companion::features::internal::kSidePanelCompanion,
-        {{"open-companion-for-image-search", "true"}}}},
-      {companion::features::kCompanionEnableNewBadgesInContextMenu});
+  features.InitAndDisableFeature(
+      companion::features::kCompanionEnableNewBadgesInContextMenu);
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
