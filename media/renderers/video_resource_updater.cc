@@ -1559,6 +1559,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 }
 
 gpu::gles2::GLES2Interface* VideoResourceUpdater::ContextGL() {
+  // This is last usage of ContextGL() in RasterContextProvider. Delete function
+  // and friend entry from RasterContextProvider if removing this.
   auto* gl = context_provider_->ContextGL();
   DCHECK(gl);
   return gl;

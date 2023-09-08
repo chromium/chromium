@@ -14,6 +14,7 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -510,7 +511,7 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   gpu::Mailbox mailbox = sii->CreateSharedImage(
       SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
       "TestLabel", gpu::kNullSurfaceHandle);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
@@ -536,14 +537,9 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
                       sizeof(mailbox.name)));
 
   // Make a new texture id from the mailbox.
-  context_provider()->ContextGL()->WaitSyncTokenCHROMIUM(
+  context_provider()->RasterInterface()->WaitSyncTokenCHROMIUM(
       list[0].mailbox_holder.sync_token.GetConstData());
-  unsigned other_texture =
-      context_provider()->ContextGL()->CreateAndTexStorage2DSharedImageCHROMIUM(
-          mailbox.name);
-  // Then delete it and make a new SyncToken.
-  context_provider()->ContextGL()->DeleteTextures(1, &other_texture);
-  context_provider()->ContextGL()->GenSyncTokenCHROMIUM(
+  context_provider()->RasterInterface()->GenSyncTokenCHROMIUM(
       list[0].mailbox_holder.sync_token.GetData());
   EXPECT_TRUE(list[0].mailbox_holder.sync_token.HasData());
 
