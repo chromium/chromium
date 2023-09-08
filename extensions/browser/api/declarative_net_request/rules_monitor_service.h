@@ -151,6 +151,10 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
 
   void SetObserverForTest(TestObserver* observer) { test_observer_ = observer; }
 
+  bool HasAnyExtraHeadersMatcher() const {
+    return ruleset_manager_.HasAnyExtraHeadersMatcher();
+  }
+
  private:
   class FileSequenceBridge;
   class ApiCallQueue;
@@ -240,12 +244,6 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   // the `extension`, it is replaced.
   void UpdateRulesetMatcher(const Extension& extension,
                             std::unique_ptr<RulesetMatcher> ruleset_matcher);
-
-  // Adjusts the extra headers listener count on the
-  // ExtensionWebRequestEventRouter. Usually called after an update to the
-  // RulesetManager. |had_extra_headers_matcher| denotes whether the
-  // RulesetManager had an extra headers matcher before the update.
-  void AdjustExtraHeaderListenerCountIfNeeded(bool had_extra_headers_matcher);
 
   // Logs metrics related to the result of loading rulesets and updates ruleset
   // checksum in preferences from |load_data|.

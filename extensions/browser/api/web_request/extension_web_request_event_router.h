@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -303,11 +304,6 @@ class ExtensionWebRequestEventRouter {
   // ExtraInfoSpec::EXTRA_HEADERS set.
   bool HasAnyExtraHeadersListener(content::BrowserContext* browser_context);
 
-  void IncrementExtraHeadersListenerCount(
-      content::BrowserContext* browser_context);
-  void DecrementExtraHeadersListenerCount(
-      content::BrowserContext* browser_context);
-
   // Called when a BrowserContext is being destroyed.
   void OnBrowserContextShutdown(content::BrowserContext* browser_context);
 
@@ -348,6 +344,7 @@ class ExtensionWebRequestEventRouter {
 
   friend class WebRequestAPI;
   friend class base::NoDestructor<ExtensionWebRequestEventRouter>;
+  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BrowserContextShutdown);
 
   struct EventListener {
     struct ID {
@@ -635,6 +632,11 @@ class ExtensionWebRequestEventRouter {
   // Returns true if |request_id| was already signaled to some event handlers.
   bool WasSignaled(content::BrowserContext* browser_context,
                    uint64_t request_id) const;
+
+  void IncrementExtraHeadersListenerCount(
+      content::BrowserContext* browser_context);
+  void DecrementExtraHeadersListenerCount(
+      content::BrowserContext* browser_context);
 
   // Helper for |HasAnyExtraHeadersListener()|.
   bool HasAnyExtraHeadersListenerImpl(content::BrowserContext* browser_context);

@@ -1031,11 +1031,8 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
   }
 
   if (matcher) {
-    bool had_extra_headers_matcher =
-        ruleset_manager_.HasAnyExtraHeadersMatcher();
     matcher->RemoveRulesetsWithIDs(ids_to_disable);
     matcher->AddOrUpdateRulesets(std::move(new_matchers));
-    AdjustExtraHeaderListenerCountIfNeeded(had_extra_headers_matcher);
   } else {
     // The extension didn't have any existing rulesets. Hence just add a new
     // CompositeMatcher with |new_matchers|. Note, this also updates the
@@ -1091,10 +1088,8 @@ void RulesMonitorService::OnDynamicRulesUpdated(
 
 void RulesMonitorService::RemoveCompositeMatcher(
     const ExtensionId& extension_id) {
-  bool had_extra_headers_matcher = ruleset_manager_.HasAnyExtraHeadersMatcher();
   ruleset_manager_.RemoveRuleset(extension_id);
   action_tracker_.ClearExtensionData(extension_id);
-  AdjustExtraHeaderListenerCountIfNeeded(had_extra_headers_matcher);
 }
 
 void RulesMonitorService::AddCompositeMatcher(
@@ -1105,9 +1100,7 @@ void RulesMonitorService::AddCompositeMatcher(
 
   auto matcher = std::make_unique<CompositeMatcher>(
       std::move(matchers), GetHostPermissionsAlwaysRequired(extension));
-  bool had_extra_headers_matcher = ruleset_manager_.HasAnyExtraHeadersMatcher();
   ruleset_manager_.AddRuleset(extension.id(), std::move(matcher));
-  AdjustExtraHeaderListenerCountIfNeeded(had_extra_headers_matcher);
 }
 
 void RulesMonitorService::UpdateRulesetMatcher(
@@ -1124,23 +1117,7 @@ void RulesMonitorService::UpdateRulesetMatcher(
     return;
   }
 
-  bool had_extra_headers_matcher = ruleset_manager_.HasAnyExtraHeadersMatcher();
   matcher->AddOrUpdateRuleset(std::move(ruleset_matcher));
-  AdjustExtraHeaderListenerCountIfNeeded(had_extra_headers_matcher);
-}
-
-void RulesMonitorService::AdjustExtraHeaderListenerCountIfNeeded(
-    bool had_extra_headers_matcher) {
-  bool has_extra_headers_matcher = ruleset_manager_.HasAnyExtraHeadersMatcher();
-  if (had_extra_headers_matcher == has_extra_headers_matcher)
-    return;
-  if (has_extra_headers_matcher) {
-    ExtensionWebRequestEventRouter::GetInstance()
-        ->IncrementExtraHeadersListenerCount(context_);
-  } else {
-    ExtensionWebRequestEventRouter::GetInstance()
-        ->DecrementExtraHeadersListenerCount(context_);
-  }
 }
 
 void RulesMonitorService::LogMetricsAndUpdateChecksumsIfNeeded(
