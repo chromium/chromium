@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POLICY_CLOUD_REMOTE_COMMANDS_INVALIDATOR_H_
-#define CHROME_BROWSER_POLICY_CLOUD_REMOTE_COMMANDS_INVALIDATOR_H_
+#ifndef COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_INVALIDATOR_H_
+#define COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_INVALIDATOR_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
+#include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace invalidation {
@@ -25,7 +26,8 @@ namespace policy {
 // services. It's not interacting with CloudPolicyClient/CloudPolicyCore
 // directly, instead, it handles the interacting with invalidation service
 // only and leaves interfaces to integrate with subclasses.
-class RemoteCommandsInvalidator : public invalidation::InvalidationHandler {
+class POLICY_EXPORT RemoteCommandsInvalidator
+    : public invalidation::InvalidationHandler {
  public:
   explicit RemoteCommandsInvalidator(std::string owner_name);
   RemoteCommandsInvalidator(const RemoteCommandsInvalidator&) = delete;
@@ -129,4 +131,4 @@ class RemoteCommandsInvalidator : public invalidation::InvalidationHandler {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_POLICY_CLOUD_REMOTE_COMMANDS_INVALIDATOR_H_
+#endif  // COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_INVALIDATOR_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/cloud/remote_commands_invalidator.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -118,9 +118,7 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
     return topics;
   }
 
-  void VerifyExpectations() {
-    Mock::VerifyAndClearExpectations(&invalidator_);
-  }
+  void VerifyExpectations() { Mock::VerifyAndClearExpectations(&invalidator_); }
 
  protected:
   // Initialize and start the invalidator.

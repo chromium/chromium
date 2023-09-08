@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/cloud/remote_commands_invalidator_impl.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/clock.h"
-#include "chrome/browser/policy/cloud/policy_invalidation_util.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
+#include "components/policy/core/common/cloud/policy_invalidation_util.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 
 namespace policy {
@@ -62,8 +62,9 @@ RemoteCommandsInvalidatorImpl::RemoteCommandsInvalidatorImpl(
 
 void RemoteCommandsInvalidatorImpl::OnInitialize() {
   core_->AddObserver(this);
-  if (core_->remote_commands_service())
+  if (core_->remote_commands_service()) {
     OnRemoteCommandsServiceStarted(core_);
+  }
 }
 
 void RemoteCommandsInvalidatorImpl::OnShutdown() {

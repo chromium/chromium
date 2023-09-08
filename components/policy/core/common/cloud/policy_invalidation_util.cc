@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/cloud/policy_invalidation_util.h"
+#include "components/policy/core/common/cloud/policy_invalidation_util.h"
 
 #include "base/strings/string_util.h"
 #include "components/invalidation/public/invalidation.h"
@@ -65,12 +65,14 @@ bool IsInvalidationExpired(const invalidation::Invalidation& invalidation,
 PolicyInvalidationType GetInvalidationMetric(bool is_missing_payload,
                                              bool is_expired) {
   if (is_expired) {
-    if (is_missing_payload)
+    if (is_missing_payload) {
       return POLICY_INVALIDATION_TYPE_NO_PAYLOAD_EXPIRED;
+    }
     return POLICY_INVALIDATION_TYPE_EXPIRED;
   }
-  if (is_missing_payload)
+  if (is_missing_payload) {
     return POLICY_INVALIDATION_TYPE_NO_PAYLOAD;
+  }
   return POLICY_INVALIDATION_TYPE_NORMAL;
 }
 

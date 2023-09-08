@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/cloud/remote_commands_invalidator.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 
 #include <string>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/policy/cloud/policy_invalidation_util.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -17,6 +16,7 @@
 #include "components/invalidation/public/single_topic_invalidation_set.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
+#include "components/policy/core/common/cloud/policy_invalidation_util.h"
 
 namespace policy {
 
@@ -86,8 +86,9 @@ void RemoteCommandsInvalidator::OnIncomingInvalidation(
 
   VLOG(2) << "Received remote command invalidation";
 
-  if (!invalidation_service_enabled_)
+  if (!invalidation_service_enabled_) {
     LOG(WARNING) << "Unexpected invalidation received.";
+  }
 
   const invalidation::SingleTopicInvalidationSet& list =
       invalidation_map.ForTopic(topic_);
@@ -97,8 +98,9 @@ void RemoteCommandsInvalidator::OnIncomingInvalidation(
   }
 
   // Acknowledge all invalidations.
-  for (const auto& it : list)
+  for (const auto& it : list) {
     it.Acknowledge();
+  }
 
   DoRemoteCommandsFetch(list.back());
 }
@@ -116,8 +118,9 @@ void RemoteCommandsInvalidator::ReloadPolicyData(
     const enterprise_management::PolicyData* policy) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (state_ != STARTED)
+  if (state_ != STARTED) {
     return;
+  }
 
   // Create the Topic based on the policy data.
   // If the policy does not specify the Topic, then unsubscribe and unregister.
@@ -130,8 +133,9 @@ void RemoteCommandsInvalidator::ReloadPolicyData(
 
   // If the policy topic in the policy data is different from the currently
   // registered topic, update the object registration.
-  if (!is_registered_ || topic != topic_)
+  if (!is_registered_ || topic != topic_) {
     Register(topic);
+  }
 }
 
 void RemoteCommandsInvalidator::Register(const invalidation::Topic& topic) {
@@ -168,8 +172,9 @@ void RemoteCommandsInvalidator::UnsubscribeFromTopics() {
 
   // Invalidator cannot unset its topics without being registered. Let's quickly
   // register and unregister to do just that.
-  if (!is_registered_)
+  if (!is_registered_) {
     temporary_registration.Observe(invalidation_service_);
+  }
 
   CHECK(invalidation_service_->UpdateInterestedTopics(
       this, invalidation::TopicSet()));
