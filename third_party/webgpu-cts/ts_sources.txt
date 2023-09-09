@@ -22,8 +22,10 @@ src/common/internal/query/query.ts
 src/common/internal/query/compare.ts
 src/common/internal/params_utils.ts
 src/common/framework/fixture.ts
+src/common/framework/metadata.ts
 src/common/framework/params_builder.ts
 src/common/framework/resources.ts
+src/common/internal/websocket_logger.ts
 src/common/internal/test_group.ts
 src/common/framework/test_group.ts
 src/common/internal/test_suite_listing.ts
@@ -46,6 +48,7 @@ src/common/tools/gen_cache.ts
 src/common/tools/gen_listings.ts
 src/common/tools/gen_wpt_cts_html.ts
 src/common/tools/image_utils.ts
+src/common/tools/merge_listing_times.ts
 src/common/tools/presubmit.ts
 src/common/tools/run_wpt_ref_tests.ts
 src/common/tools/validate.ts
