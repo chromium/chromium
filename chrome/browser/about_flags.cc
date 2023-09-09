@@ -269,6 +269,7 @@
 #include "chrome/browser/ash/file_suggest/item_suggest_cache.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
@@ -3688,7 +3689,7 @@ const FeatureEntry::FeatureVariation kVcLightIntensityVariations[] = {
     {"2.0", kVcLightIntensity20, std::size(kVcLightIntensity20), nullptr},
 };
 
-#endif  // BUILDFLAG(IS_CHROME_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam
@@ -3735,7 +3736,7 @@ const FeatureEntry::FeatureVariation
          kCrOSLateBootMissiveSecurityLegacyStorage,
          std::size(kCrOSLateBootMissiveSecurityLegacyStorage), nullptr},
 };
-#endif  // BUILDFLAG(IS_CHROME_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
@@ -10972,6 +10973,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSecurePaymentConfirmationExtensionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          payments::features::kSecurePaymentConfirmationExtensions)},
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-runtime-counters-telemetry",
+     flag_descriptions::kEnableRuntimeCountersTelemetryName,
+     flag_descriptions::kEnableRuntimeCountersTelemetryDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(reporting::kEnableRuntimeCountersTelemetry)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

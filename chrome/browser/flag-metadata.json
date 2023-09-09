@@ -3435,6 +3435,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-runtime-counters-telemetry",
+    "owners": [ "xuhong@chromium.org", "cros-reporting-team@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "enable-save-to-photos",
     "owners": [ "qpubert@google.com", "djean@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 121

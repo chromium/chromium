@@ -60659,6 +60659,7 @@ from previous Chrome versions.
       label="OmniboxGroupSuggestionsBySearchVsUrl:enabled"/>
   <int value="-1996087238" label="kAutofillEnableOffersInDownstream:enabled"/>
   <int value="-1995534832" label="DownloadProgressMessage:disabled"/>
+  <int value="-1993967111" label="EnableRuntimeCountersTelemetry:enabled"/>
   <int value="-1993745822" label="PrivacyIndicators:disabled"/>
   <int value="-1993739187"
       label="AutofillHighlightOnlyChangedValuesInPreviewMode:disabled"/>
@@ -63744,6 +63745,7 @@ from previous Chrome versions.
   <int value="-466704882" label="webview-log-js-console-messages"/>
   <int value="-466164593"
       label="CacheControlNoStoreEnterBackForwardCache:disabled"/>
+  <int value="-466047052" label="EnableRuntimeCountersTelemetry:disabled"/>
   <int value="-465429170" label="BackGestureRefactorActivityAndroid:enabled"/>
   <int value="-465381408" label="Sharesheet:disabled"/>
   <int value="-462554210"

@@ -94,8 +94,8 @@ BASE_FEATURE(kEnableAppEventsObserver,
 BASE_FEATURE(kEnableFatalCrashEventsObserver,
              "EnableFatalCrashEventsObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableRuntimeCounters,
-             "EnableRuntimeCounters",
+BASE_FEATURE(kEnableRuntimeCountersTelemetry,
+             "EnableRuntimeCountersTelemetry",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool MetricReportingManager::Delegate::IsUserAffiliated(
@@ -613,7 +613,7 @@ void MetricReportingManager::InitBootPerformanceCollector() {
 
 void MetricReportingManager::InitRuntimeCountersCollectors() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(kEnableRuntimeCounters)) {
+  if (base::FeatureList::IsEnabled(kEnableRuntimeCountersTelemetry)) {
     auto psr_telemetry_handler =
         std::make_unique<CrosHealthdPsrSamplerHandler>();
     auto psr_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(

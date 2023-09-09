@@ -3491,6 +3491,9 @@ extern const char kEnablePerDeskZOrderDescription[];
 extern const char kEnableRemoveStalePolicyPinnedAppsFromShelfName[];
 extern const char kEnableRemoveStalePolicyPinnedAppsFromShelfDescription[];
 
+extern const char kEnableRuntimeCountersTelemetryName[];
+extern const char kEnableRuntimeCountersTelemetryDescription[];
+
 extern const char kEnableSeamlessRefreshRateSwitchingName[];
 extern const char kEnableSeamlessRefreshRateSwitchingDescription[];
 

@@ -5846,6 +5846,11 @@ const char kEnableFakeKeyboardHeuristicDescription[] =
     "to be keyboards. Primarily assists in preventing the virtual keyboard "
     "from being disabled unintentionally.";
 
+const char kEnableRuntimeCountersTelemetryName[] =
+    "Enable Runtime Counters Telemetry";
+const char kEnableRuntimeCountersTelemetryDescription[] =
+    "Allow admins to collect runtime counters telemetry (Intel Gen 14+ only).";
+
 const char kFastPairName[] = "Enable Fast Pair";
 const char kFastPairDescription[] =
     "Enables Google Fast Pair service which uses BLE to discover supported "
