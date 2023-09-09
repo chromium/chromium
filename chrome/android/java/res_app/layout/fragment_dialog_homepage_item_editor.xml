@@ -26,7 +26,7 @@
         android:layout_marginVertical="24dp"
         />
 
-    <com.ark.browser.ui.widget.DrawableTintTextView
+    <com.ark.browser.ui.widget.DrawableTintEditText
         android:id="@+id/title_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
         app:drawable_tint_color="?attr/textColorMajor"
         />
 
-    <com.ark.browser.ui.widget.DrawableTintTextView
+    <com.ark.browser.ui.widget.DrawableTintEditText
         android:id="@+id/url_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

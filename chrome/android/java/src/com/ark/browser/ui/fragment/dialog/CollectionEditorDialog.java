@@ -18,7 +18,6 @@ import com.ark.browser.settings.Keys;
 import com.ark.browser.ui.widget.EmptyAlertEditText;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.bus.ZBus;
-import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.PrefsHelper;
@@ -31,7 +30,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
-public class CollectionEditorDialog extends OverDragBottomDialogFragment<CollectionEditorDialog>
+public class CollectionEditorDialog extends FitWindowOverDragBottomDialog<CollectionEditorDialog>
         implements View.OnClickListener {
 
     private static final String KEY_MOVE_TO_BOOKMARK_FOLDER = "move_to_bookmark_folder";

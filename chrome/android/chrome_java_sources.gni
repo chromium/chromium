@@ -134,6 +134,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/dialog/ContextMenuDialogFragment.java",
   "java/src/com/ark/browser/ui/fragment/dialog/DownloadDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ExitDialog.java",
+  "java/src/com/ark/browser/ui/fragment/dialog/FitWindowOverDragBottomDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/GroupTabPickerDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/HistoryStackDialogFragment.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ImagePreviewer.java",
@@ -269,6 +270,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/utils/ShadowGenerator.java",
   "java/src/com/ark/browser/utils/SkinChangeAnimation.java",
   "java/src/com/ark/browser/utils/ThreadPool.java",
+  "java/src/com/ark/browser/utils/WindowDisplayFrameObserver.java",
 
   "java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
   "java/src/org/chromium/chrome/browser/ActivityUtils.java",

@@ -174,7 +174,8 @@ public class WebSiteRedirectFragment extends BaseSwipeBackFragment
                                                 mRecycler.removeItem(item);
                                                 mRecycler.notifyItemRemoved(holder.getLayoutPosition());
 
-                                                PrefsHelper.with("site_redirect_manager").remove(item.getTargetUrl());
+                                                PrefsHelper.with("site_redirect_manager")
+                                                        .applyRemove(item.getTargetUrl());
 
                                                 if (mRecycler.isEmpty()) {
                                                     mRecycler.showEmpty();

@@ -11,13 +11,13 @@ import androidx.annotation.Nullable;
 import com.ark.browser.settings.Keys;
 import com.ark.browser.ui.fragment.settings.website.WebSiteRedirectFragment;
 import com.ark.browser.ui.widget.EmptyAlertEditText;
-import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
 
 import org.chromium.chrome.R;
+import org.chromium.components.url_formatter.UrlFormatter;
 
-public class SiteRedirectEditorDialog extends OverDragBottomDialogFragment<SiteRedirectEditorDialog>
+public class SiteRedirectEditorDialog extends FitWindowOverDragBottomDialog<SiteRedirectEditorDialog>
         implements View.OnClickListener {
 
     private EmptyAlertEditText mTitleEditText;
@@ -132,7 +132,8 @@ public class SiteRedirectEditorDialog extends OverDragBottomDialogFragment<SiteR
             return;
         }
         if (mCallback != null) {
-            mCallback.onCallback(title, url);
+            mCallback.onCallback(UrlFormatter.fixupUrl(title).getHost(),
+                    UrlFormatter.fixupUrl(url).getHost());
         }
         dismiss();
     }

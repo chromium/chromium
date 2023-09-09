@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.utils.FileUtil;
-import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.PrefsHelper;
@@ -26,7 +25,7 @@ import org.chromium.ui.base.Clipboard;
 
 import java.io.File;
 
-public class DownloadDialog extends OverDragBottomDialogFragment<DownloadDialog> {
+public class DownloadDialog extends FitWindowOverDragBottomDialog<DownloadDialog> {
 
     private static final String TAG = "cr_DownloadDialog";
 

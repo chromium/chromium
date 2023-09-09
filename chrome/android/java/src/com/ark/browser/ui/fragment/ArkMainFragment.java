@@ -21,8 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.core.ArkCompositorViewHolder;
-import com.ark.browser.core.ArkNavigationHandler;
-import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
@@ -31,7 +29,6 @@ import com.ark.browser.event.GetMainFragmentEvent;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabGroupManager;
-import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.fragment.dialog.DownloadDialog;
 import com.ark.browser.ui.fragment.dialog.ExitDialog;
@@ -263,12 +260,10 @@ public class ArkMainFragment extends BaseFragment implements
 
         //    private ProgressBar mProgressBar;
         //    private EditText mUrlBar;
-        mSwitcherManager = new TabSwitcherManager(view, savedInstanceState);
+        mSwitcherManager = new TabSwitcherManager(this, view, savedInstanceState);
         mViewHolder = mSwitcherManager.getCompositorViewHolder();
 
         getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
-
-
 
         ViewGroup coordinator = findViewById(R.id.coordinator);
         ScrimCoordinator.SystemUiScrimDelegate delegate =

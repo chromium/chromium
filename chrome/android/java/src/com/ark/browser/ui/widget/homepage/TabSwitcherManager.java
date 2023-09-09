@@ -30,6 +30,7 @@ import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.TabManagerObserver;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.ui.fragment.ArkMainFragment;
 import com.ark.browser.ui.fragment.collection.CollectionFragment;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
 import com.ark.browser.ui.fragment.download.DownloadFragment2;
@@ -39,9 +40,12 @@ import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
 import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.WindowDisplayFrameObserver;
 import com.zpj.utils.ContextUtils;
+import com.zpj.utils.ScreenUtils;
 import com.zpj.utils.StatusBarUtils;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
@@ -53,7 +57,7 @@ import org.chromium.ui.widget.Toast;
 
 public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
-
+    private final ArkMainFragment mMainFragment;
     private final Context mContext;
     private final ArkCompositorViewHolder mViewHolder;
     private final View mBrowserLayout;
@@ -61,21 +65,23 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     private final TabSwitcherLayout mTabSwitcherLayout;
     private final SwitcherRecyclerLayout mSwitcher;
     private final BottomController mBottomController;
+    private final WindowDisplayFrameObserver mWindowDisplayFrameObserver;
 
-    public TabSwitcherManager(View view, Bundle savedInstanceState) {
-        mContext = view.getContext();
-        mViewHolder = view.findViewById(R.id.compositor_view_holder);
-        mViewHolder.setRootView(view);
-        mLauncherLayout = view.findViewById(R.id.launcher_layout);
-        mBrowserLayout = view.findViewById(R.id.browser_layout);
-        mTabSwitcherLayout = view.findViewById(R.id.tab_switcher_layout);
+    public TabSwitcherManager(ArkMainFragment mainFragment, View rootView, Bundle savedInstanceState) {
+        mMainFragment = mainFragment;
+        mContext = rootView.getContext();
+        mViewHolder = rootView.findViewById(R.id.compositor_view_holder);
+        mViewHolder.setRootView(rootView);
+        mLauncherLayout = rootView.findViewById(R.id.launcher_layout);
+        mBrowserLayout = rootView.findViewById(R.id.browser_layout);
+        mTabSwitcherLayout = rootView.findViewById(R.id.tab_switcher_layout);
         mSwitcher = mTabSwitcherLayout.getSwitcher();
         mSwitcher.addCallback(this);
         mSwitcher.setAdapter(new ArkTabAdapter(mContext, mViewHolder.getTabContentManager()));
 
-        BottomControlBar bottomControlBar = view.findViewById(R.id.bottom_control_bar);
+        BottomControlBar bottomControlBar = rootView.findViewById(R.id.bottom_control_bar);
         bottomControlBar.setSwitcherManager(this);
-        mBottomController = new BottomController(view);
+        mBottomController = new BottomController(rootView);
 
         mLauncherLayout.init(savedInstanceState);
         mLauncherLayout.setClickHandler(new LauncherLayout.ClickHandler() {
@@ -171,6 +177,29 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
             }
         });
 
+        int navBarHeight = ScreenUtils.getNavBarHeight(rootView.getContext());
+        mWindowDisplayFrameObserver = new WindowDisplayFrameObserver(rootView.getContext(), new Callback<Rect>() {
+            @Override
+            public void onResult(Rect rect) {
+                if (isInBrowser() && mMainFragment.getTopFragment() == mMainFragment
+                        && mMainFragment.getTopChildFragment() == null) {
+                    int diff = rootView.getHeight() - rect.bottom - navBarHeight;
+                    if (diff > 0) {
+                        // TODO find bar
+                        int barHeight = bottomControlBar.getHeight() - bottomControlBar.getPaddingBottom();
+                        if (diff < barHeight) {
+                            if (bottomControlBar.getPaddingBottom() != diff) {
+                                bottomControlBar.setPadding(0, 0, 0, diff);
+                            }
+                        } else if (bottomControlBar.getHeight() != diff) {
+                            bottomControlBar.setPadding(0, 0, 0, diff - barHeight);
+                        }
+                    } else {
+                        bottomControlBar.setPadding(0, 0, 0, 0);
+                    }
+                }
+            }
+        });
     }
 
     public void initCompositor(ArkWindowAndroid window) {
@@ -282,12 +311,15 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         } else {
             setThemeColor(AppConfig.isNightMode() ? Color.BLACK : Color.WHITE);
         }
+
+        mWindowDisplayFrameObserver.enable();
     }
 
     public void hideBrowser() {
         mBrowserLayout.setVisibility(View.INVISIBLE);
         StatusBarUtils.setLightMode(ContextUtils.getActivity(mBrowserLayout.getContext()));
         mViewHolder.setTab(null);
+        mWindowDisplayFrameObserver.disable();
     }
 
     public void setThemeColor(int color) {

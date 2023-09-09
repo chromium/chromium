@@ -15,6 +15,7 @@ import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.bus.EventLiveData;
+import com.zpj.utils.PrefsHelper;
 
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
@@ -221,7 +222,7 @@ public class ArkWebContents {
                     new OfflinePageUtils.OfflinePageLoadUrlDelegate() {
                         @Override
                         public void loadUrl(LoadUrlParams params) {
-                            ArkWebContents.this.loadUrl(params);
+                            ArkWebContents.this.loadUrlInternal(params);
                         }
                     });
             return;
@@ -232,10 +233,11 @@ public class ArkWebContents {
 
     public void reloadIgnoringCache() {
         //            switchUserAgentIfNeeded();
+        ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(getUrl()));
         mWebContents.getNavigationController().reloadBypassingCache(true);
     }
 
-    public void loadUrl(LoadUrlParams params) {
+    private void loadUrl(LoadUrlParams params) {
         mIsLoading = true;
         mPageInfo.setUrl(params.getUrl());
         mWebContents.getNavigationController().loadUrl(params);
@@ -404,6 +406,18 @@ public class ArkWebContents {
         // and incoming URLs are converted to GURLs at their source, we can make
         // decisions of whether or not to fix up GURLs on a case-by-case basis based
         // on trustworthiness of the incoming URL.
+
+
+        GURL url = UrlFormatter.fixupUrl(params.getUrl());
+        String replaceHost = PrefsHelper.with("site_redirect_manager")
+                .getString(url.getHost(), null);
+        ArkLogger.e(this, "loadUrlInternal host=" + url.getHost()
+                + " replaceHost=" + replaceHost);
+        if (replaceHost != null) {
+            params.setUrl(url.getSpec().replace(url.getHost(), replaceHost));
+        }
+        ArkLogger.e(this, "loadUrlInternal params url=" + params.getUrl());
+
         GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
         if (!fixedUrl.isValid()) return Tab.TabLoadStatus.PAGE_LOAD_FAILED;
 

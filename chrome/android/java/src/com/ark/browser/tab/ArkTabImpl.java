@@ -32,6 +32,7 @@ import com.ark.browser.tab.core.ChildTab;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
+import com.zpj.utils.PrefsHelper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -68,6 +69,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content.browser.JavascriptInterface;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.JavascriptInjector;
@@ -319,7 +321,20 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                 return;
             }
             ThreadPool.execute(() -> {
-                TabState tabState = ArkTabDao.restorePageState(page.getId());
+                String url = page.getPageInfo().getUrl();
+                GURL gurl = UrlFormatter.fixupUrl(url);
+                String replaceHost = PrefsHelper.with("site_redirect_manager")
+                        .getString(gurl.getHost(), null);
+                ArkLogger.e(ArkTabImpl.this, "selectPage url=" + url + " replaceHost=" + replaceHost);
+
+                final TabState tabState;
+                if (replaceHost == null) {
+                    tabState = ArkTabDao.restorePageState(page.getId());
+                } else {
+                    tabState = null;
+                    page.getPageInfo().setUrl(url.replace(gurl.getHost(), replaceHost));
+                }
+
                 ThreadPool.postOnUIThread(() -> {
                     ArkLogger.e(TAG, "selectPage tabState=" + tabState);
                     if (tabState != null) {
@@ -333,7 +348,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                         }
                     }
 
-                    ArkLogger.e(TAG, "selectPage loadUrl");
+                    ArkLogger.e(TAG, "selectPage loadUrl url=" + page.getPageInfo().getUrl());
                     LoadUrlParams params = new LoadUrlParams(page.getPageInfo().getUrl());
                     params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
 
