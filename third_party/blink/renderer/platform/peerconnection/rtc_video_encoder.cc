@@ -1097,6 +1097,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   }
 
   if (metadata.end_of_picture()) {
+    CHECK(encoder_metrics_provider_);
     encoder_metrics_provider_->IncrementEncodedFrameCount();
   }
 
@@ -1364,7 +1365,11 @@ void RTCVideoEncoder::Impl::NotifyErrorStatus(
              << static_cast<int>(status.code())
              << ", message=" << status.message();
   RecordEncoderStatusUMA(status, video_codec_type_);
-  encoder_metrics_provider_->SetError(status);
+  if (encoder_metrics_provider_) {
+    // |encoder_metrics_provider_| is nullptr if NotifyErrorStatus() is called
+    // before it is created in CreateAndInitializeVEA().
+    encoder_metrics_provider_->SetError(status);
+  }
   video_encoder_.reset();
   status_ = WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
 
