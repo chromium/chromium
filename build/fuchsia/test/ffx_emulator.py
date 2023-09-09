@@ -15,6 +15,7 @@ from contextlib import AbstractContextManager
 
 from common import run_ffx_command, IMAGES_ROOT, SDK_ROOT
 from compatible_utils import get_host_arch
+from ffx_integration import ScopedFfxConfig
 
 _EMU_COMMAND_RETRIES = 3
 
@@ -35,6 +36,7 @@ class FfxEmulator(AbstractContextManager):
         self._hardware_gpu = args.hardware_gpu
         self._logs_dir = args.logs_dir
         self._with_network = args.with_network
+        self._emu_instance_dir_config = None
         if args.everlasting:
             # Do not change the name, it will break the logic.
             # ffx has a prefix-matching logic, so 'fuchsia-emulator' is not
@@ -43,6 +45,13 @@ class FfxEmulator(AbstractContextManager):
             # without interfering each other.
             self._node_name = 'fuchsia-everlasting-emulator'
             assert self._everlasting()
+            # Setting the emu.instance_dir to match the named cache, so we can
+            # keep these files across multiple runs.
+            # I feel lucky that updating this configuration needs no daemon
+            # restart, so I can do it here rather than relying on the
+            # run_test.main to take care of it.
+            self._emu_instance_dir_config = ScopedFfxConfig(
+                'emu.instance_dir', '/home/chrome-bot/.fuchsia_emulator/')
         else:
             self._node_name = 'fuchsia-emulator-' + str(random.randint(
                 1, 9999))
@@ -56,6 +65,8 @@ class FfxEmulator(AbstractContextManager):
         Returns:
             The node name of the emulator.
         """
+        if self._emu_instance_dir_config:
+            self._emu_instance_dir_config.__enter__()
         logging.info('Starting emulator %s', self._node_name)
         prod, board = self._product.split('.', 1)
         image_dir = os.path.join(IMAGES_ROOT, prod, board)
@@ -123,13 +134,9 @@ class FfxEmulator(AbstractContextManager):
                 if i > 0:
                     logging.warning(
                         'Emulator failed to start.')
-                configs = ['emu.start.timeout=90']
-                if self._everlasting():
-                    configs.append('emu.instance_dir=' \
-                                   '/home/chrome-bot/.fuchsia_emulator/')
                 run_ffx_command(cmd=emu_command,
                                 timeout=100,
-                                configs=configs)
+                                configs=['emu.start.timeout=90'])
                 break
             except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
                 run_ffx_command(cmd=('emu', 'stop'))
@@ -146,5 +153,8 @@ class FfxEmulator(AbstractContextManager):
         # The emulator might have shut down unexpectedly, so this command
         # might fail.
         run_ffx_command(cmd=cmd, check=False)
+        if self._emu_instance_dir_config:
+            self._emu_instance_dir_config.__exit__(exc_type, exc_value,
+                                                   traceback)
         # Do not suppress exceptions.
         return False
