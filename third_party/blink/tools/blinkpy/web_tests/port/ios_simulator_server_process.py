@@ -4,10 +4,13 @@
 
 import json
 import logging
+import time
 
 from blinkpy.web_tests.port.server_process import ServerProcess
 
 _log = logging.getLogger(__name__)
+
+BOOT_STATE = 'Booted'
 
 
 # Define a custom version of ServerProcess for running tests on the iOS
@@ -30,6 +33,8 @@ class IOSSimulatorServerProcess(ServerProcess):
               self).__init__(port_obj, name, cmd, env, treat_no_data_as_crash,
                              more_logging)
 
+        self._boot_simulator()
+
         self._web_test_path_file = self._get_web_test_file_path()
         if not self._web_test_path_file:
             raise RuntimeError('_web_test_path_file does not exist.')
@@ -38,15 +43,31 @@ class IOSSimulatorServerProcess(ServerProcess):
         test_file_handle = open(self._web_test_path_file, 'wb')
         test_file_handle.close()
 
+    def _boot_simulator(self):
+        device = self._get_device(self._port.device_name())
+        state = device.get('state')
+        if state != BOOT_STATE:
+            _log.info('No simulator is booted. Booting a simulator...')
+            udid = device.get('udid')
+            self._run_simctl('boot ' + udid)
+            time.sleep(2)  # Wait for 2 seconds before checking the state.
+
+            while True:
+                device = self._get_device(self._port.device_name())
+                state = device.get('state')
+                if state == BOOT_STATE:
+                    break
+                time.sleep(2)  # Wait for 2 seconds before checking again.
+
     def _get_web_test_file_path(self):
         simulator_root = self._host.filesystem.expanduser(
-            "~/Library/Developer/CoreSimulator/Devices/")
+            '~/Library/Developer/CoreSimulator/Devices/')
         udid = self._get_simulator_udid()
         if not udid:
             raise RuntimeError('The udid value of the Simulator is none.')
 
         app_data_path = self._host.filesystem.join(
-            simulator_root, udid, "data/Containers/Data/Application")
+            simulator_root, udid, 'data/Containers/Data/Application')
 
         content_shell_dir = self._get_content_shell_dir(app_data_path)
         if not content_shell_dir:
@@ -56,20 +77,20 @@ class IOSSimulatorServerProcess(ServerProcess):
         content_shell_data_path = self._host.filesystem.join(
             app_data_path, content_shell_dir)
         content_shell_tmp_path = self._host.filesystem.join(
-            content_shell_data_path, "tmp")
+            content_shell_data_path, 'tmp')
         if not self._host.filesystem.exists(content_shell_tmp_path):
             raise RuntimeError('%s path does not exist.' %
                                content_shell_tmp_path)
 
         return self._host.filesystem.join(content_shell_tmp_path,
-                                          "webtest_test_name")
+                                          'webtest_test_name')
 
     def _get_content_shell_dir(self, app_data_path):
         for app_dir in self._host.filesystem.listdir(app_data_path):
             # Check if |app_dir| has the content shell directory.
             content_shell_dir = self._host.filesystem.join(
                 app_data_path, app_dir,
-                "Library/Application Support/Chromium Content Shell")
+                'Library/Application Support/Chromium Content Shell')
             if self._host.filesystem.exists(content_shell_dir):
                 return app_dir
         return None
@@ -79,14 +100,14 @@ class IOSSimulatorServerProcess(ServerProcess):
         if not device:
             _log.error('There is no available device.')
             return None
-        udid = device.get("udid")
+        udid = device.get('udid')
         if not udid:
             _log.error('Cannot find the udid of the iOS simulator.')
             return None
         return udid
 
     def _get_device(self, device_name):
-        devices = json.loads(self._simctl('devices available'))
+        devices = json.loads(self._run_simctl('list -j devices available'))
         if len(devices) == 0:
             raise RuntimeError('No available device in the iOS simulator.')
         runtime = self._latest_runtime()
@@ -96,7 +117,7 @@ class IOSSimulatorServerProcess(ServerProcess):
             None)
 
     def _latest_runtime(self):
-        runtimes = json.loads(self._simctl('runtimes available'))
+        runtimes = json.loads(self._run_simctl('list -j runtimes available'))
         valid_runtimes = [
             runtime for runtime in runtimes['runtimes']
             if 'identifier' in runtime and runtime['identifier'].startswith(
@@ -109,8 +130,8 @@ class IOSSimulatorServerProcess(ServerProcess):
                             reverse=True)
         return valid_runtimes[0]['identifier']
 
-    def _simctl(self, command):
-        prefix_commands = ['/usr/bin/xcrun', 'simctl', 'list', '-j']
+    def _run_simctl(self, command):
+        prefix_commands = ['/usr/bin/xcrun', 'simctl']
         command_array = prefix_commands + command.split()
         return self._host.executive.run_command(command_array)
 
