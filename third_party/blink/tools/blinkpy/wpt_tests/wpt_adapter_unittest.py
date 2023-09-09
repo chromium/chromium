@@ -62,6 +62,13 @@ class WPTAdapterTest(unittest.TestCase):
         stream_mock.isatty.return_value = False
         stream_mock.fileno.return_value = 1
         self._mocks.enter_context(mock.patch('sys.stdout', stream_mock))
+        self.results_processor = mock.Mock()
+        self.results_processor.stream_results.return_value = (
+            contextlib.nullcontext(mock.Mock()))
+        self.results_processor.num_regressions = 0
+        self._mocks.enter_context(
+            mock.patch('blinkpy.wpt_tests.wpt_adapter.WPTResultsProcessor',
+                       return_value=self.results_processor))
 
     def tearDown(self):
         self._mocks.close()
@@ -295,3 +302,20 @@ class WPTAdapterTest(unittest.TestCase):
         ])
         with adapter.test_env():
             self.assertEqual(os.environ["NEW_ENV_VAR"], "new_env_var_value")
+
+    def test_show_results(self):
+        adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'])
+        post_run_tasks = mock.Mock()
+        self._mocks.enter_context(
+            mock.patch('blinkpy.web_tests.port.base.Port.clean_up_test_run',
+                       post_run_tasks.clean_up_test_run))
+        self._mocks.enter_context(
+            mock.patch.object(self.host.user, 'open_url',
+                              post_run_tasks.open_url))
+        with adapter.test_env() as options:
+            self.results_processor.num_regressions = 1
+        self.assertEqual(post_run_tasks.mock_calls, [
+            mock.call.clean_up_test_run(),
+            mock.call.open_url('file:///mock-checkout/out/Release/'
+                               'layout-test-results/results.html'),
+        ])

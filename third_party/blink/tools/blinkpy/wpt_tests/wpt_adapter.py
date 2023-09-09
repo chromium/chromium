@@ -516,17 +516,20 @@ class WPTAdapter:
             self._create_extra_run_info(self.fs.join(tmp_dir, 'mozinfo.json'),
                                         tests_root)
 
+            stack.enter_context(
+                self.process_and_upload_results(runner_options))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
+            # Changing the CWD is not ideal, but necessary for `wptserve` to
+            # resolve relative paths in `external/wpt/config.json` correctly.
             self.fs.chdir(self.port.web_tests_dir())
             yield runner_options
 
     def run_tests(self) -> int:
         with self.test_env() as runner_options:
             run = _load_entry_point(runner_options.tools_root)
-            with self.process_and_upload_results(runner_options):
-                exit_code = run(**vars(runner_options))
-                return 1 if exit_code else 0
+            exit_code = run(**vars(runner_options))
+            return 1 if exit_code else 0
 
     def _checkout_3h_epoch_commit(self, tools_root: str):
         wpt_executable = self.fs.join(tools_root, 'wpt')
