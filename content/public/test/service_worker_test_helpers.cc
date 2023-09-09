@@ -199,11 +199,35 @@ bool CheckServiceWorkerIsRunning(ServiceWorkerContext* context,
   ServiceWorkerVersion* service_worker_version =
       static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
           service_worker_version_id);
-  if (!service_worker_version) {
-    return false;
-  }
-  return service_worker_version->running_status() ==
-         content::EmbeddedWorkerStatus::RUNNING;
+  return service_worker_version && service_worker_version->running_status() ==
+                                       EmbeddedWorkerStatus::RUNNING;
+}
+
+bool CheckServiceWorkerIsStarting(ServiceWorkerContext* context,
+                                  int64_t service_worker_version_id) {
+  ServiceWorkerVersion* service_worker_version =
+      static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
+          service_worker_version_id);
+  return service_worker_version && service_worker_version->running_status() ==
+                                       EmbeddedWorkerStatus::STARTING;
+}
+
+bool CheckServiceWorkerIsStopping(ServiceWorkerContext* context,
+                                  int64_t service_worker_version_id) {
+  ServiceWorkerVersion* service_worker_version =
+      static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
+          service_worker_version_id);
+  return service_worker_version && service_worker_version->running_status() ==
+                                       EmbeddedWorkerStatus::STOPPING;
+}
+
+bool CheckServiceWorkerIsStopped(ServiceWorkerContext* context,
+                                 int64_t service_worker_version_id) {
+  ServiceWorkerVersion* service_worker_version =
+      static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
+          service_worker_version_id);
+  return !service_worker_version || service_worker_version->running_status() ==
+                                        EmbeddedWorkerStatus::STOPPED;
 }
 
 void SetServiceWorkerIdleDelay(ServiceWorkerContext* context,

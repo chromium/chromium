@@ -49,8 +49,14 @@ void ResetTickClockToDefaultForAllLiveServiceWorkerVersions(
 bool TriggerTimeoutAndCheckRunningState(ServiceWorkerContext* context,
                                         int64_t service_worker_version_id);
 
-// Returns whether the service worker is still running.
+// Returns whether the worker appears to be in each blink::EmbeddedWorkerStatus.
 bool CheckServiceWorkerIsRunning(ServiceWorkerContext* context,
+                                 int64_t service_worker_version_id);
+bool CheckServiceWorkerIsStarting(ServiceWorkerContext* context,
+                                  int64_t service_worker_version_id);
+bool CheckServiceWorkerIsStopping(ServiceWorkerContext* context,
+                                  int64_t service_worker_version_id);
+bool CheckServiceWorkerIsStopped(ServiceWorkerContext* context,
                                  int64_t service_worker_version_id);
 
 void SetServiceWorkerIdleDelay(ServiceWorkerContext* context,

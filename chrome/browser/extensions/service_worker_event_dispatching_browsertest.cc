@@ -215,8 +215,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
                                                              extension->id());
   test_event_observer.WaitForWorkerStopped();
-  // TODO(crbug.com/1467015): Assert the worker has
-  // blink::EmbeddedWorkerStatus::STOPPED status.
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
+      GetServiceWorkerContext(profile()),
+      test_event_observer.test_worker_version_id));
 
   base::HistogramTester histogram_tester;
   DispatchWebNavigationEvent(profile(), web_contents());
@@ -247,8 +248,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
   test_event_observer.WaitForWorkerStarting();
   ASSERT_TRUE(test_event_observer.test_worker_version_id !=
               blink::mojom::kInvalidServiceWorkerVersionId);
-  // TODO(crbug.com/1467015): Assert the worker has
-  // blink::EmbeddedWorkerStatus::STARTING status.
+  ASSERT_TRUE(content::CheckServiceWorkerIsStarting(
+      GetServiceWorkerContext(profile()),
+      test_event_observer.test_worker_version_id));
   // This ensures that we wait until the the browser receives the ack from the
   // renderer. This prevents unexpected histogram emits later.
   ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
@@ -293,8 +295,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
   content::StopServiceWorkerForScope(sw_context_, extension->url(),
                                      base::DoNothing());
   test_event_observer.WaitForWorkerStopping();
-  // TODO(crbug.com/1467015): Assert the worker has
-  // blink::EmbeddedWorkerStatus::STOPPING status.
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopping(
+      GetServiceWorkerContext(profile()),
+      test_event_observer.test_worker_version_id));
 
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener extension_event_listener_fired("listener fired");
