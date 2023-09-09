@@ -26,7 +26,11 @@ GL_EXPORT void ClearBindingsGL();
 bool SetNullDrawGLBindingsEnabled(bool enabled);
 bool GetNullDrawBindingsEnabled();
 
-void SetCurrentGL(CurrentGL* current);
+// This is exported from //ui/gl/gl_bindings.h to retrieve GL bindings.
+GL_EXPORT CurrentGL* GetThreadLocalCurrentGL();
+
+// This is only used internally in //ui/gl to set GL bindings from GLContext.
+void SetThreadLocalCurrentGL(CurrentGL* current);
 
 class GL_EXPORT GLApiBase : public GLApi {
  public:

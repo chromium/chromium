@@ -229,11 +229,6 @@ gfx::ExtensionSet GetGLExtensionsFromCurrentContext(
 
 }  // namespace
 
-CurrentGL*& GetGlContextForCurrentThread() {
-  thread_local CurrentGL* gl_context = nullptr;
-  return gl_context;
-}
-
 #if defined(USE_EGL)
 EGLApi* g_current_egl_context;
 #endif

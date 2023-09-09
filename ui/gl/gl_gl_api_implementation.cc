@@ -211,6 +211,20 @@ void InitializeStaticGLBindingsGL() {
   g_no_context_current_gl->Api = new NoContextGLApi;
 }
 
+CurrentGL*& ThreadLocalCurrentGL() {
+  thread_local CurrentGL* current_gl = nullptr;
+  return current_gl;
+}
+
+CurrentGL* GetThreadLocalCurrentGL() {
+  // This prevents mutation of the thread local CurrentGL pointer.
+  return ThreadLocalCurrentGL();
+}
+
+void SetThreadLocalCurrentGL(CurrentGL* current) {
+  ThreadLocalCurrentGL() = current ? current : g_no_context_current_gl;
+}
+
 void ClearBindingsGL() {
   if (g_no_context_current_gl) {
     delete g_no_context_current_gl->Api;
@@ -219,8 +233,7 @@ void ClearBindingsGL() {
     delete g_no_context_current_gl;
     g_no_context_current_gl = nullptr;
   }
-
-  GetGlContextForCurrentThread() = nullptr;
+  ThreadLocalCurrentGL() = nullptr;
 }
 
 bool SetNullDrawGLBindingsEnabled(bool enabled) {
@@ -231,10 +244,6 @@ bool SetNullDrawGLBindingsEnabled(bool enabled) {
 
 bool GetNullDrawBindingsEnabled() {
   return g_null_draw_bindings_enabled;
-}
-
-void SetCurrentGL(CurrentGL* current) {
-  GetGlContextForCurrentThread() = current ? current : g_no_context_current_gl;
 }
 
 GLApi::GLApi() = default;

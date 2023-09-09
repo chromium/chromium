@@ -79,7 +79,7 @@ GLContext::~GLContext() {
   share_group_->RemoveContext(this);
   if (GetCurrent() == this) {
     SetCurrent(nullptr);
-    SetCurrentGL(nullptr);
+    SetThreadLocalCurrentGL(nullptr);
   }
   base::subtle::Atomic32 after_value =
       base::subtle::NoBarrier_AtomicIncrement(&total_gl_contexts_, -1);
@@ -362,8 +362,9 @@ void GLContext::SetCurrent(GLSurface* surface) {
   // TODO(sievers): Remove this, but needs all gpu_unittest classes
   // to create and make current a context.
   if (!surface && GetGLImplementation() != kGLImplementationMockGL &&
-      GetGLImplementation() != kGLImplementationStubGL)
-    SetCurrentGL(nullptr);
+      GetGLImplementation() != kGLImplementationStubGL) {
+    SetThreadLocalCurrentGL(nullptr);
+  }
 }
 
 void GLContext::SetGLWorkarounds(const GLWorkarounds& workarounds) {
@@ -485,7 +486,7 @@ void GLContext::OnReleaseVirtuallyCurrent(GLContext* virtual_context) {
 }
 
 void GLContext::BindGLApi() {
-  SetCurrentGL(GetCurrentGL());
+  SetThreadLocalCurrentGL(GetCurrentGL());
 }
 
 GLContextReal::GLContextReal(GLShareGroup* share_group)

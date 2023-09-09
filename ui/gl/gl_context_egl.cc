@@ -433,9 +433,9 @@ void GLContextEGL::ReleaseBackpressureFences() {
   if (has_backpressure_fences) {
     // If this context is not current, bind this context's API so that the YUV
     // converter can safely destruct
-    GLContext* current_context = GetRealCurrent();
-    if (current_context != this) {
-      SetCurrentGL(GetCurrentGL());
+    GLContext* prev_current_context = GetRealCurrent();
+    if (prev_current_context != this) {
+      SetThreadLocalCurrentGL(GetCurrentGL());
     }
 
     EGLContext current_egl_context = eglGetCurrentContext();
@@ -456,8 +456,10 @@ void GLContextEGL::ReleaseBackpressureFences() {
 #endif
 
     // Rebind the current context's API if needed.
-    if (current_context && current_context != this) {
-      SetCurrentGL(current_context->GetCurrentGL());
+    if (prev_current_context != this) {
+      SetThreadLocalCurrentGL(prev_current_context
+                                  ? prev_current_context->GetCurrentGL()
+                                  : nullptr);
     }
 
     if (context_ != current_egl_context) {
