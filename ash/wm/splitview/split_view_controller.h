@@ -39,6 +39,7 @@ class PresentationTimeRecorder;
 }  // namespace ui
 
 namespace ash {
+class AutoSnapController;
 class OverviewSession;
 class SplitViewOverviewSession;
 class SplitViewControllerTest;
@@ -461,7 +462,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   friend class SplitViewOverviewSessionTest;
   friend class SplitViewOverviewSession;
   class DividerSnapAnimation;
-  class AutoSnapController;
   class ToBeSnappedWindowsObserver;
 
   // Reason that a snapped window is detached from the splitview.
