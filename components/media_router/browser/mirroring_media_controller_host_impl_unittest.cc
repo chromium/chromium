@@ -114,10 +114,38 @@ TEST_F(MirroringMediaControllerHostTest, OnMediaStatusUpdatedIsFrozen) {
   EXPECT_TRUE(host_->IsFrozen());
 }
 
-TEST_F(MirroringMediaControllerHostTest, Freeze) {
-  EXPECT_CALL(*media_controller_, Pause);
+TEST_F(MirroringMediaControllerHostTest, FreezeHasDelay) {
+  EXPECT_CALL(*media_controller_, Pause).Times(0);
   host_->Freeze();
   media_controller_->FlushForTesting();
+}
+
+TEST_F(MirroringMediaControllerHostTest, Freeze) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(*media_controller_, Pause)
+      .WillOnce(testing::InvokeWithoutArgs(
+          [quit = run_loop.QuitClosure()] { quit.Run(); }));
+  host_->Freeze();
+  run_loop.Run();
+}
+
+TEST_F(MirroringMediaControllerHostTest, FreezeMultipleTimes) {
+  // If freeze is called more again before the timer has finished, pause will
+  // only be called once.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*media_controller_, Pause)
+      .Times(1)
+      .WillOnce(testing::InvokeWithoutArgs(
+          [quit = run_loop.QuitClosure()] { quit.Run(); }));
+  host_->Freeze();
+  host_->Freeze();
+  run_loop.Run();
+}
+
+TEST_F(MirroringMediaControllerHostTest, FreezeThenDeleteHost) {
+  // Reseting when the freeze timer is running will not cause a crash.
+  host_->Freeze();
+  host_.reset();
 }
 
 TEST_F(MirroringMediaControllerHostTest, Unfreeze) {

@@ -44,9 +44,15 @@ bool MirroringMediaControllerHostImpl::IsFrozen() const {
 }
 
 void MirroringMediaControllerHostImpl::Freeze() {
-  if (mirroring_controller_) {
-    mirroring_controller_->Pause();
+  // Do nothing if the user has recently tried to pause mirroring.
+  if (freeze_timer_.IsRunning()) {
+    return;
   }
+
+  freeze_timer_.Start(
+      FROM_HERE, kPauseDelay,
+      base::BindOnce(&MirroringMediaControllerHostImpl::DoPauseController,
+                     base::Unretained(this)));
 }
 
 void MirroringMediaControllerHostImpl::Unfreeze() {
@@ -63,6 +69,12 @@ void MirroringMediaControllerHostImpl::OnMediaStatusUpdated(
 
   for (MirroringMediaControllerHostImpl::Observer& observer : observers_) {
     observer.OnFreezeInfoChanged();
+  }
+}
+
+void MirroringMediaControllerHostImpl::DoPauseController() {
+  if (mirroring_controller_) {
+    mirroring_controller_->Pause();
   }
 }
 
