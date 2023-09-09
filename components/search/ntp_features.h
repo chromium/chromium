@@ -177,6 +177,7 @@ extern const char kNtpHistoryClustersModuleCategoriesBoostlistParam[];
 // History Clusters Service to return.
 extern const char kNtpHistoryClustersModuleMaxClustersParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
+extern const char kCustomizeChromeWallpaperSearchResolutionParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

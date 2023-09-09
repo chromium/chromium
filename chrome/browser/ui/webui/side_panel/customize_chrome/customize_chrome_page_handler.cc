@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 
 #include "base/containers/contains.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_features.h"
@@ -247,8 +248,19 @@ void CustomizeChromePageHandler::SearchWallpaper(
     manta::proto::RequestConfig& request_config =
         *request.mutable_request_config();
     request_config.set_num_outputs(1);
-    request_config.set_image_resolution(
-        manta::proto::ImageResolution::RESOLUTION_64);
+    auto resolution_param = base::GetFieldTrialParamValueByFeature(
+        ntp_features::kCustomizeChromeWallpaperSearch,
+        ntp_features::kCustomizeChromeWallpaperSearchResolutionParam);
+    if (resolution_param == "64") {
+      request_config.set_image_resolution(
+          manta::proto::ImageResolution::RESOLUTION_64);
+    } else if (resolution_param == "256") {
+      request_config.set_image_resolution(
+          manta::proto::ImageResolution::RESOLUTION_256);
+    } else if (resolution_param == "1024") {
+      request_config.set_image_resolution(
+          manta::proto::ImageResolution::RESOLUTION_1024);
+    }
     manta::proto::InputData& input_data = *request.add_input_data();
     input_data.set_text(query);
     snapper_provider_->Call(

@@ -3112,6 +3112,27 @@ const FeatureEntry::FeatureVariation kBookmarksRefreshVariations[] = {
      std::size(kBookmarksRefreshAppMenu), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kCustomizeChromeWallpaperSearch64[] = {
+    {ntp_features::kCustomizeChromeWallpaperSearchResolutionParam, "64"},
+};
+const FeatureEntry::FeatureParam kCustomizeChromeWallpaperSearch256[] = {
+    {ntp_features::kCustomizeChromeWallpaperSearchResolutionParam, "256"},
+};
+const FeatureEntry::FeatureParam kCustomizeChromeWallpaperSearch1024[] = {
+    {ntp_features::kCustomizeChromeWallpaperSearchResolutionParam, "1024"},
+};
+const FeatureEntry::FeatureVariation
+    kCustomizeChromeWallpaperSearchVariations[] = {
+        {"- 64", kCustomizeChromeWallpaperSearch64,
+         std::size(kCustomizeChromeWallpaperSearch64), nullptr},
+        {"- 256", kCustomizeChromeWallpaperSearch256,
+         std::size(kCustomizeChromeWallpaperSearch256), nullptr},
+        {"- 1024", kCustomizeChromeWallpaperSearch1024,
+         std::size(kCustomizeChromeWallpaperSearch1024), nullptr},
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const FeatureEntry::FeatureParam kLargeFaviconFromGoogle96[] = {
     {"favicon_size_in_dip", "96"}};
 const FeatureEntry::FeatureParam kLargeFaviconFromGoogle128[] = {
@@ -9389,7 +9410,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"customize-chrome-wallpaper-search",
      flag_descriptions::kCustomizeChromeWallpaperSearchName,
      flag_descriptions::kCustomizeChromeWallpaperSearchDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kCustomizeChromeWallpaperSearch)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         ntp_features::kCustomizeChromeWallpaperSearch,
+         kCustomizeChromeWallpaperSearchVariations,
+         "Resolution")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
