@@ -103,7 +103,9 @@ def main():
                 ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
             stack.enter_context(ScopedFfxConfig('daemon.autostart', 'false'))
             stack.enter_context(
-                ScopedFfxConfig('discovery.zedboot.enabled', 'true'))
+                ScopedFfxConfig('discovery.zedboot.enabled', 'false'))
+            stack.enter_context(
+                ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'))
             stack.enter_context(ScopedFfxConfig('log.level', 'debug'))
             log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
             start_ffx_daemon()

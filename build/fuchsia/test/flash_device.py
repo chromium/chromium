@@ -38,18 +38,11 @@ def _get_system_info(target: Optional[str],
         Tuple of strings, containing (product, version number).
     """
 
-    # TODO(b/242191374): Remove when devices in swarming are no longer booted
-    # into zedboot.
     if running_unattended():
         try:
             boot_device(target, BootMode.REGULAR, serial_num)
         except (subprocess.CalledProcessError, StateTransitionError):
-            logging.warning('Could not boot device. Assuming in ZEDBOOT')
-            return ('', '')
-        wait_cmd = common.run_ffx_command(cmd=('target', 'wait', '-t', '180'),
-                                          target_id=target,
-                                          check=False)
-        if wait_cmd.returncode != 0:
+            logging.warning('Could not boot device. Assuming in fastboot')
             return ('', '')
 
     return get_system_info(target)

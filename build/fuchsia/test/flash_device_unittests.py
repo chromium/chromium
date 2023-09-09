@@ -160,7 +160,7 @@ class FlashDeviceTest(unittest.TestCase):
             mock_boot.assert_called_once_with(mock.ANY,
                                               boot_device.BootMode.REGULAR,
                                               None)
-            self.assertEqual(self._ffx_mock.call_count, 3)
+            self.assertEqual(self._ffx_mock.call_count, 2)
 
     def test_incorrect_target_info(self) -> None:
         """Test update when |os_check| is 'check' and system info was not
