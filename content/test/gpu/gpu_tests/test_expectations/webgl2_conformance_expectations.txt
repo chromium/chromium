@@ -386,7 +386,7 @@ crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/s
 # Failing at least on Pixel 4, both validating and passthrough
 crbug.com/1336010 [ android angle-disabled no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 # Failing on Pixel 4; not sure about other devices.
-crbug.com/1473838 [ android ] conformance2/extensions/oes-sample-variables.html [ Failure ]
+crbug.com/1473838 [ android angle-opengles passthrough ] conformance2/extensions/oes-sample-variables.html [ Failure ]
 # Failing on at least NVIDIA and Intel
 crbug.com/1336010 [ angle-disabled chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 
