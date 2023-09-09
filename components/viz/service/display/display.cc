@@ -613,7 +613,9 @@ namespace {
 
 DBG_FLAG_FBOOL("frame.debug.non_root_passes", debug_non_root_passes)
 
-void DebugDrawFrame(const AggregatedFrame& frame) {
+void DebugDrawFrame(
+    const AggregatedFrame& frame,
+    const std::unique_ptr<DisplayResourceProvider>& resource_provider) {
   bool is_debugger_connected = false;
   DBG_CONNECTED_OR_TRACING(is_debugger_connected);
   if (!is_debugger_connected) {
@@ -660,6 +662,13 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
           "frame.render_pass.resource_id", DBG_OPT_RED, display_rect.origin(),
           base::NumberToString(quad->resources.ids[0].GetUnsafeValue()));
 
+      if (quad->resources.ids[0] != kInvalidResourceId) {
+        auto format =
+            resource_provider->GetBufferFormat(quad->resources.ids[0]);
+        DBG_DRAW_TEXT_OPT("frame.render_pass.buf_format", DBG_OPT_BLUE,
+                          display_rect.origin(),
+                          base::NumberToString(static_cast<int>(format)));
+      }
       DBG_DRAW_RECT("frame.render_pass.quad", display_rect);
     }
   }
@@ -794,7 +803,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       VLOG(3) << "Post-aggregation\n" << frame.ToString();
     }
   }
-  DebugDrawFrame(frame);
+  DebugDrawFrame(frame, resource_provider_);
 
   if (frame.delegated_ink_metadata) {
     TRACE_EVENT_INSTANT1(
