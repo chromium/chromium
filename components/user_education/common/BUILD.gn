@@ -24,6 +24,8 @@ source_set("common") {
     "help_bubble_factory_registry.h",
     "help_bubble_params.cc",
     "help_bubble_params.h",
+    "product_messaging_controller.cc",
+    "product_messaging_controller.h",
     "scoped_new_badge_tracker_base.cc",
     "scoped_new_badge_tracker_base.h",
     "tutorial.cc",
@@ -61,6 +63,7 @@ source_set("unit_tests") {
     "feature_promo_controller_unittest.cc",
     "feature_promo_snooze_service_unittest.cc",
     "help_bubble_factory_registry_unittest.cc",
+    "product_messaging_controller_unittest.cc",
     "tutorial_unittest.cc",
   ]
 
