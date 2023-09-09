@@ -1927,6 +1927,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_environment_integrity.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_event_source.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_event_source.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ext_blend_func_extended.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ext_blend_func_extended.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ext_blend_min_max.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ext_blend_min_max.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ext_clip_control.cc",

@@ -35,6 +35,7 @@ class WebGL1ConformanceIntegrationTest(
   def _GetExtensionList(cls) -> List[str]:
     return [
         'ANGLE_instanced_arrays',
+        'EXT_blend_func_extended',
         'EXT_blend_minmax',
         'EXT_clip_control',
         'EXT_color_buffer_half_float',

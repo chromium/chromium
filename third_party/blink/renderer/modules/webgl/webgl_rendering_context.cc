@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/modules/webgl/angle_instanced_arrays.h"
+#include "third_party/blink/renderer/modules/webgl/ext_blend_func_extended.h"
 #include "third_party/blink/renderer/modules/webgl/ext_blend_min_max.h"
 #include "third_party/blink/renderer/modules/webgl/ext_clip_control.h"
 #include "third_party/blink/renderer/modules/webgl/ext_color_buffer_half_float.h"
@@ -178,6 +179,7 @@ ImageBitmap* WebGLRenderingContext::TransferToImageBitmap(
 
 void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(angle_instanced_arrays_);
+  RegisterExtension(ext_blend_func_extended_, kDraftExtension);
   RegisterExtension(ext_blend_min_max_);
   RegisterExtension(ext_clip_control_, kDraftExtension);
   RegisterExtension(ext_color_buffer_half_float_);
@@ -222,6 +224,7 @@ void WebGLRenderingContext::RegisterContextExtensions() {
 
 void WebGLRenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(angle_instanced_arrays_);
+  visitor->Trace(ext_blend_func_extended_);
   visitor->Trace(ext_blend_min_max_);
   visitor->Trace(ext_clip_control_);
   visitor->Trace(ext_color_buffer_half_float_);

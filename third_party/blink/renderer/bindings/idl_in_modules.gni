@@ -921,6 +921,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/webdatabase/sql_transaction_error_callback.idl",
   "//third_party/blink/renderer/modules/webdatabase/window_web_database.idl",
   "//third_party/blink/renderer/modules/webgl/angle_instanced_arrays.idl",
+  "//third_party/blink/renderer/modules/webgl/ext_blend_func_extended.idl",
   "//third_party/blink/renderer/modules/webgl/ext_blend_min_max.idl",
   "//third_party/blink/renderer/modules/webgl/ext_clip_control.idl",
   "//third_party/blink/renderer/modules/webgl/ext_color_buffer_float.idl",

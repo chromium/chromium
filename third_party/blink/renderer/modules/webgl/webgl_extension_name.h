@@ -10,6 +10,7 @@ namespace blink {
 // Extension names are needed to properly wrap instances in JavaScript objects.
 enum WebGLExtensionName {
   kANGLEInstancedArraysName,
+  kEXTBlendFuncExtendedName,
   kEXTBlendMinMaxName,
   kEXTClipControlName,
   kEXTColorBufferFloatName,

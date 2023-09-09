@@ -1773,6 +1773,11 @@ void FeatureInfo::InitializeFeatures() {
   }
 
   if (is_passthrough_cmd_decoder_ &&
+      gfx::HasExtension(extensions, "GL_EXT_blend_func_extended")) {
+    AddExtensionString("GL_EXT_blend_func_extended");
+  }
+
+  if (is_passthrough_cmd_decoder_ &&
       gfx::HasExtension(extensions, "GL_EXT_clip_control")) {
     feature_flags_.ext_clip_control = true;
     AddExtensionString("GL_EXT_clip_control");

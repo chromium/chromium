@@ -34,6 +34,7 @@ class WebGL2ConformanceIntegrationTest(
   @classmethod
   def _GetExtensionList(cls) -> List[str]:
     return [
+        'EXT_blend_func_extended',
         'EXT_clip_control',
         'EXT_color_buffer_float',
         'EXT_color_buffer_half_float',

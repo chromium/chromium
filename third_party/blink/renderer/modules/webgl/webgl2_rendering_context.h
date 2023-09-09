@@ -14,6 +14,7 @@
 namespace blink {
 
 class CanvasContextCreationAttributesCore;
+class EXTBlendFuncExtended;
 class EXTClipControl;
 class EXTColorBufferFloat;
 class EXTColorBufferHalfFloat;
@@ -85,6 +86,7 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   void Trace(Visitor*) const override;
 
  protected:
+  Member<EXTBlendFuncExtended> ext_blend_func_extended_;
   Member<EXTClipControl> ext_clip_control_;
   Member<EXTColorBufferFloat> ext_color_buffer_float_;
   Member<EXTColorBufferHalfFloat> ext_color_buffer_half_float_;

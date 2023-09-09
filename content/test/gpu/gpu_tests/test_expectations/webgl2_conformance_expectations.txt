@@ -135,6 +135,7 @@ crbug.com/1058744 [ no-passthrough ] WebglExtension_OES_draw_buffers_indexed [ S
 
 # Extensions unavailable on Android.
 [ android ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
+crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
@@ -146,6 +147,7 @@ crbug.com/1473838 [ android passthrough angle-opengles ] WebglExtension_WEBGL_re
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 
 # Extensions only available via passthrough decoder.
+[ no-passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_clip_control [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]

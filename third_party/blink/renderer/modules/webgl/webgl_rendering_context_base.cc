@@ -3896,6 +3896,14 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
                         "invalid parameter name, EXT_clip_control not enabled");
       return ScriptValue::CreateNull(script_state->GetIsolate());
+    case GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT:  // EXT_blend_func_extended
+      if (ExtensionEnabled(kEXTBlendFuncExtendedName)) {
+        return GetUnsignedIntParameter(script_state, pname);
+      }
+      SynthesizeGLError(
+          GL_INVALID_ENUM, "getParameter",
+          "invalid parameter name, EXT_blend_func_extended not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_MAX_COLOR_ATTACHMENTS_EXT:  // EXT_draw_buffers BEGIN
       if (ExtensionEnabled(kWebGLDrawBuffersName) || IsWebGL2())
         return WebGLAny(script_state, MaxColorAttachments());

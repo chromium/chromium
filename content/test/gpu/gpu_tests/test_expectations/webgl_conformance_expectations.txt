@@ -140,6 +140,7 @@ crbug.com/angleproject/3031 [ win angle-opengl passthrough ] WebglExtension_KHR_
 crbug.com/776222 [ android ] WebglExtension_WEBGL_video_texture [ Skip ]
 
 # Extensions not available with SwiftShader
+[ passthrough angle-swiftshader ] WebglExtension_EXT_blend_func_extended [ Skip ]
 crbug.com/1099955 [ angle-swiftshader linux ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 crbug.com/1099955 [ angle-swiftshader mac   ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 crbug.com/1099955 [ angle-swiftshader win   ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
@@ -150,6 +151,7 @@ crbug.com/1099955 [ angle-swiftshader linux ] WebglExtension_EXT_texture_compres
 crbug.com/1099955 [ angle-swiftshader win   ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 
 # Extensions not available under D3D9
+[ win passthrough angle-d3d9 ] WebglExtension_EXT_blend_func_extended [ Skip ]
 [ win passthrough angle-d3d9 ] WebglExtension_EXT_clip_control [ Skip ]
 [ win passthrough angle-d3d9 ] WebglExtension_EXT_depth_clamp [ Skip ]
 crbug.com/867718 [ win passthrough angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
@@ -161,6 +163,7 @@ crbug.com/867718 [ win passthrough angle-d3d9 ] WebglExtension_EXT_disjoint_time
 [ win passthrough angle-d3d9 ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 
 # Extensions only available via passthrough decoder
+[ no-passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_clip_control [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
@@ -175,6 +178,8 @@ crbug.com/867718 [ win passthrough angle-d3d9 ] WebglExtension_EXT_disjoint_time
 [ android ] WebglExtension_EXT_frag_depth [ Skip ]
 [ android ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
 [ android ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
+crbug.com/1473838 [ android angle-opengles passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1473838 [ android angle-vulkan passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
