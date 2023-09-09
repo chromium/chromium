@@ -55,6 +55,16 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
         const mojom::GraphicsTablet& graphics_tablet) {}
     virtual void OnGraphicsTabletSettingsUpdated(
         const mojom::GraphicsTablet& graphics_tablet) {}
+
+    virtual void OnCustomizableMouseButtonPressed(const mojom::Mouse& mouse,
+                                                  const mojom::Button& button) {
+    }
+    virtual void OnCustomizableTabletButtonPressed(
+        const mojom::GraphicsTablet& mouse,
+        const mojom::Button& button) {}
+    virtual void OnCustomizablePenButtonPressed(
+        const mojom::GraphicsTablet& mouse,
+        const mojom::Button& button) {}
   };
 
   static InputDeviceSettingsController* Get();

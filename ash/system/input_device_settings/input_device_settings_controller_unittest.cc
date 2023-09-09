@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -275,6 +276,19 @@ class FakeInputDeviceSettingsControllerObserver
     num_mouse_settings_updated_++;
   }
 
+  void OnCustomizableMouseButtonPressed(const mojom::Mouse& mouse,
+                                        const mojom::Button& button) override {
+    num_mouse_buttons_pressed_++;
+  }
+  void OnCustomizableTabletButtonPressed(const mojom::GraphicsTablet& mouse,
+                                         const mojom::Button& button) override {
+    num_tablet_buttons_pressed_++;
+  }
+  void OnCustomizablePenButtonPressed(const mojom::GraphicsTablet& mouse,
+                                      const mojom::Button& button) override {
+    num_pen_buttons_pressed_++;
+  }
+
   uint32_t num_keyboards_connected() { return num_keyboards_connected_; }
   uint32_t num_graphics_tablets_connected() {
     return num_graphics_tablets_connected_;
@@ -286,6 +300,9 @@ class FakeInputDeviceSettingsControllerObserver
     return num_graphics_tablets_settings_updated_;
   }
   uint32_t num_mouse_settings_updated() { return num_mouse_settings_updated_; }
+  uint32_t num_mouse_buttons_pressed() { return num_mouse_buttons_pressed_; }
+  uint32_t num_pen_buttons_pressed() { return num_pen_buttons_pressed_; }
+  uint32_t num_tablet_buttons_pressed() { return num_tablet_buttons_pressed_; }
 
  private:
   uint32_t num_keyboards_connected_;
@@ -293,6 +310,9 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_keyboards_settings_updated_;
   uint32_t num_graphics_tablets_settings_updated_;
   uint32_t num_mouse_settings_updated_;
+  uint32_t num_mouse_buttons_pressed_;
+  uint32_t num_tablet_buttons_pressed_;
+  uint32_t num_pen_buttons_pressed_;
 };
 
 class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
@@ -1029,6 +1049,7 @@ TEST_F(InputDeviceSettingsControllerTest, MouseButtonPressed) {
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle);
   controller_->OnMouseButtonPressed(kSampleMouseUsb.id, *button);
   EXPECT_EQ(1u, observer_->num_mouse_settings_updated());
+  EXPECT_EQ(1u, observer_->num_mouse_buttons_pressed());
 
   auto* settings = controller_->GetMouseSettings(kSampleMouseUsb.id);
   ASSERT_TRUE(settings);
@@ -1050,6 +1071,8 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
   controller_->OnGraphicsTabletButtonPressed(kSampleGraphicsTablet.id,
                                              *tablet_button);
   EXPECT_EQ(2u, observer_->num_graphics_tablets_settings_updated());
+  EXPECT_EQ(1u, observer_->num_tablet_buttons_pressed());
+  EXPECT_EQ(1u, observer_->num_pen_buttons_pressed());
 
   auto* settings =
       controller_->GetGraphicsTabletSettings(kSampleGraphicsTablet.id);

@@ -135,6 +135,15 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void DispatchGraphicsTabletDisconnectedAndEraseFromList(DeviceId id);
   void DispatchGraphicsTabletSettingsChanged(DeviceId id);
 
+  void DispatchCustomizableMouseButtonPressed(const mojom::Mouse& mouse,
+                                              const mojom::Button& button);
+  void DispatchCustomizableTabletButtonPressed(
+      const mojom::GraphicsTablet& graphics_tablet,
+      const mojom::Button& button);
+  void DispatchCustomizablePenButtonPressed(
+      const mojom::GraphicsTablet& graphics_tablet,
+      const mojom::Button& button);
+
   void InitializePolicyHandler();
   void OnKeyboardPoliciesChanged();
   void OnMousePoliciesChanged();

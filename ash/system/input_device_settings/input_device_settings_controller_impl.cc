@@ -1430,13 +1430,14 @@ void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
                            return *remapping->button;
                          });
   if (remapping_iter != button_remappings.end()) {
-    // TODO(dpad): Implement observer for button pressed for UI highlighting.
+    DispatchCustomizableMouseButtonPressed(mouse, button);
     return;
   }
 
   AddButtonToButtonRemappingList(button, button_remappings);
   mouse_pref_handler_->UpdateMouseSettings(
       active_pref_service_, policy_handler_->mouse_policies(), mouse);
+  DispatchCustomizableMouseButtonPressed(mouse, button);
   DispatchMouseSettingsChanged(device_id);
 
   UpdateDuplicateDeviceSettings(
@@ -1464,7 +1465,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
                            return *remapping->button;
                          });
   if (tablet_remapping_iter != tablet_button_remappings.end()) {
-    // TODO(dpad): Implement observer for button pressed for UI highlighting.
+    DispatchCustomizableTabletButtonPressed(graphics_tablet, button);
     return;
   }
 
@@ -1475,14 +1476,16 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
                            return *remapping->button;
                          });
   if (pen_remapping_iter != pen_button_remappings.end()) {
-    // TODO(dpad): Implement observer for button pressed for UI highlighting.
+    DispatchCustomizablePenButtonPressed(graphics_tablet, button);
     return;
   }
 
   if (IsGraphicsTabletPenButton(button)) {
     AddButtonToButtonRemappingList(button, pen_button_remappings);
+    DispatchCustomizablePenButtonPressed(graphics_tablet, button);
   } else {
     AddButtonToButtonRemappingList(button, tablet_button_remappings);
+    DispatchCustomizableTabletButtonPressed(graphics_tablet, button);
   }
   // TODO(dpad): Update graphics tablet prefs.
   DispatchGraphicsTabletSettingsChanged(device_id);
@@ -1492,6 +1495,30 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
       base::BindRepeating(&InputDeviceSettingsControllerImpl::
                               DispatchGraphicsTabletSettingsChanged,
                           base::Unretained(this)));
+}
+
+void InputDeviceSettingsControllerImpl::DispatchCustomizableMouseButtonPressed(
+    const mojom::Mouse& mouse,
+    const mojom::Button& button) {
+  for (auto& observer : observers_) {
+    observer.OnCustomizableMouseButtonPressed(mouse, button);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchCustomizableTabletButtonPressed(
+    const mojom::GraphicsTablet& graphics_tablet,
+    const mojom::Button& button) {
+  for (auto& observer : observers_) {
+    observer.OnCustomizableTabletButtonPressed(graphics_tablet, button);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchCustomizablePenButtonPressed(
+    const mojom::GraphicsTablet& graphics_tablet,
+    const mojom::Button& button) {
+  for (auto& observer : observers_) {
+    observer.OnCustomizablePenButtonPressed(graphics_tablet, button);
+  }
 }
 
 }  // namespace ash
