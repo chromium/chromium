@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">સૂર્યાસ્ત સુધી બંધ રાખો</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period કીનો કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Insert કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace કી દબાવો.</translation>
 <translation id="1770726142253415363">પંક્તિ <ph name="ROW_NUMBER" />, કૉલમ <ph name="COLUMN_NUMBER" /> પર ખસેડી.</translation>
+<translation id="1771458705381257690">તમારા ડિવાઇસનું સેટઅપ કરવા અને તેને કસ્ટમાઇઝ કરવા માટે, <ph name="NAME" /> ખોલો</translation>
 <translation id="1771761307086386028">જમણે સ્ક્રોલ કરો</translation>
 <translation id="1774796056689732716">કૅલેન્ડર, <ph name="CURRENT_MONTH_YEAR" />, હાલમાં <ph name="DATE" /> પસંદ કરેલી છે.</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />માંથી <ph name="NUM_SHOWN_ITEMS" /> બતાવી રહ્યું છે</translation>
@@ -1192,6 +1193,7 @@
 <translation id="5876666360658629066">માતાપિતાનો કોડ દાખલ કરો</translation>
 <translation id="5881540930187678962">થોડા સમય પછી ફોન હબનું સેટઅપ કરો</translation>
 <translation id="5881663018261910378">બંધ છે</translation>
+<translation id="5883017113634523865">તમામ ઉપલબ્ધ સુવિધાઓ જોવા માટે, <ph name="NAME" /> ઍપને Google Playમાંથી ઇન્સ્ટૉલ કરો</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> વિન્ડો <ph name="DESK_TITLE" />ને સોંપાઈ અને અન્ય બધી ડેસ્કમાંથી તેની સોંપણી રદ કરાઈ</translation>
 <translation id="588817334757907802">ફાઇલને Chrome બ્રાઉઝરમાં ખોલો</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>

@@ -278,6 +278,7 @@
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3272909651715601089">No se pudo abrir "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Preparando la descarga</translation>
+<translation id="3280719573299097127">Estás en una red de uso medido. Se pausó la sincronización de archivos.</translation>
 <translation id="3280987981688031357">Disco de vinilo</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3291218047831493686">Conéctate a esta red para cambiar la configuración del bloqueo de la SIM.</translation>
@@ -632,6 +633,7 @@
 <translation id="5838451609423551646">Se quitó la selección de todas las entradas.</translation>
 <translation id="5838825566232597749">Internacional Workman (EE. UU.)</translation>
 <translation id="5845721951356578987">Enfermero</translation>
+<translation id="5858478190805449225">Modo Ahorro de batería activado. Vuelve a intentarlo cuando el modo Ahorro de batería esté desactivado.</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Falló la búsqueda de DHCP</translation>

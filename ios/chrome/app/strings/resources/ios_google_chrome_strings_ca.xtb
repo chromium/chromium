@@ -36,6 +36,7 @@ Aspectes que cal tenir en compte:
 <translation id="2120238739383482109">Obre les adreces d'interès de Chrome.</translation>
 <translation id="2147651015520127414">Chrome ha verificat que <ph name="ISSUER" /> ha emès el certificat d'aquest lloc web.</translation>
 <translation id="2199719347983604670">Dades de la sincronització de Chrome</translation>
+<translation id="2311240109311056604">Obre el joc El dinosaure de Chrome.</translation>
 <translation id="2339201583852607431">La contrasenya es desarà al teu Compte de Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome comparteix la teva ubicació amb els llocs web que autoritzis.</translation>
 <translation id="2347208864470321755">Quan la funció està activada, Chrome ofereix la traducció de les pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -101,10 +102,12 @@ Aspectes que cal tenir en compte:
 <translation id="484033449593719797">No s'admeten a la versió beta de Chrome</translation>
 <translation id="4840404732697892756">El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="4903674399067644695">Aquesta targeta mostra suggeriments sobre com pots treure el màxim profit de Chrome.</translation>
+<translation id="49200511069271369">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què estàs iniciant la sessió i com es pot utilitzar Chrome. L'administrador pot configurar o restringir determinades funcions.</translation>
 <translation id="5030102366287574140">Chrome pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="5108659628347594808">Millora Chrome</translation>
 <translation id="5112925986883715005">Mostra la llista de lectura de Chrome</translation>
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
+<translation id="5156818928311866442">Obre la configuració de Chrome per establir Chrome com a navegador predeterminat.</translation>
 <translation id="5162467219239570114">Chrome no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chrome.</translation>
 <translation id="5190139289262548459">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què tens la sessió iniciada i com s'utilitza Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
@@ -155,6 +158,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7173660919484573146">Chrome utilitza Face ID per garantir l'accés autoritzat a les contrasenyes.</translation>
 <translation id="7187993566681480880">Et protegeix a Chrome i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>
 <translation id="72119412072970160">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes de Google en altres aplicacions de l'iPad.</translation>
+<translation id="7254380941803999489">Estableix Chrome com a navegador predeterminat</translation>
 <translation id="7261678641327190792">Chrome no pot comprovar les teves contrasenyes</translation>
 <translation id="7272930098487145294">Si vols desar imatges, toca Configuració per permetre que Chrome les afegeixi a les teves fotos</translation>
 <translation id="7275945473750112644">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chrome s'esborraran d'aquest dispositiu</translation>
