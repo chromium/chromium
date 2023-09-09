@@ -1066,7 +1066,7 @@
     {
       // https://drafts.csswg.org/css-color-5/#relative-colors
       name: "CSSRelativeColor",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-cascade-6/#scoped-styles

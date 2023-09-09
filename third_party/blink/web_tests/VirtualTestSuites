@@ -271,10 +271,7 @@
               "media/stable",
               "webexposed",
               "compositing/filters",
-              "external/wpt/performance-timeline/tentative/with-filter-options-originA.html",
-              "external/wpt/css/css-color/parsing/color-invalid-relative-color.html",
-              "external/wpt/css/css-color/parsing/color-valid-relative-color.html",
-              "external/wpt/css/css-color/parsing/color-computed-relative-color.html"
+              "external/wpt/performance-timeline/tentative/with-filter-options-originA.html"
             ],
     "exclusive_tests": ["media/stable"],
     "args": ["--stable-release-mode",
