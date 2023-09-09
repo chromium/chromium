@@ -2318,15 +2318,9 @@ IN_PROC_BROWSER_TEST_P(DictationKeyboardImprovementsTest,
 
 // Verifies that ChromeVox announces a message when when Dictation is toggled
 // when there is no focused editable.
-// TODO(b:259352600): Re-enable this test on MSAN & ASAN.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
-#define MAYBE_ToggledWithNoFocusTriggersSpeech \
-  DISABLED_ToggledWithNoFocusTriggersSpeech
-#else
-#define MAYBE_ToggledWithNoFocusTriggersSpeech ToggledWithNoFocusTriggersSpeech
-#endif
+// TODO(b:259352600): Flaky on MSAN & ASAN and Linux ChromiumOS in general.
 IN_PROC_BROWSER_TEST_P(DictationKeyboardImprovementsTest,
-                       MAYBE_ToggledWithNoFocusTriggersSpeech) {
+                       DISABLED_ToggledWithNoFocusTriggersSpeech) {
   // Setup ChromeVox.
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
