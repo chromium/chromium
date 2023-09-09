@@ -16,9 +16,9 @@ namespace content {
 class NavigationRequest;
 
 struct NavigationTransitionUtils {
-  // Capture the `NavigationEntryScreenshot` for the old page. Store the
+  // Capture the `NavigationEntryScreenshot` for the old page, and store the
   // screenshot in the old page's NavigationEntry.
-  // Should only be called immediately before the old page is unloaded, and
+  // Should only be called immediately before the old page is unloaded.
   static void CaptureNavigationEntryScreenshot(
       const NavigationRequest& navigation_request);
 
