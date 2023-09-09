@@ -549,6 +549,11 @@ protocol::Response InspectorEmulationAgent::setNavigatorOverrides(
 void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler", "VirtualTimeBudget",
                                   TRACE_ID_LOCAL(this));
+  // Disregard the event if the agent is disabled. Another agent may take care
+  // of pausing the time in case of an in-process frame swap.
+  if (!enabled_) {
+    return;
+  }
   virtual_time_controller_.SetVirtualTimePolicy(
       VirtualTimeController::VirtualTimePolicy::kPause);
   virtual_time_policy_.Set(protocol::Emulation::VirtualTimePolicyEnum::Pause);
