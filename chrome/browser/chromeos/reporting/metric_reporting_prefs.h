@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_REPORTING_PREFS_H_
 #define CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_REPORTING_PREFS_H_
 
+#include <string>
+
+#include "components/reporting/metrics/reporting_settings.h"
+#include "url/gurl.h"
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -30,6 +35,12 @@ constexpr char kReportWebsiteTelemetryCollectionRateMs[] =
 
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry);
 
+// Retrieves the corresponding website metric reporting policy and returns true
+// if the specified website URL is supported and matches any of the patterns in
+// the retrieved allowlist. False otherwise.
+bool IsWebsiteUrlAllowlisted(const GURL& url,
+                             const ReportingSettings* reporting_settings,
+                             const std::string& policy_setting);
 }  // namespace reporting
 
 #endif  // CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_REPORTING_PREFS_H_
