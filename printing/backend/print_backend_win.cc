@@ -386,11 +386,18 @@ mojom::ResultCode PrintBackendWin::GetDefaultPrinterName(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   if (!::GetDefaultPrinter(default_printer_name, &size)) {
-    LOG(ERROR) << ErrorMessageCheckSpooler("Error getting default printer: ",
-                                           logging::GetLastSystemErrorCode());
-    return mojom::ResultCode::kFailed;
+    logging::SystemErrorCode err = logging::GetLastSystemErrorCode();
+    if (err != ERROR_FILE_NOT_FOUND) {
+      LOG(ERROR) << ErrorMessageCheckSpooler("Error getting default printer: ",
+                                             err);
+      return mojom::ResultCode::kFailed;
+    }
+
+    // There is no default printer, which is not treated as a failure.
+    default_printer = std::string();
+  } else {
+    default_printer = base::WideToUTF8(default_printer_name);
   }
-  default_printer = base::WideToUTF8(default_printer_name);
   return mojom::ResultCode::kSuccess;
 }
 
