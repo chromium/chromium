@@ -109,7 +109,7 @@ class LintWPTTest(LoggingTestCase):
         path = self.finder.path_from_wpt_tests('good_python.py')
         self.fs.write_text_file(path, 'import os')
         with self._patch_builtins():
-            exit_code = self.command.main([path])
+            exit_code = self.command.main(['--no-manifest-update', path])
         self.assertEqual(exit_code, 0)
         self.assertLog(['INFO: All files OK.\n'])
 
@@ -117,7 +117,7 @@ class LintWPTTest(LoggingTestCase):
         path = self.finder.path_from_wpt_tests('bad_python.py')
         self.fs.write_text_file(path, 'invalid syntax should be detected')
         with self._patch_builtins():
-            exit_code = self.command.main([path])
+            exit_code = self.command.main(['--no-manifest-update', path])
         self.assertNotEqual(exit_code, 0)
         self.assertLog([
             'ERROR: bad_python.py:1: Unable to parse file (PARSE-FAILED)\n',
@@ -146,7 +146,7 @@ class LintWPTTest(LoggingTestCase):
         path = self.finder.path_from_wpt_tests('reftest.html.ini')
         self.fs.write_text_file(path, '[reftest.html]')
         with self._patch_builtins():
-            exit_code = self.command.main([path])
+            exit_code = self.command.main(['--no-manifest-update', path])
         self.assertNotEqual(exit_code, 0)
         self.assertLog([
             'ERROR: reftest.html.ini: Empty section should be removed: '

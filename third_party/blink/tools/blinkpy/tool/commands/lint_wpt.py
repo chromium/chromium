@@ -39,6 +39,7 @@ from blinkpy.w3c import wpt_metadata
 from blinkpy.w3c.common import is_basename_skipped
 from blinkpy.w3c.wpt_manifest import WPTManifest
 from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.port.factory import add_common_wpt_options
 
 path_finder.bootstrap_wpt_imports()
 from tools.lint import lint as wptlint
@@ -280,6 +281,9 @@ class LintWPT(Command):
         self._tool = tool
         self._fs = self._tool.filesystem
         self._default_port = self._tool.port_factory.get()
+        # Ensure that `self._default_port`, which is shared among child
+        # processes, never updates the manifest, as doing so could race.
+        self._default_port.set_option_default('manifest_update', False)
         self._default_port.set_option_default(
             'test_types', typing.get_args(wpt_metadata.TestType))
         self._finder = path_finder.PathFinder(self._fs)
@@ -288,7 +292,10 @@ class LintWPT(Command):
 
     def parse_args(self, args: List[str]) -> Tuple[optparse.Values, List[str]]:
         # TODO(crbug.com/1431070): Migrate `blink_tool.py` to stdlib's
-        # `argparse`. `optparse` is deprecated.
+        # `argparse`. `optparse` is deprecated. Also, consider making our own
+        # command subparser [1] instead of using the `wpt lint` one.
+        #
+        # [1]: https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_subparsers
         parser = command_line.ArgumentParser(description=self.long_help,
                                              parents=[wptlint.create_parser()],
                                              conflict_handler='resolve')
@@ -301,6 +308,7 @@ class LintWPT(Command):
                             help=argparse.SUPPRESS)
         parser.add_argument('--github-checks-text-file',
                             help=argparse.SUPPRESS)
+        add_common_wpt_options(parser)
         parameters = parser.parse_args(args)
         if not parameters.repo_root:
             parameters.repo_root = self._finder.path_from_wpt_tests()
@@ -308,6 +316,9 @@ class LintWPT(Command):
 
     def execute(self, options: optparse.Values, _args: List[str],
                 _tool: Host) -> Optional[int]:
+        if options.manifest_update:
+            for path in Port.WPT_DIRS:
+                WPTManifest.ensure_manifest(self._default_port, path)
         # Pipe `wpt lint`'s logs into `blink_tool.py`'s formatter.
         wptlint.logger = _log
         # Repurpose the `json` format to collect all lint errors, including

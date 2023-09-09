@@ -51,6 +51,7 @@ from blinkpy.tool.commands.command import Command
 from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
 from blinkpy.w3c import wpt_metadata
 from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.port.factory import wpt_options
 from blinkpy.web_tests.models.test_expectations import (
     TestExpectations,
     SPECIAL_PREFIXES,
@@ -185,6 +186,7 @@ class UpdateMetadata(Command):
             RebaselineCL.only_changed_tests_option,
             RebaselineCL.no_trigger_jobs_option,
             RebaselineCL.dry_run_option,
+            *wpt_options(),
         ])
         self._tool = tool
         # This tool's performance bottleneck is the network I/O to ResultDB.
@@ -210,7 +212,8 @@ class UpdateMetadata(Command):
             self._tool.web,
             self.git_cl,
             can_trigger_jobs=(options.trigger_jobs and not options.dry_run))
-        manifests = load_and_update_manifests(self._path_finder)
+        manifests = load_and_update_manifests(
+            self._path_finder, force_update=options.manifest_update)
         builds = self._select_builds(options)
         updater = MetadataUpdater.from_manifests(
             manifests,
@@ -1165,12 +1168,15 @@ def _compose(f, g):
     return lambda *args, **kwargs: f(g(*args, **kwargs))
 
 
-def load_and_update_manifests(finder: path_finder.PathFinder) -> ManifestMap:
+def load_and_update_manifests(finder: path_finder.PathFinder,
+                              force_update: bool = True) -> ManifestMap:
     """Load and update WPT manifests on disk by scanning the test root.
 
     Arguments:
         finder: Path finder for constructing test paths (test root, metadata
             root, and manifest path).
+        force_update: True to force a manifest update, which may be slow. A
+            stale manifest may cause the wrong tests to be recognized.
 
     See Also:
         https://github.com/web-platform-tests/wpt/blob/merge_pr_35574/tools/wptrunner/wptrunner/testloader.py#L171-L199
@@ -1186,8 +1192,7 @@ def load_and_update_manifests(finder: path_finder.PathFinder) -> ManifestMap:
             'manifest_path':
             finder.path_from_web_tests(rel_path_to_wpt_root, 'MANIFEST.json'),
         }
-    return testloader.ManifestLoader(test_paths,
-                                     force_manifest_update=True).load()
+    return testloader.ManifestLoader(test_paths, force_update).load()
 
 
 def _tests(

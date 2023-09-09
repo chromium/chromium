@@ -190,6 +190,14 @@ def add_platform_options_group(parser: argparse.ArgumentParser):
     group.add_argument('--platform', help='Platform to use (e.g., "mac-lion")')
 
 
+def add_common_wpt_options(parser: argparse.ArgumentParser):
+    parser.add_argument('--no-manifest-update',
+                        dest='manifest_update',
+                        action='store_false',
+                        help=('Do not update the web-platform-tests '
+                              'MANIFEST.json unless it does not exist.'))
+
+
 def add_configuration_options_group(parser: argparse.ArgumentParser,
                                     rwt: bool = True,
                                     product_choices: list = None):
@@ -208,11 +216,7 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        const='Release',
                        dest='configuration',
                        help='Set the configuration to Release')
-    group.add_argument('--no-manifest-update',
-                       dest='manifest_update',
-                       action='store_false',
-                       help=('Do not update the web-platform-tests '
-                             'MANIFEST.json unless it does not exist.'))
+    add_common_wpt_options(group)
     if rwt:
         group.add_argument('--no-xvfb',
                            action='store_false',
