@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "build/branding_buildflags.h"
@@ -37,14 +38,30 @@ bool CanCheckUrl(const GURL& url,
          can_check_reputation;
 }
 
-bool IsThreatTypeRelevant(const V5::ThreatType& threat_type) {
-  switch (threat_type) {
+bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail) {
+  if (base::Contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
+#if BUILDFLAG(IS_IOS)
+    // iOS doesn't support CANARY threat attribute.
+    return false;
+#else
+    if (detail.threat_type() != V5::ThreatType::SOCIAL_ENGINEERING) {
+      // CANARY should only be attached with SOCIAL_ENGINEERING,
+      // ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION or API_ABUSE. Only
+      // SOCIAL_ENGINEERING is relevant to hash real time checks (the others
+      // are not frame URLs), so only checking SOCIAL_ENGINEERING here.
+      return false;
+    }
+    if (base::Contains(detail.attributes(), V5::ThreatAttribute::FRAME_ONLY)) {
+      // CANARY and FRAME_ONLY should not be set at the same time.
+      return false;
+    }
+#endif
+  }
+
+  switch (detail.threat_type()) {
     case V5::ThreatType::MALWARE:
     case V5::ThreatType::SOCIAL_ENGINEERING:
     case V5::ThreatType::UNWANTED_SOFTWARE:
-#if !BUILDFLAG(IS_IOS)
-    case V5::ThreatType::SUSPICIOUS:
-#endif
     case V5::ThreatType::TRICK_TO_BILL:
       return true;
     default:

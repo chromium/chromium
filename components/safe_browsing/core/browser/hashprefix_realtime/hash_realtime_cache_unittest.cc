@@ -7,7 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -120,8 +120,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
                              V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
                              V5::ThreatType::BETTER_ADS_VIOLATION,
                              V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
-                             V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION,
-                             V5::ThreatType::SOCIAL_ENGINEERING_ADS}),
+                             V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION}),
     };
     cache->CacheSearchHashesResponse(requested_hash_prefixes,
                                      response_full_hashes,
@@ -288,11 +287,10 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
     std::vector<std::string> requested_hash_prefixes = {"aaaa", "bbbb"};
     auto full_hash_1 =
         CreateBasicFullHash("aaaa1111111111111111111111111111", {});
-    AddThreatTypeAndAttributes(
-        full_hash_1, V5::ThreatType::SOCIAL_ENGINEERING,
-        {V5::ThreatAttribute::CANARY, V5::ThreatAttribute::FRAME_ONLY});
+    AddThreatTypeAndAttributes(full_hash_1, V5::ThreatType::SOCIAL_ENGINEERING,
+                               {V5::ThreatAttribute::FRAME_ONLY});
     AddThreatTypeAndAttributes(full_hash_1, V5::ThreatType::MALWARE,
-                               {V5::ThreatAttribute::CANARY});
+                               {V5::ThreatAttribute::FRAME_ONLY});
     AddThreatTypeAndAttributes(
         full_hash_1, V5::ThreatType::API_ABUSE,
         {V5::ThreatAttribute::CANARY, V5::ThreatAttribute::FRAME_ONLY});
@@ -326,12 +324,11 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
   auto aaaa1_details = aaaa1_results.full_hash_details();
   EXPECT_EQ(aaaa1_details.size(), 3);
   EXPECT_EQ(aaaa1_details[0].threat_type(), V5::ThreatType::SOCIAL_ENGINEERING);
-  EXPECT_EQ(aaaa1_details[0].attributes().size(), 2);
-  EXPECT_EQ(aaaa1_details[0].attributes()[0], V5::ThreatAttribute::CANARY);
-  EXPECT_EQ(aaaa1_details[0].attributes()[1], V5::ThreatAttribute::FRAME_ONLY);
+  EXPECT_EQ(aaaa1_details[0].attributes().size(), 1);
+  EXPECT_EQ(aaaa1_details[0].attributes()[0], V5::ThreatAttribute::FRAME_ONLY);
   EXPECT_EQ(aaaa1_details[1].threat_type(), V5::ThreatType::MALWARE);
   EXPECT_EQ(aaaa1_details[1].attributes().size(), 1);
-  EXPECT_EQ(aaaa1_details[1].attributes()[0], V5::ThreatAttribute::CANARY);
+  EXPECT_EQ(aaaa1_details[1].attributes()[0], V5::ThreatAttribute::FRAME_ONLY);
   EXPECT_EQ(aaaa1_details[2].threat_type(), V5::ThreatType::UNWANTED_SOFTWARE);
   EXPECT_TRUE(aaaa1_details[2].attributes().empty());
   // Sanity check that aaaa...2 has no attributes in spite of aaaa...1 having

@@ -35,7 +35,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -2361,7 +2361,6 @@ std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
   }
   inner_request_dict.Set("hash_prefixes (base64)",
                          std::move(encoded_hash_prefixes));
-  inner_request_dict.Set("filter", ping.inner_request.filter());
 
   request_dict.Set("inner_request", std::move(inner_request_dict));
   request_dict.Set("relay_url", ping.relay_url_spec);
@@ -2392,12 +2391,8 @@ std::string SerializeV5ThreatType(V5::ThreatType threat_type) {
       return "POTENTIALLY_HARMFUL_APPLICATION";
     case V5::API_ABUSE:
       return "API_ABUSE";
-    case V5::SUSPICIOUS:
-      return "SUSPICIOUS";
     case V5::TRICK_TO_BILL:
       return "TRICK_TO_BILL";
-    case V5::SOCIAL_ENGINEERING_ADS:
-      return "SOCIAL_ENGINEERING_ADS";
     case V5::ABUSIVE_EXPERIENCE_VIOLATION:
       return "ABUSIVE_EXPERIENCE_VIOLATION";
     case V5::BETTER_ADS_VIOLATION:

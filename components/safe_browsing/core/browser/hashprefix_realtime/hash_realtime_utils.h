@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_UTILS_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_UTILS_H_
 
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
@@ -55,9 +55,9 @@ class GoogleChromeBrandingPretenderForTesting {
 bool CanCheckUrl(const GURL& url,
                  network::mojom::RequestDestination request_destination);
 
-// Returns whether the threat type is relevant for hash-prefix real-time
+// Returns whether the full hash detail is relevant for hash-prefix real-time
 // lookups.
-bool IsThreatTypeRelevant(const V5::ThreatType& threat_type);
+bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail);
 
 // Returns the 4-byte prefix of the requested 32-byte full hash.
 std::string GetHashPrefix(const std::string& full_hash);

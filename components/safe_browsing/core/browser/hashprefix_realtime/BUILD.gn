@@ -22,7 +22,7 @@ static_library("hash_realtime_service") {
     "//components/safe_browsing/core/browser/utils",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//google_apis:google_apis",
     "//services/network/public/cpp",
     "//url:url",
@@ -40,7 +40,7 @@ static_library("hash_realtime_cache") {
   deps = [
     ":hash_realtime_utils",
     "//base:base",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
   ]
 }
 
@@ -58,7 +58,7 @@ static_library("hash_realtime_utils") {
     "//components/prefs",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//services/network/public/cpp",
   ]
 }
@@ -82,7 +82,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/sync_preferences:test_support",
     "//google_apis:google_apis",
     "//services/network:test_support",
