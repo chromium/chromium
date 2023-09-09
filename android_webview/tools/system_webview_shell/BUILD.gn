@@ -173,6 +173,7 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
     "//third_party/blink/web_tests/webexposed/global-interface-listing.html",
     "//third_party/blink/web_tests/webexposed/global-interface-listing-expected.txt",
     "//third_party/blink/web_tests/webexposed/global-interface-listing-platform-specific-expected.txt",
+    "//third_party/chromium-variations",
     "$root_build_dir/third_party/blink/web_tests/resources/js-test.js",
   ]
 

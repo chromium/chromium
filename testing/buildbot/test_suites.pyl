@@ -7165,6 +7165,12 @@
           'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR',
         ],
       },
+      'system_webview_shell_instrumentation_tests': {
+        'variants': [
+          'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR_WEBVIEW_COMMANDLINE',
+          'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR_WEBVIEW_COMMANDLINE',
+        ],
+      }
     },
 
     'chromeos_brya_skylab_tests': {

@@ -35,6 +35,30 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR_WEBVIEW_COMMANDLINE",
+    identifier = "Single Group Per Study Prefer Existing Behavior Field Trial Config",
+    args = [
+        "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+        "--webview-command-line-arg=--accept-empty-variations-seed-signature",
+        "--webview-command-line-arg=--webview-verbose-logging",
+        "--webview-command-line-arg=--disable-field-trial-config",
+        "--webview-command-line-arg=--fake-variations-channel=stable",
+    ],
+)
+
+targets.variant(
+    name = "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR_WEBVIEW_COMMANDLINE",
+    identifier = "Single Group Per Study Prefer New Behavior Field Trial Config",
+    args = [
+        "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+        "--webview-command-line-arg=--accept-empty-variations-seed-signature",
+        "--webview-command-line-arg=--webview-verbose-logging",
+        "--webview-command-line-arg=--disable-field-trial-config",
+        "--webview-command-line-arg=--fake-variations-channel=stable",
+    ],
+)
+
+targets.variant(
     name = "IPHONE_7_15_4_1",
     identifier = "iPhone 7 15.4.1",
     swarming = targets.swarming(
