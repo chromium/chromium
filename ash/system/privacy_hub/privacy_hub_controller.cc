@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/types/pass_key.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
@@ -86,9 +87,15 @@ void PrivacyHubController::RegisterLocalStatePrefs(
 void PrivacyHubController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kUserCameraAllowed, true);
   registry->RegisterBooleanPref(prefs::kUserMicrophoneAllowed, true);
-  registry->RegisterBooleanPref(prefs::kUserSpeakOnMuteDetectionEnabled, false);
-  registry->RegisterBooleanPref(prefs::kShouldShowSpeakOnMuteOptInNudge, true);
-  registry->RegisterIntegerPref(prefs::kSpeakOnMuteOptInNudgeShownCount, 0);
+  registry->RegisterBooleanPref(
+      prefs::kUserSpeakOnMuteDetectionEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kShouldShowSpeakOnMuteOptInNudge, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kSpeakOnMuteOptInNudgeShownCount, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(prefs::kUserGeolocationAllowed, true);
 }
 
