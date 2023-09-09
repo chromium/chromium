@@ -148,7 +148,7 @@ both images. The set of available images is listed in the
 [DEPS file](https://source.chromium.org/chromium/chromium/src/+/main:DEPS).
 
 Note: fxbug.dev/85552 tracks migration away from the legacy image names, like
-`qemu.x64`, which is mapped to `terminal.qemu-x64-release` by the
+`qemu.x64`, which is mapped to `terminal.x64-release` by the
 [`update_images.py`](https://source.chromium.org/chromium/chromium/src/+/main:build/fuchsia/update_images.py)
 helper script.
 

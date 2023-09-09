@@ -26,7 +26,10 @@ class FfxEmulator(AbstractContextManager):
         if args.product:
             self._product = args.product
         else:
-            self._product = 'terminal.qemu-' + get_host_arch()
+            if get_host_arch() == 'x64':
+                self._product = 'terminal.x64'
+            else:
+                self._product = 'terminal.qemu-arm64'
 
         self._enable_graphics = args.enable_graphics
         self._hardware_gpu = args.hardware_gpu

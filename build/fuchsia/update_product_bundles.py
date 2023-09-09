@@ -23,7 +23,7 @@ import update_sdk
 _IMAGE_TO_PRODUCT_BUNDLE = {
     'core.x64-dfv2-release': 'core.x64-dfv2',
     'qemu.arm64': 'terminal.qemu-arm64',
-    'qemu.x64': 'terminal.qemu-x64',
+    'qemu.x64': 'terminal.x64',
     'workstation_eng.chromebook-x64-dfv2-release':
     'workstation_eng.chromebook-x64-dfv2',
     'workstation_eng.chromebook-x64-release': 'workstation_eng.chromebook-x64',

@@ -40,7 +40,7 @@ class TestUpdateProductBundles(unittest.TestCase):
       ]
       self.assertEqual(
           update_product_bundles.convert_to_products(deprecated_images), [
-              'terminal.qemu-arm64', 'terminal.qemu-x64', 'core.x64-dfv2',
+              'terminal.qemu-arm64', 'terminal.x64', 'core.x64-dfv2',
               'workstation_eng.chromebook-x64'
           ])
       for i, deprecated_image in enumerate(deprecated_images):
@@ -65,7 +65,7 @@ class TestUpdateProductBundles(unittest.TestCase):
                                                    mock_exists):
     with mock.patch('common.SDK_ROOT', 'some/path'):
       self._ffx_mock.return_value.stdout = json.dumps([{
-          "name": "terminal.qemu-x64",
+          "name": "terminal.x64",
           "spec": {
               "type": "pm",
               "path": "some/path/that/exists"
@@ -81,7 +81,7 @@ class TestUpdateProductBundles(unittest.TestCase):
       mock_abspath.side_effect = lambda x: x
 
       self.assertEqual(update_product_bundles.get_repositories(), [{
-          "name": "terminal.qemu-x64",
+          "name": "terminal.x64",
           "spec": {
               "type": "pm",
               "path": "some/path/that/exists"
