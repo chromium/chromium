@@ -338,13 +338,26 @@ void WebRtcVideoTrackSource::DeliverFrame(
         update_rect->x(), update_rect->y(), update_rect->width(),
         update_rect->height()});
   }
-  if (base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
+
+  if (ShouldSetColorSpace(frame->ColorSpace())) {
     frame_builder.set_color_space(GfxToWebRtcColorSpace(frame->ColorSpace()));
   }
   OnFrame(frame_builder.build());
 
   // Clear accumulated_update_rect_.
   accumulated_update_rect_ = gfx::Rect();
+}
+
+bool WebRtcVideoTrackSource::ShouldSetColorSpace(
+    const gfx::ColorSpace& color_space) {
+  if (!base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
+    return false;
+  }
+
+  // The remote end will assume REC709 if not instructed otherwise, so there's
+  // no need to pass this information on the wire.
+  return color_space.IsValid() &&
+         color_space != gfx::ColorSpace::CreateREC709();
 }
 
 }  // namespace blink

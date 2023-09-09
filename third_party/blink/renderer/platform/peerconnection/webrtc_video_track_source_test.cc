@@ -279,14 +279,29 @@ TEST_P(WebRtcVideoTrackSourceTest, TestColorSpaceSettings) {
                   webrtc::ColorSpace::RangeID::kFull);
       }));
 
+  // For default REC709{BT709,BT709,BT709,Limited}, we will not set color space
+  // and transmit it by RTP since decoder side would guess it if color space is
+  // invalid.
+  EXPECT_CALL(mock_sink_, OnFrame(_))
+      .InSequence(s)
+      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+        ASSERT_FALSE(frame.color_space().has_value());
+      }));
+
   gfx::ColorSpace color_range_limited(
       gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
       gfx::ColorSpace::MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::LIMITED);
   SendTestFrameWithColorSpace(frame_parameters, color_range_limited);
+
   gfx::ColorSpace color_range_full(
       gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
       gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL);
   SendTestFrameWithColorSpace(frame_parameters, color_range_full);
+
+  gfx::ColorSpace default_bt709_color_space(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
+      gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
+  SendTestFrameWithColorSpace(frame_parameters, default_bt709_color_space);
 }
 
 TEST_P(WebRtcVideoTrackSourceTest, SetsFeedback) {
