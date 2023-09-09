@@ -280656,16 +280656,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "8cc5539983eeb41b1e04bfa985b832ff4e5f2727",
-     []
-    ],
-    "mtime.json": [
-     "27c04a26211d1deb113c57b88b9ded0a56511f3b",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -414660,10 +414650,6 @@
      }
     }
    },
-   "runner-results.json": [
-    "3cb4b8019298ba072d102f337d0453040e312067",
-    []
-   ],
    "sanitizer-api": {
     "DIR_METADATA": [
      "c1c57ff93ec12d1699f3f75ef46bc941df6e93f0",
