@@ -54,12 +54,24 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   TestWorkerStatusObserver(const TestWorkerStatusObserver&) = delete;
   TestWorkerStatusObserver& operator=(const TestWorkerStatusObserver&) = delete;
 
+  void WaitForWorkerStarting() { starting_worker_run_loop_.Run(); }
   void WaitForWorkerStarted() { started_worker_run_loop_.Run(); }
+  void WaitForWorkerStopping() { stopping_worker_run_loop_.Run(); }
   void WaitForWorkerStopped() { stopped_worker_run_loop_.Run(); }
 
   int64_t test_worker_version_id = blink::mojom::kInvalidServiceWorkerVersionId;
 
   // ServiceWorkerContextObserver:
+
+  // Called when a worker has entered the
+  // `blink::EmbeddedWorkerStatus::STARTING` status. Used to indicate when our
+  // test extension is beginning to start.
+  void OnVersionStartingRunning(int64_t version_id) override {
+    test_worker_version_id = version_id;
+
+    starting_worker_run_loop_.Quit();
+  }
+
   // Called when a worker has entered the `blink::EmbeddedWorkerStatus::RUNNING`
   // status. Used to indicate when our test extension is now running.
   void OnVersionStartedRunning(
@@ -77,6 +89,17 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
 
   // Called when a worker has entered the
   // `blink::EmbeddedWorkerStatus::STOPPING` status. Used to indicate when our
+  // test extension is beginning to stop.
+  void OnVersionStoppingRunning(int64_t version_id) override {
+    // `test_worker_version_id` is the previously running version's id.
+    if (test_worker_version_id != version_id) {
+      return;
+    }
+    stopping_worker_run_loop_.Quit();
+  }
+
+  // Called when a worker has entered the
+  // `blink::EmbeddedWorkerStatus::STOPPING` status. Used to indicate when our
   // test extension has stopped.
   void OnVersionStoppedRunning(int64_t version_id) override {
     // `test_worker_version_id` is the previously running version's id.
@@ -86,7 +109,9 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
     stopped_worker_run_loop_.Quit();
   }
 
+  base::RunLoop starting_worker_run_loop_;
   base::RunLoop started_worker_run_loop_;
+  base::RunLoop stopping_worker_run_loop_;
   base::RunLoop stopped_worker_run_loop_;
   const raw_ptr<content::BrowserContext> browser_context_;
   const GURL extension_url_;
@@ -207,10 +232,85 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
       /*expected_count=*/1);
 }
 
-// TODO(crbug.com/1467015): Create test for
-// `blink::EmbeddedWorkerStatus::STARTING` worker.
-// TODO(crbug.com/1467015): Create test for
-// `blink::EmbeddedWorkerStatus::STOPPING` worker.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
+                       DispatchToStartingWorker) {
+  TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("events/reliability/service_worker"),
+      // Do not wait for anything to complete to ensure that we don't attempt to
+      // start the worker before waiting for starting below.
+      {.wait_for_renderers = false, .wait_for_registration_stored = false});
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(kTestExtensionId, extension->id());
+  test_event_observer.WaitForWorkerStarting();
+  ASSERT_TRUE(test_event_observer.test_worker_version_id !=
+              blink::mojom::kInvalidServiceWorkerVersionId);
+  // TODO(crbug.com/1467015): Assert the worker has
+  // blink::EmbeddedWorkerStatus::STARTING status.
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener extension_event_listener_fired("listener fired");
+  DispatchWebNavigationEvent(profile(), web_contents());
+
+  // The histogram expect checks that we get an ack from the renderer to the
+  // browser for the event. The wait confirms that extension worker listener
+  // finished. The wait is first (despite temporally possibly being after the
+  // ack) because it is currently the most convenient to wait on.
+  EXPECT_TRUE(extension_event_listener_fired.WaitUntilSatisfied());
+  // Call to webNavigation.onBeforeNavigate expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
+                       DispatchToStoppingWorker) {
+  TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("events/reliability/service_worker"),
+      {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(kTestExtensionId, extension->id());
+  ASSERT_TRUE(test_event_observer.test_worker_version_id !=
+              blink::mojom::kInvalidServiceWorkerVersionId);
+  test_event_observer.WaitForWorkerStarted();
+  ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
+      GetServiceWorkerContext(profile()),
+      test_event_observer.test_worker_version_id));
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  // Stop the worker, but don't wait for it to stop. We want to catch the state
+  // change to stopping when we dispatch the event.
+  content::StopServiceWorkerForScope(sw_context_, extension->url(),
+                                     base::DoNothing());
+  test_event_observer.WaitForWorkerStopping();
+  // TODO(crbug.com/1467015): Assert the worker has
+  // blink::EmbeddedWorkerStatus::STOPPING status.
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener extension_event_listener_fired("listener fired");
+  DispatchWebNavigationEvent(profile(), web_contents());
+
+  // The histogram expect checks that we get an ack from the renderer to the
+  // browser for the event. The wait confirms that extension worker listener
+  // finished. The wait is first (despite temporally possibly being after the
+  // ack) because it is currently the most convenient to wait on.
+  EXPECT_TRUE(extension_event_listener_fired.WaitUntilSatisfied());
+  // Call to webNavigation.onBeforeNavigate expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+      /*expected_count=*/1);
+}
+
 // TODO(crbug.com/1467015): Create test for event dispatching that uses the
 // `EventRouter::DispatchEventToSender()` event flow.
 

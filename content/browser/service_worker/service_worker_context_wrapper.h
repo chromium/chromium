@@ -143,12 +143,14 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       int64_t version_id,
       const std::string& uuid,
       GlobalRenderFrameHostId render_frame_host_id) override;
+  void OnStarting(int64_t version_id) override;
   void OnStarted(int64_t version_id,
                  const GURL& scope,
                  int process_id,
                  const GURL& script_url,
                  const blink::ServiceWorkerToken& token,
                  const blink::StorageKey& key) override;
+  void OnStopping(int64_t version_id) override;
   void OnStopped(int64_t version_id) override;
   void OnDeleteAndStartOver() override;
   void OnVersionStateChanged(int64_t version_id,

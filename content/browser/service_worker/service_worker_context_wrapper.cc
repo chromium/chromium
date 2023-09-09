@@ -441,6 +441,14 @@ void ServiceWorkerContextWrapper::OnClientNavigated(const GURL& script_url,
   }
 }
 
+void ServiceWorkerContextWrapper::OnStarting(int64_t version_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (auto& observer : observer_list_) {
+    observer.OnVersionStartingRunning(version_id);
+  }
+}
+
 void ServiceWorkerContextWrapper::OnStarted(
     int64_t version_id,
     const GURL& scope,
@@ -461,6 +469,14 @@ void ServiceWorkerContextWrapper::OnStarted(
   const auto& running_info = insertion_result.first->second;
   for (auto& observer : observer_list_)
     observer.OnVersionStartedRunning(version_id, running_info);
+}
+
+void ServiceWorkerContextWrapper::OnStopping(int64_t version_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (auto& observer : observer_list_) {
+    observer.OnVersionStoppingRunning(version_id);
+  }
 }
 
 void ServiceWorkerContextWrapper::OnStopped(int64_t version_id) {
