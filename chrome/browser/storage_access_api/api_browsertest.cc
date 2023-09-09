@@ -385,7 +385,9 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
       content::RenderFrameHost* render_frame_host,
       const std::string& subresource_host) {
     return {
-        content::EvalJs(render_frame_host, "document.cookie").ExtractString(),
+        content::EvalJs(render_frame_host, "document.cookie",
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractString(),
         CookiesFromFetch(render_frame_host, subresource_host),
     };
   }
@@ -673,6 +675,35 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest, PermissionQueryCrossSite) {
   // The permission should not be available cross-site.
   NavigateFrameTo(kHostC, "/echoheader?cookie");
   EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       Permission_Denied_WithoutInteraction) {
+  base::HistogramTester histogram_tester;
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::NONE);
+
+  EXPECT_EQ(false,
+            content::EvalJs(
+                GetFrame(),
+                "document.requestStorageAccess().then(() => true, () => false)",
+                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+
+  content::FetchHistogramsFromChildProcesses();
+
+  EXPECT_THAT(
+      histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
+                                      RequestOutcome::kDeniedByPrerequisites),
+      Gt(0));
 }
 
 // Validate that a cross-site iframe can bypass third-party cookie blocking via
@@ -1909,6 +1940,36 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_THAT(
       histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
                                       2 /*RequestOutcome::kGrantedByUser*/),
+      Gt(0));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessAPIWithFirstPartySetsBrowserTest,
+    Permission_AutodeniedInsideFirstPartySet_WithoutInteraction) {
+  base::HistogramTester histogram_tester;
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  EXPECT_EQ(false,
+            content::EvalJs(
+                GetFrame(),
+                "document.requestStorageAccess().then(() => true, () => false)",
+                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+
+  content::FetchHistogramsFromChildProcesses();
+
+  EXPECT_THAT(
+      histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
+                                      RequestOutcome::kDeniedByPrerequisites),
       Gt(0));
 }
 
