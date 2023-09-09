@@ -823,9 +823,6 @@
 <translation id="574762237186762643">活動</translation>
 <translation id="5755162682436943950">已登出。開啟對話框即可登入並開啟同步功能。</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
-<translation id="5762370665605786758">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。
-
-只有知道密碼短語的的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="5765456154762864099">「選單」→「設定」→「預設瀏覽器」</translation>
 <translation id="5777888488419460501">儲存在帳戶中</translation>
 <translation id="5782227691023083829">正在翻譯…</translation>

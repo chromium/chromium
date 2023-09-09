@@ -478,7 +478,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1383861834909034572">Mở khi hoàn tất</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384849755549338773">Đề xuất dịch các trang web xuất hiện ở các ngôn ngữ khác bằng Google Dịch</translation>
-<translation id="138784436342154190">Khôi phục trang khởi động mặc định?</translation>
 <translation id="1388253969141979417">Được phép sử dụng micrô</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> sẽ khởi động lại khi cập nhật xong.</translation>
 <translation id="1390113502208199250">Bạn sẽ phải đặt lại thiết bị này về trạng thái ban đầu để sử dụng các tính năng của Bản nâng cấp Chrome Education.</translation>
@@ -2394,7 +2393,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2845382757467349449">Luôn Hiển thị Thanh Dấu trang</translation>
 <translation id="2845751331501453107">Khi bạn duyệt web, thì chế độ cài đặt này, <ph name="BEGIN_LINK1" />Quảng cáo do trang web đề xuất<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />chế độ cài đặt cookie<ph name="LINK_END2" /> và khả năng cá nhân hoá quảng cáo của trang web bạn đang xem sẽ quyết định liệu quảng cáo bạn thấy có được cá nhân hoá không</translation>
 <translation id="284581348330507117">Tạo mật khẩu khác biệt</translation>
-<translation id="284805635805850872">Xóa phần mềm độc hại?</translation>
 <translation id="2849035674501872372">Tra cứu</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Đã thêm mã PIN của bạn</translation>
@@ -3225,7 +3223,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3553487194781590058">Không cho phép các trang web mở cửa sổ hình trong hình khi bạn chuyển sang thẻ khác</translation>
 <translation id="3554493885489666172">Thiết bị của bạn do <ph name="PROFILE_NAME" /> quản lý. Quản trị viên có thể truy cập vào dữ liệu trong bất kỳ hồ sơ nào trên thiết bị này.</translation>
 <translation id="3555812735919707620">Xóa tiện ích</translation>
-<translation id="3556000484321257665">Công cụ tìm kiếm của bạn đã được thay đổi thành <ph name="URL" />.</translation>
 <translation id="3557101512409028104">Đặt các hạn chế về trang web và giới hạn thời gian sử dụng thiết bị bằng Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị ChromeOS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong ChromeOS. Nội dung báo cáo có thể bao gồm thời điểm ChromeOS gặp sự cố, danh sách các tính năng bạn đã sử dụng và mức bộ nhớ thường được sử dụng.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome OS của con bạn. Nếu là quản trị viên miền, bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" /></translation>
@@ -3401,7 +3398,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3700888195348409686">Đang hiển thị (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Không cho phép trang web theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="3701515417135397388">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
-<translation id="3702500414347826004">Trang khởi động của bạn đã được thay đổi để bao gồm <ph name="URL" />.</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Nhập tên nhà bán lẻ và số hiệu cửa hàng sẽ sử dụng thiết bị minh hoạ mà bạn đang định cấu hình*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Nếu không biết số hiệu cửa hàng, bạn có thể nhập "0000" để tiếp tục cài đặt Chế độ minh hoạ. <ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*Lưu ý: Google dùng thông tin này để xác định phiên bản Chế độ minh hoạ mà thiết bị sẽ nhận được và để đo lường mức sử dụng Chế độ minh hoạ.<ph name="END_PARAGRAPH3" /></translation>
@@ -3700,7 +3696,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="3916445069167113093">Loại tệp này có thể gây hại cho máy tính của bạn. Bạn có muốn giữ tệp <ph name="FILE_NAME" /> không?</translation>
 <translation id="3917184139185490151">Máy tính của bạn chứa một mô-đun bảo mật dùng để triển khai nhiều tính năng bảo mật quan trọng trong ChromeOS. Truy cập Trung tâm trợ giúp của Chromebook để tìm hiểu thêm: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">Bộ nhớ không đủ để đồng bộ hoá tệp. Hãy thử giải phóng dung lượng.</translation>
-<translation id="3918972485393593704">Báo cáo chi tiết cho Google</translation>
 <translation id="3919145445993746351">Để có các tiện ích trên tất cả các máy tính, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="3919229493046408863">Tắt thông báo khi có thiết bị ở gần</translation>
 <translation id="3919262972282962508">Sau tháng 12 năm 2022, các phiên bản cũ của Ứng dụng Chrome sẽ không mở trên các thiết bị Mac. Hãy liên hệ với quản trị viên để cập nhật lên phiên bản mới hoặc xoá ứng dụng này.</translation>
@@ -3934,7 +3929,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="409742781329613461">Mẹo dành cho Chrome</translation>
 <translation id="4097560579602855702">Tìm kiếm trên Google</translation>
 <translation id="4098667039111970300">Công cụ bút cảm ứng trên thanh công cụ</translation>
-<translation id="4099060993766194518">Khôi phục công cụ tìm kiếm mặc định?</translation>
 <translation id="4099874310852108874">Đã xảy ra lỗi mạng.</translation>
 <translation id="4100020874626534113">Cho phép gán dấu phụ linh hoạt. Ví dụ: Bạn có thể nhập "anhs" hoặc "asnh" để nhập từ "ánh".</translation>
 <translation id="4100733287846229632">Dung lượng của thiết bị quá thấp</translation>
@@ -4726,7 +4720,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4763408175235639573">Các cookie sau đã được cài đặt khi bạn xem trang này</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> không phải là tài khoản Google for Education hợp lệ. Hãy liên hệ với quản trị viên của bạn. Nếu là quản trị viên thì bạn có thể thiết lập tổ chức của mình bằng cách truy cập vào: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Thiết bị này sẽ được lưu trong 1 tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {MONTHS} tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
-<translation id="4765582662863429759">Cho phép Android Messages chuyển tiếp tin nhắn văn bản từ điện thoại sang Chromebook</translation>
 <translation id="476563889641554689">Chọn khu vực bạn muốn tìm kiếm bằng Ống kính</translation>
 <translation id="4766598565665644999">Tất cả tiện ích đều có thể đọc và thay đổi <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Tìm hiểu thêm về các tiện ích bị tắt.</translation>
@@ -4900,9 +4893,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4898011734382862273">Chứng chỉ "<ph name="CERTIFICATE_NAME" />" đại diện cho một tổ chức phát hành chứng chỉ</translation>
 <translation id="4899052647152077033">Đảo ngược màu</translation>
 <translation id="4899696330053002588">Chứa quảng cáo</translation>
-<translation id="489985760463306091">Để hoàn tất xóa phần mềm độc hại, hãy khởi động lại máy tính của bạn</translation>
 <translation id="490031510406860025">Không được phép trên trang web này</translation>
-<translation id="4900392736118574277">Trang khởi động của bạn đã được thay đổi thành <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – đan xen</translation>
 <translation id="4900652253009739885">Không thể xóa công tắc duy nhất đang được gán cho thao tác "Chọn". Hãy nhấn phím bất kỳ để <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Mở rộng thẻ đã đóng gần đây</translation>
@@ -5105,7 +5096,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5085162214018721575">Đang kiểm tra bản cập nhật</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">Ghi chú dài hơn 1000 ký tự</translation>
-<translation id="5086874064903147617">Khôi phục trang chủ mặc định?</translation>
 <translation id="5087249366037322692">Được thêm bởi bên thứ ba</translation>
 <translation id="5087580092889165836">Thêm thẻ</translation>
 <translation id="5088427648965532275">Nhà cung cấp Passpoint</translation>
@@ -8125,7 +8115,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7594725637786616550">Powerwash để đặt lại <ph name="DEVICE_TYPE" /> của bạn giống như mới.</translation>
 <translation id="7595453277607160340">Để dùng ứng dụng Android và đảm bảo rằng <ph name="DEVICE_TYPE" /> của bạn hoạt động đúng cách, hãy đăng nhập lại và cập nhật.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (mã lỗi <ph name="ERROR_CODE" />).</translation>
-<translation id="7598466960084663009">Khởi động lại máy tính</translation>
 <translation id="7599527631045201165">Tên thiết bị là quá dài. Hãy nhập một tên ngắn hơn để thử lại.</translation>
 <translation id="7600054753482800821">&amp;Quản lý công cụ tìm kiếm và công cụ tìm kiếm trang web</translation>
 <translation id="7600965453749440009">Không bao giờ dịch <ph name="LANGUAGE" /></translation>
@@ -8446,7 +8435,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7835178595033117206">Đã xóa dấu trang</translation>
 <translation id="7836577093182643605">Danh sách chủ đề bạn không cho phép chia sẻ với các trang web</translation>
 <translation id="7836850009646241041">Thử chạm lại vào khóa bảo mật</translation>
-<translation id="7837776265184002579">Trang chủ của bạn đã được thay đổi thành <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Không lưu được "<ph name="NETWORK_NAME" />" qua <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{Đã gửi <ph name="ATTACHMENTS" /> đến <ph name="DEVICE_NAME" />}other{Đã gửi <ph name="ATTACHMENTS" /> đến <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839051173341654115">Xem/Sao lưu phương tiện</translation>

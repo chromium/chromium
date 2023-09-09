@@ -828,9 +828,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="574762237186762643">Događaji</translation>
 <translation id="5755162682436943950">Odjavljeno. Otvara dijalog za prijavu i uključuje sinkronizaciju.</translation>
 <translation id="5758631781033351321">Ovdje ćete pronaći svoj popis za čitanje</translation>
-<translation id="5762370665605786758">Šifriranje uz pomoć šifre ne uključuje načine plaćanja i adrese s Google Paya.
-
-Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šifra se ne šalje Googleu niti se pohranjuje na Googleu. Ako zaboravite šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromeove podatke na računu<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Izbornik → Postavke → Zadani preglednik</translation>
 <translation id="5777888488419460501">Spremi na račun</translation>
 <translation id="5782227691023083829">Prijevod u tijeku...</translation>

@@ -477,7 +477,6 @@
 <translation id="1383861834909034572">完成时打开</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384849755549338773">主动为采用其他语言的网站提供 Google 翻译服务</translation>
-<translation id="138784436342154190">要恢复默认启动页吗？</translation>
 <translation id="1388253969141979417">允许使用您的麦克风</translation>
 <translation id="1388728792929436380">待更新完毕后，<ph name="DEVICE_TYPE" /> 将会重启。</translation>
 <translation id="1390113502208199250">您必须将此设备恢复出厂设置才能使用 Chrome 教育版升级许可功能。</translation>
@@ -2372,7 +2371,6 @@
 <translation id="2845382757467349449">总是显示书签栏</translation>
 <translation id="2845751331501453107">您在浏览时是否会看到个性化广告取决于此设置、<ph name="BEGIN_LINK1" />网站建议的广告<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告</translation>
 <translation id="284581348330507117">创建互不重复的密码</translation>
-<translation id="284805635805850872">要移除有害软件吗？</translation>
 <translation id="2849035674501872372">查找</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">您的 PIN 码已添加完毕</translation>
@@ -3203,7 +3201,6 @@
 <translation id="3553487194781590058">不允许网站在您切换到另一标签页时打开画中画窗口</translation>
 <translation id="3554493885489666172">您的设备由 <ph name="PROFILE_NAME" /> 管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="3555812735919707620">卸载扩展程序</translation>
-<translation id="3556000484321257665">您的搜索引擎已改为 <ph name="URL" />。</translation>
 <translation id="3557101512409028104">通过 Family Link 设置网站限制和设备使用时间限制</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
@@ -3379,7 +3376,6 @@
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">不允许网站跟踪您的摄像头位置</translation>
 <translation id="3701515417135397388">发现密码遭遇数据泄露时向您发出警告</translation>
-<translation id="3702500414347826004">您的启动页已更改，添加了 <ph name="URL" />。</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />为这部正在配置的演示设备输入零售商名称和商店编号*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果您不知道商店编号，可以输入“0000”以继续执行演示模式安装。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*注意：Google 会使用这些信息来确定设备应接收哪个版本的演示模式，以及衡量演示模式的使用情况。<ph name="END_PARAGRAPH3" /></translation>
@@ -3679,7 +3675,6 @@
 <translation id="3916445069167113093">此类型的文件可能会损害您的计算机。您仍然要保留 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="3917184139185490151">您的计算机包含一个安全模块，该模块可用于在 Chrome 操作系统中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">存储空间不足，无法同步您的文件。请尝试释放一些空间。</translation>
-<translation id="3918972485393593704">向 Google 报告详细信息</translation>
 <translation id="3919145445993746351">若想在您的所有计算机上使用您的扩展程序，请开启同步功能</translation>
 <translation id="3919229493046408863">附近有其他设备时关闭通知</translation>
 <translation id="3919262972282962508">2022 年 12 月之后，旧版 Chrome 应用将无法在 Mac 设备上开启。请联系您的管理员以更新到新版本或移除此应用。</translation>
@@ -3912,7 +3907,6 @@
 <translation id="409742781329613461">Chrome 使用提示</translation>
 <translation id="4097560579602855702">在 Google 中搜索</translation>
 <translation id="4098667039111970300">在工具栏中显示触控笔工具</translation>
-<translation id="4099060993766194518">要恢复默认搜索引擎吗？</translation>
 <translation id="4099874310852108874">发生了网络错误。</translation>
 <translation id="4100020874626534113">允许灵活的变音符分配。例如，您可输入“anhs”或“asnh”来获取“ánh”。</translation>
 <translation id="4100733287846229632">设备存储空间严重不足</translation>
@@ -4701,7 +4695,6 @@
 <translation id="4763408175235639573">以下 Cookie 是系统在您查看此网页时设置的</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> 不是有效的 Google for Education 账号。请与您的管理员联系。如果您本人就是管理员，则可通过访问 g.co/workspace/edusignup 来设置贵组织</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{此设备将被保存 1 个月，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {MONTHS} 个月，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
-<translation id="4765582662863429759">允许 Android 信息将短信从手机转送到 Chromebook</translation>
 <translation id="476563889641554689">选择要使用智能镜头搜索的区域</translation>
 <translation id="4766598565665644999">所有扩展程序都可以读取和更改 <ph name="HOST" /></translation>
 <translation id="4767427586072640478">详细了解已停用的扩展程序。</translation>
@@ -4875,9 +4868,7 @@
 <translation id="4898011734382862273">证书“<ph name="CERTIFICATE_NAME" />”代表一个证书授权中心</translation>
 <translation id="4899052647152077033">反色</translation>
 <translation id="4899696330053002588">包含广告</translation>
-<translation id="489985760463306091">要完成有害软件的移除，请重新启动计算机</translation>
 <translation id="490031510406860025">不允许在此网站上使用</translation>
-<translation id="4900392736118574277">您的启动页已改为 <ph name="URL" />。</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> 赫兹 - 隔行扫描</translation>
 <translation id="4900652253009739885">这是为“选择”操作分配的唯一开关键，因此无法移除。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="4901154724271753917">展开“最近关闭的标签页”部分</translation>
@@ -5080,7 +5071,6 @@
 <translation id="5085162214018721575">正在检查更新</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">备注长度超过了 1000 个字符</translation>
-<translation id="5086874064903147617">要恢复默认主页吗？</translation>
 <translation id="5087249366037322692">由第三方添加</translation>
 <translation id="5087580092889165836">添加新卡</translation>
 <translation id="5088427648965532275">Passpoint 来源</translation>
@@ -8098,7 +8088,6 @@
 <translation id="7594725637786616550">Powerwash 会将您的 <ph name="DEVICE_TYPE" /> 重置为初始状态。</translation>
 <translation id="7595453277607160340">要想使用 Android 应用并确保您的<ph name="DEVICE_TYPE" />能够正常运作，请重新登录并安装更新。</translation>
 <translation id="7595547011743502844"><ph name="ERROR" />（错误代码为：<ph name="ERROR_CODE" />）。</translation>
-<translation id="7598466960084663009">重新启动计算机</translation>
 <translation id="7599527631045201165">设备名称过长。请输入一个较短的名称以重试。</translation>
 <translation id="7600054753482800821">管理搜索引擎和网站搜索(&amp;M)</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
@@ -8419,7 +8408,6 @@
 <translation id="7835178595033117206">已移除书签</translation>
 <translation id="7836577093182643605">主题列表，这些主题已被您屏蔽，因为您不想将它们分享给网站</translation>
 <translation id="7836850009646241041">请再次尝试轻触您的安全密钥</translation>
-<translation id="7837776265184002579">您的主页已改为 <ph name="URL" />。</translation>
 <translation id="7838838951812478896">未能保存由“<ph name="DEVICE_NAME" />”分享的“<ph name="NETWORK_NAME" />”</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{已向“<ph name="DEVICE_NAME" />”发送 <ph name="ATTACHMENTS" />}other{已向“<ph name="DEVICE_NAME" />”发送 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="7839051173341654115">查看/备份媒体</translation>

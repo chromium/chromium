@@ -10,6 +10,7 @@
 <translation id="1431818719585918472">Deixa que Chromium bloquegi les teves pestanyes d'incògnit.</translation>
 <translation id="1472013873724362412">El vostre compte no funciona a Chromium. Contacteu amb l'administrador del domini o utilitzeu un compte de Google estàndard per iniciar la sessió.</translation>
 <translation id="1507010443238049608">Ajuda a millorar les funcions i el rendiment de Chromium</translation>
+<translation id="1513122820609681462">Estableix Chromium com a navegador predeterminat</translation>
 <translation id="1531155317299575425">Mostra sol·licituds per iniciar la sessió a Chromium.</translation>
 <translation id="1591119736686995611">Obre la quadrícula de pestanyes de Chromium.</translation>
 <translation id="1617663976202781617">Dades de la sincronització de Chromium</translation>
@@ -143,11 +144,13 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6625409903340039086">Chromium ara admet polítiques dels usuaris per al compte gestionat</translation>
 <translation id="6728350288669261079">Obre la configuració a Chromium.</translation>
 <translation id="6752854822223394465">La teva organització està configurant Chromium...</translation>
+<translation id="6794054469102824109">Obre el joc El dinosaure de Chromium.</translation>
 <translation id="6820823224820483452">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="6911341667534646387">Continua utilitzant les dades de Chromium al teu Compte de Google</translation>
 <translation id="7006920032187763988">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes en altres aplicacions de l'iPad.</translation>
 <translation id="7018284295775193585">Chromium no es pot actualitzar</translation>
 <translation id="7045244423563602563">Personalitza Chromium</translation>
+<translation id="7055269218854630176">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què estàs iniciant la sessió i com es pot utilitzar Chromium. L'administrador pot configurar o restringir determinades funcions.</translation>
 <translation id="7099326575020694068">Chromium no pot utilitzar la càmera en mode de visualització dividida</translation>
 <translation id="7165402419892018581">Tria Chromium a Emplenament automàtic</translation>
 <translation id="7175400662502680481">La teva contrasenya ha quedat exposada en una violació de les dades. El gestor de contrasenyes de Google recomana que la canviïs ara.</translation>
@@ -186,6 +189,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="865600487977764604">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualitzat</translation>
 <translation id="8685813584220679697">Inicia la sessió en aquest lloc web i a Chromium.</translation>
+<translation id="8730503818204408000">Obre la configuració de Chromium per establir Chromium com a navegador predeterminat.</translation>
 <translation id="8747378496147986285">Quan aquesta opció està activada:
 <ph name="BEGIN_INDENT" />  • Ajuda a millorar Chromium per a les persones que el fan servir igual que tu.<ph name="END_INDENT" />
 
@@ -204,5 +208,6 @@ Aspectes que cal tenir en compte:
 <translation id="9110075932708282655">Utilitza Chromium de manera predeterminada</translation>
 <translation id="921174536258924340">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="971488683725792095">Utilitza Chromium automàticament quan toquis enllaços en missatges, documents i altres aplicacions.</translation>
+<translation id="981812233959540767">Juga al joc El dinosaure de Chromium</translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
 </translationbundle>

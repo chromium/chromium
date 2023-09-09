@@ -478,7 +478,6 @@
 <translation id="1383861834909034572">完成後開啟</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384849755549338773">詢問是否使用「Google 翻譯」轉換其它語言的網頁</translation>
-<translation id="138784436342154190">要將起始網頁還原至預設值嗎？</translation>
 <translation id="1388253969141979417">已允許使用麥克風</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> 將在更新完成時重新啟動。</translation>
 <translation id="1390113502208199250">您需要將此裝置回復原廠設定，才能使用 Chrome Education 升級功能。</translation>
@@ -2394,7 +2393,6 @@
 <translation id="2845382757467349449">永遠顯示書籤列</translation>
 <translation id="2845751331501453107">瀏覽時是否看到個人化廣告，取決於此設定、<ph name="BEGIN_LINK1" />網站建議的廣告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />、網站是否顯示個人化廣告</translation>
 <translation id="284581348330507117">設定獨特的密碼</translation>
-<translation id="284805635805850872">要移除有害的軟件嗎？</translation>
 <translation id="2849035674501872372">查詢</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">已新增您的 PIN</translation>
@@ -3225,7 +3223,6 @@
 <translation id="3553487194781590058">切換至其他分頁時，不允許網站開啟畫中畫視窗</translation>
 <translation id="3554493885489666172">您的裝置由 <ph name="PROFILE_NAME" /> 管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
 <translation id="3555812735919707620">移除擴充功能</translation>
-<translation id="3556000484321257665">您的搜尋引擎已變更為 <ph name="URL" />。</translation>
 <translation id="3557101512409028104">透過 Family Link 設定網站限制和裝置使用時間限制</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
@@ -3401,7 +3398,6 @@
 <translation id="3700888195348409686">正在顯示 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">不允許網站追蹤攝錄機位置</translation>
 <translation id="3701515417135397388">在密碼於資料外洩中被盜用時警告你</translation>
-<translation id="3702500414347826004">您的起始網頁已變更，包含 <ph name="URL" />。</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />輸入此示範裝置要設定的零售商名稱和商店編號*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如不知道商店編號，輸入「0000」即可繼續進行「示範模式」安裝。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*請注意：Google 會使用這些資料確認裝置應接收的「示範模式」版本，並評估「示範模式」的使用情況。<ph name="END_PARAGRAPH3" /></translation>
@@ -3698,7 +3694,6 @@
 <translation id="3916445069167113093">這種類型的檔案可能會損害您的電腦，您仍要保留 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3917184139185490151">您的電腦具有安全模組，Chrome OS 需要透過該模組來執行許多重要的安全防護功能。如要瞭解詳情，請瀏覽 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">儲存空間不足，無法同步檔案。請嘗試騰出空間。</translation>
-<translation id="3918972485393593704">向 Google 報告詳情</translation>
 <translation id="3919145445993746351">如要在所有電腦上取得您的擴充程式，請開啟同步功能</translation>
 <translation id="3919229493046408863">附近有其他裝置時關閉通知</translation>
 <translation id="3919262972282962508">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Mac 裝置上開啟。請聯絡系統管理員以更新至新版本，或移除此應用程式。</translation>
@@ -3930,7 +3925,6 @@
 <translation id="409742781329613461">Chrome 提示</translation>
 <translation id="4097560579602855702">搜尋 Google</translation>
 <translation id="4098667039111970300">工具列中的觸控筆工具</translation>
-<translation id="4099060993766194518">要將搜尋引擎還原至預設值嗎？</translation>
 <translation id="4099874310852108874">網絡發生錯誤。</translation>
 <translation id="4100020874626534113">允許彈性指派變音符號。例如，無論您輸入「anhs」還是「asnh」，都可以得到「ánh」這個字。</translation>
 <translation id="4100733287846229632">裝置的儲存空間嚴重不足</translation>
@@ -4722,7 +4716,6 @@
 <translation id="4763408175235639573">系統在您瀏覽此網頁時已設定下列 Cookie</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> 並不是有效的 Google for Education 帳戶。請聯絡您的管理員。如果您是管理員，可前往 g.co/workspace/edusignup 設定機構</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{系統會記住此裝置，在 1 個月內無需輸入驗證碼即可再次連接。此設定由管理員設定。}other{系統會記住此裝置，在 {MONTHS} 個月內無需輸入驗證碼即可再次連接。此設定由管理員設定。}}</translation>
-<translation id="4765582662863429759">允許「Android 訊息」由您的手機轉送短訊至 Chromebook</translation>
 <translation id="476563889641554689">選取要使用「智能鏡頭」搜尋的區域</translation>
 <translation id="4766598565665644999">所有擴充程式都可以讀取並變更 <ph name="HOST" /></translation>
 <translation id="4767427586072640478">進一步了解已經停用嘅擴充程式。</translation>
@@ -4896,9 +4889,7 @@
 <translation id="4898011734382862273">憑證「<ph name="CERTIFICATE_NAME" />」代表憑證授權單位</translation>
 <translation id="4899052647152077033">反轉顏色</translation>
 <translation id="4899696330053002588">包含廣告</translation>
-<translation id="489985760463306091">如要完成有害軟件移除程序，請重新啟動您的電腦</translation>
 <translation id="490031510406860025">不允許在此網站執行</translation>
-<translation id="4900392736118574277">您的起始網頁已變更為 <ph name="URL" />。</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - 交錯顯示</translation>
 <translation id="4900652253009739885">這是為「選取」動作指派的唯一按鍵，因此無法移除。按任何鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="4901154724271753917">展開最近關閉的分頁</translation>
@@ -5101,7 +5092,6 @@
 <translation id="5085162214018721575">檢查更新</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">筆記超過 1000 個字元</translation>
-<translation id="5086874064903147617">要將首頁還原至預設值嗎？</translation>
 <translation id="5087249366037322692">由第三方新增</translation>
 <translation id="5087580092889165836">加入新卡</translation>
 <translation id="5088427648965532275">Passpoint 供應商</translation>
@@ -8118,7 +8108,6 @@
 <translation id="7594725637786616550">執行 Powerwash 以將 <ph name="DEVICE_TYPE" /> 恢復原廠設定。</translation>
 <translation id="7595453277607160340">如要使用 Android 應用程式並確保您的 <ph name="DEVICE_TYPE" /> 正常運作，請重新登入並更新。</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (錯誤代碼 <ph name="ERROR_CODE" />)。</translation>
-<translation id="7598466960084663009">重新啟動電腦</translation>
 <translation id="7599527631045201165">裝置名稱太長。請輸入較短的名稱並再試一次。</translation>
 <translation id="7600054753482800821">管理搜尋引擎和站內搜尋</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
@@ -8439,7 +8428,6 @@
 <translation id="7835178595033117206">移除咗書籤</translation>
 <translation id="7836577093182643605">您唔希望系統同網站分享呢啲主題，因此已經封鎖咗嘅主題清單</translation>
 <translation id="7836850009646241041">請嘗試再次輕觸安全密鑰</translation>
-<translation id="7837776265184002579">您的首頁已變更為 <ph name="URL" />。</translation>
 <translation id="7838838951812478896">無法透過<ph name="DEVICE_NAME" /> 儲存「<ph name="NETWORK_NAME" />」</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{已傳送 <ph name="ATTACHMENTS" />給 <ph name="DEVICE_NAME" />}other{已傳送 <ph name="ATTACHMENTS" />給 <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839051173341654115">查看/備份媒體</translation>

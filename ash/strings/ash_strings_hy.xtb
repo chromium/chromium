@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">Անջատված է մինչև մայրամուտ</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ․ (միջակետ) ստեղնային դյուրանցումը փոփոխվել է։ Insert ստեղնն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace։</translation>
 <translation id="1770726142253415363">Տեղափոխվեց տող <ph name="ROW_NUMBER" />, սյունակ <ph name="COLUMN_NUMBER" />։</translation>
+<translation id="1771458705381257690">Սարքը կարգավորելու և անհատականացնելու համար բացեք <ph name="NAME" /> հավելվածը</translation>
 <translation id="1771761307086386028">Ոլորել աջ</translation>
 <translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
 <translation id="1775598828170459419">Ցուցադրված է <ph name="NUM_SHOWN_ITEMS" /> տարր՝ <ph name="NUM_TOTAL_ITEMS" />-ից</translation>
@@ -451,6 +452,7 @@
 <translation id="2891209721153296020">«Չեղարկել ընտրությունը»</translation>
 <translation id="2894949423239620203">Մալուխը կարող է ազդել աշխատանքի արդյունավետության վրա</translation>
 <translation id="2914580577416829331">Էկրանի լուսանկարներ</translation>
+<translation id="2924416280450782352">Չհաջողվեց ցուցադրել տարրերը։ Փորձեք նորից բացել վահանակը։</translation>
 <translation id="2931572158271115754">Անելիքների այս ցուցակում ոչինչ չկա։</translation>
 <translation id="2941112035454246133">Ցածր</translation>
 <translation id="2942350706960889382">Ամրացված խոշորացույց</translation>
@@ -1192,6 +1194,7 @@
 <translation id="5876666360658629066">Մուտքագրեք ծնողի մուտքի կոդը</translation>
 <translation id="5881540930187678962">Կարգավորեք Հեռախոսի կառավարման կենտրոնն ավելի ուշ</translation>
 <translation id="5881663018261910378">Անջատված է</translation>
+<translation id="5883017113634523865">Բոլոր հասանելի գործառույթները տեսնելու համար Google Play-ից տեղադրեք <ph name="NAME" />-ի համար ուղեկցող հավելվածը</translation>
 <translation id="5887954372087850114">«<ph name="WINDOW_TITLE" />» պատուհանը նշանակվել է «<ph name="DESK_TITLE" />» աշխատասեղանին։ Նշանակումը մյուս աշխատասեղանների համար չեղարկվել է։</translation>
 <translation id="588817334757907802">Բացել ֆայլը Chrome դիտարկիչում</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>

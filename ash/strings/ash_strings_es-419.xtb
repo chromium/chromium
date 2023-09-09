@@ -200,6 +200,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1757857692711134412">Desactivada hasta el atardecer</translation>
 <translation id="1768366657309696705">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + signo de punto. Para usar la tecla Insertar, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + Mayúsculas + retroceso.</translation>
 <translation id="1770726142253415363">Se movió a la fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Abre <ph name="NAME" /> para configurar y personalizar tu dispositivo</translation>
 <translation id="1771761307086386028">Desplazar hacia la derecha</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />, se seleccionó <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Se muestran <ph name="NUM_SHOWN_ITEMS" /> de <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1194,6 +1195,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5876666360658629066">Ingresa el código parental</translation>
 <translation id="5881540930187678962">Configura Phone Hub más tarde</translation>
 <translation id="5881663018261910378">Desactivado</translation>
+<translation id="5883017113634523865">Instala la app de <ph name="NAME" /> desde Google Play para ver todas las funciones disponibles</translation>
 <translation id="5887954372087850114">Se asignó la ventana <ph name="WINDOW_TITLE" /> al escritorio <ph name="DESK_TITLE" /> y se anuló la asignación al resto de los escritorios</translation>
 <translation id="588817334757907802">Abrir el archivo en el navegador Chrome</translation>
 <translation id="5895138241574237353">Reiniciar</translation>

@@ -823,9 +823,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="574762237186762643">Sự kiện</translation>
 <translation id="5755162682436943950">Đã đăng xuất. Mở hộp thoại để đăng nhập và bật tính năng đồng bộ hoá.</translation>
 <translation id="5758631781033351321">Bạn sẽ thấy danh sách đọc ở đây</translation>
-<translation id="5762370665605786758">Quy trình mã hoá bằng cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay.
-
-Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Trình đơn → Cài đặt → Trình duyệt mặc định</translation>
 <translation id="5777888488419460501">Lưu trong Tài khoản</translation>
 <translation id="5782227691023083829">Đang dịch...</translation>
@@ -1456,7 +1453,7 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9157836665414082580">Hộp thoại loại bỏ</translation>
 <translation id="9162432979321511934">Bật tính năng Tự động điền mật khẩu</translation>
-<translation id="9165320910061267720">Để nhận thông báo khi có chương trình giảm giá, bạn cần bật thông báo trong phần cài đặt trên iOS.</translation>
+<translation id="9165320910061267720">Để nhận thông báo giảm giá, bạn cần bật thông báo trong phần cài đặt trên iOS.</translation>
 <translation id="9165886811579296457">Tính năng Kiểm tra an toàn không phát hiện bất kỳ vấn đề bảo mật nào cần bạn khắc phục.</translation>
 <translation id="9172603439892261948">Đồng bộ hoá dấu trang, nhật ký hoạt động và nhiều nội dung khác.</translation>
 <translation id="9177438225260810839">Tìm kiếm các thẻ đang mở</translation>

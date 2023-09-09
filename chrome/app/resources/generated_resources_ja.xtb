@@ -476,7 +476,6 @@
 <translation id="1383861834909034572">ダウンロードが完了したら開きます</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1384849755549338773">他の言語のウェブサイトで Google 翻訳を使用するか尋ねる</translation>
-<translation id="138784436342154190">デフォルトの起動ページに戻しますか？</translation>
 <translation id="1388253969141979417">マイクの使用を許可するサイト</translation>
 <translation id="1388728792929436380">更新が完了すると、<ph name="DEVICE_TYPE" />が再起動されます。</translation>
 <translation id="1390113502208199250">Chrome Education Upgrade 機能を使用するには、このデバイスを出荷時の設定にリセットする必要があります。</translation>
@@ -2378,7 +2377,6 @@
 <translation id="2845382757467349449">ブックマーク バーを常に表示</translation>
 <translation id="2845751331501453107">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、<ph name="BEGIN_LINK1" />ウェブサイトが提案する広告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定状況<ph name="LINK_END2" />、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
 <translation id="284581348330507117">新たなパスワードを作成してください</translation>
-<translation id="284805635805850872">有害なソフトウェアを削除しますか？</translation>
 <translation id="2849035674501872372">調べる</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" />（<ph name="UNICODE_NAME" />）</translation>
 <translation id="2849767214114481738">PIN を追加しました</translation>
@@ -3211,7 +3209,6 @@
 <translation id="3553487194781590058">別のタブに変更したときピクチャー イン ピクチャー ウィンドウを開くことをサイトに許可しない</translation>
 <translation id="3554493885489666172">このデバイスは <ph name="PROFILE_NAME" /> によって管理されています。管理者はこのデバイスの任意のプロファイルのデータにアクセスできます。</translation>
 <translation id="3555812735919707620">拡張機能を削除</translation>
-<translation id="3556000484321257665">検索エンジンが <ph name="URL" /> に変更されました。</translation>
 <translation id="3557101512409028104">ファミリー リンクでウェブサイトの制限と利用時間の上限を設定します</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。障害レポートでは、Chrome OS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3559079791149580653"><ph name="DEVICE_NAME" /> への画面のキャストを停止する</translation>
@@ -3387,7 +3384,6 @@
 <translation id="3700888195348409686">表示中（<ph name="PAGE_ORIGIN" />）</translation>
 <translation id="3700993174159313525">サイトにカメラ位置の追跡を許可しない</translation>
 <translation id="3701515417135397388">データ侵害によりパスワードが漏洩した場合に警告する</translation>
-<translation id="3702500414347826004">起動ページに <ph name="URL" /> が追加されました。</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />このデモデバイスを設定する販売店の名前と番号を入力してください*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />販売店の番号が不明な場合は、「0000」と入力するとデモモードのインストールを続行できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*注: Google は、デバイスが受信するデモモードのバージョンを特定し、デモモードの使用状況を測定する目的でこの情報を使用します。<ph name="END_PARAGRAPH3" /></translation>
@@ -3686,7 +3682,6 @@
 <translation id="3916445069167113093">この種類のファイルはコンピュータに損害を与える可能性があります。<ph name="FILE_NAME" /> のダウンロードを続けますか？</translation>
 <translation id="3917184139185490151">ご使用のパソコンにはセキュア モジュールが組み込まれています。これは Chrome OS の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは、Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=sm）をご覧ください。</translation>
 <translation id="3917644013202553949">空き容量が不足しているため、ファイルを同期できません。空き容量を増やしてみてください。</translation>
-<translation id="3918972485393593704">Google に詳細なレポートを送信する</translation>
 <translation id="3919145445993746351">お使いのどのパソコンでも同じ拡張機能を使用するには、同期を有効にします</translation>
 <translation id="3919229493046408863">周辺にデバイスがあるときに通知をオフにする</translation>
 <translation id="3919262972282962508">古いバージョンの Chrome アプリを Mac デバイスで使用できるのは、2022 年 12 月までです。管理者にお問い合わせのうえ、新しいバージョンに更新するか、アプリを削除してください。</translation>
@@ -3920,7 +3915,6 @@
 <translation id="409742781329613461">Chrome のヒント</translation>
 <translation id="4097560579602855702">Google で検索</translation>
 <translation id="4098667039111970300">ツールバーのタッチペン ツール</translation>
-<translation id="4099060993766194518">既定の検索エンジンに戻しますか？</translation>
 <translation id="4099874310852108874">ネットワークエラーが発生しました。</translation>
 <translation id="4100020874626534113">フレキシブルな発音区別符号の割り当てを許可します。たとえば、「anhs」や「asnh」と入力すると、「ánh」を入力できます。</translation>
 <translation id="4100733287846229632">デバイスの空き領域が非常に少なくなっています</translation>
@@ -4711,7 +4705,6 @@
 <translation id="4763408175235639573">このページを表示したときに以下の Cookie が設定されました</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> は、有効な Google for Education アカウントではありません。管理者にお問い合わせください。管理者の方は、g.co/workspace/edusignup に移動して組織を設定できます</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{このデバイスは 1 か月間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {MONTHS} か月間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
-<translation id="4765582662863429759">スマートフォンから Chromebook へのテキストの伝達を Android メッセージに許可します</translation>
 <translation id="476563889641554689">Google レンズを使用して検索する範囲を選択します</translation>
 <translation id="4766598565665644999">すべての拡張機能が <ph name="HOST" /> の読み取りと変更を行えます</translation>
 <translation id="4767427586072640478">無効になっている拡張機能の詳細。</translation>
@@ -4885,9 +4878,7 @@
 <translation id="4898011734382862273">証明書にある「<ph name="CERTIFICATE_NAME" />」は認証局を表しています</translation>
 <translation id="4899052647152077033">色を反転</translation>
 <translation id="4899696330053002588">広告が表示されます</translation>
-<translation id="489985760463306091">有害なソフトウェアの削除を完了するには、パソコンを再起動してください</translation>
 <translation id="490031510406860025">このサイトでは許可されていません</translation>
-<translation id="4900392736118574277">起動ページが <ph name="URL" /> に変更されました。</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - インターレース</translation>
 <translation id="4900652253009739885">「選択」に割り当てられているスイッチが 1 つしかないため、削除できません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
 <translation id="4901154724271753917">最近閉じたタブを展開する</translation>
@@ -5091,7 +5082,6 @@
 <translation id="5085162214018721575">アップデートを確認しています</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">メモが 1,000 文字を超えています</translation>
-<translation id="5086874064903147617">デフォルトのホームページに戻しますか？</translation>
 <translation id="5087249366037322692">サードパーティにより追加</translation>
 <translation id="5087580092889165836">カードを追加</translation>
 <translation id="5088427648965532275">Passpoint プロバイダ</translation>
@@ -8111,7 +8101,6 @@
 <translation id="7594725637786616550">お使いの <ph name="DEVICE_TYPE" /> を出荷時の状態にリセットするために、Powerwash を実行します。</translation>
 <translation id="7595453277607160340">Android アプリを使用し、<ph name="DEVICE_TYPE" /> が適切に動作し続けるようにするには、もう一度ログインしてアップデートを行ってください。</translation>
 <translation id="7595547011743502844"><ph name="ERROR" />（エラーコード <ph name="ERROR_CODE" />）。</translation>
-<translation id="7598466960084663009">パソコンを再起動</translation>
 <translation id="7599527631045201165">デバイス名が長すぎます。短い名前を入力して、もう一度お試しください。</translation>
 <translation id="7600054753482800821">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
@@ -8431,7 +8420,6 @@
 <translation id="7835178595033117206">ブックマークを削除しました</translation>
 <translation id="7836577093182643605">サイトと共有しないようブロックしたトピックのリスト</translation>
 <translation id="7836850009646241041">もう一度セキュリティ キーをタッチしてください</translation>
-<translation id="7837776265184002579">ホームページが <ph name="URL" /> に変更されました。</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> から「<ph name="NETWORK_NAME" />」を保存できませんでした</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" />を <ph name="DEVICE_NAME" /> に送信しました}other{<ph name="ATTACHMENTS" />を <ph name="DEVICE_NAME" /> に送信しました}}</translation>
 <translation id="7839051173341654115">メディアを表示 / バックアップ</translation>

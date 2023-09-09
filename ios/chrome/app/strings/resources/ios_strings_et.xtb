@@ -823,9 +823,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="574762237186762643">Sündmused</translation>
 <translation id="5755162682436943950">Välja logitud. Avab dialoogi sisselogimiseks ja sünkroonimise sisselülitamiseks.</translation>
 <translation id="5758631781033351321">Oma lugemisloendi leiate siit</translation>
-<translation id="5762370665605786758">Parooliga krüpteerimine ei hõlma Google Pay makseviise ja aadresse.
-
-Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google'ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i andmed<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menüü → Seaded → Vaikebrauser</translation>
 <translation id="5777888488419460501">Salvesta kontole</translation>
 <translation id="5782227691023083829">Tõlkimine...</translation>

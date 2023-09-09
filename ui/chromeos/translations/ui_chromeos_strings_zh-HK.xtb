@@ -278,7 +278,7 @@
 <translation id="3264582393905923483">內容</translation>
 <translation id="3272909651715601089">無法開啟「<ph name="PATH" />」</translation>
 <translation id="3280431534455935878">準備中</translation>
-<translation id="3280719573299097127">你使用的是計量付費網路，因此檔案同步處理作業已暫停。</translation>
+<translation id="3280719573299097127">你正在使用按用量收費的網絡，因此檔案同步處理已暫停。</translation>
 <translation id="3280987981688031357">黑膠唱片</translation>
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3291218047831493686">連接此網絡即可變更 SIM 卡鎖定設定</translation>
@@ -633,7 +633,7 @@
 <translation id="5838451609423551646">喺選擇範圍入面移除所有項目。</translation>
 <translation id="5838825566232597749">美式 Workman 國際</translation>
 <translation id="5845721951356578987">護士</translation>
-<translation id="5858478190805449225">已開啟省電模式。請在省電模式關閉時再試一次。</translation>
+<translation id="5858478190805449225">已開啟慳電模式。請在慳電模式關閉時再試一次。</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5861477046012235702">遊戲玩家</translation>
 <translation id="5864471791310927901">DHCP 查閱失敗</translation>

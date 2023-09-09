@@ -200,6 +200,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1757857692711134412">Gün batımına kadar kapalı</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nokta klavye kısayolu değişti. Insert tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> tuşu + Üst Karakter + Geri Tuşu'na basın.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />. satır, <ph name="COLUMN_NUMBER" />. sütuna taşındı.</translation>
+<translation id="1771458705381257690">Cihazınızı kurup özelleştirmek için <ph name="NAME" /> uygulamasını açın</translation>
 <translation id="1771761307086386028">Sağa kaydır</translation>
 <translation id="1774796056689732716">Takvim, <ph name="CURRENT_MONTH_YEAR" />, şu anda <ph name="DATE" /> seçili.</translation>
 <translation id="1775598828170459419"><ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /> gösteriliyor</translation>
@@ -1193,6 +1194,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5876666360658629066">Ebeveyn kodunu girin</translation>
 <translation id="5881540930187678962">Telefon Merkezi'ni sonra kurun</translation>
 <translation id="5881663018261910378">Kapalı</translation>
+<translation id="5883017113634523865">Kullanılabilir tüm özellikleri görmek için Google Play'den <ph name="NAME" /> uygulamasını yükleyin</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> penceresi <ph name="DESK_TITLE" /> masasına atandı ve diğer tüm masalardaki ataması kaldırıldı</translation>
 <translation id="588817334757907802">Dosyayı Chrome tarayıcıda aç</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>

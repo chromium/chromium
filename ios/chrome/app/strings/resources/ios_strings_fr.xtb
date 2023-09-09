@@ -823,9 +823,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="574762237186762643">Événements</translation>
 <translation id="5755162682436943950">Déconnecté. Ouvre la boîte de dialogue pour se connecter et activer la synchronisation.</translation>
 <translation id="5758631781033351321">Votre liste de lecture s'affichera ici</translation>
-<translation id="5762370665605786758">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses Google Pay.
-
-Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menu → Paramètres → Navigateur par défaut</translation>
 <translation id="5777888488419460501">Enregistrer dans le compte</translation>
 <translation id="5782227691023083829">Traduction en cours...</translation>

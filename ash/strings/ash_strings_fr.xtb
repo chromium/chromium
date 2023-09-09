@@ -200,6 +200,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1757857692711134412">Désactivé jusqu'au coucher du soleil</translation>
 <translation id="1768366657309696705">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+. (point) a été modifié. Pour utiliser la touche Entrée, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Maj+Retour arrière.</translation>
 <translation id="1770726142253415363">Déplacée vers la ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Ouvrez <ph name="NAME" /> pour configurer et personnaliser votre appareil</translation>
 <translation id="1771761307086386028">Vers la droite</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, le <ph name="DATE" /> est actuellement sélectionné.</translation>
 <translation id="1775598828170459419">Affichage de <ph name="NUM_SHOWN_ITEMS" /> sur <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1192,6 +1193,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5876666360658629066">Saisir le code parental</translation>
 <translation id="5881540930187678962">Configurer Phone Hub plus tard</translation>
 <translation id="5881663018261910378">Désactivé</translation>
+<translation id="5883017113634523865">Installez l'appli pour <ph name="NAME" /> depuis Google Play pour voir toutes les fonctionnalités disponibles</translation>
 <translation id="5887954372087850114">La fenêtre <ph name="WINDOW_TITLE" /> est associée à <ph name="DESK_TITLE" /> et dissociée de tous les autres bureaux</translation>
 <translation id="588817334757907802">Ouvrir le fichier dans le navigateur Chrome</translation>
 <translation id="5895138241574237353">Redémarrer</translation>

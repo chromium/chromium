@@ -200,6 +200,7 @@
 <translation id="1757857692711134412">Выключана да захаду сонца</translation>
 <translation id="1768366657309696705">Змянілася прызначэнне спалучэння клавіш <ph name="LAUNCHER_KEY_NAME" /> + кропка. Каб выканаць дзеянне клавішы Insert, націсніце <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Перамешчана на радок <ph name="ROW_NUMBER" />, у слупок <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Каб наладзіць прыладу, адкрыйце праграму "<ph name="NAME" />"</translation>
 <translation id="1771761307086386028">Прагартаць управа</translation>
 <translation id="1774796056689732716">Каляндар, <ph name="CURRENT_MONTH_YEAR" />, дата, якая цяпер выбрана, – <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Паказваецца <ph name="NUM_SHOWN_ITEMS" /> з <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1193,6 +1194,7 @@
 <translation id="5876666360658629066">Увядзіце бацькоўскі код</translation>
 <translation id="5881540930187678962">Наладзьце Тэлефонны цэнтр пазней</translation>
 <translation id="5881663018261910378">Выключана</translation>
+<translation id="5883017113634523865">Каб пабачыць усе даступныя функцыі, усталюйце спадарожную праграму для праграмы "<ph name="NAME" />" з Google Play</translation>
 <translation id="5887954372087850114">Акно "<ph name="WINDOW_TITLE" />" прызначана для працоўнага стала "<ph name="DESK_TITLE" />". Прызначэнне гэтага акна для іншых працоўных сталоў скасавана</translation>
 <translation id="588817334757907802">Адкрыць файл у браўзеры Chrome</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>

@@ -426,6 +426,7 @@
 <translation id="1335929031622236846">Құрылғыны тіркеу</translation>
 <translation id="133660899895084533">Bluetooth перифериялық құрылғылары туралы ақпарат пен деректерді оқу</translation>
 <translation id="1336902454946927954">Саусағыңыздың ізі танылмағандықтан, қауіпсіздік кілті құлыптаулы тұр. Оның құлпын ашу үшін PIN кодыңызды енгізіңіз.</translation>
+<translation id="1337066099824654054">Контекстік анықтама параметрі өшірулі</translation>
 <translation id="1338631221631423366">Жұпталуда…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> осы қолданбаны ашқысы келеді.</translation>
 <translation id="1338950911836659113">Жойылуда…</translation>
@@ -476,7 +477,6 @@
 <translation id="1383861834909034572">Аяқталғанда ашу</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1384849755549338773">Басқа тілдердегі веб-сайттар үшін Google Translate қызметін ұсыну</translation>
-<translation id="138784436342154190">Әдепкі іске қосу беті қалпына келтірілсін бе?</translation>
 <translation id="1388253969141979417">Микрофоныңызды пайдалануға рұқсаты барлар</translation>
 <translation id="1388728792929436380">Жаңарту аяқталғанда, <ph name="DEVICE_TYPE" /> құрылғысы қайта қосылады.</translation>
 <translation id="1390113502208199250">Chrome Education Upgrade мүмкіндіктерін пайдалану үшін құрылғыны зауыттық параметрлерге қайтаруыңыз керек.</translation>
@@ -2376,7 +2376,6 @@
 <translation id="2845382757467349449">Әрқашан бетбелгілер жолағын көрсету</translation>
 <translation id="2845751331501453107">Шолу кезінде сіз көрген жарнаманың жекелендірілгені осы параметрге, <ph name="BEGIN_LINK1" />сайт ұсынған жарнамаларға<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cookie файлдарының параметрлеріне<ph name="LINK_END2" /> және сіз көріп жатқан сайттың жарнамаларды жекелендіруіне байланысты.</translation>
 <translation id="284581348330507117">Бірегей құпия сөздер жасаңыз.</translation>
-<translation id="284805635805850872">Зиян бағдарламалық құрал өшірілсін бе?</translation>
 <translation id="2849035674501872372">Іздеу</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">PIN кодыңыз енгізілді</translation>
@@ -3207,7 +3206,6 @@
 <translation id="3553487194781590058">Басқа қойындыға ауысқан кезде, сайттардың "Суреттегі сурет" режимі терезесін ашуына рұқсат етпеу</translation>
 <translation id="3554493885489666172">Құрылғыңызды <ph name="PROFILE_NAME" /> басқарады. Әкімшілер бұл құрылғыдағы кез келген профильдің деректерін пайдалана алады.</translation>
 <translation id="3555812735919707620">Кеңейтімді жою</translation>
-<translation id="3556000484321257665">Іздеу жүйесі <ph name="URL" /> болып өзгерді.</translation>
 <translation id="3557101512409028104">Family Link қолданбасы арқылы веб-сайт шектеулерін және пайдалану уақытына қойылатын шектеулерді орнатыңыз.</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />ChromeOS құрылғыларына автоматты түрде жасалған есептерді жіберуге рұқсат берсеңіз, бізге ChromeOS жүйесіндегі ақауларды жойып, оны жетілдіруде басымдықты дұрыс анықтауға көмектесесіз. Мұндай есептерде ChromeOS бұзылған кезде қолданыста болған функциялар және әдетте пайдаланылатын жад көлемі сияқты ақпарат қамтылуы мүмкін.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Балаңыздың ChromeOS құрылғысындағы параметрлер арқылы кез келген уақытта мұндай есептерді жіберуге рұқсат бере және тыйым сала аласыз. Егер домен әкімшісі болсаңыз, бұл параметрді әкімші консолі арқылы өзгерте аласыз.<ph name="END_PARAGRAPH2" /></translation>
@@ -3383,7 +3381,6 @@
 <translation id="3700888195348409686">Көрсетілуде (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Сайттардың камераңыздың орнын бақылауына рұқсат бермеу</translation>
 <translation id="3701515417135397388">Деректер қолды болған кезде құпия сөз ұрланса, сізге ескерту жасау</translation>
-<translation id="3702500414347826004">Іске қосу беттері <ph name="URL" /> мекенжайын қамтитын етіп өзгертілді.</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Бөлшек сатушы атын және осы демо құрылғы конфигурацияланатын дүкен нөмірін енгізіңіз*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Дүкен нөмірін білмесеңіз, Демо режимін орнатуды жалғастыру үшін "0000" деп енгізуіңізге болады. <ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*Ескертпе: Google осы ақпаратты демо режимінің құрылғыға қажетті нұсқасын анықтау және демо режимінің пайдаланылуын өлшеу үшін қолданады.<ph name="END_PARAGRAPH3" /></translation>
@@ -3441,6 +3438,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> деректері 24 сағаттан кейін жойылады.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> ашу керек пе?</translation>
+<translation id="3740396996321407665">Белгілі бір мүмкіндіктерден контекстік анықтама алу</translation>
 <translation id="3740945083753997630">Дисплей мен мәтін өлшемін кішірейту</translation>
 <translation id="3741056951918180319">Кез келген сайтта кеңейтімді басып, пайдалана бере аласыз.</translation>
 <translation id="3742235229730461951">Корей пернетақтасының орналасуы</translation>
@@ -3682,7 +3680,6 @@
 <translation id="3916445069167113093">Файлдың бұл түрі компьютеріңізге зиян келтіруі мүмкін. Бәрібір <ph name="FILE_NAME" /> сақтауды қалайсыз ба?</translation>
 <translation id="3917184139185490151">Компьютерде қауіпсіздік модулі бар, ол ChromeOS жүйесінде көптеген маңызды қауіпсіздік функцияларын ендіру үшін пайдаланылады. Толығырақ ақпарат алу үшін Chromebook Анықтамалық орталығына кіріңіз: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">Файлдарыңызды синхрондау үшін жад жеткіліксіз. Орын босатып көріңіз.</translation>
-<translation id="3918972485393593704">Толық мәліметтерді Google қызметіне беріңіз</translation>
 <translation id="3919145445993746351">Барлық компьютерде кеңейтімдер орнатылуы үшін, синхрондауды іске қосыңыз.</translation>
 <translation id="3919229493046408863">Маңайда құрылғылар пайда болғанда хабарландыруды өшіру</translation>
 <translation id="3919262972282962508">Chrome қолданбаларының ескі нұсқалары 2022 жылдың желтоқсанынан кейін Mac жүйесіндегі құрылғыларда ашылмайды. Қолданбаның жаңа нұсқасын орнату немесе оны жою үшін әкімшіге хабарласыңыз.</translation>
@@ -3916,7 +3913,6 @@
 <translation id="409742781329613461">Chrome браузеріне қатысты кеңестер</translation>
 <translation id="4097560579602855702">Google-дан іздеу</translation>
 <translation id="4098667039111970300">Құралдар тақтасындағы стилус құралдары</translation>
-<translation id="4099060993766194518">Әдепкі іздеу жүйесі қалпына келтірілсін бе?</translation>
 <translation id="4099874310852108874">Желіде қате орын алды.</translation>
 <translation id="4100020874626534113">Икемді диакритика тағайындауына рұқсат етіңіз. Мысалы, "ánh" дегенді алу үшін "anhs" немесе "asnh" деп теруге болады.</translation>
 <translation id="4100733287846229632">Құрылғыда бос орын өте аз</translation>
@@ -4707,7 +4703,6 @@
 <translation id="4763408175235639573">Осы бетті ашқанда, мына cookie файлдары орнатылды</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> жарамды Google for Education аккаунты емес. Әкімшіңізге хабарласыңыз. Егер сіз әкімші болсаңыз, келесі сілтемеге өтіп ұйымыңызды реттей аласыз: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Бұл құрылғы 1 ай сақталады және келесіде кодсыз қосыла аласыз. Оны әкімші орнатады.}other{Бұл құрылғы {MONTHS} ай сақталады және келесіде кодсыз қосыла аласыз. Оны әкімші орнатады.}}</translation>
-<translation id="4765582662863429759">Android Messages қолданбасына хабарларды телефоннан Chromebook құрылғысына жіберуге мүмкіндік береді</translation>
 <translation id="476563889641554689">Lens көмегімен іздейтін аумақты таңдаңыз</translation>
 <translation id="4766598565665644999">Барлық кеңейтім <ph name="HOST" /> сайтын оқып, өзгерте алады.</translation>
 <translation id="4767427586072640478">Өшірулі кеңейтімдер туралы толық ақпарат алыңыз.</translation>
@@ -4881,9 +4876,7 @@
 <translation id="4898011734382862273">"<ph name="CERTIFICATE_NAME" />" сертификаты сертификат беру органын көрсетеді</translation>
 <translation id="4899052647152077033">Түсін кетіру</translation>
 <translation id="4899696330053002588">Жарнама бар</translation>
-<translation id="489985760463306091">Зиян бағдарламалық құралды өшіруді аяқтау үшін компьютеріңізді қайта іске қосыңыз</translation>
 <translation id="490031510406860025">Бұл сайтта рұқсат етілмеген</translation>
-<translation id="4900392736118574277">Іске қосу беті <ph name="URL" /> мекенжайына өзгерді.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц − қабаттастырылған</translation>
 <translation id="4900652253009739885">"Таңдау" әрекетіне тағайындалған жалғыз ауыстырғышты жою мүмкін емес. <ph name="RESPONSE" /> үшін кез келген пернені басыңыз.</translation>
 <translation id="4901154724271753917">Жақында жабылған беттерді жаю</translation>
@@ -5086,7 +5079,6 @@
 <translation id="5085162214018721575">Жаңартуларды тексеру</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">Ескертпе ұзындығы 1000 таңба шегінен асып кеткен.</translation>
-<translation id="5086874064903147617">Реттелмелі үлкен курсор қалпына келтірілсін бе?</translation>
 <translation id="5087249366037322692">Үшінші тарап қосқан</translation>
 <translation id="5087580092889165836">Несие картасын қосу</translation>
 <translation id="5088427648965532275">Passpoint провайдері</translation>
@@ -6401,6 +6393,7 @@
 <translation id="6173623053897475761">PIN кодын қайта теріңіз</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Сілтемені алу</translation>
+<translation id="6176701216248282552">Контекстік анықтама параметрі қосулы. Бұл мүмкіндіктер ашық беттерді Google-ға жібере алады.</translation>
 <translation id="6177412385419165772">Өшірілуде...</translation>
 <translation id="6178664161104547336">Сертификат таңдау</translation>
 <translation id="6178682841350631965">Кіру деректеріңіз жаңартылды.</translation>
@@ -8101,7 +8094,6 @@
 <translation id="7594725637786616550">Powerwash функциясы <ph name="DEVICE_TYPE" /> құрылғыңызды бастапқы күйіне қайта орнатуға арналған.</translation>
 <translation id="7595453277607160340">Android қолданбаларын пайдалану үшін және <ph name="DEVICE_TYPE" /> дұрыс жұмыс істеуі үшін, аккаунтқа қайта кіріңіз де, жаңартыңыз.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (қате коды <ph name="ERROR_CODE" />).</translation>
-<translation id="7598466960084663009">Компьютерді қайта іске қосу</translation>
 <translation id="7599527631045201165">Құрылғының атауы тым ұзын. Қысқасын енгізіп, қайта көріңіз.</translation>
 <translation id="7600054753482800821">&amp;Іздеу жүйелерін және сайттан іздеу әрекетін басқару</translation>
 <translation id="7600965453749440009">Ешқашан <ph name="LANGUAGE" /> тіліне аудармау</translation>
@@ -8422,7 +8414,6 @@
 <translation id="7835178595033117206">Бетбелгі өшірілген</translation>
 <translation id="7836577093182643605">Сіз блоктаған және сайттарға көрсетілмесін деген тақырыптар тізімі</translation>
 <translation id="7836850009646241041">Қауіпсіздік кілтін тағы түртіп көріңіз.</translation>
-<translation id="7837776265184002579">Негізгі бет <ph name="URL" /> болып өзгерді.</translation>
 <translation id="7838838951812478896">"<ph name="NETWORK_NAME" />" тіркелу дерегі <ph name="DEVICE_NAME" /> құрылғысынан сақталмады</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> құрылғысына жіберілді}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> құрылғысына жіберілді}}</translation>
 <translation id="7839051173341654115">Медианы көру/сақтық көшірмесін жасау</translation>

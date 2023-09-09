@@ -200,6 +200,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1757857692711134412">Umezimwa hadi machweo</translation>
 <translation id="1768366657309696705">Mikato ya kibodi ya <ph name="LAUNCHER_KEY_NAME" /> + Kitone imebadilika. Ili utumie kitufe cha Insert, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Imehamishiwa kwenye safu mlalo ya <ph name="ROW_NUMBER" />, safu wima ya <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="1771458705381257690">Fungua <ph name="NAME" /> ili uweke na ubadilishe upendavyo mipangilio ya kifaa chako</translation>
 <translation id="1771761307086386028">Sogeza kulia</translation>
 <translation id="1774796056689732716">Kalenda, <ph name="CURRENT_MONTH_YEAR" />, kwa sasa umechagua <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Inaonyesha <ph name="NUM_SHOWN_ITEMS" /> kati ya <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -1193,6 +1194,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5876666360658629066">Weka msimbo wa mzazi</translation>
 <translation id="5881540930187678962">Weka mipangillio ya Kituo cha Kudhibiti Simu baadaye</translation>
 <translation id="5881663018261910378">Umezimwa</translation>
+<translation id="5883017113634523865">Sakinisha programu ya <ph name="NAME" /> kutoka Google Play ili uone vipengele vyote vinavyopatikana</translation>
 <translation id="5887954372087850114">Dirisha la <ph name="WINDOW_TITLE" /> limewekwa kwenye <ph name="DESK_TITLE" /> na limeondolewa kwenye maeneokazi mengine yote</translation>
 <translation id="588817334757907802">Fungua faili katika kivinjari cha Chrome</translation>
 <translation id="5895138241574237353">Zima na uwashe</translation>

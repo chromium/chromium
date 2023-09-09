@@ -428,6 +428,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1335929031622236846">Enrol your device</translation>
 <translation id="133660899895084533">Read Bluetooth peripherals information and data</translation>
 <translation id="1336902454946927954">Your security key is locked because your fingerprint couldn't be recognised. To unlock it, enter your PIN.</translation>
+<translation id="1337066099824654054">Contextual help is off</translation>
 <translation id="1338631221631423366">Pairing…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> wants to open this application.</translation>
 <translation id="1338950911836659113">Deleting...</translation>
@@ -478,7 +479,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1383861834909034572">Opening when complete</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384849755549338773">Offer Google Translate for websites in other languages</translation>
-<translation id="138784436342154190">Restore default start-up page?</translation>
 <translation id="1388253969141979417">Allowed to use your microphone</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> will restart when updates are complete.</translation>
 <translation id="1390113502208199250">You will have to factory reset this device to use Chrome Education upgrade features.</translation>
@@ -2399,7 +2399,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2845382757467349449">Always Show Bookmarks Bar</translation>
 <translation id="2845751331501453107">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK1" />site-suggested ads<ph name="LINK_END1" />, your <ph name="BEGIN_LINK2" />cookie settings<ph name="LINK_END2" />, and if the site that you’re viewing personalises ads</translation>
 <translation id="284581348330507117">Create unique passwords</translation>
-<translation id="284805635805850872">Remove harmful software?</translation>
 <translation id="2849035674501872372">Look up</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Your PIN has been added</translation>
@@ -3232,7 +3231,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3553487194781590058">Don't allow sites to open a picture-in-picture window when you change to a different tab</translation>
 <translation id="3554493885489666172">Your device is managed by <ph name="PROFILE_NAME" />. Administrators can access the data in any profile on this device.</translation>
 <translation id="3555812735919707620">Remove extension</translation>
-<translation id="3556000484321257665">Your search engine was changed to <ph name="URL" />.</translation>
 <translation id="3557101512409028104">Set website restrictions and screen time limits with Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Allowing ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were enabled and how much memory was typically used.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your child's ChromeOS device settings. If you're a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" /></translation>
@@ -3409,7 +3407,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3700888195348409686">Presenting (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Don't allow sites to track your camera position</translation>
 <translation id="3701515417135397388">Warn you if a password was compromised in a data breach</translation>
-<translation id="3702500414347826004">Your start-up pages were changed to include <ph name="URL" />.</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Enter the name of the retailer and the shop number for which this demo device is being configured*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />If you don't know the shop number, you can enter '0000' to continue with demo mode installation. <ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*Note: Google uses this information to identify which version of demo mode the device should receive and to measure usage of demo mode.<ph name="END_PARAGRAPH3" /></translation>
@@ -3467,6 +3464,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> data will be deleted in 24 hours</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Open <ph name="APPLICATION" />?</translation>
+<translation id="3740396996321407665">Get contextual help from some features</translation>
 <translation id="3740945083753997630">Decrease display and text size</translation>
 <translation id="3741056951918180319">You can always click the extension to use it on any site</translation>
 <translation id="3742235229730461951">Korean keyboard layout</translation>
@@ -3708,7 +3706,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3916445069167113093">This type of file can harm your computer. Do you want to keep <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="3917184139185490151">Your computer contains a secure module, which is used to implement many critical security features in Chrome OS. Visit the Chromebook Help Centre to learn more: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">There isn’t enough storage to sync your files. Try freeing up space.</translation>
-<translation id="3918972485393593704">Report details to Google</translation>
 <translation id="3919145445993746351">To get your extensions on all your computers, turn on sync</translation>
 <translation id="3919229493046408863">Turn off notification when devices are nearby</translation>
 <translation id="3919262972282962508">Old versions of Chrome Apps won't open on Mac devices after December 2022. Contact your administrator to update to a new version or remove this app.</translation>
@@ -3942,7 +3939,6 @@ This can include information about installed software, files, your browser and t
 <translation id="409742781329613461">Tips for Chrome</translation>
 <translation id="4097560579602855702">Search Google</translation>
 <translation id="4098667039111970300">Stylus tools in toolbar</translation>
-<translation id="4099060993766194518">Restore default search engine?</translation>
 <translation id="4099874310852108874">Network error occurred.</translation>
 <translation id="4100020874626534113">Allow flexible diacritic assignment. For example, you can type “anhs” or “asnh” to get “ánh”.</translation>
 <translation id="4100733287846229632">Device space critically low</translation>
@@ -4735,7 +4731,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4763408175235639573">The following cookies were set when you viewed this page</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> isn't a valid Google for Education account. Contact your administrator. If you are an administrator, you can set up your organisation by visiting: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{This device will be saved for one month and you can connect without a code next time. This is set by your administrator.}other{This device will be saved for {MONTHS} months and you can connect without a code next time. This is set by your administrator.}}</translation>
-<translation id="4765582662863429759">Allows Android Messages to relay texts from your phone to your Chromebook</translation>
 <translation id="476563889641554689">Select an area to search with Lens</translation>
 <translation id="4766598565665644999">All extensions can read and change <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Learn more about disabled extensions.</translation>
@@ -4909,9 +4904,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4898011734382862273">The certificate '<ph name="CERTIFICATE_NAME" />' represents a Certification Authority</translation>
 <translation id="4899052647152077033">Invert colours</translation>
 <translation id="4899696330053002588">Contains ads</translation>
-<translation id="489985760463306091">To finish removing harmful software, restart your computer</translation>
 <translation id="490031510406860025">Not allowed on this site</translation>
-<translation id="4900392736118574277">Your start-up page was changed to <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – interlaced</translation>
 <translation id="4900652253009739885">Can’t remove the only switch assigned to 'Select'. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Expand recently closed</translation>
@@ -5115,7 +5108,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5085162214018721575">Checking for updates</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">Note is more than 1,000 characters</translation>
-<translation id="5086874064903147617">Restore default homepage?</translation>
 <translation id="5087249366037322692">Added by a third party</translation>
 <translation id="5087580092889165836">Add card</translation>
 <translation id="5088427648965532275">Passpoint provider</translation>
@@ -6435,6 +6427,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6173623053897475761">Type your PIN again</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Get a link</translation>
+<translation id="6176701216248282552">Contextual help is on. These features can send open pages to Google.</translation>
 <translation id="6177412385419165772">Removing…</translation>
 <translation id="6178664161104547336">Select a certificate</translation>
 <translation id="6178682841350631965">Your sign-in data was updated</translation>
@@ -8140,7 +8133,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7594725637786616550">Powerwash to reset your <ph name="DEVICE_TYPE" /> to be just like new.</translation>
 <translation id="7595453277607160340">To use Android apps and keep your <ph name="DEVICE_TYPE" /> working properly, sign in again and update.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (error code <ph name="ERROR_CODE" />).</translation>
-<translation id="7598466960084663009">Restart computer</translation>
 <translation id="7599527631045201165">The device name is too long. Enter a shorter name to try again.</translation>
 <translation id="7600054753482800821">&amp;Manage search engines and Site Search</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
@@ -8461,7 +8453,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7835178595033117206">Bookmark removed</translation>
 <translation id="7836577093182643605">List of topics that you blocked that you don't want shared with sites</translation>
 <translation id="7836850009646241041">Try touching your security key again</translation>
-<translation id="7837776265184002579">Your homepage was changed to <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Couldn't save '<ph name="NETWORK_NAME" />' from <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> sent to <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> sent to <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839051173341654115">View/Backup media</translation>

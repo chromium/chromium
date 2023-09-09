@@ -478,7 +478,6 @@
 <translation id="1383861834909034572">완료되면 열기</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384849755549338773">다른 언어로 표시되는 웹사이트에서 Google 번역 제공</translation>
-<translation id="138784436342154190">기본 시작 페이지를 복원하시겠습니까?</translation>
 <translation id="1388253969141979417">마이크 사용이 허용됨</translation>
 <translation id="1388728792929436380">업데이트가 완료되면 <ph name="DEVICE_TYPE" /> 기기가 다시 시작됩니다.</translation>
 <translation id="1390113502208199250">Chrome Education 업그레이드 기능을 사용하려면 기기를 초기화해야 합니다.</translation>
@@ -2396,7 +2395,6 @@
 <translation id="2845382757467349449">북마크바 항상 표시</translation>
 <translation id="2845751331501453107">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK1" />사이트 추천 광고<ph name="LINK_END1" />, 나의 <ph name="BEGIN_LINK2" />쿠키 설정<ph name="LINK_END2" />, 시청 중인 사이트에서 광고를 개인 최적화하는지 여부에 따라 나에게 표시되는 광고의 개인 최적화 여부가 달라집니다.</translation>
 <translation id="284581348330507117">사용한 적이 없는 비밀번호를 만드세요.</translation>
-<translation id="284805635805850872">유해한 소프트웨어를 삭제하시겠습니까?</translation>
 <translation id="2849035674501872372">찾기</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" />(<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">PIN 추가됨</translation>
@@ -3227,7 +3225,6 @@
 <translation id="3553487194781590058">다른 탭으로 변경하면 사이트에서 PIP 모드 창을 열도록 허용하지 않음</translation>
 <translation id="3554493885489666172"><ph name="PROFILE_NAME" />에서 관리하는 기기입니다. 관리자가 기기에 등록된 모든 프로필의 데이터에 액세스할 수 있습니다.</translation>
 <translation id="3555812735919707620">확장 프로그램 삭제</translation>
-<translation id="3556000484321257665">검색엔진이 <ph name="URL" />(으)로 변경되었습니다.</translation>
 <translation id="3557101512409028104">Family Link를 사용해 웹사이트 제한사항 및 기기 사용 시간 제한 설정</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상적으로 종료되는지, 어떤 기능이 사용되었는지, 일반적으로 메모리가 얼마나 많이 사용되는지 등의 정보가 포함됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />자녀의 ChromeOS 기기 설정에서 언제든 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
@@ -3403,7 +3400,6 @@
 <translation id="3700888195348409686">표시 중(<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">사이트에서 카메라 위치를 추적하도록 허용하지 않음</translation>
 <translation id="3701515417135397388">정보 유출로 인해 비밀번호가 유출된 경우 경고</translation>
-<translation id="3702500414347826004">시작 페이지가 <ph name="URL" />을(를) 포함하도록 변경되었습니다.</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />이 데모 기기를 구성하려는 소매업체 이름과 상점 번호를 입력합니다*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />상점 번호를 모르는 경우 '0000'을 입력하여 데모 모드 설치를 계속 진행할 수 있습니다. <ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*참고: Google은 이 정보를 사용하여 기기에 설치해야 하는 데모 모드 버전을 파악하고 데모 모드의 사용량을 측정합니다.<ph name="END_PARAGRAPH3" /></translation>
@@ -3702,7 +3698,6 @@
 <translation id="3916445069167113093">이 형식의 파일은 컴퓨터를 손상시킬 수 있습니다. 그래도 <ph name="FILE_NAME" />을(를) 다운로드하시겠습니까?</translation>
 <translation id="3917184139185490151">컴퓨터에 보안 모듈이 있습니다. 보안 모듈은 ChromeOS에서 여러 중요한 보안 기능을 구현하는 데 사용됩니다. 자세히 알아보려면 Chromebook 고객센터의 다음 페이지를 방문하세요. https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">저장용량이 부족하여 파일을 동기화할 수 없습니다. 여유 공간을 확보해 보세요.</translation>
-<translation id="3918972485393593704">Google에 세부정보 신고</translation>
 <translation id="3919145445993746351">어느 컴퓨터에서나 내 확장 프로그램을 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="3919229493046408863">기기가 주변에 있을 때 알림 끄기</translation>
 <translation id="3919262972282962508">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Mac 기기에서 열리지 않습니다. 관리자에게 문의하여 새 버전으로 업데이트하거나 앱을 삭제하세요.</translation>
@@ -3934,7 +3929,6 @@
 <translation id="409742781329613461">Chrome 도움말</translation>
 <translation id="4097560579602855702">Google 검색</translation>
 <translation id="4098667039111970300">툴바에 스타일러스 도구 표시</translation>
-<translation id="4099060993766194518">기본 검색엔진을 복원하시겠습니까?</translation>
 <translation id="4099874310852108874">네트워크 오류가 발생했습니다.</translation>
 <translation id="4100020874626534113">유연한 발음 구별 부호 할당을 허용합니다. 예를 들어 'anhs' 또는 'asnh'를 입력하여 'ánh'를 얻을 수 있습니다.</translation>
 <translation id="4100733287846229632">기기 저장 공간 매우 부족</translation>
@@ -4726,7 +4720,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4763408175235639573">페이지를 열었을 때 다음 쿠키가 설정됨</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> 계정은 유효한 Google for Education 계정이 아닙니다. 관리자에게 문의하세요. 관리자인 경우 g.co/workspace/edusignup에서 조직을 설정할 수 있습니다.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{기기는 한 달 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}other{기기는 {MONTHS}개월 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}}</translation>
-<translation id="4765582662863429759">Android 메시지가 휴대전화의 문자 메시지를 Chromebook으로 전달하도록 허용합니다.</translation>
 <translation id="476563889641554689">렌즈로 검색할 영역을 선택하세요.</translation>
 <translation id="4766598565665644999">모든 확장 프로그램이 <ph name="HOST" />을 읽고 변경할 수 있습니다.</translation>
 <translation id="4767427586072640478">사용 중지된 확장 프로그램에 관해 자세히 알아봅니다.</translation>
@@ -4900,9 +4893,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4898011734382862273">'<ph name="CERTIFICATE_NAME" />' 인증서는 인증 기관을 나타냅니다.</translation>
 <translation id="4899052647152077033">색상 반전</translation>
 <translation id="4899696330053002588">광고 포함</translation>
-<translation id="489985760463306091">유해한 소프트웨어 삭제를 완료하려면 컴퓨터를 다시 시작하세요.</translation>
 <translation id="490031510406860025">이 사이트에서 허용되지 않음</translation>
-<translation id="4900392736118574277">시작 페이지가 <ph name="URL" />(으)로 변경되었습니다.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" />Hz - 인터레이스됨</translation>
 <translation id="4900652253009739885">'선택'에 할당된 스위치가 1개이므로 삭제할 수 없습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="4901154724271753917">최근에 닫은 탭 펼치기</translation>
@@ -5105,7 +5096,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5085162214018721575">업데이트를 확인하는 중</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">메모가 1,000자(영문 기준)를 초과합니다.</translation>
-<translation id="5086874064903147617">기본 홈페이지를 복원하시겠습니까?</translation>
 <translation id="5087249366037322692">타사 프로그램에서 추가</translation>
 <translation id="5087580092889165836">카드 추가</translation>
 <translation id="5088427648965532275">Passpoint 제공업체</translation>
@@ -8124,7 +8114,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7594725637786616550">파워워시는 <ph name="DEVICE_TYPE" /> 기기를 초기화하여 새것처럼 만들어 줍니다.</translation>
 <translation id="7595453277607160340">Android 앱을 사용하고 <ph name="DEVICE_TYPE" /> 기기가 제대로 작동하도록 하려면 다시 로그인하고 업데이트하세요.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" />(오류 코드: <ph name="ERROR_CODE" />).</translation>
-<translation id="7598466960084663009">컴퓨터 다시 시작</translation>
 <translation id="7599527631045201165">기기 이름이 너무 깁니다. 더 짧은 이름을 입력하고 다시 시도해 보세요.</translation>
 <translation id="7600054753482800821">검색엔진 및 사이트 검색 관리</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
@@ -8445,7 +8434,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7835178595033117206">북마크가 삭제됨</translation>
 <translation id="7836577093182643605">사이트와 공유하지 않으려는 차단된 주제 목록</translation>
 <translation id="7836850009646241041">보안 키 다시 터치해 보기</translation>
-<translation id="7837776265184002579">홈페이지가 <ph name="URL" />(으)로 변경되었습니다.</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" />의 '<ph name="NETWORK_NAME" />'이(가) 저장되지 않음</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 전송됨}other{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 전송됨}}</translation>
 <translation id="7839051173341654115">미디어 보기/백업</translation>
