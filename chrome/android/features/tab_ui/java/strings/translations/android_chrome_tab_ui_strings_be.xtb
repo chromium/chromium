@@ -36,7 +36,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Дадаць укладку ў групу}one{Згрупаваць укладкі}few{Згрупаваць укладкі}many{Згрупаваць укладкі}other{Згрупаваць укладкі}}</translation>
 <translation id="3996880007329611795">Атрымліваць абвесткі</translation>
 <translation id="4133493477912226187">Здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
-<translation id="4212246570487010370">Бесперапынны прагляд</translation>
+<translation id="4212246570487010370">Працягвайце прагляд</translation>
 <translation id="4648718555153979859">Укладкі згрупаваны тут</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> водгук)}one{(<ph name="REVIEWS_COUNT_MANY" /> водгук)}few{(<ph name="REVIEWS_COUNT_MANY" /> водгукі)}many{(<ph name="REVIEWS_COUNT_MANY" /> водгукаў)}other{(<ph name="REVIEWS_COUNT_MANY" /> водгуку)}}</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
