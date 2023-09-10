@@ -429,6 +429,7 @@
 <translation id="1335929031622236846">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನೋಂದಾಯಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="133660899895084533">ಬ್ಲೂಟೂತ್ ಹೊರಭಾಗಗಳ ಮಾಹಿತಿ ಮತ್ತು ಡೇಟಾವನ್ನು ಓದಿ</translation>
 <translation id="1336902454946927954">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗದ ಕಾರಣ, ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಕೀ ಲಾಕ್ ಆಗಿದೆ. ಇದನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ನಿಮ್ಮ ಪಿನ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
+<translation id="1337066099824654054">ಸಂದರ್ಭೋಚಿತ ಸಹಾಯ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="1338631221631423366">ಜೋಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ತೆರೆಯಲು ಬಯಸುತ್ತಿದೆ.</translation>
 <translation id="1338950911836659113">ಅಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -3449,6 +3450,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> ಡೇಟಾವನ್ನು 24 ಗಂಟೆಗಳಲ್ಲಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> ತೆರೆಯುವುದೇ?</translation>
+<translation id="3740396996321407665">ಕೆಲವು ಫೀಚರ್‌ಗಳಿಂದ ಸಂದರ್ಭೋಚಿತ ಸಹಾಯವನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="3740945083753997630">ಡಿಸ್‌ಪ್ಲೇ ಮತ್ತು ಪಠ್ಯ ಗಾತ್ರವನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="3741056951918180319">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬಳಸಲು ನೀವು ಯಾವಾಗಲೂ ವಿಸ್ತರಣೆಯನ್ನು ಕ್ಲಿಕ್ ಮಾಡಬಹುದು</translation>
 <translation id="3742235229730461951">ಕೊರಿಯನ್ ಕೀಬೋರ್ಡ್ ಲೇಔಟ್</translation>
@@ -6408,6 +6410,7 @@
 <translation id="6173623053897475761">ನಿಮ್ಮ ಪಿನ್‌ ಅನ್ನು ಪುನಃ ಟೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="6175314957787328458">Microsoft ಡೊಮೇನ್ GUID</translation>
 <translation id="6175910054050815932">ಲಿಂಕ್ ಪಡೆಯಿರಿ</translation>
+<translation id="6176701216248282552">ಸಂದರ್ಭೋಚಿತ ಸಹಾಯ ಆನ್ ಆಗಿದೆ. ಈ ಫೀಚರ್‌ಗಳು ತೆರೆದ ಪುಟಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಬಹುದು.</translation>
 <translation id="6177412385419165772">ತೆಗೆದುಹಾಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6178664161104547336">ಒಂದು ಪ್ರಮಾಣಪತ್ರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6178682841350631965">ನಿಮ್ಮ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
