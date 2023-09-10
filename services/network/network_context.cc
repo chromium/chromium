@@ -794,7 +794,9 @@ void NetworkContext::CreateURLLoaderFactory(
     scoped_refptr<ResourceSchedulerClient> resource_scheduler_client) {
   url_loader_factories_.emplace(std::make_unique<cors::CorsURLLoaderFactory>(
       this, std::move(params), std::move(resource_scheduler_client),
-      std::move(receiver), &cors_origin_access_list_));
+      std::move(receiver), &cors_origin_access_list_,
+      network_service_ ? network_service_->network_service_resource_block_list()
+                       : nullptr));
 }
 
 void NetworkContext::CreateURLLoaderFactoryForCertNetFetcher(

@@ -122,6 +122,14 @@ BASE_FEATURE(kMdnsResponderGeneratedNameListing,
              "MdnsResponderGeneratedNameListing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, resource requests will be evaluated against the Network
+// Service's block list. The block list is populated by the MaskedDomainList, so
+// "MaskedDomainList" will need to also be enabled for the block list to have
+// any contents.
+BASE_FEATURE(kEnableNetworkServiceResourceBlockList,
+             "EnableNetworkServiceResourceBlockList",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables ORB blocked responses being treated as errors (according to the spec)
 // rather than the current, CORB-style handling of injecting an empty response.
 // This exempts fetches initiated by scripts. (Technically, fetches with an

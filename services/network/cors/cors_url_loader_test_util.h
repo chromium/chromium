@@ -318,6 +318,14 @@ class CorsURLLoaderTestBase : public testing::Test {
       net::ReferrerPolicy referrer_policy = net::ReferrerPolicy::NO_REFERRER,
       net::SiteForCookies site_for_cookies = net::SiteForCookies());
 
+  // TODO(crbug.com/1478868): This is an interim method only for AFP block list
+  // experiment.
+  // Adds a domain to the resource block list and a corresponding domain that
+  // allows the request to bypass the block list if the top frame domain matches
+  // it.
+  void AddResourceBlockListRule(const std::string& domain,
+                                const std::string& top_frame_bypass);
+
  private:
   // Test environment.
   base::test::TaskEnvironment task_environment_;

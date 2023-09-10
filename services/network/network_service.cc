@@ -75,10 +75,10 @@
 #include "services/network/dns_config_change_manager.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/http_auth_cache_copier.h"
+#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/net_log_proxy_sink.h"
 #include "services/network/network_context.h"
-#include "services/network/network_service_proxy_allow_list.h"
 #include "services/network/public/cpp/crash_keys.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
@@ -487,6 +487,9 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   network_service_proxy_allow_list_ =
       std::make_unique<NetworkServiceProxyAllowList>();
+
+  network_service_resource_block_list_ =
+      std::make_unique<NetworkServiceResourceBlockList>();
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   constexpr size_t kMaxSCTAuditingCacheEntries = 1024;
@@ -953,6 +956,7 @@ void NetworkService::UpdateMaskedDomainList(const std::string& raw_mdl) {
   auto mdl = masked_domain_list::MaskedDomainList();
   if (mdl.ParseFromString(raw_mdl)) {
     network_service_proxy_allow_list_->UseMaskedDomainList(mdl);
+    network_service_resource_block_list_->UseMaskedDomainList(mdl);
   } else {
     LOG(ERROR) << "Unable to parse MDL in NetworkService";
   }

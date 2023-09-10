@@ -185,6 +185,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // Returns a clone of the value returned by `GetClientSecurityState()`.
   mojom::ClientSecurityStatePtr CloneClientSecurityState() const;
 
+  // TODO(crbug.com/1478868): This is an interim method only for AFP block list
+  // experiment. This method should not be used for other use cases. This will
+  // be removed when AFP block list logic is migrated to subresource filter.
+  bool ShouldBlockRequestForAfpExperiment(GURL request_url);
+
   // Returns whether preflight errors due exclusively to Private Network Access
   // checks should be ignored.
   //
