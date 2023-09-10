@@ -11537,89 +11537,74 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Interval_8sec",
+                    "name": "Interval_8sec",
                     "params": {
-                        "interval": "8s"
+                        "interval": "8s",
+                        "mode": "only-when-unprovisioning"
                     },
                     "enable_features": [
-                        "PartitionAllocMemoryReclaimer"
+                        "PartitionAllocMemoryReclaimer",
+                        "PartitionAllocSortSmallerSlotSpanFreeLists",
+                        "PartitionAllocStraightenLargerSlotSpanFreeLists"
+                    ],
+                    "disable_features": [
+                        "PartitionAllocSortActiveSlotSpans"
                     ]
                 },
                 {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "PartitionAllocMemoryReclaimer"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocSortActiveSlotSpans": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocSortActiveSlotSpans"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocSortSmallerSlotSpanFreeLists": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "PartitionAllocSortSmallerSlotSpanFreeLists"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocStraightenLargerSlotSpanFreeLists": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Always",
+                    "name": "SortActiveSlotSpans",
                     "params": {
-                        "mode": "always"
+                        "interval": "4s",
+                        "mode": "only-when-unprovisioning"
                     },
                     "enable_features": [
+                        "PartitionAllocMemoryReclaimer",
+                        "PartitionAllocSortActiveSlotSpans",
+                        "PartitionAllocSortSmallerSlotSpanFreeLists",
                         "PartitionAllocStraightenLargerSlotSpanFreeLists"
                     ]
                 },
                 {
-                    "name": "Disabled",
+                    "name": "DontSortSmallerSlotSpanFreeLists",
+                    "params": {
+                        "interval": "4s",
+                        "mode": "only-when-unprovisioning"
+                    },
+                    "enable_features": [
+                        "PartitionAllocMemoryReclaimer",
+                        "PartitionAllocStraightenLargerSlotSpanFreeLists"
+                    ],
                     "disable_features": [
+                        "PartitionAllocSortActiveSlotSpans",
+                        "PartitionAllocSortSmallerSlotSpanFreeLists"
+                    ]
+                },
+                {
+                    "name": "AlwaysStraightenLargerSlotSpanFreeLists",
+                    "params": {
+                        "interval": "4s",
+                        "mode": "always"
+                    },
+                    "enable_features": [
+                        "PartitionAllocMemoryReclaimer",
+                        "PartitionAllocSortSmallerSlotSpanFreeLists",
+                        "PartitionAllocStraightenLargerSlotSpanFreeLists"
+                    ],
+                    "disable_features": [
+                        "PartitionAllocSortActiveSlotSpans"
+                    ]
+                },
+                {
+                    "name": "DontStraightenLargerSlotSpanFreeLists_v2",
+                    "params": {
+                        "interval": "4s"
+                    },
+                    "enable_features": [
+                        "PartitionAllocMemoryReclaimer",
+                        "PartitionAllocSortSmallerSlotSpanFreeLists"
+                    ],
+                    "disable_features": [
+                        "PartitionAllocSortActiveSlotSpans",
                         "PartitionAllocStraightenLargerSlotSpanFreeLists"
                     ]
                 }
