@@ -1217,7 +1217,7 @@ def GenerateLicenseFileCsv(
   #   * License text for library included in product,
   #   * Mirrored source for reciprocal licences.
   #   * Signoff date.
-  static_data = ["Chromium", "Yes", "Yes", "N/A"]
+  static_data = ["Chromium", "Yes", "No", "N/A"]
 
   # Add informative CSV header row to make it clear which columns represent
   # which data in the review spreadsheet.
