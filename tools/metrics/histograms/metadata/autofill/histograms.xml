@@ -98,6 +98,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.MandatoryReauth.Source">
+  <variant name="CheckoutFullServerCard"
+      summary="Feature is trying to be updated from full server card checkout"/>
   <variant name="CheckoutLocalCard"
       summary="Feature is trying to be updated from local card checkout"/>
   <variant name="CheckoutVirtualCard"
@@ -3469,8 +3471,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow.ReauthOfferOptInDecision"
+    name="Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow.ReauthOfferOptInDecision2"
     enum="MandatoryReauthOfferOptInDecision" expires_after="2024-07-01">
+  <owner>vinnypersky@google.com</owner>
   <owner>sujiezhu@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

@@ -57,7 +57,7 @@ class MandatoryReauthManagerTest : public testing::Test {
       MandatoryReauthOfferOptInDecision opt_in_decision) {
     histogram_tester_.ExpectUniqueSample(
         "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
-        "ReauthOfferOptInDecision",
+        "ReauthOfferOptInDecision2",
         opt_in_decision, 1);
   }
 
@@ -356,12 +356,10 @@ class MandatoryReauthManagerOptInFlowTest
 
   std::string GetOptInSource() {
     switch (GetParam()) {
-      case CreditCard::RecordType::kFullServerCard:
-        // TODO(crbug.com/1478907): Ensure we log full server card if we are
-        // in the full server card case.
-        // Fall-through for now.
       case CreditCard::RecordType::kLocalCard:
         return "CheckoutLocalCard";
+      case CreditCard::RecordType::kFullServerCard:
+        return "CheckoutFullServerCard";
       case CreditCard::RecordType::kVirtualCard:
         return "CheckoutVirtualCard";
       case CreditCard::RecordType::kMaskedServerCard:
@@ -461,9 +459,11 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
       autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowFailed, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         MandatoryReauthManagerOptInFlowTest,
-                         testing::Values(CreditCard::RecordType::kLocalCard,
-                                         CreditCard::RecordType::kVirtualCard));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MandatoryReauthManagerOptInFlowTest,
+    testing::Values(CreditCard::RecordType::kLocalCard,
+                    CreditCard::RecordType::kFullServerCard,
+                    CreditCard::RecordType::kVirtualCard));
 
 }  // namespace autofill::payments

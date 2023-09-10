@@ -20,26 +20,31 @@ namespace autofill_metrics {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class MandatoryReauthOfferOptInDecision {
+  // Opt-in is offered.
   kOffered = 0,
-  // Opt-in is not offered for the detailed reason below:
+  // Opt-in is not offered in incognito mode.
   kIncognitoMode = 1,
+  // The user does not have a valid auth method on the device (e.g. screenlock),
+  // so opt-in will not be offered.
   kNoSupportedReauthMethod = 2,
-  kNoCardExtractedFromForm = 3,
-  // We only offer opt-in after user experienced non-interactive authentication.
+  // Deprecated: kNoCardExtractedFromForm = 3,
+  // We only offer opt-in whenever the user experiences a non-interactive
+  // authentication.
   kWentThroughInteractiveAuthentication = 4,
   // For corner cases when a user goes through a non-interactive authentication
   // flow with a card that is not a local/server/virtual card, then types in a
   // local/server/virtual card manually into the form.
-  kManuallyFilledLocalCard = 5,
-  kManuallyFilledServerCard = 6,
-  kManuallyFilledVirtualCard = 7,
+  // Deprecated: kManuallyFilledLocalCard = 5,
+  // Deprecated: kManuallyFilledServerCard = 6,
+  // Deprecated: kManuallyFilledVirtualCard = 7,
   // For corner cases when there is no stored card for the extracted card.
-  kNoStoredCardForExtractedCard = 8,
+  // Deprecated: kNoStoredCardForExtractedCard = 8,
   // Currently reauth opt-in is only supported for local and virtual cards.
-  kUnsupportedCardType = 9,
+  // Deprecated: kUnsupportedCardType = 9,
   // Opt-in is never re-offered once the user has opted in or out.
   kAlreadyOptedIn = 10,
   kAlreadyOptedOut = 11,
+  // Opt-in is not offered if it is blocked by the strike database.
   kBlockedByStrikeDatabase = 12,
   kMaxValue = kBlockedByStrikeDatabase,
 };
@@ -105,7 +110,9 @@ enum class MandatoryReauthOptInOrOutSource {
   // The OptIn is triggered after using green pathed virtual card during
   // checkout.
   kCheckoutVirtualCard = 3,
-  kMaxValue = kCheckoutVirtualCard,
+  // The OptIn is triggered after filling a full server card.
+  kCheckoutFullServerCard = 4,
+  kMaxValue = kCheckoutFullServerCard,
 };
 
 void LogMandatoryReauthOfferOptInDecision(

@@ -956,7 +956,7 @@ TEST_F(
   EXPECT_FALSE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
-      "ReauthOfferOptInDecision",
+      "ReauthOfferOptInDecision2",
       autofill_metrics::MandatoryReauthOfferOptInDecision::
           kBlockedByStrikeDatabase,
       1);
@@ -977,7 +977,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_FALSE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
-      "ReauthOfferOptInDecision",
+      "ReauthOfferOptInDecision2",
       autofill_metrics::MandatoryReauthOfferOptInDecision::kAlreadyOptedIn, 1);
 }
 
@@ -996,7 +996,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_FALSE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
-      "ReauthOfferOptInDecision",
+      "ReauthOfferOptInDecision2",
       autofill_metrics::MandatoryReauthOfferOptInDecision::kAlreadyOptedOut, 1);
 }
 

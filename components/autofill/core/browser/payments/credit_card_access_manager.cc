@@ -1150,11 +1150,11 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
     accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess,
                                    card_.get());
 
-    // This local card autofill flow did not have any interactive
+    // This local or full server card autofill flow did not have any interactive
     // authentication, so notify the FormDataImporter of this.
     client_->GetFormDataImporter()
         ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-            CreditCard::RecordType::kLocalCard);
+            card_->record_type());
 
     // `accessor_->OnCreditCardFetched()` makes a copy of `card` and `cvc`
     // before it asynchronously fills them into the form. Thus we can safely
@@ -1224,7 +1224,7 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
         // below.
         client_->GetFormDataImporter()
             ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-                CreditCard::RecordType::kVirtualCard);
+                card_->record_type());
 
         autofill_metrics::LogServerCardUnmaskResult(
             autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked,
