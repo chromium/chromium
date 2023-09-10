@@ -43,11 +43,17 @@ class TestImporterTest(LoggingTestCase):
             'cq-builder-a': {
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
                 'is_try_builder': True,
             },
             'cq-builder-b': {
                 'port_name': 'mac-mac12',
                 'specifiers': ['Mac12', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
                 'is_try_builder': True,
             },
             'cq-wpt-builder-c': {

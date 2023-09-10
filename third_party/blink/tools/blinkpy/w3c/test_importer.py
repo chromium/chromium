@@ -261,7 +261,7 @@ class TestImporter(object):
         wptrunner_builders = {
             builder
             for builder in self.host.builders.all_try_builder_names()
-            if self.host.builders.uses_wptrunner(builder)
+            if self.host.builders.has_wptrunner_steps(builder)
         }
         if rebaselining_builders:
             _log.info('For rebaselining:')

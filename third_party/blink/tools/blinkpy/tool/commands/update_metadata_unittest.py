@@ -152,9 +152,12 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
                 'steps': {
-                    'wpt_tests_suite (with patch)': {},
+                    'wpt_tests_suite (with patch)': {
+                        'uses_wptrunner': True,
+                    },
                     'wpt_tests_suite_highdpi (with patch)': {
                         'flag_specific': 'highdpi',
+                        'uses_wptrunner': True,
                     },
                 },
             },
@@ -163,7 +166,9 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 'specifiers': ['Mac10.11', 'Debug'],
                 'is_try_builder': True,
                 'steps': {
-                    'wpt_tests_suite (with patch)': {},
+                    'wpt_tests_suite (with patch)': {
+                        'uses_wptrunner': True,
+                    },
                 },
             },
             'Test Linux Tests (wpt)': {

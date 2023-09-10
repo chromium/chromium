@@ -97,7 +97,7 @@ class TestConfigurations(collections.abc.Mapping):
         wptrunner_builders = {
             builder
             for builder in host.builders.all_builder_names()
-            if host.builders.uses_wptrunner(builder)
+            if host.builders.has_wptrunner_steps(builder)
         }
 
         for builder in wptrunner_builders:
@@ -105,6 +105,8 @@ class TestConfigurations(collections.abc.Mapping):
             _, build_config, *_ = host.builders.specifiers_for_builder(builder)
 
             for step in host.builders.step_names_for_builder(builder):
+                if not host.builders.uses_wptrunner(builder, step):
+                    continue
                 flag_specific = host.builders.flag_specific_option(
                     builder, step) or ''
                 port = host.port_factory.get(

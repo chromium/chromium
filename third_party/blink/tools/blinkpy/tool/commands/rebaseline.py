@@ -352,7 +352,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         #TODO: we should make the selection of (builder, step) deterministic
         for builder, step in list(release_build_steps) + list(
                 debug_build_steps):
-            if not self._tool.builders.uses_wptrunner(builder):
+            if not self._tool.builders.uses_wptrunner(builder, step):
                 # Some result db related unit tests set step to None
                 is_legacy_step = step is None or 'blink_web_tests' in step
                 flag_spec_option = self._tool.builders.flag_specific_option(

@@ -104,7 +104,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         allowed_builders = {
             builder
             for builder in self._tool.builders.all_try_builder_names()
-            if not self._tool.builders.uses_wptrunner(builder)
+            if self._tool.builders.has_rwt_steps(builder)
         }
         for builder in value.split(','):
             if builder in allowed_builders:

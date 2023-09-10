@@ -443,7 +443,7 @@ class UpdateMetadata(Command):
         builders = self._tool.builders.all_try_builder_names()
         return [
             Build(builder) for builder in builders
-            if self._tool.builders.uses_wptrunner(builder)
+            if self._tool.builders.has_wptrunner_steps(builder)
         ]
 
     def _explicit_include_patterns(self, options: optparse.Values,
