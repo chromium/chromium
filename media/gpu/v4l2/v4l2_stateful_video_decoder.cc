@@ -421,6 +421,13 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DVLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   if (buffer->end_of_stream()) {
+    if (!event_task_runner_) {
+      // Receiving Flush before any "normal" Decode() calls. This is a bit of a
+      // contrived situation but possible, nonetheless ,and also a test case.
+      std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
+      return;
+    }
+
     if (h264_frame_reassembler_ && h264_frame_reassembler_->HasFragments()) {
       decoder_buffer_and_callbacks_.emplace(
           h264_frame_reassembler_->AssembleAndFlushFragments(),
@@ -442,13 +449,6 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
     if (!OUTPUT_queue_->SendStopCommand()) {
       std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
-      return;
-    }
-
-    if (!event_task_runner_) {
-      // Receiving Flush before any "normal" Decode() calls. This is a bit of a
-      // contrived situation but possible, nonetheless ,and also a test case.
-      std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
       return;
     }
 
