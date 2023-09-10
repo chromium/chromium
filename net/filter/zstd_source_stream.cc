@@ -4,12 +4,15 @@
 
 #include "net/filter/zstd_source_stream.h"
 
+#include <algorithm>
 #include <utility>
 
 #define ZSTD_STATIC_LINKING_ONLY
 
+#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "third_party/zstd/src/lib/zstd.h"
 #include "third_party/zstd/src/lib/zstd_errors.h"
@@ -37,10 +40,21 @@ class ZstdSourceStream : public FilterSourceStream {
     ZSTD_customMem custom_mem = {&customMalloc, &customFree, this};
     dctx_.reset(ZSTD_createDCtx_advanced(custom_mem));
     CHECK(dctx_);
+
     // Following RFC 8878 recommendation (see section 3.1.1.1.2 Window
     // Descriptor) of using a maximum 8MB memory buffer to decompress frames
     // to '... protect decoders from unreasonable memory requirements'.
-    ZSTD_DCtx_setParameter(dctx_.get(), ZSTD_d_windowLogMax, 23);
+    int window_log_max = 23;
+    if (dictionary_) {
+      // For shared dictionary case, allow using larger window size (Log2Ceiling
+      // of `dictionary_size`). It is safe because we have the size limit per
+      // shared dictionary and the total dictionary size limit.
+      window_log_max =
+          std::max(base::bits::Log2Ceiling(
+                       base::checked_cast<uint32_t>(dictionary_size_)),
+                   window_log_max);
+    }
+    ZSTD_DCtx_setParameter(dctx_.get(), ZSTD_d_windowLogMax, window_log_max);
     if (dictionary_) {
       size_t result = ZSTD_DCtx_loadDictionary_advanced(
           dctx_.get(), reinterpret_cast<const void*>(dictionary_->data()),
