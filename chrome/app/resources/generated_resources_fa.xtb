@@ -1429,6 +1429,7 @@
 <translation id="2102495993840063010">‏برنامه‌های Android</translation>
 <translation id="2104166991923847969">خاموش شدن خودکار نقطه اتصال</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> پنهان شده است</translation>
+<translation id="2108204112555497972">‫<ph name="NUM_DAYS_HOURS_MINUTES" /> ثانیه پیش بررسی شد</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{شماره تلفن}one{# شماره تلفن}other{# شماره تلفن}}</translation>
 <translation id="2110941575868943054">اجازه دارند دستگاه‌های بلوتوث را جستجو کند</translation>
 <translation id="211144231511833662">پاک کردن نوع</translation>
@@ -2470,6 +2471,7 @@
 <translation id="2907619724991574506">نشانی‌های وب راه‌اندازی</translation>
 <translation id="2907798539022650680">اتصال به «<ph name="NAME" />» ناموفق بود: <ph name="DETAILS" />
     پیام سرور: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">‏باز کردن فایل‌های Word،‏ Excel، و PowerPoint</translation>
 <translation id="2908162660801918428">افزودن گالری رسانه از طریق دایرکتوری</translation>
 <translation id="2908358077082926882">برای لغو تخصیص و <ph name="RESPONSE" />، «<ph name="CURRENTKEY" />» را دوباره فشار دهید.</translation>
 <translation id="2909506265808101667">‏اتصال با سرویس‌های Google برقرار نشد. اتصال شبکه‌تان را بررسی و دوباره امتحان کنید. کد خطا: <ph name="ERROR_CODE" />.</translation>
@@ -6111,6 +6113,7 @@
 <translation id="5920543303088087579">سرپرستتان اتصال به این شبکه را غیرفعال کرده است</translation>
 <translation id="5921257443092182237">‏«خدمات مکان Google» از منابعی مانند Wi-Fi، شبکه تلفن همراه، و حسگرها برای کمک به تخمین مکان دستگاه شما استفاده می‌کند.</translation>
 <translation id="5924047253200400718">دریافت راهنمایی<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">‏پیش‌از کپی یا منتقل کردن فایل‌های Microsoft به Google Drive سؤال شود</translation>
 <translation id="5924527146239595929">‏عکس جدیدی بگیرید یا عکس یا نماد موجودی را انتخاب کنید.
     <ph name="LINE_BREAK" />
     این تصویر در صفحه ورود به سیستم و صفحه درحالت قفل Chromebook نشان داده می‌شود.</translation>
@@ -6529,6 +6532,7 @@
 <translation id="6263284346895336537">غیر مهم</translation>
 <translation id="6264365405983206840">انتخاب &amp;همه</translation>
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
+<translation id="6265159465845424232">‏پیش‌از کپی یا منتقل کردن فایل‌های Microsoft به Microsoft OneDrive سؤال شود</translation>
 <translation id="6265687851677020761">برداشتن درگاه</translation>
 <translation id="6266532094411434237">درحال اتصال به <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">انتخاب گواهی برای راستی‌آزمایی خودتان در <ph name="HOST_NAME" /></translation>
@@ -7290,6 +7294,7 @@
 <translation id="6897363604023044284">انتخاب سایت برای پاک کردن</translation>
 <translation id="6897688156970667447">مفید در نور کم و برای صرفه‌جویی در باتری</translation>
 <translation id="6897972855231767338">درباره مرور به‌عنوان مهمان بیشتر بدانید</translation>
+<translation id="6898438890765871056">‏باز کردن پوشه OneDrive</translation>
 <translation id="6898440773573063262">از این به بعد در این دستگاه برنامه‌های کیوسک می‌توانند برای راه‌اندازی خودکار پیکربندی شوند.</translation>
 <translation id="6899427698619335650">‏مجاز کردن حرکت‌گذاری انعطاف‌پذیر. برای مثال، می‌توانید با تایپ کردن «anh1» یا «a1nh» به «ánh» برسید.</translation>
 <translation id="6900284862687837908">برنامه پس‌زمینه: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8044,6 +8049,7 @@
 <translation id="7517959947270534934">‏عضو خانواده‌تان فعلاً نمی‌تواند گذرواژه‌ها را دریافت کند. از او بخواهید Chrome را به‌روزرسانی و گذرواژه‌هایش را همگام‌سازی کند.</translation>
 <translation id="7520766081042531487">درگاه ناشناس: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">نمایش میان‌برها</translation>
+<translation id="7521430434164837205">‏فایل‌های Microsoft 365</translation>
 <translation id="7522255036471229694">‏بگویید «Ok Google»</translation>
 <translation id="7523117833414447032">هنگام خواندن حروف بزرگ</translation>
 <translation id="7523585675576642403">تغییر نام نمایه</translation>
@@ -9772,6 +9778,7 @@
 <translation id="8896830132794747524">با حرکات سریع‌تر موشواره، نشانگر بیشتر حرکت خواهد کرد</translation>
 <translation id="8898140163781851592">دکمه اصلی موشواره</translation>
 <translation id="8898786835233784856">انتخاب برگه بعدی</translation>
+<translation id="8898790559170352647">‏افزودن حساب Microsoft</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
 <translation id="8899851313684471736">باز کردن پیوند در &amp;پنجره جدید</translation>
 <translation id="8900413463156971200">فعال کردن شبکه تلفن همراه</translation>

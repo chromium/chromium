@@ -1432,6 +1432,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2102495993840063010">Aplikasi Android</translation>
 <translation id="2104166991923847969">Otomatis nonaktifkan hotspot</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> tersembunyi</translation>
+<translation id="2108204112555497972">Diperiksa <ph name="NUM_DAYS_HOURS_MINUTES" /> lalu</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nomor telepon}other{# nomor telepon}}</translation>
 <translation id="2110941575868943054">Diizinkan mencari perangkat Bluetooth</translation>
 <translation id="211144231511833662">Hapus Jenis</translation>
@@ -2473,6 +2474,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2907619724991574506">URL Memulai</translation>
 <translation id="2907798539022650680">Gagal terhubung ke '<ph name="NAME" />': <ph name="DETAILS" />
     Pesan server: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Buka file Word, Excel, dan PowerPoint</translation>
 <translation id="2908162660801918428">Tambahkan Galeri Media menurut Direktori</translation>
 <translation id="2908358077082926882">Tekan "<ph name="CURRENTKEY" />" lagi untuk menghapus penetapan dan <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Tidak dapat terhubung dengan layanan Google. Periksa koneksi jaringan Anda, lalu coba lagi. Kode error: <ph name="ERROR_CODE" />.</translation>
@@ -6114,6 +6116,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5920543303088087579">Koneksi ke jaringan ini tidak diizinkan oleh administrator</translation>
 <translation id="5921257443092182237">Layanan lokasi Google menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat ini.</translation>
 <translation id="5924047253200400718">Dapatkan bantuan<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Tanyakan sebelum menyalin atau memindahkan file Microsoft ke Google Drive</translation>
 <translation id="5924527146239595929">Ambil foto baru atau pilih foto atau ikon yang sudah ada.
     <ph name="LINE_BREAK" />
     Gambar ini akan ditampilkan di layar login dan layar kunci Chromebook.</translation>
@@ -6532,6 +6535,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6263284346895336537">Tidak Kritis</translation>
 <translation id="6264365405983206840">Pilih Semu&amp;a</translation>
 <translation id="6264376385120300461">Tetap download</translation>
+<translation id="6265159465845424232">Tanyakan sebelum menyalin atau memindahkan file Microsoft ke Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Hapus port</translation>
 <translation id="6266532094411434237">Menghubungkan ke <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Pilih sertifikat untuk membuktikan diri Anda ke <ph name="HOST_NAME" /></translation>
@@ -7291,6 +7295,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6897363604023044284">Pilih situs yang akan dihapus datanya</translation>
 <translation id="6897688156970667447">Berguna saat cahaya redup dan menghemat baterai</translation>
 <translation id="6897972855231767338">Pelajari lebih lanjut cara menjelajah sebagai tamu</translation>
+<translation id="6898438890765871056">Buka folder OneDrive</translation>
 <translation id="6898440773573063262">Aplikasi Kiosk sekarang dapat dikonfigurasi untuk peluncuran otomatis di perangkat ini.</translation>
 <translation id="6899427698619335650">Izinkan penetapan diakritik yang fleksibel. Misalnya, Anda dapat mengetik “anh1” atau “a1nh” untuk mendapatkan “ánh”.</translation>
 <translation id="6900284862687837908">Aplikasi Latar Belakang: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8044,6 +8049,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7517959947270534934">Anggota keluarga Anda saat ini tidak dapat menerima sandi. Minta anggota keluarga untuk mengupdate Chrome dan menyinkronkan sandi.</translation>
 <translation id="7520766081042531487">Portal Samaran: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Tampilkan pintasan</translation>
+<translation id="7521430434164837205">File Microsoft 365</translation>
 <translation id="7522255036471229694">Ucapkan "Ok Google"</translation>
 <translation id="7523117833414447032">Saat membaca huruf kapital</translation>
 <translation id="7523585675576642403">Ganti Nama Profil</translation>
@@ -9772,6 +9778,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8896830132794747524">Gerakan yang lebih cepat dengan mouse akan menggerakkan kursor lebih jauh</translation>
 <translation id="8898140163781851592">Tombol mouse utama</translation>
 <translation id="8898786835233784856">Pilih Tab Berikutnya</translation>
+<translation id="8898790559170352647">Tambahkan akun Microsoft Anda</translation>
 <translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>
 <translation id="8899851313684471736">Buka link di &amp;jendela baru</translation>
 <translation id="8900413463156971200">Aktifkan jaringan Seluler</translation>

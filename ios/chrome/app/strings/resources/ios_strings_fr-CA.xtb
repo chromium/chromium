@@ -174,7 +174,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1959679933317802873">En attente de contenu…</translation>
 <translation id="1965935827552890526">Terminez ce que vous faisiez dans votre autre fenêtre de Chrome.</translation>
 <translation id="1967461193809857427">{count,plural, =1{Reprendre l'onglet que vous avez laissé sur Android?}one{Reprendre les onglets que vous avez laissés sur Android?}other{Reprendre les onglets que vous avez laissés sur Android?}}</translation>
-<translation id="1973912524893600642">Garder les données</translation>
+<translation id="1973912524893600642">Conserver les données</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1980417445547898121">{count,plural, =1{Obtenez {count} onglet récemment actif à partir de votre autre appareil sur cet iPhone}one{Obtenez {count} onglet récemment actif à partir de votre autre appareil sur cet iPhone}other{Obtenez vos {count} onglets récemment actifs à partir de votre autre appareil sur cet iPhone}}</translation>
 <translation id="1981118202195772574">Mobile</translation>
