@@ -4809,6 +4809,29 @@
             ]
         }
     ],
+    "DelayablePriorityThreshold": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Medium_20230906",
+                    "params": {
+                        "DelayablePriorityThreshold": "medium"
+                    },
+                    "enable_features": [
+                        "DelayablePriorityThresholdFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeprecateAssistantStylusFeatures": [
         {
             "platforms": [
