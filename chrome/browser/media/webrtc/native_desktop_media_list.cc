@@ -180,13 +180,17 @@ class NativeDesktopMediaList::Worker
   ~Worker() override;
 
   void Start();
-  void Refresh(const DesktopMediaID::Id& view_dialog_id, bool update_thumnails);
+  void Refresh(bool update_thumbnails);
 
   void RefreshThumbnails(std::vector<DesktopMediaID> native_ids,
                          const gfx::Size& thumbnail_size);
   void FocusList();
   void HideList();
   void ClearDelegatedSourceListSelection();
+
+  // If |excluded_window_id| is not kNullId, then that ID will
+  // be ignored by `this`.
+  void SetExcludedWindow(DesktopMediaID::Id excluded_window_id);
 
  private:
   typedef std::map<DesktopMediaID, size_t> ImageHashesMap;
@@ -201,10 +205,12 @@ class NativeDesktopMediaList::Worker
 
   // These must be members because |SourceDescription| is a protected type from
   // |DesktopMediaListBase|.
+  // |excluded_window_id|, if different from kNullId, indicates a window
+  // which should be excluded from the list produced.
   static std::vector<SourceDescription> FormatSources(
       const webrtc::DesktopCapturer::SourceList& sources,
-      const DesktopMediaID::Id& view_dialog_id,
-      const DesktopMediaList::Type& list_type);
+      const DesktopMediaList::Type& list_type,
+      DesktopMediaID::Id excluded_window_id);
 
 #if BUILDFLAG(IS_WIN)
   static std::vector<SourceDescription> GetCurrentProcessWindows();
@@ -242,11 +248,14 @@ class NativeDesktopMediaList::Worker
   bool delegated_source_list_has_selection_ = false;
   bool focused_ = false;
 
-  // Used to keep track of the view dialog where the thumbnails are displayed.
-  // Needed so that the view dialog can be excluded from the thumbnails.
+  // If this ID is different than kNullId, then windows with this ID
+  // may not be captured.
+  // Used to keep track of the view dialog where the thumbnails are displayed,
+  // so as to avoid offering the user to capture that dialog, which will
+  // disappear as soon as the user makes that choice.
   // TODO(https://crbug.com/1471931): Set this earlier to avoid frames being
   // dropped because it's not set. If possible set it in the constructor.
-  absl::optional<content::DesktopMediaID::Id> view_dialog_id_;
+  DesktopMediaID::Id excluded_window_id_ = DesktopMediaID::kNullId;
 
   // Stores hashes of snapshots previously captured.
   ImageHashesMap image_hashes_;
@@ -288,17 +297,8 @@ void NativeDesktopMediaList::Worker::Start() {
     capturer_->GetDelegatedSourceListController()->Observe(this);
 }
 
-void NativeDesktopMediaList::Worker::Refresh(
-    const DesktopMediaID::Id& view_dialog_id,
-    bool update_thumnails) {
+void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-
-  // Store the view_dialog_id so that it can be excluded from the thumbnail view
-  // when OnRecurrentCaptureResult() is called.
-  if (!view_dialog_id_.has_value()) {
-    view_dialog_id_ = view_dialog_id;
-  }
-  CHECK_EQ(*view_dialog_id_, view_dialog_id);
 
   webrtc::DesktopCapturer::SourceList sources;
   if (!capturer_->GetSourceList(&sources)) {
@@ -321,7 +321,7 @@ void NativeDesktopMediaList::Worker::Refresh(
   }
 
   std::vector<SourceDescription> source_descriptions =
-      FormatSources(sources, view_dialog_id, type_);
+      FormatSources(sources, type_, excluded_window_id_);
 
 #if BUILDFLAG(IS_WIN)
   // If |add_current_process_windows_| is set to false, |capturer_| will have
@@ -340,7 +340,7 @@ void NativeDesktopMediaList::Worker::Refresh(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeDesktopMediaList::RefreshForVizFrameSinkWindows,
-                     media_list_, source_descriptions, update_thumnails));
+                     media_list_, source_descriptions, update_thumbnails));
 }
 
 void NativeDesktopMediaList::Worker::RefreshThumbnails(
@@ -400,8 +400,8 @@ void NativeDesktopMediaList::Worker::RefreshThumbnails(
 std::vector<DesktopMediaListBase::SourceDescription>
 NativeDesktopMediaList::Worker::FormatSources(
     const webrtc::DesktopCapturer::SourceList& sources,
-    const DesktopMediaID::Id& view_dialog_id,
-    const DesktopMediaList::Type& list_type) {
+    const DesktopMediaList::Type& list_type,
+    DesktopMediaID::Id excluded_window_id) {
   std::vector<SourceDescription> source_descriptions;
   std::u16string title;
   for (size_t i = 0; i < sources.size(); ++i) {
@@ -422,8 +422,9 @@ NativeDesktopMediaList::Worker::FormatSources(
       case DesktopMediaList::Type::kWindow:
         source_type = DesktopMediaID::Type::TYPE_WINDOW;
         // Skip the picker dialog window.
-        if (sources[i].id == view_dialog_id)
+        if (sources[i].id == excluded_window_id) {
           continue;
+        }
         title = base::UTF8ToUTF16(sources[i].title);
         break;
 
@@ -591,10 +592,7 @@ void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
 }
 
 void NativeDesktopMediaList::Worker::OnSourceListUpdated() {
-  // Source list is updated, call Refresh.
-  if (view_dialog_id_.has_value()) {
-    Refresh(*view_dialog_id_, /*update_thumnails=*/false);
-  }
+  Refresh(/*update_thumbnails=*/false);
 }
 
 void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
@@ -608,6 +606,11 @@ void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
   // the SourceList is visible.
   if (focused_)
     capturer_->GetDelegatedSourceListController()->EnsureVisible();
+}
+
+void NativeDesktopMediaList::Worker::SetExcludedWindow(
+    DesktopMediaID::Id excluded_window_id) {
+  excluded_window_id_ = excluded_window_id;
 }
 
 void NativeDesktopMediaList::Worker::FocusList() {
@@ -708,6 +711,19 @@ NativeDesktopMediaList::~NativeDesktopMediaList() {
   thread_.Stop();
 }
 
+void NativeDesktopMediaList::SetViewDialogWindowId(DesktopMediaID dialog_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  DesktopMediaListBase::SetViewDialogWindowId(dialog_id);
+
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&Worker::SetExcludedWindow,
+                                base::Unretained(worker_.get()), dialog_id.id));
+}
+
 bool NativeDesktopMediaList::IsSourceListDelegated() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return is_source_list_delegated_;
@@ -761,7 +777,7 @@ void NativeDesktopMediaList::HideList() {
       base::BindOnce(&Worker::HideList, base::Unretained(worker_.get())));
 }
 
-void NativeDesktopMediaList::Refresh(bool update_thumnails) {
+void NativeDesktopMediaList::Refresh(bool update_thumbnails) {
   DCHECK(can_refresh());
 
 #if defined(USE_AURA)
@@ -776,12 +792,12 @@ void NativeDesktopMediaList::Refresh(bool update_thumnails) {
   thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&Worker::Refresh, base::Unretained(worker_.get()),
-                     view_dialog_id_.id, update_thumnails));
+                     update_thumbnails));
 }
 
 void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
     std::vector<SourceDescription> sources,
-    bool update_thumnails) {
+    bool update_thumbnails) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(can_refresh());
 
@@ -890,7 +906,7 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
 
   UpdateSourcesList(sources);
 
-  if (!update_thumnails) {
+  if (!update_thumbnails) {
     OnRefreshComplete();
     return;
   }
