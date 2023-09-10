@@ -304,9 +304,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // TODO(bartekn): Turn on zeroing as much as possible, to reduce
   // pointer-related UBs. In the current implementation we do it only when the
   // underlying implementation needs it for correctness, for performance
-  // reasons. There are two secnarios where it's important:
-  // 1. When rewriting renderer, we don't want extra overhead get in the way of
-  //    our perf evaluation.
+  // reasons. There are two scenarios where it's important:
+  // 1. When rewriting renderer, we don't want extra overhead to get in the way
+  //    of our perf evaluation.
   // 2. The same applies to rewriting 3rd party libraries, but also we want
   //    RawPtrNoOpImpl to be a true no-op, in case the library is linked with
   //    a product other than Chromium (this can be mitigated using
@@ -349,7 +349,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(raw_ptr&& p) noexcept {
-    // Unlike the the copy version of this operator, this branch is necessaty
+    // Unlike the the copy version of this operator, this branch is necessary
     // for correctness.
     if (PA_LIKELY(this != &p)) {
       Impl::ReleaseWrappedPtr(wrapped_ptr_);
