@@ -47,6 +47,7 @@
 #include "components/grit/components_resources.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
@@ -106,6 +107,10 @@ bool AppServiceProxyAsh::IsValidProfile() {
 void AppServiceProxyAsh::Initialize() {
   if (!IsValidProfile()) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(kAppServiceStorage)) {
+    app_storage_ = std::make_unique<apps::AppStorage>(app_registry_cache_);
   }
 
   const user_manager::User* user =

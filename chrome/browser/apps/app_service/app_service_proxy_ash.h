@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_storage/app_storage.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -412,6 +413,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   ShortcutInnerIconLoader shortcut_inner_icon_loader_;
   IconCoalescer shortcut_icon_coalescer_;
   IconCache shortcut_outer_icon_loader_;
+
+  std::unique_ptr<apps::AppStorage> app_storage_;
 
   raw_ptr<SubscriberCrosapi, ExperimentalAsh> crosapi_subscriber_ = nullptr;
 
