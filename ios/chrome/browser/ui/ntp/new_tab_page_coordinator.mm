@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -118,6 +119,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface NewTabPageCoordinator () <AppStateObserver,
+                                     AuthenticationServiceObserving,
                                      BooleanObserver,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
@@ -147,6 +149,10 @@
 
   // Observes changes in the DiscoverFeed.
   std::unique_ptr<DiscoverFeedObserverBridge> _discoverFeedObserverBridge;
+
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 // Coordinator for the ContentSuggestions.
@@ -408,6 +414,7 @@
   _prefObserverBridge.reset();
   _discoverFeedObserverBridge.reset();
   _identityObserverBridge.reset();
+  _authServiceObserverBridge.reset();
 
   self.started = NO;
 }
@@ -590,6 +597,11 @@
   // Start observing DiscoverFeedService.
   _discoverFeedObserverBridge = std::make_unique<DiscoverFeedObserverBridge>(
       self, self.discoverFeedService);
+
+  // Start observing Authentication service.
+  _authServiceObserverBridge =
+      std::make_unique<AuthenticationServiceObserverBridge>(self.authService,
+                                                            self);
 }
 
 // Creates all the NTP components.
@@ -1366,6 +1378,24 @@
     }
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
+  }
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  switch (self.authService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      // If sign-in becomes disabled, the sign-in promo must be disabled too.
+      // TODO(crbug.com/1479446): The sign-in promo should just be hidden
+      // instead of resetting the hierarchy.
+      [self updateNTPForFeed];
+      [self setContentOffsetToTop];
   }
 }
 
