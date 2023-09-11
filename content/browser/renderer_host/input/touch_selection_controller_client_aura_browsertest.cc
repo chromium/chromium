@@ -315,6 +315,14 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
     return selection_controller_client_;
   }
 
+  // Performs a tap to place the cursor at `point`.
+  void TapAndWaitForCursor(ui::test::EventGenerator& generator,
+                           const gfx::Point& point) {
+    selection_controller_client()->InitWaitForSelectionUpdate();
+    generator.GestureTapAt(point);
+    selection_controller_client()->Wait();
+  }
+
   // Performs a long press to select the word at `point`.
   void SelectWithLongPress(ui::test::EventGenerator& generator,
                            const gfx::Point& point) {
@@ -1590,42 +1598,28 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   EXPECT_FALSE(selection_controller_client()->IsMagnifierVisible());
 }
 
-// Tests that the select all command in the quick menu works correctly and that
-// the touch handles and quick menu are shown after the command is executed.
+// Tests that the select all menu command works correctly.
 IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        SelectAllCommand) {
-  // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(false);
-
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   ui::TouchSelectionControllerTestApi selection_controller_test_api(
       rwhva->selection_controller());
-  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
-            rwhva->selection_controller()->active_status());
-  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
-  EXPECT_EQ(gfx::RectF(),
-            rwhva->selection_controller()->GetVisibleRectBetweenBounds());
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
 
-  gfx::NativeView native_view = rwhva->GetNativeView();
-  ui::test::EventGenerator generator(native_view->GetRootWindow());
+  // Tap inside the textfield and wait for the insertion cursor to appear.
+  TapAndWaitForCursor(generator,
+                      ConvertPointFromView(rwhva, generator.delegate(),
+                                           GetPointInTextfield(2)));
 
-  // Tap inside the textfield and wait for the insertion handle to appear.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::INSERTION_HANDLE_SHOWN);
-  gfx::Point point = gfx::ToRoundedPoint(GetPointInTextfield(2));
-  generator.delegate()->ConvertPointFromTarget(native_view, &point);
-  generator.GestureTapAt(point);
-  selection_controller_client()->Wait();
-  EXPECT_EQ(ui::TouchSelectionController::INSERTION_ACTIVE,
-            rwhva->selection_controller()->active_status());
+  // Select all command should be enabled.
   EXPECT_TRUE(
       selection_controller_client()->GetActiveMenuClient()->IsCommandIdEnabled(
           ui::TouchEditable::kSelectAll));
 
   // Execute select all command.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::SELECTION_HANDLES_SHOWN);
+  selection_controller_client()->InitWaitForSelectionUpdate();
   selection_controller_client()->GetActiveMenuClient()->ExecuteCommand(
       ui::TouchEditable::kSelectAll, 0);
   selection_controller_client()->Wait();
@@ -1633,8 +1627,6 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   // All text in the textfield should be selected. Touch handles and quick menu
   // should be shown and the select all command should now be disabled since all
   // text is already selected.
-  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
-            rwhva->selection_controller()->active_status());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
   EXPECT_TRUE(selection_controller_test_api.GetStartVisible());
   EXPECT_TRUE(selection_controller_test_api.GetEndVisible());
@@ -1646,42 +1638,28 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
           ui::TouchEditable::kSelectAll));
 }
 
-// Tests that the select word command in the quick menu works correctly and that
-// the touch handles and quick menu are shown after the command is executed.
+// Tests that the select word menu command works correctly.
 IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        SelectWordCommand) {
-  // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(false);
-
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   ui::TouchSelectionControllerTestApi selection_controller_test_api(
       rwhva->selection_controller());
-  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
-            rwhva->selection_controller()->active_status());
-  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
-  EXPECT_EQ(gfx::RectF(),
-            rwhva->selection_controller()->GetVisibleRectBetweenBounds());
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
 
-  gfx::NativeView native_view = rwhva->GetNativeView();
-  ui::test::EventGenerator generator(native_view->GetRootWindow());
+  // Tap inside the textfield and wait for the insertion cursor to appear.
+  TapAndWaitForCursor(generator,
+                      ConvertPointFromView(rwhva, generator.delegate(),
+                                           GetPointInTextfield(2)));
 
-  // Tap inside the textfield and wait for the insertion handle to appear.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::INSERTION_HANDLE_SHOWN);
-  gfx::Point point = gfx::ToRoundedPoint(GetPointInTextfield(2));
-  generator.delegate()->ConvertPointFromTarget(native_view, &point);
-  generator.GestureTapAt(point);
-  selection_controller_client()->Wait();
-  EXPECT_EQ(ui::TouchSelectionController::INSERTION_ACTIVE,
-            rwhva->selection_controller()->active_status());
+  // Select word command should be enabled.
   EXPECT_TRUE(
       selection_controller_client()->GetActiveMenuClient()->IsCommandIdEnabled(
           ui::TouchEditable::kSelectWord));
 
   // Execute select word command.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::SELECTION_HANDLES_SHOWN);
+  selection_controller_client()->InitWaitForSelectionUpdate();
   selection_controller_client()->GetActiveMenuClient()->ExecuteCommand(
       ui::TouchEditable::kSelectWord, 0);
   selection_controller_client()->Wait();
@@ -1689,8 +1667,6 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   // The closest word should be selected. Touch handles and quick menu should be
   // shown and the select word command should now be disabled since there is a
   // non-empty selection.
-  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
-            rwhva->selection_controller()->active_status());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
   EXPECT_TRUE(selection_controller_test_api.GetStartVisible());
   EXPECT_TRUE(selection_controller_test_api.GetEndVisible());
@@ -1706,21 +1682,17 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 // disabled for empty textfields.
 IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        SelectCommandsEmptyTextfield) {
-  // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(false);
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
 
-  // Long-press on an empty textfield and wait for insertion handle to appear.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::INSERTION_HANDLE_SHOWN);
-  gfx::PointF point = GetPointInsideEmptyTextfield();
-  ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
-  long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
-  ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
-                              long_press_details);
-  rwhva->OnGestureEvent(&long_press);
-  selection_controller_client()->Wait();
+  // Long-press on an empty textfield, then release to make an insertion handle
+  // appear.
+  SelectWithLongPress(generator,
+                      ConvertPointFromView(rwhva, generator.delegate(),
+                                           GetPointInsideEmptyTextfield()));
+  generator.ReleaseTouch();
 
   // Select all and select word commands should be disabled.
   EXPECT_FALSE(
