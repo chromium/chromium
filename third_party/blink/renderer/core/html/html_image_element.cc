@@ -711,10 +711,6 @@ bool HTMLImageElement::HasLegalLinkAttribute(const QualifiedName& name) const {
          HTMLElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLImageElement::SubResourceAttributeName() const {
-  return html_names::kSrcAttr;
-}
-
 void HTMLImageElement::SetIsAdRelated() {
   if (!is_ad_related_ && GetDocument().View()) {
     GetDocument().View()->RegisterForLifecycleNotifications(this);

@@ -294,8 +294,4 @@ bool HTMLBodyElement::HasLegalLinkAttribute(const QualifiedName& name) const {
          HTMLElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLBodyElement::SubResourceAttributeName() const {
-  return html_names::kBackgroundAttr;
-}
-
 }  // namespace blink

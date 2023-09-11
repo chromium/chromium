@@ -244,7 +244,6 @@ class CORE_EXPORT HTMLImageElement final
 
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
-  const QualifiedName& SubResourceAttributeName() const override;
 
   bool draggable() const override;
 

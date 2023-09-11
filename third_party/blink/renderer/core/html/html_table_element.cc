@@ -648,10 +648,6 @@ bool HTMLTableElement::HasLegalLinkAttribute(const QualifiedName& name) const {
          HTMLElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLTableElement::SubResourceAttributeName() const {
-  return html_names::kBackgroundAttr;
-}
-
 HTMLTableRowsCollection* HTMLTableElement::rows() {
   return EnsureCachedCollection<HTMLTableRowsCollection>(kTableRows);
 }

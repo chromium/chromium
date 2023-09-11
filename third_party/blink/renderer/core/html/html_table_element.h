@@ -86,7 +86,6 @@ class CORE_EXPORT HTMLTableElement final : public HTMLElement {
       MutableCSSPropertyValueSet*) override;
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
-  const QualifiedName& SubResourceAttributeName() const override;
 
   // Used to obtain either a solid or outset border decl and to deal with the
   // frame and rules attributes.

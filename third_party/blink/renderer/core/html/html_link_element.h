@@ -140,7 +140,6 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   void RemovedFrom(ContainerNode&) override;
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
-  const QualifiedName& SubResourceAttributeName() const override;
   bool SheetLoaded() override;
   void NotifyLoadedSheetAndAllCriticalSubresources(
       LoadedSheetErrorStatus) override;

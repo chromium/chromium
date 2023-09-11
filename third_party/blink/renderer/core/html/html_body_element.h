@@ -66,7 +66,6 @@ class CORE_EXPORT HTMLBodyElement final : public HTMLElement,
 
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
-  const QualifiedName& SubResourceAttributeName() const override;
 
   Document& GetDocumentForWindowEventHandler() const override {
     return GetDocument();

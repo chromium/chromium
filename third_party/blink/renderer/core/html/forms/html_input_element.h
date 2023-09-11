@@ -436,7 +436,6 @@ class CORE_EXPORT HTMLInputElement
 
   bool IsURLAttribute(const Attribute&) const final;
   bool HasLegalLinkAttribute(const QualifiedName&) const final;
-  const QualifiedName& SubResourceAttributeName() const final;
   bool IsInRange() const final;
   bool IsOutOfRange() const final;
 

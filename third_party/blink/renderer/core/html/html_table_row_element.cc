@@ -47,10 +47,6 @@ bool HTMLTableRowElement::HasLegalLinkAttribute(
          HTMLTablePartElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLTableRowElement::SubResourceAttributeName() const {
-  return html_names::kBackgroundAttr;
-}
-
 static int FindIndexInRowCollection(const HTMLCollection& rows,
                                     const HTMLTableRowElement& target) {
   Element* candidate = rows.item(0);

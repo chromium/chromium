@@ -274,6 +274,16 @@ HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
   document.IncrementImmediateChildFrameCreationCount();
 }
 
+const QualifiedName& HTMLFrameOwnerElement::SubResourceAttributeName() const {
+  // This doesn't really make sense, but it preserves existing behavior
+  // that may or may not matter for the one caller of this method.
+
+  // It might make more sense for this to be pure virtual and the
+  // remaining subclasses that don't override this (frame, iframe,
+  // portal, fenced frame) to do so.
+  return QualifiedName::Null();
+}
+
 LayoutEmbeddedContent* HTMLFrameOwnerElement::GetLayoutEmbeddedContent() const {
   // HTMLObjectElement and HTMLEmbedElement may return arbitrary layoutObjects
   // when using fallback content.

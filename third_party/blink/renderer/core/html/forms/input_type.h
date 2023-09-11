@@ -282,7 +282,6 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual String DefaultToolTip(const InputTypeView&) const;
   virtual Decimal FindClosestTickMarkValue(const Decimal&);
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
-  virtual const QualifiedName& SubResourceAttributeName() const;
   virtual void CopyNonAttributeProperties(const HTMLInputElement&);
   virtual void OnAttachWithLayoutObject();
 

@@ -2455,10 +2455,6 @@ bool Element::HasLegalLinkAttribute(const QualifiedName&) const {
   return false;
 }
 
-const QualifiedName& Element::SubResourceAttributeName() const {
-  return QualifiedName::Null();
-}
-
 template <typename CharacterType>
 static inline ClassStringContent ClassStringHasClassName(
     const CharacterType* characters,

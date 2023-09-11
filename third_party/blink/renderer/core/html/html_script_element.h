@@ -91,7 +91,6 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
-  const QualifiedName& SubResourceAttributeName() const override;
 
   // ScriptElementBase overrides:
   String SourceAttributeValue() const override;

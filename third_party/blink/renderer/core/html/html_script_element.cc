@@ -73,10 +73,6 @@ bool HTMLScriptElement::HasLegalLinkAttribute(const QualifiedName& name) const {
          HTMLElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLScriptElement::SubResourceAttributeName() const {
-  return html_names::kSrcAttr;
-}
-
 void HTMLScriptElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
   if (change.IsChildInsertion())

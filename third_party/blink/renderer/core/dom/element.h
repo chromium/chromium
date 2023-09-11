@@ -572,7 +572,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DefaultEventHandler(Event&) override;
 
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
-  virtual const QualifiedName& SubResourceAttributeName() const;
 
   // Only called by the parser immediately after element construction.
   void ParserSetAttributes(const Vector<Attribute, kAttributePrealloc>&);

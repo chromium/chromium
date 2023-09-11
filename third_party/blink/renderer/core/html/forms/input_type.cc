@@ -934,10 +934,6 @@ bool InputType::HasLegalLinkAttribute(const QualifiedName&) const {
   return false;
 }
 
-const QualifiedName& InputType::SubResourceAttributeName() const {
-  return QualifiedName::Null();
-}
-
 void InputType::CopyNonAttributeProperties(const HTMLInputElement&) {}
 
 void InputType::OnAttachWithLayoutObject() {}

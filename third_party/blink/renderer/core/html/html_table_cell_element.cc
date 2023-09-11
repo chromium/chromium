@@ -141,12 +141,6 @@ bool HTMLTableCellElement::HasLegalLinkAttribute(
          HTMLTablePartElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLTableCellElement::SubResourceAttributeName() const {
-  return HasTagName(html_names::kTdTag)
-             ? html_names::kBackgroundAttr
-             : HTMLTablePartElement::SubResourceAttributeName();
-}
-
 const AtomicString& HTMLTableCellElement::Abbr() const {
   return FastGetAttribute(html_names::kAbbrAttr);
 }

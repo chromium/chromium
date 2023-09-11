@@ -1527,10 +1527,6 @@ bool HTMLInputElement::HasLegalLinkAttribute(const QualifiedName& name) const {
          TextControlElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLInputElement::SubResourceAttributeName() const {
-  return input_type_->SubResourceAttributeName();
-}
-
 const AtomicString& HTMLInputElement::DefaultValue() const {
   return FastGetAttribute(html_names::kValueAttr);
 }

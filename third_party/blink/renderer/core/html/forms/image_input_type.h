@@ -64,7 +64,6 @@ class ImageInputType final : public BaseButtonInputType {
   unsigned Height() const override;
   unsigned Width() const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
-  const QualifiedName& SubResourceAttributeName() const override;
   void EnsureFallbackContent() override;
   void EnsurePrimaryContent() override;
   void CreateShadowSubtree() override;

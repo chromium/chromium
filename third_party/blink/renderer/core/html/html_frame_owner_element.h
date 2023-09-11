@@ -69,6 +69,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   virtual FrameOwnerElementType OwnerType() const = 0;
 
+  virtual const QualifiedName& SubResourceAttributeName() const;
+
   Document* getSVGDocument(ExceptionState&) const;
 
   void SetEmbeddedContentView(EmbeddedContentView*);

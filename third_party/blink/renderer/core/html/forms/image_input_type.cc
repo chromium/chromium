@@ -226,10 +226,6 @@ bool ImageInputType::HasLegalLinkAttribute(const QualifiedName& name) const {
          BaseButtonInputType::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& ImageInputType::SubResourceAttributeName() const {
-  return html_names::kSrcAttr;
-}
-
 void ImageInputType::EnsureFallbackContent() {
   if (use_fallback_content_)
     return;
