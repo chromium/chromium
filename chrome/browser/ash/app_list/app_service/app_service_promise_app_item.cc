@@ -29,11 +29,6 @@ AppServicePromiseAppItem::AppServicePromiseAppItem(
       package_id_(update.PackageId()) {
   InitializeItem(update);
 
-  SetPromisePackageId(update.PackageId().ToString());
-  SetAppStatus(
-      ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status()));
-  SetProgress(update.Progress().value_or(0));
-
   // Promise icons should not be synced as they are transient and only present
   // during app installations.
   SetIsEphemeral(true);
@@ -94,10 +89,9 @@ void AppServicePromiseAppItem::OnLoadIcon(apps::IconValuePtr icon_value) {
 void AppServicePromiseAppItem::InitializeItem(
     const apps::PromiseAppUpdate& update) {
   CHECK(update.ShouldShow());
+  SetPromisePackageId(update.PackageId().ToString());
   SetName(ShelfControllerHelper::GetLabelForPromiseStatus(update.Status()));
-  if (update.Progress().has_value()) {
-    SetProgress(update.Progress().value());
-  }
+  SetProgress(update.Progress().value_or(0));
   SetAppStatus(
       ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status()));
 }
