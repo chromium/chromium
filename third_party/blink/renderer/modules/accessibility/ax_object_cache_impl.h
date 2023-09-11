@@ -506,10 +506,6 @@ class MODULES_EXPORT AXObjectCacheImpl
                            base::TimeDelta timeout,
                            ui::AXTreeUpdate*) override;
 
-  void MarkAllImageAXObjectsDirty() override {
-    return Root()->MarkAllImageAXObjectsDirty();
-  }
-
   void MarkAXObjectDirtyWithDetails(
       AXObject* obj,
       bool subtree,

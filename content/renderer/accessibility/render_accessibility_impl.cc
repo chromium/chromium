@@ -475,11 +475,10 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
       // not change.
       if (!ax_image_annotator_) {
         CreateAXImageAnnotator();
-        // Walk the tree to discover images, and mark them dirty so that
-        // they get added to the annotator.
+        // Rebuild the document tree so that images become annotated.
         DCHECK(ax_context_);
         ScopedFreezeAXTreeSource freeze(ax_context_.get());
-        ax_context_->MarkAllImageAXObjectsDirty();
+        ax_context_->MarkDocumentDirty();
       }
       break;
     case ax::mojom::Action::kSignalEndOfTest:

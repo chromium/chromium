@@ -244,8 +244,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   virtual void MarkElementDirty(const Node*) = 0;
 
-  virtual void MarkAllImageAXObjectsDirty() = 0;
-
   // Notifies that an AXObject is dirty and its state needs
   // to be serialized again. If |subtree| is true, the entire subtree is
   // dirty.

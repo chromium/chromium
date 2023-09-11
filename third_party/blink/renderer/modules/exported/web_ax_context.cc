@@ -94,13 +94,6 @@ bool WebAXContext::SerializeEntireTree(size_t max_node_count,
                                                           timeout, response);
 }
 
-void WebAXContext::MarkAllImageAXObjectsDirty() {
-  if (!HasActiveDocument()) {
-    return;
-  }
-  private_->GetAXObjectCache().MarkAllImageAXObjectsDirty();
-}
-
 void WebAXContext::SerializeDirtyObjectsAndEvents(
     bool has_plugin_tree_source,
     std::vector<ui::AXTreeUpdate>& updates,
