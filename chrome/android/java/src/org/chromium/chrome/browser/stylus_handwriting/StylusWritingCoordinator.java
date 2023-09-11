@@ -39,12 +39,16 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
                     public void onContentChanged(Tab tab) {
                         if (tab.getWebContents() == null) return;
                         mStylusWritingController.onWebContentsChanged(tab.getWebContents());
+                        tab.getContentView().setStylusWritingIconSupplier(
+                                mStylusWritingController::resolvePointerIcon);
                     }
                 },
                 /* swap Callback */
                 tab -> {
                     if (tab == null || tab.getWebContents() == null) return;
                     mStylusWritingController.onWebContentsChanged(tab.getWebContents());
+                    tab.getContentView().setStylusWritingIconSupplier(
+                            mStylusWritingController::resolvePointerIcon);
                 });
     }
 

@@ -5,6 +5,7 @@
 package org.chromium.components.stylus_handwriting;
 
 import android.content.Context;
+import android.view.PointerIcon;
 
 import androidx.annotation.Nullable;
 
@@ -19,6 +20,9 @@ import org.chromium.content_public.browser.WebContents;
 public class StylusWritingController {
     private final Context mContext;
     private WebContents mCurrentWebContents;
+    @Nullable
+    private PointerIcon mHandwritingIcon;
+    private boolean mShouldOverrideStylusHoverIcon;
 
     @Nullable
     private AndroidStylusWritingHandler mAndroidHandler;
@@ -27,11 +31,22 @@ public class StylusWritingController {
     @Nullable
     private DisabledStylusWritingHandler mDisabledStylusWritingHandler;
 
+    static StylusWritingController createControllerForTests(Context context, PointerIcon icon) {
+        StylusWritingController controller = new StylusWritingController(context);
+        controller.mHandwritingIcon = icon;
+        return controller;
+    }
+
     /**
      * Creates a new instance of this class.
      */
     public StylusWritingController(Context context) {
         mContext = context;
+        int iconType = getHandler().getStylusPointerIcon();
+        if (iconType != PointerIcon.TYPE_NULL) {
+            mHandwritingIcon =
+                    PointerIcon.getSystemIcon(context, getHandler().getStylusPointerIcon());
+        }
     }
 
     /**
@@ -77,8 +92,8 @@ public class StylusWritingController {
         mCurrentWebContents = webContents;
         StylusApiOption handler = getHandler();
         handler.onWebContentsChanged(mContext, webContents);
-        webContents.getViewAndroidDelegate().setStylusWritingCursorHandler(
-                handler.getStylusWritingCursorHandler());
+        webContents.getViewAndroidDelegate().setShouldShowStylusHoverIconCallback(
+                this::setShouldOverrideStylusHoverIcon);
     }
 
     /**
@@ -95,7 +110,16 @@ public class StylusWritingController {
         if (mCurrentWebContents == null) return;
         handler.onWebContentsChanged(mContext, mCurrentWebContents);
         if (mCurrentWebContents.getViewAndroidDelegate() == null) return;
-        mCurrentWebContents.getViewAndroidDelegate().setStylusWritingCursorHandler(
-                handler.getStylusWritingCursorHandler());
+        mCurrentWebContents.getViewAndroidDelegate().setShouldShowStylusHoverIconCallback(
+                this::setShouldOverrideStylusHoverIcon);
+    }
+
+    @Nullable
+    public PointerIcon resolvePointerIcon() {
+        return mShouldOverrideStylusHoverIcon ? mHandwritingIcon : null;
+    }
+
+    private void setShouldOverrideStylusHoverIcon(boolean shouldOverride) {
+        mShouldOverrideStylusHoverIcon = shouldOverride;
     }
 }

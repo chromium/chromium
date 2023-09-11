@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
@@ -69,39 +70,15 @@ public class ViewAndroidDelegate {
     private final ObserverList<VerticalScrollDirectionChangeListener>
             mVerticalScrollDirectionChangeListeners = new ObserverList<>();
 
-    /**
-     * Handles cursor updates for stylus writing.
-     */
-    public interface StylusWritingCursorHandler {
-        /**
-         * @param currentView the current view to set the cursor.
-         * @return true if cursor update was handled.
-         */
-        boolean didHandleCursorUpdate(View currentView);
-
-        /**
-         * Notify that stylus writing icon is removed and not shown.
-         */
-        default void notifyStylusWritingCursorRemoved() {}
-    }
-
-    private StylusWritingCursorHandler mStylusWritingCursorHandler;
-
-    // Cache the last Pointer Icon calculated for cursor type received from blink. Pointer is reset
-    // to this icon when once cursor stops being overridden.
-    private PointerIcon mPointerIconForLastCursor;
-
-    // Whether the cursor received from blink has been overridden to set specific cursor.
-    // Ex: Stylus writing cursor.
-    private boolean mCursorOverridden;
+    private Callback<Boolean> mUpdateShouldShowStylusHoverIcon;
 
     /**
-     * Sets a handler to handle the stylus writing cursor updates.
-     *
-     * @param handler the handler object.
+     * Sets a callback which should be called with the latest value of whether the element being
+     * hovered over is editable.
+     * @param callback the callback object.
      */
-    public void setStylusWritingCursorHandler(StylusWritingCursorHandler handler) {
-        mStylusWritingCursorHandler = handler;
+    public void setShouldShowStylusHoverIconCallback(Callback<Boolean> callback) {
+        mUpdateShouldShowStylusHoverIcon = callback;
     }
 
     /**
@@ -277,8 +254,6 @@ public class ViewAndroidDelegate {
     @CalledByNative
     public void onCursorChangedToCustom(Bitmap customCursorBitmap, int hotspotX, int hotspotY) {
         PointerIcon icon = PointerIcon.create(customCursorBitmap, hotspotX, hotspotY);
-        mPointerIconForLastCursor = icon;
-        if (mCursorOverridden) return;
 
         getContainerViewGroup().setPointerIcon(icon);
     }
@@ -409,34 +384,16 @@ public class ViewAndroidDelegate {
         }
         ViewGroup containerView = getContainerViewGroup();
         PointerIcon icon = PointerIcon.getSystemIcon(containerView.getContext(), pointerIconType);
-        mPointerIconForLastCursor = icon;
-        if (mCursorOverridden) return;
 
         containerView.setPointerIcon(icon);
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private void notifyHoverActionStylusWritable(boolean stylusWritable) {
-        // Set stylus writing icon when hover action under pointer is writable.
-        if (stylusWritable && didHandleStylusWritingCursorUpdate()) {
-            mCursorOverridden = true;
-            return;
+    public void notifyHoverActionStylusWritable(boolean stylusWritable) {
+        if (mUpdateShouldShowStylusHoverIcon != null) {
+            mUpdateShouldShowStylusHoverIcon.onResult(stylusWritable);
         }
-
-        // If the hover action becomes not writable, then blink may not send another cursor update
-        // as the element under pointer is still same. Then reset to last cached icon from blink.
-        if (mCursorOverridden && !stylusWritable) {
-            getContainerViewGroup().setPointerIcon(mPointerIconForLastCursor);
-            if (mStylusWritingCursorHandler != null) {
-                mStylusWritingCursorHandler.notifyStylusWritingCursorRemoved();
-            }
-        }
-        mCursorOverridden = false;
-    }
-
-    private boolean didHandleStylusWritingCursorUpdate() {
-        return mStylusWritingCursorHandler != null
-                && mStylusWritingCursorHandler.didHandleCursorUpdate(getContainerViewGroup());
     }
 
     /**
