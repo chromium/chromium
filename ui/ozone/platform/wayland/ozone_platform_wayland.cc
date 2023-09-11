@@ -405,11 +405,8 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_clip_rect = buffer_manager_->supports_clip_rect();
       properties.supports_affine_transform =
           buffer_manager_->supports_affine_transform();
-      // TODO(crbug.com/1472486): Re-enable feature when the bugs are resolved.
-      // The |buffer_manager_->supports_out_of_window_clip_rect()| was
-      // (re)enabled but is a broken feature that causes the window jutter. So
-      // force to false until this situation is resolved.
-      properties.supports_out_of_window_clip_rect = false;
+      properties.supports_out_of_window_clip_rect =
+          buffer_manager_->supports_out_of_window_clip_rect();
     }
     return properties;
   }
