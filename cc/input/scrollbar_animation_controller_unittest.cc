@@ -45,7 +45,7 @@ class MockScrollbarAnimationControllerClient
     return host_impl_->ScrollbarsFor(scroll_element_id);
   }
   MOCK_METHOD0(DidChangeScrollbarVisibility, void());
-  bool IsFluentScrollbar() const override { return is_fluent_; }
+  bool IsFluentOverlayScrollbar() const override { return is_fluent_; }
 
   base::OnceClosure& start_fade() { return start_fade_; }
   base::TimeDelta& delay() { return delay_; }
@@ -162,17 +162,15 @@ class ScrollbarAnimationControllerAuraOverlayTest
   NiceMock<MockScrollbarAnimationControllerClient> client_;
 };
 
+// TODO(https://crbug.com/1479200): Implement unit tests for fluent overlay
+// scrollbars tickmarks when they are implemented. Also, investigate if there
+// are tests that work for both fluent and non fluent aura overlay scrollbars
+// that can be reused.
 class ScrollbarAnimationControllerFluentOverlayTest
     : public ScrollbarAnimationControllerAuraOverlayTest {
  public:
   ScrollbarAnimationControllerFluentOverlayTest()
       : ScrollbarAnimationControllerAuraOverlayTest(/* is_fluent */ true) {}
-
-  void SetUp() override {
-    ScrollbarAnimationControllerAuraOverlayTest::SetUp();
-    // Mock initial call for did request show on page load.
-    scrollbar_controller_->DidRequestShow();
-  }
 };
 
 // Check initialization of scrollbar. Should start off invisible and thin.
@@ -1269,7 +1267,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 
 // Ensure Aura Overlay Scrollbars shows and did not fade out when tickmarks show
 // and fade out when tickmarks hide.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, TickmakrsShowHide) {
+TEST_F(ScrollbarAnimationControllerAuraOverlayTest, TickmarksShowHide) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -1313,50 +1311,156 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, TickmakrsShowHide) {
   EXPECT_EQ(kFadeDelay, client_.delay());
 }
 
+// Test that Fluent scrollbar animations get properly queued when moving the
+// mouse while the scrollbar is visible.
 TEST_F(ScrollbarAnimationControllerFluentOverlayTest,
-       FluentScrollbarMinimalModeByDefault) {
-  // An fade out animation should have not been enqueued. Scrollbar stays in
-  // the minimal (thin) mode.
-  EXPECT_TRUE(client_.start_fade().is_null());
-  EXPECT_FLOAT_EQ(kIdleThicknessScale,
-                  v_scrollbar_layer_->thumb_thickness_scale_factor());
-  EXPECT_FLOAT_EQ(kIdleThicknessScale,
-                  h_scrollbar_layer_->thumb_thickness_scale_factor());
-  EXPECT_FALSE(scrollbar_controller_->ScrollbarsHidden());
-  ExpectScrollbarsOpacity(1.f);
-}
+       DidMouseMoveWithVisibleScrollbarQueuesAnimations) {
+  base::TimeTicks time;
+  time += base::Seconds(1);
+  ExpectScrollbarsOpacity(0.f);
 
-TEST_F(ScrollbarAnimationControllerFluentOverlayTest,
-       FluentScrollbarMinimalModeOnMouseLeave) {
-  // Move mouse inside scroller.
+  // Emulate scroll. Scrollbar should be fully shown.
+  scrollbar_controller_->DidScrollUpdate();
+  ExpectScrollbarsOpacity(1.f);
+
+  // Process a MouseMove far from the scrollbar, a fade out animation should be
+  // queued.
   scrollbar_controller_->DidMouseMove(gfx::PointF(50, 50));
-  EXPECT_TRUE(client_.start_fade().is_null());
+  EXPECT_FALSE(client_.start_fade().is_null());
+  std::move(client_.start_fade()).Run();
+  scrollbar_controller_->Animate(time);
+  time += kFadeDuration / 2.f;
+  scrollbar_controller_->Animate(time);
+  ExpectScrollbarsOpacity(0.5f);
+
+  // Process a MouseMove on top the vertical scrollbar, then tick animations for
+  // the thickness to update and check that it did.
+  scrollbar_controller_->DidMouseMove(gfx::PointF(90, 10));
+  scrollbar_controller_->Animate(time + kFadeDuration);
+  ExpectScrollbarsOpacity(1.f);
+}
+
+// Ensure Fluent overlay scrollbar remains hidden when invisible and being
+// moused over.
+TEST_F(ScrollbarAnimationControllerFluentOverlayTest,
+       DidMouseMoveWithHiddenScrollbarRemainsHidden) {
+  ExpectScrollbarsOpacity(0.f);
+
+  // Have the controller process a MouseMove on top of the vertical scrollbar
+  // and check that no animation was queued.
+  scrollbar_controller_->DidMouseMove(gfx::PointF(90, 10));
+  EXPECT_TRUE(client_.start_fade().is_null() ||
+              client_.start_fade().IsCancelled());
+  EXPECT_TRUE(scrollbar_controller_->ScrollbarsHidden());
+  ExpectScrollbarsOpacity(0.f);
+}
+
+// Ensure Fluent overlay scrollbar gets shown when scrolling, goes to Full Mode
+// when mousing over it and disappears when the mouse moves away.
+TEST_F(ScrollbarAnimationControllerFluentOverlayTest,
+       ScrollAndMouseOverGoesToFullMode) {
+  ExpectScrollbarsOpacity(0.f);
+
+  // Emulate scroll. Scrollbar should be fully shown.
+  scrollbar_controller_->DidScrollUpdate();
   ExpectScrollbarsOpacity(1.f);
 
-  // Trigger mouse leave to check that Fluent overlay scrollbars don't fade out.
-  scrollbar_controller_->DidMouseLeave();
+  // Process a MouseMove on top the vertical scrollbar, then tick animations for
+  // the scrollbar's thickness to update and check that it did.
+  scrollbar_controller_->DidMouseMove(gfx::PointF(90, 10));
+  base::TimeTicks time;
+  time += base::Seconds(1);
+  scrollbar_controller_->Animate(time);
+  time += kThinningDuration;
+  scrollbar_controller_->Animate(time);
+  EXPECT_FLOAT_EQ(1.f, v_scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  h_scrollbar_layer_->thumb_thickness_scale_factor());
 
-  // An fade out animation should have not been enqueued. Scrollbar stays in
-  // the minimal (thin) mode.
-  EXPECT_TRUE(client_.start_fade().is_null());
+  // Process a MouseMove away from the vertical scrollbar, then check that a
+  // fade out animation started.
+  scrollbar_controller_->DidMouseMove(gfx::PointF(10, 10));
+  EXPECT_EQ(kFadeDelay, client_.delay());
+  EXPECT_FALSE(client_.start_fade().is_null());
+  std::move(client_.start_fade()).Run();
+
+  // Tick the animation and verify that the scrollbar disappears and its
+  // thickness goes back to idle.
+  scrollbar_controller_->Animate(time);
+  scrollbar_controller_->Animate(time + kThinningDuration + kFadeDuration);
+  EXPECT_TRUE(scrollbar_controller_->ScrollbarsHidden());
+  ExpectScrollbarsOpacity(0.f);
   EXPECT_FLOAT_EQ(kIdleThicknessScale,
                   v_scrollbar_layer_->thumb_thickness_scale_factor());
   EXPECT_FLOAT_EQ(kIdleThicknessScale,
                   h_scrollbar_layer_->thumb_thickness_scale_factor());
-  ExpectScrollbarsOpacity(1.f);
 }
 
-TEST_F(ScrollbarAnimationControllerFluentOverlayTest,
-       FluentScrollbarMinimalModeOnWillUpdateScroll) {
-  // Scrollbar should be visible on scroll will update.
-  scrollbar_controller_->WillUpdateScroll();
+// Move the pointer out of the scroll area after scrolling and expect the
+// scrollbar to fade.
+TEST_F(ScrollbarAnimationControllerFluentOverlayTest, FadeWhenMouseLeaves) {
+  ExpectScrollbarsOpacity(0.f);
 
-  // An fade out animation should have not been enqueued. Scrollbar stays in
-  // the minimal (thin) mode.
-  EXPECT_TRUE(client_.start_fade().is_null());
+  // Emulate scroll. Scrollbar should be fully shown.
+  scrollbar_controller_->DidScrollUpdate();
+  ExpectScrollbarsOpacity(1.f);
+
+  // Emulate a MouseLeave and expect the scrollbar to eventually fade out.
+  scrollbar_controller_->DidMouseLeave();
+  EXPECT_EQ(kFadeDelay, client_.delay());
+  EXPECT_FALSE(client_.start_fade().is_null());
+  std::move(client_.start_fade()).Run();
+
+  // Tick the animation and verify that the scrollbars disappear and its
+  // thickness goes back to idle.
+  base::TimeTicks time;
+  time += base::Seconds(1);
+  scrollbar_controller_->Animate(time);
+  scrollbar_controller_->Animate(time + kThinningDuration + kFadeDuration);
+  ExpectScrollbarsOpacity(0.f);
+  EXPECT_TRUE(scrollbar_controller_->ScrollbarsHidden());
   EXPECT_FLOAT_EQ(kIdleThicknessScale,
                   v_scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  h_scrollbar_layer_->thumb_thickness_scale_factor());
+}
+
+// Test that scrollbars disappear when it is captured and then is released after
+// the mouse leaves the scrollable area.
+TEST_F(ScrollbarAnimationControllerFluentOverlayTest,
+       HidesWhenReleasedOutsideArea) {
+  ExpectScrollbarsOpacity(0.f);
+
+  // Emulate scroll. Scrollbar should be fully shown.
+  scrollbar_controller_->DidScrollUpdate();
   ExpectScrollbarsOpacity(1.f);
+
+  // Process a MouseMove on top the vertical scrollbar and capture it. It should
+  // render at full thickness immediately (without needing to tick animations).
+  scrollbar_controller_->DidMouseMove(gfx::PointF(90, 10));
+  scrollbar_controller_->DidMouseDown();
+  EXPECT_FLOAT_EQ(1.f, v_scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  h_scrollbar_layer_->thumb_thickness_scale_factor());
+
+  // Leave the scrollable area and verify that no animation is queued.
+  scrollbar_controller_->DidMouseLeave();
+  EXPECT_TRUE(client_.start_fade().is_null() ||
+              client_.start_fade().IsCancelled());
+
+  // Release the scrollbar, then check that a fade out animation started.
+  scrollbar_controller_->DidMouseUp();
+  EXPECT_EQ(kFadeDelay, client_.delay());
+  EXPECT_FALSE(client_.start_fade().is_null());
+  std::move(client_.start_fade()).Run();
+
+  // Tick the animation and verify that the scrollbars disappear.
+  base::TimeTicks time;
+  time += base::Seconds(1);
+  scrollbar_controller_->Animate(time);
+  scrollbar_controller_->Animate(time + kFadeDuration);
+  EXPECT_TRUE(scrollbar_controller_->ScrollbarsHidden());
+  ExpectScrollbarsOpacity(0.f);
 }
 
 class ScrollbarAnimationControllerAndroidTest
@@ -1382,7 +1486,7 @@ class ScrollbarAnimationControllerAndroidTest
     return host_impl()->ScrollbarsFor(scroll_element_id);
   }
   void DidChangeScrollbarVisibility() override {}
-  bool IsFluentScrollbar() const override { return false; }
+  bool IsFluentOverlayScrollbar() const override { return false; }
 
  protected:
   void SetUp() override {

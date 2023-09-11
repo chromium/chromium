@@ -148,9 +148,12 @@ void SingleScrollbarAnimationControllerThinning::DidMouseUp() {
   captured_ = false;
   StopAnimation();
 
-  const bool thickness_should_decrease = client_->IsFluentScrollbar()
-                                             ? !mouse_is_near_scrollbar_track_
-                                             : !mouse_is_near_scrollbar_thumb_;
+  // On mouse up, Fluent scrollbars go straight to the scrollbar disappearance
+  // animation (via ScrollbarAnimationController) without queueing a thinning
+  // animation.
+  const bool thickness_should_decrease =
+      !client_->IsFluentOverlayScrollbar() && !mouse_is_near_scrollbar_thumb_;
+
   if (thickness_should_decrease) {
     thickness_change_ = AnimationChange::kDecrease;
     StartAnimation();
@@ -160,16 +163,17 @@ void SingleScrollbarAnimationControllerThinning::DidMouseUp() {
 }
 
 void SingleScrollbarAnimationControllerThinning::DidMouseLeave() {
-  if (client_->IsFluentScrollbar() && !mouse_is_near_scrollbar_track_)
-    return;
-
-  if (!client_->IsFluentScrollbar() && !mouse_is_over_scrollbar_thumb_ &&
-      !mouse_is_near_scrollbar_thumb_)
-    return;
-
   mouse_is_over_scrollbar_thumb_ = false;
   mouse_is_near_scrollbar_thumb_ = false;
   mouse_is_near_scrollbar_track_ = false;
+
+  // On mouse leave, Fluent scrollbars go straight to the scrollbar
+  // disappearance animation (via ScrollbarAnimationController) without queueing
+  // a thinning animation.
+  if (client_->IsFluentOverlayScrollbar()) {
+    thickness_change_ = AnimationChange::kNone;
+    return;
+  }
 
   if (captured_)
     return;
@@ -203,13 +207,27 @@ void SingleScrollbarAnimationControllerThinning::CalculateThicknessShouldChange(
       distance_to_scrollbar_thumb == 0.0f;
   const bool mouse_is_near_scrollbar_thumb =
       distance_to_scrollbar_thumb <= MouseMoveDistanceToTriggerExpand();
-  const bool thickness_should_change =
-      client_->IsFluentScrollbar()
-          ? (mouse_is_near_scrollbar_track_ != mouse_is_near_scrollbar_track)
-          : (mouse_is_near_scrollbar_thumb_ != mouse_is_near_scrollbar_thumb);
+  bool thickness_should_change;
+  if (client_->IsFluentOverlayScrollbar()) {
+    const bool is_visible = scrollbar->OverlayScrollbarOpacity() > 0.f;
+    const bool moved_over_track =
+        mouse_is_near_scrollbar_track_ != mouse_is_near_scrollbar_track;
+    const bool mouse_far_from_track =
+        (!mouse_is_near_scrollbar_track &&
+         thickness_change_ == AnimationChange::kNone);
+    // On mouse move Fluent scrollbars will queue a thinning animation iff the
+    // scrollbar is visible and either the mouse has moved over the track
+    // (increase thickness) or the mouse has moved far away from the track
+    // and there is no previously queued animation (decreasse thickness).
+    thickness_should_change =
+        is_visible && (moved_over_track || mouse_far_from_track);
+  } else {
+    thickness_should_change =
+        (mouse_is_near_scrollbar_thumb_ != mouse_is_near_scrollbar_thumb);
+  }
 
   if (!captured_ && thickness_should_change) {
-    const bool thickness_should_increase = client_->IsFluentScrollbar()
+    const bool thickness_should_increase = client_->IsFluentOverlayScrollbar()
                                                ? mouse_is_near_scrollbar_track
                                                : mouse_is_near_scrollbar_thumb;
     thickness_change_ = thickness_should_increase ? AnimationChange::kIncrease
@@ -225,8 +243,8 @@ void SingleScrollbarAnimationControllerThinning::CalculateThicknessShouldChange(
 float SingleScrollbarAnimationControllerThinning::
     ThumbThicknessScaleByMouseDistanceToScrollbar() const {
   const bool mouse_is_near_scrollbar_part =
-      client_->IsFluentScrollbar() ? mouse_is_near_scrollbar_track_
-                                   : mouse_is_near_scrollbar_thumb_;
+      client_->IsFluentOverlayScrollbar() ? mouse_is_near_scrollbar_track_
+                                          : mouse_is_near_scrollbar_thumb_;
   return mouse_is_near_scrollbar_part ? 1.f : kIdleThicknessScale;
 }
 
@@ -286,12 +304,12 @@ void SingleScrollbarAnimationControllerThinning::ApplyThumbThicknessScale(
 
 float SingleScrollbarAnimationControllerThinning::
     MouseMoveDistanceToTriggerExpand() {
-  return client_->IsFluentScrollbar() ? 0.0f : 25.0f;
+  return client_->IsFluentOverlayScrollbar() ? 0.0f : 25.0f;
 }
 
 float SingleScrollbarAnimationControllerThinning::
     MouseMoveDistanceToTriggerFadeIn() {
-  return client_->IsFluentScrollbar() ? 0.0f : 30.0f;
+  return client_->IsFluentOverlayScrollbar() ? 0.0f : 30.0f;
 }
 
 }  // namespace cc

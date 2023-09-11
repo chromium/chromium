@@ -581,14 +581,17 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
 #else   // BUILDFLAG(IS_ANDROID)
   const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
 
+  settings.enable_fluent_scrollbar = ui::IsFluentScrollbarEnabled();
+  settings.enable_fluent_overlay_scrollbar =
+      ui::IsFluentOverlayScrollbarEnabled();
+
   if (ui::IsOverlayScrollbarEnabled()) {
     settings.scrollbar_animator = cc::LayerTreeSettings::AURA_OVERLAY;
     settings.scrollbar_thinning_duration =
         ui::kOverlayScrollbarThinningDuration;
-    settings.scrollbar_flash_after_any_scroll_update = true;
+    settings.scrollbar_flash_after_any_scroll_update =
+        !settings.enable_fluent_overlay_scrollbar;
   }
-
-  settings.enable_fluent_scrollbar = ui::IsFluentScrollbarEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   settings.decoded_image_working_set_budget_bytes =

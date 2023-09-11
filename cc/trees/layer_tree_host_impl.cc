@@ -4419,8 +4419,8 @@ ScrollbarSet LayerTreeHostImpl::ScrollbarsFor(ElementId id) const {
   return active_tree_->ScrollbarsFor(id);
 }
 
-bool LayerTreeHostImpl::IsFluentScrollbar() const {
-  return settings().enable_fluent_scrollbar;
+bool LayerTreeHostImpl::IsFluentOverlayScrollbar() const {
+  return settings().enable_fluent_overlay_scrollbar;
 }
 
 void LayerTreeHostImpl::AddVideoFrameController(
