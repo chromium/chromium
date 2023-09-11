@@ -199,16 +199,20 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                         final Tab currentTab = mTabModelSelector.getCurrentTab();
                         if (currentTab != null) {
                             if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
-                                mHideTabCallback = new HideTabCallback(() -> {
+                                if (mHideTabCallback != null) {
+                                    mHideTabCallback.cancel();
+                                }
+                                HideTabCallback hideTabCallback = new HideTabCallback(() -> {
                                     Tab tab = mTabModelSelector.getCurrentTab();
                                     if (currentTab == tab) {
                                         currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
                                     }
                                     mHideTabCallback = null;
                                 });
+                                mHideTabCallback = hideTabCallback;
                                 mTabContentManager.cacheTabThumbnailWithCallback(currentTab,
                                         /*returnBitmap=*/false,
-                                        (bitmap) -> { mHideTabCallback.run(); });
+                                        (bitmap) -> { hideTabCallback.run(); });
                             } else {
                                 mTabContentManager.cacheTabThumbnail(currentTab);
                             }
