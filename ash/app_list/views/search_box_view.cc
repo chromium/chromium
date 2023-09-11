@@ -1193,6 +1193,13 @@ void SearchBoxView::SetAutocompleteText(
   DCHECK(autocomplete_text != current_text);
   // Autocomplete text should not be the same as highlighted text.
 
+  // If the highlight range is beyond the suggested autocomplete text, clear
+  // the autocomplete ghost text and return.
+  if (highlight_range_.start() >= autocomplete_text.size()) {
+    MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
+    return;
+  }
+
   const std::u16string& highlighted_text =
       autocomplete_text.substr(highlight_range_.start());
   DCHECK(highlighted_text != current_text);
