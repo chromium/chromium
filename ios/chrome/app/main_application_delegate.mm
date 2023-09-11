@@ -63,9 +63,6 @@ const int kMainIntentCheckDelay = 1;
   NSSet<UISceneSession*>* _sceneSessionsToDiscard;
   // Delegate that handles delivered push notification workflow.
   PushNotificationDelegate* _pushNotificationDelegate;
-  // YES if the application was able to successfully register itself with APNS
-  // and obtain its APNS token.
-  BOOL _didRegisterDeviceWithAPNS;
 }
 
 // YES if application:didFinishLaunchingWithOptions: was called. Used to
@@ -88,6 +85,7 @@ const int kMainIntentCheckDelay = 1;
         [[AppState alloc] initWithStartupInformation:_startupInformation];
     _pushNotificationDelegate =
         [[PushNotificationDelegate alloc] initWithAppState:_appState];
+    [PushNotificationUtil registerDeviceWithAPNS];
     [_mainController setAppState:_appState];
   }
   return self;
@@ -229,7 +227,6 @@ const int kMainIntentCheckDelay = 1;
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
   // This method is invoked by iOS on the successful registration of the app to
   // APNS and retrieval of the device's APNS token.
-  _didRegisterDeviceWithAPNS = YES;
   base::UmaHistogramBoolean("IOS.PushNotification.APNSDeviceRegistration",
                             true);
 
@@ -368,8 +365,6 @@ const int kMainIntentCheckDelay = 1;
         }
       });
 
-  [self registerDeviceForPushNotifications];
-
   [_appState applicationWillEnterForeground:UIApplication.sharedApplication
                             metricsMediator:_metricsMediator
                                memoryHelper:_memoryHelper];
@@ -421,16 +416,6 @@ const int kMainIntentCheckDelay = 1;
 }
 
 #pragma mark - Private
-
-// Registers the device with APNS to enable receiving push notifications to the
-// device. In addition, the function sets the UNUserNotificationCenter's
-// delegate which enables the application to display push notifications that
-// were received while Chrome was open.
-- (void)registerDeviceForPushNotifications {
-  if (!_didRegisterDeviceWithAPNS) {
-    [PushNotificationUtil registerDeviceWithAPNS];
-  }
-}
 
 // Notifies the Feature Engagement Tracker (FET) that the app has launched from
 // an external intent (i.e. through the share sheet), which is an eligibility

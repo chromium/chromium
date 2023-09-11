@@ -24,10 +24,6 @@ PushNotificationBrowserStateServiceFactory::GetInstance() {
 PushNotificationBrowserStateService*
 PushNotificationBrowserStateServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  if (!IsPriceNotificationsEnabled()) {
-    return nullptr;
-  }
-
   return static_cast<PushNotificationBrowserStateService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
