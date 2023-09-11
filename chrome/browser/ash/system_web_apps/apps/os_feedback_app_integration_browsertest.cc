@@ -34,7 +34,6 @@
 class OSFeedbackAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   OSFeedbackAppIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures({ash::features::kOsFeedback}, {});
     feedback_url_ = GURL(ash::kChromeUIOSFeedbackUrl);
   }
 
@@ -99,9 +98,6 @@ class OSFeedbackAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
   GURL feedback_url_;
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This test verifies that the Feedback app is opened in a new browser window.

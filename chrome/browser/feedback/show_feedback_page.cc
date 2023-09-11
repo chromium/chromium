@@ -226,8 +226,7 @@ void RequestFeedbackFlow(const GURL& page_url,
     show_questionnaire = IsFromUserInteraction(source);
   }
   // Disable the new feedback tool for kiosk, because SWAs are disabled there.
-  if (!chromeos::IsKioskSession() &&
-      base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
+  if (!chromeos::IsKioskSession()) {
     // TODO(crbug.com/1407646): Include autofill metadata into CrOS new feedback
     // tool.
     ash::SystemAppLaunchParams params;

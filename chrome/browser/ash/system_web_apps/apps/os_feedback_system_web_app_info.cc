@@ -83,9 +83,6 @@ OSFeedbackAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForOSFeedbackSystemWebApp();
 }
 
-bool OSFeedbackAppDelegate::IsAppEnabled() const {
-  return base::FeatureList::IsEnabled(ash::features::kOsFeedback);
-}
 bool OSFeedbackAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return true;
 }

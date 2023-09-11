@@ -135,11 +135,6 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
 
 }  // namespace
 
-bool OSFeedbackUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(ash::features::kOsFeedback);
-}
-
 OSFeedbackUI::OSFeedbackUI(
     content::WebUI* web_ui,
     std::unique_ptr<OsFeedbackDelegate> feedback_delegate)

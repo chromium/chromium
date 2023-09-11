@@ -54,11 +54,6 @@ OsFeedbackUntrustedUIConfig::OsFeedbackUntrustedUIConfig()
 
 OsFeedbackUntrustedUIConfig::~OsFeedbackUntrustedUIConfig() = default;
 
-bool OsFeedbackUntrustedUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kOsFeedback);
-}
-
 std::unique_ptr<content::WebUIController>
 OsFeedbackUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                                    const GURL& url) {

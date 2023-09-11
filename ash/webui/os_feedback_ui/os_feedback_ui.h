@@ -36,8 +36,6 @@ class OSFeedbackUIConfig : public ChromeOSWebUIConfig<OSFeedbackUI> {
       : ChromeOSWebUIConfig(content::kChromeUIScheme,
                             ash::kChromeUIOSFeedbackHost,
                             create_controller_func) {}
-
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 class OSFeedbackUI : public ui::MojoWebUIController {

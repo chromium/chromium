@@ -196,9 +196,7 @@ FakeFeedbackPrivateDelegate::GetFeedbackUploaderForContext(
 
 class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
  public:
-  ChromeOsFeedbackDelegateTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kOsFeedback);
-  }
+  ChromeOsFeedbackDelegateTest() {}
 
   ~ChromeOsFeedbackDelegateTest() override = default;
 

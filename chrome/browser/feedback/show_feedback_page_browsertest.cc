@@ -29,9 +29,7 @@ namespace ash {
 
 class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
  public:
-  ShowFeedbackPageBrowserTest() {
-    scope_feature_list_.InitAndEnableFeature(ash::features::kOsFeedback);
-  }
+  ShowFeedbackPageBrowserTest() {}
   ~ShowFeedbackPageBrowserTest() override = default;
 
  protected:
