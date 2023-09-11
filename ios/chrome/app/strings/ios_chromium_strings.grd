@@ -422,7 +422,7 @@ Things to consider:
         Chromium uses Google Maps to give you directions and local info on detected addresses.
       </message>
       <message name="IDS_IOS_MINI_MAP_IPH_TITLE" desc="The text of the iph string displayed on Mini Map screen on first trigger [iOS only].">
-        Chromium detects addresses using Google Maps to give you directions and local info.
+        Chromium detects addresses and uses Google Maps to give you directions and local info.
       </message>
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_HEADER" desc="The header for the Import Data settings screen. [400em]">
         <ph name="USER_EMAIL1">$1<ex>johndoe@gmail.com</ex></ph> was using Chromium and left bookmarks, passwords, and other settings on this device.
