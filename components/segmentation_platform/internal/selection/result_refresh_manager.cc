@@ -17,8 +17,20 @@ bool SupportMultiOutput(SegmentResultProvider::SegmentResult* result) {
 }
 
 // Collects training data after model execution.
-void CollectTrainingData(const Config* config,
-                         ExecutionService* execution_service) {
+void CollectTrainingDataIfNeeded(
+    const Config* config,
+    ExecutionService* execution_service,
+    SegmentResultProvider::ResultState result_state) {
+  bool is_model_executed =
+      (result_state ==
+       SegmentResultProvider::ResultState::kServerModelExecutionScoreUsed) ||
+      (result_state ==
+       SegmentResultProvider::ResultState::kDefaultModelExecutionScoreUsed);
+
+  // Collect training data only if model was executed.
+  if (!is_model_executed) {
+    return;
+  }
   // The execution service and training data collector might be null in testing.
   if (execution_service && execution_service->training_data_collector()) {
     for (const auto& segment : config->segments) {
@@ -128,7 +140,7 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
   cached_result_writer_->UpdatePrefsIfExpired(config, client_result,
                                               platform_options_);
 
-  CollectTrainingData(config, execution_service);
+  CollectTrainingDataIfNeeded(config, execution_service, result_state);
 }
 
 }  // namespace segmentation_platform
