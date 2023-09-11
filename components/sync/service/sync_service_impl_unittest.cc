@@ -674,7 +674,7 @@ TEST_F(
             service()->GetTransportState());
 
   // This call represents the initial passphrase type coming in from the server.
-  service()->SetPassphraseType(PassphraseType::kCustomPassphrase);
+  service()->PassphraseTypeChanged(PassphraseType::kCustomPassphrase);
 
   // UserSelectableType::kAutofill should have been disabled.
   EXPECT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -703,7 +703,7 @@ TEST_F(
 
   // This call represents the passphrase type being determined again after a
   // browser restart.
-  service()->SetPassphraseType(PassphraseType::kCustomPassphrase);
+  service()->PassphraseTypeChanged(PassphraseType::kCustomPassphrase);
 
   // UserSelectableType::kAutofill should stay enabled.
   EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -753,7 +753,7 @@ TEST_F(
 
   // This call represents the initial passphrase type coming in from the server,
   // the user has no custom passphrase before signing in.
-  service()->SetPassphraseType(PassphraseType::kKeystorePassphrase);
+  service()->PassphraseTypeChanged(PassphraseType::kKeystorePassphrase);
 
   // UserSelectableType::kAutofill should have been enabled.
   ASSERT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -761,7 +761,7 @@ TEST_F(
 
   // This call represents setting a custom passphrase either locally or coming
   // in from the server.
-  service()->SetPassphraseType(PassphraseType::kCustomPassphrase);
+  service()->PassphraseTypeChanged(PassphraseType::kCustomPassphrase);
 
   // UserSelectableType::kAutofill should stay enabled.
   EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(

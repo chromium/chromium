@@ -1245,12 +1245,12 @@ void SyncServiceImpl::ReconfigureDataTypesDueToCrypto() {
   NotifyObservers();
 }
 
-void SyncServiceImpl::SetPassphraseType(PassphraseType passphrase_type) {
+void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // if kReplaceSyncPromosWithSignInPromos is enabled, kAutofill should be
   // disabled for newly sign in users who have already custom passphrase set.
-  // The first `SetPassphraseType()` call reflects the server-side passphrase
-  // type before signing in.
+  // The first `PassphraseTypeChanged()` call reflects the server-side
+  // passphrase type before signing in.
   if (!sync_prefs_.GetCachedPassphraseType().has_value() &&
       IsExplicitPassphrase(passphrase_type) &&
       GetSyncAccountStateForPrefs() ==

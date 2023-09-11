@@ -120,7 +120,7 @@ class MockDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(void, CryptoStateChanged, (), (override));
   MOCK_METHOD(void, CryptoRequiredUserActionChanged, (), (override));
   MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
-  MOCK_METHOD(void, SetPassphraseType, (PassphraseType), (override));
+  MOCK_METHOD(void, PassphraseTypeChanged, (PassphraseType), (override));
   MOCK_METHOD(absl::optional<PassphraseType>,
               GetPassphraseType,
               (),
@@ -148,7 +148,7 @@ class SyncServiceCryptoTest : public testing::Test {
 
     ON_CALL(delegate_, GetPassphraseType())
         .WillByDefault(ReturnPointee(&passphrase_type_));
-    ON_CALL(delegate_, SetPassphraseType(_))
+    ON_CALL(delegate_, PassphraseTypeChanged(_))
         .WillByDefault(SaveArg<0>(&passphrase_type_));
   }
 

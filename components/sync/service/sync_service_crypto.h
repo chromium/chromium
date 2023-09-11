@@ -36,7 +36,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     virtual void CryptoStateChanged() = 0;
     virtual void CryptoRequiredUserActionChanged() = 0;
     virtual void ReconfigureDataTypesDueToCrypto() = 0;
-    virtual void SetPassphraseType(PassphraseType passphrase_type) = 0;
+    virtual void PassphraseTypeChanged(PassphraseType passphrase_type) = 0;
     virtual absl::optional<PassphraseType> GetPassphraseType() const = 0;
     virtual void SetEncryptionBootstrapToken(
         const std::string& bootstrap_token) = 0;
