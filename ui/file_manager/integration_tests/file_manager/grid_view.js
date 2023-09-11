@@ -186,9 +186,23 @@ testcase.showGridViewEncryptedFile = async () => {
   // Click the grid view button.
   await remoteCall.waitAndClickElement(appId, '#view-button');
 
+  // Check the file's icon.
   const icon = await remoteCall.waitForElementStyles(
       appId, '.thumbnail-grid .no-thumbnail', ['-webkit-mask-image']);
   chrome.test.assertTrue(
       icon.styles['-webkit-mask-image'].includes('encrypted.svg'),
       'Icon does not seem to be the encrypted one');
+
+  // Move mouse out of the view change button, so we won't have its hover text.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOut', appId, ['#view-button']));
+  await remoteCall.waitForElementLost(appId, 'files-tooltip[visible=true]');
+
+  // Hover over an icon: a tooltip should appear.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId,
+      ['[file-name="test-encrypted.txt"] .no-thumbnail']));
+  const label = await remoteCall.waitForElement(
+      appId, ['files-tooltip[visible=true]', '#label']);
+  chrome.test.assertEq('Encrypted file', label.text);
 };

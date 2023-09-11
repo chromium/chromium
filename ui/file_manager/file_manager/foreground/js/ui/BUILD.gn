@@ -312,6 +312,9 @@ js_library("file_grid") {
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
   ]
+  externs_list = [
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_tooltip.js",
+  ]
 }
 
 js_unittest("file_grid_unittest") {

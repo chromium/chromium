@@ -1029,6 +1029,9 @@ export class FileGrid extends Grid {
       }
     } else if (FileType.isEncrypted(entry, opt_mimeType)) {
       box.setAttribute('generic-thumbnail', 'encrypted');
+      box.setAttribute('aria-label', str('ENCRYPTED_ICON_TOOLTIP'));
+      /** @type {!FilesTooltip} */ (document.querySelector('files-tooltip'))
+          .addTarget(box);
     } else {
       box.classList.toggle('no-thumbnail', true);
       const locationInfo = this.volumeManager_.getLocationInfo(entry);
