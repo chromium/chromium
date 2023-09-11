@@ -326,6 +326,10 @@ void WaylandToplevelWindow::SetShape(std::unique_ptr<ShapeRects> native_shape,
                                      const gfx::Transform& transform) {
   if (shell_toplevel_) {
     shell_toplevel_->SetShape(std::move(native_shape));
+    // The surface shape is double-buffered state maintained by the shell
+    // surface server-side and applied to the root surface. We must also commit
+    // the surface tree to ensure state is applied correctly.
+    root_surface()->Commit(false);
   }
 }
 
