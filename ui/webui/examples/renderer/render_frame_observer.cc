@@ -14,6 +14,7 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_thread.h"
 #include "ipc/ipc_sync_channel.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-external.h"
@@ -70,7 +71,8 @@ class V8BinderContext {
       base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>;
 
   explicit V8BinderContext(content::RenderFrame* render_frame)
-      : isolate_(v8::Isolate::GetCurrent()),
+      : isolate_(
+            render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate()),
         handle_scope_(isolate_),
         context_(render_frame->GetWebFrame()->MainWorldScriptContext()),
         context_scope_(context_) {}
