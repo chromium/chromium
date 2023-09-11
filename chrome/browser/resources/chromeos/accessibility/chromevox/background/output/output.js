@@ -917,7 +917,6 @@ export class Output {
     }
 
     const rule = new OutputRule(type);
-    const eventBlock = OutputRule.RULES[rule.event];
     const parentRole =
         (OutputRoleInfo[node.role] || {}).inherits || CustomRole.NO_ROLE;
     rule.output = outputTypes.OutputFormatType.SPEAK;
@@ -932,7 +931,7 @@ export class Output {
     formatLog.writeRule(rule.specifier);
     OutputFormatter.format(this, {
       node,
-      outputFormat: eventBlock[rule.role][rule.output],
+      outputFormat: rule.formatString,
       outputBuffer: buff,
       outputFormatLogger: formatLog,
       opt_prevNode: prevNode,

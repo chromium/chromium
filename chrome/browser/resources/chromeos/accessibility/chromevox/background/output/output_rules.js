@@ -56,6 +56,11 @@ export class OutputRule {
     });
   }
 
+  /** @return {string} */
+  get formatString() {
+    return OutputRule.RULES[this.event_][this.role_][this.output_];
+  }
+
   /**
    * @param {ChromeVoxRole|undefined} role
    * @param {ChromeVoxRole|undefined} parentRole
