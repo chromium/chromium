@@ -108,7 +108,6 @@ constexpr char kRandomPageContent[] =
     "<html><title>SomthingElse</title><body>I am SomethingElse</body></html>";
 constexpr char kHelloPagePath[] = "/hello_google";
 constexpr char kRandomPagePath[] = "/non_google_page";
-constexpr char kMergeSessionPath[] = "/MergeSession";
 constexpr char kMultiLoginPath[] = "/oauth/multilogin";
 
 CoreAccountId PickAccountId(Profile* profile,
@@ -750,8 +749,7 @@ class FakeGoogle {
       http_response->set_code(net::HTTP_OK);
       http_response->set_content_type("text/html");
       http_response->set_content(kRandomPageContent);
-    } else if (hang_merge_session_ && (request_path == kMergeSessionPath ||
-                                       request_path == kMultiLoginPath)) {
+    } else if (hang_multilogin_ && request_path == kMultiLoginPath) {
       merge_session_event_.Signal();
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&FakeGoogle::NotifyMergeSessionSignal,
@@ -787,7 +785,7 @@ class FakeGoogle {
     EXPECT_TRUE(merge_session_signal_->Wait());
   }
 
-  void set_hang_merge_session() { hang_merge_session_ = true; }
+  void set_hang_multilogin() { hang_multilogin_ = true; }
 
  private:
   void NotifyPageRequestSignal() {
@@ -809,7 +807,7 @@ class FakeGoogle {
   base::WaitableEvent merge_session_event_;
   std::unique_ptr<base::test::TestFuture<void>> page_request_signal_;
   std::unique_ptr<base::test::TestFuture<void>> merge_session_signal_;
-  bool hang_merge_session_ = false;
+  bool hang_multilogin_ = false;
 };
 
 class MergeSessionTest : public OAuth2Test,
@@ -840,18 +838,17 @@ class MergeSessionTest : public OAuth2Test,
 
   void RegisterAdditionalRequestHandlers() override {
     OAuth2Test::RegisterAdditionalRequestHandlers();
-    AddRequestDeferer(kMergeSessionPath, &merge_session_deferer_);
-    AddRequestDeferer(kMultiLoginPath, &merge_session_deferer_);
+    AddRequestDeferer(kMultiLoginPath, &multilogin_deferer_);
 
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &FakeGoogle::HandleRequest, base::Unretained(&fake_google_)));
   }
 
  protected:
-  void UnblockMergeSession() { merge_session_deferer_.UnblockRequest(); }
+  void UnblockMergeSession() { multilogin_deferer_.UnblockRequest(); }
 
   virtual void WaitForMergeSessionToStart() {
-    merge_session_deferer_.WaitForRequestToStart();
+    multilogin_deferer_.WaitForRequestToStart();
   }
 
   bool do_async_xhr() const { return GetParam(); }
@@ -905,7 +902,7 @@ class MergeSessionTest : public OAuth2Test,
   }
 
   FakeGoogle fake_google_;
-  RequestDeferrer merge_session_deferer_;
+  RequestDeferrer multilogin_deferer_;
   GURL fake_google_page_url_;
   GURL non_google_page_url_;
 };
@@ -1108,7 +1105,7 @@ class MergeSessionTimeoutTest : public MergeSessionTest {
 };
 
 IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
-  fake_google_.set_hang_merge_session();
+  fake_google_.set_hang_multilogin();
 
   StartNewUserSession(/*wait_for_merge=*/false,
                       /*is_under_advanced_protection=*/false);
