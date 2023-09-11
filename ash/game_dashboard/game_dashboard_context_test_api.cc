@@ -101,10 +101,10 @@ PillButton* GameDashboardContextTestApi::GetMainMenuGameControlsSetupButton() {
   return main_menu_view->game_controls_setup_button_;
 }
 
-Switch* GameDashboardContextTestApi::GetMainMenuGameControlsHintSwitch() {
+Switch* GameDashboardContextTestApi::GetMainMenuGameControlsFeatureSwitch() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
-  return main_menu_view->game_controls_hint_switch_;
+  return main_menu_view->game_controls_feature_switch_;
 }
 
 views::LabelButton* GameDashboardContextTestApi::GetMainMenuFeedbackButton() {

@@ -63,7 +63,7 @@ class GameDashboardContextTestApi {
   views::Button* GetMainMenuScreenSizeSettingsButton();
   views::Button* GetMainMenuGameControlsDetailsButton();
   PillButton* GetMainMenuGameControlsSetupButton();
-  Switch* GetMainMenuGameControlsHintSwitch();
+  Switch* GetMainMenuGameControlsFeatureSwitch();
   views::LabelButton* GetMainMenuFeedbackButton();
   IconButton* GetMainMenuHelpButton();
   IconButton* GetMainMenuSettingsButton();

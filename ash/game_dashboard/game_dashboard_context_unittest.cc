@@ -115,60 +115,49 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
   // Opens the main menu and toolbar, and checks Game Controls UI states. At the
   // end of the test, closes the main menu and toolbar.
-  // `tile_states` is about feature tile states, {expect_exists, expect_enabled,
-  // expect_toggled}.
-  // `details_row_states` is about Game Controls details row, {expect_exist,
-  // expect_enabled}.
-  // `hint_states` is about hint switch button states, {expect_exists,
+  // `hint_tile_states` is about feature tile states, {expect_exists,
   // expect_enabled, expect_on}.
+  // `details_row_exists` is about if the Game Controls details row exists.
+  // `feature_switch_states` is about feature switch button states,
+  // {expect_exists, expect_toggled}.
   // `setup_exists` shows if setup button exists.
-  void OpenMenuCheckGameControlsUIState(std::array<bool, 3> tile_states,
-                                        std::array<bool, 2> details_row_states,
-                                        std::array<bool, 3> hint_states,
-                                        bool setup_exists) {
+  void OpenMenuCheckGameControlsUIState(
+      std::array<bool, 3> hint_tile_states,
+      bool details_row_exists,
+      std::array<bool, 2> feature_switch_states,
+      bool setup_exists) {
     test_api_->OpenTheMainMenu();
 
     auto* tile = test_api_->GetMainMenuGameControlsTile();
-    if (tile_states[0]) {
+    if (hint_tile_states[0]) {
       ASSERT_TRUE(tile);
-      EXPECT_EQ(tile_states[1], tile->GetEnabled());
-      EXPECT_EQ(tile_states[2], tile->IsToggled());
+      EXPECT_EQ(hint_tile_states[1], tile->GetEnabled());
+      EXPECT_EQ(hint_tile_states[2], tile->IsToggled());
     } else {
       EXPECT_FALSE(tile);
     }
 
     auto* details_row = test_api_->GetMainMenuGameControlsDetailsButton();
-    if (details_row_states[0]) {
-      ASSERT_TRUE(details_row);
-      EXPECT_EQ(details_row_states[1], details_row->GetEnabled());
-    } else {
-      EXPECT_FALSE(details_row);
-    }
+    ASSERT_EQ(!!details_row, details_row_exists);
 
-    auto* switch_button = test_api_->GetMainMenuGameControlsHintSwitch();
-    if (hint_states[0]) {
+    auto* switch_button = test_api_->GetMainMenuGameControlsFeatureSwitch();
+    if (feature_switch_states[0]) {
       ASSERT_TRUE(switch_button);
-      EXPECT_EQ(hint_states[1], switch_button->GetEnabled());
-      EXPECT_EQ(hint_states[2], switch_button->GetIsOn());
+      EXPECT_EQ(feature_switch_states[1], switch_button->GetIsOn());
     } else {
       EXPECT_FALSE(switch_button);
     }
 
     auto* setup_button = test_api_->GetMainMenuGameControlsSetupButton();
-    if (setup_exists) {
-      EXPECT_TRUE(setup_button);
-    } else {
-      EXPECT_FALSE(setup_button);
-    }
+    ASSERT_EQ(!!setup_button, setup_exists);
 
     // Open toolbar and check the toolbar's Game Controls button state.
     test_api_->OpenTheToolbar();
-    // The button state has the same state as the feature tile on the main menu.
+    // The button state has the same state as the hint tile on the main menu.
     auto* game_controls_button = test_api_->GetToolbarGameControlsButton();
-    if (tile_states[0]) {
+    if (hint_tile_states[0]) {
       ASSERT_TRUE(game_controls_button);
-      EXPECT_EQ(tile_states[1], game_controls_button->GetEnabled());
-      EXPECT_EQ(tile_states[2], game_controls_button->toggled());
+      EXPECT_EQ(feature_switch_states[1], game_controls_button->toggled());
     } else {
       EXPECT_FALSE(game_controls_button);
     }
@@ -377,13 +366,11 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
   CreateGameWindow(/*is_arc_window=*/true);
 
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/
-      {/*expect_exists=*/false, /*expect_enabled=*/false,
-       /*expect_toggled=*/false},
-      /*details_row_states=*/
-      {/*expect_exists=*/false, /*expect_enabled=*/false},
-      /*hint_states=*/
+      /*hint_tile_states=*/
       {/*expect_exists=*/false, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*details_row_exists=*/false,
+      /*feature_switch_states=*/
+      {/*expect_exists=*/false, /*expect_toggled=*/false},
       /*setup_exists=*/false);
 
   // Game Controls is available, not empty, but not enabled.
@@ -392,12 +379,11 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
       static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
                                        ArcGameControlsFlag::kAvailable));
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/
-      {/*expect_exists=*/true, /*expect_enabled=*/true,
-       /*expect_toggled=*/false},
-      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/false},
-      /*hint_states=*/
+      /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*details_row_exists=*/true,
+      /*feature_switch_states=*/
+      {/*expect_exists=*/true, /*expect_toggled=*/false},
       /*setup_exists=*/false);
 
   // Game Controls is available, but empty. Even Game Controls is set enabled,
@@ -408,27 +394,39 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
           ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
           ArcGameControlsFlag::kEmpty | ArcGameControlsFlag::kEnabled));
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/
-      {/*expect_exists=*/true, /*expect_enabled=*/false,
-       /*expect_toggled=*/false},
-      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
-      /*hint_states=*/
-      {/*expect_exists=*/false, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*hint_tile_states=*/
+      {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*details_row_exists=*/true,
+      /*feature_switch_states=*/
+      {/*expect_exists=*/false, /*expect_toggled=*/false},
       /*setup_exists=*/true);
 
-  // Game Controls is available, not empty and enabled.
+  // Game controls is available, not empty, enabled and no mapping hint.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,
       static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
                                        ArcGameControlsFlag::kAvailable |
                                        ArcGameControlsFlag::kEnabled));
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/
-      {/*expect_exists=*/true, /*expect_enabled=*/true,
-       /*expect_toggled=*/true},
-      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
-      /*hint_states=*/
+      /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/false},
+      /*details_row_exists=*/true,
+      /*feature_switch_states=*/
+      {/*expect_exists=*/true, /*expect_toggled=*/true},
+      /*setup_exists=*/false);
+
+  // Game controls is available, not empty, enabled and has mapping hint on.
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(
+          ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
+          ArcGameControlsFlag::kEnabled | ArcGameControlsFlag::kHint));
+  OpenMenuCheckGameControlsUIState(
+      /*hint_tile_states=*/
+      {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/true},
+      /*details_row_exists=*/true,
+      /*feature_switch_states=*/
+      {/*expect_exists=*/true, /*expect_toggled=*/true},
       /*setup_exists=*/false);
 }
 
@@ -454,7 +452,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
   test_api_->OpenTheToolbar();
 
   auto* detail_row = test_api_->GetMainMenuGameControlsDetailsButton();
-  auto* switch_button = test_api_->GetMainMenuGameControlsHintSwitch();
+  auto* switch_button = test_api_->GetMainMenuGameControlsFeatureSwitch();
   auto* game_controls_button = test_api_->GetToolbarGameControlsButton();
   EXPECT_TRUE(detail_row->GetEnabled());
   EXPECT_TRUE(switch_button->GetEnabled());
@@ -462,9 +460,9 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
   EXPECT_TRUE(game_controls_button->GetEnabled());
   EXPECT_TRUE(game_controls_button->toggled());
   // Disable Game Controls.
-  LeftClickOn(test_api_->GetMainMenuGameControlsTile());
-  EXPECT_FALSE(detail_row->GetEnabled());
-  EXPECT_FALSE(switch_button->GetEnabled());
+  LeftClickOn(switch_button);
+  EXPECT_TRUE(detail_row->GetEnabled());
+  EXPECT_TRUE(switch_button->GetEnabled());
   EXPECT_FALSE(switch_button->GetIsOn());
   // Toolbar button should also get updated.
   EXPECT_TRUE(game_controls_button->GetEnabled());
@@ -472,7 +470,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
 
   EXPECT_FALSE(game_dashboard_utils::IsFlagSet(
       game_window_->GetProperty(kArcGameControlsFlagsKey),
-      ArcGameControlsFlag::kEnabled));
+      ArcGameControlsFlag::kHint));
 
   test_api_->CloseTheToolbar();
   test_api_->CloseTheMainMenu();
@@ -482,11 +480,11 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
 
   // Open the main menu again to check if the states are preserved and close it.
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true,
-                       /*expect_toggled=*/false},
-      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/false},
-      /*hint_states=*/
+      /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*details_row_exists=*/true,
+      /*feature_switch_states=*/
+      {/*expect_exists=*/true, /*expect_toggled=*/false},
       /*setup_exists=*/false);
 
   // Open the main menu and toolbar. Enable Game Controls and switch hint button
@@ -494,28 +492,29 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
   detail_row = test_api_->GetMainMenuGameControlsDetailsButton();
-  switch_button = test_api_->GetMainMenuGameControlsHintSwitch();
+  switch_button = test_api_->GetMainMenuGameControlsFeatureSwitch();
   game_controls_button = test_api_->GetToolbarGameControlsButton();
+  auto* game_controls_tile = test_api_->GetMainMenuGameControlsTile();
   // Enable Game Controls.
-  LeftClickOn(test_api_->GetMainMenuGameControlsTile());
+  LeftClickOn(switch_button);
   EXPECT_TRUE(detail_row->GetEnabled());
   EXPECT_TRUE(switch_button->GetEnabled());
   EXPECT_TRUE(switch_button->GetIsOn());
   EXPECT_TRUE(game_controls_button->GetEnabled());
   EXPECT_TRUE(game_controls_button->toggled());
+  EXPECT_TRUE(game_controls_tile->IsToggled());
   // Switch hint off.
-  LeftClickOn(switch_button);
-  EXPECT_FALSE(switch_button->GetIsOn());
+  LeftClickOn(game_controls_tile);
   test_api_->CloseTheToolbar();
   test_api_->CloseTheMainMenu();
 
   // Open the main menu again to check if the states are preserved and close it.
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true,
-                       /*expect_toggled=*/true},
-      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
-      /*hint_states=*/
+      /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/false},
+      /*details_row_exists=*/true,
+      /*feature_switch_states=*/
+      {/*expect_exists=*/true, /*expect_toggled=*/true},
       /*setup_exists=*/false);
 }
 

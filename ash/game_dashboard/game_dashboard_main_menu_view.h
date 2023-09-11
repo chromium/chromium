@@ -62,7 +62,7 @@ class ASH_EXPORT GameDashboardMainMenuView
   void OnGameControlsTilePressed();
   void OnGameControlsDetailsPressed();
   void OnGameControlsSetUpButtonPressed();
-  void OnGameControlsHintSwitchButtonPressed();
+  void OnGameControlsFeatureSwitchButtonPressed();
 
   // Handles when the Screen Size Settings is pressed.
   void OnScreenSizeSettingsButtonPressed();
@@ -114,7 +114,7 @@ class ASH_EXPORT GameDashboardMainMenuView
   // Toolbar button to toggle the `GameDashboardToolbarView`.
   raw_ptr<FeatureTile> toolbar_tile_ = nullptr;
 
-  // Game controls button to toggle the Game Controls UI visibility.
+  // Game controls button to toggle the Game Controls UI hint.
   raw_ptr<FeatureTile> game_controls_tile_ = nullptr;
 
   // Record game button to start recording the game window. This will open the
@@ -128,8 +128,8 @@ class ASH_EXPORT GameDashboardMainMenuView
   // Setup button to configure Game Controls for the current game window.
   raw_ptr<PillButton> game_controls_setup_button_ = nullptr;
 
-  // Hint button to toggle the Game Controls hint UI.
-  raw_ptr<Switch> game_controls_hint_switch_ = nullptr;
+  // Hint switch to toggle the Game Controls feature.
+  raw_ptr<Switch> game_controls_feature_switch_ = nullptr;
 };
 
 }  // namespace ash

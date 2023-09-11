@@ -276,27 +276,13 @@ void GameDashboardMainMenuView::OnScreenshotTilePressed() {
 void GameDashboardMainMenuView::OnGameControlsTilePressed() {
   game_controls_tile_->SetToggled(!game_controls_tile_->IsToggled());
 
-  bool is_toggled = game_controls_tile_->IsToggled();
-  // TODO(b/274690042): Replace the strings with localized strings.
-  game_controls_details_->SetSubtitle(is_toggled ? u"On" : u"Off");
-  game_controls_details_->SetEnabled(is_toggled);
-
-  if (game_controls_setup_button_) {
-    game_controls_setup_button_->SetEnabled(is_toggled);
-  } else {
-    DCHECK(game_controls_hint_switch_);
-    game_controls_hint_switch_->SetEnabled(is_toggled);
-    game_controls_hint_switch_->SetIsOn(is_toggled);
-  }
-
   auto* game_window = context_->game_window();
   game_window->SetProperty(
       kArcGameControlsFlagsKey,
       game_dashboard_utils::UpdateFlag(
           game_window->GetProperty(kArcGameControlsFlagsKey),
-          static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kEnabled |
-                                           ArcGameControlsFlag::kHint),
-          /*enable_flag=*/is_toggled));
+          ArcGameControlsFlag::kHint,
+          /*enable_flag=*/game_controls_tile_->IsToggled()));
 }
 
 void GameDashboardMainMenuView::OnGameControlsDetailsPressed() {
@@ -309,14 +295,24 @@ void GameDashboardMainMenuView::OnGameControlsSetUpButtonPressed() {
   context_->CloseMainMenu();
 }
 
-void GameDashboardMainMenuView::OnGameControlsHintSwitchButtonPressed() {
+void GameDashboardMainMenuView::OnGameControlsFeatureSwitchButtonPressed() {
+  const bool is_toggled = game_controls_feature_switch_->GetIsOn();
+  // TODO(b/274690042): Replace the strings with localized strings.
+  game_controls_details_->SetSubtitle(is_toggled ? u"On" : u"Off");
+
+  DCHECK(game_controls_tile_);
+  game_controls_tile_->SetEnabled(is_toggled);
+  game_controls_tile_->SetToggled(is_toggled);
+
   auto* game_window = context_->game_window();
   game_window->SetProperty(
       kArcGameControlsFlagsKey,
       game_dashboard_utils::UpdateFlag(
           game_window->GetProperty(kArcGameControlsFlagsKey),
-          ArcGameControlsFlag::kHint,
-          /*enable_flag=*/game_controls_hint_switch_->GetIsOn()));
+          static_cast<ArcGameControlsFlag>(
+              /*enable_flag=*/ArcGameControlsFlag::kEnabled |
+              ArcGameControlsFlag::kHint),
+          is_toggled));
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
@@ -394,6 +390,8 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
     return;
   }
 
+  // Add the game controls tile which shows and hides the game controls mapping
+  // hint.
   game_controls_tile_ = container->AddChildView(CreateTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnGameControlsTilePressed,
                           base::Unretained(this)),
@@ -403,10 +401,11 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE)));
 
   game_controls_tile_->SetEnabled(
+      game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled) &&
       !game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
   if (game_controls_tile_->GetEnabled()) {
     game_controls_tile_->SetToggled(
-        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled));
+        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kHint));
   }
 }
 
@@ -431,12 +430,11 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
               IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE)));
   game_controls_details_->SetID(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
 
-  const bool is_enabled =
+  const bool is_flag_set =
       game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled);
   // TODO(b/279117180): Include application name in the subtitle.
   // TODO(b/274690042): Replace the strings with localized strings.
-  game_controls_details_->SetSubtitle(is_enabled ? u"On" : u"Off");
-  game_controls_details_->SetEnabled(is_enabled);
+  game_controls_details_->SetSubtitle(is_flag_set ? u"On" : u"Off");
 
   if (game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty)) {
     // Add "Set up" button for empty state.
@@ -451,7 +449,6 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
     game_controls_setup_button_->SetID(VIEW_ID_GD_CONTROLS_SETUP_BUTTON);
     game_controls_setup_button_->SetProperty(views::kMarginsKey,
                                              gfx::Insets::TLBR(0, 20, 0, 0));
-    game_controls_setup_button_->SetEnabled(is_enabled);
   } else {
     // Add toggle button and arrow icon for non-empty state.
     auto* edit_container = game_controls_details_->AddCustomizedTailView(
@@ -463,22 +460,18 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
     edit_container->SetProperty(views::kMarginsKey,
                                 gfx::Insets::TLBR(0, 8, 0, 0));
 
-    // Add switch_button to show or hide input mapping hints.
-    game_controls_hint_switch_ = edit_container->AddChildView(
-        std::make_unique<Switch>(base::BindRepeating(
-            &GameDashboardMainMenuView::OnGameControlsHintSwitchButtonPressed,
-            base::Unretained(this))));
-    game_controls_hint_switch_->SetID(VIEW_ID_GD_CONTROLS_HINT_SWITCH);
+    // Add switch_button to enable or disable game controls.
+    game_controls_feature_switch_ =
+        edit_container->AddChildView(std::make_unique<Switch>(
+            base::BindRepeating(&GameDashboardMainMenuView::
+                                    OnGameControlsFeatureSwitchButtonPressed,
+                                base::Unretained(this))));
     // TODO(b/279117180): Update the accessibility name.
-    game_controls_hint_switch_->SetAccessibleName(
+    game_controls_feature_switch_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-    game_controls_hint_switch_->SetProperty(views::kMarginsKey,
-                                            gfx::Insets::TLBR(0, 0, 0, 18));
-    game_controls_hint_switch_->SetEnabled(is_enabled);
-    game_controls_hint_switch_->SetIsOn(
-        is_enabled ? game_dashboard_utils::IsFlagSet(*flags,
-                                                     ArcGameControlsFlag::kHint)
-                   : false);
+    game_controls_feature_switch_->SetProperty(views::kMarginsKey,
+                                               gfx::Insets::TLBR(0, 0, 0, 18));
+    game_controls_feature_switch_->SetIsOn(is_flag_set);
     // Add arrow icon.
     edit_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
