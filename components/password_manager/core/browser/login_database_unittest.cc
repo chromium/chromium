@@ -1687,6 +1687,37 @@ TEST_F(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
       sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 }
 
+TEST_F(LoginDatabaseSyncMetadataTest, GetSyncEntityMetadataForStorageKey) {
+  // Construct metadata with at least one field set to test deserialization.
+  sync_pb::EntityMetadata metadata;
+  metadata.set_is_deleted(true);
+
+  PasswordStoreSync::MetadataStore& password_sync_metadata_store =
+      db().password_sync_metadata_store();
+
+  // Storage keys must be integers.
+  const std::string kStorageKey1 = "1";
+  metadata.set_sequence_number(1);
+
+  ASSERT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
+      SyncModelType(), kStorageKey1, metadata));
+
+  LoginDatabase::SyncMetadataStore& store_impl =
+      static_cast<LoginDatabase::SyncMetadataStore&>(
+          password_sync_metadata_store);
+
+  const std::unique_ptr<sync_pb::EntityMetadata> entity_metadata =
+      store_impl.GetSyncEntityMetadataForStorageKeyForTest(syncer::PASSWORDS,
+                                                           kStorageKey1);
+  ASSERT_THAT(entity_metadata, testing::NotNull());
+  EXPECT_TRUE(entity_metadata->is_deleted());
+
+  // Other arbitrary storage keys should return no metadata.
+  EXPECT_THAT(store_impl.GetSyncEntityMetadataForStorageKeyForTest(
+                  syncer::PASSWORDS, "5"),
+              testing::IsNull());
+}
+
 TEST_F(LoginDatabaseSyncMetadataTest, DeleteAllSyncMetadata) {
   sync_pb::EntityMetadata metadata;
   PasswordStoreSync::MetadataStore& password_sync_metadata_store =

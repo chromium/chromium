@@ -226,12 +226,24 @@ class LoginDatabase {
     SyncMetadataStore& operator=(const SyncMetadataStore&) = delete;
     ~SyncMetadataStore() override;
 
+    // Test-only variant of the private function with a similar name.
+    std::unique_ptr<sync_pb::EntityMetadata>
+    GetSyncEntityMetadataForStorageKeyForTest(syncer::ModelType model_type,
+                                              const std::string& storage_key);
+
    private:
     // Reads all the stored sync entities metadata for |model_type| in a
     // MetadataBatch. Returns nullptr in case of failure. This is currently used
     // only for passwords.
     std::unique_ptr<syncer::MetadataBatch> GetAllSyncEntityMetadata(
         syncer::ModelType model_type);
+
+    // Reads sync entity data for an individual |model_type| and entity
+    // identified by |storage_key|. Returns null if no entry is found or an
+    // error occurred.
+    std::unique_ptr<sync_pb::EntityMetadata> GetSyncEntityMetadataForStorageKey(
+        syncer::ModelType model_type,
+        const std::string& storage_key);
 
     // Reads the stored ModelTypeState for |model_type|. Returns nullptr in case
     // of failure. This is currently used only for passwords.
@@ -278,6 +290,9 @@ class LoginDatabase {
   // password for the supplied primary key |id|.
   void DeleteKeychainItemByPrimaryId(int id);
 #endif  // BUILDFLAG(IS_IOS)
+
+  FRIEND_TEST_ALL_PREFIXES(LoginDatabaseSyncMetadataTest,
+                           GetSyncEntityMetadataForStorageKey);
 
   void ReportNumberOfAccountsMetrics(bool custom_passphrase_sync_enabled);
   void ReportTimesPasswordUsedMetrics(bool custom_passphrase_sync_enabled);
