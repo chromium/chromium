@@ -1800,25 +1800,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
-<histogram name="Apps.AppListSearchResultInternalApp.Open"
-    enum="AppListInternalAppName" expires_after="2020-12-13">
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    The app list search result of an internal app that was opened by the user.
-    This is gathered per click of a search result.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppListSearchResultInternalApp.Show"
-    enum="AppListInternalAppName" expires_after="2023-01-15">
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    The app list search result of an internal app that was shown to the user.
-    This is gathered per creation of a search result. Note: Typing a word with
-    multiple letters could trigger multiple creations of the search result.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppListSearchResultOpenTypeV2" enum="AppListSearchResult"
     expires_after="2024-02-04">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->

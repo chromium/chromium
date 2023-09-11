@@ -270,24 +270,6 @@ void RecordAppLaunch(const std::string& app_id,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void RecordBuiltInAppSearchResult(const std::string& app_id) {
-  if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
-                                  BuiltInAppName::kKeyboardShortcutViewer);
-  } else if (app_id == ash::kInternalAppIdSettings) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
-                                  BuiltInAppName::kSettings);
-  } else if (app_id == ash::kInternalAppIdContinueReading) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
-                                  BuiltInAppName::kContinueReading);
-  } else if (app_id == plugin_vm::kPluginVmShelfAppId) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
-                                  BuiltInAppName::kPluginVm);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 const absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     const std::string& app_id) {
   if (app_id == web_app::kCalculatorAppId) {
