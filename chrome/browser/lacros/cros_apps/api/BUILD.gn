@@ -9,7 +9,10 @@ assert(is_chromeos_lacros)
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "cros_apps_api_browsertest.cc" ]
+  sources = [
+    "cros_apps_api_browsertest.cc",
+    "cros_apps_blink_runtime_feature_browsertest.cc",
+  ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -22,6 +25,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/constants",
     "//chromeos/lacros",
+    "//content/test:browsertest_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

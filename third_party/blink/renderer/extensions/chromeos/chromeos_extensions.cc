@@ -37,7 +37,8 @@ bool IsSupportedExecutionContext(ExecutionContext* execution_context) {
 void InstallChromeOSExtensions(ScriptState* script_state) {
   auto* execution_context = ExecutionContext::From(script_state);
   if (!IsSupportedExecutionContext(execution_context) ||
-      !RuntimeEnabledFeatures::BlinkExtensionChromeOSEnabled()) {
+      !RuntimeEnabledFeatures::BlinkExtensionChromeOSEnabled(
+          execution_context)) {
     return;
   }
 

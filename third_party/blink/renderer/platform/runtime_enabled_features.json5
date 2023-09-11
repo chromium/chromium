@@ -473,6 +473,7 @@
     },
     {
       name: "BlinkExtensionChromeOS",
+      browser_process_read_write_access: true,
       base_feature: "none",
     },
     {
