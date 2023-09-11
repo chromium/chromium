@@ -1175,7 +1175,7 @@
   {
     "name": "chrome-cart-dom-based-heuristics",
     "owners": [ "yuezhanggg", "wychen"],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "chrome-labs",
