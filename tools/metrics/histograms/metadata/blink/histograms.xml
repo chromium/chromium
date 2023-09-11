@@ -95,6 +95,29 @@ chromium-metrics-reviews@google.com.
   <variant name="XSLStyleSheet" summary="XSL Style Sheet"/>
 </variants>
 
+<histogram name="Blink.Accessibility.Bundle" enum="AccessibilityModeBundleEnum"
+    expires_after="2024-02-01">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Tracks when combinations of mode flags are set. Records when the
+    accessibility mode flag changes and aligns with one of the common (named)
+    flag bundles. Bundles that do not match a named set fall into the unnamed
+    bucket.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
+    expires_after="2024-02-01">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Tracks whether individual accessibility mode flags are set. Recorded when
+    each mode flag is flipped from false to true. Only tracks usage within web
+    content.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Accessibility.NumTreeUpdatesQueuedBeforeLayout"
     units="updates" expires_after="2023-03-05">
   <owner>aleventhal@chromium.org</owner>

@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents_ax_mode_notifier.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_mode_histogram_logger.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_utils.h"
@@ -59,14 +60,6 @@ const char kAXModeBundleBasic[] = "basic";
 // Used for validating the 'form-controls' bundle parameter for
 // --force-renderer-accessibility.
 const char kAXModeBundleFormControls[] = "form-controls";
-
-// Record a histogram for an accessibility mode when it is enabled.
-void RecordNewAccessibilityModeFlags(
-    ui::AXMode::ModeFlagHistogramValue mode_flag) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Accessibility.ModeFlag", mode_flag,
-      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
-}
 
 // Update the accessibility histogram 45 seconds after initialization.
 static const int ACCESSIBILITY_HISTOGRAM_DELAY_SECS = 45;
@@ -469,55 +462,8 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
   // Proxy the AXMode to AXPlatformNode to enable accessibility.
   ui::AXPlatformNode::NotifyAddAXModeFlags(accessibility_mode_);
 
-  // Retrieve only newly added modes for the purposes of logging.
-  int new_mode_flags = mode.flags() & (~previous_mode.flags());
-  if (new_mode_flags & ui::AXMode::kNativeAPIs) {
-    RecordNewAccessibilityModeFlags(
-        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_NATIVE_APIS);
-  }
-
-  if (new_mode_flags & ui::AXMode::kWebContents) {
-    RecordNewAccessibilityModeFlags(
-        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS);
-  }
-
-  if (new_mode_flags & ui::AXMode::kInlineTextBoxes) {
-    RecordNewAccessibilityModeFlags(
-        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES);
-  }
-
-  if (new_mode_flags & ui::AXMode::kScreenReader) {
-    RecordNewAccessibilityModeFlags(
-        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
-  }
-
-  if (new_mode_flags & ui::AXMode::kHTML) {
-    RecordNewAccessibilityModeFlags(
-        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML);
-  }
-
-  if (new_mode_flags & ui::AXMode::kHTMLMetadata) {
-    RecordNewAccessibilityModeFlags(
-        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML_METADATA);
-  }
-
-  if (new_mode_flags & ui::AXMode::kLabelImages) {
-    RecordNewAccessibilityModeFlags(
-        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES);
-  }
-
-  if (new_mode_flags & ui::AXMode::kPDF) {
-    RecordNewAccessibilityModeFlags(
-        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF);
-  }
-
-  // Retrieve only newly added experimental modes for the purposes of logging.
-  int new_experimental_mode_flags =
-      mode.experimental_flags() & (~previous_mode.experimental_flags());
-  if (new_experimental_mode_flags & ui::AXMode::kExperimentalFormControls) {
-    base::UmaHistogramBoolean("Accessibility.ExperimentalModeFlag.FormControls",
-                              true);
-  }
+  ui::RecordAccessibilityModeHistograms(ui::AXHistogramPrefix::kNone,
+                                        accessibility_mode_, previous_mode);
 
   NotifyWebContentsToAddAXMode(accessibility_mode_);
 

@@ -557,6 +557,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Bundle" enum="AccessibilityModeBundleEnum"
+    expires_after="2024-02-01">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Tracks when combinations of mode flags are set. Records when the mode flag
+    changes and aligns with one of the common (named) flag bundles.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CaptionSettingsLoadedFromPrefs"
     enum="BooleanEnabled" expires_after="2024-08-07">
   <owner>evliu@google.com</owner>
