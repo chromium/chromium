@@ -172,7 +172,7 @@ void PageFreezingPolicy::OnIsAudibleChanged(const PageNode* page_node) {
   // Gives the page a grace period after being audible to avoid freezing it
   // during a short silence (e.g. between tracks in an audio player).
   if (!page_node->IsAudible()) {
-    DCHECK(!base::Contains(page_nodes_unfreeze_tasks_, page_node));
+    DCHECK(!base::Contains(page_nodes_recently_audible_, page_node));
     SubmitNegativeFreezingVote(page_node, CannotFreezeReason::kRecentlyAudible);
     base::OnceClosure remove_was_recently_audible_vote_after_timeout =
         base::BindOnce(
