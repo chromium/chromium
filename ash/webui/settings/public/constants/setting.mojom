@@ -241,6 +241,8 @@ enum Setting {
 
   // Files section.
   kGoogleDriveConnection = 1300,
+  kGoogleDriveRemoveAccess = 1301,
+  kGoogleDriveFileSync = 1302,
 
   // Printing section.
   kAddPrinter = 1400,

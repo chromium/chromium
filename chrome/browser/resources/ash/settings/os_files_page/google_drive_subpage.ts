@@ -83,7 +83,8 @@ export class SettingsGoogleDriveSubpageElement extends
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set<Setting>([Setting.kGoogleDriveConnection]),
+        value: () => new Set<Setting>(
+            [Setting.kGoogleDriveRemoveAccess, Setting.kGoogleDriveFileSync]),
       },
 
       /**

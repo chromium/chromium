@@ -1,8 +1,6 @@
 <style include="settings-shared"></style>
 
-<div
-    class="settings-box two-line first"
-    deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+<div class="settings-box two-line first">
   <template is="dom-if" if="[[driveDisabled_]]" restamp>
     <div class="start">
       $i18nRaw{googleDriveReconnectAs}
@@ -17,7 +15,7 @@
       on-click="onConnectDisconnectClick_"
       pref="{{prefs.gdata.disabled}}"
       label="[[getConnectDisconnectButtonLabel_(driveDisabled_)]]"
-      deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+      deep-link-focus-id$="[[Setting.kGoogleDriveRemoveAccess]]">
   </controlled-button>
   <template is="dom-if"
       if="[[shouldShowConfirmationDialog_(dialogType_, 'disconnect')]]" restamp>
@@ -43,7 +41,8 @@
         sub-label="[[getBulkPinningSubLabel_(bulkPinningStatus_)]]"
         learn-more-url="$i18n{googleDriveFileSyncLearnMoreLink}"
         on-settings-boolean-control-change="onToggleBulkPinning_"
-        no-set-pref>
+        no-set-pref
+        deep-link-focus-id$="[[Setting.kGoogleDriveFileSync]]">
     </settings-toggle-button>
 
     <template is="dom-if"

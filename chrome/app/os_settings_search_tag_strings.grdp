@@ -1122,6 +1122,9 @@
   <message name="IDS_OS_SETTINGS_TAG_FILES_DISCONNECT_GOOGLE_DRIVE" desc="Text for search result item that, when clicked, navigates the user to Settings: Google Drive settings, with a toggle to enable/disable connecting the user's Google Drive account.">
     Disconnect Google Drive account
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_FILES_REMOVE_GOOGLE_DRIVE_ACCESS" desc="Text for search result item that, when clicked, navigates the user to Settings: Google Drive settings, with a toggle to remove the user's Google Drive access from the device.">
+    Remove Google Drive access
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_FILES_NETWORK_FILE_SHARES" desc="Text for search result item which, when clicked, navigates the user to network file share (a.k.a. SMB share) settings. Alternate phrase for: 'SMB share'">
     Network file shares
   </message>
@@ -1133,6 +1136,12 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE" translateable="false" desc="Text for search result item which, when clicked, navigates the user to the Google Drive settings.">
     Google Drive settings
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE_FILE_SYNC" desc="Text for search result item which, when clicked, navigates the user to the Files sync feature in Google Drive settings.">
+    File sync
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE_FILE_SYNC_ALT1" desc="Text for search result item which, when clicked, navigates the user to the Files sync feature in Google Drive settings.">
+    Offline
   </message>
 
   <!-- Printing section. -->

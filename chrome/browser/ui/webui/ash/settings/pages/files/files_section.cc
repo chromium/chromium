@@ -45,12 +45,6 @@ const std::vector<SearchConcept>& GetFilesSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSection,
        {.section = mojom::Section::kFiles}},
-      {IDS_OS_SETTINGS_TAG_FILES_DISCONNECT_GOOGLE_DRIVE,
-       mojom::kFilesSectionPath,
-       mojom::SearchResultIcon::kDrive,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kGoogleDriveConnection}},
       {IDS_OS_SETTINGS_TAG_FILES_NETWORK_FILE_SHARES,
        mojom::kNetworkFileSharesSubpagePath,
        mojom::SearchResultIcon::kFolder,
@@ -74,14 +68,50 @@ const std::vector<SearchConcept>& GetFilesOfficeSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetFilesGoogleDriveSearchConcepts() {
+// Returns specific search terms to surface the "File sync" feature.
+const std::vector<SearchConcept>& GetFilesGoogleDriveFileSyncSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE_FILE_SYNC,
+        mojom::kGoogleDriveSubpagePath,
+        mojom::SearchResultIcon::kDrive,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.setting = mojom::Setting::kGoogleDriveFileSync},
+        {IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE_FILE_SYNC_ALT1,
+         SearchConcept::kAltTagEnd}}});
+  return *tags;
+}
+
+// Returns search terms to navigate to the Google Drive subpage when the feature
+// is enabled.
+const std::vector<SearchConcept>& GetFilesGoogleDriveSubpageSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE,
         mojom::kGoogleDriveSubpagePath,
         mojom::SearchResultIcon::kDrive,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSubpage,
-        {.subpage = mojom::Subpage::kGoogleDrive}}});
+        {.subpage = mojom::Subpage::kGoogleDrive}},
+       {IDS_OS_SETTINGS_TAG_FILES_REMOVE_GOOGLE_DRIVE_ACCESS,
+        mojom::kGoogleDriveSubpagePath,
+        mojom::SearchResultIcon::kDrive,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kGoogleDriveRemoveAccess}}});
+  return *tags;
+}
+
+// If the Google Drive subpage is not enabled, returns search terms to navigate
+// to the existing Disconnect Google Drive setting.
+const std::vector<SearchConcept>&
+GetFilesGoogleDriveDisconnectSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_FILES_DISCONNECT_GOOGLE_DRIVE,
+        mojom::kFilesSectionPath,
+        mojom::SearchResultIcon::kDrive,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kGoogleDriveConnection}}});
   return *tags;
 }
 
@@ -95,10 +125,17 @@ FilesSection::FilesSection(Profile* profile,
   if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     updater.AddSearchTags(GetFilesOfficeSearchConcepts());
   }
-  if (drive::util::IsDriveFsBulkPinningEnabled(profile) ||
-      base::FeatureList::IsEnabled(
-          ash::features::kFilesGoogleDriveSettingsPage)) {
-    updater.AddSearchTags(GetFilesGoogleDriveSearchConcepts());
+
+  if (drive::util::IsDriveFsBulkPinningEnabled(profile)) {
+    updater.AddSearchTags(GetFilesGoogleDriveFileSyncSearchConcepts());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ash::features::kFilesGoogleDriveSettingsPage) ||
+      drive::util::IsDriveFsBulkPinningEnabled(profile)) {
+    updater.AddSearchTags(GetFilesGoogleDriveSubpageSearchConcepts());
+  } else {
+    updater.AddSearchTags(GetFilesGoogleDriveDisconnectSearchConcepts());
   }
 }
 
@@ -284,6 +321,8 @@ bool FilesSection::LogMetric(mojom::Setting setting, base::Value& value) const {
 
 void FilesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kGoogleDriveConnection);
+  generator->RegisterTopLevelSetting(mojom::Setting::kGoogleDriveFileSync);
+  generator->RegisterTopLevelSetting(mojom::Setting::kGoogleDriveRemoveAccess);
 
   // Network file shares.
   generator->RegisterTopLevelSubpage(
