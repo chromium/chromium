@@ -1442,34 +1442,6 @@ LayoutUnit LayoutBox::LogicalTop() const {
   return StyleRef().IsHorizontalWritingMode() ? location.Y() : location.X();
 }
 
-void LayoutBox::SetLocationAndUpdateOverflowControlsIfNeeded(
-    const LayoutPoint& location) {
-  NOT_DESTROYED();
-  if (!HasLayer() ||
-      RuntimeEnabledFeatures::ScrollableAreaNoSnappingEnabled()) {
-    SetLocation(location);
-    return;
-  }
-  // The Layer does not yet have the up to date subpixel accumulation
-  // so we base the size strictly on the frame rect's location.
-  gfx::Size old_pixel_snapped_border_rect_size =
-      PixelSnappedBorderBoxRect().size();
-  SetLocation(location);
-  // TODO(crbug.com/1020913): This is problematic because this function may be
-  // called after layout of this LayoutBox. Changing scroll container size here
-  // will cause inconsistent layout. Also we should be careful not to set
-  // this LayoutBox NeedsLayout. This will be unnecessary when we support
-  // subpixel layout of scrollable area and overflow controls.
-  if (PixelSnappedBorderBoxSize(PhysicalOffset(location)) !=
-      old_pixel_snapped_border_rect_size) {
-    bool needed_layout = NeedsLayout();
-    PaintLayerScrollableArea::FreezeScrollbarsScope freeze_scrollbar;
-    Layer()->UpdateScrollingAfterLayout();
-    // The above call should not schedule new NeedsLayout.
-    DCHECK(needed_layout || !NeedsLayout());
-  }
-}
-
 gfx::QuadF LayoutBox::AbsoluteContentQuad(MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   PhysicalRect rect = PhysicalContentBoxRect();

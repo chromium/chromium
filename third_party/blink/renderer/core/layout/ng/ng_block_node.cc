@@ -1409,7 +1409,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
         LayoutPoint point = LayoutBoxUtils::ComputeLocation(
             child_fragment, child.offset, physical_fragment,
             previous_container_break_token);
-        flow_thread->SetLocationAndUpdateOverflowControlsIfNeeded(point);
+        flow_thread->SetLocation(point);
         flow_thread->SetLogicalWidth(logical_size.inline_size);
         has_processed_first_column_in_flow_thread = true;
       }
@@ -1515,7 +1515,7 @@ void NGBlockNode::CopyChildFragmentPosition(
   LayoutPoint point = LayoutBoxUtils::ComputeLocation(
       child_fragment, offset, container_fragment,
       previous_container_break_token);
-  layout_box->SetLocationAndUpdateOverflowControlsIfNeeded(point);
+  layout_box->SetLocation(point);
 
   if (needs_invalidation_check)
     layout_box->SetShouldCheckForPaintInvalidation();
@@ -1565,8 +1565,7 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
           maybe_flipped_offset.top += previously_consumed_block_size;
         else
           maybe_flipped_offset.left += previously_consumed_block_size;
-        layout_box->SetLocationAndUpdateOverflowControlsIfNeeded(
-            maybe_flipped_offset.ToLayoutPoint());
+        layout_box->SetLocation(maybe_flipped_offset.ToLayoutPoint());
         if (UNLIKELY(layout_box->HasSelfPaintingLayer()))
           layout_box->Layer()->SetNeedsVisualOverflowRecalc();
 #if DCHECK_IS_ON()

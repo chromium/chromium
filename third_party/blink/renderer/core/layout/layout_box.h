@@ -314,13 +314,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // relative to.
   virtual LayoutBox* LocationContainer() const;
 
-  // FIXME: Currently scrollbars are using int geometry and positioned based on
-  // pixelSnappedBorderBoxRect whose size may change when location changes
-  // because of pixel snapping. This function is used to change location of the
-  // LayoutBox outside of LayoutBox::layout(). Will remove when we use
-  // LayoutUnits for scrollbars.
-  void SetLocationAndUpdateOverflowControlsIfNeeded(const LayoutPoint&);
-
   void SetSize(const PhysicalSize& size) {
     NOT_DESTROYED();
     DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());

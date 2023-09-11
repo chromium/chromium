@@ -2179,7 +2179,7 @@
     {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
-      depends_on: ["LayoutNGNoLocation", "ScrollableAreaNoSnapping"],
+      depends_on: ["LayoutNGNoLocation"],
       status: "stable",
     },
     {
@@ -3247,10 +3247,6 @@
     },
     {
       name: "ScriptingMediaFeature",
-      status: "stable",
-    },
-    {
-      name: "ScrollableAreaNoSnapping",
       status: "stable",
     },
     {
