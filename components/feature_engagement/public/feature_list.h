@@ -256,6 +256,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoPostRestoreDefaultBrowserFeature,
                        "IPH_iOSPromoPostDefaultBrowserRestore");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoPasswordManagerWidgetFeature,
                        "IPH_iOSPromoPasswordManagerWidget");
+DEFINE_VARIATION_PARAM(kIPHiOSChoiceScreenFeature,
+                       "IPH_iOSChoiceScreenFeature");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -541,6 +543,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSShareToolbarItemFeature),
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSPromoPasswordManagerWidgetFeature),
+        VARIATION_ENTRY(kIPHiOSChoiceScreenFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHAutofillFeedbackNewBadgeFeature),

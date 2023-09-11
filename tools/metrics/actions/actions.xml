@@ -39284,6 +39284,7 @@ should be able to be added at any place in this file.
   <suffix name="IntentChip"
       label="In product help for opening a webpage in an app using the intent
              chip."/>
+  <suffix name="iOSChoiceScreen" label="For iOSChoiceScreen feature"/>
   <suffix name="iOSDefaultBrowserBadgeEligibility"
       label="For iOSDefaultBrowserBadgeEligibility feature"/>
   <suffix name="iOSDefaultBrowserOverflowMenuBadge"
