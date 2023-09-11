@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "content/public/common/content_switches.h"
 
 namespace {

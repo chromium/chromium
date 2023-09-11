@@ -37,6 +37,7 @@
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/global_routing_id.h"

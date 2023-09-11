@@ -54,7 +54,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"

@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prefetcher.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerenderer.h"
+#include "content/common/features.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_navigation_handle.h"

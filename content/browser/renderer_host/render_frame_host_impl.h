@@ -72,6 +72,7 @@
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/common/dom_automation_controller.mojom.h"
+#include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/input/input_injector.mojom-forward.h"
 #include "content/common/navigation_client.mojom-forward.h"

@@ -16,12 +16,19 @@ See also the following for definitions:
 
 This step would be different depending on where you want to use the flag:
 
-### To Use the Flag in `content/` Only
+### To use the Flag in `content/` and its embedders
 
 Add a `base::Feature` to the following files:
 
 * [content/public/common/content_features.cc](https://cs.chromium.org/chromium/src/content/public/common/content_features.cc)
 * [content/public/common/content_features.h](https://cs.chromium.org/chromium/src/content/public/common/content_features.h)
+
+### To use the Flag in `content/` Only
+
+Add a `base::Feature` to the following files:
+
+* [content/common/features.cc](https://cs.chromium.org/chromium/src/content/common/features.cc)
+* [content/common/features.h](https://cs.chromium.org/chromium/src/content/common/features.h)
 
 ### To Use the Flag in `third_party/blink/` (and Possibly in `content/`)
 

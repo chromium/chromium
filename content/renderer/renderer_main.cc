@@ -30,6 +30,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "content/common/skia_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"

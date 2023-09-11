@@ -29,6 +29,7 @@
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/common/features.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

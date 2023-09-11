@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "content/common/features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

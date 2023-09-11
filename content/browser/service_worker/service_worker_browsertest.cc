@@ -4280,7 +4280,8 @@ class ServiceWorkerSpeculativeStartupBrowserTest
       public testing::WithParamInterface<SpeculativeStartupNavigationType> {
  public:
   ServiceWorkerSpeculativeStartupBrowserTest() {
-    feature_list_.InitAndEnableFeature(kSpeculativeServiceWorkerStartup);
+    feature_list_.InitAndEnableFeature(
+        features::kSpeculativeServiceWorkerStartup);
   }
   ~ServiceWorkerSpeculativeStartupBrowserTest() override = default;
 
@@ -4375,7 +4376,8 @@ class ServiceWorkerSpeculativeStartupWithoutParamBrowserTest
     : public ServiceWorkerBrowserTest {
  public:
   ServiceWorkerSpeculativeStartupWithoutParamBrowserTest() {
-    feature_list_.InitAndEnableFeature(kSpeculativeServiceWorkerStartup);
+    feature_list_.InitAndEnableFeature(
+        features::kSpeculativeServiceWorkerStartup);
   }
 
  private:
@@ -4622,7 +4624,7 @@ class ServiceWorkerWarmUpByVisibilityBrowserTest
                    .name,
                "false"},
           }}},
-        {kSpeculativeServiceWorkerStartup});
+        {features::kSpeculativeServiceWorkerStartup});
   }
   ~ServiceWorkerWarmUpByVisibilityBrowserTest() override = default;
 
@@ -4710,7 +4712,7 @@ class ServiceWorkerWarmUpByPointerBrowserTest
                    .name,
                GetParam().enable_warm_up_by_pointerdown ? "true" : "false"},
           }}},
-        {kSpeculativeServiceWorkerStartup});
+        {features::kSpeculativeServiceWorkerStartup});
   }
   ~ServiceWorkerWarmUpByPointerBrowserTest() override = default;
 
@@ -6151,7 +6153,7 @@ class ServiceWorkerAutoPreloadBrowserTest
  public:
   ServiceWorkerAutoPreloadBrowserTest() {
     feature_list_.InitWithFeatures(
-        {kServiceWorkerAutoPreload},
+        {features::kServiceWorkerAutoPreload},
         {features::kServiceWorkerBypassFetchHandler});
   }
 
@@ -6346,7 +6348,11 @@ class ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest
  public:
   ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{kServiceWorkerAutoPreload, {{"blocked_hosts", blocked_host()}}}}, {});
+        {
+            {features::kServiceWorkerAutoPreload,
+             {{"blocked_hosts", blocked_host()}}},
+        },
+        {});
   }
 
   void RegisterServiceWorkerWithBlockedHost() {
@@ -6900,7 +6906,7 @@ class ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest
   ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kServiceWorkerStaticRouter},
-        {kServiceWorkerStaticRouterStartServiceWorker});
+        {features::kServiceWorkerStaticRouterStartServiceWorker});
   }
   ~ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest() override =
       default;

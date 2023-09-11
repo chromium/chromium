@@ -24,6 +24,7 @@
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/prefetch_service_delegate.h"

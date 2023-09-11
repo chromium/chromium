@@ -31,6 +31,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"

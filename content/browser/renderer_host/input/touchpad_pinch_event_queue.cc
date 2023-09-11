@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"

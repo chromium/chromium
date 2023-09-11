@@ -16,7 +16,7 @@
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"

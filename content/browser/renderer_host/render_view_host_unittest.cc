@@ -81,7 +81,8 @@ class RenderViewHostTest : public RenderViewHostImplTestHarness {
 TEST_F(RenderViewHostTest, DontGrantBindingsToSharedProcess) {
   // This test does not make sense when AllowBindings checks for WebUIs is
   // enabled as it explicitly violates what the check is supposed to prevent.
-  if (base::FeatureList::IsEnabled(kEnsureAllowBindingsIsAlwaysForWebUI)) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnsureAllowBindingsIsAlwaysForWebUI)) {
     GTEST_SKIP();
   }
   // Create another view in the same process.

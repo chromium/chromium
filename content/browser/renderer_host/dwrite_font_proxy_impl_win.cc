@@ -30,7 +30,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/dwrite_font_file_util_win.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"

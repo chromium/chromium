@@ -102,6 +102,7 @@
 #include "content/browser/webui/content_web_ui_configs.h"
 #include "content/browser/webui/url_data_manager.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "content/common/pseudonymization_salt.h"
 #include "content/common/skia_utils.h"
 #include "content/common/thread_pool_util.h"

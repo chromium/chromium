@@ -8,8 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/common/features.h"
 #include "content/common/input/event_with_latency_info.h"
-#include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"

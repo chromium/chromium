@@ -9,8 +9,8 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/common/features.h"
 #include "content/public/browser/preloading.h"
-#include "content/public/common/content_features.h"
 
 namespace content {
 

@@ -1905,7 +1905,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForMaybeOpaqueOrigin(
           // able to access data from origins that require a lock.
 
           // Allow the corresponding base::Feature to turn off enforcement.
-          if (!base::FeatureList::IsEnabled(kSiteIsolationCitadelEnforcement)) {
+          if (!base::FeatureList::IsEnabled(
+                  features::kSiteIsolationCitadelEnforcement)) {
             return true;
           }
 

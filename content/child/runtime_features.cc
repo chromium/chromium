@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/features.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/base/features.h"

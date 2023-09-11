@@ -56,7 +56,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
@@ -1220,7 +1219,8 @@ bool GpuProcessHost::LaunchGpuProcess() {
 
 #if BUILDFLAG(IS_WIN)
   if (kind_ == GPU_PROCESS_KIND_INFO_COLLECTION &&
-      base::FeatureList::IsEnabled(kGpuInfoCollectionSeparatePrefetch)) {
+      base::FeatureList::IsEnabled(
+          features::kGpuInfoCollectionSeparatePrefetch)) {
     cmd_line->AppendArg(switches::kPrefetchArgumentOther);
   } else {
     cmd_line->AppendArg(switches::kPrefetchArgumentGpu);

@@ -1975,7 +1975,8 @@ NavigationRequest::NavigationRequest(
     // already started the service worker), but this call does nothing if the
     // service worker already started for the URL.
     if (reload_type_ != ReloadType::BYPASSING_CACHE &&
-        base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
+        base::FeatureList::IsEnabled(
+            features::kSpeculativeServiceWorkerStartup)) {
       if (ServiceWorkerContext* context =
               frame_tree_node_->navigator()
                   .controller()

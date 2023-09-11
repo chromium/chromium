@@ -12,7 +12,7 @@
 #include "base/test/test_timeouts.h"
 #import "content/app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 

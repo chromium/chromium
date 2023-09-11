@@ -5780,7 +5780,7 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
 void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
     const std::vector<GURL>& urls) {
   const bool kStartupEnabled =
-      base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup);
+      base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerStartup);
   const bool kWarmUpEnabled =
       base::FeatureList::IsEnabled(
           blink::features::kSpeculativeServiceWorkerWarmUp) &&
@@ -6364,7 +6364,8 @@ void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
   // should be skipped in that case.
   if (webui_bindings != BINDINGS_POLICY_NONE &&
       !RenderProcessHost::run_renderer_in_process() &&
-      base::FeatureList::IsEnabled(kEnsureAllowBindingsIsAlwaysForWebUI)) {
+      base::FeatureList::IsEnabled(
+          features::kEnsureAllowBindingsIsAlwaysForWebUI)) {
     ProcessLock process_lock = GetProcess()->GetProcessLock();
     if (!process_lock.is_locked_to_site() ||
         !base::Contains(URLDataManagerBackend::GetWebUISchemes(),

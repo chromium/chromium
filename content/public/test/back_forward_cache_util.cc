@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"

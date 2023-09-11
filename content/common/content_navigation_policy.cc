@@ -255,7 +255,7 @@ bool ShouldRestrictCanAccessDataForOriginToUIThread() {
   // Only restrict calls to the UI thread if the feature is enabled, and if the
   // new blob URL support is enabled.
   return base::FeatureList::IsEnabled(
-             kRestrictCanAccessDataForOriginToUIThread) &&
+             features::kRestrictCanAccessDataForOriginToUIThread) &&
          base::FeatureList::IsEnabled(
              net::features::kSupportPartitionedBlobUrl);
 }

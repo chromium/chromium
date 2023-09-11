@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
+#include "content/common/features.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/web_contents_observer.h"

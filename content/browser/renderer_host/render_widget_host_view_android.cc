@@ -71,7 +71,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/skia/include/core/SkBitmap.h"

@@ -25,6 +25,7 @@
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/utility_sandbox_delegate.h"
+#include "content/common/features.h"
 #include "content/common/in_process_child_thread_params.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

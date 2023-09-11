@@ -5,6 +5,7 @@
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 
 #include "components/attribution_reporting/features.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/features.h"

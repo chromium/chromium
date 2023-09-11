@@ -5259,7 +5259,8 @@ void RenderFrameImpl::BeginNavigation(
 
   if (frame_->IsOutermostMainFrame() && url.is_valid() &&
       url.SchemeIsHTTPOrHTTPS() &&
-      base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
+      base::FeatureList::IsEnabled(
+          features::kSpeculativeServiceWorkerStartup)) {
     frame_->MaybeStartOutermostMainFrameNavigation(WebVector<WebURL>({url}));
   }
 

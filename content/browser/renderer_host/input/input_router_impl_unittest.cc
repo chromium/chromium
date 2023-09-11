@@ -30,7 +30,7 @@
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/browser/site_instance_group.h"
 #include "content/common/content_constants_internal.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"

@@ -37,6 +37,7 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"

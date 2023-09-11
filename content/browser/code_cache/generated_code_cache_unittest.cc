@@ -14,7 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/network_isolation_key.h"

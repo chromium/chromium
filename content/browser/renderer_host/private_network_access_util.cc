@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"

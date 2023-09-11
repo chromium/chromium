@@ -32,7 +32,6 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -85,7 +84,8 @@ class ChildProcessSecurityPolicyTestBrowserClient
 };
 
 bool IsCitadelProtectionEnabled() {
-  return base::FeatureList::IsEnabled(kSiteIsolationCitadelEnforcement);
+  return base::FeatureList::IsEnabled(
+      features::kSiteIsolationCitadelEnforcement);
 }
 
 void LockProcessIfNeeded(int process_id,
@@ -117,7 +117,7 @@ class ChildProcessSecurityPolicyTest
       : task_environment_(BrowserTaskEnvironment::REAL_IO_THREAD),
         old_browser_client_(nullptr) {
     feature_list_.InitWithFeatureState(
-        kSiteIsolationCitadelEnforcement,
+        features::kSiteIsolationCitadelEnforcement,
         GetParam() == ChildProcessSecurityPolicyTestCase::kCitadelEnabled);
   }
 

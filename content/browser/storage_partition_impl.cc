@@ -102,6 +102,7 @@
 #include "content/browser/ssl_private_key_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

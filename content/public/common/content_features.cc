@@ -17,19 +17,6 @@ namespace features {
 
 // All features in alphabetical order.
 
-// Enables content-initiated, main frame navigations to data URLs.
-// TODO(meacer): Remove when the deprecation is complete.
-//               https://www.chromestatus.com/feature/5669602927312896
-BASE_FEATURE(kAllowContentInitiatedDataUrlNavigations,
-             "AllowContentInitiatedDataUrlNavigations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Allows Blink to request fonts from the Android Downloadable Fonts API through
-// the service implemented on the Java side.
-BASE_FEATURE(kAndroidDownloadableFontsMatching,
-             "AndroidDownloadableFontsMatching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // Use chromim's implementation of selection magnifier built using surface
 // control APIs, instead of using the system-provided magnifier.
@@ -72,26 +59,6 @@ BASE_FEATURE(kAudioServiceSandbox,
 #endif
 );
 
-// The following two features, when enabled, result in the browser process only
-// asking the renderer process to run beforeunload handlers if it knows such
-// handlers are registered. The two slightly differ in what they do and how
-// they behave:
-// . `kAvoidUnnecessaryBeforeUnloadCheckPostTask` in this case content continues
-//   to report a beforeunload handler is present (even though it isn't). When
-//   asked to dispatch the beforeunload handler, a post task is used (rather
-//   than going to the renderer).
-// . `kAvoidUnnecessaryBeforeUnloadCheckSync` in this case content does not
-//   report a beforeunload handler is present. A ramification of this is
-//   navigations that would normally check beforeunload handlers before
-//   continuing will not, and navigation will synchronously continue.
-// Only one should be used (if both are set, the second takes precedence). The
-// second is unsafe for Android WebView (and thus entirely disabled via
-// ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()),
-// because the embedder may trigger reentrancy, which cannot be avoided.
-BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync,
-             "AvoidUnnecessaryBeforeUnloadCheckSync",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch for Background Fetch.
 BASE_FEATURE(kBackgroundFetch,
              "BackgroundFetch",
@@ -107,12 +74,6 @@ BASE_FEATURE(kBackForwardTransitions,
              "BackForwardTransitions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables reporting ResourceTiming entries for document, who initiated a
-// cancelled navigation in one of their <iframe>.
-BASE_FEATURE(kResourceTimingForCancelledNavigationInFrame,
-             "ResourceTimingForCancelledNavigationInFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows pages that created a MediaSession service to stay eligible for the
 // back/forward cache.
 BASE_FEATURE(kBackForwardCacheMediaSessionService,
@@ -123,19 +84,6 @@ BASE_FEATURE(kBackForwardCacheMediaSessionService,
 // flakes during testing.
 BASE_FEATURE(kBackForwardCacheEntryTimeout,
              "BackForwardCacheEntryTimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables controlling the time to live for pages in the BackForwardCache.
-// The time to live is defined by the param 'time_to_live_seconds'; if this
-// param is not specified then this feature is ignored and the default is used.
-BASE_FEATURE(kBackForwardCacheTimeToLiveControl,
-             "BackForwardCacheTimeToLiveControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable back/forward cache for screen reader users. This flag should be
-// removed once the https://crbug.com/1271450 is resolved.
-BASE_FEATURE(kEnableBackForwardCacheForScreenReader,
-             "EnableBackForwardCacheForScreenReader",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // BackForwardCache is disabled on low memory devices. The threshold is defined
@@ -179,15 +127,6 @@ BASE_FEATURE(kBlockInsecurePrivateNetworkRequestsFromPrivate,
              "BlockInsecurePrivateNetworkRequestsFromPrivate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When this feature is enabled, requests to localhost initiated from non-secure
-// contexts in the `unknown` IP address space are blocked.
-//
-// See also:
-//  - kBlockInsecurePrivateNetworkRequests
-BASE_FEATURE(kBlockInsecurePrivateNetworkRequestsFromUnknown,
-             "BlockInsecurePrivateNetworkRequestsFromUnknown",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables use of the PrivateNetworkAccessNonSecureContextsAllowed deprecation
 // trial. This is a necessary yet insufficient condition: documents that wish to
 // make use of the trial must additionally serve a valid origin trial token.
@@ -199,11 +138,6 @@ BASE_FEATURE(kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
 // This is no-op if the network service is hosted in the browser process.
 BASE_FEATURE(kBrokerFileOperationsOnDiskCacheInNetworkService,
              "BrokerFileOperationsOnDiskCacheInNetworkService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, keyboard user activation will be verified by the browser side.
-BASE_FEATURE(kBrowserVerifiedUserActivationKeyboard,
-             "BrowserVerifiedUserActivationKeyboard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, mouse user activation will be verified by the browser side.
@@ -219,17 +153,6 @@ BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
              "CacheControlNoStoreEnterBackForwardCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If Canvas2D Image Chromium is allowed, this feature controls whether it is
-// enabled.
-BASE_FEATURE(kCanvas2DImageChromium,
-             "Canvas2DImageChromium",
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // Clear the window.name property for the top-level cross-site navigations that
 // swap BrowsingContextGroups(BrowsingInstances).
 BASE_FEATURE(kClearCrossSiteCrossBrowsingContextGroupWindowName,
@@ -240,20 +163,6 @@ BASE_FEATURE(kCompositeBGColorAnimation,
              "CompositeBGColorAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCompositeClipPathAnimation,
-             "CompositeClipPathAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, code cache does not use a browsing_data filter for deletions.
-BASE_FEATURE(kCodeCacheDeletionWithoutFilter,
-             "CodeCacheDeletionWithoutFilter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, event.movement is calculated in blink instead of in browser.
-BASE_FEATURE(kConsolidatedMovementXY,
-             "ConsolidatedMovementXY",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Blink cooperative scheduling.
 BASE_FEATURE(kCooperativeScheduling,
              "CooperativeScheduling",
@@ -263,17 +172,6 @@ BASE_FEATURE(kCooperativeScheduling,
 // https://www.w3.org/TR/reporting/#crash-report
 BASE_FEATURE(kCrashReporting,
              "CrashReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables support for the `Critical-CH` response header.
-// https://github.com/WICG/client-hints-infrastructure/blob/master/reliability.md#critical-ch
-BASE_FEATURE(kCriticalClientHint,
-             "CriticalClientHint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable changing source dynamically for desktop capture.
-BASE_FEATURE(kDesktopCaptureChangeSource,
-             "DesktopCaptureChangeSource",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the device posture API.
@@ -357,20 +255,9 @@ BASE_FEATURE(kDocumentPolicy,
              "DocumentPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable document policy negotiation mechanism.
-BASE_FEATURE(kDocumentPolicyNegotiation,
-             "DocumentPolicyNegotiation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable establishing the GPU channel early in renderer startup.
 BASE_FEATURE(kEarlyEstablishGpuChannel,
              "EarlyEstablishGpuChannel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Requires documents embedded via <iframe>, etc, to explicitly opt-into the
-// embedding: https://github.com/mikewest/embedding-requires-opt-in.
-BASE_FEATURE(kEmbeddingRequiresOptIn,
-             "EmbeddingRequiresOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables canvas 2d methods BeginLayer and EndLayer.
@@ -392,20 +279,6 @@ BASE_FEATURE(kEnableServiceWorkersForChromeUntrusted,
 // Enables service workers on chrome:// urls.
 BASE_FEATURE(kEnableServiceWorkersForChromeScheme,
              "EnableServiceWorkersForChromeScheme",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If this feature is enabled and device permission is not granted by the user,
-// media-device enumeration will provide at most one device per type and the
-// device IDs will not be available.
-BASE_FEATURE(kEnumerateDevicesHideDeviceIDs,
-             "EnumerateDevicesHideDeviceIDs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Content counterpart of ExperimentalContentSecurityPolicyFeatures in
-// third_party/blink/renderer/platform/runtime_enabled_features.json5. Enables
-// experimental Content Security Policy features ('navigate-to').
-BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
-             "ExperimentalContentSecurityPolicyFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables JavaScript API to intermediate federated identity requests.
@@ -459,13 +332,6 @@ BASE_FEATURE(kFedCmSelectiveDisclosure,
              "FedCmSelectiveDisclosure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables metrics collection for signin status mismatches. Also enables
-// parsing the signin status HTTP headers.
-// kFedCmIdpSigninStatusEnabled takes precedence over this feature flag.
-BASE_FEATURE(kFedCmIdpSigninStatusMetrics,
-             "FedCmIdpSigninStatusMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the IDP signin status API for use with FedCM, including avoiding
 // network requests when not signed in and mismatch handling.
 BASE_FEATURE(kFedCmIdpSigninStatusEnabled,
@@ -510,31 +376,6 @@ const base::FeatureParam<base::TimeDelta>
         &kFirstPartySets, "FirstPartySetsNavigationThrottleTimeout",
         base::Seconds(2)};
 
-// Enables fixes for matching src: local() for web fonts correctly against full
-// font name or postscript name. Rolling out behind a flag, as enabling this
-// enables a font indexer on Android which we need to test in the field first.
-BASE_FEATURE(kFontSrcLocalMatching,
-             "FontSrcLocalMatching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if !BUILDFLAG(IS_ANDROID)
-// Feature controlling whether or not memory pressure signals will be forwarded
-// to the GPU process.
-BASE_FEATURE(kForwardMemoryPressureEventsToGpuProcess,
-             "ForwardMemoryPressureEventsToGpuProcess",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-// If enabled, limits the number of FLEDGE auctions that can be run between page
-// load and unload -- any attempt to run more than this number of auctions will
-// fail (return null to JavaScript).
-BASE_FEATURE(kFledgeLimitNumAuctions,
-             "LimitNumFledgeAuctions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// The number of allowed auctions for each page load (load to unload).
-const base::FeatureParam<int> kFledgeLimitNumAuctionsParam{
-    &kFledgeLimitNumAuctions, "max_auctions_per_page", 8};
-
 // Enables scrollers inside Blink to store scroll offsets in fractional
 // floating-point numbers rather than truncating to integers.
 BASE_FEATURE(kFractionalScrollOffsets,
@@ -553,33 +394,10 @@ BASE_FEATURE(kNetworkQualityEstimatorWebHoldback,
 // (activated by kUserAgentClientHint)
 BASE_FEATURE(kGreaseUACH, "GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// Supports proxying thread type changes of renderer processes to browser
-// process and having browser process handle adjusting thread properties (nice
-// value, c-group, latency sensitivity...) for renderers which have sandbox
-// restrictions.
-BASE_FEATURE(kHandleRendererThreadTypeChangesInBrowser,
-             "HandleRendererThreadTypeChangesInBrowser",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // This is intended as a kill switch for the Idle Detection feature. To enable
 // this feature, the experimental web platform features flag should be set,
 // or the site should obtain an Origin Trial token.
 BASE_FEATURE(kIdleDetection, "IdleDetection", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// A feature flag for the memory-backed code cache.
-BASE_FEATURE(kInMemoryCodeCache,
-             "InMemoryCodeCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// During compositor frame eviction, collect not only the surfaces that are
-// reachable from the main frame tree, but also recurse into inner
-// frames. Otherwise only toplevel frames and OOPIF are handled, and other
-// cases, e.g. PDF tiles are ignored. See https://crbug.com/1360351 for details.
-BASE_FEATURE(kInnerFrameCompositorSurfaceEviction,
-             "InnerFrameCompositorSurfaceEviction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, "InstalledApp", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -620,19 +438,10 @@ BASE_FEATURE(kIsolateOrigins,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 
-// Enables the TC39 Array grouping proposal.
-BASE_FEATURE(kJavaScriptArrayGrouping,
-             "JavaScriptArrayGrouping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables experimental JavaScript shared memory features.
 BASE_FEATURE(kJavaScriptExperimentalSharedMemory,
              "JavaScriptExperimentalSharedMemory",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLazyFrameLoading,
-             "LazyFrameLoading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable lazy initialization of the media controls.
 BASE_FEATURE(kLazyInitializeMediaControls,
@@ -660,11 +469,6 @@ BASE_FEATURE(kLogJsConsoleMessages,
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
-
-// Enables a fix for a macOS IME Live Conversion issue. crbug.com/1328530.
-BASE_FEATURE(kMacImeLiveConversionFix,
-             "MacImeLiveConversionFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Uses ThreadType::kCompositing for the main thread
 BASE_FEATURE(kMainThreadCompositingPriority,
@@ -701,29 +505,6 @@ const base::FeatureParam<MBIMode> kMBIModeParam {
 #endif
       &mbi_mode_types
 };
-
-// If this feature is enabled, media-device enumerations use a cache that is
-// invalidated upon notifications sent by base::SystemMonitor. If disabled, the
-// cache is considered invalid on every enumeration request.
-BASE_FEATURE(kMediaDevicesSystemMonitorCache,
-             "MediaDevicesSystemMonitorCaching",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-// Allow cross-context transfer of MediaStreamTracks.
-BASE_FEATURE(kMediaStreamTrackTransfer,
-             "MediaStreamTrackTransfer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled Mojo uses a dedicated background thread to listen for incoming
-// IPCs. Otherwise it's configured to use Content's IO thread for that purpose.
-BASE_FEATURE(kMojoDedicatedThread,
-             "MojoDedicatedThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables/disables the video capture service.
 BASE_FEATURE(kMojoVideoCapture,
@@ -806,55 +587,10 @@ BASE_FEATURE(kPersistentOriginTrials,
              "PersistentOriginTrials",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables process sharing for sites that do not require a dedicated process
-// by using a default SiteInstance. Default SiteInstances will only be used
-// on platforms that do not use full site isolation.
-// Note: This feature is mutally exclusive with
-// kProcessSharingWithStrictSiteInstances. Only one of these should be enabled
-// at a time.
-BASE_FEATURE(kProcessSharingWithDefaultSiteInstances,
-             "ProcessSharingWithDefaultSiteInstances",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Whether cross-site frames should get their own SiteInstance even when
-// strict site isolation is disabled. These SiteInstances will still be
-// grouped into a shared default process based on BrowsingInstance.
-BASE_FEATURE(kProcessSharingWithStrictSiteInstances,
-             "ProcessSharingWithStrictSiteInstances",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Tells the RenderFrameHost to send beforeunload messages on a different
-// local frame interface which will handle the messages at a higher priority.
-BASE_FEATURE(kHighPriorityBeforeUnload,
-             "HighPriorityBeforeUnload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, then an updated prefetch request limit policy will be used that
 // separates eager and non-eager prefetches, and allows for evictions.
 BASE_FEATURE(kPrefetchNewLimits,
              "PrefetchNewLimits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Preload cookie database on NetworkContext creation.
-BASE_FEATURE(kPreloadCookies,
-             "PreloadCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Preloading holdback feature disables preloading (e.g., preconnect, prefetch,
-// and prerender) on all predictors. This is useful in comparing the impact of
-// blink::features::kPrerender2 experiment with and without them.
-
-// This Feature allows configuring preloading features via a parameter string.
-// See content/browser/preloading/preloading_config.cc to see how to use this
-// feature.
-BASE_FEATURE(kPreloadingConfig,
-             "PreloadingConfig",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables exposure of the core milestone 1 (M1) APIs in the renderer without an
-// origin trial token: Attribution Reporting, FLEDGE, Topics.
-BASE_FEATURE(kPrivacySandboxAdsAPIsM1Override,
-             "PrivacySandboxAdsAPIsM1Override",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
@@ -903,17 +639,6 @@ BASE_FEATURE(kPrivateNetworkAccessForIframes,
              "PrivateNetworkAccessForIframes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Private Network Access checks in warning mode for iframe navigations.
-//
-// Does nothing if `kPrivateNetworkAccessForIframes` is disabled.
-//
-// If both this and `kPrivateNetworkAccessForIframes` are enabled, then PNA
-// preflight requests for iframe navigations are not required to succeed. If
-// one fails, a warning is simply displayed in DevTools.
-BASE_FEATURE(kPrivateNetworkAccessForIframesWarningOnly,
-             "PrivateNetworkAccessForIframesWarningOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Requires that CORS preflight requests succeed before sending private network
 // requests. This flag implies `kPrivateNetworkAccessSendPreflights`.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
@@ -926,16 +651,6 @@ BASE_FEATURE(kPrivateNetworkAccessRespectPreflightResults,
 BASE_FEATURE(kPrivateNetworkAccessSendPreflights,
              "PrivateNetworkAccessSendPreflights",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable the ProactivelySwapBrowsingInstance experiment. A browsing instance
-// represents a set of frames that can script each other. Currently, Chrome does
-// not always switch BrowsingInstance when navigating in between two unrelated
-// pages. This experiment makes Chrome swap BrowsingInstances for cross-site
-// HTTP(S) navigations when the BrowsingInstance doesn't contain any other
-// windows.
-BASE_FEATURE(kProactivelySwapBrowsingInstance,
-             "ProactivelySwapBrowsingInstance",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables origin-keyed processes by default, unless origins opt out using
 // Origin-Agent-Cluster: ?0. This feature only takes effect if the Blink feature
@@ -970,19 +685,6 @@ BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
 BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
              "ReduceSubresourceResponseStartedIPC",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Causes hidden tabs with crashed subframes to be marked for reload, meaning
-// that if a user later switches to that tab, the current page will be
-// reloaded.  This will hide crashed subframes from the user at the cost of
-// extra reloads.
-BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
-             "ReloadHiddenTabsWithCrashedSubframes",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 
 // RenderDocument:
 //
@@ -1039,12 +741,6 @@ constexpr base::FeatureParam<bool>
         &kProcessPerSiteUpToMainFrameThreshold,
         "ProcessPerSiteMainFrameAllowDevToolsAttached", false};
 
-// Enables skipping the early call to CommitPending when navigating away from a
-// crashed frame.
-BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
-             "SkipEarlyCommitPendingForCrashedFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables bypassing the service worker fetch handler. Unlike
 // `kServiceWorkerSkipIgnorableFetchHandler`, this feature starts the service
 // worker for subsequent requests.
@@ -1087,20 +783,6 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
         &kServiceWorkerBypassFetchHandler, "bypass_for",
         ServiceWorkerBypassFetchHandlerTarget::kMainResource,
         &service_worker_bypass_fetch_handler_target_options};
-
-// The set of ServiceWorker to bypass while making navigation request.
-// They are represented by a comma separated list of HEX encoded SHA256 hash of
-// the ServiceWorker's scripts.
-// e.g.
-// 9685C8DE399237BDA6FF3AD0F281E9D522D46BB0ECFACE05E98D2B9AAE51D1EF,
-// 20F0D78B280E40C0A17ABB568ACF4BDAFFB9649ADA75B0675F962B3F4FC78EA4
-BASE_FEATURE(kServiceWorkerBypassFetchHandlerHashStrings,
-             "ServiceWorkerBypassFetchHandlerHashStrings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string>
-    kServiceWorkerBypassFetchHandlerBypassedHashStrings{
-        &kServiceWorkerBypassFetchHandlerHashStrings,
-        "script_checksum_to_bypass", ""};
 
 // Enables skipping the service worker fetch handler if the fetch handler is
 // identified as ignorable.
@@ -1177,11 +859,6 @@ BASE_FEATURE(kSecurePaymentConfirmationDebug,
              "SecurePaymentConfirmationDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Make sendBeacon throw for a Blob with a non simple type.
-BASE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType,
-             "SendBeaconThrowForBlobWithNonSimpleType",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Service worker based payment apps as defined by w3c here:
 // https://w3c.github.io/webpayments-payment-apps-api/
 // TODO(rouslan): Remove this.
@@ -1208,12 +885,6 @@ BASE_FEATURE(kShouldAllowFirstPartyStorageKeyOverrideFromEmbedder,
              "ShouldAllowFirstPartyStorageKeyOverrideFromEmbedder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Signed Exchange Reporting for distributors
-// https://www.chromestatus.com/feature/5687904902840320
-BASE_FEATURE(kSignedExchangeReportingForDistributors,
-             "SignedExchangeReportingForDistributors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Origin-Signed HTTP Exchanges (for WebPackage Loading)
 // https://www.chromestatus.com/feature/5745285984681984
 BASE_FEATURE(kSignedHTTPExchange,
@@ -1229,12 +900,6 @@ BASE_FEATURE(kUserMediaCaptureOnFocus,
 // This is intended as a kill switch for the WebOTP Service feature. To enable
 // this feature, the experimental web platform features flag should be set.
 BASE_FEATURE(kWebOTP, "WebOTP", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables WebOTP calls in cross-origin iframes if allowed by Permissions
-// Policy.
-BASE_FEATURE(kWebOTPAssertionFeaturePolicy,
-             "WebOTPAssertionFeaturePolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the web lockscreen API implementation
 // (https://github.com/WICG/lock-screen) in Chrome.
@@ -1294,10 +959,6 @@ BASE_FEATURE(kSpareRendererForSitePerProcess,
              "SpareRendererForSitePerProcess",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStopVideoCaptureOnScreenLock,
-             "StopVideoCaptureOnScreenLock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether site isolation should use origins instead of scheme and
 // eTLD+1.
 BASE_FEATURE(kStrictOriginIsolation,
@@ -1348,30 +1009,6 @@ const base::FeatureParam<int> kTouchDragMovementThresholdDip{
     &kTouchDragAndContextMenu, "DragAndDropMovementThresholdDipParam", 60};
 #endif
 
-// Enables async touchpad pinch zoom events. We check the ACK of the first
-// synthetic wheel event in a pinch sequence, then send the rest of the
-// synthetic wheel events of the pinch sequence as non-blocking if the first
-// event’s ACK is not canceled.
-BASE_FEATURE(kTouchpadAsyncPinchEvents,
-             "TouchpadAsyncPinchEvents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Allows swipe left/right from touchpad change browser navigation. Currently
-// only enabled by default on CrOS, LaCrOS and Windows.
-BASE_FEATURE(kTouchpadOverscrollHistoryNavigation,
-             "TouchpadOverscrollHistoryNavigation",
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-// Enable TrustedTypes .fromLiteral support.
-BASE_FEATURE(kTrustedTypesFromLiteral,
-             "TrustedTypesFromLiteral",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
 // sites as they migrate towards requiring cross-origin isolation for these
 // features.
@@ -1396,11 +1033,6 @@ BASE_FEATURE(kVerifyDidCommitParams,
              "VerifyDidCommitParams",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the <video>.getVideoPlaybackQuality() API is enabled.
-BASE_FEATURE(kVideoPlaybackQuality,
-             "VideoPlaybackQuality",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable the viewport segments API.
 // Tracking bug for enabling viewport segments API: https://crbug.com/1039050.
 BASE_FEATURE(kViewportSegments,
@@ -1421,11 +1053,6 @@ BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,
              "WebAssemblyExperimentalJSPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
-
-// Enable WebAssembly dynamic tiering (only tier up hot functions).
-BASE_FEATURE(kWebAssemblyDynamicTiering,
-             "WebAssemblyDynamicTiering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable support for the WebAssembly Garbage Collection proposal:
 // https://github.com/WebAssembly/gc.
@@ -1479,12 +1106,6 @@ BASE_FEATURE(kWebBluetoothNewPermissionsBackend,
              "WebBluetoothNewPermissionsBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If WebGL Image Chromium is allowed, this feature controls whether it is
-// enabled.
-BASE_FEATURE(kWebGLImageChromium,
-             "WebGLImageChromium",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable the browser process components of the Web MIDI API. This flag does not
 // control whether the API is exposed in Blink.
 BASE_FEATURE(kWebMidi, "WebMidi", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1497,11 +1118,6 @@ BASE_FEATURE(kWebOtpBackendAuto,
 
 // The JavaScript API for payments on the web.
 BASE_FEATURE(kWebPayments, "WebPayments", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Use GpuMemoryBuffer backed VideoFrames in media streams.
-BASE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames,
-             "WebRTC-UseGpuMemoryBufferVideoFrames",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables code caching for scripts used on WebUI pages.
 BASE_FEATURE(kWebUICodeCache,
@@ -1539,12 +1155,6 @@ BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);
 // technologies are present
 BASE_FEATURE(kAutoDisableAccessibilityV2,
              "AutoDisableAccessibilityV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Sets moderate binding to background renderers playing media, when enabled.
-// Else the renderer will have strong binding.
-BASE_FEATURE(kBackgroundMediaRendererHasModerateBinding,
-             "BackgroundMediaRendererHasModerateBinding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Reduce the priority of GPU process when in background so it is more likely
@@ -1592,11 +1202,6 @@ BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Pre-warm up the network process on browser startup.
-BASE_FEATURE(kWarmUpNetworkProcess,
-             "WarmUpNetworkProcess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch for the WebNFC feature. This feature can be enabled for all sites
 // using the kEnableExperimentalWebPlatformFeatures flag.
 // https://w3c.github.io/web-nfc/
@@ -1605,16 +1210,6 @@ BASE_FEATURE(kWebNfc, "WebNFC", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-// Enables caching of media devices for the purpose of enumerating them.
-BASE_FEATURE(kDeviceMonitorMac,
-             "DeviceMonitorMac",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable IOSurface based screen capturer.
-BASE_FEATURE(kIOSurfaceCapturer,
-             "IOSurfaceCapturer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables backgrounding hidden renderers on Mac.
 BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
              "MacAllowBackgroundingRenderProcesses",
@@ -1622,12 +1217,6 @@ BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
 
 BASE_FEATURE(kMacSyscallSandbox,
              "MacSyscallSandbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Feature that controls whether WebContentsOcclusionChecker should handle
-// occlusion notifications.
-BASE_FEATURE(kMacWebContentsOcclusion,
-             "MacWebContentsOcclusion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_MAC)

@@ -12,6 +12,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"

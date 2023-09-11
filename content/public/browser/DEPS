@@ -28,6 +28,7 @@ specific_include_rules = {
   ".*\.cc": [
     "+content/browser",
     "+content/common/content_constants_internal.h",
+    "+content/common/features.h",
     "-content/browser/loader",
   ],
   ".*\.mm": [

@@ -29,6 +29,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "content/common/features.h"
 #include "content/common/thread_pool_util.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"

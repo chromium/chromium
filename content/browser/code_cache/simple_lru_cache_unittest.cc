@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

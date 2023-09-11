@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "net/http/http_response_headers.h"

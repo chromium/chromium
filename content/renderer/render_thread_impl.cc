@@ -72,6 +72,7 @@
 #include "content/common/buildflags.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "content/common/main_frame_counter.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/common/pseudonymization_salt.h"

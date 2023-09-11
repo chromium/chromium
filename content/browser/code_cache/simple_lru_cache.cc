@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/numerics/clamped_math.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "net/base/url_util.h"
 
 namespace content {

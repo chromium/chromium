@@ -30,7 +30,7 @@ void ServiceWorkerResourceLoader::SetCommitResponsibility(
             commit_responsibility_ == FetchResponseFrom::kWithoutServiceWorker);
       break;
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
-      CHECK(base::FeatureList::IsEnabled(kServiceWorkerAutoPreload));
+      CHECK(base::FeatureList::IsEnabled(features::kServiceWorkerAutoPreload));
       CHECK_EQ(commit_responsibility_, FetchResponseFrom::kServiceWorker);
       break;
     case FetchResponseFrom::kServiceWorker:

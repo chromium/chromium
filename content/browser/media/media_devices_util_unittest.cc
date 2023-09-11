@@ -5,7 +5,7 @@
 #include "content/browser/media/media_devices_util.h"
 
 #include "base/feature_list.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "media/audio/audio_device_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

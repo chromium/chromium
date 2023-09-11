@@ -533,8 +533,8 @@ void FrameTree::CreateProxiesForSiteInstance(
       // not exist here, which means we have not seen this `SiteInstance`
       // before, so we instantiate `batched_proxy_ipc_sender` to consolidate
       // IPCs for proxy creation.
-      bool should_consolidate_ipcs =
-          base::FeatureList::IsEnabled(kConsolidatedIPCForProxyCreation);
+      bool should_consolidate_ipcs = base::FeatureList::IsEnabled(
+          features::kConsolidatedIPCForProxyCreation);
       if (should_consolidate_ipcs) {
         base::SafeRef<RenderFrameProxyHost> root_proxy =
             root_browsing_context_state
