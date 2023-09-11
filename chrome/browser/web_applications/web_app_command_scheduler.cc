@@ -241,25 +241,20 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
 
 void WebAppCommandScheduler::InstallPlaceholder(
     const ExternalInstallOptions& install_options,
-    base::OnceCallback<void(const AppId& app_id,
-                            webapps::InstallResultCode code,
-                            bool did_uninstall_and_replace)> callback,
-    base::WeakPtr<content::WebContents> web_contents,
+    base::OnceCallback<void(ExternallyManagedAppManager::InstallResult)>
+        callback,
     const base::Location& location) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            std::move(callback), AppId(),
-            webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown,
-            /*did_uninstall_and_replace=*/false));
+        base::BindOnce(std::move(callback),
+                       ExternallyManagedAppManager::InstallResult()));
     return;
   }
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallPlaceholderCommand>(
-          &profile_.get(), install_options, std::move(callback), web_contents,
-          provider_->web_contents_manager().CreateDataRetriever()),
+          &profile_.get(), install_options, std::move(callback)),
       location);
 }
 

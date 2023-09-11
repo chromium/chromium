@@ -2,44 +2,112 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/commands/install_placeholder_command.h"
+#include "chrome/browser/web_applications/jobs/install_placeholder_job.h"
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/mock_data_retriever.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/install_result_code.h"
-#include "content/public/browser/web_contents.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/base_paths_win.h"
-#include "base/test/scoped_path_override.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace web_app {
 namespace {
 
-class InstallPlaceholderCommandTest : public WebAppTest {
+class InstallPlaceholderJobWrapperCommand
+    : public WebAppCommandTemplate<SharedWebContentsWithAppLock> {
  public:
-  const int kIconSize = 96;
+  InstallPlaceholderJobWrapperCommand(
+      Profile* profile,
+      const ExternalInstallOptions& install_options,
+      InstallPlaceholderJob::InstallAndReplaceCallback callback,
+      std::unique_ptr<WebAppDataRetriever> data_retriever = nullptr)
+      : WebAppCommandTemplate<SharedWebContentsWithAppLock>(
+            "InstallPlaceholderJobWrapperCommand"),
+        profile_(*profile),
+        install_options_(install_options),
+        callback_(std::move(callback)),
+        data_retriever_(std::move(data_retriever)),
+        lock_description_(
+            std::make_unique<SharedWebContentsWithAppLockDescription>(
+                base::flat_set<AppId>{
+                    GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+                                  install_options.install_url)})) {}
+
+  ~InstallPlaceholderJobWrapperCommand() override = default;
+
+  void StartWithLock(
+      std::unique_ptr<SharedWebContentsWithAppLock> lock) override {
+    lock_ = std::move(lock);
+    install_placeholder_job_ = std::make_unique<InstallPlaceholderJob>(
+        &*profile_, install_options_,
+        base::BindOnce(
+            &InstallPlaceholderJobWrapperCommand::OnPlaceholderInstalled,
+            weak_factory_.GetWeakPtr()),
+        *lock_);
+    if (data_retriever_) {
+      install_placeholder_job_->SetDataRetrieverForTesting(
+          std::move(data_retriever_));
+    }
+    install_placeholder_job_->Start();
+  }
+
+  void OnPlaceholderInstalled(webapps::InstallResultCode code, AppId app_id) {
+    SignalCompletionAndSelfDestruct(
+        webapps::IsSuccess(code) ? CommandResult::kSuccess
+                                 : CommandResult::kFailure,
+        base::BindOnce(std::move(callback_), code, std::move(app_id)));
+  }
+
+  const LockDescription& lock_description() const override {
+    return *lock_description_;
+  }
+
+  base::Value ToDebugValue() const override { return base::Value(); }
+
+  void OnShutdown() override {}
+
+ private:
+  raw_ref<Profile> profile_;
+  ExternalInstallOptions install_options_;
+  InstallPlaceholderJob::InstallAndReplaceCallback callback_;
+  std::unique_ptr<WebAppDataRetriever> data_retriever_;
+
+  std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
+  std::unique_ptr<SharedWebContentsWithAppLock> lock_;
+
+  std::unique_ptr<InstallPlaceholderJob> install_placeholder_job_;
+
+  base::WeakPtrFactory<InstallPlaceholderJobWrapperCommand> weak_factory_{this};
+};
+
+class InstallPlaceholderJobTest : public WebAppTest {
+ public:
+  static constexpr int kIconSize = 96;
   const GURL kInstallUrl = GURL("https://example.com");
 
   void SetUp() override {
@@ -55,29 +123,29 @@ class InstallPlaceholderCommandTest : public WebAppTest {
   }
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
+
   FakeOsIntegrationManager& fake_os_integration_manager() {
     return static_cast<FakeOsIntegrationManager&>(
         provider()->os_integration_manager());
   }
+
   TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
 
  private:
-#if BUILDFLAG(IS_WIN)
-  // This prevents creating shortcuts in the startup dir.
-  base::ScopedPathOverride override_start_dir_{base::DIR_USER_STARTUP};
-#endif  // BUILDFLAG(IS_WIN)
-  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_ = nullptr;
+  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_;
 };
 
-TEST_F(InstallPlaceholderCommandTest, InstallPlaceholder) {
+TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
   ExternalInstallOptions options(kInstallUrl, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
-  base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
-  provider()->scheduler().InstallPlaceholder(options, future.GetCallback());
+  base::test::TestFuture<webapps::InstallResultCode, AppId> future;
 
-  ExternallyManagedAppManager::InstallResult result = future.Take();
-  EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
-  const AppId app_id = *result.app_id;
+  provider()->command_manager().ScheduleCommand(
+      std::make_unique<InstallPlaceholderJobWrapperCommand>(
+          profile(), options, future.GetCallback()));
+
+  EXPECT_EQ(future.Get<0>(), webapps::InstallResultCode::kSuccessNewInstall);
+  const AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
@@ -96,12 +164,12 @@ TEST_F(InstallPlaceholderCommandTest, InstallPlaceholder) {
   }
 }
 
-TEST_F(InstallPlaceholderCommandTest, InstallPlaceholderWithOverrideIconUrl) {
+TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
   ExternalInstallOptions options(kInstallUrl, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   const GURL icon_url("https://example.com/test.png");
   options.override_icon_url = icon_url;
-  base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
+  base::test::TestFuture<webapps::InstallResultCode, AppId> future;
 
   auto data_retriever =
       std::make_unique<testing::StrictMock<MockDataRetriever>>();
@@ -122,14 +190,12 @@ TEST_F(InstallPlaceholderCommandTest, InstallPlaceholderWithOverrideIconUrl) {
       .WillOnce(base::test::RunOnceCallback<4>(
           IconsDownloadedResult::kCompleted, std::move(icons), http_result));
 
-  auto command = std::make_unique<InstallPlaceholderCommand>(
-      profile(), options, future.GetCallback());
-  command->SetDataRetrieverForTesting(std::move(data_retriever));
+  auto command = std::make_unique<InstallPlaceholderJobWrapperCommand>(
+      profile(), options, future.GetCallback(), std::move(data_retriever));
   provider()->command_manager().ScheduleCommand(std::move(command));
 
-  ExternallyManagedAppManager::InstallResult result = future.Take();
-  EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
-  const AppId app_id = *result.app_id;
+  EXPECT_EQ(future.Get<0>(), webapps::InstallResultCode::kSuccessNewInstall);
+  const AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
@@ -140,52 +206,6 @@ TEST_F(InstallPlaceholderCommandTest, InstallPlaceholderWithOverrideIconUrl) {
     EXPECT_TRUE(os_state->has_shortcut());
   }
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(InstallPlaceholderCommandTest,
-       InstallPlaceholderWithUninstallAndReplace) {
-  GURL old_app_url("http://old-app.com");
-  const AppId old_app =
-      test::InstallDummyWebApp(profile(), "old_app", old_app_url);
-  auto shortcut_info = std::make_unique<ShortcutInfo>();
-  shortcut_info->url = old_app_url;
-  shortcut_manager()->SetShortcutInfoForApp(old_app, std::move(shortcut_info));
-  ShortcutLocations shortcut_locations;
-  shortcut_locations.on_desktop = false;
-  shortcut_locations.in_quick_launch_bar = true;
-  shortcut_locations.in_startup = true;
-  shortcut_manager()->SetAppExistingShortcuts(old_app_url, shortcut_locations);
-
-  ExternalInstallOptions options(kInstallUrl, mojom::UserDisplayMode::kBrowser,
-                                 ExternalInstallSource::kExternalPolicy);
-  options.uninstall_and_replace = {old_app};
-
-  base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
-  provider()->scheduler().InstallPlaceholder(options, future.GetCallback());
-
-  ExternallyManagedAppManager::InstallResult result = future.Take();
-  EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(result.did_uninstall_and_replace);
-  const AppId app_id = *result.app_id;
-  EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
-      app_id, WebAppManagement::kPolicy));
-
-  auto last_install_options =
-      fake_os_integration_manager().get_last_install_options();
-  EXPECT_FALSE(last_install_options->add_to_desktop);
-  EXPECT_TRUE(last_install_options->add_to_quick_launch_bar);
-  EXPECT_TRUE(last_install_options->os_hooks[OsHookType::kRunOnOsLogin]);
-  if (AreOsIntegrationSubManagersEnabled()) {
-    absl::optional<proto::WebAppOsIntegrationState> os_state =
-        provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-    EXPECT_TRUE(os_state->has_run_on_os_login());
-    EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-              proto::RunOnOsLoginMode::WINDOWED);
-  }
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 }  // namespace web_app

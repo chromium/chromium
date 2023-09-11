@@ -16,7 +16,7 @@ class Profile;
 
 namespace web_app {
 
-class AppLock;
+class WithAppResources;
 
 struct ShortcutInfo;
 struct ShortcutLocations;
@@ -25,17 +25,22 @@ struct ShortcutLocations;
 // migrates an |to_app|'s OS attributes (e.g pin position, app list
 // folder/position, shortcuts and other OS integrations) to the first |from_app|
 // found.
+// The app lock only needs to lock the app with the `to_app` id. The
+// `from_apps_or_extensions` are uninstalled through separately scheduled
+// commands.
 class WebAppUninstallAndReplaceJob {
  public:
   WebAppUninstallAndReplaceJob(
       Profile* profile,
-      AppLock& to_app_lock,
+      WithAppResources& to_app_lock,
       const std::vector<AppId>& from_apps_or_extensions,
       const AppId& to_app,
       base::OnceCallback<void(bool uninstall_triggered)> on_complete);
   ~WebAppUninstallAndReplaceJob();
+
   // Note: This can synchronously call `on_complete`.
   void Start();
+  base::Value ToDebugValue() const;
 
  private:
   void MigrateUiAndUninstallApp(const AppId& from_app,
@@ -56,12 +61,14 @@ class WebAppUninstallAndReplaceJob {
 
   void OnInstallOsHooksCompleted(base::OnceClosure on_complete, OsHooksErrors);
 
-  raw_ptr<Profile> profile_ = nullptr;
-  // `this` must exist within the scope of a WebAppCommand's AppLock.
-  raw_ref<AppLock> to_app_lock_;
+  const raw_ref<Profile> profile_;
+  // `this` must exist within the scope of a WebAppCommand's WithAppResources.
+  const raw_ref<WithAppResources> to_app_lock_;
   std::vector<AppId> from_apps_or_extensions_;
   const AppId to_app_;
   base::OnceCallback<void(bool uninstall_triggered)> on_complete_;
+
+  base::Value::Dict debug_value_;
 
   base::WeakPtrFactory<WebAppUninstallAndReplaceJob> weak_ptr_factory_{this};
 };

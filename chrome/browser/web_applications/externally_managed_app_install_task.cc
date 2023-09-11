@@ -110,7 +110,7 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
         install_options_.install_url,
         ConvertExternalInstallSourceToSource(install_options_.install_source),
         base::BindOnce(&ExternallyManagedAppInstallTask::InstallPlaceholder,
-                       weak_ptr_factory_.GetWeakPtr(), web_contents,
+                       weak_ptr_factory_.GetWeakPtr(),
                        std::move(retry_on_failure)));
     return;
   }
@@ -229,7 +229,6 @@ void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
 }
 
 void ExternallyManagedAppInstallTask::InstallPlaceholder(
-    content::WebContents* web_contents,
     ResultCallback callback,
     absl::optional<AppId> app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -247,11 +246,10 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
 
   provider_->scheduler().InstallPlaceholder(
       install_options_,
-      base::BindOnce(
-          &ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced,
-          weak_ptr_factory_.GetWeakPtr(), /*is_placeholder=*/true,
-          /*offline_install=*/false, std::move(callback)),
-      web_contents->GetWeakPtr());
+      base::BindOnce(&ExternallyManagedAppInstallTask::
+                         OnWebAppInstalledAndReplacedWithInstallResult,
+                     weak_ptr_factory_.GetWeakPtr(), /*is_placeholder=*/true,
+                     /*offline_install=*/false, std::move(callback)));
 }
 
 void ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced(
@@ -261,21 +259,32 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced(
     const AppId& app_id,
     webapps::InstallResultCode code,
     bool did_uninstall_and_replace) {
-  if (!IsNewInstall(code)) {
+  OnWebAppInstalledAndReplacedWithInstallResult(
+      is_placeholder, offline_install, std::move(result_callback),
+      ExternallyManagedAppManager::InstallResult(code, app_id,
+                                                 did_uninstall_and_replace));
+}
+
+void ExternallyManagedAppInstallTask::
+    OnWebAppInstalledAndReplacedWithInstallResult(
+        bool is_placeholder,
+        bool offline_install,
+        ResultCallback result_callback,
+        ExternallyManagedAppManager::InstallResult result) {
+  if (!IsNewInstall(result.code)) {
     std::move(result_callback)
-        .Run(ExternallyManagedAppManager::InstallResult(code));
+        .Run(ExternallyManagedAppManager::InstallResult(result.code));
     return;
   }
 
   if (offline_install) {
-    code = install_options().only_use_app_info_factory
-               ? webapps::InstallResultCode::kSuccessOfflineOnlyInstall
-               : webapps::InstallResultCode::kSuccessOfflineFallbackInstall;
+    result.code =
+        install_options().only_use_app_info_factory
+            ? webapps::InstallResultCode::kSuccessOfflineOnlyInstall
+            : webapps::InstallResultCode::kSuccessOfflineFallbackInstall;
   }
 
-  std::move(result_callback)
-      .Run(ExternallyManagedAppManager::InstallResult(
-          code, app_id, did_uninstall_and_replace));
+  std::move(result_callback).Run(std::move(result));
 }
 
 void ExternallyManagedAppInstallTask::TryAppInfoFactoryOnFailure(

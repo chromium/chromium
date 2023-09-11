@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -137,10 +138,8 @@ class WebAppCommandScheduler {
   // flow when url load fails.
   void InstallPlaceholder(
       const ExternalInstallOptions& install_options,
-      base::OnceCallback<void(const AppId& app_id,
-                              webapps::InstallResultCode code,
-                              bool did_uninstall_and_replace)> callback,
-      base::WeakPtr<content::WebContents> web_contents,
+      base::OnceCallback<void(ExternallyManagedAppManager::InstallResult)>
+          callback,
       const base::Location& location = FROM_HERE);
 
   void PersistFileHandlersUserChoice(

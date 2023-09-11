@@ -82,8 +82,7 @@ class ExternallyManagedAppInstallTask {
                    WebAppUrlLoader::Result load_url_result);
 
   // result_callback could be called synchronously or asynchronously.
-  void InstallPlaceholder(content::WebContents* web_contents,
-                          ResultCallback result_callback,
+  void InstallPlaceholder(ResultCallback result_callback,
                           absl::optional<AppId> app_id);
 
   void UninstallPlaceholderApp(content::WebContents* web_contents,
@@ -100,6 +99,11 @@ class ExternallyManagedAppInstallTask {
                                     const AppId& app_id,
                                     webapps::InstallResultCode code,
                                     bool did_uninstall_and_replace);
+  void OnWebAppInstalledAndReplacedWithInstallResult(
+      bool is_placeholder,
+      bool offline_install,
+      ResultCallback result_callback,
+      ExternallyManagedAppManager::InstallResult result);
 
   void OnUninstallAndReplaced(bool uninstall_and_replace_triggered);
   void TryAppInfoFactoryOnFailure(
