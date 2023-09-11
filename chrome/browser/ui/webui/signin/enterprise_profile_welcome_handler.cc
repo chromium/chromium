@@ -71,7 +71,8 @@ std::string GetManagedAccountTitleWithEmail(
   absl::optional<std::string> account_manager =
       chrome::GetAccountManagerIdentity(profile);
 
-  if (!signin_util::IsProfileSeparationEnforcedByProfile(profile)) {
+  if (!signin_util::IsProfileSeparationEnforcedByProfile(
+          profile, base::UTF16ToUTF8(email))) {
     // The profile is managed but does not enforce profile separation. The
     // intercepted account requires it.
     if (account_manager && !account_manager->empty()) {

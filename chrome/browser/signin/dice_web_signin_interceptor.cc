@@ -369,8 +369,13 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
                                         intercepted_account_info.account_id) {
     return !chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
   }
+  if (!signin_util::IsAccountExemptedFromEnterpriseProfileSeparation(
+          profile_, intercepted_account_info.email)) {
+    return true;
+  }
 
-  if (!signin_util::IsProfileSeparationEnforcedByProfile(profile_) &&
+  if (!signin_util::IsProfileSeparationEnforcedByProfile(
+          profile_, intercepted_account_info.email) &&
       !signin_util::IsProfileSeparationEnforcedByPolicies(
           intercepted_account_profile_separation_policies_.value_or(
               policy::ProfileSeparationPolicies()))) {
@@ -744,7 +749,7 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     SigninInterceptionResult create) {
   signin_util::RecordEnterpriseProfileCreationUserChoice(
       /*enforced_by_policy=*/!signin_util::IsProfileSeparationEnforcedByProfile(
-          profile_) &&
+          profile_, account_info.email) &&
           !signin_util::IsProfileSeparationEnforcedByPolicies(
               intercepted_account_profile_separation_policies_.value_or(
                   policy::ProfileSeparationPolicies())),
@@ -887,6 +892,17 @@ DiceWebSigninInterceptor::EnterpriseSeparationMaybeRequired(
     bool is_new_account_interception,
     const absl::optional<policy::ProfileSeparationPolicies>&
         intercepted_profile_separation_policies) const {
+  CoreAccountInfo primary_core_account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  // Enforce separation for new accounts or re-auth of existing secondary
+  // accounts.
+  if ((new_account_interception_ || primary_core_account_info.email != email) &&
+      !signin_util::IsAccountExemptedFromEnterpriseProfileSeparation(profile_,
+                                                                     email)) {
+    return true;
+  }
+
   // No enterprise separation required for consumer accounts.
   if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(email) ==
       signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
@@ -904,7 +920,11 @@ DiceWebSigninInterceptor::EnterpriseSeparationMaybeRequired(
   if (!intercepted_account_info.IsManaged())
     return false;
   // If `profile` requires enterprise profile separation, return true.
-  if (signin_util::IsProfileSeparationEnforcedByProfile(profile_)) {
+  // Here we only check the legacy policy by passing an empty email since the
+  // new ProfileSeparationSetting policy is checked early in the function.
+  if (signin_util::IsProfileSeparationEnforcedByProfile(
+          profile_,
+          /*intercepted_account_email=*/std::string())) {
     return true;
   }
 
