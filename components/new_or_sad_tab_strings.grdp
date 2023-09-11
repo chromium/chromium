@@ -200,6 +200,17 @@
         When on, sites can't use cookies that track you across the web. Features on some sites may break.
       </message>
 
+      <!-- 3P Cookie Depreciation  -->
+      <if expr="not is_android">
+        <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE" desc="Text informing users that 3rd-party cookies are blocked." formatter_data="android_java" translateable="false">
+          Third-party cookies are blocked
+        </message>
+        <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites." formatter_data="android_java" translateable="false">
+          Chrome blocks sites from using third-party cookies to track you as you browse.
+          If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
+        </message>
+      </if>
+
       <!-- Revamped Incognito New Tab Page strings -->
 
       <if expr="_google_chrome">

@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -42,6 +43,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
@@ -271,6 +273,11 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   replacements["incognitoTabDescription"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST);
 
+  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(incognito_profile);
+  bool is_tracking_protection_3pcd_enabled =
+      tracking_protection_settings->IsTrackingProtection3pcdEnabled();
+
   bool use_revamped_ui =
       base::FeatureList::IsEnabled(features::kIncognitoNtpRevamp);
   if (use_revamped_ui) {
@@ -300,19 +307,35 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
     replacements["learnMore"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
     replacements["cookieControlsTitle"] =
-        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
+        is_tracking_protection_3pcd_enabled
+            ? l10n_util::GetStringUTF8(
+                  IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE)
+            : l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
     replacements["cookieControlsDescription"] =
-        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
+        is_tracking_protection_3pcd_enabled
+            ? l10n_util::GetStringFUTF8(
+                  IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
+                  base::ASCIIToUTF16(chrome::kCookiesSettingsHelpCenterURL))
+            : l10n_util::GetStringUTF8(
+                  IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   }
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
+
+  if (is_tracking_protection_3pcd_enabled) {
+    replacements["hideBlockCookiesToggle"] = "hidden";
+    replacements["hideTooltipIcon"] = "hidden";
+  } else {
+    replacements["hideBlockCookiesToggle"] = "";
+    replacements["hideTooltipIcon"] =
+        cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
+  }
+
   replacements["cookieControlsToggleChecked"] =
       cookie_controls_service->GetToggleCheckedValue() ? "checked" : "";
-  replacements["hideTooltipIcon"] =
-      cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
   replacements["cookieControlsToolTipIcon"] =
       CookieControlsHandler::GetEnforcementIcon(
           cookie_controls_service->GetCookieControlsEnforcement());
