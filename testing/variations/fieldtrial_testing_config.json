@@ -16212,6 +16212,31 @@
             ]
         }
     ],
+    "ThreadCachePurgeInterval": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "interval_1_2_60_20230909",
+                    "params": {
+                        "ThreadCacheDefaultPurgeInterval": "2s",
+                        "ThreadCacheMaxPurgeInterval": "60s",
+                        "ThreadCacheMinPurgeInterval": "1s"
+                    },
+                    "enable_features": [
+                        "EnableConfigurableThreadCachePurgeInterval"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThreadPoolCap": [
         {
             "platforms": [
