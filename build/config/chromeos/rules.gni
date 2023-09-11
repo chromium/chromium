@@ -371,6 +371,9 @@ template("generate_runner_script") {
       # then do testing.
       # See more at //docs/testing/chromeos_integration.
       if (test_exe == "chromeos_integration_tests") {
+        # Run the test sudo helper.
+        executable_args += [ "--run-test-sudo-helper" ]
+
         if (is_chromeos_ash) {
           # For ash, it need to first stop the existing ash.
           executable_args += [ "--stop-ui" ]

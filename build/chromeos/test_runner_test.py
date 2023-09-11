@@ -239,12 +239,12 @@ class TastTests(TestRunnerTest):
 class GTestTest(TestRunnerTest):
 
   @parameterized.expand([
-      [True, True],
-      [True, False],
-      [False, True],
-      [False, False],
+      [True, True, True],
+      [True, False, False],
+      [False, True, True],
+      [False, False, False],
   ])
-  def test_gtest(self, use_vm, stop_ui):
+  def test_gtest(self, use_vm, stop_ui, use_test_sudo_helper):
     """Tests running a gtest."""
     fd_mock = mock.mock_open()
 
@@ -258,6 +258,8 @@ class GTestTest(TestRunnerTest):
     ]
     if stop_ui:
       args.append('--stop-ui')
+    if use_test_sudo_helper:
+      args.append('--run-test-sudo-helper')
 
     with mock.patch.object(sys, 'argv', args),\
          mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen,\
@@ -288,8 +290,18 @@ class GTestTest(TestRunnerTest):
           export HOME=/usr/local/tmp
           export TMPDIR=/usr/local/tmp
           """)
+
       core_cmd = 'LD_LIBRARY_PATH=./ ./out_eve/Release/base_unittests'\
           ' --test-launcher-shard-index=0 --test-launcher-total-shards=1'
+
+      if use_test_sudo_helper:
+        expected_device_script += dedent("""\
+            TEST_SUDO_HELPER_PATH=$(mktemp)
+            ./test_sudo_helper.py --socket-path=${TEST_SUDO_HELPER_PATH} &
+            TEST_SUDO_HELPER_PID=$!
+          """)
+        core_cmd += ' --test-sudo-helper-socket-path=${TEST_SUDO_HELPER_PATH}'
+
       if stop_ui:
         dbus_cmd = 'dbus-send --system --type=method_call'\
           ' --dest=org.chromium.PowerManager'\
@@ -304,6 +316,13 @@ class GTestTest(TestRunnerTest):
           """).format(dbus_cmd, core_cmd)
       else:
         expected_device_script += core_cmd + '\n'
+
+      if use_test_sudo_helper:
+        expected_device_script += dedent("""\
+            kill $TEST_SUDO_HELPER_PID
+            unlink ${TEST_SUDO_HELPER_PATH}
+          """)
+
       self.assertEqual(1, fd_mock().write.call_count)
       # Split the strings to make failure messages easier to read.
       self.assertListEqual(
