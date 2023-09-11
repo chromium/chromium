@@ -187,7 +187,7 @@ using signin_metrics::PromoAction;
   ProceduralBlock completionAction = ^{
     [weakSelf interruptUserSigninUIWithAction:action
                          signinCompletionInfo:completionInfo
-                                   completion:completion];
+                          interruptCompletion:completion];
   };
   if (self.addAccountSigninCoordinator) {
     // `self.addAccountSigninCoordinator` needs to be interupted before
@@ -389,8 +389,10 @@ using signin_metrics::PromoAction;
   DCHECK(self.mediator);
   DCHECK(self.viewController);
 
+  self.unifiedConsentCoordinator.delegate = nil;
   [self.unifiedConsentCoordinator stop];
   self.unifiedConsentCoordinator = nil;
+  self.mediator.delegate = nil;
   [self.mediator disconnect];
   self.mediator = nil;
   self.viewController = nil;
@@ -491,8 +493,9 @@ using signin_metrics::PromoAction;
 - (void)interruptUserSigninUIWithAction:(SigninCoordinatorInterrupt)action
                    signinCompletionInfo:
                        (SigninCompletionInfo*)signinCompletinInfo
-                             completion:(ProceduralBlock)completion {
-  if (self.viewControllerPresentingAnimation) {
+                    interruptCompletion:(ProceduralBlock)interruptCompletion {
+  if (self.viewControllerPresentingAnimation &&
+      action != SigninCoordinatorInterrupt::UIShutdownNoDismiss) {
     // UIKit doesn't allow a view controller to be dismissed during the
     // animation. The interruption has to be processed when the view controller
     // will be fully presented.
@@ -502,7 +505,7 @@ using signin_metrics::PromoAction;
     self.interruptCallback = ^() {
       [weakSelf interruptUserSigninUIWithAction:action
                            signinCompletionInfo:signinCompletinInfo
-                                     completion:completion];
+                            interruptCompletion:interruptCompletion];
     };
     return;
   }
@@ -513,17 +516,22 @@ using signin_metrics::PromoAction;
   DCHECK(!self.advancedSettingsSigninCoordinator);
   __weak UserSigninCoordinator* weakSelf = self;
   ProceduralBlock runCompletionCallback = ^{
+    // This will finish the coordinator (and call the sign-in completion block).
     [weakSelf
         viewControllerDismissedWithResult:SigninCoordinatorResultInterrupted
                            completionInfo:signinCompletinInfo];
-    if (completion) {
-      completion();
+    // Once this coordinator is fully finished, `interruptCompletion` can be
+    // called.
+    if (interruptCompletion) {
+      interruptCompletion();
     }
   };
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
-      [self.mediator interruptWithAction:action
-                              completion:runCompletionCallback];
+      // The mediator should be interrupted and ignore callbacks.
+      self.mediator.delegate = nil;
+      [self.mediator interruptWithAction:action completion:nil];
+      runCompletionCallback();
       break;
     }
     case SigninCoordinatorInterrupt::DismissWithAnimation: {

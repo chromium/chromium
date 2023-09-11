@@ -131,7 +131,6 @@
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   [self.authenticationFlow interruptWithAction:action];
-  DCHECK(self.delegate);
   switch (self.delegate.signinStateOnStart) {
     case IdentitySigninStateSignedOut:
       switch (action) {
