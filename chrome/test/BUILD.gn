@@ -1005,6 +1005,11 @@ if (is_chromeos && is_chromeos_device) {
         "base/chromeos/crosier/interactive_ash_test.h",
         "base/chromeos/crosier/interactive_ash_test_uitest.cc",
       ]
+
+      data_deps = [
+        "//chrome/test/base/chromeos/crosier/helper",
+        "//chrome/test/base/chromeos/crosier/helper:client",
+      ]
     }
   }
 }
