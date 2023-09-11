@@ -13,12 +13,8 @@ namespace blink {
 ShapingLineBreaker::ShapingLineBreaker(
     scoped_refptr<const ShapeResult> result,
     const LazyLineBreakIterator* break_iterator,
-    const Hyphenation* hyphenation,
-    ShapeCallback shape_callback,
-    void* shape_callback_context)
-    : shape_callback_(shape_callback),
-      shape_callback_context_(shape_callback_context),
-      result_(result),
+    const Hyphenation* hyphenation)
+    : result_(result),
       break_iterator_(break_iterator),
       hyphenation_(hyphenation) {
   // Line breaking performance relies on high-performance x-position to

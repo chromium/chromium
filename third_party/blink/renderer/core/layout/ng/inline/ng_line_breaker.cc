@@ -1334,21 +1334,29 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
 
   DCHECK_EQ(item_shape_result.StartIndex(), item.StartOffset());
   DCHECK_EQ(item_shape_result.EndIndex(), item.EndOffset());
-  struct ShapeCallbackContext {
+  class NGShapingLineBreaker : public ShapingLineBreaker {
     STACK_ALLOCATED();
 
    public:
-    NGLineBreaker* line_breaker;
-    const NGInlineItem& item;
-  } shape_callback_context{this, item};
-  const ShapingLineBreaker::ShapeCallback shape_callback =
-      [](void* untyped_context, unsigned start, unsigned end) {
-        ShapeCallbackContext* context =
-            static_cast<ShapeCallbackContext*>(untyped_context);
-        return context->line_breaker->ShapeText(context->item, start, end);
-      };
-  ShapingLineBreaker breaker(&item_shape_result, &break_iterator_, hyphenation_,
-                             shape_callback, &shape_callback_context);
+    NGShapingLineBreaker(NGLineBreaker* line_breaker,
+                         const NGInlineItem* item,
+                         scoped_refptr<const ShapeResult> result)
+        : ShapingLineBreaker(std::move(result),
+                             &line_breaker->break_iterator_,
+                             line_breaker->hyphenation_),
+          line_breaker_(line_breaker),
+          item_(item) {}
+
+   protected:
+    scoped_refptr<ShapeResult> Shape(unsigned start, unsigned end) final {
+      return line_breaker_->ShapeText(*item_, start, end);
+    }
+
+   private:
+    NGLineBreaker* line_breaker_;
+    const NGInlineItem* item_;
+
+  } breaker(this, &item, &item_shape_result);
 
   // Use kStartShouldBeSafe if at the beginning of a line.
   unsigned options = ShapingLineBreaker::kDefaultOptions;
