@@ -500,10 +500,6 @@ class DriveIntegrationService : public KeyedService,
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
 
-  base::ScopedObservation<ash::NetworkStateHandler,
-                          ash::NetworkStateHandlerObserver>
-      network_state_handler_{this};
-
   std::unique_ptr<PinManager> pin_manager_;
 
   int drivefs_total_failures_count_ = 0;
@@ -518,6 +514,10 @@ class DriveIntegrationService : public KeyedService,
   int64_t last_offline_storage_size_result_;
 
   PrefChangeRegistrar registrar_;
+
+  base::ScopedObservation<ash::NetworkStateHandler,
+                          ash::NetworkStateHandlerObserver>
+      network_state_handler_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

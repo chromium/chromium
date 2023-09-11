@@ -640,7 +640,10 @@ DriveIntegrationService::DriveIntegrationService(
   SetEnabled(util::IsDriveEnabledForProfile(profile));
 }
 
-DriveIntegrationService::~DriveIntegrationService() = default;
+DriveIntegrationService::~DriveIntegrationService() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  network_state_handler_.Reset();
+}
 
 void DriveIntegrationService::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

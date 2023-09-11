@@ -172,7 +172,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 //  - Rebuild the progress of bulk pinned items (if turned off mid way through a
 //    bulk pinning event).
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
-    : DriveFsHostObserver,
+    : DriveFsHost::Observer,
       ash::UserDataAuthClient::Observer,
       ash::SpacedClient::Observer,
       chromeos::PowerManagerClient::Observer {
@@ -247,7 +247,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Notify any ongoing syncing events that a delete operation has occurred.
   void NotifyDelete(Id id, const Path& path);
 
-  // DriveFsHostObserver implementation.
+  // DriveFsHost::Observer implementation.
   void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) override;
   void OnUnmounted() override;
   void OnFilesChanged(const std::vector<mojom::FileChange>& changes) override;
@@ -489,23 +489,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   bool should_pin_files_for_testing_ GUARDED_BY_CONTEXT(sequence_checker_) =
       true;
 
-  GUARDED_BY_CONTEXT(sequence_checker_)
-  base::ScopedObservation<DriveFsHost, DriveFsHostObserver> drivefs_host_{this};
-
-  GUARDED_BY_CONTEXT(sequence_checker_)
-  base::ScopedObservation<chromeos::PowerManagerClient,
-                          chromeos::PowerManagerClient::Observer>
-      power_manager_{this};
-
-  GUARDED_BY_CONTEXT(sequence_checker_)
-  base::ScopedObservation<ash::UserDataAuthClient,
-                          ash::UserDataAuthClient::Observer>
-      user_data_auth_client_{this};
-
-  GUARDED_BY_CONTEXT(sequence_checker_)
-  base::ScopedObservation<ash::SpacedClient, ash::SpacedClient::Observer>
-      spaced_client_{this};
-
   SpaceGetter space_getter_ GUARDED_BY_CONTEXT(sequence_checker_);
   CompletionCallback completion_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -536,6 +519,26 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // taking a long time. Used to avoid emitting the WARNING log too frequently.
   base::Time last_long_listing_files_warning_time_;
 
+  GUARDED_BY_CONTEXT(sequence_checker_)
+  base::ScopedObservation<DriveFsHost, DriveFsHost::Observer> drivefs_host_{
+      this};
+
+  GUARDED_BY_CONTEXT(sequence_checker_)
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_{this};
+
+  GUARDED_BY_CONTEXT(sequence_checker_)
+  base::ScopedObservation<ash::UserDataAuthClient,
+                          ash::UserDataAuthClient::Observer>
+      user_data_auth_client_{this};
+
+  GUARDED_BY_CONTEXT(sequence_checker_)
+  base::ScopedObservation<ash::SpacedClient, ash::SpacedClient::Observer>
+      spaced_client_{this};
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<PinManager> weak_ptr_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Add);
