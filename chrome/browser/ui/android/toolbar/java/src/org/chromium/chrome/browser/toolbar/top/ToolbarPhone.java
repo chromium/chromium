@@ -1825,6 +1825,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void setTabSwitcherMode(boolean inTabSwitcherMode) {
+        // On entering the tab switcher, set the focusability of the url bar to be false. This will
+        // occur at the start of the enter event, and will later be reset to true upon finishing the
+        // exit event only in #onStartSurfaceStateChanged.
+        if (inTabSwitcherMode) {
+            mLocationBar.setUrlBarFocusable(false);
+        }
+
         // This method is only used for grid tab switcher with the start surface disabled. When
         // start surface is enabled, omnibox state is updated in onStartSurfaceStateChanged(), which
         // is always called before setTabSwitcherMode(), so skip here.
@@ -1855,8 +1862,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // The width of location bar depends on mTabSwitcherState so layout request is needed. See
         // crbug.com/974745.
         ViewUtils.requestLayout(this, "ToolbarPhone.setTabSwitcherMode");
-
-        mLocationBar.setUrlBarFocusable(false);
 
         finishAnimations();
 
@@ -1941,8 +1946,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         updateShadowVisibility();
         updateTabSwitcherButtonRipple();
         // Url bar should be focusable. This will be set in UrlBar#onDraw but there's a delay which
-        // may cause focus to fail, so set here too.
-        mLocationBar.setUrlBarFocusable(true);
+        // may cause focus to fail, so set here too. Only set to true if the GTS is NOT showing,
+        // such as during the exit tab switcher event.
+        if (!isShowingStartSurfaceTabSwitcher) {
+            mLocationBar.setUrlBarFocusable(true);
+        }
 
         // Toolbar should be expanded when it's shown on the start surface homepage.
         float startSurfaceScrollFraction =
