@@ -467,19 +467,6 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ParseKeyframeKeyList(
                                 CSSParserTokenRange(tokenizer.TokenizeToEOF()));
 }
 
-String CSSParserImpl::ParseCustomPropertyName(const String& name_text) {
-  CSSTokenizer tokenizer(name_text);
-  CSSParserTokenRange range = tokenizer.TokenizeToEOF();
-  const CSSParserToken& name_token = range.ConsumeIncludingWhitespace();
-  if (!range.AtEnd()) {
-    return {};
-  }
-  if (!CSSVariableParser::IsValidVariableName(name_token)) {
-    return {};
-  }
-  return name_token.Value().ToString();
-}
-
 bool CSSParserImpl::ConsumeSupportsDeclaration(CSSParserTokenStream& stream) {
   DCHECK(parsed_properties_.empty());
   // Even though we might use an observer here, this is just to test if we

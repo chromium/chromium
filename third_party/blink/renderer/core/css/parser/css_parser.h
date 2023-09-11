@@ -112,7 +112,6 @@ class CORE_EXPORT CSSParser {
       const String&);
   static StyleRuleKeyframe* ParseKeyframeRule(const CSSParserContext*,
                                               const String&);
-  static String ParseCustomPropertyName(const String&);
 
   static StyleRuleTry* ParseTryRule(const CSSParserContext*, const String&);
 
