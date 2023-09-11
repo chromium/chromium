@@ -19,12 +19,11 @@ void AutofillImageFetcherImpl::FetchImagesForURLs(
     base::span<const GURL> card_art_urls,
     base::OnceCallback<void(
         const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  if (!java_image_fetcher_) {
-    java_image_fetcher_ = Java_AutofillImageFetcher_create(
-        env, key_->GetProfileKeyAndroid()->GetJavaObject());
+  if (card_art_urls.empty()) {
+    return;
   }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
 
   std::vector<base::android::ScopedJavaLocalRef<jobject>> java_urls;
   for (const auto& url : card_art_urls) {
@@ -32,8 +31,19 @@ void AutofillImageFetcherImpl::FetchImagesForURLs(
   }
 
   Java_AutofillImageFetcher_prefetchImages(
-      env, java_image_fetcher_,
+      env, GetOrCreateJavaImageFetcher(),
       url::GURLAndroid::ToJavaArrayOfGURLs(env, java_urls));
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+AutofillImageFetcherImpl::GetOrCreateJavaImageFetcher() {
+  if (!java_image_fetcher_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    java_image_fetcher_ = Java_AutofillImageFetcher_create(
+        env, key_->GetProfileKeyAndroid()->GetJavaObject());
+  }
+
+  return base::android::ScopedJavaLocalRef<jobject>(java_image_fetcher_);
 }
 
 }  // namespace autofill

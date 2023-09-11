@@ -29,10 +29,12 @@ class AutofillImageFetcherImpl : public AutofillImageFetcherBase,
           const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback)
       override;
 
+  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaImageFetcher();
+
  private:
   raw_ptr<ProfileKey> key_;
 
-  base::android::ScopedJavaLocalRef<jobject> java_image_fetcher_;
+  base::android::ScopedJavaGlobalRef<jobject> java_image_fetcher_;
 };
 
 }  // namespace autofill

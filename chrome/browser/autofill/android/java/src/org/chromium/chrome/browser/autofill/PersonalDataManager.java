@@ -355,11 +355,17 @@ public class PersonalDataManager {
     private final Map<String, Bitmap> mCreditCardArtImages = new HashMap<>();
     private ImageFetcher mImageFetcher = ImageFetcherFactory.createImageFetcher(
             ImageFetcherConfig.DISK_CACHE_ONLY, ProfileKey.getLastUsedRegularProfileKey());
+    // TODO (crbug.com/1467754): Move the logic to fetch and manage the images to
+    // AutofillImageFetcher.
+    private final AutofillImageFetcher mAutofillImageFetcher;
 
     private PersonalDataManager() {
         // Note that this technically leaks the native object, however, PersonalDataManager
         // is a singleton that lives forever and there's no clean shutdown of Chrome on Android
         mPersonalDataManagerAndroid = PersonalDataManagerJni.get().init(PersonalDataManager.this);
+        // Get the AutofillImageFetcher instance that was created during browser startup.
+        mAutofillImageFetcher = PersonalDataManagerJni.get().getOrCreateJavaImageFetcher(
+                mPersonalDataManagerAndroid);
     }
 
     /**
@@ -988,5 +994,6 @@ public class PersonalDataManager {
         boolean isAutofillCreditCardManaged();
         String toCountryCode(String countryName);
         void setSyncServiceForTesting(long nativePersonalDataManagerAndroid);
+        AutofillImageFetcher getOrCreateJavaImageFetcher(long nativePersonalDataManagerAndroid);
     }
 }

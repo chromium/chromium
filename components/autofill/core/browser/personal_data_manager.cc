@@ -2112,6 +2112,10 @@ bool PersonalDataManager::IsPaymentCvcStorageEnabled() {
          prefs::IsPaymentCvcStorageEnabled(pref_service_);
 }
 
+AutofillImageFetcherBase* PersonalDataManager::GetImageFetcher() const {
+  return image_fetcher_;
+}
+
 AutofillProfileMigrationStrikeDatabase*
 PersonalDataManager::GetProfileMigrationStrikeDatabase() {
   return const_cast<AutofillProfileMigrationStrikeDatabase*>(
