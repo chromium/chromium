@@ -4,11 +4,9 @@
 # found in the LICENSE file.
 """Siso configuration for mojo."""
 
+load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
-
-__filegroups = {}
-
-__handlers = {}
+load("./platform.star", "platform")
 
 def __step_config(ctx, step_config):
     # mojom_bindings_generator.py will run faster on n2-highmem-8 than
@@ -20,7 +18,7 @@ def __step_config(ctx, step_config):
     step_config["rules"].extend([
         {
             "name": "mojo/mojom_bindings_generator",
-            "command_prefix": "python3 ../../mojo/public/tools/bindings/mojom_bindings_generator.py",
+            "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/mojom_bindings_generator.py",
             "inputs": [
                 "mojo/public/tools/bindings/mojom_bindings_generator.py",
             ],
@@ -120,7 +118,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "mojo/mojom_parser",
-            "command_prefix": "python3 ../../mojo/public/tools/mojom/mojom_parser.py",
+            "command_prefix": platform.python_bin + " ../../mojo/public/tools/mojom/mojom_parser.py",
             "indirect_inputs": {
                 "includes": [
                     "*.build_metadata",
@@ -154,21 +152,22 @@ def __step_config(ctx, step_config):
                     ],
                 },
             },
-            "remote": True,
+            # TODO: b/285078792 - Win cross compile on Linux worker doesn't work with input_root_absolute_path=true.
+            "remote": runtime.os != "windows",
             "input_root_absolute_path": True,
             "output_local": True,
             "platform_ref": platform_ref,
         },
         {
             "name": "mojo/validate_typemap_config",
-            "command_prefix": "python3 ../../mojo/public/tools/bindings/validate_typemap_config.py",
+            "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/validate_typemap_config.py",
             "remote": True,
             "output_local": True,
             "platform_ref": platform_ref,
         },
         {
             "name": "mojo/generate_type_mappings",
-            "command_prefix": "python3 ../../mojo/public/tools/bindings/generate_type_mappings.py",
+            "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/generate_type_mappings.py",
             "remote": True,
             "output_local": True,
             "platform_ref": platform_ref,
@@ -179,6 +178,4 @@ def __step_config(ctx, step_config):
 mojo = module(
     "mojo",
     step_config = __step_config,
-    filegroups = __filegroups,
-    handlers = __handlers,
 )

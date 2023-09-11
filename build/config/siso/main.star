@@ -10,6 +10,8 @@ load("@builtin//struct.star", "module")
 load("./blink_all.star", "blink_all")
 load("./linux.star", chromium_linux = "chromium")
 load("./mac.star", chromium_mac = "chromium")
+load("./mojo.star", "mojo")
+load("./platform.star", "platform")
 load("./reproxy.star", "reproxy")
 load("./simple.star", "simple")
 load("./windows.star", chromium_windows = "chromium")
@@ -42,23 +44,32 @@ def init(ctx):
         "input_deps": {},
         "rules": [],
     }
-    step_config = host.step_config(ctx, step_config)
-    step_config = simple.step_config(ctx, step_config)
     step_config = blink_all.step_config(ctx, step_config)
+    step_config = host.step_config(ctx, step_config)
+    step_config = mojo.step_config(ctx, step_config)
+    step_config = simple.step_config(ctx, step_config)
     if reproxy.enabled(ctx):
         step_config = reproxy.step_config(ctx, step_config)
 
     #  Python actions may use an absolute path at the first argument.
     #  e.g. C:/src/depot_tools/bootstrap-2@3_8_10_chromium_26_bin/python3/bin/python3.exe
-    #  It needs to set `pyhton3` or `python3.exe` be replaced with `python3.exe` for remote execution.
+    #  It needs to set `pyhton3` or `python3.exe` to remote_command.
     for rule in step_config["rules"]:
         if rule["name"].startswith("clang-coverage"):
             # clang_code_coverage_wrapper.run() strips the python wrapper.
             # So it shouldn't set `remote_command: python3`.
             continue
+
+        # On Linux worker, it needs to be `python3` instead of `python3.exe`.
         arg0 = rule.get("command_prefix", "").split(" ")[0].strip("\"")
-        if arg0 in ["python3", "python3.exe"]:
-            rule["remote_command"] = arg0
+        if arg0 == platform.python_bin:
+            continue
+        p = step_config.get("reproxy_config", {}).get("platform") or step_config["platforms"].get(rule.get("platform_ref", "default"))
+        if not p:
+            continue
+        if p.get("OSFamily") == "Linux":
+            arg0 = arg0.removesuffix(".exe")
+        rule["remote_command"] = arg0
 
     filegroups = {}
     filegroups.update(blink_all.filegroups)

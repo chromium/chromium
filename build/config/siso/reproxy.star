@@ -7,8 +7,9 @@
 load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
-load("./rewrapper_cfg.star", "rewrapper_cfg")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
+load("./platform.star", "platform")
+load("./rewrapper_cfg.star", "rewrapper_cfg")
 
 __filegroups = {}
 
@@ -174,7 +175,7 @@ def __step_config(ctx, step_config):
         # Handle generic action_remote calls.
         {
             "name": "action_remote",
-            "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper",
+            "command_prefix": platform.python_bin + " ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper",
             "handler": "rewrite_action_remote_py",
         },
     ]
@@ -186,7 +187,7 @@ def __step_config(ctx, step_config):
         # TODO(b/292838933): Implement mojom_parser processor in Starlark?
         if rule["name"] == "mojo/mojom_parser":
             rule.update({
-                "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
+                "command_prefix": platform.python_bin + " ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
                 "handler": "rewrite_action_remote_py",
             })
             new_rules.insert(0, rule)
@@ -230,15 +231,15 @@ def __step_config(ctx, step_config):
         # Finally handle remaining remote rules. It's assumed it is enough to only convert native remote config to reproxy config.
         platform_ref = rule.get("platform_ref")
         if platform_ref:
-            platform = step_config["platforms"].get(platform_ref)
-            if not platform:
+            p = step_config["platforms"].get(platform_ref)
+            if not p:
                 fail("Rule %s uses undefined platform '%s'" % (rule["name"], platform_ref))
         else:
-            platform = step_config.get("platforms", {}).get("default")
-            if not platform:
+            p = step_config.get("platforms", {}).get("default")
+            if not p:
                 fail("Rule %s did not set platform_ref but no default platform exists" % rule["name"])
         rule["reproxy_config"] = {
-            "platform": platform,
+            "platform": p,
             "labels": {
                 "type": "tool",
             },
