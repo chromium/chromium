@@ -18159,7 +18159,7 @@
                 {
                     "name": "Enabled_WebApkAllowIconUpdate",
                     "params": {
-                        "shell_version": "159"
+                        "shell_version": "166"
                     },
                     "enable_features": [
                         "WebApkAllowIconUpdate"
