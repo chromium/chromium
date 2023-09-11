@@ -1,5 +1,5 @@
 monorail {
-  component: "Blink>SecurityFeature"
+  component: "Blink>SecurityFeature>MixedContent"
 }
-team_email: "security-dev@chromium.org"
+team_email: "trusty-transport@chromium.org"
 
