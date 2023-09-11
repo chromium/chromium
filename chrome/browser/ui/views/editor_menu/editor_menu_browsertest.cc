@@ -12,6 +12,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/screen.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -103,6 +104,24 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 
   // View is positioned below the anchor.
   EXPECT_EQ(bounds.y() - kMarginDip, kAnchorBoundsTop.bottom());
+  GetEditorMenuView()->GetWidget()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       AlignsEditorMenuRightEdgeWithAnchor) {
+  ASSERT_NE(GetControllerImpl(), nullptr);
+
+  // Place the anchor near the right edge of the screen.
+  const int screen_right =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().right();
+  const gfx::Rect anchor_bounds = gfx::Rect(screen_right - 80, 250, 70, 160);
+  GetControllerImpl()->OnTextAvailable(anchor_bounds, /*selected_text=*/"",
+                                       /*surrounding_text=*/"");
+
+  // Editor menu should be right aligned with anchor.
+  EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen().right(),
+            anchor_bounds.right());
+
   GetEditorMenuView()->GetWidget()->Close();
 }
 

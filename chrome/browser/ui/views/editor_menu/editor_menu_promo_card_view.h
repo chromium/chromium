@@ -13,6 +13,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
+class Label;
 class MdTextButton;
 }
 
@@ -66,6 +67,8 @@ class EditorMenuPromoCardView : public views::View,
   // `delegate_` outlives `this`.
   raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;
 
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<views::MdTextButton> dismiss_button_ = nullptr;
   raw_ptr<views::MdTextButton> tell_me_more_button_ = nullptr;
 

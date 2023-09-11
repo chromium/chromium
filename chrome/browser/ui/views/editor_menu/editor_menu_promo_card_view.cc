@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -45,16 +47,32 @@ constexpr char kWidgetName[] = "EditorMenuPromoCardViewWidget";
 constexpr char16_t kTitleTextPlaceholder[] =
     u"Editor menu title text placeholder";
 constexpr char16_t kDescriptionTextPlaceholder[] =
-    u"Editor menu description text placeholder";
+    u"Editor menu description text placeholder text to introduce the editor "
+    u"menu feature";
 
 constexpr int kPromoCardIconSizeDip = 48;
 
-constexpr gfx::Insets kPromoCardInsets = gfx::Insets::VH(12, 16);
+// Spacing around the main containers in the promo card. This is applied between
+// the icon container, text container and promo card edges.
+constexpr int kPromoCardHorizontalPaddingDip = 16;
+constexpr gfx::Insets kPromoCardInsets =
+    gfx::Insets::VH(12, kPromoCardHorizontalPaddingDip);
 
-constexpr int kContainerMinWidthDip = 368;
+constexpr int kPromoCardMinWidthDip = 320;
+constexpr int kPromoCardMaxWidthDip = 592;
 
 // Spacing between this view and the anchor view (context menu).
 constexpr int kMarginDip = 8;
+
+int GetPromoCardWidth(int anchor_view_width) {
+  return std::clamp(anchor_view_width, kPromoCardMinWidthDip,
+                    kPromoCardMaxWidthDip);
+}
+
+int GetPromoCardLabelWidth(int promo_card_width) {
+  return promo_card_width - kPromoCardInsets.width() - kPromoCardIconSizeDip -
+         kPromoCardHorizontalPaddingDip;
+}
 
 }  // namespace
 
@@ -131,11 +149,32 @@ void EditorMenuPromoCardView::OnWidgetActivationChanged(views::Widget* widget,
 
 void EditorMenuPromoCardView::UpdateBounds(
     const gfx::Rect& anchor_view_bounds) {
-  const int height = GetHeightForWidth(anchor_view_bounds.width());
-  int y = anchor_view_bounds.y() - kMarginDip - height;
+  const int promo_card_width = GetPromoCardWidth(anchor_view_bounds.width());
 
-  // The Editor Menu view will be off screen if showing above the anchor.
-  // Show below the anchor instead.
+  // Multiline labels aren't resized properly in flex or box layouts. According
+  // to https://crbug.com/678337#c7 this isn't easy to fix. As a workaround, we
+  // explicitly set the labels' maximum width.
+  const int label_width = GetPromoCardLabelWidth(promo_card_width);
+  title_->SetMaximumWidth(label_width);
+  description_->SetMaximumWidth(label_width);
+
+  // Since the width of the labels can affect their preferred height, compute
+  // promo card height after label width has been set.
+  const int promo_card_height = GetHeightForWidth(promo_card_width);
+
+  // Try to align the left edges of the promo card and anchor view. If that
+  // places the promo card partially offscreen, align the right edges instead.
+  int x = anchor_view_bounds.x();
+  if (x + promo_card_width > display::Screen::GetScreen()
+                                 ->GetDisplayMatching(anchor_view_bounds)
+                                 .work_area()
+                                 .right()) {
+    x = anchor_view_bounds.right() - promo_card_width;
+  }
+
+  // Try to position the promo card above the anchor view. If that places the
+  // promo card partially offscreen, position it below the anchor view instead.
+  int y = anchor_view_bounds.y() - kMarginDip - promo_card_height;
   if (y < display::Screen::GetScreen()
               ->GetDisplayMatching(anchor_view_bounds)
               .work_area()
@@ -143,9 +182,7 @@ void EditorMenuPromoCardView::UpdateBounds(
     y = anchor_view_bounds.bottom() + kMarginDip;
   }
 
-  const gfx::Rect bounds = {{anchor_view_bounds.x(), y},
-                            {kContainerMinWidthDip, height}};
-  GetWidget()->SetBounds(bounds);
+  GetWidget()->SetBounds(gfx::Rect(x, y, promo_card_width, promo_card_height));
 }
 
 void EditorMenuPromoCardView::InitLayout() {
@@ -179,22 +216,22 @@ void EditorMenuPromoCardView::InitLayout() {
 }
 
 void EditorMenuPromoCardView::AddTitle(views::View* main_view) {
-  auto* title = main_view->AddChildView(std::make_unique<views::Label>(
+  title_ = main_view->AddChildView(std::make_unique<views::Label>(
       kTitleTextPlaceholder, views::style::CONTEXT_DIALOG_TITLE,
       views::style::STYLE_HEADLINE_5));
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title->SetMultiLine(true);
-  title->SetEnabledColorId(ui::kColorSysOnSurface);
+  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_->SetMultiLine(true);
+  title_->SetEnabledColorId(ui::kColorSysOnSurface);
 }
 
 void EditorMenuPromoCardView::AddDescription(views::View* main_view) {
-  auto* description = main_view->AddChildView(std::make_unique<views::Label>(
+  description_ = main_view->AddChildView(std::make_unique<views::Label>(
       kDescriptionTextPlaceholder, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_BODY_3));
-  description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description->SetMultiLine(true);
-  description->SetEnabledColorId(ui::kColorSysOnSurfaceSubtle);
-  description->SetProperty(
+  description_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description_->SetMultiLine(true);
+  description_->SetEnabledColorId(ui::kColorSysOnSurfaceSubtle);
+  description_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(views::LayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT),
