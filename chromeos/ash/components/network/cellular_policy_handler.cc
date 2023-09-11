@@ -20,11 +20,8 @@
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/policy_util.h"
-#include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-
-using ash::cellular_setup::mojom::ProfileInstallMethod;
 
 namespace ash {
 
@@ -344,9 +341,6 @@ void CellularPolicyHandler::PerformInstallESim(
   } else {
     const bool is_initial_install =
         remaining_install_requests_.front()->retry_backoff.failure_count() == 0;
-    const bool is_smds =
-        remaining_install_requests_.front()->activation_code.type() ==
-        policy_util::SmdxActivationCode::Type::SMDS;
 
     // Remote provisioning of eSIM profiles via SM-DP+ activation code in policy
     // does not require confirmation code.
@@ -357,8 +351,7 @@ void CellularPolicyHandler::PerformInstallESim(
             &CellularPolicyHandler::OnESimProfileInstallAttemptComplete,
             weak_ptr_factory_.GetWeakPtr()),
         is_initial_install,
-        is_smds ? ProfileInstallMethod::kViaSmds
-                : ProfileInstallMethod::kViaActivationCodeAfterSmds);
+        /*is_install_via_qr_code=*/false);
   }
 }
 
@@ -420,10 +413,11 @@ void CellularPolicyHandler::OnInhibitedForRefreshSmdxProfiles(
   // The cellular device must be inhibited before refreshing SM-DX profiles. If
   // we fail to receive a lock consider this installation attempt a failure.
   if (!inhibit_lock) {
+    // TODO(b/278135630): Emit
+    // Ash.Network.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
     NET_LOG(ERROR)
         << "Failed to inhibit cellular for refreshing SM-DX profiles";
     auto current_request = std::move(remaining_install_requests_.front());
-
     PopRequest();
     ScheduleRetryAndProcessRequests(std::move(current_request),
                                     InstallRetryReason::kInternalError);
@@ -464,6 +458,8 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
     CellularNetworkMetricsLogger::LogSmdsScanProfileCount(profile_paths.size());
     // TODO(b/278135481): Emit
     // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.Duration.
+    // TODO(b/278135630): Emit
+    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
   }
 
   // The activation code will already be known in the SM-DP+ case, but for the
@@ -502,9 +498,7 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
           &CellularPolicyHandler::OnESimProfileInstallAttemptComplete,
           weak_ptr_factory_.GetWeakPtr()),
       is_initial_install,
-      is_smds ? ProfileInstallMethod::kViaSmds
-              : ProfileInstallMethod::kViaActivationCodeAfterSmds,
-      std::move(inhibit_lock));
+      /*is_install_via_qr_code=*/false, std::move(inhibit_lock));
 }
 
 void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(

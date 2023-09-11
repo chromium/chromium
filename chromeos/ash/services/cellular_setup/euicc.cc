@@ -150,13 +150,16 @@ void Euicc::InstallProfileFromActivationCode(
         ProfileInstallMethodToEnum(install_method));
   }
 
+  const bool is_install_via_qr_code =
+      install_method == mojom::ProfileInstallMethod::kViaQrCodeAfterSmds ||
+      install_method == mojom::ProfileInstallMethod::kViaQrCodeSkippedSmds;
   esim_manager_->cellular_esim_installer()
       ->LockAndInstallProfileFromActivationCode(
           activation_code, confirmation_code, path_,
           /*new_shill_properties=*/base::Value::Dict(),
           base::BindOnce(&Euicc::OnESimInstallProfileResult,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-          /*is_initial_install=*/true, install_method);
+          /*is_initial_install=*/true, is_install_via_qr_code);
 }
 
 void Euicc::OnESimInstallProfileResult(

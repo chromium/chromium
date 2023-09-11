@@ -43,8 +43,6 @@ using InstallResultTuple = std::tuple<HermesResponseStatus,
                                       absl::optional<dbus::ObjectPath>,
                                       absl::optional<std::string>>;
 
-using cellular_setup::mojom::ProfileInstallMethod;
-
 const char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
 const char kTestEid[] = "12345678901234567890123456789012";
 const char kTestCellularServicePath[] = "/service/cellular101";
@@ -181,10 +179,7 @@ class CellularESimInstallerLegacyTest : public testing::Test {
               out_service_path = service_path;
               run_loop.Quit();
             }),
-        is_initial_install,
-        is_install_via_qr_code
-            ? ProfileInstallMethod::kViaQrCodeAfterSmds
-            : ProfileInstallMethod::kViaActivationCodeAfterSmds);
+        is_initial_install, is_install_via_qr_code);
 
     FastForwardProfileRefreshDelay();
 
