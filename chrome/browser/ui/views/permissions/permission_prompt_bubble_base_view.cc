@@ -6,72 +6,38 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
-#include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/url_formatter/elide_url.h"
-#include "components/vector_icons/vector_icons.h"
-#include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/text_constants.h"
-#include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
-
-namespace {
-
-constexpr UrlIdentity::TypeSet allowed_types = {
-    UrlIdentity::Type::kDefault, UrlIdentity::Type::kChromeExtension,
-    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kFile};
-
-constexpr UrlIdentity::FormatOptions options = {
-    .default_options = {
-        UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
-
-}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
                                       kMainViewId);
@@ -86,19 +52,14 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
     std::u16string window_title,
     std::u16string accessible_window_title,
     absl::optional<std::u16string> extra_text)
-    : browser_(browser),
+    : PermissionPromptBaseView(browser, delegate),
+      browser_(browser),
       delegate_(delegate),
       permission_requested_time_(permission_requested_time),
       is_one_time_permission_(IsOneTimePermission(*delegate.get())),
-      url_identity_(GetUrlIdentity(browser, *delegate)),
       accessible_window_title_(accessible_window_title),
       window_title_(window_title) {
   // Note that browser_ may be null in unit tests.
-
-  // To prevent permissions being accepted accidentally, and as a security
-  // measure against crbug.com/619429, permission prompts should not be accepted
-  // as the default action.
-  SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   SetPromptStyle(prompt_style);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -133,7 +94,7 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
         base::BindRepeating(&PermissionPromptBubbleBaseView::
                                 FilterUnintenedEventsAndRunCallbacks,
                             base::Unretained(this),
-                            PermissionDialogButton::kAcceptOnce),
+                            GetViewId(PermissionDialogButton::kAcceptOnce)),
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
     allow_once_button->SetID(GetViewId(PermissionDialogButton::kAcceptOnce));
 
@@ -141,7 +102,7 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
         base::BindRepeating(&PermissionPromptBubbleBaseView::
                                 FilterUnintenedEventsAndRunCallbacks,
                             base::Unretained(this),
-                            PermissionDialogButton::kAccept),
+                            GetViewId(PermissionDialogButton::kAccept)),
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT));
     allow_always_button->SetProperty(views::kElementIdentifierKey,
                                      kAllowButtonElementId);
@@ -155,7 +116,7 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
         base::BindRepeating(&PermissionPromptBubbleBaseView::
                                 FilterUnintenedEventsAndRunCallbacks,
                             base::Unretained(this),
-                            PermissionDialogButton::kDeny),
+                            GetViewId(PermissionDialogButton::kDeny)),
         l10n_util::GetStringUTF16(block_message_id));
     block_button->SetID(GetViewId(PermissionDialogButton::kDeny));
 
@@ -181,14 +142,14 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
     SetButtonLabel(ui::DIALOG_BUTTON_OK,
                    l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
     SetAcceptCallback(base::BindOnce(
-        &PermissionPromptBubbleBaseView::RunButtonCallbacks,
-        base::Unretained(this), PermissionDialogButton::kAccept));
+        &PermissionPromptBubbleBaseView::RunButtonCallback,
+        base::Unretained(this), GetViewId(PermissionDialogButton::kAccept)));
 
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
-    SetCancelCallback(
-        base::BindOnce(&PermissionPromptBubbleBaseView::RunButtonCallbacks,
-                       base::Unretained(this), PermissionDialogButton::kDeny));
+    SetCancelCallback(base::BindOnce(
+        &PermissionPromptBubbleBaseView::RunButtonCallback,
+        base::Unretained(this), GetViewId(PermissionDialogButton::kDeny)));
 
     if (features::IsChromeRefresh2023()) {
       SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kTonal);
@@ -272,15 +233,6 @@ void PermissionPromptBubbleBaseView::SetPromptStyle(
   }
 }
 
-void PermissionPromptBubbleBaseView::AddedToWidget() {
-  if (url_identity_.type == UrlIdentity::Type::kDefault) {
-    // There is a risk of URL spoofing from origins that are too wide to fit in
-    // the bubble; elide origins from the front to prevent this.
-    GetBubbleFrameView()->SetTitleView(
-        CreateTitleOriginLabel(GetWindowTitle()));
-  }
-}
-
 bool PermissionPromptBubbleBaseView::ShouldShowCloseButton() const {
   return true;
 }
@@ -294,23 +246,6 @@ std::u16string PermissionPromptBubbleBaseView::GetAccessibleWindowTitle()
   return accessible_window_title_;
 }
 
-bool PermissionPromptBubbleBaseView::ShouldIgnoreButtonPressedEventHandling(
-    View* button,
-    const ui::Event& event) const {
-  // Ignore the key pressed event if the button row bounds intersect with PiP
-  // windows bounds.
-  if (!event.IsKeyEvent()) {
-    return false;
-  }
-
-  absl::optional<gfx::Rect> pip_window_bounds =
-      PictureInPictureWindowManager::GetInstance()
-          ->GetPictureInPictureWindowBounds();
-
-  return pip_window_bounds &&
-         pip_window_bounds->Intersects(button->GetBoundsInScreen());
-}
-
 void PermissionPromptBubbleBaseView::ClosingPermission() {
   DCHECK_EQ(prompt_style_, PermissionPromptStyle::kBubbleOnly);
   RecordDecision(permissions::PermissionAction::DISMISSED);
@@ -319,26 +254,9 @@ void PermissionPromptBubbleBaseView::ClosingPermission() {
   }
 }
 
-void PermissionPromptBubbleBaseView::FilterUnintenedEventsAndRunCallbacks(
-    PermissionDialogButton type,
-    const ui::Event& event) {
-  if (GetDialogClientView()->IsPossiblyUnintendedInteraction(event)) {
-    return;
-  }
-
-  View* button =
-      AsDialogDelegate()->GetExtraView()->GetViewByID(GetViewId(type));
-
-  if (ShouldIgnoreButtonPressedEventHandling(button, event)) {
-    return;
-  }
-
-  RunButtonCallbacks(type);
-}
-
-void PermissionPromptBubbleBaseView::RunButtonCallbacks(
-    PermissionDialogButton type) {
-  switch (type) {
+void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
+  PermissionDialogButton button = GetPermissionDialogButton(button_id);
+  switch (button) {
     case PermissionDialogButton::kAccept:
       RecordDecision(permissions::PermissionAction::GRANTED);
       delegate_->Accept();
@@ -373,26 +291,6 @@ bool PermissionPromptBubbleBaseView::IsOneTimePermission(
     }
   }
   return true;
-}
-
-// static
-UrlIdentity PermissionPromptBubbleBaseView::GetUrlIdentity(
-    Browser* browser,
-    permissions::PermissionPrompt::Delegate& delegate) {
-  DCHECK(!delegate.Requests().empty());
-  GURL origin_url = delegate.GetRequestingOrigin();
-
-  UrlIdentity url_identity =
-      UrlIdentity::CreateFromUrl(browser ? browser->profile() : nullptr,
-                                 origin_url, allowed_types, options);
-
-  if (url_identity.type == UrlIdentity::Type::kFile) {
-    // File URLs will show the same constant.
-    url_identity.name =
-        l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE);
-  }
-
-  return url_identity;
 }
 
 void PermissionPromptBubbleBaseView::RecordDecision(

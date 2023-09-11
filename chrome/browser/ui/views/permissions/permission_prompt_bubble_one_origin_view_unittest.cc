@@ -191,8 +191,8 @@ TEST_F(PermissionPromptBubbleOneOriginViewTest, ButtonPressesRecordMetrics) {
   {
     auto bubble = CreateBubble(&delegate);
     base::HistogramTester tester;
-    bubble->RunButtonCallbacks(
-        PermissionPromptBubbleBaseView::PermissionDialogButton::kAcceptOnce);
+    bubble->RunButtonCallback(static_cast<int>(
+        PermissionPromptBubbleBaseView::PermissionDialogButton::kAcceptOnce));
     tester.ExpectTotalCount("Permissions.Prompt.TimeToDecision.AcceptedOnce",
                             1);
     EXPECT_EQ(

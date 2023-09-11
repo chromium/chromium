@@ -4,6 +4,8 @@
 
 #include "components/permissions/permission_request.h"
 
+#include <string>
+
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -304,6 +306,23 @@ ContentSettingsType PermissionRequest::GetContentSettingsType() const {
   if (type.has_value())
     return type.value();
   return ContentSettingsType::DEFAULT;
+}
+
+std::u16string PermissionRequest::GetPermissionNameTextFragment() const {
+  int message_id = 0;
+  switch (request_type()) {
+    case RequestType::kCameraStream:
+      message_id = IDS_CAMERA_PERMISSION_NAME_FRAGMENT;
+      break;
+    case RequestType::kMicStream:
+      message_id = IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT;
+      break;
+    default:
+      NOTREACHED();
+      return std::u16string();
+  }
+  DCHECK_NE(0, message_id);
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 }  // namespace permissions

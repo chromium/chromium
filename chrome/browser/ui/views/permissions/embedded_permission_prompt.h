@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_
 
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 
 class Browser;
@@ -44,8 +45,12 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop {
   };
 
   // permissions::PermissionPrompt:
+  TabSwitchingBehavior GetTabSwitchingBehavior() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
+
+ private:
+  raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_

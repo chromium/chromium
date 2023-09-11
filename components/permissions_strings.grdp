@@ -359,4 +359,28 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_REQUEST_QUOTA_PERMISSION_FRAGMENT" desc="Permission fragment presented in the permission bubble when the webapp requests new larger quota to persistently store data on the device. Follows a 'This site would like to:' prompt.">
     Store files on this device
   </message>
+
+  <!-- Embedded permission prompts: text -->
+  <message name="IDS_EMBEDDED_PROMPT_ADMIN_BLOCKED" desc="Text informing the user that their administrator has blocked a permission for a site">
+    Your administrator has blocked <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
+  </message>
+  <message name="IDS_EMBEDDED_PROMPT_ADMIN_ALLOWED" desc="Text informing the user that their administrator has allowed a permission for a site">
+    Your administrator has allowed <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
+  </message>
+
+  <!-- Embedded permission prompts: permission name fragments -->
+  <message name="IDS_CAMERA_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera permission">
+    camera
+  </message>
+  <message name="IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the microphone permission">
+    microphone
+  </message>
+  <message name="IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera and microphone permissions">
+    camera and microphone
+  </message>
+
+  <!--Embedded permission prompts: button labels-->
+  <message name="IDS_EMBEDDED_PROMPT_OK_LABEL" desc="Label used on a button that allows the user to acknowledge and close an informational dialog">
+    OK
+  </message>
 </grit-part>

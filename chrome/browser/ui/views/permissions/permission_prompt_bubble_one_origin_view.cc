@@ -143,11 +143,10 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
           prompt_style,
           l10n_util::GetStringFUTF16(
               IDS_PERMISSIONS_BUBBLE_PROMPT,
-              PermissionPromptBubbleBaseView::GetUrlIdentity(browser, *delegate)
+              PermissionPromptBaseView::GetUrlIdentity(browser, *delegate)
                   .name),
           GetAccessibleWindowTitleInternal(
-              PermissionPromptBubbleBaseView::GetUrlIdentity(browser, *delegate)
-                  .name,
+              PermissionPromptBaseView::GetUrlIdentity(browser, *delegate).name,
               GetVisibleRequests(*delegate.get())),
           GetExtraText(*delegate.get())) {
   std::vector<permissions::PermissionRequest*> visible_requests =
