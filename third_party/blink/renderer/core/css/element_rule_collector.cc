@@ -1182,8 +1182,8 @@ void ElementRuleCollector::DidMatchRule(
       result_.SetFirstLineDependsOnSizeContainerQueries();
     }
   } else {
-    matched_rules_.push_back(
-        MatchedRule(rule_data, layer_order, proximity, style_sheet_index));
+    matched_rules_.emplace_back(rule_data, layer_order, proximity,
+                                style_sheet_index);
   }
 }
 

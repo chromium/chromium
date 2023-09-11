@@ -55,9 +55,11 @@ class MatchedRule {
   // Everything in this class is private to ElementRuleCollector, since it
   // contains non-owned references to RuleData (see the constructor), but we
   // cannot make the class itself private, since
-  // WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS() needs it to be visible from
-  // the outside.
- private:
+  // WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS() and Vector::emplace_back()
+  // need it to be visible from the outside.
+  static const unsigned kBitsForPositionInRuleData = 18;
+
+ public:
   // Does not take overship of rule_data (it is owned by the appropriate
   // bucket in RuleSet), so the RuleData must live for at least as long as
   // the MatchedRule, ie., those buckets must not be modified (which would
@@ -71,14 +73,12 @@ class MatchedRule {
               unsigned style_sheet_index)
       : rule_data_(rule_data),
         layer_order_(layer_order),
-        proximity_(proximity) {
-    DCHECK(rule_data_);
-    static const unsigned kBitsForPositionInRuleData = 18;
-    position_ = (static_cast<uint64_t>(style_sheet_index)
-                 << kBitsForPositionInRuleData) +
-                rule_data_->GetPosition();
-  }
+        proximity_(proximity),
+        position_((static_cast<uint64_t>(style_sheet_index)
+                   << kBitsForPositionInRuleData) +
+                  rule_data->GetPosition()) {}
 
+ private:
   const RuleData* GetRuleData() const { return rule_data_; }
   uint64_t GetPosition() const { return position_; }
   unsigned Specificity() const { return GetRuleData()->Specificity(); }
