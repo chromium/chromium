@@ -165,11 +165,18 @@ and **events**.
 | status | RoutineStatus | Current routine status |
 | status_message | string | Optional routine status message |
 | user_message | UserMessageType | Returned for routines that require user action (e.g. unplug power cable) |
+
+### GetAvailableRoutinesResponse
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| routines | Array<RoutineType\> | Available routine types |
+
+
 ## Functions
 
 | Function Name | Definition | Permission needed to access | Released in `dpsl` version |
 ------------ | ------------- | ------------- | ------------- |
-| getAvailableRoutines | () => Promise<List<RoutineType\>\> | `os.diagnostics` | M96 |
+| getAvailableRoutines | () => Promise<GetAvailableRoutinesResponse\> | `os.diagnostics` | M96 |
 | getRoutineUpdate | (params: GetRoutineUpdateRequest) => Promise<GetRoutineUpdateResponse\> | `os.diagnostics` | M96 |
 | runAcPowerRoutine | (params: RunAcPowerRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M105 |
 | runAudioDriverRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
