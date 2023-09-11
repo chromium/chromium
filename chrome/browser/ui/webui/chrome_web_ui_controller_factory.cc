@@ -1037,6 +1037,13 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return FlagsUI::GetFaviconResourceBytes(scale_factor);
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
+  // The chrome://apps page is not available on Android or ChromeOS.
+  if (page_url.host_piece() == chrome::kChromeUIAppLauncherPageHost) {
+    return webapps::AppHomeUI::GetFaviconResourceBytes(scale_factor);
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   if (page_url.host_piece() == chrome::kChromeUINewTabPageHost)
     return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
 

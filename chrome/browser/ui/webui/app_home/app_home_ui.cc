@@ -12,7 +12,9 @@
 #include "chrome/grit/app_home_resources.h"
 #include "chrome/grit/app_home_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace webapps {
 
@@ -51,6 +53,13 @@ void AppHomeUI::BindInterface(
   page_factory_receiver_.reset();
 
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+// static
+base::RefCountedMemory* AppHomeUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_BOOKMARK_BAR_APPS_SHORTCUT, scale_factor);
 }
 
 void AppHomeUI::CreatePageHandler(
