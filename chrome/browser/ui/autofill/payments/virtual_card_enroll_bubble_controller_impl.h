@@ -52,6 +52,8 @@ class VirtualCardEnrollBubbleControllerImpl
   std::u16string GetLearnMoreLinkText() const override;
   const VirtualCardEnrollmentFields GetVirtualCardEnrollmentFields()
       const override;
+  VirtualCardEnrollmentBubbleSource GetVirtualCardEnrollmentBubbleSource()
+      const override;
   AutofillBubbleBase* GetVirtualCardEnrollBubbleView() const override;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -63,7 +65,6 @@ class VirtualCardEnrollBubbleControllerImpl
   void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
                      const GURL& url) override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
-
   bool IsIconVisible() const override;
 
  protected:
@@ -77,9 +78,6 @@ class VirtualCardEnrollBubbleControllerImpl
 
  private:
   friend class VirtualCardEnrollBubbleControllerImplTestApi;
-
-  // Gets the correct virtual card enrollment source metric to log.
-  VirtualCardEnrollmentBubbleSource GetVirtualCardEnrollmentBubbleSource();
 
   friend class content::WebContentsUserData<
       VirtualCardEnrollBubbleControllerImpl>;

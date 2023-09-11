@@ -18,47 +18,47 @@ import org.chromium.chrome.R;
 /** The view of the autofill virtual card enrollment bottom sheet UI. */
 /*package*/ class AutofillVcnEnrollBottomSheetView {
     /** The view that contains all other views. */
-    /*package*/ final ViewGroup mContentView;
+    final ViewGroup mContentView;
 
     /** The view that optionally scrolls the contents on smaller screens. */
-    /*package*/ final ScrollView mScrollView;
+    final ScrollView mScrollView;
 
     /** The title of the bottom sheet UI. */
-    /*package*/ final TextView mDialogTitle;
+    final TextView mDialogTitle;
 
     /** The text that describes what a virtual card does. */
-    /*package*/ final TextView mVirtualCardDescription;
+    final TextView mVirtualCardDescription;
 
     /** The container for the card icon, label, and description. */
-    /*package*/ final View mCardContainer;
+    final View mCardContainer;
 
     /** The icon for the card. */
-    /*package*/ final ImageView mIssuerIcon;
+    final ImageView mIssuerIcon;
 
     /** The label for the card. */
-    /*package*/ final TextView mCardLabel;
+    final TextView mCardLabel;
 
     /** The description for the card. */
-    /*package*/ final TextView mCardDescription;
+    final TextView mCardDescription;
 
     /** Legal messages from Google Pay. */
-    /*package*/ final TextView mGoogleLegalMessage;
+    final TextView mGoogleLegalMessage;
 
     /** Legal messages from the issuer bank. */
-    /*package*/ final TextView mIssuerLegalMessage;
+    final TextView mIssuerLegalMessage;
 
     /** The button that accepts the enrollment prompt. */
-    /*package*/ final Button mAcceptButton;
+    final Button mAcceptButton;
 
     /** The button that cancels the enrollment. */
-    /*package*/ final Button mCancelButton;
+    final Button mCancelButton;
 
     /**
      * Creates the view of the autofill virtual card enrollment bottom sheet UI.
      *
      * @param context The context for inflating the UI layout XML file.
      */
-    /*package*/ AutofillVcnEnrollBottomSheetView(Context context) {
+    AutofillVcnEnrollBottomSheetView(Context context) {
         mContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.autofill_vcn_enroll_bottom_sheet_content, null);
         mScrollView = mContentView.findViewById(R.id.scroll_view);

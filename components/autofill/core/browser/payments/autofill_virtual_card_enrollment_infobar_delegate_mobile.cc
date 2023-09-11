@@ -22,8 +22,9 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::
 
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::
     ~AutofillVirtualCardEnrollmentInfoBarDelegateMobile() {
-  if (!had_user_interaction_)
+  if (!had_user_interaction_) {
     OnInfobarClosed(PaymentsBubbleClosedReason::kNotInteracted);
+  }
 }
 
 // static
@@ -84,6 +85,13 @@ void AutofillVirtualCardEnrollmentInfoBarDelegateMobile::OnInfobarLinkClicked(
   virtual_card_enroll_bubble_controller_->OnLinkClicked(link_type, url);
 }
 
+VirtualCardEnrollmentBubbleSource
+AutofillVirtualCardEnrollmentInfoBarDelegateMobile::
+    GetVirtualCardEnrollmentBubbleSource() {
+  return virtual_card_enroll_bubble_controller_
+      ->GetVirtualCardEnrollmentBubbleSource();
+}
+
 infobars::InfoBarDelegate::InfoBarIdentifier
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIdentifier() const {
   return AUTOFILL_VIRTUAL_CARD_ENROLLMENT_INFOBAR_DELEGATE_MOBILE;
@@ -105,10 +113,12 @@ int AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetButtons() const {
 std::u16string
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetButtonLabel(
     InfoBarButton button) const {
-  if (button == BUTTON_OK)
+  if (button == BUTTON_OK) {
     return virtual_card_enroll_bubble_controller_->GetAcceptButtonText();
-  if (button == BUTTON_CANCEL)
+  }
+  if (button == BUTTON_CANCEL) {
     return virtual_card_enroll_bubble_controller_->GetDeclineButtonText();
+  }
   NOTREACHED() << "Unsupported button label requested.";
   return std::u16string();
 }

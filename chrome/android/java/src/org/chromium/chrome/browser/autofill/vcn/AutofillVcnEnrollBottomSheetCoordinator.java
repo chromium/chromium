@@ -5,14 +5,9 @@
 package org.chromium.chrome.browser.autofill.vcn;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.View;
 
-import androidx.browser.customtabs.CustomTabsIntent;
-
-import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.base.WindowAndroid;
@@ -22,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Coordinator controller for the virtual card number (VCN) enrollment bottom sheet. */
 /*package*/ class AutofillVcnEnrollBottomSheetCoordinator {
     /** Callbacks from the VCN enrollment bottom sheet. */
-    /*package*/ interface Delegate {
+    interface Delegate {
         /** Called when the user accepts the VCN enrollment bottom sheet. */
         void onAccept();
 
@@ -44,30 +39,21 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
      * @param tabModelSelectorSupplier Supplies the tab model selector when it's ready.
      * @param delegate The callbacks for user actions.
      */
-    /*package*/ AutofillVcnEnrollBottomSheetCoordinator(Context context,
-            PropertyModel.Builder modelBuilder, LayoutStateProvider layoutStateProvider,
+    AutofillVcnEnrollBottomSheetCoordinator(Context context, PropertyModel.Builder modelBuilder,
+            LayoutStateProvider layoutStateProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier, Delegate delegate) {
         AutofillVcnEnrollBottomSheetView view = new AutofillVcnEnrollBottomSheetView(context);
         view.mAcceptButton.setOnClickListener((View button) -> delegate.onAccept());
         view.mCancelButton.setOnClickListener((View button) -> delegate.onCancel());
 
-        AutofillUiUtils.CardIconSpecs cardIconSpecs =
-                AutofillUiUtils.CardIconSpecs.create(context, AutofillUiUtils.CardIconSize.LARGE);
-        AutofillVcnEnrollBottomSheetViewBinder viewBinder =
-                new AutofillVcnEnrollBottomSheetViewBinder(this::launchChromeCustomTab,
-                        cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
-        PropertyModelChangeProcessor.create(modelBuilder.build(), view, viewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                modelBuilder.build(), view, AutofillVcnEnrollBottomSheetViewBinder::bind);
 
         mMediator = new AutofillVcnEnrollBottomSheetMediator(
                 new AutofillVcnEnrollBottomSheetContent(
                         view.mContentView, view.mScrollView, delegate::onDismiss),
                 new AutofillVcnEnrollBottomSheetLifecycle(
                         layoutStateProvider, tabModelSelectorSupplier));
-    }
-
-    private void launchChromeCustomTab(String url) {
-        new CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(
-                ContextUtils.getApplicationContext(), Uri.parse(url));
     }
 
     /**
@@ -77,12 +63,12 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
      *
      * @return True if shown.
      */
-    /*package*/ boolean requestShowContent(WindowAndroid window) {
+    boolean requestShowContent(WindowAndroid window) {
         return mMediator.requestShowContent(window);
     }
 
     /** Hides the virtual card enrollment bottom sheet, if present. */
-    /*package*/ void hide() {
+    void hide() {
         mMediator.hide();
     }
 }

@@ -4,15 +4,21 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -25,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -35,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -66,6 +74,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     @Mock
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
+    private ShadowActivity mShadowActivity;
     private WindowAndroid mWindow;
     private AutofillVcnEnrollBottomSheetBridge mBridge;
 
@@ -80,6 +89,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         mJniMocker.mock(AutofillVcnEnrollBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mShadowActivity = shadowOf(activity);
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         mBridge = new AutofillVcnEnrollBottomSheetBridge();
@@ -260,6 +270,26 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         mBridge.onDismiss();
 
         verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    public void testOpenLink() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+        requestShowContent(mWebContents);
+
+        mBridge.openLink("https://example.test",
+                VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK);
+
+        Intent intent = mShadowActivity.getNextStartedActivity();
+        assertThat(intent.getData(), equalTo(Uri.parse("https://example.test")));
+        assertThat(intent.getAction(), equalTo(Intent.ACTION_VIEW));
+        assertThat(intent.getExtras().get(CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE),
+                equalTo(CustomTabsIntent.SHOW_PAGE_TITLE));
+        verify(mBridgeNatives)
+                .recordLinkClickMetric(eq(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE),
+                        eq(VirtualCardEnrollmentLinkType
+                                        .VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK));
     }
 
     @Test

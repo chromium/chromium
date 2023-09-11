@@ -26,7 +26,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
      *                   screens.
      * @param onDismiss The callback to invoke when the user dismisses the bottom sheet.
      */
-    /*package*/ AutofillVcnEnrollBottomSheetContent(
+    AutofillVcnEnrollBottomSheetContent(
             View contentView, ScrollView scrollView, Runnable onDismiss) {
         mContentView = contentView;
         mScrollView = scrollView;

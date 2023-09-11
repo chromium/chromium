@@ -37,14 +37,14 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
      * @param layoutStateProvider Exposes a way to listen to layout state changes.
      * @param tabModelSelectorSupplier Supplies the tab model selector.
      */
-    /*package*/ AutofillVcnEnrollBottomSheetLifecycle(LayoutStateProvider layoutStateProvider,
+    AutofillVcnEnrollBottomSheetLifecycle(LayoutStateProvider layoutStateProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mLayoutStateProvider = layoutStateProvider;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 
     /** @return Whether the lifecycle can begin. Depends on the current layout. */
-    /*package*/ boolean canBegin() {
+    boolean canBegin() {
         return !mHasBegun && mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING);
     }
 
@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
      * @param onEndOfLifecycle The callback to run when the bottom sheet must be hidden. Invoked
      *                         when a tab or layout changes (e.g., going into "tab overview").
      */
-    /*package*/ void begin(Runnable onEndOfLifecycle) {
+    void begin(Runnable onEndOfLifecycle) {
         mOnEndOfLifecycle = onEndOfLifecycle;
         mHasBegun = true;
 
@@ -66,7 +66,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
     /**
      * @return Whether the lifecycle has begun. Returns true when observing tab and layout changes.
      */
-    /*package*/ boolean hasBegun() {
+    boolean hasBegun() {
         return mHasBegun;
     }
 
@@ -74,7 +74,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
      * Ends the lifecycle of the virtual card number (VCN) enrollment bottom sheet. Stops observing
      * tab and layout changes.
      */
-    /*package*/ void end() {
+    void end() {
         mLayoutStateProvider.removeObserver(this);
         mTabModelSelectorSupplier.removeObserver(this);
 

@@ -6,63 +6,153 @@ package org.chromium.chrome.browser.autofill.vcn;
 
 import android.graphics.Bitmap;
 
+import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
-/** The model of the autofill virtual card enrollment bottom sheet UI. */
+/** The model of the autofill virtual card number (VCN) enrollment bottom sheet UI. */
 /*package*/ abstract class AutofillVcnEnrollBottomSheetProperties {
-    /** The prompt message for the bottom sheet. */
-    /*package*/ static final ReadableObjectPropertyKey<String> MESSAGE_TEXT =
-            new ReadableObjectPropertyKey<>();
+    /** Opens links. */
+    static interface LinkOpener {
+        /**
+         * Opens a link and records the metric for opening it.
+         *
+         * @param url The link to open.
+         * @param linkType the type of link being opened. Used for logging metrics.
+         */
+        void openLink(String url, @VirtualCardEnrollmentLinkType int linkType);
+    }
 
-    /**
-     * A list of three elements: (1) the text that describes what a virtual card does, including a
-     * "learn more" link text, (2) The "learn more" link text, and (3) the URL to open when the
-     * "learn more" link is tapped.
-     */
-    /*package*/ static final ReadableObjectPropertyKey<ArrayList<String>> DESCRIPTION_TEXT =
+    /** The description for the VCN enrollment bottom sheet. */
+    static class Description {
+        /** The text that describes what a virtual card does, including a "learn more" link text. */
+        final String mText;
+
+        /** The "learn more" link text. */
+        final String mLearnMoreLinkText;
+
+        /** The URL to open when the "learn more" link is tapped. */
+        final String mLearnMoreLinkUrl;
+
+        /** The type of link to record in metrics when the "learn more" link is tapped. */
+        @VirtualCardEnrollmentLinkType final int mLearnMoreLinkType;
+
+        /** The opener for the "learn more" link. */
+        final LinkOpener mLinkOpener;
+
+        /**
+         * Constructs a description for the VCN enrollment bottom sheet.
+         *
+         * @param text The text that describes what a virtual card does, including a "learn more"
+         *             link text.
+         * @param learnMoreLinkText The "learn more" link text.
+         * @param learnMoreLinkUrl The URL to open when the "learn more" link is tapped.
+         * @param learnMoreLinkType The type of link to record in metrics when the "learn more" link
+         *                          is tapped.
+         * @param linkOpener The link opener.
+         */
+        Description(String text, String learnMoreLinkText, String learnMoreLinkUrl,
+                @VirtualCardEnrollmentLinkType int learnMoreLinkType, LinkOpener linkOpener) {
+            mText = text;
+            mLearnMoreLinkText = learnMoreLinkText;
+            mLearnMoreLinkUrl = learnMoreLinkUrl;
+            mLearnMoreLinkType = learnMoreLinkType;
+            mLinkOpener = linkOpener;
+        }
+    }
+
+    /** Legal messages. */
+    static class LegalMessages {
+        /** Legal message lines. */
+        final LinkedList<LegalMessageLine> mLines;
+
+        /** The type of link to record in metrics when a link is tapped. */
+        @VirtualCardEnrollmentLinkType final int mLinkType;
+
+        /** The opener for the links in the legal messages. */
+        final LinkOpener mLinkOpener;
+
+        /**
+         * Constructs legal messages.
+         *
+         * @param lines The legal message lines.
+         * @param linkType the type of link to record in metrics when link is tapped.
+         */
+        LegalMessages(LinkedList<LegalMessageLine> lines,
+                @VirtualCardEnrollmentLinkType int linkType, LinkOpener linkOpener) {
+            mLines = lines;
+            mLinkType = linkType;
+            mLinkOpener = linkOpener;
+        }
+    }
+
+    /** Issuer icon. */
+    static class IssuerIcon {
+        /** The bitmap for the issuer icon. */
+        final Bitmap mBitmap;
+
+        /** The width of the issuer icon. */
+        final int mWidth;
+
+        /** The height of the issuer icon. */
+        final int mHeight;
+
+        /** Constructs an issuer icon. */
+        IssuerIcon(Bitmap bitmap, int width, int height) {
+            mBitmap = bitmap;
+            mWidth = width;
+            mHeight = height;
+        }
+    }
+
+    /** The prompt message for the bottom sheet. */
+    static final ReadableObjectPropertyKey<String> MESSAGE_TEXT = new ReadableObjectPropertyKey<>();
+
+    /** The description text with a "learn more" link. */
+    static final ReadableObjectPropertyKey<Description> DESCRIPTION =
             new ReadableObjectPropertyKey<>();
 
     /**
      * The accessibility description for the container that displays the issuer icon, card label,
      * and card description.
      */
-    /*package*/ static final ReadableObjectPropertyKey<String>
-            CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION = new ReadableObjectPropertyKey<>();
+    static final ReadableObjectPropertyKey<String> CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION =
+            new ReadableObjectPropertyKey<>();
 
     /** The icon for the card. */
-    /*package*/ static final ReadableObjectPropertyKey<Bitmap> ISSUER_ICON =
+    static final ReadableObjectPropertyKey<IssuerIcon> ISSUER_ICON =
             new ReadableObjectPropertyKey<>();
 
     /** The label for the card. */
-    /*package*/ static final ReadableObjectPropertyKey<String> CARD_LABEL =
-            new ReadableObjectPropertyKey<>();
+    static final ReadableObjectPropertyKey<String> CARD_LABEL = new ReadableObjectPropertyKey<>();
 
     /** The description for the card. */
-    /*package*/ static final ReadableObjectPropertyKey<String> CARD_DESCRIPTION =
+    static final ReadableObjectPropertyKey<String> CARD_DESCRIPTION =
             new ReadableObjectPropertyKey<>();
 
     /** Legal messages from Google Pay. */
-    /*package*/ static final ReadableObjectPropertyKey<LinkedList<LegalMessageLine>>
-            GOOGLE_LEGAL_MESSAGES = new ReadableObjectPropertyKey<>();
+    static final ReadableObjectPropertyKey<LegalMessages> GOOGLE_LEGAL_MESSAGES =
+            new ReadableObjectPropertyKey<>();
 
     /** Legal messages from the issuer bank. */
-    /*package*/ static final ReadableObjectPropertyKey<LinkedList<LegalMessageLine>>
-            ISSUER_LEGAL_MESSAGES = new ReadableObjectPropertyKey<>();
+    static final ReadableObjectPropertyKey<LegalMessages> ISSUER_LEGAL_MESSAGES =
+            new ReadableObjectPropertyKey<>();
 
     /** The label for the button that enrolls a virtual card. */
-    /*package*/ static final ReadableObjectPropertyKey<String> ACCEPT_BUTTON_LABEL =
+    static final ReadableObjectPropertyKey<String> ACCEPT_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
     /** The label for the button that cancels enrollment. */
-    /*package*/ static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
+    static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
-    /*package*/ static final PropertyKey[] ALL_KEYS = {MESSAGE_TEXT, DESCRIPTION_TEXT,
+    static final PropertyKey[] ALL_KEYS = {MESSAGE_TEXT, DESCRIPTION,
             CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION, ISSUER_ICON, CARD_LABEL, CARD_DESCRIPTION,
             GOOGLE_LEGAL_MESSAGES, ISSUER_LEGAL_MESSAGES, ACCEPT_BUTTON_LABEL, CANCEL_BUTTON_LABEL};
+
+    /** Do not instantiate. */
+    private AutofillVcnEnrollBottomSheetProperties() {}
 }

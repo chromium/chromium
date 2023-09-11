@@ -20,7 +20,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LinkOpener;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,17 +33,16 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
 /** Tests for {@link AutofillVcnEnrollBottomSheetViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTestActivityTestCase {
+public final class AutofillVcnEnrollBottomSheetViewBinderTest
+        extends BlankUiTestActivityTestCase implements LinkOpener {
     private PropertyModel.Builder mModel;
     private AutofillVcnEnrollBottomSheetView mView;
-    private AutofillVcnEnrollBottomSheetViewBinder mViewBinder;
 
     @Override
     public void setUpTest() throws Exception {
@@ -46,16 +50,18 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
 
         mModel = new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS);
         mView = new AutofillVcnEnrollBottomSheetView(getActivity());
-        mViewBinder = new AutofillVcnEnrollBottomSheetViewBinder(/*urlLauncher=*/(String url)
-                                                                         -> {},
-                /*issuerIconWidth=*/10, /*issuerIconHeight=*/10);
         bind(mModel);
     }
 
     // Builds the model from the given builder and binds it to the view.
     private void bind(PropertyModel.Builder modelBuilder) {
-        PropertyModelChangeProcessor.create(modelBuilder.build(), mView, mViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                modelBuilder.build(), mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
     }
+
+    // LinkOpener:
+    @Override
+    public void openLink(String url, @VirtualCardEnrollmentLinkType int linkType) {}
 
     @Test
     @SmallTest
@@ -74,44 +80,39 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
     public void testDescriptionText() {
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
-        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT, null));
+        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION, null));
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
-        bind(mModel.with(
-                AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT, new ArrayList<>()));
+        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
+                new Description(null, null, null,
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
+                        /*linkOpener=*/null)));
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
-        ArrayList<String> descriptionComponents = new ArrayList<>();
-        descriptionComponents.add("Description text");
-        descriptionComponents.add("");
-        bind(mModel.with(
-                AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT, descriptionComponents));
+        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
+                new Description("", "", "",
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
+                        /*linkOpener=*/this)));
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
-        descriptionComponents = new ArrayList<>();
-        descriptionComponents.add("Description text");
-        descriptionComponents.add("text");
-        bind(mModel.with(
-                AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT, descriptionComponents));
+        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
+                new Description("Description text", "", "",
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
+                        /*linkOpener=*/this)));
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
-        descriptionComponents = new ArrayList<>();
-        descriptionComponents.add("Description text");
-        descriptionComponents.add("text");
-        descriptionComponents.add("https://example.test");
-        bind(mModel.with(
-                AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT, descriptionComponents));
+        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
+                new Description("Description text", "text", "",
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
+                        /*linkOpener=*/this)));
+        assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
+
+        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
+                new Description("Description text", "text", "https://example.test",
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
+                        /*linkOpener=*/this)));
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()),
                 equalTo("Description text"));
-
-        descriptionComponents = new ArrayList<>();
-        descriptionComponents.add("Description text");
-        descriptionComponents.add("text");
-        descriptionComponents.add("https://example.test");
-        descriptionComponents.add("extra");
-        bind(mModel.with(
-                AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT, descriptionComponents));
-        assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
     }
 
     @Test
@@ -133,8 +134,9 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
     public void testIssuerIcon() {
         assertThat(mView.mIssuerIcon.getDrawable(), nullValue());
 
-        bind(mModel.with(
-                AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON, createBitmap(10, 0xFFFF0000)));
+        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
+                new IssuerIcon(createBitmap(/*dimensions=*/10, /*color=*/0xFFFF0000), /*width=*/5,
+                        /*height=*/5)));
         assertThat(mView.mIssuerIcon.getDrawable(), notNullValue());
     }
 
@@ -182,25 +184,40 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
     }
 
     private void runLegalMessageTest(
-            TextView view, ReadableObjectPropertyKey<LinkedList<LegalMessageLine>> property) {
+            TextView view, ReadableObjectPropertyKey<LegalMessages> property) {
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
         bind(mModel.with(property, null));
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
-        bind(mModel.with(property, new LinkedList<LegalMessageLine>()));
+        bind(mModel.with(property,
+                new LegalMessages(null,
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
+                        /*linkOpener=*/null)));
+        assertThat(String.valueOf(view.getText()), isEmptyString());
+
+        bind(mModel.with(property,
+                new LegalMessages(new LinkedList<LegalMessageLine>(),
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
+                        /*linkOpener=*/this)));
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
         LinkedList<LegalMessageLine> lines = new LinkedList<>();
         lines.add(new LegalMessageLine("Legal message line"));
-        bind(mModel.with(property, lines));
+        bind(mModel.with(property,
+                new LegalMessages(lines,
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
+                        /*linkOpener=*/this)));
         assertThat(String.valueOf(view.getText()), equalTo("Legal message line"));
 
         LegalMessageLine line = new LegalMessageLine("Legal message line");
         line.links.add(new Link(0, 5, "https://example.test"));
         lines = new LinkedList<>();
         lines.add(line);
-        bind(mModel.with(property, lines));
+        bind(mModel.with(property,
+                new LegalMessages(lines,
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
+                        /*linkOpener=*/this)));
         assertThat(String.valueOf(view.getText()), equalTo("Legal message line"));
     }
 
