@@ -119,4 +119,32 @@ suite('<fkey-row>', () => {
     await initializeFkeyRow(kb);
     assertTrue(getShortcutNames().every(shortcutIncludesSearchKey));
   });
+
+  test(
+      'fkey shortcut options include correct top row action key label',
+      async () => {
+        await initializeFkeyRow();
+        const keyLabel = fkeyRow.getTopRowKeyLabel();
+        // menuOptions.splice(1) is used to remove the "Disabled"
+        // dropdown option.
+        const shortcutNames: string[] =
+            getDropdownMenuElement().menuOptions.splice(1).map(m => m.name);
+        assertTrue(
+            shortcutNames.every((name: string) => name.includes(keyLabel)));
+      });
+
+  test('fkey shortcut options respect topRowAreFkeys setting', async () => {
+    await initializeFkeyRow();
+    assertFalse(getShortcutNames().every(shortcutIncludesSearchKey));
+    const keyboard = fkeyRow.get('keyboard');
+    const kb = {
+      ...keyboard,
+      settings: {
+        ...keyboard.settings,
+        topRowAreFkeys: false,
+      },
+    };
+    await initializeFkeyRow(kb);
+    assertTrue(getShortcutNames().every(shortcutIncludesSearchKey));
+  });
 });
