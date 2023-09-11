@@ -236,6 +236,16 @@ public class WebappRegistry {
     }
 
     /**
+     * Returns an array of all origins that have an installed WebAPK.
+     */
+    @CalledByNative
+    private static String[] getOriginsWithWebApkAsArray() {
+        Set<String> origins = WebappRegistry.getInstance().getOriginsWithWebApk();
+        String[] originsArray = new String[origins.size()];
+        return origins.toArray(originsArray);
+    }
+
+    /**
      * Checks whether a TWA is installed for the origin, and no WebAPK.
      */
     public boolean isTwaInstalled(String origin) {
@@ -252,6 +262,16 @@ public class WebappRegistry {
         origins.addAll(getOriginsWithWebApk());
         origins.addAll(mPermissionStore.getStoredOrigins());
         return origins;
+    }
+
+    /**
+     * Returns an array of all origins that have a WebAPK or TWA installed.
+     */
+    @CalledByNative
+    public static String[] getOriginsWithInstalledAppAsArray() {
+        Set<String> origins = WebappRegistry.getInstance().getOriginsWithInstalledApp();
+        String[] originsArray = new String[origins.size()];
+        return origins.toArray(originsArray);
     }
 
     /**

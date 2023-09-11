@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_
 #define CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_
 
+#include <jni.h>
+
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
 
 class GURL;
@@ -31,6 +34,12 @@ class WebappRegistry {
   // URLs matching |url_filter|, whilst leaving other data intact.
   virtual void ClearWebappHistoryForUrls(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter);
+
+  // Returns a std::vector of all origins that have an installed WebAPK.
+  virtual std::vector<std::string> GetOriginsWithWebApk();
+
+  // Returns all origins that have a WebAPK or TWA installed.
+  virtual std::vector<std::string> GetOriginsWithInstalledApp();
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_
