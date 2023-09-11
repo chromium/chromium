@@ -44,7 +44,8 @@ absl::optional<std::string> CreateKeyAssertionHeaderAndPayload(
     base::span<const uint8_t> pubkey,
     base::StringPiece client_id,
     base::StringPiece challenge,
-    const GURL& destination_url);
+    const GURL& destination_url,
+    base::StringPiece name_space);
 
 // Appends `signature` to provided `header_and_payload` to form a complete JWT.
 std::string AppendSignatureToHeaderAndPayload(

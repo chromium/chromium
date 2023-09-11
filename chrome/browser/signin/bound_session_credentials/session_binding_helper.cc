@@ -17,6 +17,8 @@
 
 namespace {
 
+constexpr std::string_view kSessionBindingNamespace = "CookieBinding";
+
 unexportable_keys::BackgroundTaskPriority kSessionBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kUserBlocking;
 
@@ -79,7 +81,7 @@ void SessionBindingHelper::SignAssertionToken(
       signin::CreateKeyAssertionHeaderAndPayload(
           *unexportable_key_service_->GetAlgorithm(*binding_key),
           *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key),
-          session_id_, challenge, destination_url);
+          session_id_, challenge, destination_url, kSessionBindingNamespace);
 
   if (!header_and_payload.has_value()) {
     std::move(callback).Run(std::string());

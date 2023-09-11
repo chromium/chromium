@@ -59,10 +59,14 @@ base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
 
 absl::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::StringPiece schema,
     const base::Value::Dict& payload) {
   auto header = base::Value::Dict()
                     .Set("alg", SignatureAlgorithmToString(algorithm))
                     .Set("typ", "jwt");
+  if (!schema.empty()) {
+    header.Set("schema", schema);
+  }
   absl::optional<std::string> header_serialized = base::WriteJson(header);
   if (!header_serialized) {
     DVLOG(1) << "Unexpected JSONWriter error while serializing a registration "
@@ -103,7 +107,8 @@ CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
           .Set("iat", static_cast<double>(
                           (timestamp - base::Time::UnixEpoch()).InSeconds()))
           .Set("key", CreatePublicKeyInfo(pubkey));
-  return CreateHeaderAndPayloadWithCustomPayload(algorithm, payload);
+  return CreateHeaderAndPayloadWithCustomPayload(algorithm, /*schema=*/"",
+                                                 payload);
 }
 
 absl::optional<std::string>
@@ -123,7 +128,8 @@ CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
           .Set("iat", static_cast<double>(
                           (timestamp - base::Time::UnixEpoch()).InSeconds()))
           .Set("key", CreatePublicKeyInfo(pubkey));
-  return CreateHeaderAndPayloadWithCustomPayload(algorithm, payload);
+  return CreateHeaderAndPayloadWithCustomPayload(algorithm, /*schema=*/"",
+                                                 payload);
 }
 
 absl::optional<std::string> CreateKeyAssertionHeaderAndPayload(
@@ -131,13 +137,16 @@ absl::optional<std::string> CreateKeyAssertionHeaderAndPayload(
     base::span<const uint8_t> pubkey,
     base::StringPiece client_id,
     base::StringPiece challenge,
-    const GURL& destination_url) {
+    const GURL& destination_url,
+    base::StringPiece name_space) {
   auto payload = base::Value::Dict()
                      .Set("sub", client_id)
                      .Set("aud", destination_url.spec())
                      .Set("jti", challenge)
-                     .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)));
-  return CreateHeaderAndPayloadWithCustomPayload(algorithm, payload);
+                     .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)))
+                     .Set("namespace", name_space);
+  return CreateHeaderAndPayloadWithCustomPayload(
+      algorithm, "DEVICE_BOUND_SESSION_CREDENTIALS_ASSERTION", payload);
 }
 
 std::string AppendSignatureToHeaderAndPayload(

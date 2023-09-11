@@ -22,6 +22,8 @@
 
 namespace {
 
+constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
+
 unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
 
@@ -129,7 +131,7 @@ void TokenBindingHelper::SignAssertionToken(
           *unexportable_key_service_->GetAlgorithm(*binding_key),
           *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key),
           GaiaUrls::GetInstance()->oauth2_chrome_client_id(), challenge,
-          destination_url);
+          destination_url, kTokenBindingNamespace);
 
   if (!header_and_payload.has_value()) {
     // TODO(alexilin): Record a histogram.
