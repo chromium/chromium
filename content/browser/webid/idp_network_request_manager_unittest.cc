@@ -1252,7 +1252,7 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestIdpError) {
   const char response[] =
       R"({
         "error": {
-          "code": 500,
+          "code": "invalid_request",
           "url": "https://idp.test/error"
         }
       })";
@@ -1263,7 +1263,7 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestIdpError) {
   auto callback =
       base::BindLambdaForTesting([&](FetchStatus status, TokenResult result) {
         EXPECT_TRUE(result.error);
-        EXPECT_EQ(500, result.error->code);
+        EXPECT_EQ("invalid_request", result.error->code);
         EXPECT_EQ("https://idp.test/error", result.error->url);
         run_loop.Quit();
       });
@@ -1275,6 +1275,22 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestIdpError) {
   manager->SendTokenRequest(token_endpoint, "account", "request",
                             std::move(callback), std::move(on_continue));
   run_loop.Run();
+}
+
+TEST_F(IdpNetworkRequestManagerTest, TokenRequestServerError) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  FetchStatus fetch_status;
+  TokenResult token_result;
+  std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+      "account", "request", net::HTTP_INTERNAL_SERVER_ERROR);
+  EXPECT_EQ("", token_result.token);
+  EXPECT_TRUE(token_result.error);
+  EXPECT_EQ("server_error", token_result.error->code);
+  EXPECT_EQ(GURL(), token_result.error->url);
+  EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, fetch_status.response_code);
 }
 
 }  // namespace

@@ -74,6 +74,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kEmptyListError,
     kInvalidContentTypeError,
   };
+
   struct FetchStatus {
     ParseStatus parse_status;
     // The HTTP response code, if one was received, otherwise the net error. It
@@ -117,7 +118,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   };
 
   struct IdentityCredentialTokenError {
-    int code;
+    std::string code;
     GURL url;
   };
 

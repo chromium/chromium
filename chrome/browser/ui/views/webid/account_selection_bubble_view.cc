@@ -74,6 +74,13 @@ constexpr int kTopMargin = 16;
 
 constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
+// Error codes.
+constexpr char kInvalidRequest[] = "invalid_request";
+constexpr char kUnauthorizedClient[] = "unauthorized_client";
+constexpr char kAccessDenied[] = "access_denied";
+constexpr char kTemporarilyUnavailable[] = "temporarily_unavailable";
+constexpr char kServerError[] = "server_error";
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("fedcm_account_profile_image_fetcher",
                                         R"(
@@ -426,6 +433,75 @@ std::u16string GetAccessibleTitle(
              : title;
 }
 
+std::pair<std::u16string, std::u16string> GetErrorDialogText(
+    const absl::optional<TokenError>& error,
+    const std::u16string& top_frame_for_display,
+    const std::u16string& idp_for_display) {
+  std::string code = error ? error->code : "";
+  GURL url = error ? error->url : GURL();
+
+  std::u16string summary;
+  std::u16string description;
+
+  if (code == kInvalidRequest) {
+    summary = l10n_util::GetStringFUTF16(
+        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_SUMMARY, top_frame_for_display,
+        idp_for_display);
+    description = l10n_util::GetStringUTF16(
+        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_DESCRIPTION);
+  } else if (code == kUnauthorizedClient) {
+    summary = l10n_util::GetStringFUTF16(
+        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_SUMMARY,
+        top_frame_for_display, idp_for_display);
+    description = l10n_util::GetStringUTF16(
+        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_DESCRIPTION);
+  } else if (code == kAccessDenied) {
+    summary = l10n_util::GetStringUTF16(
+        IDS_SIGNIN_ACCESS_DENIED_ERROR_DIALOG_SUMMARY);
+    description = l10n_util::GetStringUTF16(
+        IDS_SIGNIN_ACCESS_DENIED_ERROR_DIALOG_DESCRIPTION);
+  } else if (code == kTemporarilyUnavailable) {
+    summary = l10n_util::GetStringUTF16(
+        IDS_SIGNIN_TEMPORARILY_UNAVAILABLE_ERROR_DIALOG_SUMMARY);
+    description = l10n_util::GetStringFUTF16(
+        IDS_SIGNIN_TEMPORARILY_UNAVAILABLE_ERROR_DIALOG_DESCRIPTION,
+        idp_for_display);
+  } else if (code == kServerError) {
+    summary = l10n_util::GetStringUTF16(IDS_SIGNIN_SERVER_ERROR_DIALOG_SUMMARY);
+    description = l10n_util::GetStringFUTF16(
+        IDS_SIGNIN_SERVER_ERROR_DIALOG_DESCRIPTION, top_frame_for_display);
+  } else {
+    summary = l10n_util::GetStringFUTF16(
+        IDS_SIGNIN_GENERIC_ERROR_DIALOG_SUMMARY, idp_for_display);
+    description =
+        l10n_util::GetStringUTF16(IDS_SIGNIN_GENERIC_ERROR_DIALOG_DESCRIPTION);
+  }
+
+  // List of error codes where extra description should be shown if an error
+  // url is available. kServerError is excluded because it is an enum that
+  // shouldn't be returned by the IDP but instead returned by the browser as a
+  // result of not receiving a response from the IDP. Hence, there shouldn't be
+  // an error url.
+  const std::set<std::string> codes_need_extra_description{
+      kInvalidRequest, kUnauthorizedClient, kAccessDenied,
+      kTemporarilyUnavailable};
+  if (!codes_need_extra_description.contains(code)) {
+    return std::tie(summary, description);
+  }
+
+  if (url.is_empty()) {
+    description += u" " + l10n_util::GetStringFUTF16(
+                              IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_PROMPT,
+                              top_frame_for_display);
+  } else {
+    description += u" " + l10n_util::GetStringFUTF16(
+                              IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_PROMPT,
+                              idp_for_display);
+  }
+
+  return std::tie(summary, description);
+}
+
 }  // namespace
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
@@ -635,12 +711,16 @@ void AccountSelectionBubbleView::ShowErrorDialog(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(kVerticalSpacing, kLeftRightPadding)));
 
+  std::u16string summary_text;
+  std::u16string description_text;
+  std::tie(summary_text, description_text) =
+      GetErrorDialogText(error, top_frame_for_display, idp_for_display);
+
   // Add error summary.
   views::Label* const summary =
       row->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringFUTF16(IDS_SIGNIN_GENERIC_ERROR_DIALOG_SUMMARY,
-                                     idp_for_display),
-          views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+          summary_text, views::style::CONTEXT_DIALOG_TITLE,
+          views::style::STYLE_PRIMARY));
   summary->SetMultiLine(true);
   summary->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   constexpr int kSummaryLineHeight = 20;
@@ -649,9 +729,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   // Add error description.
   views::Label* const description =
       row->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(
-              IDS_SIGNIN_GENERIC_ERROR_DIALOG_DESCRIPTION),
-          views::style::CONTEXT_DIALOG_BODY_TEXT,
+          description_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
           views::style::STYLE_SECONDARY));
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);

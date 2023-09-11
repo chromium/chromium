@@ -167,6 +167,14 @@ GURL ExtractUrl(const base::Value::Dict& response, const char* key) {
   return url;
 }
 
+std::string ExtractString(const base::Value::Dict& response, const char* key) {
+  const std::string* str = response.FindString(key);
+  if (!str) {
+    return "";
+  }
+  return *str;
+}
+
 absl::optional<content::IdentityRequestAccount> ParseAccount(
     const base::Value::Dict& account,
     const std::string& client_id) {
@@ -574,6 +582,11 @@ void OnTokenRequestParsed(
   TokenResult token_result;
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
+    if (IsFedCmErrorEnabled() &&
+        fetch_status.parse_status == ParseStatus::kNoResponseError) {
+      token_result.error = TokenError("server_error", /*url=*/GURL());
+    }
+
     std::move(callback).Run(fetch_status, token_result);
     return;
   }
@@ -602,7 +615,7 @@ void OnTokenRequestParsed(
   if (IsFedCmErrorEnabled()) {
     const base::Value::Dict* response_error = response.FindDict(kErrorKey);
     if (response_error) {
-      int error_code = response_error->FindInt(kErrorCodeKey).value_or(0);
+      std::string error_code = ExtractString(*response_error, kErrorCodeKey);
       GURL error_url = ExtractUrl(*response_error, kErrorUrlKey);
       token_result.error = TokenError(error_code, error_url);
     }

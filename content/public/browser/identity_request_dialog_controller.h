@@ -30,7 +30,7 @@ struct CONTENT_EXPORT ClientMetadata {
 };
 
 struct CONTENT_EXPORT IdentityCredentialTokenError {
-  int code;
+  std::string code;
   GURL url;
 };
 
