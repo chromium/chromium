@@ -766,10 +766,6 @@ class FileSystemAccessFileHandleSwapFileCloningTest
       return CloneFileResult::kAttemptedAndCompletedUnexpectedly;
     }
 
-    // TODO(https://crbug.com/1439179): Remove this expectation once we have a
-    // better idea of what's causing the spurious failures.
-    EXPECT_EQ(maybe_clone_result.value(), base::File::Error::FILE_OK);
-
     // Ideally we could just check that the result is FILE_OK, but
     // clonefile() may spuriously fail. See https://crbug.com/1439179. For the
     // purposes of these tests, we'll consider these spurious errors as
