@@ -35,6 +35,13 @@ config("find_bad_constructs") {
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
       "check-raw-ptr-to-stack-allocated",
+
+      # TODO(https://crbug.com/1449812): This option should be removed after
+      #   next clang roll.
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "raw-ptr-fix-crbug-1449812",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
@@ -52,12 +59,6 @@ config("find_bad_constructs") {
         "-plugin-arg-find-bad-constructs",
         "-Xclang",
         "check-raw-ptr-fields",
-
-        # TODO(mikt): Remove this once crbug.com/1449812 is resolved.
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=um/winnt.h",
       ]
     }
 
