@@ -2565,6 +2565,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf openLatestTab];
       };
+    case OPEN_CLEAR_BROWSING_DATA_DIALOG:
+      return ^{
+        [weakSelf openClearBrowsingDataDialog];
+      };
     default:
       return nil;
   }
@@ -2678,6 +2682,17 @@ void InjectNTP(Browser* browser) {
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
                          ApplicationCommands);
   [applicationCommandsHandler showCreditCardSettings];
+}
+
+- (void)openClearBrowsingDataDialog {
+  if (!self.currentInterface.browser) {
+    return;
+  }
+
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                         ApplicationCommands);
+  [applicationCommandsHandler showClearBrowsingDataSettings];
 }
 
 - (void)openLatestTab {

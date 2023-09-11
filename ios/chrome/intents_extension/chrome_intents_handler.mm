@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/common/intents/ClearBrowsingDataIntent.h"
 #import "ios/chrome/common/intents/ManagePasswordsIntent.h"
 #import "ios/chrome/common/intents/ManagePaymentMethodsIntent.h"
 #import "ios/chrome/common/intents/ManageSettingsIntent.h"
@@ -44,7 +45,8 @@
                                     ManagePasswordsIntentHandling,
                                     ManageSettingsIntentHandling,
                                     OpenLatestTabIntentHandling,
-                                    OpenLensIntentHandling>
+                                    OpenLensIntentHandling,
+                                    ClearBrowsingDataIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -380,6 +382,22 @@
   OpenLensIntentResponse* response = [[OpenLensIntentResponse alloc]
       initWithCode:OpenLensIntentResponseCodeContinueInApp
       userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - ClearBrowsingDataIntentHandling
+
+- (void)handleClearBrowsingData:(ClearBrowsingDataIntent*)intent
+                     completion:(void (^)(ClearBrowsingDataIntentResponse*))
+                                    completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([ClearBrowsingDataIntent class])];
+
+  ClearBrowsingDataIntentResponse* response =
+      [[ClearBrowsingDataIntentResponse alloc]
+          initWithCode:ClearBrowsingDataIntentResponseCodeContinueInApp
+          userActivity:activity];
 
   completion(response);
 }

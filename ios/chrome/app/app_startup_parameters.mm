@@ -119,6 +119,9 @@
     case OPEN_LATEST_TAB:
       [description appendString:@", should resume latest tab"];
       break;
+    case OPEN_CLEAR_BROWSING_DATA_DIALOG:
+      [description appendString:@", should open Clear Browsing Data dialog"];
+      break;
     default:
       break;
   }
