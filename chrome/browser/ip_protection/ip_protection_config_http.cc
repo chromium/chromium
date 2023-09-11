@@ -196,6 +196,11 @@ void IpProtectionConfigHttp::GetProxyConfig(GetProxyConfigCallback callback) {
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(kGoogApiKeyHeader,
                                       google_apis::GetAPIKey());
+  // Although this request has an empty request-body, it must still have the
+  // protobuf content-type, or else the API server will ignore the `Accept`
+  // header and respond with JSON.
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                      kProtobufContentType);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kProtobufContentType);
 
