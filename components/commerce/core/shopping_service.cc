@@ -688,7 +688,7 @@ bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
                                     country_on_startup_, locale_on_startup_)) {
     return false;
   }
-  return account_checker_ && account_checker_->IsSignedIn() &&
+  return account_checker_ && account_checker_->IsOptedIntoSync() &&
          account_checker_->IsAnonymizedUrlDataCollectionEnabled();
 }
 
@@ -1362,7 +1362,7 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
 
   // Make sure the user allows subscriptions to be made and that we can fetch
   // store data.
-  if (!account_checker || !account_checker->IsSignedIn() ||
+  if (!account_checker || !account_checker->IsOptedIntoSync() ||
       !account_checker->IsSyncingBookmarks() ||
       !account_checker->IsAnonymizedUrlDataCollectionEnabled() ||
       blocked_by_waa || account_checker->IsSubjectToParentalControls()) {

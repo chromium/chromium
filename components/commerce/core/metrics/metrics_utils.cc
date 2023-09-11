@@ -111,7 +111,7 @@ void RecordShoppingListIneligibilityReasons(
         ShoppingFeatureIneligibilityReason::kEnterprisePolicy);
   }
 
-  if (!account_checker->IsSignedIn()) {
+  if (!account_checker->IsOptedIntoSync()) {
     base::UmaHistogramEnumeration(kShoppingListIneligibleHistogramName,
                                   ShoppingFeatureIneligibilityReason::kSignin);
   }

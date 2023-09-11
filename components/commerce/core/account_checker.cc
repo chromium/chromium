@@ -67,7 +67,7 @@ AccountChecker::AccountChecker(
 
 AccountChecker::~AccountChecker() = default;
 
-bool AccountChecker::IsSignedIn() {
+bool AccountChecker::IsOptedIntoSync() {
   // TODO(crbug.com/1463438): ConsentLevel::kSync is deprecated and should be
   //     removed. See ConsentLevel::kSync documentation for details.
   return identity_manager_ &&
@@ -117,7 +117,7 @@ void AccountChecker::OnPrimaryAccountChanged(
 
 void AccountChecker::FetchWaaStatus() {
   // For now we need to update users' consent status on web and app activity.
-  if (!IsSignedIn()) {
+  if (!IsOptedIntoSync()) {
     return;
   }
   // TODO(crbug.com/1311754): These parameters (url, oauth_scope, etc.) are
@@ -191,7 +191,7 @@ void AccountChecker::OnFetchWaaJsonParsed(
 }
 
 void AccountChecker::FetchPriceEmailPref() {
-  if (!IsSignedIn()) {
+  if (!IsOptedIntoSync()) {
     return;
   }
 
@@ -278,7 +278,7 @@ void AccountChecker::OnPriceEmailPrefChanged() {
     return;
   }
 
-  if (!IsSignedIn() || !pref_service_) {
+  if (!IsOptedIntoSync() || !pref_service_) {
     return;
   }
 

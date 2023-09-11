@@ -35,7 +35,7 @@ class AccountChecker : public signin::IdentityManager::Observer {
   AccountChecker(const AccountChecker&) = delete;
   ~AccountChecker() override;
 
-  virtual bool IsSignedIn();
+  virtual bool IsOptedIntoSync();
 
   // Returns whether bookmarks is currently syncing. This will return true in
   // cases where sync is still initializing, but the sync feature itself is
