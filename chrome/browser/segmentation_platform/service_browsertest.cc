@@ -19,8 +19,10 @@
 #include "components/segmentation_platform/embedder/default_model/optimization_target_segmentation_dummy.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
+#include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
@@ -317,6 +319,10 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
   while (!utils_.IsUrlInDatabase(kUrl1)) {
     base::RunLoop().RunUntilIdle();
   }
+  UkmDatabaseClient::GetInstance()
+      .GetUkmDataManager()
+      ->GetUkmDatabase()
+      ->CommitTransactionForTesting();
   // There are no UKM metrics written to the database, count = 0.
   EXPECT_EQ(ModelProvider::Request({0}), input_feature_in_last_execution_);
 }

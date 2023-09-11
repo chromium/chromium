@@ -85,6 +85,10 @@ class UkmDatabaseBackendTest : public testing::Test {
   void SetUp() override {
     task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    CreateAndInitBackend();
+  }
+
+  void CreateAndInitBackend() {
     backend_ = std::make_unique<UkmDatabaseBackend>(
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("ukm_database")),
         task_runner_);
@@ -150,6 +154,8 @@ TEST_F(UkmDatabaseBackendTest, EntriesWithoutUrls) {
   EXPECT_EQ(stats2.metric_count_for_event_id.rbegin()->second, 3);
   EXPECT_THAT(stats2.metric_count_for_url_id,
               ElementsAre(std::make_pair(UrlId(), 6)));
+
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
 
 TEST_F(UkmDatabaseBackendTest, UrlIdsForEntries) {
@@ -192,6 +198,8 @@ TEST_F(UkmDatabaseBackendTest, UrlIdsForEntries) {
 
   // Empty because URL was not validated.
   test_util::AssertUrlsInTable(backend_->db(), {});
+
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
 
 TEST_F(UkmDatabaseBackendTest, UpdateSourceUrl) {
@@ -215,6 +223,8 @@ TEST_F(UkmDatabaseBackendTest, UpdateSourceUrl) {
   ExpectEntriesWithUrlId(backend_->db(), kUrlId1, 3);
   ExpectEntriesWithUrlId(backend_->db(), kUrlId2, 3);
 
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
+
   // Updating existing URL should replace existing entries with new URL ID.
   backend_->UpdateUrlForUkmSource(kSourceId1, kUrl2, false);
   ExpectEntriesWithUrlId(backend_->db(), kUrlId2, 6);
@@ -226,6 +236,8 @@ TEST_F(UkmDatabaseBackendTest, UpdateSourceUrl) {
 
   // Empty because URL was not validated.
   test_util::AssertUrlsInTable(backend_->db(), {});
+
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
 
 TEST_F(UkmDatabaseBackendTest, ValidatedUrl) {
@@ -244,6 +256,8 @@ TEST_F(UkmDatabaseBackendTest, ValidatedUrl) {
   // Adding URL as non-validated again will not remove from db.
   backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false);
   EXPECT_TRUE(backend_->url_table_for_testing().IsUrlInTable(kUrlId1));
+
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
 
 TEST_F(UkmDatabaseBackendTest, UrlValidation) {
@@ -267,6 +281,8 @@ TEST_F(UkmDatabaseBackendTest, UrlValidation) {
                                {UrlMatcher{.url_id = kUrlId1, .url = kUrl1}});
   backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false);
   EXPECT_FALSE(backend_->url_table_for_testing().IsUrlInTable(kUrlId2));
+
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
 
 TEST_F(UkmDatabaseBackendTest, RemoveUrls) {
@@ -312,6 +328,8 @@ TEST_F(UkmDatabaseBackendTest, RemoveUrls) {
   EXPECT_EQ(stats2.metric_count_for_event_id.size(), 4u);
   EXPECT_EQ(stats2.metric_count_for_url_id.size(), 4u);
 
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
+
   // Removing non-validated URL removes from metrics table.
   backend_->RemoveUrls({kUrl3}, /*all_urls=*/false);
   DatabaseStats stats3 = GetDatabaseStats(backend_->db());
@@ -332,6 +350,66 @@ TEST_F(UkmDatabaseBackendTest, RemoveUrls) {
   EXPECT_EQ(stats4.metric_count_for_event_id.size(), 1u);
   EXPECT_THAT(stats4.metric_count_for_url_id,
               UnorderedElementsAre(std::make_pair(UrlId(), 3)));
+  test_util::AssertUrlsInTable(backend_->db(), {});
+
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
+}
+
+TEST_F(UkmDatabaseBackendTest, DestructorCommitsTransaction) {
+  ukm::mojom::UkmEntryPtr entry1 = GetSampleUkmEntry();
+  backend_->StoreUkmEntry(std::move(entry1));
+  ukm::mojom::UkmEntryPtr entry2 = GetSampleUkmEntry();
+  backend_->StoreUkmEntry(std::move(entry2));
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
+
+  // Delete the backend (database) and recreate it with same path.
+  backend_.reset();
+  CreateAndInitBackend();
+
+  // The delete should have committed immediately.
+  test_util::AssertUrlsInTable(backend_->db(), {});
+
+  DatabaseStats stats = GetDatabaseStats(backend_->db());
+  EXPECT_EQ(stats.metric_count_for_event_id.size(), 2u);
+  EXPECT_EQ(stats.metric_count_for_event_id.begin()->second, 3);
+  EXPECT_EQ(stats.metric_count_for_event_id.rbegin()->second, 3);
+  EXPECT_THAT(stats.metric_count_for_url_id,
+              ElementsAre(std::make_pair(UrlId(), 6)));
+}
+
+TEST_F(UkmDatabaseBackendTest, RemoveUrlsCommitsImmediately) {
+  const GURL kUrl1("https://www.url1.com");
+  const GURL kUrl2("https://www.url2.com");
+  const UrlId kUrlId1 = UkmUrlTable::GenerateUrlId(kUrl1);
+  const UrlId kUrlId2 = UkmUrlTable::GenerateUrlId(kUrl2);
+  const ukm::SourceId kSourceId1 = 10;
+  const ukm::SourceId kSourceId2 = 20;
+
+  ukm::mojom::UkmEntryPtr entry1 = GetSampleUkmEntry(kSourceId1);
+  ukm::mojom::UkmEntryPtr entry2 = GetSampleUkmEntry(kSourceId2);
+
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, false);
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, false);
+  backend_->OnUrlValidated(kUrl1);
+  backend_->OnUrlValidated(kUrl2);
+  backend_->StoreUkmEntry(std::move(entry1));
+  backend_->StoreUkmEntry(std::move(entry2));
+
+  test_util::AssertUrlsInTable(backend_->db(),
+                               {UrlMatcher{.url_id = kUrlId1, .url = kUrl1},
+                                UrlMatcher{.url_id = kUrlId2, .url = kUrl2}});
+
+  backend_->RemoveUrls({kUrl1, kUrl2}, /*all_urls=*/false);
+
+  // Rollback transaction in progress and destroy the db, the URL should be
+  // deleted from database.
+  ASSERT_TRUE(backend_->has_transaction_for_testing());
+  backend_->RollbackTransactionForTesting();
+
+  // Delete the backend (database) and recreate it with same path.
+  backend_.reset();
+  CreateAndInitBackend();
+  // The delete should have committed immediately.
   test_util::AssertUrlsInTable(backend_->db(), {});
 }
 
@@ -386,6 +464,8 @@ TEST_F(UkmDatabaseBackendTest, DeleteAllUrls) {
   EXPECT_EQ(stats3.total_metrics, 3);
   EXPECT_EQ(stats3.metric_count_for_event_id.size(), 1u);
   EXPECT_EQ(stats2.metric_count_for_url_id, no_url_metrics);
+
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
 
 TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
@@ -428,6 +508,8 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
 
   backend_->DeleteEntriesOlderThan(base::Time::Max());
   test_util::AssertUrlsInTable(backend_->db(), {});
+
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
 
 TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
@@ -523,6 +605,8 @@ TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
   DatabaseStats stats1 = GetDatabaseStats(backend_->db());
   EXPECT_EQ(12, stats1.total_metrics);
   EXPECT_EQ(4u, stats1.metric_count_for_event_id.size());
+
+  EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
 
 class FailedUkmDatabaseTest : public UkmDatabaseBackendTest {

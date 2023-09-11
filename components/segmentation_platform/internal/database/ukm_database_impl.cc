@@ -77,4 +77,12 @@ void UkmDatabaseImpl::DeleteEntriesOlderThan(base::Time time) {
                                 backend_->GetWeakPtr(), time));
 }
 
+void UkmDatabaseImpl::CommitTransactionForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UkmDatabaseBackend::CommitTransactionForTesting,
+                     backend_->GetWeakPtr()));
+}
+
 }  // namespace segmentation_platform

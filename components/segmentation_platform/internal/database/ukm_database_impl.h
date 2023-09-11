@@ -39,6 +39,7 @@ class UkmDatabaseImpl : public UkmDatabase {
   void RemoveUrls(const std::vector<GURL>& urls, bool all_urls) override;
   void RunReadonlyQueries(QueryList&& queries, QueryCallback callback) override;
   void DeleteEntriesOlderThan(base::Time time) override;
+  void CommitTransactionForTesting() override;
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

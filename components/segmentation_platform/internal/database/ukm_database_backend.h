@@ -22,6 +22,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "sql/database.h"
+#include "sql/transaction.h"
 #include "url/gurl.h"
 
 namespace segmentation_platform {
@@ -49,6 +50,7 @@ class UkmDatabaseBackend : public UkmDatabase {
   void RemoveUrls(const std::vector<GURL>& urls, bool all_urls) override;
   void RunReadonlyQueries(QueryList&& queries, QueryCallback callback) override;
   void DeleteEntriesOlderThan(base::Time time) override;
+  void CommitTransactionForTesting() override;
 
   sql::Database& db() { return db_; }
 
@@ -56,6 +58,13 @@ class UkmDatabaseBackend : public UkmDatabase {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return url_table_;
   }
+
+  bool has_transaction_for_testing() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return !!current_transaction_;
+  }
+
+  void RollbackTransactionForTesting();
 
   base::WeakPtr<UkmDatabaseBackend> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -65,10 +74,19 @@ class UkmDatabaseBackend : public UkmDatabase {
   // Helper to delete all URLs from database.
   void DeleteAllUrls();
 
+  // Tracks changes in the current transaction and commits when over a limit.
+  void TrackChangesInTransaction(int change_count);
+
+  // Commit current transaction and begin a new one.
+  void RestartTransaction();
+
   const base::FilePath database_path_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
+  int change_count_ GUARDED_BY_CONTEXT(sequence_checker_){0};
+  std::unique_ptr<sql::Transaction> current_transaction_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   UkmMetricsTable metrics_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   UkmUrlTable url_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   enum class Status { CREATED, INIT_FAILED, INIT_SUCCESS };

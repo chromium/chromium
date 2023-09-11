@@ -92,6 +92,8 @@ class UkmDatabase {
   // Removes metrics older than or equal to the given `time` from the database.
   // URLs are removed when there are no references to the metrics.
   virtual void DeleteEntriesOlderThan(base::Time time) = 0;
+
+  virtual void CommitTransactionForTesting() = 0;
 };
 
 }  // namespace segmentation_platform
