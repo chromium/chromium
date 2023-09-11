@@ -58,6 +58,61 @@ std::unique_ptr<ActionItem> ActionList::RemoveAction(ActionItem* action_item) {
   return nullptr;
 }
 
+void ActionList::Reset() {
+  children_.clear();
+  if (delegate_) {
+    delegate_->ActionListChanged();
+  }
+}
+
+BaseAction::BaseAction() = default;
+
+BaseAction::~BaseAction() = default;
+
+BaseAction* BaseAction::GetParent() const {
+  return parent_;
+}
+
+ActionItem* BaseAction::AddChild(std::unique_ptr<ActionItem> action_item) {
+  DCHECK(!action_item->GetParent());
+  action_item->parent_ = this;
+  return children_.AddAction(std::move(action_item));
+}
+
+std::unique_ptr<ActionItem> BaseAction::RemoveChild(ActionItem* action_item) {
+  DCHECK(action_item);
+  DCHECK_EQ(action_item->GetParent(), this);
+  action_item->parent_ = nullptr;
+  return children_.RemoveAction(action_item);
+}
+
+void BaseAction::ActionListChanged() {}
+
+void BaseAction::ResetActionList() {
+  children_.Reset();
+}
+
+BEGIN_METADATA_BASE(BaseAction)
+END_METADATA
+
+ScopedActionUpdate::ScopedActionUpdate(ActionItem* action_item)
+    : action_item_(action_item) {}
+
+ScopedActionUpdate::ScopedActionUpdate(
+    ScopedActionUpdate&& scoped_action_update)
+    : action_item_(std::move(scoped_action_update.action_item_)) {
+  scoped_action_update.action_item_ = nullptr;
+}
+
+ScopedActionUpdate& ScopedActionUpdate::operator=(
+    ScopedActionUpdate&& scoped_action_update) = default;
+
+ScopedActionUpdate::~ScopedActionUpdate() {
+  if (action_item_) {
+    action_item_->EndUpdate();
+  }
+}
+
 ActionItem::ActionItemBuilder::ActionItemBuilder() {
   action_item_ = std::make_unique<ActionItem>();
 }
@@ -128,6 +183,17 @@ ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetEnabled(
 ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetEnabled(
     bool enabled) && {
   return std::move(this->SetEnabled(enabled));
+}
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetGroupId(
+    absl::optional<int> group_id) & {
+  action_item_->SetGroupId(group_id);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetGroupId(
+    absl::optional<int> group_id) && {
+  return std::move(this->SetGroupId(group_id));
 }
 
 ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetImage(
@@ -243,6 +309,18 @@ void ActionItem::SetChecked(bool checked) {
     return;
   }
   checked_ = checked;
+  if (group_id_.has_value() && checked_ && GetParent()) {
+    const ActionList& peer_actions = GetParent()->GetChildren();
+    for (auto& child : peer_actions.children()) {
+      if (child.get() == this) {
+        continue;
+      }
+      auto child_id = child->GetGroupId();
+      if (child_id.has_value() && group_id_ == child_id) {
+        child->SetChecked(false);
+      }
+    }
+  }
   ActionItemChanged();
 }
 
@@ -255,6 +333,18 @@ void ActionItem::SetEnabled(bool enabled) {
     return;
   }
   enabled_ = enabled;
+  ActionItemChanged();
+}
+
+absl::optional<int> ActionItem::GetGroupId() const {
+  return group_id_;
+}
+
+void ActionItem::SetGroupId(absl::optional<int> group_id) {
+  if (group_id_ == group_id) {
+    return;
+  }
+  group_id_ = group_id;
   ActionItemChanged();
 }
 
@@ -294,10 +384,6 @@ void ActionItem::SetTooltipText(const std::u16string& tooltip) {
   ActionItemChanged();
 }
 
-ActionItem* ActionItem::GetParent() const {
-  return parent_.get();
-}
-
 bool ActionItem::GetVisible() const {
   return visible_;
 }
@@ -316,14 +402,6 @@ void ActionItem::SetInvokeActionCallback(InvokeActionCallback callback) {
   }
   callback_ = std::move(callback);
   ActionItemChanged();
-}
-
-ActionItem* ActionItem::AddChild(std::unique_ptr<ActionItem> action_item) {
-  return children_.AddAction(std::move(action_item));
-}
-
-std::unique_ptr<ActionItem> ActionItem::RemoveChild(ActionItem* action_item) {
-  return children_.RemoveAction(action_item);
 }
 
 [[nodiscard]] base::CallbackListSubscription
@@ -353,17 +431,40 @@ ActionItem::ActionItemBuilder ActionItem::Builder() {
   return ActionItemBuilder();
 }
 
+ScopedActionUpdate ActionItem::BeginUpdate() {
+  ++updating_;
+  return ScopedActionUpdate(this);
+}
+
 void ActionItem::ActionListChanged() {
+  BaseAction::ActionListChanged();
   ActionItemChanged();
 }
 
 void ActionItem::ActionItemChanged() {
+  if (updating_ > 0) {
+    updated_ = true;
+    return;
+  }
+  updated_ = false;
   TriggerChangedCallback(this);
 }
 
-BEGIN_METADATA_BASE(ActionItem)
+void ActionItem::EndUpdate() {
+  if (updating_ > 0) {
+    --updating_;
+    if (!updating_ && updated_) {
+      ActionItemChanged();
+    }
+  }
+}
+
+BEGIN_METADATA(ActionItem, BaseAction)
+ADD_PROPERTY_METADATA(absl::optional<ActionId>, ActionId)
 ADD_PROPERTY_METADATA(ui::Accelerator, Accelerator)
+ADD_PROPERTY_METADATA(bool, Checked)
 ADD_PROPERTY_METADATA(bool, Enabled)
+ADD_PROPERTY_METADATA(absl::optional<int>, GroupId)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(bool, Visible)
@@ -395,53 +496,56 @@ void ActionManager::ResetForTesting() {
 }
 
 void ActionManager::IndexActions() {
-  if (root_action_list_->empty() && !initializer_list_->empty()) {
+  if (root_action_parent_.GetChildren().children().empty() &&
+      !initializer_list_->empty()) {
     initializer_list_->Notify(this);
   }
 }
 
-ActionItem* ActionManager::FindAction(std::u16string term) {
+ActionItem* ActionManager::FindAction(std::u16string term, ActionItem* scope) {
   IndexActions();
   return nullptr;
 }
 
-ActionItem* ActionManager::FindAction(ActionId action_id) {
+ActionItem* ActionManager::FindAction(ActionId action_id, ActionItem* scope) {
   IndexActions();
-  auto iter = std::find_if(root_action_list_->children().begin(),
-                           root_action_list_->children().end(),
-                           [action_id](auto& item) {
-                             auto id = item->GetActionId();
-                             return id && *id == action_id;
-                           });
-  if (iter != root_action_list_->children().end()) {
-    return (*iter).get();
+  if (scope) {
+    auto scope_action_id = scope->GetActionId();
+    if (scope_action_id.has_value() && action_id == scope_action_id.value()) {
+      return scope;
+    }
   }
-  return nullptr;
+  const ActionList& action_list =
+      scope ? scope->GetChildren() : root_action_parent_.GetChildren();
+  return FindActionImpl(action_id, action_list);
 }
 
-ActionItem* ActionManager::FindAction(const ui::KeyEvent& key_event) {
+ActionItem* ActionManager::FindAction(const ui::KeyEvent& key_event,
+                                      ActionItem* scope) {
   IndexActions();
   return nullptr;
 }
 
-void ActionManager::GetActions(ActionItemVector& items) {
+void ActionManager::GetActions(ActionItemVector& items, ActionItem* scope) {
   IndexActions();
-  for (auto& child : root_action_list_->children()) {
+  const ActionList& action_list =
+      scope ? scope->GetChildren() : root_action_parent_.GetChildren();
+  for (auto& child : action_list.children()) {
     GetActionsImpl(child.get(), items);
   }
 }
 
 ActionItem* ActionManager::AddAction(std::unique_ptr<ActionItem> action_item) {
-  return root_action_list_->AddAction(std::move(action_item));
+  return root_action_parent_.AddChild(std::move(action_item));
 }
 
 std::unique_ptr<ActionItem> ActionManager::RemoveAction(
     ActionItem* action_item) {
-  return root_action_list_->RemoveAction(action_item);
+  return root_action_parent_.RemoveChild(action_item);
 }
 
 void ActionManager::ResetActions() {
-  root_action_list_ = std::make_unique<ActionList>(this);
+  root_action_parent_.ResetActionList();
 }
 
 void ActionManager::ResetActionItemInitializerList() {
@@ -459,7 +563,22 @@ void ActionManager::AppendActionItemInitializer(
       initializer_list_->Add(std::move(initializer)));
 }
 
-void ActionManager::ActionListChanged() {}
+ActionItem* ActionManager::FindActionImpl(ActionId action_id,
+                                          const ActionList& list) {
+  for (const auto& item : list.children()) {
+    auto id = item->GetActionId();
+    if (id && id == action_id) {
+      return item.get();
+    }
+    if (!item->GetChildren().empty()) {
+      ActionItem* result = FindActionImpl(action_id, item->GetChildren());
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return nullptr;
+}
 
 void ActionManager::GetActionsImpl(ActionItem* item, ActionItemVector& items) {
   items.push_back(item);

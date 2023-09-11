@@ -36,19 +36,60 @@ class COMPONENT_EXPORT(ACTIONS) ActionList {
   explicit ActionList(Delegate* delegate);
   ~ActionList();
   const ActionListVector& children() const { return children_; }
-  bool empty() { return children_.empty(); }
+  bool empty() const { return children_.empty(); }
 
   ActionItem* AddAction(std::unique_ptr<ActionItem> action_item);
   std::unique_ptr<ActionItem> RemoveAction(ActionItem* action_item);
+  // Clear the action list vector
+  void Reset();
 
  private:
   ActionListVector children_;
   raw_ptr<Delegate> delegate_;
 };
 
-class COMPONENT_EXPORT(ACTIONS) ActionItem
+class COMPONENT_EXPORT(ACTIONS) BaseAction
     : public ui::metadata::MetaDataProvider,
       public ActionList::Delegate {
+ public:
+  METADATA_HEADER_BASE(BaseAction);
+  BaseAction();
+  BaseAction(const BaseAction&) = delete;
+  BaseAction& operator=(const BaseAction&) = delete;
+  ~BaseAction() override;
+
+  BaseAction* GetParent() const;
+
+  ActionItem* AddChild(std::unique_ptr<ActionItem> action_item);
+  std::unique_ptr<ActionItem> RemoveChild(ActionItem* action_item);
+
+  const ActionList& GetChildren() const { return children_; }
+  void ResetActionList();
+
+ protected:
+  void ActionListChanged() override;
+
+ private:
+  raw_ptr<BaseAction> parent_ = nullptr;
+  ActionList children_{this};
+};
+
+// Class returned from ActionItem::BeginUpdate() in order to allow a "batch"
+// update of the ActionItem state without triggering ActionChanged callbacks
+// for each state change. Will trigger one update once the instance goes out of
+// scope, assuming any changes were actually made.
+class COMPONENT_EXPORT(ACTIONS) ScopedActionUpdate {
+ public:
+  explicit ScopedActionUpdate(ActionItem* action_item);
+  ScopedActionUpdate(ScopedActionUpdate&& scoped_action_update);
+  ScopedActionUpdate& operator=(ScopedActionUpdate&& scoped_action_update);
+  ~ScopedActionUpdate();
+
+ private:
+  raw_ptr<ActionItem> action_item_;
+};
+
+class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
  public:
   using ActionChangedCallback = ui::metadata::PropertyChangedCallback;
   using InvokeActionCallback = base::RepeatingCallback<void(ActionItem*)>;
@@ -80,6 +121,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
     ActionItemBuilder&& SetChecked(bool checked) &&;
     ActionItemBuilder& SetEnabled(bool enabled) &;
     ActionItemBuilder&& SetEnabled(bool enabled) &&;
+    ActionItemBuilder& SetGroupId(absl::optional<int> group_id) &;
+    ActionItemBuilder&& SetGroupId(absl::optional<int> group_id) &&;
     ActionItemBuilder& SetImage(const ui::ImageModel& image) &;
     ActionItemBuilder&& SetImage(const ui::ImageModel& image) &&;
     ActionItemBuilder& SetText(const std::u16string& text) &;
@@ -109,7 +152,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
     ChildList children_;
   };
 
-  METADATA_HEADER_BASE(ActionItem);
+  METADATA_HEADER(ActionItem);
 
   ActionItem();
   explicit ActionItem(InvokeActionCallback callback);
@@ -125,19 +168,18 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
   void SetChecked(bool checked);
   bool GetEnabled() const;
   void SetEnabled(bool enabled);
+  absl::optional<int> GetGroupId() const;
+  void SetGroupId(absl::optional<int> group_id);
   const ui::ImageModel& GetImage() const;
   void SetImage(const ui::ImageModel& image);
   const std::u16string GetText() const;
   void SetText(const std::u16string& text);
   const std::u16string GetTooltipText() const;
   void SetTooltipText(const std::u16string& tooltip);
-  ActionItem* GetParent() const;
   bool GetVisible() const;
   void SetVisible(bool visible);
   void SetInvokeActionCallback(InvokeActionCallback callback);
 
-  ActionItem* AddChild(std::unique_ptr<ActionItem> action_item);
-  std::unique_ptr<ActionItem> RemoveChild(ActionItem* action_item);
   [[nodiscard]] base::CallbackListSubscription AddActionChangedCallback(
       ActionChangedCallback callback);
 
@@ -149,7 +191,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
   static ActionItemBuilder Builder(InvokeActionCallback callback);
   static ActionItemBuilder Builder();
 
-  const ActionList& GetChildren() const { return children_; }
+  [[nodiscard]] ScopedActionUpdate BeginUpdate();
 
  protected:
   // ActionList::Delegate override.
@@ -157,13 +199,20 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
   void ActionItemChanged();
 
  private:
+  friend class ScopedActionUpdate;
+  void EndUpdate();
+
   using Synonyms = std::vector<std::u16string>;
-  raw_ptr<ActionItem> parent_ = nullptr;
-  ActionList children_{this};
+  // When `updating_` > 0, calling ActionItemChanged() will only record whether
+  // is item was updated in `updated_`. Once `updating_` returns to 0 and
+  // `updated_` = true, the ActionChanged callbacks will trigger.
+  int updating_ = 0;
+  bool updated_ = false;
   absl::optional<ActionId> action_id_;
   ui::Accelerator accelerator_;
   bool checked_ = false;
   bool enabled_ = true;
+  absl::optional<int> group_id_;
   bool visible_ = true;
   std::u16string text_;
   std::u16string tooltip_;
@@ -173,8 +222,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
 };
 
 class COMPONENT_EXPORT(ACTIONS) ActionManager
-    : public ui::metadata::MetaDataProvider,
-      public ActionList::Delegate {
+    : public ui::metadata::MetaDataProvider {
  public:
   METADATA_HEADER_BASE(ActionManager);
 
@@ -189,15 +237,16 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   static void ResetForTesting();
 
   void IndexActions();
-  ActionItem* FindAction(std::u16string term);
-  ActionItem* FindAction(ActionId action_id);
-  ActionItem* FindAction(const ui::KeyEvent& key_event);
-  void GetActions(ActionItemVector& items);
+  ActionItem* FindAction(std::u16string term, ActionItem* scope = nullptr);
+  ActionItem* FindAction(ActionId action_id, ActionItem* scope = nullptr);
+  ActionItem* FindAction(const ui::KeyEvent& key_event,
+                         ActionItem* scope = nullptr);
+  void GetActions(ActionItemVector& items, ActionItem* scope = nullptr);
 
   ActionItem* AddAction(std::unique_ptr<ActionItem> action_item);
   std::unique_ptr<ActionItem> RemoveAction(ActionItem* action_item);
 
-  // Clears the actions stored in `root_action_list_`.
+  // Clears the actions stored in `root_action_parent_`.
   void ResetActions();
 
   // Resets the current `initializer_list_`.
@@ -211,10 +260,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   ActionManager();
   ~ActionManager() override;
 
-  // ActionList::Delegate override.
-  void ActionListChanged() override;
-
  private:
+  ActionItem* FindActionImpl(ActionId action_id, const ActionList& list);
   void GetActionsImpl(ActionItem* item, ActionItemVector& items);
 
   // Holds the chain of ActionManager initializer callbacks.
@@ -223,8 +270,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   // Holds the subscriptions for initializers in the `initializer_list_`.
   std::vector<base::CallbackListSubscription> initializer_subscriptions_;
 
-  // Holds all the "root" actions. Most actions will live here.
-  std::unique_ptr<ActionList> root_action_list_;
+  // All "root" actions are parented to this action.
+  BaseAction root_action_parent_;
 };
 
 }  // namespace actions

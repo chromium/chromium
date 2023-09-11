@@ -119,6 +119,32 @@ TEST_F(ActionManagerTest, ActionNotFound) {
   EXPECT_FALSE(action);
 }
 
+TEST_F(ActionItemTest, ScopedFindActionTest) {
+  // clang-format off
+  auto builder = ActionItem::Builder()
+      .SetText(kActionText)
+      .SetActionId(kActionTest1)
+      .SetVisible(true)
+      .SetEnabled(false)
+      .AddChildren(
+          ActionItem::Builder()
+              .SetActionId(kActionTest2)
+              .SetText(kChild1Text),
+          ActionItem::Builder()
+              .SetActionId(kActionTest3)
+              .SetChecked(true)
+              .SetText(kChild2Text));
+  // clang-format on
+  auto& manager = ActionManager::GetForTesting();
+  manager.AddAction(std::move(builder).Build());
+  auto* action_test1 = manager.FindAction(kActionTest1);
+  ASSERT_TRUE(action_test1);
+  auto* action_test2 = manager.FindAction(kActionTest2, action_test1);
+  ASSERT_TRUE(action_test2);
+  auto* action_test3 = manager.FindAction(kActionTest3, action_test2);
+  EXPECT_FALSE(action_test3);
+}
+
 TEST_F(ActionItemTest, ActionBuilderTest) {
   const std::u16string text = u"Test Action";
   int action_invoked_count = 0;
@@ -217,6 +243,71 @@ TEST_F(ActionItemTest, TestGetChildren) {
   manager.GetActions(actions);
   EXPECT_FALSE(actions.empty());
   EXPECT_EQ(actions.size(), size_t{3});
+}
+
+TEST_F(ActionItemTest, TestItemBatchUpdate) {
+  bool action_item_changed = false;
+  // clang-format off
+  auto builder = ActionItem::Builder()
+      .SetText(kActionText)
+      .SetActionId(kActionTest1)
+      .SetVisible(true)
+      .SetEnabled(false)
+      .AddChildren(
+          ActionItem::Builder()
+              .SetActionId(kActionTest2)
+              .SetText(kChild1Text),
+          ActionItem::Builder()
+              .SetActionId(kActionTest3)
+              .SetChecked(true)
+              .SetText(kChild2Text));
+  // clang-format on
+  auto& manager = ActionManager::GetForTesting();
+  manager.AddAction(std::move(builder).Build());
+  auto* root_action = manager.FindAction(kActionTest1);
+  auto changed_subscription =
+      root_action->AddActionChangedCallback(base::BindRepeating(
+          [](bool* action_item_changed) { *action_item_changed = true; },
+          &action_item_changed));
+  {
+    auto scoped_updater = root_action->BeginUpdate();
+    root_action->SetEnabled(true);
+    EXPECT_FALSE(action_item_changed);
+    root_action->SetVisible(false);
+    EXPECT_FALSE(action_item_changed);
+  }
+  EXPECT_TRUE(action_item_changed);
+}
+
+TEST_F(ActionItemTest, TestGroupIdExclusion) {
+  // clang-format off
+  auto builder = ActionItem::Builder()
+      .SetText(kActionText)
+      .SetActionId(kActionTest1)
+      .SetVisible(true)
+      .SetEnabled(false)
+      .AddChildren(
+          ActionItem::Builder()
+              .SetActionId(kActionTest2)
+              .SetGroupId(10)
+              .SetText(kChild1Text),
+          ActionItem::Builder()
+              .SetActionId(kActionTest3)
+              .SetGroupId(10)
+              .SetChecked(true)
+              .SetText(kChild2Text));
+  // clang-format on
+  auto& manager = ActionManager::GetForTesting();
+  manager.AddAction(std::move(builder).Build());
+  auto* action_test2 = manager.FindAction(kActionTest2);
+  auto* action_test3 = manager.FindAction(kActionTest3);
+  ASSERT_TRUE(action_test2);
+  ASSERT_TRUE(action_test2);
+  EXPECT_FALSE(action_test2->GetChecked());
+  EXPECT_TRUE(action_test3->GetChecked());
+  action_test2->SetChecked(true);
+  EXPECT_TRUE(action_test2->GetChecked());
+  EXPECT_FALSE(action_test3->GetChecked());
 }
 
 }  // namespace actions
