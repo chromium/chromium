@@ -9,6 +9,7 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertInstanceof, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PasswordComplexity, PasswordFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './set_local_password_input.html.js';
@@ -139,15 +140,26 @@ export class SetLocalPasswordInputElement extends
     }
 
     const value = this.$.firstInput.value;
-    // TODO(b/297331703): Replace this check by a call into a validation method
-    // implemented in the browser process.
-    const graphemeNum = [...new Intl.Segmenter().segment(value)].length;
-    if (graphemeNum < 8) {
-      this.firstInputValidity_ = FirstInputValidity.TOO_SHORT;
+    const {complexity} =
+        await PasswordFactorEditor.getRemote().checkLocalPasswordComplexity(
+            value);
+
+    // Abort validation if the user has changed the input value while we were
+    // waiting for the async function call above to return.
+    if (value !== this.$.firstInput.value) {
       return;
     }
 
-    this.firstInputValidity_ = FirstInputValidity.OK;
+    switch (complexity) {
+      case PasswordComplexity.kOk:
+        this.firstInputValidity_ = FirstInputValidity.OK;
+        break;
+      case PasswordComplexity.kTooShort:
+        this.firstInputValidity_ = FirstInputValidity.TOO_SHORT;
+        break;
+      default:
+        assertNotReached();
+    }
   }
 
   private validateConfirmInput(): void {
