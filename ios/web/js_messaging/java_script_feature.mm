@@ -48,18 +48,38 @@ JavaScriptFeature::FeatureScript::CreateWithFilename(
     TargetFrames target_frames,
     ReinjectionBehavior reinjection_behavior,
     const PlaceholderReplacementsCallback& replacements_callback) {
-  return JavaScriptFeature::FeatureScript(filename, injection_time,
-                                          target_frames, reinjection_behavior,
-                                          replacements_callback);
+  NSString* injection_token =
+      InjectionTokenForScript(base::SysUTF8ToNSString(filename));
+  return JavaScriptFeature::FeatureScript(
+      filename, /*script=*/absl::nullopt, injection_token, injection_time,
+      target_frames, reinjection_behavior, replacements_callback);
+}
+
+JavaScriptFeature::FeatureScript
+JavaScriptFeature::FeatureScript::CreateWithString(
+    const std::string& script,
+    InjectionTime injection_time,
+    TargetFrames target_frames,
+    ReinjectionBehavior reinjection_behavior,
+    const PlaceholderReplacementsCallback& replacements_callback) {
+  NSString* unique_id = [[NSProcessInfo processInfo] globallyUniqueString];
+  NSString* injection_token = InjectionTokenForScript(unique_id);
+  return JavaScriptFeature::FeatureScript(
+      /*filename=*/absl::nullopt, script, injection_token, injection_time,
+      target_frames, reinjection_behavior, replacements_callback);
 }
 
 JavaScriptFeature::FeatureScript::FeatureScript(
-    const std::string& filename,
+    absl::optional<std::string> filename,
+    absl::optional<std::string> script,
+    NSString* injection_token,
     InjectionTime injection_time,
     TargetFrames target_frames,
     ReinjectionBehavior reinjection_behavior,
     const PlaceholderReplacementsCallback& replacements_callback)
     : script_filename_(filename),
+      script_(script),
+      injection_token_(injection_token),
       injection_time_(injection_time),
       target_frames_(target_frames),
       reinjection_behavior_(reinjection_behavior),
@@ -78,18 +98,24 @@ JavaScriptFeature::FeatureScript& JavaScriptFeature::FeatureScript::operator=(
 JavaScriptFeature::FeatureScript::~FeatureScript() = default;
 
 NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
-  NSString* script_filename = base::SysUTF8ToNSString(script_filename_);
+  NSString* script = nil;
+  if (script_) {
+    script = base::SysUTF8ToNSString(script_.value());
+  } else {
+    CHECK(script_filename_);
+    script = GetPageScript(base::SysUTF8ToNSString(*script_filename_));
+  }
+
   if (reinjection_behavior_ ==
       ReinjectionBehavior::kReinjectOnDocumentRecreation) {
-    return ReplacePlaceholders(GetPageScript(script_filename));
+    return ReplacePlaceholders(script);
   }
   // WKUserScript instances will automatically be re-injected by WebKit when the
   // document is re-created, even though the JavaScript context will not be
   // re-created. So the script needs to be wrapped in `MakeScriptInjectableOnce`
   // so that is is not re-injected.
-  return MakeScriptInjectableOnce(
-      InjectionTokenForScript(script_filename),
-      ReplacePlaceholders(GetPageScript(script_filename)));
+  return MakeScriptInjectableOnce(injection_token_,
+                                  ReplacePlaceholders(script));
 }
 
 NSString* JavaScriptFeature::FeatureScript::ReplacePlaceholders(
