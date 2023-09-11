@@ -2389,6 +2389,35 @@ const FeatureEntry::FeatureVariation kStartSurfaceReturnTimeVariations[] = {
     {"60 minute", kStartSurfaceReturnTime_60Minute,
      std::size(kStartSurfaceReturnTime_60Minute), nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kAccountReauthenticationRecentTimeWindow_0Minutes[] = {
+        {"account_reauthentication_recent_time_window_minutes", "0"},
+};
+const FeatureEntry::FeatureParam
+    kAccountReauthenticationRecentTimeWindow_1Minutes[] = {
+        {"account_reauthentication_recent_time_window_minutes", "1"},
+};
+const FeatureEntry::FeatureParam
+    kAccountReauthenticationRecentTimeWindow_5Minutes[] = {
+        {"account_reauthentication_recent_time_window_minutes", "5"},
+};
+const FeatureEntry::FeatureParam
+    kAccountReauthenticationRecentTimeWindow_10Minutes[] = {
+        {"account_reauthentication_recent_time_window_minutes", "10"},
+};
+const FeatureEntry::FeatureVariation
+    kAccountReauthenticationRecentTimeWindowVariations[] = {
+        {"0 minutes", kAccountReauthenticationRecentTimeWindow_0Minutes,
+         std::size(kAccountReauthenticationRecentTimeWindow_0Minutes), nullptr},
+        {"1 minutes", kAccountReauthenticationRecentTimeWindow_1Minutes,
+         std::size(kAccountReauthenticationRecentTimeWindow_1Minutes), nullptr},
+        {"5 minutes", kAccountReauthenticationRecentTimeWindow_5Minutes,
+         std::size(kAccountReauthenticationRecentTimeWindow_5Minutes), nullptr},
+        {"10 minutes", kAccountReauthenticationRecentTimeWindow_10Minutes,
+         std::size(kAccountReauthenticationRecentTimeWindow_10Minutes),
+         nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface[] = {
@@ -3753,6 +3782,7 @@ const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
      switches::kCastMirroringTargetPlayoutDelay, "300"},
     {flag_descriptions::kCastMirroringTargetPlayoutDelay350ms,
      switches::kCastMirroringTargetPlayoutDelay, "350"}};
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -7113,6 +7143,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kStartSurfaceReturnTime,
                                     kStartSurfaceReturnTimeVariations,
                                     "StartSurfaceReturnTime")},
+    {"account-reauthentication-recent-time-window",
+     flag_descriptions::kAccountReauthenticationRecentTimeWindowName,
+     flag_descriptions::kAccountReauthenticationRecentTimeWindowDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAccountReauthenticationRecentTimeWindow,
+         kAccountReauthenticationRecentTimeWindowVariations,
+         "AccountReauthenticationRecentTimeWindow")},
 
     {"tab-drag-drop", flag_descriptions::kTabDragDropName,
      flag_descriptions::kTabDragDropDescription, kOsAndroid,

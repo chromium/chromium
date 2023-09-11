@@ -2252,6 +2252,13 @@ extern const char kCCTRealTimeEngagementSignalsAlternativeImplDescription[];
 extern const char kCCTTextFragmentLookupApiEnabledName[];
 extern const char kCCTTextFragmentLookupApiEnabledDescription[];
 
+extern const char kAccountReauthenticationRecentTimeWindowName[];
+extern const char kAccountReauthenticationRecentTimeWindowDescription[];
+extern const char kAccountReauthenticationRecentTimeWindowDefault[];
+extern const char kAccountReauthenticationRecentTimeWindow0mins[];
+extern const char kAccountReauthenticationRecentTimeWindow1mins[];
+extern const char kAccountReauthenticationRecentTimeWindow5mins[];
+
 extern const char kChimeAlwaysShowNotificationDescription[];
 extern const char kChimeAlwaysShowNotificationName[];
 

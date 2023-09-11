@@ -22,17 +22,23 @@ import android.content.Intent;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountReauthenticationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * The mediator handles which design the device lock UI displays and interacts through the
  * coordinator delegate.
  */
 public class DeviceLockMediator {
+    static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM =
+            "account_reauthentication_recent_time_window_minutes";
+
     private final PropertyModel mModel;
     private final DeviceLockCoordinator.Delegate mDelegate;
 
@@ -121,17 +127,21 @@ public class DeviceLockMediator {
     }
 
     private void maybeTriggerAccountReauthenticationChallenge(Runnable onSuccess) {
-        // If no account is specified, the current flow does not require account reauthentication.
+        //  If no account is specified, the current flow does not require account reauthentication.
         if (mAccount == null) {
             onSuccess.run();
             return;
         }
+        int accountReauthenticationRecentTimeWindowMinutes =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW,
+                        ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM, 10);
         mAccountReauthenticationUtils.confirmCredentialsOrRecentAuthentication(
                 getAccountManager(), mAccount, mActivity, (confirmationResult) -> {
                     if (confirmationResult
                             == AccountReauthenticationUtils.ConfirmationResult.SUCCESS) {
                         onSuccess.run();
                     }
-                });
+                }, TimeUnit.MINUTES.toMillis(accountReauthenticationRecentTimeWindowMinutes));
     }
 }

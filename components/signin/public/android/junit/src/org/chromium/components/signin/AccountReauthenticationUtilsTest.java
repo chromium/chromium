@@ -33,6 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AccountReauthenticationUtilsTest {
+    private static final long MOCK_RECENT_TIME_WINDOW_MILLIS = 10 * 60 * 1000; // 10 minutes
+
     @Rule
     public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
@@ -102,8 +104,8 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        new AccountReauthenticationUtils().confirmRecentAuthentication(
-                mAccountManagerFacade, mAccount, mRecentAuthenticationResult::set);
+        new AccountReauthenticationUtils().confirmRecentAuthentication(mAccountManagerFacade,
+                mAccount, mRecentAuthenticationResult::set, MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals((Integer) AccountReauthenticationUtils.RecentAuthenticationResult
                              .HAS_RECENT_AUTHENTICATION,
                 mRecentAuthenticationResult.get());
@@ -115,8 +117,8 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        new AccountReauthenticationUtils().confirmRecentAuthentication(
-                mAccountManagerFacade, mAccount, mRecentAuthenticationResult::set);
+        new AccountReauthenticationUtils().confirmRecentAuthentication(mAccountManagerFacade,
+                mAccount, mRecentAuthenticationResult::set, MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals((Integer) AccountReauthenticationUtils.RecentAuthenticationResult
                              .NO_RECENT_AUTHENTICATION,
                 mRecentAuthenticationResult.get());
@@ -128,8 +130,8 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        new AccountReauthenticationUtils().confirmRecentAuthentication(
-                mAccountManagerFacade, mAccount, mRecentAuthenticationResult::set);
+        new AccountReauthenticationUtils().confirmRecentAuthentication(mAccountManagerFacade,
+                mAccount, mRecentAuthenticationResult::set, MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals((Integer) AccountReauthenticationUtils.RecentAuthenticationResult
                              .NO_RECENT_AUTHENTICATION,
                 mRecentAuthenticationResult.get());
@@ -141,8 +143,8 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        new AccountReauthenticationUtils().confirmRecentAuthentication(
-                mAccountManagerFacade, mAccount, mRecentAuthenticationResult::set);
+        new AccountReauthenticationUtils().confirmRecentAuthentication(mAccountManagerFacade,
+                mAccount, mRecentAuthenticationResult::set, MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals((Integer) AccountReauthenticationUtils.RecentAuthenticationResult
                              .RECENT_AUTHENTICATION_ERROR,
                 mRecentAuthenticationResult.get());
@@ -157,7 +159,8 @@ public class AccountReauthenticationUtilsTest {
                 .confirmCredentials(any(Account.class), any(), any());
 
         new AccountReauthenticationUtils().confirmCredentialsOrRecentAuthentication(
-                mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set);
+                mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set,
+                MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals((Integer) AccountReauthenticationUtils.ConfirmationResult.SUCCESS,
                 mRecentConfirmationResult.get());
     }
@@ -170,7 +173,8 @@ public class AccountReauthenticationUtilsTest {
                 .confirmCredentials(any(Account.class), any(), any());
 
         new AccountReauthenticationUtils().confirmCredentialsOrRecentAuthentication(
-                mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set);
+                mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set,
+                MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals((Integer) AccountReauthenticationUtils.ConfirmationResult.SUCCESS,
                 mRecentConfirmationResult.get());
     }
@@ -184,7 +188,8 @@ public class AccountReauthenticationUtilsTest {
                 .confirmCredentials(any(Account.class), any(), any());
 
         new AccountReauthenticationUtils().confirmCredentialsOrRecentAuthentication(
-                mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set);
+                mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set,
+                MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals((Integer) AccountReauthenticationUtils.ConfirmationResult.REJECTED,
                 mRecentConfirmationResult.get());
     }
@@ -197,7 +202,8 @@ public class AccountReauthenticationUtilsTest {
                 .confirmCredentials(any(Account.class), any(), any());
 
         new AccountReauthenticationUtils().confirmCredentialsOrRecentAuthentication(
-                mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set);
+                mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set,
+                MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals((Integer) AccountReauthenticationUtils.ConfirmationResult.ERROR,
                 mRecentConfirmationResult.get());
     }

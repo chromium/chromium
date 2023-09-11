@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
@@ -26,7 +27,6 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PR
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -46,9 +46,12 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountReauthenticationUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -58,7 +61,10 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Unit tests for the {@link DeviceLockMediator}.*/
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures({ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW})
 public class DeviceLockMediatorUnitTest {
+    private static final int MOCK_RECENT_TIME_WINDOW = 10;
+
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
     @Rule
@@ -142,6 +148,12 @@ public class DeviceLockMediatorUnitTest {
         mPackageManager = Mockito.mock(PackageManager.class);
         doReturn(mKeyguardManager).when(mActivity).getSystemService(eq(Context.KEYGUARD_SERVICE));
         doReturn(mPackageManager).when(mActivity).getPackageManager();
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW,
+                DeviceLockMediator.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM, "10");
+        FeatureList.setTestValues(testValues);
     }
 
     @Test
@@ -169,7 +181,6 @@ public class DeviceLockMediatorUnitTest {
     @Test
     public void
     testDeviceLockMediator_deviceLockCreationIntentSupported_deviceSupportsPINIntentIsTrue() {
-        Intent intent = new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
         ResolveInfo resolveInfo = new ResolveInfo();
         resolveInfo.isDefault = true;
 
@@ -366,7 +377,8 @@ public class DeviceLockMediatorUnitTest {
         if (accountReauthenticationResult != null) {
             doAnswer(accountReauthenticationResult)
                     .when(mAccountReauthenticationUtils)
-                    .confirmCredentialsOrRecentAuthentication(any(), any(), any(), any());
+                    .confirmCredentialsOrRecentAuthentication(
+                            any(), any(), any(), any(), anyLong());
         }
 
         DeviceLockMediator deviceLockMediator = new DeviceLockMediator(mDelegate, mWindowAndroid,
@@ -378,7 +390,7 @@ public class DeviceLockMediatorUnitTest {
         verify(mDeviceLockAuthenticatorBridge, times(deviceLockChallengesTriggered))
                 .reauthenticate(any(), eq(false));
         verify(mAccountReauthenticationUtils, times(accountReauthenticationsTriggered))
-                .confirmCredentialsOrRecentAuthentication(any(), any(), any(), any());
+                .confirmCredentialsOrRecentAuthentication(any(), any(), any(), any(), anyLong());
         verify(mDelegate, times(onDeviceLockReadyCalls)).onDeviceLockReady();
         verify(mDelegate, times(onDeviceLockRefusedCalls)).onDeviceLockRefused();
     }

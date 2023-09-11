@@ -448,6 +448,8 @@ public abstract class ChromeFeatureList {
     public static final String START_SURFACE_ON_TABLET = "StartSurfaceOnTablet";
     public static final String START_SURFACE_REFACTOR = "StartSurfaceRefactor";
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
+    public static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW =
+            "AccountReauthenticationRecentTimeWindow";
     public static final String START_SURFACE_WITH_ACCESSIBILITY = "StartSurfaceWithAccessibility";
     public static final String START_SURFACE_SPARE_TAB = "StartSurfaceSpareTab";
     public static final String STORE_HOURS = "StoreHoursAndroid";
@@ -602,6 +604,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(START_SURFACE_REFACTOR, false);
     public static final CachedFlag sStartSurfaceReturnTime =
             new CachedFlag(START_SURFACE_RETURN_TIME, false);
+    public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
+            new CachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sStartSurfaceWithAccessibility =
             new CachedFlag(START_SURFACE_WITH_ACCESSIBILITY, false);
     public static final CachedFlag sStoreHoursAndroid = new CachedFlag(STORE_HOURS, false);
@@ -683,6 +687,7 @@ public abstract class ChromeFeatureList {
         sStartSurfaceOnTablet,
         sStartSurfaceRefactor,
         sStartSurfaceReturnTime,
+        sAccountReauthenticationRecentTimeWindow,
         sStartSurfaceWithAccessibility,
         sStoreHoursAndroid,
         sSurfacePolish,

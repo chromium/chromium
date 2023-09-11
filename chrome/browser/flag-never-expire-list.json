@@ -13,6 +13,7 @@
 // The format of this file is a list of flag names; it is validated by a unit
 // test (AboutFlagsTest.OnlyPermittedFlagsNeverExpire).
 [
+  "account-reauthentication-recent-time-window",
   "allow-all-sites-to-initiate-mirroring",
   "allow-cross-device-feature-suite",
   "allow-devtools-in-system-ui",

@@ -61471,6 +61471,8 @@ from previous Chrome versions.
   <int value="-1596489715" label="AutoScreenBrightness:enabled"/>
   <int value="-1595456861" label="FullscreenPopupWindows:disabled"/>
   <int value="-1594298767" label="FullscreenToolbarReveal:enabled"/>
+  <int value="-1593946814"
+      label="AccountReauthenticationRecentTimeWindow:enabled"/>
   <int value="-1591974904"
       label="SafeBrowsingSeparateNetworkContexts:disabled"/>
   <int value="-1591450227" label="enable-microphone-mute-switch-device"/>
@@ -62051,6 +62053,8 @@ from previous Chrome versions.
   <int value="-1311204345" label="FuseBox:disabled"/>
   <int value="-1311133348" label="VrBrowsingNativeAndroidUi:enabled"/>
   <int value="-1310737697" label="MaterialDesignSettings:enabled"/>
+  <int value="-1310387347"
+      label="AccountReauthenticationRecentTimeWindow:disabled"/>
   <int value="-1309955811"
       label="DnsOverHttpsWithIdentifiersReuseOldPolicy:disabled"/>
   <int value="-1309828996"

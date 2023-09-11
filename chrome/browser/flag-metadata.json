@@ -39,6 +39,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "account-reauthentication-recent-time-window",
+    "owners": [ "clhager", "twellington", "geoffhuang"],
+    "expiry_milestone":-1
+  },
+  {
     "name": "adaptive-button-in-top-toolbar",
     "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 99

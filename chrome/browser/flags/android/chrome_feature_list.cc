@@ -330,6 +330,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStartSurfaceAndroid,
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
+    &kAccountReauthenticationRecentTimeWindow,
     &kStartSurfaceRefactor,
     &kStartSurfaceSpareTab,
     &kStartSurfaceDisabledFeedImprovement,
@@ -1116,6 +1117,10 @@ BASE_FEATURE(kStartSurfaceSpareTab,
 BASE_FEATURE(kStartSurfaceReturnTime,
              "StartSurfaceReturnTime",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAccountReauthenticationRecentTimeWindow,
+             "AccountReauthenticationRecentTimeWindow",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceRefactor,
              "StartSurfaceRefactor",

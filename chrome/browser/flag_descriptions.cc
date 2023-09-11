@@ -3870,6 +3870,17 @@ const char kCCTTextFragmentLookupApiEnabledName[] =
 const char kCCTTextFragmentLookupApiEnabledDescription[] =
     "Enable CCT API to lookup text fragments";
 
+const char kAccountReauthenticationRecentTimeWindowName[] =
+    "Account Reauthentication Recent Time Window";
+const char kAccountReauthenticationRecentTimeWindowDescription[] =
+    "Changes the time window after a successful account authentication during "
+    "which reauthentication challenges are not needed.";
+const char kAccountReauthenticationRecentTimeWindowDefault[] =
+    "10 mins (default)";
+const char kAccountReauthenticationRecentTimeWindow0mins[] = "0 mins";
+const char kAccountReauthenticationRecentTimeWindow1mins[] = "1 mins";
+const char kAccountReauthenticationRecentTimeWindow5mins[] = "5 mins";
+
 const char kChimeAlwaysShowNotificationDescription[] =
     "A debug flag to always show Chime notification after receiving a payload.";
 const char kChimeAlwaysShowNotificationName[] =

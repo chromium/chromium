@@ -15,14 +15,11 @@ import org.chromium.base.TimeUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeUnit;
 
 /**
  * ReauthenticationUtils contains static util methods for account reauthentication.
  */
 public class AccountReauthenticationUtils {
-    private static final long RECENT_TIME_WINDOW_IN_MILLIS = TimeUnit.MINUTES.toMillis(10);
-
     public AccountReauthenticationUtils() {}
 
     @IntDef({RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION,
@@ -52,9 +49,12 @@ public class AccountReauthenticationUtils {
      * @param callback The callback to indicate whether the device had a recent authentication for
      *         the given account, there was no recent authentication, or if confirmation was
      *         interrupted by an exception.
+     * @param recentTimeWindowMillis The time window in milliseconds for which a previous
+     *         successful authentication can be considered recent.
      */
     public void confirmRecentAuthentication(AccountManagerFacade accountManagerFacade,
-            Account account, @RecentAuthenticationResult Callback<Integer> callback) {
+            Account account, @RecentAuthenticationResult Callback<Integer> callback,
+            long recentTimeWindowMillis) {
         accountManagerFacade.confirmCredentials(account, null, (response) -> {
             if (response == null) {
                 callback.onResult(RecentAuthenticationResult.RECENT_AUTHENTICATION_ERROR);
@@ -64,7 +64,7 @@ public class AccountReauthenticationUtils {
                 Long latestCredentialAuthentication =
                         response.getLong(AccountManager.KEY_LAST_AUTHENTICATED_TIME);
                 if (TimeUtils.currentTimeMillis()
-                        <= latestCredentialAuthentication + RECENT_TIME_WINDOW_IN_MILLIS) {
+                        <= latestCredentialAuthentication + recentTimeWindowMillis) {
                     callback.onResult(RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION);
                     return;
                 }
@@ -84,9 +84,12 @@ public class AccountReauthenticationUtils {
      *         sub-Activity to prompt the user to confirm their password.
      * @param callback The callback to indicate whether the device had a recent authentication for
      *         the given account or if the user successfully confirmed their credentials.
+     * @param recentTimeWindowMillis The time window in milliseconds for which a previous
+     *         successful authentication can be considered recent.
      */
     public void confirmCredentialsOrRecentAuthentication(AccountManagerFacade accountManagerFacade,
-            Account account, Activity activity, @ConfirmationResult Callback<Integer> callback) {
+            Account account, Activity activity, @ConfirmationResult Callback<Integer> callback,
+            long recentTimeWindowMillis) {
         confirmRecentAuthentication(
                 accountManagerFacade, account, (recentAuthenticationResult) -> {
                     if (RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION
@@ -105,6 +108,6 @@ public class AccountReauthenticationUtils {
                             callback.onResult(ConfirmationResult.REJECTED);
                         }
                     });
-                });
+                }, recentTimeWindowMillis);
     }
 }
