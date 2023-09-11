@@ -1003,10 +1003,6 @@ void WizardController::ShowConsumerUpdateScreen() {
   SetCurrentScreen(GetScreen(ConsumerUpdateScreenView::kScreenId));
 }
 
-void WizardController::ShowPasswordSelectionScreen() {
-  SetCurrentScreen(GetScreen(PasswordSelectionScreenView::kScreenId));
-}
-
 void WizardController::ShowEnrollmentScreen() {
   // Update the enrollment configuration and start the screen.
   oobe_metrics_helper_.OnEnrollmentScreenShown();
@@ -1068,8 +1064,29 @@ void WizardController::ShowSyncConsentScreen() {
   SetCurrentScreen(GetScreen(SyncConsentScreenView::kScreenId));
 }
 
+void WizardController::StartAuthFactorsSetup() {
+  if (features::IsCryptohomeRecoveryEnabled()) {
+    ShowCryptohomeRecoverySetupScreen();
+  } else {
+    ShowFingerprintSetupScreen();
+  }
+}
+
+void WizardController::ShowCryptohomeRecoverySetupScreen() {
+  CHECK(features::IsCryptohomeRecoveryEnabled());
+  SetCurrentScreen(GetScreen(CryptohomeRecoverySetupScreenView::kScreenId));
+}
+
+void WizardController::ShowPasswordSelectionScreen() {
+  SetCurrentScreen(GetScreen(PasswordSelectionScreenView::kScreenId));
+}
+
 void WizardController::ShowFingerprintSetupScreen() {
   SetCurrentScreen(GetScreen(FingerprintSetupScreenView::kScreenId));
+}
+
+void WizardController::ShowPinSetupScreen() {
+  SetCurrentScreen(GetScreen(PinSetupScreenView::kScreenId));
 }
 
 void WizardController::ShowThemeSelectionScreen() {
@@ -1130,10 +1147,6 @@ void WizardController::ShowGestureNavigationScreen() {
   SetCurrentScreen(GetScreen(GestureNavigationScreenView::kScreenId));
 }
 
-void WizardController::ShowPinSetupScreen() {
-  SetCurrentScreen(GetScreen(PinSetupScreenView::kScreenId));
-}
-
 void WizardController::ShowPackagedLicenseScreen() {
   SetCurrentScreen(GetScreen(PackagedLicenseView::kScreenId));
 }
@@ -1180,19 +1193,6 @@ void WizardController::ShowDisplaySizeScreen() {
     SetCurrentScreen(GetScreen(DisplaySizeScreenView::kScreenId));
   } else {
     OnDisplaySizeScreenExit(DisplaySizeScreen::Result::kNotApplicable);
-  }
-}
-
-void WizardController::ShowCryptohomeRecoverySetupScreen() {
-  CHECK(features::IsCryptohomeRecoveryEnabled());
-  SetCurrentScreen(GetScreen(CryptohomeRecoverySetupScreenView::kScreenId));
-}
-
-void WizardController::ShowAuthenticationSetupScreen() {
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    ShowCryptohomeRecoverySetupScreen();
-  } else {
-    ShowFingerprintSetupScreen();
   }
 }
 
@@ -1300,28 +1300,6 @@ void WizardController::OnConsumerUpdateScreenExit(
     AdvanceToSigninScreen();
   } else {
     AdvanceToScreen(PrefToScreenId(screen_name));
-  }
-}
-
-void WizardController::OnPasswordSelectionScreenExit(
-    PasswordSelectionScreen::Result result) {
-  OnScreenExit(PasswordSelectionScreenView::kScreenId,
-               PasswordSelectionScreen::GetResultString(result));
-  switch (result) {
-    case PasswordSelectionScreen::Result::NOT_APPLICABLE:
-      ShowAuthenticationSetupScreen();
-      return;
-    case PasswordSelectionScreen::Result::BACK: {
-      const bool did_go_back = MaybeSetToPreviousScreen();
-      DCHECK(did_go_back);
-      return;
-    }
-    case PasswordSelectionScreen::Result::LOCAL_PASSWORD:
-      // TODO(b/293295420): Go to the new local password screen.
-      return;
-    case PasswordSelectionScreen::Result::GAIA_PASSWORD:
-      AdvanceToSigninScreen();
-      return;
   }
 }
 
@@ -1554,13 +1532,6 @@ void WizardController::OnConsolidatedConsentScreenExit(
   }
 }
 
-void WizardController::OnCryptohomeRecoverySetupScreenExit(
-    CryptohomeRecoverySetupScreen::Result result) {
-  OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
-               CryptohomeRecoverySetupScreen::GetResultString(result));
-  ShowFingerprintSetupScreen();
-}
-
 void WizardController::OnOfflineLoginScreenExit(
     OfflineLoginScreen::Result result) {
   OnScreenExit(OfflineLoginView::kScreenId,
@@ -1619,8 +1590,7 @@ void WizardController::OnHWDataCollectionScreenExit(
     OnOobeFlowFinished();
     return;
   }
-
-  ShowAuthenticationSetupScreen();
+  StartAuthFactorsSetup();
 }
 
 void WizardController::OnSmartPrivacyProtectionScreenExit(
@@ -2161,23 +2131,68 @@ void WizardController::OnSyncConsentScreenExit(
     return;
   }
 
-  ShowAuthenticationSetupScreen();
+  StartAuthFactorsSetup();
+}
+
+// Start of local authentication setup screen exit handlers.
+
+void WizardController::OnCryptohomeRecoverySetupScreenExit(
+    CryptohomeRecoverySetupScreen::Result result) {
+  OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
+               CryptohomeRecoverySetupScreen::GetResultString(result));
+  if (ash::features::IsPasswordSelectionEnabledInOobe()) {
+    ShowPasswordSelectionScreen();
+  } else {
+    ShowFingerprintSetupScreen();
+  }
+}
+
+void WizardController::OnPasswordSelectionScreenExit(
+    PasswordSelectionScreen::Result result) {
+  OnScreenExit(PasswordSelectionScreenView::kScreenId,
+               PasswordSelectionScreen::GetResultString(result));
+  switch (result) {
+    // TODO(b/291808449): add an edge case for Enterprise users
+    // without GAIA/SAML password.
+    case PasswordSelectionScreen::Result::NOT_APPLICABLE:
+      ShowFingerprintSetupScreen();
+      return;
+    case PasswordSelectionScreen::Result::BACK: {
+      // TODO(b/291808449): It should not be possible to go back
+      const bool did_go_back = MaybeSetToPreviousScreen();
+      DCHECK(did_go_back);
+      return;
+    }
+    case PasswordSelectionScreen::Result::LOCAL_PASSWORD:
+      // TODO(b/291808449): Go to the new local password screen.
+      return;
+    case PasswordSelectionScreen::Result::GAIA_PASSWORD:
+      // TODO(b/291808449): Screen should set up GAIA password
+      // itself, proceed to next step.
+      ShowFingerprintSetupScreen();
+      return;
+  }
 }
 
 void WizardController::OnFingerprintSetupScreenExit(
     FingerprintSetupScreen::Result result) {
   OnScreenExit(FingerprintSetupScreenView::kScreenId,
                FingerprintSetupScreen::GetResultString(result));
-
   ShowPinSetupScreen();
 }
 
 void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
   OnScreenExit(PinSetupScreenView::kScreenId,
                PinSetupScreen::GetResultString(result));
+  FinishAuthFactorsSetup();
+}
 
+void WizardController::FinishAuthFactorsSetup() {
+  // TODO(b/238606050): Ensure that AuthSession is terminated after this step.
   ShowRecommendAppsScreen();
 }
+
+// End of local authentication setup screen exit handlers.
 
 void WizardController::OnRecommendAppsScreenExit(
     RecommendAppsScreen::Result result) {

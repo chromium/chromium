@@ -378,13 +378,26 @@ class WizardController : public OobeUI::Observer {
   void OnKioskAutolaunchScreenExit(KioskAutolaunchScreen::Result result);
   void OnDemoPreferencesScreenExit(DemoPreferencesScreen::Result result);
   void OnDemoSetupScreenExit(DemoSetupScreen::Result result);
+  void OnUserCreationScreenExit(UserCreationScreen::Result result);
+  // Start of online authentication sub-group
+  void OnGaiaScreenExit(GaiaScreen::Result result);
+  void OnSamlConfirmPasswordScreenExit(
+      SamlConfirmPasswordScreen::Result result);
+  // End of online authentication sub-group
   void OnLocaleSwitchScreenExit(LocaleSwitchScreen::Result result);
   void OnRecoveryEligibilityScreenExit(
       RecoveryEligibilityScreen::Result result);
   void OnTermsOfServiceScreenExit(TermsOfServiceScreen::Result result);
-  void OnFingerprintSetupScreenExit(FingerprintSetupScreen::Result result);
   void OnSyncConsentScreenExit(SyncConsentScreen::Result result);
+  // Start of Local authentication setup sub-group
+  void StartAuthFactorsSetup();
+  void OnCryptohomeRecoverySetupScreenExit(
+      CryptohomeRecoverySetupScreen::Result result);
+  void OnPasswordSelectionScreenExit(PasswordSelectionScreen::Result result);
+  void OnFingerprintSetupScreenExit(FingerprintSetupScreen::Result result);
   void OnPinSetupScreenExit(PinSetupScreen::Result result);
+  void FinishAuthFactorsSetup();
+  // End of Local authentication setup sub-group
   void OnRecommendAppsScreenExit(RecommendAppsScreen::Result result);
   void OnAppDownloadingScreenExit();
   void OnAssistantOptInFlowScreenExit(AssistantOptInFlowScreen::Result result);
@@ -398,11 +411,7 @@ class WizardController : public OobeUI::Observer {
   void OnOobeFlowFinished();
   void OnPackagedLicenseScreenExit(PackagedLicenseScreen::Result result);
   void OnFamilyLinkNoticeScreenExit(FamilyLinkNoticeScreen::Result result);
-  void OnUserCreationScreenExit(UserCreationScreen::Result result);
   void OnTpmErrorScreenExit(TpmErrorScreen::Result result);
-  void OnGaiaScreenExit(GaiaScreen::Result result);
-  void OnSamlConfirmPasswordScreenExit(
-      SamlConfirmPasswordScreen::Result result);
   void OnPasswordChangeLegacyScreenExit(
       GaiaPasswordChangedScreenLegacy::Result result);
   void OnPasswordChangeScreenExit(GaiaPasswordChangedScreen::Result result);
@@ -415,8 +424,6 @@ class WizardController : public OobeUI::Observer {
   void OnOsTrialScreenExit(OsTrialScreen::Result result);
   void OnConsolidatedConsentScreenExit(
       ConsolidatedConsentScreen::Result result);
-  void OnCryptohomeRecoverySetupScreenExit(
-      CryptohomeRecoverySetupScreen::Result result);
   void OnGuestTosScreenExit(GuestTosScreen::Result result);
   void OnHWDataCollectionScreenExit(HWDataCollectionScreen::Result result);
   void OnSmartPrivacyProtectionScreenExit(
@@ -430,7 +437,6 @@ class WizardController : public OobeUI::Observer {
   void OnGaiaInfoScreenExit(GaiaInfoScreen::Result result);
   void OnAddChildScreenExit(AddChildScreen::Result result);
   void OnConsumerUpdateScreenExit(ConsumerUpdateScreen::Result result);
-  void OnPasswordSelectionScreenExit(PasswordSelectionScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
