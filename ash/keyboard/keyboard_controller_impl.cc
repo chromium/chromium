@@ -419,7 +419,7 @@ aura::Window* KeyboardControllerImpl::GetContainerForDisplay(
   RootWindowController* controller =
       Shell::Get()->GetRootWindowControllerWithDisplayId(display.id());
   aura::Window* container =
-      controller->GetContainer(kShellWindowId_VirtualKeyboardContainer);
+      controller ? controller->GetContainer(kShellWindowId_VirtualKeyboardContainer) : nullptr ;
   DCHECK(container);
   return container;
 }
