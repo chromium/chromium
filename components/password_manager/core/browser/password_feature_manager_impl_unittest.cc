@@ -160,11 +160,6 @@ class PasswordFeatureManagerImplTestBiometricAuthenticationTest
 TEST_P(PasswordFeatureManagerImplTestBiometricAuthenticationTest,
        IsBiometricAuthenticationBeforeFillingEnabled) {
   TestCase test_case = GetParam();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureState(
-      password_manager::features::kBiometricAuthenticationForFilling,
-      test_case.had_biometrics);
-
   SCOPED_TRACE(test_case.description);
 
   pref_service_.SetBoolean(password_manager::prefs::kHadBiometricsAvailable,

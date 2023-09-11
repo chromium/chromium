@@ -95,9 +95,7 @@ void DeviceAuthenticatorMac::AuthenticateWithMessage(
   // Always use CanAuthenticateWithBiometrics() before invoking the biometrics
   // API, and if it fails use password_manager_util_mac::AuthenticateUser()
   // instead, until crbug.com/1358442 is fixed.
-  if (!CanAuthenticateWithBiometrics() ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kBiometricAuthenticationInSettings)) {
+  if (!CanAuthenticateWithBiometrics()) {
     OnAuthenticationCompleted(authenticator_->AuthenticateUserWithNonBiometrics(
         l10n_util::GetStringFUTF16(IDS_PASSWORDS_AUTHENTICATION_PROMPT_PREFIX,
                                    message)));

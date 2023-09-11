@@ -409,17 +409,13 @@ PasswordForm MakeNormalizedBlocklistedForm(
 bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
     const PrefService* local_state) {
   return local_state->GetBoolean(
-             password_manager::prefs::kHadBiometricsAvailable) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kBiometricAuthenticationForFilling);
+      password_manager::prefs::kHadBiometricsAvailable);
 }
 
 bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
     password_manager::PasswordManagerClient* client) {
   return client && client->GetDeviceAuthenticator() &&
          client->GetDeviceAuthenticator()->CanAuthenticateWithBiometrics() &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kBiometricAuthenticationForFilling) &&
          !client->GetPrefs()->GetBoolean(
              password_manager::prefs::kBiometricAuthenticationBeforeFilling);
 }

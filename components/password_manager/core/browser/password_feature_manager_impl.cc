@@ -48,8 +48,6 @@ bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
   return local_state_ &&
          local_state_->GetBoolean(
              password_manager::prefs::kHadBiometricsAvailable) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kBiometricAuthenticationForFilling) &&
          pref_service_ &&
          pref_service_->GetBoolean(
              password_manager::prefs::kBiometricAuthenticationBeforeFilling);

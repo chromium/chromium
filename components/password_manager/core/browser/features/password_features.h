@@ -14,13 +14,6 @@ namespace password_manager::features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kBiometricAuthenticationForFilling);
-#endif
-#if BUILDFLAG(IS_MAC)
-BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
-#endif
-
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 

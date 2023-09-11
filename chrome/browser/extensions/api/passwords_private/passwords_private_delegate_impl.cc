@@ -867,8 +867,6 @@ void PasswordsPrivateDelegateImpl::SwitchBiometricAuthBeforeFillingState(
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   NOTIMPLEMENTED();
 #else
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kBiometricAuthenticationForFilling));
   password_manager::PasswordAccessAuthenticator::AuthResultCallback callback =
       base::BindOnce(&ChangeBiometricAuthenticationBeforeFillingSetting,
                      profile_->GetPrefs());

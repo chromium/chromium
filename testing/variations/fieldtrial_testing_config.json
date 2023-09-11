@@ -2316,35 +2316,6 @@
             ]
         }
     ],
-    "BiometricAuthenticationChromeDesktop": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BiometricAuthenticationForFilling",
-                        "BiometricAuthenticationInSettings"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BiometricAuthenticationForFilling"
-                    ]
-                }
-            ]
-        }
-    ],
     "BlinkSchedulerCompositorTQPolicyDuringThreadedScroll": [
         {
             "platforms": [
