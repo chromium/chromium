@@ -241,6 +241,9 @@ void VizDebugger::UpdateFilters() {
 void VizDebugger::CompleteFrame(uint64_t counter,
                                 const gfx::Size& window_pix,
                                 base::TimeTicks time_ticks) {
+  if (!enabled_) {
+    return;
+  }
   read_write_lock_.WriteLock();
   UpdateFilters();
   json_frame_output_ = FrameAsJson(counter, window_pix, time_ticks);
