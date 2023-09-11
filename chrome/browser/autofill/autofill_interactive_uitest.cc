@@ -3047,8 +3047,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on.
+// TODO(crbug.com/1481004): Re-enable this test
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DynamicFormFill_FirstElementDisappears \
+  DISABLED_DynamicFormFill_FirstElementDisappears
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappears \
+  DynamicFormFill_FirstElementDisappears
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicFormFill_FirstElementDisappears) {
+                       MAYBE_DynamicFormFill_FirstElementDisappears) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid.html");
