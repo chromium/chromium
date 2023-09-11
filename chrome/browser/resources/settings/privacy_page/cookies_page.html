@@ -251,7 +251,8 @@
       </settings-toggle-button>
     </template>
     <settings-do-not-track-toggle id="doNotTrack"
-        prefs="{{prefs}}">
+        prefs="{{prefs}}"
+        hidden="[[is3pcdRedesignEnabled_]]">
     </settings-do-not-track-toggle>
     <template is="dom-if" if="[[showPreloadingSubpage_]]">
       <cr-link-row id="preloadingLinkRow"

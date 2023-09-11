@@ -3216,6 +3216,12 @@
   <message name="IDS_SETTINGS_COOKIES_BLOCK_EXCEPTIONS" desc="Title of the list containing site exceptions always blocking them from using cookies">
     Sites that can never use cookies
   </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL" desc="Label for the 'Tracking protection' page entry point." translateable="false">
+    Tracking protection
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_SUB_LABEL" desc="Sub-label for the 'Tracking protection' page entry point." translateable="false">
+    Protection from third-party cookie tracking
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_APP_PROTOCOL_HANDLERS" desc="Label for the app protocol handlers (e.g. mailto) in site settings.">
     Apps
   </message>

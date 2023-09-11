@@ -133,6 +133,12 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () => !loadTimeData.getBoolean(
             'isPerformanceSettingsPreloadingSubpageEnabled'),
       },
+
+      is3pcdRedesignEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
+      },
     };
   }
 
@@ -150,6 +156,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private enableFirstPartySetsUI_: boolean;
   private isPrivacySandboxSettings4_: boolean;
   private showPreloadingSubpage_: boolean;
+  private is3pcdRedesignEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

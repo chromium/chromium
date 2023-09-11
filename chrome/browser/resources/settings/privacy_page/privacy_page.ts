@@ -178,6 +178,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
       },
 
+      is3pcdRedesignEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
+      },
+
       privateStateTokensEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('privateStateTokensEnabled'),
@@ -322,6 +328,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private isPrivacySandboxSettings4_: boolean;
+  private is3pcdRedesignEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
@@ -535,6 +542,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     return (!this.isPrivacySandboxRestricted_ ||
             this.isPrivacySandboxRestrictedNoticeEnabled_) &&
         this.isPrivacySandboxSettings4_;
+  }
+
+  private isPrivacySandboxSettings4CookiesEntrypointEnabled_(): boolean {
+    return this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
+  }
+
+  private isPrivacySandboxSettings3CookiesEntrypointEnabled_(): boolean {
+    return !this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
   }
 }
 

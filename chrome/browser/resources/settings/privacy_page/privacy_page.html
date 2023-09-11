@@ -48,7 +48,18 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
-        <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
+        <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
+          <cr-link-row id="trackingProtectionLinkRow"
+              start-icon="settings:visibility-off"
+              class="hr" label="$i18n{trackingProtectionLinkRowLabel}"
+              sub-label="$i18n{trackingProtectionLinkRowSubLabel}"
+              on-click="onCookiesClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
+        <template is="dom-if"
+          if="[[isPrivacySandboxSettings4CookiesEntrypointEnabled_(
+            isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
           <cr-link-row id="thirdPartyCookiesLinkRow"
               start-icon="settings:cookie"
               class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
@@ -58,7 +69,9 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
-        <template is="dom-if" if="[[!isPrivacySandboxSettings4_]]">
+        <template is="dom-if"
+          if="[[isPrivacySandboxSettings3CookiesEntrypointEnabled_(
+            isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
           <cr-link-row id="cookiesLinkRow" start-icon="settings:cookie"
               class="hr" label="$i18n{cookiePageTitle}"
               sub-label="[[cookieSettingDescription_]]"
