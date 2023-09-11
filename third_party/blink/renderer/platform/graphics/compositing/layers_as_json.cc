@@ -95,6 +95,7 @@ std::unique_ptr<JSONObject> CCLayerAsJSON(const cc::Layer& layer,
   }
 
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
+      (flags & kLayerTreeIncludesDebugInfo) &&
       layer.hit_test_opaqueness() != cc::HitTestOpaqueness::kOpaque) {
     json->SetString("hitTestOpaqueness",
                     cc::HitTestOpaquenessToString(layer.hit_test_opaqueness()));

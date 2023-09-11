@@ -55,6 +55,12 @@
     {
       "name": "LayoutVideo VIDEO id='video'",
       "bounds": [150, 60],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutVideo VIDEO id='video'",
+      "bounds": [150, 60],
       "transform": 1
     },
     {

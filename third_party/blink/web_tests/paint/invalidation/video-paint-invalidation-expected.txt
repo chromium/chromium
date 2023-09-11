@@ -1,10 +1,16 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutVideo VIDEO id='video'",
+      "bounds": [320, 240],
+      "drawsContent": false,
+      "transform": 1
     },
     {
       "name": "LayoutVideo VIDEO id='video'",

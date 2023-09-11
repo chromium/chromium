@@ -7,12 +7,10 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutSVGRoot svg",
-      "bounds": [600, 400],
-      "backgroundColor": "#008000",
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "bounds": [100, 100],
       "invalidations": [
-        [50, 0, 500, 400],
-        [0, 120, 200, 160]
+        [0, 30, 50, 50]
       ],
       "transform": 1
     }

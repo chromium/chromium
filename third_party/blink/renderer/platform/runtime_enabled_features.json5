@@ -2004,6 +2004,7 @@
     },
     {
       name: "HitTestOpaqueness",
+      status: "experimental",
       implied_by: ["HitTestTransparency"],
     },
     {
