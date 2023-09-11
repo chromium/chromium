@@ -40,6 +40,7 @@
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
@@ -63,7 +64,6 @@ namespace {
 
 // Inclusive bounds used to restrict which queries request drive suggestions
 // from the backend.
-const size_t kMinQueryLength = 4;
 const size_t kMaxQueryLength = 200;
 
 // TODO(skare): Pull the enum in search_provider.cc into its .h file, and switch
@@ -502,8 +502,9 @@ bool DocumentProvider::IsDocumentProviderAllowed(
     return false;
   }
 
-  // Experiment: don't issue queries for inputs under some length.
-  if (input.text().length() < kMinQueryLength ||
+  // Don't issue queries for inputs whose lengths aren't in the intended range.
+  if (input.text().length() <
+          omnibox_feature_configs::DocumentProvider::Get().min_query_length ||
       input.text().length() > kMaxQueryLength) {
     return false;
   }

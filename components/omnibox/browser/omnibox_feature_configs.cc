@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "components/omnibox/common/omnibox_features.h"
 
 namespace omnibox_feature_configs {
 
@@ -23,6 +24,15 @@ CalcProvider::CalcProvider() {
           .Get();
   num_non_calc_inputs =
       base::FeatureParam<int>(&kCalcProvider, "CalcProviderNumNonCalcInputs", 3)
+          .Get();
+}
+
+// static
+DocumentProvider::DocumentProvider() {
+  enabled = base::FeatureList::IsEnabled(omnibox::kDocumentProvider);
+  min_query_length =
+      base::FeatureParam<int>(&omnibox::kDocumentProvider,
+                              "DocumentProviderMinQueryLength", 4)
           .Get();
 }
 

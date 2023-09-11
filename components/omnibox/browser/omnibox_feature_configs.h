@@ -102,6 +102,14 @@ struct CalcProvider : Config<CalcProvider> {
   size_t num_non_calc_inputs;
 };
 
+// If enabled, set the minimum input length before requesting document
+// suggestions.
+struct DocumentProvider : Config<DocumentProvider> {
+  DocumentProvider();
+  bool enabled;
+  size_t min_query_length;
+};
+
 // If enabled, the shortcut provider is more aggressive in scoring.
 struct ShortcutBoosting : Config<ShortcutBoosting> {
   DECLARE_FEATURE(kShortcutBoost);
