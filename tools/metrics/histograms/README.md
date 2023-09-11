@@ -690,8 +690,11 @@ correction to its `direction` attribute any time.
 ### Cleaning Up Histogram Entries {#obsolete}
 
 If a histogram is no longer being emitted to, you should clean it up by removing
-the corresponding histograms.xml entry. You can also add an obsoletion message
-in the same changelist. This also applies to variants of a
+the corresponding histograms.xml entry. The histogram data will still be
+available for viewing on Google's internal UMA dashboard.
+
+When removing a histograms.xml entry you can also add an obsoletion message in
+the same changelist. This also applies to variants of a
 [patterned histogram](#Patterned-Histograms) and to suffix entries for a
 suffixed histogram.
 
