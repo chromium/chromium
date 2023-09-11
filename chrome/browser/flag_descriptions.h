@@ -3480,9 +3480,6 @@ extern const char kEnableNeuralStylusPalmRejectionDescription[];
 extern const char kEnableEdgeDetectionName[];
 extern const char kEnableEdgeDetectionDescription[];
 
-extern const char kEnableOsFeedbackName[];
-extern const char kEnableOsFeedbackDescription[];
-
 extern const char kEnableNewShortcutMappingName[];
 extern const char kEnableNewShortcutMappingDescription[];
 

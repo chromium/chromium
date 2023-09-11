@@ -6045,11 +6045,6 @@ const char kEnableNeuralStylusPalmRejectionDescription[] =
     "Experimental: Enable Neural Palm detection. Not compatible with all "
     "devices.";
 
-const char kEnableOsFeedbackName[] = "Enable updated Feedback Tool App";
-const char kEnableOsFeedbackDescription[] =
-    "Enable the feedback tool with new UX design that helps users mitigate "
-    "the issues while writing feedback and makes the UI easier to use.";
-
 const char kEnableNewShortcutMappingName[] = "Enable New Shortcut Mapping";
 const char kEnableNewShortcutMappingDescription[] =
     "Enables experimental new shortcut mapping";

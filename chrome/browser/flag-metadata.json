@@ -3225,11 +3225,6 @@
     "expiry_milestone": 127
   },
   {
-    "name": "enable-os-feedback",
-    "owners": [ "xiangdongkong", "cros-feedback-app@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-os-integration-sub-managers",
     "owners": [ "dibyapal@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 120
