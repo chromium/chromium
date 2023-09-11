@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/network/masked_domain_list/network_service_resource_block_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
-#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
 
 namespace network {
@@ -27,6 +28,10 @@ void NetworkServiceResourceBlockList::AddDomainWithBypassForTesting(
     net::SchemeHostPortMatcher bypass_matcher) {
   url_matcher_with_bypass_.AddDomainWithBypass(domain,
                                                std::move(bypass_matcher));
+}
+
+size_t NetworkServiceResourceBlockList::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(url_matcher_with_bypass_);
 }
 
 bool NetworkServiceResourceBlockList::IsEnabled() {
@@ -68,6 +73,10 @@ void NetworkServiceResourceBlockList::UseMaskedDomainList(
       }
     }
   }
+  base::UmaHistogramMemoryKB(
+      "NetworkService.MaskedDomainList.NetworkServiceResourceBlockList."
+      "EstimatedMemoryUsageInKB",
+      EstimateMemoryUsage() / 1024);
 }
 
 }  // namespace network

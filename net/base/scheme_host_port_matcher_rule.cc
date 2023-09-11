@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/parse_number.h"
 #include "net/base/url_util.h"
@@ -103,6 +104,12 @@ bool SchemeHostPortMatcherRule::IsHostnamePatternRule() const {
   return false;
 }
 
+#if !BUILDFLAG(CRONET_BUILD)
+size_t SchemeHostPortMatcherRule::EstimateMemoryUsage() const {
+  return 0;
+}
+#endif  // !BUILDFLAG(CRONET_BUILD)
+
 SchemeHostPortMatcherHostnamePatternRule::
     SchemeHostPortMatcherHostnamePatternRule(
         const std::string& optional_scheme,
@@ -159,6 +166,13 @@ SchemeHostPortMatcherHostnamePatternRule::GenerateSuffixMatchingRule() const {
       optional_scheme_, hostname_pattern_, optional_port_);
 }
 
+#if !BUILDFLAG(CRONET_BUILD)
+size_t SchemeHostPortMatcherHostnamePatternRule::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(optional_scheme_) +
+         base::trace_event::EstimateMemoryUsage(hostname_pattern_);
+}
+#endif  // !BUILDFLAG(CRONET_BUILD)
+
 SchemeHostPortMatcherIPHostRule::SchemeHostPortMatcherIPHostRule(
     const std::string& optional_scheme,
     const IPEndPoint& ip_end_point)
@@ -195,6 +209,13 @@ std::string SchemeHostPortMatcherIPHostRule::ToString() const {
   return str;
 }
 
+#if !BUILDFLAG(CRONET_BUILD)
+size_t SchemeHostPortMatcherIPHostRule::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(optional_scheme_) +
+         base::trace_event::EstimateMemoryUsage(ip_host_);
+}
+#endif  // !BUILDFLAG(CRONET_BUILD)
+
 SchemeHostPortMatcherIPBlockRule::SchemeHostPortMatcherIPBlockRule(
     const std::string& description,
     const std::string& optional_scheme,
@@ -229,5 +250,13 @@ SchemeHostPortMatcherResult SchemeHostPortMatcherIPBlockRule::Evaluate(
 std::string SchemeHostPortMatcherIPBlockRule::ToString() const {
   return description_;
 }
+
+#if !BUILDFLAG(CRONET_BUILD)
+size_t SchemeHostPortMatcherIPBlockRule::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(description_) +
+         base::trace_event::EstimateMemoryUsage(optional_scheme_) +
+         base::trace_event::EstimateMemoryUsage(ip_prefix_);
+}
+#endif  // !BUILDFLAG(CRONET_BUILD)
 
 }  // namespace net

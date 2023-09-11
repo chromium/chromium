@@ -42,6 +42,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
 
   void Clear();
 
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
   // Determine the partition of the `match_list_with_bypass_map_` that contains
   // the given domain.
   static std::string PartitionMapKey(std::string domain);

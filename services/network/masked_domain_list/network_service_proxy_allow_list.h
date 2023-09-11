@@ -28,6 +28,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   // handle IP protection.
   static mojom::CustomProxyConfigPtr MakeIpProtectionCustomProxyConfig();
 
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
   // Returns true if the allow list is eligible to be used but does not indicate
   // that allow list is currently populated.
   bool IsEnabled();
