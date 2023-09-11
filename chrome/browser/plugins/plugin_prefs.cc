@@ -74,6 +74,7 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
 void PluginPrefs::ShutdownOnUIThread() {
   prefs_ = nullptr;
   registrar_.RemoveAll();
+  profile_ = nullptr;
 }
 
 PluginPrefs::PluginPrefs() = default;

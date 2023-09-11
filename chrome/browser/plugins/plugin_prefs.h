@@ -73,10 +73,10 @@ class PluginPrefs : public RefcountedKeyedService {
 
   bool always_open_pdf_externally_ = false;
 
-  raw_ptr<Profile, LeakedDanglingUntriaged> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Weak pointer, owned by the profile.
-  raw_ptr<PrefService, LeakedDanglingUntriaged> prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   PrefChangeRegistrar registrar_;
 };
