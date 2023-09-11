@@ -667,7 +667,8 @@ export class DeviceOperator {
     await device.takePortraitModePhoto(
         listenerCallbacksRouter.$.bindNewPipeAndPassRemote());
 
-    Promise.allSettled(callbacks).then(() => {
+    // This is for cleanup after all effects are settled.
+    void Promise.allSettled(callbacks).then(() => {
       state.removeObserver(state.State.SUSPEND, suspendObserver);
       closeEndpoint(listenerCallbacksRouter);
     });
