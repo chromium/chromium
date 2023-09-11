@@ -161,12 +161,16 @@
             field_dependencies: ["float"]
           },
           {
+            method: "Display()",
+            field_dependencies: ["Display"]
+          },
+          {
             method: "DisplayLayoutCustomName()",
             field_dependencies: ["DisplayLayoutCustomName"]
           },
           {
-            method: "OriginalDisplay()",
-            field_dependencies: ["OriginalDisplay"]
+            method: "IsOriginalDisplayInlineType()",
+            field_dependencies: ["IsOriginalDisplayInlineType"]
           },
           {
             method: "HasStroke()",

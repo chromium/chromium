@@ -1561,8 +1561,9 @@ void StyleResolver::ApplyBaseStyleNoCache(
     ApplyDocumentRulesSelectors(state, &GetDocument());
   }
 
-  // Cache our original display.
-  state.StyleBuilder().SetOriginalDisplay(state.StyleBuilder().Display());
+  // Cache our if our original display is inline.
+  state.StyleBuilder().SetIsOriginalDisplayInlineType(
+      ComputedStyle::IsDisplayInlineType(state.StyleBuilder().Display()));
 
   StyleAdjuster::AdjustComputedStyle(
       state, style_request.IsPseudoStyleRequest() ? nullptr : element);

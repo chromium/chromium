@@ -72,20 +72,10 @@
       default_value: "g_null_atom",
     },
     {
-      name: "OriginalDisplay",
-      field_template: "keyword",
-      type_name: "EDisplay",
-      keywords: [
-        "inline", "block", "list-item", "inline-block", "table", "inline-table",
-        "table-row-group", "table-header-group", "table-footer-group",
-        "table-row", "table-column-group", "table-column", "table-cell",
-        "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
-        "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "layout-custom", "inline-layout-custom", "math", "block math",
-        // Available only if CSSDisplayMultipleValues is enabled:
-        "inline list-item", "flow-root list-item", "inline flow-root list-item"
-      ],
-      default_value: "inline",
+      name: "IsOriginalDisplayInlineType",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "true",
     },
     {
       name: "InsideLink",

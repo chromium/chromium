@@ -1752,9 +1752,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return IsDisplayReplacedType(Display());
   }
   bool IsDisplayInlineType() const { return IsDisplayInlineType(Display()); }
-  bool IsOriginalDisplayInlineType() const {
-    return IsDisplayInlineType(OriginalDisplay());
-  }
   bool IsDisplayBlockContainer() const {
     return IsDisplayBlockContainer(Display());
   }
