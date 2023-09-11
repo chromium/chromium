@@ -581,7 +581,16 @@ String Locale::FormatDateTime(const DateComponents& date,
       NOTREACHED();
       break;
   }
-  return builder.ToString();
+
+  String date_time_string = builder.ToString();
+
+#if BUILDFLAG(IS_MAC)
+  // Revert ICU 72 change that introduced U+202F instead of U+0020
+  // to separate time from AM/PM. See https://crbug.com/1453047.
+  date_time_string.Replace(0x202f, 0x20);
+#endif
+
+  return date_time_string;
 }
 
 }  // namespace blink
