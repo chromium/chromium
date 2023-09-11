@@ -841,6 +841,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Cras.StreamRuntimeWithMinimum{Duration}{Direction}{ClientType}{StreamType}"
+    units="seconds" expires_after="2024-09-08">
+  <owner>pteerapong@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Similar to Cras.StreamRuntime, but only for streams with runtime at least
+    {Duration}. The value is recorded when the stream is destroyed.
+  </summary>
+  <token key="Duration">
+    <variant name=".10s"/>
+  </token>
+  <token key="Direction">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".Input"/>
+    <variant name=".Output"/>
+  </token>
+  <token key="ClientType">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".ARC" summary="A client created by ARC++."/>
+    <variant name=".ARCVM" summary="A client created by ARCVM."/>
+    <variant name=".BOREALIS" summary="A client created by BOREALIS."/>
+    <variant name=".Chrome" summary="A client created by Chrome."/>
+    <variant name=".CrOSVM" summary="A client created by ChromeOS VM."/>
+    <variant name=".InvalidType" summary="Invalid client."/>
+    <variant name=".LaCrOS" summary="A client created by LaCrOS."/>
+    <variant name=".Legacy" summary="A client using an old CRAS lib."/>
+    <variant name=".PCM" summary="A client created by PCM."/>
+    <variant name=".ServerStream" summary="A client created by CRAS server."/>
+    <variant name=".Test" summary="A client created by cras_test_client."/>
+    <variant name=".Unknown" summary="Unknown client."/>
+  </token>
+  <token key="StreamType">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".Default"/>
+    <variant name=".ProAudio"/>
+    <variant name=".VoiceCommunication"/>
+  </token>
+</histogram>
+
 <histogram name="Cras.StreamSamplingFormat" enum="AlsaSampleFormatType"
     expires_after="2024-03-16">
 <!-- Name completed by histogram_suffixes
