@@ -50,7 +50,6 @@ import * as Common from 'devtools/core/common/common.js';
   }
 
   await new Promise(createIndexedDB);
-  await ApplicationTestRunner.createWebSQLDatabase('database-for-test');
   await UI.viewManager.showView('resources');
   UI.panels.resources.sidebar.cookieListTreeElement.firstChild().select(false, true);
   dumpCurrentState('Initial state:');
