@@ -277,8 +277,6 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncBackupEnabled() const;
   void SyncCaptionStyle() const;
   void SyncConsumerAutoUpdateToggle() const;
-  void SyncDockedMagnifierEnabled() const;
-  void SyncFocusHighlightEnabled() const;
   void SyncGIOBetaEnabled() const;
   void SyncLocale() const;
   void SyncLocationServiceEnabled() const;
@@ -287,10 +285,6 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncProxySettingsForSystemProxy() const;
   void SyncReportingConsent(bool initial_sync) const;
   void SyncPictureInPictureEnabled() const;
-  void SyncScreenMagnifierEnabled() const;
-  void SyncSelectToSpeakEnabled() const;
-  void SyncSpokenFeedbackEnabled() const;
-  void SyncSwitchAccessEnabled() const;
   void SyncTimeZone() const;
   void SyncTimeZoneByGeolocation() const;
   void SyncUse24HourClock() const;
@@ -309,10 +303,6 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // Registers to listen to a particular perf in local state.
   // This should be used when dealing with pref per device.
   void AddLocalStatePrefToObserve(const std::string& pref_name);
-
-  // Returns whether client supports `EnableAccessibilityFeatures` method or
-  // not.
-  bool IsEnableAccessibilityFeaturesMethodAvailable() const;
 
   // Returns the integer value of the pref.  pref_name must exist.
   int GetIntegerPref(const std::string& pref_name) const;
@@ -418,26 +408,6 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
              pref_name == ash::prefs::kAccessibilitySwitchAccessEnabled ||
              pref_name == ash::prefs::kDockedMagnifierEnabled) {
     SyncAccessibilityFeatures();
-    if (IsEnableAccessibilityFeaturesMethodAvailable()) {
-      return;
-    }
-
-    // TODO(b/296330419): Keeping these for backward compatibility until all
-    // client has supported the new way to update enable accessibility features.
-    // Clean up afterwards.
-    if (pref_name == ash::prefs::kAccessibilityFocusHighlightEnabled) {
-      SyncFocusHighlightEnabled();
-    } else if (pref_name == ash::prefs::kAccessibilityScreenMagnifierEnabled) {
-      SyncScreenMagnifierEnabled();
-    } else if (pref_name == ash::prefs::kAccessibilitySelectToSpeakEnabled) {
-      SyncSelectToSpeakEnabled();
-    } else if (pref_name == ash::prefs::kAccessibilitySpokenFeedbackEnabled) {
-      SyncSpokenFeedbackEnabled();
-    } else if (pref_name == ash::prefs::kAccessibilitySwitchAccessEnabled) {
-      SyncSwitchAccessEnabled();
-    } else if (pref_name == ash::prefs::kDockedMagnifierEnabled) {
-      SyncDockedMagnifierEnabled();
-    }
   } else if (pref_name == ash::prefs::kAccessibilityLargeCursorEnabled) {
     SyncAccessibilityLargeMouseCursorEnabled();
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
@@ -622,15 +592,6 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   // https://crbug.com/955071
   ResetFontScaleToDefault();
   ResetPageZoomToDefault();
-
-  if (!IsEnableAccessibilityFeaturesMethodAvailable()) {
-    SyncDockedMagnifierEnabled();
-    SyncFocusHighlightEnabled();
-    SyncScreenMagnifierEnabled();
-    SyncSelectToSpeakEnabled();
-    SyncSpokenFeedbackEnabled();
-    SyncSwitchAccessEnabled();
-  }
 }
 
 void ArcSettingsServiceImpl::SyncAppTimeSettings() {
@@ -716,24 +677,6 @@ void ArcSettingsServiceImpl::SyncAccessibilityFeatures() const {
       GetBooleanPref(ash::prefs::kAccessibilitySwitchAccessEnabled);
 
   instance->EnableAccessibilityFeatures(std::move(features));
-}
-
-void ArcSettingsServiceImpl::SyncFocusHighlightEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilityFocusHighlightEnabled,
-      "org.chromium.arc.intent_helper.SET_FOCUS_HIGHLIGHT_ENABLED");
-}
-
-void ArcSettingsServiceImpl::SyncScreenMagnifierEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilityScreenMagnifierEnabled,
-      "org.chromium.arc.intent_helper.SET_SCREEN_MAGNIFIER_ENABLED");
-}
-
-void ArcSettingsServiceImpl::SyncDockedMagnifierEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kDockedMagnifierEnabled,
-      "org.chromium.arc.intent_helper.SET_DOCKED_MAGNIFIER_ENABLED");
 }
 
 void ArcSettingsServiceImpl::SyncLocale() const {
@@ -901,24 +844,6 @@ void ArcSettingsServiceImpl::SyncPictureInPictureEnabled() const {
   instance->SetPipSuppressionStatus(!isPipEnabled);
 }
 
-void ArcSettingsServiceImpl::SyncSelectToSpeakEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilitySelectToSpeakEnabled,
-      "org.chromium.arc.intent_helper.SET_SELECT_TO_SPEAK_ENABLED");
-}
-
-void ArcSettingsServiceImpl::SyncSpokenFeedbackEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-      "org.chromium.arc.intent_helper.SET_SPOKEN_FEEDBACK_ENABLED");
-}
-
-void ArcSettingsServiceImpl::SyncSwitchAccessEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilitySwitchAccessEnabled,
-      "org.chromium.arc.intent_helper.SET_SWITCH_ACCESS_ENABLED");
-}
-
 void ArcSettingsServiceImpl::SyncTimeZone() const {
   TimezoneSettings* timezone_settings = TimezoneSettings::GetInstance();
   std::u16string timezoneID = timezone_settings->GetCurrentTimezoneID();
@@ -995,13 +920,6 @@ void ArcSettingsServiceImpl::AddLocalStatePrefToObserve(
   local_state_registrar_.Add(
       pref_name, base::BindRepeating(&ArcSettingsServiceImpl::OnPrefChanged,
                                      base::Unretained(this)));
-}
-
-bool ArcSettingsServiceImpl::IsEnableAccessibilityFeaturesMethodAvailable()
-    const {
-  auto* const instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->intent_helper(), EnableAccessibilityFeatures);
-  return instance;
 }
 
 int ArcSettingsServiceImpl::GetIntegerPref(const std::string& pref_name) const {
