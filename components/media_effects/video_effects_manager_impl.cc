@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/effects/video_effects_manager_impl.h"
+#include "components/media_effects/video_effects_manager_impl.h"
 
 VideoEffectsManagerImpl::VideoEffectsManagerImpl(
     PrefService* pref_service,

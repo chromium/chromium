@@ -1,7 +1,8 @@
-source_set("effects") {
+source_set("media_effects") {
   deps = [
     "//base",
-    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/content",
+    "//components/user_prefs",
     "//content/public/browser",
     "//services/video_capture/public/mojom",
     "//third_party/abseil-cpp:absl",
@@ -16,12 +17,14 @@ source_set("effects") {
   ]
 }
 
-source_set("unittests") {
+source_set("unit_tests") {
   testonly = true
   deps = [
-    ":effects",
+    ":media_effects",
     "//base",
-    "//chrome/test:test_support",
+    "//components/media_effects/test",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
   sources = [

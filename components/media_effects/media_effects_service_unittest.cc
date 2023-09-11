@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/effects/media_effects_service.h"
+#include "components/media_effects/media_effects_service.h"
 
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "components/media_effects/test/test_browser_context_with_prefs.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets_f.h"
 
@@ -42,41 +42,15 @@ void SetFramingSync(
 }  // namespace
 
 class MediaEffectsServiceTest : public testing::Test {
- public:
-  MediaEffectsServiceTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-
-  void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("TestProfile");
-    service_ = base::WrapUnique(StartNewMediaEffectsService());
-  }
-
-  void TearDown() override {
-    service_->Shutdown();
-    service_.reset();
-    profile_ = nullptr;
-    profile_manager_.DeleteAllTestingProfiles();
-  }
-
-  MediaEffectsService* StartNewMediaEffectsService() {
-    MediaEffectsService* service = new MediaEffectsService(profile_);
-    // base::RunLoop().RunUntilIdle();
-    return service;
-  }
-
  protected:
-  std::unique_ptr<MediaEffectsService> service_;
-
- private:
-  raw_ptr<Profile> profile_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager profile_manager_;
+  media_effects::TestBrowserContextWithPrefs browser_context_;
+  MediaEffectsService service_{browser_context_.prefs()};
 };
 
 TEST_F(MediaEffectsServiceTest, BindVideoEffectsManager) {
   mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager;
-  service_->BindVideoEffectsManager(
+  service_.BindVideoEffectsManager(
       kDeviceId, effects_manager.BindNewPipeAndPassReceiver());
 
   EXPECT_TRUE(GetConfigurationSync(effects_manager)->framing.is_null());
@@ -92,7 +66,7 @@ TEST_F(MediaEffectsServiceTest, BindVideoEffectsManager) {
 TEST_F(MediaEffectsServiceTest,
        BindVideoEffectsManager_TwoRegistrantsWithSameIdConnectToSameManager) {
   mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager1;
-  service_->BindVideoEffectsManager(
+  service_.BindVideoEffectsManager(
       kDeviceId, effects_manager1.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
@@ -102,7 +76,7 @@ TEST_F(MediaEffectsServiceTest,
             GetConfigurationSync(effects_manager1)->framing->padding_ratios);
 
   mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager2;
-  service_->BindVideoEffectsManager(
+  service_.BindVideoEffectsManager(
       kDeviceId, effects_manager2.BindNewPipeAndPassReceiver());
 
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
@@ -113,7 +87,7 @@ TEST_F(
     MediaEffectsServiceTest,
     BindVideoEffectsManager_TwoRegistrantsWithDifferentIdConnectToDifferentManager) {
   mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager1;
-  service_->BindVideoEffectsManager(
+  service_.BindVideoEffectsManager(
       "test_device_1", effects_manager1.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
@@ -123,7 +97,7 @@ TEST_F(
             GetConfigurationSync(effects_manager1)->framing->padding_ratios);
 
   mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager2;
-  service_->BindVideoEffectsManager(
+  service_.BindVideoEffectsManager(
       "test_device_2", effects_manager2.BindNewPipeAndPassReceiver());
 
   // Expect `framing` to be unset because it is a separate instance of
@@ -136,10 +110,10 @@ TEST_F(
     MediaEffectsServiceTest,
     OnLastReceiverDisconnected_ErasesTheManagerWhenAllReceiversAreDisconnected) {
   mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager1;
-  service_->BindVideoEffectsManager(
+  service_.BindVideoEffectsManager(
       kDeviceId, effects_manager1.BindNewPipeAndPassReceiver());
   mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager2;
-  service_->BindVideoEffectsManager(
+  service_.BindVideoEffectsManager(
       kDeviceId, effects_manager2.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
@@ -158,7 +132,7 @@ TEST_F(
   base::RunLoop().RunUntilIdle();
 
   mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager3;
-  service_->BindVideoEffectsManager(
+  service_.BindVideoEffectsManager(
       kDeviceId, effects_manager3.BindNewPipeAndPassReceiver());
 
   // Expect `framing` to be unset because it is a new instance of

@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
-#define CHROME_BROWSER_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
+#ifndef COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
+#define COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
 
-#include "chrome/browser/media/effects/video_effects_manager_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/media_effects/video_effects_manager_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
-
-class Profile;
 
 class MediaEffectsService : public KeyedService {
  public:
-  explicit MediaEffectsService(Profile* profile);
+  explicit MediaEffectsService(PrefService* prefs);
 
   MediaEffectsService(const MediaEffectsService&) = delete;
   MediaEffectsService& operator=(const MediaEffectsService&) = delete;
@@ -51,11 +50,11 @@ class MediaEffectsService : public KeyedService {
 
   void OnLastReceiverDisconnected(const std::string& device_id);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> prefs_;
 
   // Device ID strings mapped to effects manager instances.
   base::flat_map<std::string, std::unique_ptr<VideoEffectsManagerImpl>>
       video_effects_managers_;
 };
 
-#endif  // CHROME_BROWSER_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
+#endif  // COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_

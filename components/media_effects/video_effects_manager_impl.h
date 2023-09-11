@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_EFFECTS_VIDEO_EFFECTS_MANAGER_IMPL_H_
-#define CHROME_BROWSER_MEDIA_EFFECTS_VIDEO_EFFECTS_MANAGER_IMPL_H_
+#ifndef COMPONENTS_MEDIA_EFFECTS_VIDEO_EFFECTS_MANAGER_IMPL_H_
+#define COMPONENTS_MEDIA_EFFECTS_VIDEO_EFFECTS_MANAGER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -47,4 +47,4 @@ class VideoEffectsManagerImpl
       observers_;
 };
 
-#endif  // CHROME_BROWSER_MEDIA_EFFECTS_VIDEO_EFFECTS_MANAGER_IMPL_H_
+#endif  // COMPONENTS_MEDIA_EFFECTS_VIDEO_EFFECTS_MANAGER_IMPL_H_

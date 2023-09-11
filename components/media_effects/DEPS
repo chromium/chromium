@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/keyed_service",
+  "+components/prefs",
+  "+components/user_prefs",
+  "+content/public/browser",
+  "+content/public/test",
+  "+mojo/public/cpp/bindings",
+  "+services/video_capture/public/mojom/video_effects_manager.mojom.h",
+  "+ui/gfx/geometry",
+]

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/effects/media_effects_service.h"
-#include "chrome/browser/profiles/profile.h"
+#include "components/media_effects/media_effects_service.h"
 #include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
 
-MediaEffectsService::MediaEffectsService(Profile* profile)
-    : profile_(profile) {}
+MediaEffectsService::MediaEffectsService(PrefService* prefs) : prefs_(prefs) {}
 
 MediaEffectsService::~MediaEffectsService() = default;
 
@@ -31,7 +29,7 @@ VideoEffectsManagerImpl& MediaEffectsService::GetOrCreateVideoEffectsManager(
   auto [effects_manager, inserted] = video_effects_managers_.emplace(
       device_id,
       std::make_unique<VideoEffectsManagerImpl>(
-          profile_->GetPrefs(),
+          prefs_,
           base::BindOnce(&MediaEffectsService::OnLastReceiverDisconnected,
                          base::Unretained(this), device_id)));
   CHECK(inserted);
