@@ -15560,6 +15560,29 @@
             ]
         }
     ],
+    "SmallerInterestArea": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Smaller_0500",
+                    "params": {
+                        "size_in_pixels": "500"
+                    },
+                    "enable_features": [
+                        "SmallerInterestArea"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmartPWAInstallPromptAndroid": [
         {
             "platforms": [
