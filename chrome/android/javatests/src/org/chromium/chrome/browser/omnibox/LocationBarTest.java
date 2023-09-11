@@ -45,6 +45,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -249,6 +250,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1470145")
     public void testSetSearchQueryFocusesUrlBar_preNative() {
         startActivityWithDeferredNativeInitialization();
         final String query = "testing query";
