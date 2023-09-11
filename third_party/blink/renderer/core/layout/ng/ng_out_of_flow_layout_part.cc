@@ -2614,6 +2614,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
     // above all OOFs in the containing block chain, to find the right
     // fragmentation context root.
     containing_block = &box;
+    bool is_inside_spanner = false;
     do {
       // Keep searching up the tree until we have found a containing block
       // that's in-flow and the containing block of that containing block is a
@@ -2621,7 +2622,20 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
       // that contains the fragment.
       bool is_out_of_flow = containing_block->IsOutOfFlowPositioned();
       containing_block = containing_block->ContainingNGBox();
+      if (containing_block->IsColumnSpanAll()) {
+        is_inside_spanner = true;
+        continue;
+      }
       if (containing_block->IsFragmentationContextRoot() && !is_out_of_flow) {
+        // If the OOF element we are searching for has a CB that is nested
+        // within a spanner, that OOF will *not* be laid out in the nearest
+        // multicol container. Instead, it will propagate up to the context in
+        // which the spanner is laid out. Thus, continue searching past the
+        // nearest multicol container for the OOF in question.
+        if (is_inside_spanner) {
+          is_inside_spanner = false;
+          continue;
+        }
         break;
       }
     } while (containing_block->MightBeInsideFragmentationContext());
