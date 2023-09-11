@@ -294,6 +294,8 @@ bool AngleVulkanImageBacking::Initialize(
     }
   }
 
+  // External sampling is supported only when initializing from GMB.
+  CHECK(!format().PrefersExternalSampler());
   int num_planes = format().NumberOfPlanes();
   vk_textures_.reserve(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {
@@ -328,7 +330,7 @@ bool AngleVulkanImageBacking::Initialize(
 
 bool AngleVulkanImageBacking::InitializeWihGMB(
     gfx::GpuMemoryBufferHandle handle) {
-  DCHECK(format().is_single_plane());
+  DCHECK(format().is_single_plane() || format().PrefersExternalSampler());
 
   auto* vulkan_implementation =
       context_state_->vk_context_provider()->GetVulkanImplementation();
@@ -336,7 +338,9 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
   DCHECK(vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
                                                          handle.type));
 
-  VkFormat vk_format = ToVkFormat(format(), /*plane_index=*/0);
+  VkFormat vk_format = format().PrefersExternalSampler()
+                           ? ToVkFormatExternalSampler(format())
+                           : ToVkFormatSinglePlanar(format());
   auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
       device_queue, std::move(handle), size(), vk_format, color_space());
 
@@ -640,6 +644,15 @@ void AngleVulkanImageBacking::EndAccessSkia() {
 
 bool AngleVulkanImageBacking::InitializePassthroughTexture() {
   DCHECK(gl_textures_.empty());
+
+  // It is not possible to import into GL when using external sampling.
+  // Short-circuit out if this is requested (it should not be requested in
+  // production, but might be in fuzzing flows).
+  if (format().PrefersExternalSampler()) {
+    LOG(ERROR)
+        << "Importing textures with external sampling into GL is not possible";
+    return false;
+  }
 
   int num_planes = format().NumberOfPlanes();
   gl_textures_.reserve(num_planes);
