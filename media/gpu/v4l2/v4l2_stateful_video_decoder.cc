@@ -1074,6 +1074,11 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
     return absl::nullopt;
   }
 
+  // It's possible that |buffer| contains more than one full frame
+  // (e.g. main/CAPCM1_Sand_E.h264, main/CAPCMNL1_Sand_E.h264 and a few
+  // others). This code now doesn't support it (|buffer| is either a full frame
+  // or is a fragment of a full frame). TODO(mcasas): support this case.
+
   const auto is_new_frame = *result;
   if (!is_new_frame) {
     VLOGF(3) << "|buffer| is a frame fragment, storing it for reassembly.";
