@@ -193,6 +193,11 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::CSS::SourceRange>,
       const String& selector,
       std::unique_ptr<protocol::CSS::SelectorList>*) override;
+  protocol::Response setPropertyRulePropertyName(
+      const String& in_styleSheetId,
+      std::unique_ptr<protocol::CSS::SourceRange> in_range,
+      const String& in_propertyName,
+      std::unique_ptr<protocol::CSS::Value>* out_propertyName) override;
   protocol::Response setKeyframeKey(
       const String& style_sheet_id,
       std::unique_ptr<protocol::CSS::SourceRange>,

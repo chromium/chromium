@@ -2095,6 +2095,16 @@ experimental domain CSS
       string propertyName
       string value
 
+  # Modifies the property rule property name.
+  command setPropertyRulePropertyName
+    parameters
+      StyleSheetId styleSheetId
+      SourceRange range
+      string propertyName
+    returns
+      # The resulting key text after modification.
+      Value propertyName
+
   # Modifies the keyframe rule key text.
   command setKeyframeKey
     parameters

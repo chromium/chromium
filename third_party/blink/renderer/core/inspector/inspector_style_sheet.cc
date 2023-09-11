@@ -323,7 +323,8 @@ void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
   // [3]:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2131;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
   if (rule->rule_header_range.length() == 0 &&
-      (rule->type == StyleRule::RuleType::kStyle && rule->property_data.empty())) {
+      (rule->type == StyleRule::RuleType::kStyle &&
+       rule->property_data.empty())) {
     // Add the source data for the child rules since they exist in the
     // rule data coming from the parser.
     for (auto& child_rule : rule->child_rules) {
@@ -498,6 +499,28 @@ bool VerifyRuleText(Document* document, const String& rule_text) {
 
 bool VerifyStyleText(Document* document, const String& text) {
   return VerifyRuleText(document, "div {" + text + "}");
+}
+
+bool VerifyPropertyNameText(Document* document, const String& name_text) {
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
+      ParserContextForDocument(document));
+  CSSRuleSourceDataList* source_data =
+      MakeGarbageCollected<CSSRuleSourceDataList>();
+  String text =
+      "@property " + name_text + " { syntax: \"*\"; inherits: false; }";
+  StyleSheetHandler handler(text, document, source_data);
+  CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
+                                    style_sheet, text, handler);
+
+  unsigned rule_count = source_data->size();
+  if (rule_count != 1 || source_data->at(0)->type != StyleRule::kProperty)
+    return false;
+
+  const CSSRuleSourceData& property_data = *source_data->at(0);
+  if (property_data.property_data.size() != 2)
+    return false;
+
+  return true;
 }
 
 bool VerifyKeyframeKeyText(Document* document, const String& key_text) {
@@ -1256,6 +1279,50 @@ CSSStyleRule* InspectorStyleSheet::SetRuleSelector(
   OnStyleSheetTextChanged();
 
   return style_rule;
+}
+
+CSSPropertyRule* InspectorStyleSheet::SetPropertyName(
+    const SourceRange& range,
+    const String& text,
+    SourceRange* new_range,
+    String* old_text,
+    ExceptionState& exception_state) {
+  if (!VerifyPropertyNameText(page_style_sheet_->OwnerDocument(), text)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Property name text is not valid.");
+    return nullptr;
+  }
+
+  CSSRuleSourceData* source_data = FindRuleByHeaderRange(range);
+  if (!source_data || !source_data->HasProperties()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "Source range didn't match existing source range");
+    return nullptr;
+  }
+
+  CSSRule* rule = RuleForSourceData(source_data);
+  if (!rule || !rule->parentStyleSheet() ||
+      rule->GetType() != CSSRule::kPropertyRule) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "Source range didn't match existing style source range");
+    return nullptr;
+  }
+
+  CSSPropertyRule* property_rule = To<CSSPropertyRule>(rule);
+  if (!property_rule->SetNameText(
+          page_style_sheet_->OwnerDocument()->GetExecutionContext(), text)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "The property name '" + text + "' is invalid and cannot be parsed");
+    return nullptr;
+  }
+
+  ReplaceText(source_data->rule_header_range, text, new_range, old_text);
+  OnStyleSheetTextChanged();
+
+  return property_rule;
 }
 
 CSSKeyframeRule* InspectorStyleSheet::SetKeyframeKey(

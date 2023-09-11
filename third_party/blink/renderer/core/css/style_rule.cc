@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_view_transitions_rule.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
@@ -578,6 +579,17 @@ const CSSValue* StyleRuleProperty::Inherits() const {
 
 const CSSValue* StyleRuleProperty::GetInitialValue() const {
   return properties_->GetPropertyCSSValue(CSSPropertyID::kInitialValue);
+}
+
+bool StyleRuleProperty::SetNameText(const ExecutionContext* execution_context,
+                                    const String& name_text) {
+  DCHECK(!name_text.IsNull());
+  String name = CSSParser::ParseCustomPropertyName(name_text);
+  if (!name)
+    return false;
+
+  name_ = name;
+  return true;
 }
 
 void StyleRuleProperty::TraceAfterDispatch(blink::Visitor* visitor) const {
