@@ -77,6 +77,12 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetDefaultFocusableChild() override;
 
+  // Reports to UMA if a HTCAPTION hit test was in the grab handle or other
+  // location. The location of this function is temporary to allow for easy
+  // merging.
+  static void ReportCaptionHitTestInReservedGrabHandleSpace(
+      bool in_reserved_grab_handle_space);
+
   views::FlexLayout* layout_manager_for_testing() { return layout_manager_; }
   views::View* GetTabStripContainerForTesting() { return tab_strip_container_; }
 
