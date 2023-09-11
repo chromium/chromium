@@ -2523,6 +2523,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Views.PopupFirstPaint" units="ms"
+    expires_after="2024-08-01">
+  <owner>tluk@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the number of milliseconds between the views omnibox popup
+    construction and the first time content for the popup is displayed on the
+    screen. This is emitted once each time the omnibox is opened. It is recorded
+    again if the omnibox has closed and later re-opened. It is not emitted more
+    than once for a single opened instance of the ombibox popup.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.WebUI.FirstUpdate" units="ms"
     expires_after="2024-08-01">
   <owner>orinj@chromium.org</owner>
