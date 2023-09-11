@@ -14,6 +14,7 @@ luci.console_view(
         luci.console_view_entry(builder = "ci/linux-remote-ssd-rel-dev"),
         luci.console_view_entry(builder = "ci/mac-rel-dev"),
         luci.console_view_entry(builder = "ci/mac-arm-rel-dev"),
+        luci.console_view_entry(builder = "ci/win-local-ssd-rel-dev"),
         luci.console_view_entry(builder = "ci/win-rel-dev"),
         luci.console_view_entry(builder = "ci/win11-rel-dev"),
     ],
