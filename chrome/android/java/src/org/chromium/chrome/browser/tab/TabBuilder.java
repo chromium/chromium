@@ -168,7 +168,7 @@ public class TabBuilder {
             if (mFromFrozenState) assert mLaunchType == TabLaunchType.FROM_RESTORE;
         }
 
-        TabImpl tab = new TabImpl(mId, mIncognito, mLaunchType, null);
+        TabImpl tab = new TabImpl(mId, mIncognito, mLaunchType);
         Tab parent = null;
         if (mParent != null) {
             parent = mParent;

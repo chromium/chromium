@@ -54,11 +54,11 @@ public class MockTab extends TabImpl {
      * these two fields only.
      */
     public MockTab(int id, boolean incognito) {
-        super(id, incognito, null, null);
+        super(id, incognito, null);
     }
 
     public MockTab(int id, boolean incognito, @TabLaunchType Integer type) {
-        super(id, incognito, type, null);
+        super(id, incognito, type);
     }
 
     @Override

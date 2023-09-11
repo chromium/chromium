@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -73,7 +72,6 @@ import org.chromium.content_public.browser.navigation_controller.UserAgentOverri
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
@@ -211,7 +209,6 @@ public class TabImpl implements Tab {
 
     private final TabThemeColorHelper mThemeColorHelper;
     private int mThemeColor;
-    private boolean mUsedCriticalPersistedTabData;
     private boolean mIsWebContentObscured;
 
     /**
@@ -225,19 +222,12 @@ public class TabImpl implements Tab {
      * @param id The id this tab should be identified with.
      * @param incognito Whether or not this tab is incognito.
      * @param launchType Type indicating how this tab was launched.
-     * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
      */
     @SuppressLint("HandlerLeak")
-    TabImpl(int id, boolean incognito, @Nullable @TabLaunchType Integer launchType,
-            @Nullable SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
+    TabImpl(int id, boolean incognito, @Nullable @TabLaunchType Integer launchType) {
         mIsTabSaveEnabledSupplier.set(false);
         mId = TabIdManager.getInstance().generateValidId(id);
         mIncognito = incognito;
-        if (!CriticalPersistedTabData.isEmptySerialization(serializedCriticalPersistedTabData)
-                && useCriticalPersistedTabData()) {
-            CriticalPersistedTabData.build(this, serializedCriticalPersistedTabData);
-            mUsedCriticalPersistedTabData = true;
-        }
 
         // Override the configuration for night mode to always stay in light mode until all UIs in
         // Tab are inflated from activity context instead of application context. This is to
@@ -966,12 +956,7 @@ public class TabImpl implements Tab {
             String appId = null;
             Boolean hasThemeColor = null;
             int themeColor = 0;
-            if (mUsedCriticalPersistedTabData) {
-                appId = CriticalPersistedTabData.from(this).getOpenerAppId();
-                themeColor = CriticalPersistedTabData.from(this).getThemeColor();
-                hasThemeColor = themeColor != TabState.UNSPECIFIED_THEME_COLOR
-                        && !ColorUtils.isThemeColorTooBright(themeColor);
-            } else if (tabState != null) {
+            if (tabState != null) {
                 appId = tabState.openerAppId;
                 themeColor = tabState.getThemeColor();
                 hasThemeColor = tabState.hasThemeColor();
@@ -989,11 +974,6 @@ public class TabImpl implements Tab {
     public void registerTabSaving() {
         CriticalPersistedTabData.from(this).registerIsTabSaveEnabledSupplier(
                 mIsTabSaveEnabledSupplier);
-    }
-
-    // TODO(b/298056319) deprecate usages of CriticalPersistedTabData in TabImpl.
-    private boolean useCriticalPersistedTabData() {
-        return false;
     }
 
     @Nullable

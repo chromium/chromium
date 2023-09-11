@@ -103,7 +103,7 @@ public class TabUnitTest {
         doReturn(mContext).when(mWeakReferenceContext).get();
         doReturn(mContext).when(mContext).getApplicationContext();
 
-        mTab = new TabImpl(TAB1_ID, false, null, null) {
+        mTab = new TabImpl(TAB1_ID, false, null) {
             @Override
             public boolean isInitialized() {
                 return true;
@@ -164,7 +164,7 @@ public class TabUnitTest {
         doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         doReturn(mChromeActivity).when(mWeakReferenceContext).get();
 
-        mTab = new TabImpl(TAB1_ID, false, null, null) {
+        mTab = new TabImpl(TAB1_ID, false, null) {
             @Override
             void updateWindowAndroid(WindowAndroid windowAndroid) {}
             @Override
