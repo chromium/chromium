@@ -80,7 +80,7 @@ class BookmarkClientBase : public bookmarks::BookmarkClient {
   base::Uuid last_suggested_folder_uuid_;
 
   // The last provider that was used to pass a suggestion to a feature.
-  raw_ptr<SuggestedSaveLocationProvider> last_used_provider_;
+  raw_ptr<SuggestedSaveLocationProvider> last_used_provider_{nullptr};
 
   // A map of suggestions that were rejected by the user to the time they will
   // next be allowed to suggested. This is intentionally in-memory only,
