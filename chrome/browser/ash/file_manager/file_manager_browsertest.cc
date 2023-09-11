@@ -1985,7 +1985,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirCreateWithContextMenu"),
         TestCase("dirCreateWithKeyboard"),
         TestCase("dirCreateWithoutChangingCurrent"),
-        TestCase("dirCreateMultipleFolders"),
+        // TODO(http://crbug.com/1480973): Enable
+        // TestCase("dirCreateMultipleFolders"),
         TestCase("dirContextMenuZip"),
         TestCase("dirContextMenuZipEject"),
         TestCase("dirContextMenuRecent"),
