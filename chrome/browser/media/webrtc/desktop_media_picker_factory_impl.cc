@@ -24,7 +24,7 @@ namespace {
 std::unique_ptr<ThumbnailCapturer> MakeWindowCapturer() {
 #if BUILDFLAG(IS_MAC)
   if (ShouldUseThumbnailCapturerMac()) {
-    return CreateThumbnailCapturerMac(kDefaultThumbnailSize);
+    return CreateThumbnailCapturerMac();
   }
 #endif  // BUILDFLAG(IS_MAC)
 
