@@ -4932,11 +4932,11 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
             PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan);
 
   for (void* ptr_to_free : ptrs) {
-    allocator.root()->FreeNoHooks(ptr_to_free);
+    allocator.root()->Free<FreeFlags::kNoHooks>(ptr_to_free);
   }
 
-  allocator.root()->FreeNoHooks(ptr);
-  allocator.root()->FreeNoHooks(ptr2);
+  allocator.root()->Free<FreeFlags::kNoHooks>(ptr);
+  allocator.root()->Free<FreeFlags::kNoHooks>(ptr2);
 }
 
 #if defined(PA_HAS_DEATH_TESTS)

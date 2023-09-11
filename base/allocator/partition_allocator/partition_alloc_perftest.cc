@@ -99,9 +99,11 @@ class PartitionAllocator : public Allocator {
     return alloc_.AllocNoHooks(size, PartitionPageSize());
   }
   void Free(void* data) override {
-    // Even though it's easy to invoke the fast path with alloc_.FreeNoHooks(),
-    // we chose to use the slower path, because it's more common with PA-E.
-    PartitionRoot::FreeNoHooksInUnknownRoot(data);
+    // Even though it's easy to invoke the fast path with
+    // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
+    // more common with PA-E.
+    PartitionRoot::FreeInlineInUnknownRoot<
+        partition_alloc::FreeFlags::kNoHooks>(data);
   }
 
  private:

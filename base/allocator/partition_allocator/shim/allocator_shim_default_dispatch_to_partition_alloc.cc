@@ -293,7 +293,8 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
   } else {
     // size == 0 and address != null means just "free(address)".
     if (address) {
-      partition_alloc::PartitionRoot::FreeNoHooksInUnknownRoot(address);
+      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
+          partition_alloc::FreeFlags::kNoHooks>(address);
     }
   }
   // The original memory block (specified by address) is unchanged if ENOMEM.
@@ -307,7 +308,8 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
     size_t copy_size = usage > size ? size : usage;
     memcpy(new_ptr, address, copy_size);
 
-    partition_alloc::PartitionRoot::FreeNoHooksInUnknownRoot(address);
+    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
+        partition_alloc::FreeFlags::kNoHooks>(address);
   }
   return new_ptr;
 }
@@ -367,7 +369,8 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   }
 #endif  // BUILDFLAG(PA_IS_CAST_ANDROID)
 
-  partition_alloc::PartitionRoot::FreeNoHooksInUnknownRoot(object);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
+      partition_alloc::FreeFlags::kNoHooks>(object);
 }
 
 #if BUILDFLAG(IS_APPLE)
@@ -384,7 +387,8 @@ void PartitionFreeDefiniteSize(const AllocatorDispatch*,
   partition_alloc::ScopedDisallowAllocations guard{};
   // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
   // still useful though, as we avoid double-checking that the address is owned.
-  partition_alloc::PartitionRoot::FreeNoHooksInUnknownRoot(address);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
+      partition_alloc::FreeFlags::kNoHooks>(address);
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -469,7 +473,8 @@ void PartitionTryFreeDefault(const AllocatorDispatch*,
     return allocator_shim::TryFreeDefaultFallbackToFindZoneAndFree(address);
   }
 
-  partition_alloc::PartitionRoot::FreeNoHooksInUnknownRoot(address);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
+      partition_alloc::FreeFlags::kNoHooks>(address);
 }
 #endif  // BUILDFLAG(IS_APPLE)
 

@@ -50,7 +50,7 @@ class MetadataAllocator {
   }
 
   void deallocate(value_type* ptr, size_t size) {
-    PCScanMetadataAllocator().FreeNoHooks(ptr);
+    PCScanMetadataAllocator().FreeInline<FreeFlags::kNoHooks>(ptr);
   }
 };
 
@@ -60,7 +60,7 @@ struct AllocatedOnPCScanMetadataPartition {
     return PCScanMetadataAllocator().AllocNoHooks(size, PartitionPageSize());
   }
   static void operator delete(void* ptr) {
-    PCScanMetadataAllocator().FreeNoHooks(ptr);
+    PCScanMetadataAllocator().FreeInline<FreeFlags::kNoHooks>(ptr);
   }
 };
 
@@ -73,7 +73,7 @@ T* MakePCScanMetadata(Args&&... args) {
 
 struct PCScanMetadataDeleter final {
   inline void operator()(void* ptr) const {
-    PCScanMetadataAllocator().FreeNoHooks(ptr);
+    PCScanMetadataAllocator().FreeInline<FreeFlags::kNoHooks>(ptr);
   }
 };
 

@@ -519,12 +519,19 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
   template <unsigned int flags = 0>
-  PA_NOINLINE void Free(void* object);
-  PA_ALWAYS_INLINE void FreeNoHooks(void* object);
+  PA_NOINLINE void Free(void* object) {
+    FreeInline<flags>(object);
+  }
+  template <unsigned int flags = 0>
+  PA_ALWAYS_INLINE void FreeInline(void* object);
 
   template <unsigned int flags = 0>
-  PA_NOINLINE static void FreeInUnknownRoot(void* object);
-  PA_ALWAYS_INLINE static void FreeNoHooksInUnknownRoot(void* object);
+  PA_NOINLINE static void FreeInUnknownRoot(void* object) {
+    FreeInlineInUnknownRoot<flags>(object);
+  }
+  template <unsigned int flags = 0>
+  PA_ALWAYS_INLINE static void FreeInlineInUnknownRoot(void* object);
+
   // Immediately frees the pointer bypassing the quarantine. |slot_start| is the
   // beginning of the slot that contains |object|.
   PA_ALWAYS_INLINE void FreeNoHooksImmediate(void* object,
@@ -1245,7 +1252,10 @@ FreeNotificationData PartitionRoot::CreateFreeNotificationData(
 template <unsigned int flags>
 PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
                                                 const PartitionRoot* root) {
-  PA_DCHECK(flags < FreeFlags::kLastFlag << 1);
+  static_assert(flags < FreeFlags::kLastFlag << 1);
+  if constexpr (flags & FreeFlags::kNoHooks) {
+    return false;
+  }
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if constexpr (!(flags & FreeFlags::kNoMemoryToolOverride)) {
@@ -1274,29 +1284,6 @@ PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
   return false;
 }
 
-template <unsigned int flags>
-PA_NOINLINE void PartitionRoot::Free(void* object) {
-  bool early_return = FreeProlog<flags>(object, this);
-  if (early_return) {
-    return;
-  }
-
-  FreeNoHooks(object);
-}
-
-// static
-template <unsigned int flags>
-PA_NOINLINE void PartitionRoot::FreeInUnknownRoot(void* object) {
-  // The correct PartitionRoot might not be deducible if the |object| originates
-  // from an override hook.
-  bool early_return = FreeProlog<flags>(object, nullptr);
-  if (early_return) {
-    return;
-  }
-
-  FreeNoHooksInUnknownRoot(object);
-}
-
 PA_ALWAYS_INLINE bool PartitionRoot::IsMemoryTaggingEnabled() const {
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
   return settings.memory_tagging_enabled_;
@@ -1315,7 +1302,13 @@ PartitionRoot::memory_tagging_reporting_mode() const {
 }
 
 // static
-PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksInUnknownRoot(void* object) {
+template <unsigned int flags>
+PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInUnknownRoot(void* object) {
+  bool early_return = FreeProlog<flags>(object, nullptr);
+  if (early_return) {
+    return;
+  }
+
   if (PA_UNLIKELY(!object)) {
     return;
   }
@@ -1328,13 +1321,21 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksInUnknownRoot(void* object) {
   // change the critical path from object -> slot_span -> root into two
   // *parallel* ones:
   // 1. object -> root
-  // 2. object -> slot_span (inside FreeNoHooks)
+  // 2. object -> slot_span (inside FreeInline)
   uintptr_t object_addr = internal::ObjectPtr2Addr(object);
   auto* root = FromAddrInFirstSuperpage(object_addr);
-  root->FreeNoHooks(object);
+  root->FreeInline<FreeFlags::kNoHooks>(object);
 }
 
-PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooks(void* object) {
+template <unsigned int flags>
+PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
+  // The correct PartitionRoot might not be deducible if the |object| originates
+  // from an override hook.
+  bool early_return = FreeProlog<flags>(object, this);
+  if (early_return) {
+    return;
+  }
+
   if (PA_UNLIKELY(!object)) {
     return;
   }

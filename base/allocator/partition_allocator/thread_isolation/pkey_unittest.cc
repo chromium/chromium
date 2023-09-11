@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 
@@ -142,7 +143,7 @@ ISOLATED_FUNCTION uint64_t IsolatedAllocFree(void* arg) {
   if (!buf) {
     return 0xffffffffffffffffllu;
   }
-  isolated_globals.allocator->root()->FreeNoHooks(buf);
+  isolated_globals.allocator->root()->Free<FreeFlags::kNoHooks>(buf);
 
   return kTestReturnValue;
 }

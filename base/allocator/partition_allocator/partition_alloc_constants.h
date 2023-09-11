@@ -53,8 +53,10 @@ struct AllocFlags {
 struct FreeFlags {
   // See AllocFlags::kNoMemoryToolOverride.
   static constexpr unsigned int kNoMemoryToolOverride = 1 << 0;
+  // Don't allow any hooks (override or observers).
+  static constexpr unsigned int kNoHooks = 1 << 1;  // Internal.
 
-  static constexpr unsigned int kLastFlag = kNoMemoryToolOverride;
+  static constexpr unsigned int kLastFlag = kNoHooks;
 };
 
 namespace internal {

@@ -52,11 +52,12 @@ template <bool quarantinable>
 void NonScannableAllocatorImpl<quarantinable>::Free(void* ptr) {
 #if BUILDFLAG(USE_STARSCAN)
   if (PA_UNLIKELY(pcscan_enabled_.load(std::memory_order_acquire))) {
-    allocator_->root()->FreeNoHooks(ptr);
+    allocator_->root()->FreeInline<partition_alloc::FreeFlags::kNoHooks>(ptr);
     return;
   }
 #endif  // BUILDFLAG(USE_STARSCAN)
-  partition_alloc::PartitionRoot::FreeNoHooksInUnknownRoot(ptr);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
+      partition_alloc::FreeFlags::kNoHooks>(ptr);
 }
 
 template <bool quarantinable>

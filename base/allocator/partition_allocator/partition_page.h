@@ -124,7 +124,7 @@ struct SlotSpanMetadata {
   PA_ALWAYS_INLINE void Free(uintptr_t ptr, PartitionRoot* root);
   // Appends the passed freelist to the slot-span's freelist. Please note that
   // the function doesn't increment the tags of the passed freelist entries,
-  // since FreeNoHooks() did it already.
+  // since FreeInline() did it already.
   PA_ALWAYS_INLINE void AppendFreeList(EncodedNextFreelistEntry* head,
                                        EncodedNextFreelistEntry* tail,
                                        size_t number_of_freed,
