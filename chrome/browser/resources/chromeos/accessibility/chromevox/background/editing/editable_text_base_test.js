@@ -101,12 +101,12 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
           ['ChromeVoxEditableTextBase', 'TextChangedEvent'],
           '/chromevox/background/editing/editable_text_base.js'),
       importModule(
-          'TypingEcho', '/chromevox/background/editing/typing_echo.js'),
+          'TypingEchoState', '/chromevox/background/editing/typing_echo.js'),
       importModule('TtsInterface', '/chromevox/common/tts_interface.js'),
       importModule('LocalStorage', '/common/local_storage.js'),
     ]);
 
-    LocalStorage.set('typingEcho', TypingEcho.CHARACTER_AND_WORD);
+    LocalStorage.set('typingEcho', TypingEchoState.CHARACTER_AND_WORD);
     ChromeVoxEditableTextBase.eventTypingEcho = false;
     ChromeVoxEditableTextBase.shouldSpeakInsertions = true;
     ChromeVox.braille = new TestBraille();
@@ -365,7 +365,7 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingLongText', function() {
 
 /** Tests character echo. */
 TEST_F('ChromeVoxEditableTextUnitTest', 'CharacterEcho', function() {
-  LocalStorage.set('typingEcho', TypingEcho.CHARACTER);
+  LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
   obj.changed(new TextChangeEvent('H', 1, 1));
@@ -396,13 +396,13 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'CharEchoInAutoComplete', function() {
   // This simulates a user typing into an auto complete text field one character
   // at a time. The selection is the completion and we toggle between various
   // typing echo options.
-  LocalStorage.set('typingEcho', TypingEcho.CHARACTER);
+  LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
   obj.changed(new TextChangeEvent(url, 2, 13));
-  LocalStorage.set('typingEcho', TypingEcho.NONE);
+  LocalStorage.set('typingEcho', TypingEchoState.NONE);
   obj.changed(new TextChangeEvent(url, 3, 13));
-  LocalStorage.set('typingEcho', TypingEcho.CHARACTER_AND_WORD);
+  LocalStorage.set('typingEcho', TypingEchoState.CHARACTER_AND_WORD);
   obj.changed(new TextChangeEvent(url, 4, 13));
-  LocalStorage.set('typingEcho', TypingEcho.WORD);
+  LocalStorage.set('typingEcho', TypingEchoState.WORD);
   obj.changed(new TextChangeEvent(url, 5, 13));
 
   // The characters should only be read for the typing echo modes containing a
@@ -423,7 +423,7 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'CharEchoInAutoComplete', function() {
 
 /** Tests word echo. */
 TEST_F('ChromeVoxEditableTextUnitTest', 'WordEcho', function() {
-  LocalStorage.set('typingEcho', TypingEcho.WORD);
+  LocalStorage.set('typingEcho', TypingEchoState.WORD);
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
   obj.changed(new TextChangeEvent('H', 1, 1));
@@ -445,7 +445,7 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'WordEcho', function() {
 
 /** Tests no echo. */
 TEST_F('ChromeVoxEditableTextUnitTest', 'NoEcho', function() {
-  LocalStorage.set('typingEcho', TypingEcho.NONE);
+  LocalStorage.set('typingEcho', TypingEchoState.NONE);
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
   obj.changed(new TextChangeEvent('H', 1, 1));

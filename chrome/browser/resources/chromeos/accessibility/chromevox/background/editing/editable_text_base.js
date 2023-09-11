@@ -19,7 +19,7 @@ import {Personality, QueueMode, TtsCategory, TtsSpeechProperties} from '../../co
 import {ChromeVoxState} from '../chromevox_state.js';
 import {TtsInterface} from '../tts_interface.js';
 
-import {TypingEcho} from './typing_echo.js';
+import {TypingEchoState} from './typing_echo.js';
 
 /**
  * A class containing the information needed to speak
@@ -314,8 +314,9 @@ export class ChromeVoxEditableTextBase {
       if (this.start + 1 === evt.start && this.end === this.value.length &&
           evt.end === this.value.length) {
         // Autocomplete: the user typed one character of autocompleted text.
-        if (LocalStorage.get('typingEcho') === TypingEcho.CHARACTER ||
-            LocalStorage.get('typingEcho') === TypingEcho.CHARACTER_AND_WORD) {
+        if (LocalStorage.get('typingEcho') === TypingEchoState.CHARACTER ||
+            LocalStorage.get('typingEcho') ===
+                TypingEchoState.CHARACTER_AND_WORD) {
           this.speak(this.value.substr(this.start, 1), evt.triggeredByUser);
         }
         this.speak(this.value.substr(evt.start));
@@ -535,8 +536,9 @@ export class ChromeVoxEditableTextBase {
       }
       utterance = inserted;
     } else if (insertedLen === 1) {
-      if ((LocalStorage.get('typingEcho') === TypingEcho.WORD ||
-           LocalStorage.get('typingEcho') === TypingEcho.CHARACTER_AND_WORD) &&
+      if ((LocalStorage.get('typingEcho') === TypingEchoState.WORD ||
+           LocalStorage.get('typingEcho') ===
+               TypingEchoState.CHARACTER_AND_WORD) &&
           this.isWordBreakChar(inserted) && prefixLen > 0 &&
           !this.isWordBreakChar(evt.value.substr(prefixLen - 1, 1))) {
         // Speak previous word.
@@ -551,8 +553,9 @@ export class ChromeVoxEditableTextBase {
           triggeredByUser = false;  // Implies QUEUE_MODE_QUEUE.
         }
       } else if (
-          LocalStorage.get('typingEcho') === TypingEcho.CHARACTER ||
-          LocalStorage.get('typingEcho') === TypingEcho.CHARACTER_AND_WORD) {
+          LocalStorage.get('typingEcho') === TypingEchoState.CHARACTER ||
+          LocalStorage.get('typingEcho') ===
+              TypingEchoState.CHARACTER_AND_WORD) {
         utterance = inserted;
       }
     } else if (deletedLen > 1 && !autocompleteSuffix) {
