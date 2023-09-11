@@ -6,7 +6,8 @@ import {MetadataStatsType} from '../metadata_stats_type.js';
 import {addEntries, createTestFile, ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
@@ -103,7 +104,8 @@ testcase.metadataDrive = async () => {
 
   // Navigate 2 folders deep, because navigating in directory tree might
   // trigger further metadata fetches.
-  await navigateWithDirectoryTree(appId, '/My Drive/photos1/folder1');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive/photos1/folder1');
 
   // Fetch the metadata stats.
   const metadataStats = /** @type {!MetadataStatsType} */
@@ -141,7 +143,8 @@ testcase.metadataDownloads = async () => {
 
   // Navigate 2 folders deep, because navigating in directory tree might
   // triggers further metadata fetches.
-  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos1/folder1');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Downloads/photos1/folder1');
 
   // Fetch the metadata stats.
   const metadataStats =
@@ -199,8 +202,9 @@ testcase.metadataLargeDrive = async () => {
   console.log('setupAndWaitUntilReady finished!');
 
   // Navigate only 1 folder deep,which is slightly different from
-  // metadatatDrive test.
-  await navigateWithDirectoryTree(appId, '/My Drive/folder1');
+  // metadataDrive test.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive/folder1');
 
   // Wait for the metadata stats to reach the desired count.
   // File list component, doesn't display all files at once for performance
@@ -266,7 +270,8 @@ testcase.metadataTeamDrives = async () => {
       RootPath.DRIVE, downloadsEntries, entries.concat(driveEntries));
 
   // Navigate to Shared drives root.
-  await navigateWithDirectoryTree(appId, '/Shared drives');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Shared drives');
 
   // Expand Shared Drives, because expanding might need metadata.
   const expandIcon = sharedDrivesTreeItem + ' > .tree-row .expand-icon';

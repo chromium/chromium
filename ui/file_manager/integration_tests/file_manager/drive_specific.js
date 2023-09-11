@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, createTestFile, ENTRIES, EntryType, expectHistogramTotalCount, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {createTestFile, ENTRIES, EntryType, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
+import {remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {FakeTask} from './tasks.js';
 import {BASIC_DRIVE_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
@@ -256,7 +257,8 @@ testcase.driveSearchAlwaysDisplaysMyDrive = async () => {
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
 
   // Start the search from a sub-folder.
-  await navigateWithDirectoryTree(appId, '/My Drive/photos');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive/photos');
 
   // Search the text.
   remoteCall.typeSearchText(appId, 'hello');
@@ -501,7 +503,8 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Navigate to the Offline fake entry.
-  await navigateWithDirectoryTree(appId, '/Offline');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Offline');
 
   // Bring up the context menu for test.txt.
   await remoteCall.waitAndRightClick(
@@ -523,7 +526,7 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
       '#pinned-toggle:not([checked])');
 
   // Navigate to the Shared with me fake entry.
-  await navigateWithDirectoryTree(appId, '/Shared with me');
+  await directoryTree.navigateToPath('/Shared with me');
 
   // Bring up the context menu for test.txt.
   await remoteCall.waitAndRightClick(
@@ -908,7 +911,8 @@ testcase.driveOfflineInfoBanner = async () => {
   await remoteCall.waitForElement(appId, driveOfflineBannerHiddenQuery);
 
   // Navigate to a different directory within Drive.
-  await navigateWithDirectoryTree(appId, '/My Drive/photos');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive/photos');
 
   // Check: the Drive offline info banner should stay hidden.
   await remoteCall.waitForElement(appId, driveOfflineBannerHiddenQuery);
@@ -1229,7 +1233,8 @@ testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
   await remoteCall.waitForElement(appId, syncInProgressQuery);
 
   // Go inside the some_folder folder.
-  await navigateWithDirectoryTree(appId, '/My Drive/some_folder');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive/some_folder');
 
   // Fake toFailUploading.ogv failing to sync to Drive.
   await sendTestMessage({
@@ -1575,7 +1580,8 @@ testcase.driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled = async () => {
 
   // Navigate to the shared with me directory and assert that the pinned
   // property is not set on the directory.
-  await navigateWithDirectoryTree(appId, '/Shared with me');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Shared with me');
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="Shared Directory"]:not(.pinned)');
 

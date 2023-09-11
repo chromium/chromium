@@ -5,7 +5,8 @@
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {FakeTask} from './tasks.js';
 import {COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, RECENT_ENTRY_SET} from './test_data.js';
 
@@ -503,7 +504,8 @@ async function checkContextMenuInDriveFolder(
   await maybeCopyToClipboard(appId, commandId);
 
   // Navigate to folder.
-  await navigateWithDirectoryTree(appId, '/My Drive/' + folderName);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive/' + folderName);
 
   // Right-click inside the file list.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
@@ -586,7 +588,8 @@ async function checkMyFilesRootItemContextMenu(itemName, commandStates) {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Navigate to My files.
-  await navigateWithDirectoryTree(appId, '/My files');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files');
 
   // Wait for the navigation to complete.
   const expectedRows = [
@@ -788,7 +791,8 @@ async function checkRecentsContextMenu(
       [ENTRIES.desktop, ENTRIES.world, ENTRIES.testDocument]);
 
   // Navigate to Recents.
-  await navigateWithDirectoryTree(appId, '/Recent');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Recent');
 
   // Wait for the navigation to complete.
   const expectedRows = TestEntryInfo.getExpectedRows(RECENT_ENTRY_SET);
@@ -985,7 +989,8 @@ testcase.checkPolicyAssignedDefaultHasManagedIcon = async () => {
   for (const nonDefaultTaskItem of tasksMenuNonDefaultTaskItems) {
     chrome.test.assertFalse('is-default' in nonDefaultTaskItem.attributes);
     chrome.test.assertFalse('is-managed' in nonDefaultTaskItem.attributes);
-    chrome.test.assertFalse(nonDefaultTaskItem.attributes['class'].includes('change-default'));
+    chrome.test.assertFalse(
+        nonDefaultTaskItem.attributes['class'].includes('change-default'));
   }
 };
 
@@ -1026,7 +1031,8 @@ testcase.checkEncryptedMoveEnabled = async () => {
 
   // Navigate to a folder, ENTRIES.photos appears to be just a writeable test
   // folder.
-  await navigateWithDirectoryTree(appId, '/My Drive/photos');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive/photos');
 
   // Right-click inside the file list.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
@@ -1059,7 +1065,8 @@ testcase.checkEncryptedCrossVolumeMoveDisabled = async () => {
       'execCommand failed');
 
   // Navigate to a folder, “My files“ is just an example of a writeable one.
-  await navigateWithDirectoryTree(appId, '/My files');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files');
 
   // Right-click inside the file list.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(

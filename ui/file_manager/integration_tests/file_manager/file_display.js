@@ -5,7 +5,8 @@
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {IGNORE_APP_ERRORS, isSinglePartitionFormat, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {IGNORE_APP_ERRORS, isSinglePartitionFormat, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPUTERS_ENTRY_SET} from './test_data.js';
 
 /**
@@ -222,14 +223,15 @@ testcase.fileDisplayComputers = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPUTERS_ENTRY_SET);
 
-  // Navigate to Comuter Grand Root.
-  await navigateWithDirectoryTree(appId, '/Computers');
+  // Navigate to Computer Grand Root.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Computers');
 
-  // Navigiate to a Computer Root.
-  await navigateWithDirectoryTree(appId, '/Computers/Computer A');
+  // Navigate to a Computer Root.
+  await directoryTree.navigateToPath('/Computers/Computer A');
 
-  // Navigiate to a subdirectory under a Computer Root.
-  await navigateWithDirectoryTree(appId, '/Computers/Computer A/A');
+  // Navigate to a subdirectory under a Computer Root.
+  await directoryTree.navigateToPath('/Computers/Computer A/A');
 };
 
 

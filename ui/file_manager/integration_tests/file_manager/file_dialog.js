@@ -5,7 +5,8 @@
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, openAndWaitForClosingDialog, openEntryChoosingWindow, pollForChosenEntry, remoteCall} from './background.js';
+import {openAndWaitForClosingDialog, openEntryChoosingWindow, pollForChosenEntry, remoteCall} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
@@ -555,7 +556,8 @@ testcase.openMultiFileDialogDriveOfficeFile = async () => {
   // Wait for initial load to finish.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
-  await navigateWithDirectoryTree(appId, '/My Drive');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive');
 
   // Sort the file names so we can compare the array directly with the entries
   // returned from pollForChosenEntry() without worrying about order.
@@ -914,7 +916,8 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
       appId, expectedRows, {ignoreLastModifiedTime: true});
 
   // Navigate to Downloads folder.
-  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Downloads');
 
   // Right-click "photos" folder to show context menu.
   await remoteCall.waitAndRightClick(appId, '#file-list [file-name="photos"]');

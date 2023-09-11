@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {isSinglePartitionFormat, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
  * Lanuches file manager and stubs out the formatVolume private api.
@@ -71,8 +72,8 @@ async function openFormatDialogWithSinglePartitionFormat(
       'focus failed: #directory-tree');
 
   // Expand device tree entry to access partition entry.
-  await remoteCall.expandTreeItemInDirectoryTree(
-      appId, `#directory-tree [entry-label="${deviceLabel}"]`);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel(deviceLabel);
 
   // Right click on the USB's directory tree entry.
   const treeQuery = `#directory-tree [entry-label="${usbLabel}"]`;
@@ -334,7 +335,8 @@ testcase.formatDialogGearMenu = async () => {
     usbNavigationPath = '/FAKEUSB/fake-usb';
   }
   // Navigate to the USB via the directory tree.
-  await navigateWithDirectoryTree(appId, usbNavigationPath);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath(usbNavigationPath);
 
   // Click on the gear menu button.
   await remoteCall.waitAndClickElement(appId, '#gear-button:not([hidden])');

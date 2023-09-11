@@ -5,18 +5,19 @@
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {createShortcut, expandTreeItem, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {createShortcut, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {TREEITEM_DRIVE} from './create_new_folder.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
- * Directory tree selector constants.
+ * Directory tree path constants.
  */
-const TREEITEM_A = TREEITEM_DRIVE + ' [entry-label="A"]';
-const TREEITEM_B = TREEITEM_A + ' [entry-label="B"]';
-const TREEITEM_C = TREEITEM_B + ' [entry-label="C"]';
+const TREEITEM_A = `/${TREEITEM_DRIVE}/A`;
+const TREEITEM_B = `${TREEITEM_A}/B`;
+const TREEITEM_C = `${TREEITEM_B}/C`;
 
-const TREEITEM_D = TREEITEM_DRIVE + ' [entry-label="D"]';
-const TREEITEM_E = TREEITEM_D + ' [entry-label="E"]';
+const TREEITEM_D = `/${TREEITEM_DRIVE}/D`;
+const TREEITEM_E = `${TREEITEM_D}/E`;
 
 /**
  * Entry set used for the folder shortcut tests.
@@ -82,10 +83,11 @@ const DIRECTORY = {
  * @return {Promise} Promise fulfilled on success.
  */
 async function expandDirectoryTree(appId) {
-  await expandTreeItem(appId, DIRECTORY.Drive.treeItem);
-  await expandTreeItem(appId, DIRECTORY.A.treeItem);
-  await expandTreeItem(appId, DIRECTORY.B.treeItem);
-  await expandTreeItem(appId, DIRECTORY.D.treeItem);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.recursiveExpand(DIRECTORY.Drive.treeItem);
+  await directoryTree.recursiveExpand(DIRECTORY.A.treeItem);
+  await directoryTree.recursiveExpand(DIRECTORY.B.treeItem);
+  await directoryTree.recursiveExpand(DIRECTORY.D.treeItem);
 }
 
 /**
@@ -96,10 +98,8 @@ async function expandDirectoryTree(appId) {
  * @return {Promise} Promise fulfilled on success.
  */
 async function navigateToDirectory(appId, directory) {
-  const itemIcon = directory.treeItem + '> .tree-row .item-icon';
-  await remoteCall.waitForElement(appId, itemIcon);
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [itemIcon]));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath(directory.treeItem);
 
   await remoteCall.waitForFiles(appId, directory.contents);
 }
@@ -270,7 +270,8 @@ testcase.addRemoveFolderShortcuts = async () => {
   // Remove shortcut to D from the other window.
   await removeShortcut(appId2, DIRECTORY.D);
 
-  // Check: directory D in the directory tree should be selected.
-  const selection = TREEITEM_D + '[selected]';
-  await remoteCall.waitForElement(appId1, selection);
+  // Check: directory D in the directory tree should be focused.
+  const directoryTree =
+      await DirectoryTreePageObject.create(appId1, remoteCall);
+  await directoryTree.waitForFocusedItemByLabel('D');
 };

@@ -5,7 +5,8 @@
 import {RootPath, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, recursiveExpand, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
@@ -13,8 +14,8 @@ import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
  * When we are not in guest mode, we fill Google Drive with the basic entry set
  * which causes an extra tree-item to be added.
  */
-export const TREEITEM_DRIVE = '#directory-tree [entry-label="My Drive"]';
-export const TREEITEM_DOWNLOADS = '#directory-tree [entry-label="Downloads"]';
+export const TREEITEM_DRIVE = 'My Drive';
+export const TREEITEM_DOWNLOADS = 'Downloads';
 
 /**
  * Selects the first item in the file list.
@@ -63,10 +64,10 @@ async function getFileRenamingValue(appId) {
  *
  * @param {string} appId The Files app windowId.
  * @param {!Array<!TestEntryInfo>} initialEntrySet Initial set of entries.
- * @param {string} selector Downloads or Drive directory tree item selector.
+ * @param {string} label Downloads or Drive directory tree item label.
  * @return {Promise} Promise to be fulfilled on success.
  */
-async function createNewFolder(appId, initialEntrySet, selector) {
+async function createNewFolder(appId, initialEntrySet, label) {
   const textInput = '#file-list .table-row[renaming] input.rename';
 
   // Focus the file-list.
@@ -85,9 +86,8 @@ async function createNewFolder(appId, initialEntrySet, selector) {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Check: a new folder should be present in the directory tree.
-  const newSubtreeChildItem =
-      `${selector} .tree-children .tree-item[entry-label="${newFolderName}"]`;
-  await remoteCall.waitForElement(appId, newSubtreeChildItem);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForChildItemByLabel(label, newFolderName);
 
   // Check: the text input should be shown in the file list.
   await remoteCall.waitForElement(appId, textInput);
@@ -133,9 +133,7 @@ async function createNewFolder(appId, initialEntrySet, selector) {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Check: the test folder should be present in the directory tree.
-  const testSubtreeChildItem =
-      `${selector} .tree-children .tree-item[entry-label="${newFolderName}"]`;
-  await remoteCall.waitForElement(appId, testSubtreeChildItem);
+  await directoryTree.waitForChildItemByLabel(label, newFolderName);
 
   // Wait for the new folder to become selected in the file list.
   await remoteCall.waitForElement(
@@ -145,7 +143,8 @@ async function createNewFolder(appId, initialEntrySet, selector) {
 testcase.selectCreateFolderDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-  await recursiveExpand(appId, '/My files/Downloads');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.recursiveExpand('/My files/Downloads');
   await selectFirstFileListItem(appId);
   await createNewFolder(appId, BASIC_LOCAL_ENTRY_SET, TREEITEM_DOWNLOADS);
 };
@@ -153,21 +152,24 @@ testcase.selectCreateFolderDownloads = async () => {
 testcase.createFolderDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-  await recursiveExpand(appId, '/My files/Downloads');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.recursiveExpand('/My files/Downloads');
   await createNewFolder(appId, BASIC_LOCAL_ENTRY_SET, TREEITEM_DOWNLOADS);
 };
 
 testcase.createFolderNestedDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-  await recursiveExpand(appId, '/My files/Downloads');
-  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.recursiveExpand('/My files/Downloads');
+  await directoryTree.navigateToPath('/My files/Downloads/photos');
   await createNewFolder(appId, [], TREEITEM_DOWNLOADS);
 };
 
 testcase.createFolderDrive = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
-  await recursiveExpand(appId, '/Google Drive/My Drive');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.recursiveExpand('/Google Drive/My Drive');
   await createNewFolder(appId, BASIC_DRIVE_ENTRY_SET, TREEITEM_DRIVE);
 };

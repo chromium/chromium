@@ -188,7 +188,7 @@ export class DirectoryTreePageObject {
    * @return {!Promise<void>}
    */
   async expandTreeItemByLabel(label, allowEmpty) {
-    this.expandTreeItem(this.selectors_.itemByLabel(label), allowEmpty);
+    await this.expandTreeItem_(this.selectors_.itemByLabel(label), allowEmpty);
   }
 
   /**
@@ -214,7 +214,7 @@ export class DirectoryTreePageObject {
           'queryAllElements', this.appId_,
           [this.selectors_.attachModifier(query, {expanded: true})]);
       if (elements.length === 0) {
-        await this.expandTreeItem(query);
+        await this.expandTreeItem_(query);
       }
     }
 
@@ -338,6 +338,21 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Wait for the child tree item under a specified parent item by their label.
+   *
+   * @param {string} parentLabel Label of the parent item.
+   * @param {string} childLabel Label of the child item.
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForChildItemByLabel(parentLabel, childLabel) {
+    return this.remoteCall_.waitForElement(
+        this.appId_,
+        this.selectors_.childItem(
+            this.selectors_.itemByLabel(parentLabel),
+            this.selectors_.itemItselfByLabel(childLabel)));
+  }
+
+  /**
    * Select the tree item by its label.
    *
    * @param {string} label Label of the tree item.
@@ -355,7 +370,7 @@ export class DirectoryTreePageObject {
    * @return {!Promise<void>}
    */
   async selectItemByType(type) {
-    this.selectItem_(
+    await this.selectItem_(
         this.selectors_.itemByType(type, /* isPlaceholder= */ false));
   }
 
@@ -366,7 +381,7 @@ export class DirectoryTreePageObject {
    * @return {!Promise<void>}
    */
   async selectPlaceholderItem(type) {
-    this.selectItem_(
+    await this.selectItem_(
         this.selectors_.itemByType(type, /* isPlaceholder= */ true));
   }
 
@@ -383,15 +398,15 @@ export class DirectoryTreePageObject {
 
   /**
    * Expands a single tree item by clicking on its expand icon.
-   * TODO: this "selector" version should be private in future.
    *
+   * @private
    * @param {string} itemSelector Selector to the tree item that should be
    *     expanded.
    * @param {boolean=} allowEmpty Allow expanding tree item without
    *     any children.
    * @return {!Promise<void>}
    */
-  async expandTreeItem(itemSelector, allowEmpty) {
+  async expandTreeItem_(itemSelector, allowEmpty) {
     await this.remoteCall_.waitForElement(this.appId_, itemSelector);
     const elements = await this.remoteCall_.callRemoteTestUtil(
         'queryAllElements', this.appId_,
@@ -504,6 +519,19 @@ class DirectoryTreeSelectors_ {
   childItems(itemSelector) {
     return `${itemSelector} > ${
         this.useNewTree ? 'xf-tree-item' : '.tree-children > .tree-item'}`;
+  }
+
+  /**
+   * Get the child item under a specific parent item.
+   *
+   * @param {string} parentSelector The parent item selector.
+   * @param {string} childSelector The child item selector.
+   * @return {string}
+   */
+  childItem(parentSelector, childSelector) {
+    return this.useNewTree ?
+        `${parentSelector} ${childSelector}` :
+        `${parentSelector} .tree-children ${childSelector}`;
   }
 
   /**

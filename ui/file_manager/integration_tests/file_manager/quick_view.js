@@ -9,8 +9,9 @@ import {ExecuteScriptError} from '../remote_call.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {mountCrostini, mountGuestOs, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, BASIC_ZIP_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
+import {mountCrostini, mountGuestOs, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
 
 /**
  * The tag used to create a safe environment to display the preview.
@@ -467,7 +468,8 @@ testcase.openQuickViewRemovablePartitions = async () => {
   // Wait for the USB root to be available.
   await remoteCall.waitForElement(
       appId, '#directory-tree [entry-label="Drive Label"]');
-  await navigateWithDirectoryTree(appId, '/Drive Label');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Drive Label');
 
   // Wait for 2 removable partitions to appear in the directory tree.
   await repeatUntil(async () => {
@@ -513,7 +515,8 @@ testcase.openQuickViewTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Navigate to /Trash and ensure the file is shown.
-  await navigateWithDirectoryTree(appId, '/Trash');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Trash');
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -641,7 +644,8 @@ testcase.openQuickViewAndroid = async () => {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Navigate to the Android files '/Documents' directory.
-  await navigateWithDirectoryTree(appId, '/My files/Play files/Documents');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Play files/Documents');
 
   // Check: the 'android.txt' file should appear in the file list.
   files = [ENTRIES.documentsText.getExpectedRow()];
@@ -671,7 +675,8 @@ testcase.openQuickViewAndroidGuestOs = async () => {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Navigate to the Android files '/Documents' directory.
-  await navigateWithDirectoryTree(appId, '/My files/Play files/Documents');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Play files/Documents');
 
   // Check: the 'android.txt' file should appear in the file list.
   files = [ENTRIES.documentsText.getExpectedRow()];

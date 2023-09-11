@@ -6,8 +6,9 @@ import {FilesAppState} from '../files_app_state.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sendTestMessage, SharedOption, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {mountCrostini, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
+import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
  * @param {string} appId The ID that identifies the files app.
@@ -317,7 +318,8 @@ testcase.searchWithLocationOptions = async () => {
   // Start in the nested directory, as the default search location
   // is THIS_FOLDER. Expect to find one hello file. Then search on
   // THIS_CHROMEBOOK and expect to find two.
-  await navigateWithDirectoryTree(appId, '/My files/Downloads/A');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Downloads/A');
 
   // Search for all files with "hello" in their name.
   await remoteCall.typeSearchText(appId, 'hello');
@@ -417,7 +419,8 @@ testcase.searchDriveWithRecencyOptions = async () => {
 
   // Navigate to Google Drive. We are searching "local" directory, which limits
   // search results to Drive.
-  await navigateWithDirectoryTree(appId, '/My Drive');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive');
 
   // Search for all files with "hello" in their name.
   await remoteCall.typeSearchText(appId, 'hello');
@@ -474,7 +477,8 @@ testcase.searchDriveWithTypeOptions = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Navigate to Google Drive; make sure we have the desired files.
-  await navigateWithDirectoryTree(appId, '/My Drive');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive');
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(BASIC_DRIVE_ENTRY_SET));
 
@@ -593,7 +597,8 @@ testcase.resetSearchOptionsOnFolderChange = async () => {
       !!await remoteCall.selectSearchOption(appId, 'recency', 4),
       'Failed to change to "Last week" recency selector');
 
-  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Downloads/photos');
 
   // Start search again.
   await remoteCall.typeSearchText(appId, 'b');
@@ -658,7 +663,8 @@ testcase.showsEducationNudge = async () => {
  */
 testcase.searchFromMyFiles = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
-  await navigateWithDirectoryTree(appId, '/My files');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files');
   const beforeSearchPath =
       await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []);
   chrome.test.assertEq('/My files', beforeSearchPath);
@@ -679,7 +685,7 @@ testcase.searchFromMyFiles = async () => {
   // Add some Linux specific files.
   await addEntries(['crostini'], [ENTRIES.debPackage]);
   // Navigate back to /My files
-  await navigateWithDirectoryTree(appId, '/My files');
+  await directoryTree.navigateToPath('/My files');
 
   // Search for files containing ack (should include debPackage.
   await remoteCall.typeSearchText(appId, 'ack');
@@ -806,7 +812,8 @@ testcase.searchHierarchy = async () => {
   await addEntries(['crostini'], [linuxHello]);
 
   // Move to a nested directory under My files.
-  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Downloads/photos');
 
   // Expect photosHello, as the only result when searching in photos.
   await remoteCall.typeSearchText(appId, '-hello.txt');
@@ -859,7 +866,8 @@ testcase.hideSearchInTrash = async () => {
   chrome.test.assertTrue(searchButton.styles['display'] !== 'none');
 
   // Navigate to Trash and confirm that the search button is now hidden.
-  await navigateWithDirectoryTree(appId, '/Trash');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Trash');
   searchButton = await remoteCall.waitForElementStyles(
       appId, ['#search-button'], ['visibility']);
   chrome.test.assertTrue(searchButton.styles['visibility'] === 'hidden');
@@ -874,7 +882,7 @@ testcase.hideSearchInTrash = async () => {
   chrome.test.assertEq(searchWrapper.attributes.collapsed, '');
 
   // Go back to Downloads and confirm that the search button is visible again.
-  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+  await directoryTree.navigateToPath('/My files/Downloads');
   searchButton = await remoteCall.waitForElementStyles(
       appId, ['#search-button'], ['visibility']);
   chrome.test.assertTrue(searchButton.styles['visibility'] !== 'hidden');
@@ -947,7 +955,8 @@ testcase.searchSharedWithMe = async () => {
     nestedTestSharedFile,
   ]);
 
-  await navigateWithDirectoryTree(appId, '/Shared with me');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Shared with me');
 
   // Find the specific file, test.txt
   await remoteCall.typeSearchText(appId, 'test.txt');
@@ -974,7 +983,8 @@ testcase.searchDocumentsProvider = async () => {
       appId, '[has-children="true"] [volume-type-icon="documents_provider"]');
 
   // Search for all files with "nam" in their name.
-  await navigateWithDirectoryTree(appId, '/DocumentsProvider');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/DocumentsProvider');
   await remoteCall.typeSearchText(appId, 'nam');
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([ENTRIES.renamableFile]),
@@ -993,7 +1003,8 @@ testcase.searchDocumentsProviderWithTypeOptions = async () => {
   // Wait for DocumentsProvider to mount and Verify that the files are visible.
   await remoteCall.waitForElement(
       appId, '[has-children="true"] [volume-type-icon="documents_provider"]');
-  await navigateWithDirectoryTree(appId, '/DocumentsProvider');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/DocumentsProvider');
 
   // Search the DocumentsProvider folder for files with "File" in their name.
   await remoteCall.typeSearchText(appId, 'File');
@@ -1036,7 +1047,8 @@ testcase.searchDocumentsProviderWithRecencyOptions = async () => {
   // Wait for DocumentsProvider to mount and Verify that the files are visible.
   await remoteCall.waitForElement(
       appId, '[has-children="true"] [volume-type-icon="documents_provider"]');
-  await navigateWithDirectoryTree(appId, '/DocumentsProvider');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/DocumentsProvider');
 
   // Search the DocumentsProvider for files with "hello" in their name.
   await remoteCall.typeSearchText(appId, 'hello');
@@ -1067,7 +1079,8 @@ testcase.searchFileSystemProvider = async () => {
   });
   await remoteCall.waitForElement(
       appId, '.tree-row .icon[volume-type-icon="provided"]');
-  await navigateWithDirectoryTree(appId, '/Test (1)');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/Test (1)');
   await remoteCall.waitForElement(
       appId, '.tree-row[selected] .icon[volume-type-icon="provided"]');
   await remoteCall.typeSearchText(appId, 'folder');

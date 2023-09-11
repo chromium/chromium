@@ -5,7 +5,7 @@
 import {getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, openEntryChoosingWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {openEntryChoosingWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {waitForDialog} from './file_dialog.js';
 
 /**

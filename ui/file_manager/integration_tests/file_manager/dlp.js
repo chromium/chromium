@@ -6,7 +6,8 @@ import {DialogType} from '../dialog_type.js';
 import {addEntries, ENTRIES, EntryType, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {FakeTask} from './tasks.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
@@ -23,14 +24,15 @@ async function copyOrMove(appId, file, destination, isCopy) {
     chrome.test.assertTrue(false, 'copyOrMove invalid parameters');
   }
 
-  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Downloads');
   await remoteCall.waitForFiles(appId, [file.getExpectedRow()]);
   await remoteCall.waitUntilSelected(appId, file.nameText);
 
   const command = isCopy ? 'copy' : 'cut';
   await remoteCall.callRemoteTestUtil('execCommand', appId, [command]);
 
-  await navigateWithDirectoryTree(appId, destination);
+  await directoryTree.navigateToPath(destination);
 
   await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']);
 }
@@ -177,7 +179,8 @@ testcase.transferShowDlpToast = async () => {
   await remoteCall.waitForElement(appId, '#toast');
 
   // Navigate back to Downloads.
-  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Downloads');
 
   // The file should be there because the transfer was restricted.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -291,7 +294,9 @@ testcase.saveAsDlpRestrictedAndroid = async () => {
   const closer = async (dialog) => {
     // Select My Files folder and wait for file list to display Downloads, Play
     // files, and Linux files.
-    await navigateWithDirectoryTree(dialog, '/My files');
+    const directoryTree =
+        await DirectoryTreePageObject.create(dialog, remoteCall);
+    await directoryTree.navigateToPath('/My files');
 
     await remoteCall.waitForFiles(
         dialog, [downloadsRow, playFilesRow, linuxFilesRow],
@@ -318,7 +323,7 @@ testcase.saveAsDlpRestrictedAndroid = async () => {
 
     // Unmount Play files and mount ARCVM.
     await sendTestMessage({name: 'unmountPlayFiles'});
-    const guestId = await sendTestMessage({
+    await sendTestMessage({
       name: 'registerMountableGuest',
       displayName: guestName,
       canMount: true,
@@ -362,7 +367,9 @@ testcase.saveAsDlpRestrictedVm = async () => {
 
   const closer = async (dialog) => {
     // Select My Files folder and wait for file list.
-    await navigateWithDirectoryTree(dialog, '/My files');
+    const directoryTree =
+        await DirectoryTreePageObject.create(dialog, remoteCall);
+    await directoryTree.navigateToPath('/My files');
     const guestFilesRow = [guestName, '--', 'Folder'];
     await remoteCall.waitForFiles(
         dialog, [downloadsRow, playFilesRow, linuxFilesRow, guestFilesRow],
@@ -390,7 +397,7 @@ testcase.saveAsDlpRestrictedVm = async () => {
     await remoteCall.waitUntilCurrentDirectoryIsChanged(
         dialog, `/My files/${guestName}`);
     await remoteCall.waitForElement(dialog, disabledOkButton);
-    await navigateWithDirectoryTree(dialog, '/My files');
+    await directoryTree.navigateToPath('/My files');
     await remoteCall.waitForElementsCount(dialog, [disabledRealTreeItem], 1);
     await remoteCall.waitForElementsCount(dialog, [disabledDirectory], 1);
     await remoteCall.waitUntilSelected(dialog, guestName);
@@ -437,7 +444,9 @@ testcase.saveAsDlpRestrictedCrostini = async () => {
 
     // Select My Files folder and wait for file list to display Downloads, Play
     // files, and Linux files.
-    await navigateWithDirectoryTree(dialog, '/My files');
+    const directoryTree =
+        await DirectoryTreePageObject.create(dialog, remoteCall);
+    await directoryTree.navigateToPath('/My files');
     await remoteCall.waitForFiles(
         dialog, [downloadsRow, playFilesRow, linuxFilesRow],
         {ignoreFileSize: true, ignoreLastModifiedTime: true});
@@ -462,7 +471,7 @@ testcase.saveAsDlpRestrictedCrostini = async () => {
     // still in the Linux files directory.
     await remoteCall.waitUntilCurrentDirectoryIsChanged(dialog, '/Linux files');
     await remoteCall.waitForElement(dialog, disabledOkButton);
-    await navigateWithDirectoryTree(dialog, '/My files');
+    await directoryTree.navigateToPath('/My files');
     await remoteCall.waitForElementsCount(dialog, [disabledLinuxTreeItem], 1);
     await remoteCall.waitForElementsCount(dialog, [disabledDirectory], 1);
     await remoteCall.waitUntilSelected(dialog, 'Linux files');

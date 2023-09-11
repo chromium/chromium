@@ -5,7 +5,8 @@
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN, BASIC_DRIVE_ENTRY_SET, BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN, BASIC_LOCAL_ENTRY_SET, BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET} from './test_data.js';
 
 /**
@@ -220,7 +221,8 @@ testcase.hideCurrentDirectoryByTogglingHiddenAndroidFolders = async () => {
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Navigate to "/My files/Play files/A".
-  await navigateWithDirectoryTree(appId, '/My files/Play files/A');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Play files/A');
 
   // Wait until current directory is changed to "/My files/Play files/A".
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
@@ -654,7 +656,8 @@ testcase.showAvailableStorageSmbfs = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
-  await navigateWithDirectoryTree(appId, '/SMB Share');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/SMB Share');
 
   // Wait for the volume's file list to appear.
   const files = TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET);
@@ -751,7 +754,8 @@ testcase.showManageMirrorSyncShowsOnlyInLocalRoot = async () => {
           '[command=\'#manage-mirrorsync\']:not([disabled][hidden])');
 
   // Navigate to the Google Drive root.
-  await navigateWithDirectoryTree(appId, '/My Drive');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive');
 
   // Wait for the gear menu button to appear and click it.
   await remoteCall.waitAndClickElement(appId, '#gear-button');

@@ -5,7 +5,8 @@
 import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {expandTreeItem, mountCrostini, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
  * Select My files in directory tree and wait for load.
@@ -154,8 +155,8 @@ testcase.myFilesUpdatesChildren = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select Downloads folder.
-  const isDriveQuery = false;
-  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Downloads');
 
   // Wait for gear menu to be displayed.
   await remoteCall.waitForElement(appId, '#gear-button');
@@ -189,7 +190,7 @@ testcase.myFilesUpdatesChildren = async () => {
   await remoteCall.waitForElement(appId, downloadsQuery + hasChildren);
 
   // Expand Downloads to display the ".hidden-folder".
-  await expandTreeItem(appId, downloadsQuery);
+  await directoryTree.expandTreeItemByLabel('Downloads');
 
   // Check the hidden folder to be displayed in LHS.
   // Children of Downloads and named ".hidden-folder".

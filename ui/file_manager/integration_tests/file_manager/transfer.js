@@ -5,8 +5,8 @@
 import {ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {expandTreeItem, isSinglePartitionFormat, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {waitAndAcceptDialog} from './keyboard_operations.js';
+import {isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, OFFLINE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
 /**
@@ -152,16 +152,18 @@ async function transferBetweenVolumes(transferInfo) {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, localFiles, driveFiles);
 
   // Expand Drive root if either src or dst is within Drive.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   if (transferInfo.source.isTeamDrive || transferInfo.destination.isTeamDrive) {
-    const myDriveContent = TestEntryInfo.getExpectedRows(
-        driveFiles.filter(e => e.teamDriveName === '' && e.computerName === ''));
+    const myDriveContent = TestEntryInfo.getExpectedRows(driveFiles.filter(
+        e => e.teamDriveName === '' && e.computerName === ''));
     // Select + expand + wait for its content.
-    await navigateWithDirectoryTree(appId, '/My Drive');
+
+    await directoryTree.navigateToPath('/My Drive');
     await remoteCall.waitForFiles(appId, myDriveContent);
   }
 
   // Select the source folder.
-  await navigateWithDirectoryTree(appId, transferInfo.source.breadcrumbsPath);
+  await directoryTree.navigateToPath(transferInfo.source.breadcrumbsPath);
 
   // Wait for the expected files to appear in the file list.
   await remoteCall.waitForFiles(appId, srcContents);
@@ -180,8 +182,7 @@ async function transferBetweenVolumes(transferInfo) {
       'execCommand', appId, [transferCommand]));
 
   // Select the destination folder.
-  await navigateWithDirectoryTree(
-      appId, transferInfo.destination.breadcrumbsPath);
+  await directoryTree.navigateToPath(transferInfo.destination.breadcrumbsPath);
 
   // Wait for the expected files to appear in the file list.
   await remoteCall.waitForFiles(
@@ -625,7 +626,8 @@ testcase.transferDragDropActiveDrop = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Expand Downloads to display "photos" folder in the directory tree.
-  await expandTreeItem(appId, '#directory-tree [entry-label="Downloads"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel('Downloads');
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -888,7 +890,8 @@ testcase.transferDragAndDrop = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Expand Downloads to display "photos" folder in the directory tree.
-  await expandTreeItem(appId, '#directory-tree [entry-label="Downloads"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel('Downloads');
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -934,7 +937,8 @@ testcase.transferDragAndDropFolder = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Expand Downloads to display folder "D" in the directory tree.
-  await expandTreeItem(appId, '#directory-tree [entry-label="Downloads"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel('Downloads');
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -947,7 +951,7 @@ testcase.transferDragAndDropFolder = async () => {
   // Wait for the directory tree target.
   const target =
       `#directory-tree [entry-label="${ENTRIES.directoryD.nameText}"]`;
-  await remoteCall.waitForElement(appId, target);
+  await directoryTree.waitForItemByLabel(ENTRIES.directoryD.nameText);
 
   // Drag the source and drop it on the target.
   const skipDrop = false;
@@ -958,9 +962,8 @@ testcase.transferDragAndDropFolder = async () => {
 
   // Check: the dropped folder "A" should appear in the directory tree under
   // the target folder "D" and be expandable (as folder "A" contains "B").
-  await expandTreeItem(appId, target);
-  await expandTreeItem(
-      appId, target + ` [entry-label="${ENTRIES.directoryA.nameText}"]`);
+  await directoryTree.expandTreeItemByLabel(ENTRIES.directoryD.nameText);
+  await directoryTree.expandTreeItemByLabel(ENTRIES.directoryA.nameText);
 };
 
 /*
@@ -974,7 +977,8 @@ testcase.transferDragAndHover = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Expand Downloads to display "photos" folder in the directory tree.
-  await expandTreeItem(appId, '#directory-tree [entry-label="Downloads"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel('Downloads');
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -1134,7 +1138,8 @@ testcase.transferToUsbHasDestinationText = async () => {
     navigationPath = '/FAKEUSB/fake-usb';
   }
   // Select USB volume.
-  await navigateWithDirectoryTree(appId, navigationPath);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath(navigationPath);
 
   // Tell the background page to never finish the file copy.
   await remoteCall.callRemoteTestUtil(

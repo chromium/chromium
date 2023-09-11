@@ -5,8 +5,9 @@
 import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {expandTreeItem, IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {TREEITEM_DOWNLOADS, TREEITEM_DRIVE} from './create_new_folder.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
  * Waits until a dialog with an OK button is shown, and accepts it by clicking
@@ -129,7 +130,7 @@ async function keyboardDelete(path, confirmDeletion = false) {
  * Files app directory tree, and should not be shown there when deleted.
  *
  * @param {string} path The path to be tested, Downloads or Drive.
- * @param {string} treeItem The directory tree item selector.
+ * @param {string} treeItem The directory tree item label.
  * @param {boolean=} confirmDeletion If the file system doesn't support trash,
  *     need to confirm the deletion.
  */
@@ -138,7 +139,8 @@ async function keyboardDeleteFolder(path, treeItem, confirmDeletion = false) {
       await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
 
   // Expand the directory tree |treeItem|.
-  await expandTreeItem(appId, treeItem);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel(treeItem);
 
   // Check: the folder should be shown in the directory tree.
   await waitForDirectoryTreeItem(appId, 'photos');
@@ -195,7 +197,7 @@ async function renameFile(appId, oldName, newName) {
  * renaming to check the folder cannot be entered while it is being renamed.
  *
  * @param {string} path Initial path (Downloads or Drive).
- * @param {string} treeItem The directory tree item selector.
+ * @param {string} treeItem The directory tree item label.
  * @return {Promise} Promise to be fulfilled on success.
  */
 async function testRenameFolder(path, treeItem) {
@@ -204,7 +206,8 @@ async function testRenameFolder(path, treeItem) {
       await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
 
   // Expand the directory tree |treeItem|.
-  await expandTreeItem(appId, treeItem);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel(treeItem);
 
   // Check: the photos folder should be shown in the directory tree.
   await waitForDirectoryTreeItem(appId, 'photos');

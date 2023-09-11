@@ -5,7 +5,8 @@
 import {RootPath} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET} from './test_data.js';
 
 /**
@@ -23,8 +24,9 @@ async function shareWithOthersExpectBrowserURL(
 
   // Navigate to the specified team drive if one is specified.
   if (teamDrive !== undefined) {
-    await navigateWithDirectoryTree(
-        appId,
+    const directoryTree =
+        await DirectoryTreePageObject.create(appId, remoteCall);
+    await directoryTree.navigateToPath(
         teamDrive === '' ? '/Shared drives' : `/Shared drives/${teamDrive}`);
 
     // Wait for the file list to update.
@@ -68,8 +70,9 @@ async function manageWithDriveExpectBrowserURL(
 
   // Navigate to the specified team drive if one is specified.
   if (teamDrive !== undefined) {
-    await navigateWithDirectoryTree(
-        appId,
+    const directoryTree =
+        await DirectoryTreePageObject.create(appId, remoteCall);
+    await directoryTree.navigateToPath(
         teamDrive === '' ? '/Shared drives' : `/Shared drives/${teamDrive}`);
 
     // Wait for the file list to update.
@@ -177,7 +180,8 @@ testcase.shareDirectoryTeamDrive = async () => {
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat(SHARED_DRIVE_ENTRY_SET));
 
   // Navigate to the team drive.
-  await navigateWithDirectoryTree(appId, `/Shared drives/${teamDrive}`);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath(`/Shared drives/${teamDrive}`);
 
   // Wait for the file list to update.
   await remoteCall.waitForFileListChange(appId, BASIC_DRIVE_ENTRY_SET.length);
