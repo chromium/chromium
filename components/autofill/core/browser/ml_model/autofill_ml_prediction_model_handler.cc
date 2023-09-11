@@ -8,6 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -37,27 +39,32 @@ AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
 AutofillMlPredictionModelHandler::~AutofillMlPredictionModelHandler() = default;
 
 void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
-    const FormData& form_data,
-    base::OnceCallback<void(const std::vector<ServerFieldType>&)> callback) {
+    std::unique_ptr<FormStructure> form_structure,
+    base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback) {
   // According to the description of `BatchExecuteModelWithInput()`, it
   // should be used in-time sensitive applications. But since the bigger model
   // will eventually take FormData as input, the function will be called once.
   // TODO(crbug.com/1465926): Change to ExecuteModelWithInput once we switch to
   // bigger model.
+  // TODO(crbug.com/1465926): Remove `ToFormData()` as it creates a new copy
+  // of the FormData.
+  std::vector<FormFieldData> form_fields = form_structure->ToFormData().fields;
   BatchExecuteModelWithInput(
       base::BindOnce(
-          [](base::OnceCallback<void(const std::vector<ServerFieldType>&)>
+          [](std::unique_ptr<FormStructure> form_structure,
+             base::OnceCallback<void(std::unique_ptr<FormStructure>)>
                  outer_callback,
              const std::vector<absl::optional<ServerFieldType>>& outputs) {
-            std::vector<ServerFieldType> predictions;
-            predictions.reserve(outputs.size());
-            for (const absl::optional<ServerFieldType>& output : outputs) {
-              predictions.push_back(output.value_or(UNKNOWN_TYPE));
+            CHECK_EQ(form_structure->field_count(), outputs.size());
+            for (size_t i = 0; i < outputs.size(); i++) {
+              CHECK(outputs[i].has_value());
+              form_structure->field(i)->set_heuristic_type(
+                  HeuristicSource::kMachineLearning, *outputs[i]);
             }
-            std::move(outer_callback).Run(predictions);
+            std::move(outer_callback).Run(std::move(form_structure));
           },
-          std::move(callback)),
-      form_data.fields);
+          std::move(form_structure), std::move(callback)),
+      std::move(form_fields));
 }
 
 }  // namespace autofill
