@@ -83,53 +83,49 @@ if (is_win) {
 
   template("test_msi_installer") {
     testonly = true
-    appid = "{C28FCF72-BCF2-45C5-8DEF-31A74AC02012}"
+    appid = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}"
     msi_base_name = "TestSystemMsiInstaller"
     version = invoker.version
     relative_path = appid + "." + version + "/" + msi_base_name + ".msi"
-    output_installer = "$root_build_dir/test_installer/" + relative_path
+    output_dir = "$root_build_dir/test_installer/"
+    output_installer = output_dir + relative_path
+    checked_in_msi = "//chrome/updater/test/data/" +
+                     updater_company_short_name + "MSI/" + relative_path
 
-    if (is_chrome_branded) {
-      action("test_msi_installer" + target_name) {
-        script = "create_test_msi_installer.py"
-        test_installer_wxs_xml = "test_installer.wxs.xml"
+    action("test_msi_installer" + target_name) {
+      script = "create_test_msi_installer.py"
+      test_installer_wxs_xml = "test_installer.wxs.xml"
 
-        inputs = [
-          script,
-          test_installer_wxs_xml,
-        ]
-        outputs = [ output_installer ]
+      inputs = [
+        script,
+        test_installer_wxs_xml,
+      ]
+      outputs = [ output_installer ]
 
-        args = [
-          "--candle_path",
-          rebase_path("//third_party/wix/candle.exe", root_build_dir),
-          "--light_path",
-          rebase_path("//third_party/wix/light.exe", root_build_dir),
-          "--product_name",
-          "Test System MSI Installer",
-          "--product_version",
-          version,
-          "--appid",
-          appid,
-          "--msi_base_name",
-          msi_base_name,
-          "--msi_template_path",
-          rebase_path(test_installer_wxs_xml),
-          "--company_name",
-          updater_company_short_name,
-          "--company_full_name",
-          updater_company_full_name,
-          "--output_dir",
-          rebase_path("$root_build_dir/test_installer"),
-        ]
-      }
-    } else {
-      # WiX tools are only available on `src-internal`, so the Chromium version is
-      # generated and checked into `//chrome/updater/test/data/chromium_msi/`.
-      copy("test_msi_installer" + target_name) {
-        sources = [ "//chrome/updater/test/data/chromium_msi/" + relative_path ]
-        outputs = [ output_installer ]
-      }
+      args = [
+        "--candle_path",
+        rebase_path("//third_party/wix/candle.exe", root_build_dir),
+        "--light_path",
+        rebase_path("//third_party/wix/light.exe", root_build_dir),
+        "--product_name",
+        "Test System MSI Installer",
+        "--product_version",
+        version,
+        "--appid",
+        appid,
+        "--msi_base_name",
+        msi_base_name,
+        "--msi_template_path",
+        rebase_path(test_installer_wxs_xml),
+        "--company_name",
+        updater_company_short_name,
+        "--company_full_name",
+        updater_company_full_name,
+        "--checked_in_msi",
+        rebase_path(checked_in_msi, root_build_dir),
+        "--output_dir",
+        rebase_path(output_dir, root_build_dir),
+      ]
     }
   }
 
