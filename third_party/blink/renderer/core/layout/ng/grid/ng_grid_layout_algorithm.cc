@@ -3791,6 +3791,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           // Although we know that this item isn't going to fit here, we're
           // inside balanced multicol, so we need to figure out how much more
           // fragmentainer space we'd need to fit more content.
+          NGDisableSideEffectsScope disable_side_effects;
           auto* result = grid_item.node.Layout(space, break_token);
           PropagateSpaceShortage(constraint_space, result,
                                  fragment_relative_block_offset,
