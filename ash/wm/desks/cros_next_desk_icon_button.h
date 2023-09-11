@@ -22,7 +22,7 @@ class DeskBarViewBase;
 
 // A button view in the desks bar with an icon. The button have three different
 // states, and the three states are interchangeable.
-// TODO(https://b/291622042): Remove `ZeroStateIconButton` and
+// TODO(http://b/291622042): Remove `ZeroStateIconButton` and
 // `ExpandedDesksBarButton`, replace them with this class, and rename this class
 // by removing the prefix CrOSNext.
 class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {

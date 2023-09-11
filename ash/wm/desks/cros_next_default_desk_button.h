@@ -16,7 +16,7 @@ class DeskBarViewBase;
 // state of the desks bar when there's only a single desk available, in which
 // case the bar is shown in a minimized state. Clicking the button will switch
 // to the expanded desks bar and focus on the single desk's name view.
-// TODO(https://b/291622042): Remove `ZeroStateDefaultDeskButton`, replace it
+// TODO(http://b/291622042): Remove `ZeroStateDefaultDeskButton`, replace it
 // with this class, and rename this class by removing the prefix CrOSNext.
 class CrOSNextDefaultDeskButton : public CrOSNextDeskButtonBase {
  public:

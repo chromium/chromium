@@ -80,7 +80,7 @@ constexpr int kBetweenChildPaddingDp = 10;
 
 // Padding between the window previews within the alt-tab bandshield when
 // feature flag Jellyroll is enabled.
-// TODO(https://b/291622042): Rename this to `kBetweenChildPaddingDp`, and
+// TODO(http://b/291622042): Rename this to `kBetweenChildPaddingDp`, and
 // remove `kBetweenChildPaddingDp` above.
 constexpr int kBetweenChildPaddingDpCrOSNext = 12;
 

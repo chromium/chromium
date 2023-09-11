@@ -272,7 +272,7 @@ class WindowRestoreControllerTest : public AshTestBase,
 
   void TearDown() override {
     env_observation_.Reset();
-
+    WindowRestoreController::Get()->SetSaveWindowCallbackForTesting({});
     AshTestBase::TearDown();
   }
 

@@ -297,7 +297,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
         gfx::Size(button_label_size.width(), desk_name_view->height())));
   }
 
-  // TODO(https://b/291622042): After CrOS Next is launched, remove function
+  // TODO(http://b/291622042): After CrOS Next is launched, remove function
   // `LayoutInternal`, and move this to Layout.
   void LayoutInternalCrOSNext(views::View* host) {
     TRACE_EVENT0("ui", "DeskBarScrollViewLayout::LayoutInternalCrOSNext");

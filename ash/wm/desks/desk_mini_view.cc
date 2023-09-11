@@ -63,7 +63,7 @@ constexpr int kShortcutViewHeight = 20;
 constexpr int kShortcutViewIconSize = 14;
 constexpr int kShortcutViewDistanceFromBottom = 4;
 
-// TODO(https://b/291622042): After CrOS Next is launched, remove
+// TODO(http://b/291622042): After CrOS Next is launched, remove
 // `kPreviewFocusRingRadiusOld`.
 constexpr int kPreviewFocusRingRadius = 10;
 

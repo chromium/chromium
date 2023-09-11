@@ -782,7 +782,7 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenExitingTabletMode) {
   TabletModeControllerTestApi().LeaveTabletMode();
 }
 
-// Tests that update drag does not cause a crash. Test for https://b/290102602.
+// Tests that update drag does not cause a crash. Test for http://b/290102602.
 TEST_F(TabletModeMultitaskMenuTest, NoCrashDuringUpdateDrag) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);

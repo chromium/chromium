@@ -220,7 +220,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // Udate the visibility of the `default_desk_button_` on the desk bar's
   // state.
-  // TODO(https://b/291622042): Remove `UpdateDeskButtonsVisibility`, replace it
+  // TODO(http://b/291622042): Remove `UpdateDeskButtonsVisibility`, replace it
   // with this function, and rename this function by removing the prefix
   // CrOSNext.
   void UpdateDeskButtonsVisibilityCrOSNext();
@@ -232,7 +232,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // Update the visibility of the saved desk library button based on whether
   // the saved desk feature is enabled and the user has any saved desks.
-  // TODO(https://b/291622042): Remove `UpdateLibraryButtonVisibility`, replace
+  // TODO(http://b/291622042): Remove `UpdateLibraryButtonVisibility`, replace
   // it with this function, and rename this function by removing the prefix
   // CrOSNext.
   void UpdateLibraryButtonVisibilityCrOSNext();
@@ -473,7 +473,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // Buttons for the CrOS Next updated UI. They're added behind the feature flag
   // Jellyroll.
-  // TODO(https://b/291622042): After CrOS Next is launched, replace
+  // TODO(http://b/291622042): After CrOS Next is launched, replace
   // `zero_state_default_desk_button_`, `zero_state_default_desk_button_`,
   // `expanded_state_new_desk_button_`, `zero_state_library_button_` and
   // `expanded_state_library_button_` with the buttons below.

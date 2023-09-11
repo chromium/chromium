@@ -1557,7 +1557,7 @@ TEST_F(TabletWindowFloatTest, Dragging) {
 }
 
 // Tests that there is no crash when maximizing a dragged floated window.
-// Regression test for https://b/254107825.
+// Regression test for http://b/254107825.
 TEST_F(TabletWindowFloatTest, MaximizeWhileDragging) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
