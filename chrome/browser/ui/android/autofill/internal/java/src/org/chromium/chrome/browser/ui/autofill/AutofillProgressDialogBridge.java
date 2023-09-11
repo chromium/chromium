@@ -8,13 +8,17 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewStub;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -73,6 +77,9 @@ public class AutofillProgressDialogBridge {
      * Shows a progress bar dialog.
      *
      * @param loadingMessage Message to show below the progress bar.
+     * @param titleIconId The resource id for the icon to be displayed to the left of the title. If
+     * flag 'AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK' is enabled titleIconId is
+     * overridden.
      */
     @CalledByNative
     public void showDialog(
@@ -80,20 +87,54 @@ public class AutofillProgressDialogBridge {
         mProgressDialogContentView =
                 LayoutInflater.from(mContext).inflate(R.layout.autofill_progress_dialog, null);
         ((TextView) mProgressDialogContentView.findViewById(R.id.message)).setText(loadingMessage);
+
+        boolean useCustomTitleView = ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK);
+
+        if (useCustomTitleView) {
+            ViewStub stub = mProgressDialogContentView.findViewById(R.id.title_with_icon_stub);
+            stub.setLayoutResource(R.layout.icon_after_title_view);
+            stub.inflate();
+            titleIconId = R.drawable.google_pay;
+        }
+
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
-                        .with(ModalDialogProperties.TITLE, title)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mProgressDialogContentView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, buttonLabel);
-        if (titleIconId != 0) {
-            builder.with(ModalDialogProperties.TITLE_ICON,
-                    ResourcesCompat.getDrawable(
-                            mContext.getResources(), titleIconId, mContext.getTheme()));
-        }
+        updateTitleView(useCustomTitleView, title, titleIconId, builder);
         mDialogModel = builder.build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+    }
+
+    /**
+     * Updates the title and icon view. If AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK
+     * feature is enabled, sets title and icon in the customView otherwise uses
+     * PropertyModel.Builder for title and icon.
+     *
+     * @param useCustomTitleView Indicates true/false to use custom title view.
+     * @param title Title of the prompt dialog.
+     * @param titleIcon Icon near the title.
+     * @param builder The PropertyModel.Builder instance.
+     */
+    private void updateTitleView(boolean useCustomTitleView, String title,
+            @DrawableRes int titleIcon, PropertyModel.Builder builder) {
+        if (useCustomTitleView) {
+            TextView titleView = (TextView) mProgressDialogContentView.findViewById(R.id.title);
+            titleView.setText(title);
+            ImageView iconView =
+                    (ImageView) mProgressDialogContentView.findViewById(R.id.title_icon);
+            iconView.setImageResource(titleIcon);
+        } else {
+            builder.with(ModalDialogProperties.TITLE, title);
+            if (titleIcon != 0) {
+                builder.with(ModalDialogProperties.TITLE_ICON,
+                        ResourcesCompat.getDrawable(
+                                mContext.getResources(), titleIcon, mContext.getTheme()));
+            }
+        }
     }
 
     /**

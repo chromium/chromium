@@ -4,42 +4,55 @@ Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
+<LinearLayout
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/progress_bar_dialog_margin_top"
-        android:id="@+id/progress_bar_layout">
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="@dimen/progress_bar_size"
-            android:layout_height="@dimen/progress_bar_size"
-            android:indeterminate="true"/>
-        <ImageView
-            android:id="@+id/confirmation_icon"
+    <ViewStub
+        android:id="@+id/title_with_icon_stub"
+        android:inflatedId="@+id/title_with_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/checkmark_blue"
-            android:visibility="gone"
-            tools:ignore="ContentDescription" />
-    </FrameLayout>
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/progress_bar_dialog_margin_top"
+            android:id="@+id/progress_bar_layout">
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="@dimen/progress_bar_size"
+                android:layout_height="@dimen/progress_bar_size"
+                android:indeterminate="true"/>
+            <ImageView
+                android:id="@+id/confirmation_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/checkmark_blue"
+                android:visibility="gone"
+                tools:ignore="ContentDescription" />
+        </FrameLayout>
 
-    <TextView
-        android:id="@+id/message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/progress_bar_description_spacing"
-        android:layout_marginBottom="@dimen/progress_bar_dialog_margin_bottom"
-        android:layout_below="@+id/progress_bar_layout"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.TextMedium.Accent1" />
-</RelativeLayout>
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/progress_bar_description_spacing"
+            android:layout_marginBottom="@dimen/progress_bar_dialog_margin_bottom"
+            android:layout_below="@+id/progress_bar_layout"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.TextMedium.Accent1" />
+    </RelativeLayout>
+</LinearLayout>
