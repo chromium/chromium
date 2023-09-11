@@ -112,9 +112,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void OpenAssistantPage() override;
   void OpenSearchBoxIphUrl() override;
 
-  // Builds the menu model for the category filter menu.
-  ui::SimpleMenuModel* BuildFilterMenuModel();
-
   // Shows the category filter menu that allows users to enable/disable specific
   // search categories.
   void ShowFilterMenu();
@@ -256,6 +253,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Clear highlight range.
   void ResetHighlightRange();
+
+  // Builds the menu model for the category filter menu.
+  ui::SimpleMenuModel* BuildFilterMenuModel();
 
   // Tracks whether the search result page view is visible.
   bool search_result_page_visible_ = false;

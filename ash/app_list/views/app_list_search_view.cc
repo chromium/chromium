@@ -23,13 +23,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,6 +60,9 @@ constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(1, 0, 1, 1);
 // result animations should be sped up.
 constexpr base::TimeDelta kForcedFastAnimationInterval =
     base::Milliseconds(500);
+
+// The size of the icon in the search notifier.
+constexpr int kSearchNotifierIconSize = 30;
 
 }  // namespace
 
@@ -102,26 +105,34 @@ AppListSearchView::AppListSearchView(
       result_selection_controller_.get());
 
   if (features::IsProductivityLauncherImageSearchEnabled()) {
-    // TODO(crbug.com/1352636): Only create `search_notifier_` if it is not yet
-    // accepted.
-    // TODO(crbug.com/1352636): Update the strings with the l10n translated
-    // ones.
-    AppListToastView::Builder toast_view_builder(
-        u"You can now find your images by keyword");
-    toast_view_builder.SetButton(
-        u"Got it",
-        base::BindRepeating(&AppListSearchView::OnSearchNotifierButtonPressed,
-                            weak_ptr_factory_.GetWeakPtr()));
-    search_notifier_ = scroll_contents->AddChildView(
-        toast_view_builder.SetViewDelegate(view_delegate)
-            .SetIcon(ui::ImageModel::FromVectorIcon(kLauncherImageSearchIcon,
-                                                    ui::kColorMenuIcon))
-            .SetIconBackground(true)
-            .SetSubtitle(
-                u"Try \'cat\', \'dog\', \'building\', \'receipts\', etc")
-            .Build());
-    search_notifier_->SetProperty(views::kMarginsKey,
-                                  gfx::Insets::TLBR(16, 16, 0, 16));
+    search_notifier_controller_ = std::make_unique<SearchNotifierController>();
+    if (search_notifier_controller_->ShouldShowPrivacyNotice()) {
+      // The image search category should be always disabled unless the search
+      // notifier is accepted or timeout.
+      view_delegate->SetCategoryEnabled(AppListSearchControlCategory::kImages,
+                                        false);
+
+      // TODO(crbug.com/1352636): Update the strings with the l10n translated
+      // ones.
+      AppListToastView::Builder toast_view_builder(
+          u"You can now find your images by keyword");
+      toast_view_builder.SetButton(
+          u"Get started",
+          base::BindRepeating(&AppListSearchView::OnSearchNotifierButtonPressed,
+                              weak_ptr_factory_.GetWeakPtr()));
+      search_notifier_ = scroll_contents->AddChildView(
+          toast_view_builder.SetViewDelegate(view_delegate)
+              .SetIcon(ui::ImageModel::FromVectorIcon(
+                  vector_icons::kImageSearchIcon, ui::kColorMenuIcon,
+                  kSearchNotifierIconSize))
+              .SetSubtitle(
+                  u"Try \'cat\', \'dog\', \'building\', \'receipts\', etc")
+              .Build());
+      search_notifier_->SetProperty(views::kMarginsKey,
+                                    gfx::Insets::TLBR(16, 16, 0, 16));
+      search_notifier_->icon()->SetProperty(views::kMarginsKey,
+                                            gfx::Insets::TLBR(8, 8, 8, 0));
+    }
   }
 
   auto add_result_container = [&](SearchResultContainerView* new_container) {
@@ -152,7 +163,6 @@ AppListSearchView::AppListSearchView(
 
   // Launcher image search container is always the third view shown.
   if (features::IsProductivityLauncherImageSearchEnabled()) {
-    search_notifier_controller_ = std::make_unique<SearchNotifierController>();
     image_search_container_ = scroll_contents->AddChildView(
         std::make_unique<SearchResultImageListView>(view_delegate));
     add_result_container(image_search_container_);

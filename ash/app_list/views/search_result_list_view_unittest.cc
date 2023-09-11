@@ -32,8 +32,8 @@ int kDefaultSearchItems = 3;
 // Preferred sizing for different types of search result views.
 constexpr int kPreferredWidth = 640;
 constexpr int kDefaultViewHeight = 40;
-constexpr int kInlineAnswerViewHeight = 80;
-constexpr gfx::Insets kInlineAnswerBorder(12);
+constexpr int kInlineAnswerViewHeight = 88;
+constexpr gfx::Insets kInlineAnswerBorder(16);
 
 // SearchResultListType::SearchResultListType::AnswerCard, and
 //  SearchResultListType::kBestMatch do not have associated categories.

@@ -101,6 +101,7 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Sets whether the icon for the toast should have a background.
   void AddIconBackground();
 
+  views::ImageView* icon() const { return icon_; }
   views::LabelButton* toast_button() const { return toast_button_; }
   views::Button* close_button() const { return close_button_; }
 

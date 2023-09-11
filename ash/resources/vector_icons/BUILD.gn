@@ -191,7 +191,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "ksv_volume_up.icon",
     "launch.icon",
     "launcher_hide_continue_section.icon",
-    "launcher_image_search.icon",
     "launcher_show_continue_section.icon",
     "lock_screen_alert.icon",
     "lock_screen_arrow.icon",
