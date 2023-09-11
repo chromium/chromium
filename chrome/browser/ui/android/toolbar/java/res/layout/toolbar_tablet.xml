@@ -27,7 +27,7 @@ found in the LICENSE file.
 
         <org.chromium.chrome.browser.toolbar.HomeButton
             android:id="@+id/home_button"
-            style="@style/ToolbarButton"
+            style="@style/ToolbarHoverableButton"
             android:src="@drawable/btn_toolbar_home"
             android:contentDescription="@string/accessibility_toolbar_btn_home"
             android:visibility="gone"
@@ -38,14 +38,14 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/back_button"
-            style="@style/ToolbarButton"
+            style="@style/ToolbarHoverableButton"
             android:src="@drawable/btn_back"
             android:contentDescription="@string/accessibility_toolbar_btn_back"
             app:tint="@color/default_icon_color_tint_list" />
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/forward_button"
-            style="@style/ToolbarButton"
+            style="@style/ToolbarHoverableButton"
             android:src="@drawable/btn_forward"
             android:contentDescription="@string/accessibility_toolbar_btn_forward"
             app:tint="@color/default_icon_color_tint_list" />
@@ -56,7 +56,7 @@ found in the LICENSE file.
             android:src="@drawable/btn_reload_stop"
             android:contentDescription="@string/accessibility_btn_refresh"
             app:tint="@color/default_icon_color_tint_list"
-            style="@style/ToolbarButton" />
+            style="@style/ToolbarHoverableButton" />
 
         <org.chromium.chrome.browser.omnibox.LocationBarTablet
             android:id="@+id/location_bar"
@@ -71,14 +71,14 @@ found in the LICENSE file.
             android:id="@+id/optional_button_stub"
             android:inflatedId="@+id/optional_toolbar_button"
             android:layout="@layout/optional_toolbar_button"
-            style="@style/ToolbarButton"
+            style="@style/ToolbarHoverableButton"
             android:background="@drawable/toolbar_tab_switcher_button_ripple"
             android:paddingStart="8dp"
             android:visibility="gone" />
 
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
-            style="@style/ToolbarButton"
+            style="@style/ToolbarHoverableButton"
             android:background="@drawable/toolbar_tab_switcher_button_ripple"
             android:paddingStart="@dimen/toolbar_tab_switcher_button_padding"
             android:layout_gravity="top"
