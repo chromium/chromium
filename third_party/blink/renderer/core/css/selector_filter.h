@@ -79,18 +79,6 @@ class CORE_EXPORT SelectorFilter {
   DISALLOW_NEW();
 
  public:
-  class CORE_EXPORT ParentStackFrame {
-    DISALLOW_NEW();
-
-   public:
-    ParentStackFrame() : element(nullptr) {}
-    explicit ParentStackFrame(Element& element) : element(&element) {}
-
-    void Trace(Visitor*) const;
-
-    Member<Element> element;
-  };
-
   SelectorFilter() = default;
   SelectorFilter(const SelectorFilter&) = delete;
   SelectorFilter& operator=(const SelectorFilter&) = delete;
@@ -102,12 +90,8 @@ class CORE_EXPORT SelectorFilter {
   void PushParent(Element& parent);
   void PopParent(Element& parent);
 
-  // Work around crbug.com/1478343 by calling the destructors right away.
-  void Clear() { parent_stack_.clear(); }
-
   bool ParentStackIsConsistent(const ContainerNode* parent_node) const {
-    return !parent_stack_.empty() &&
-           parent_stack_.back().element == parent_node;
+    return !parent_stack_.empty() && parent_stack_.back() == parent_node;
   }
 
   template <unsigned maximumIdentifierCount>
@@ -124,7 +108,7 @@ class CORE_EXPORT SelectorFilter {
   void PushParentStackFrame(Element& parent);
   void PopParentStackFrame();
 
-  HeapVector<ParentStackFrame> parent_stack_;
+  HeapVector<Member<Element>> parent_stack_;
 
   // With 100 unique strings in the filter, 2^12 slot table has false positive
   // rate of ~0.2%.
@@ -146,7 +130,5 @@ inline bool SelectorFilter::FastRejectSelector(
 }
 
 }  // namespace blink
-
-WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(blink::SelectorFilter::ParentStackFrame)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_FILTER_H_

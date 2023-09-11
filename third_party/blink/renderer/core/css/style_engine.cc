@@ -2411,7 +2411,6 @@ void StyleEngine::InvalidateForRuleSetChanges(
   selector_filter.PushAllParentsOf(tree_scope);
   ApplyRuleSetInvalidation(tree_scope, tree_scope.RootNode(), selector_filter,
                            changed_rule_sets, invalidation_scope);
-  selector_filter.Clear();
 }
 
 void StyleEngine::InvalidateInitialData() {

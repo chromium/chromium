@@ -210,10 +210,10 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
 
 void SelectorFilter::PushParentStackFrame(Element& parent) {
   DCHECK(ancestor_identifier_filter_);
-  DCHECK(parent_stack_.empty() || parent_stack_.back().element ==
-                                      FlatTreeTraversal::ParentElement(parent));
+  DCHECK(parent_stack_.empty() ||
+         parent_stack_.back() == FlatTreeTraversal::ParentElement(parent));
   DCHECK(!parent_stack_.empty() || !FlatTreeTraversal::ParentElement(parent));
-  parent_stack_.push_back(ParentStackFrame(parent));
+  parent_stack_.push_back(parent);
   // Mix tags, class names and ids into some sort of weird bouillabaisse.
   // The filter is used for fast rejection of child and descendant selectors.
   CollectElementIdentifierHashes(parent, [this](unsigned hash) {
@@ -224,9 +224,9 @@ void SelectorFilter::PushParentStackFrame(Element& parent) {
 void SelectorFilter::PopParentStackFrame() {
   DCHECK(!parent_stack_.empty());
   DCHECK(ancestor_identifier_filter_);
-  CollectElementIdentifierHashes(
-      *parent_stack_.back().element,
-      [this](unsigned hash) { ancestor_identifier_filter_->Remove(hash); });
+  CollectElementIdentifierHashes(*parent_stack_.back(), [this](unsigned hash) {
+    ancestor_identifier_filter_->Remove(hash);
+  });
   parent_stack_.pop_back();
   if (parent_stack_.empty()) {
 #if DCHECK_IS_ON()
@@ -259,8 +259,7 @@ void SelectorFilter::PushParent(Element& parent) {
   DCHECK(ancestor_identifier_filter_);
   // We may get invoked for some random elements in some wacky cases during
   // style resolve. Pause maintaining the stack in this case.
-  if (parent_stack_.back().element !=
-      FlatTreeTraversal::ParentElement(parent)) {
+  if (parent_stack_.back() != FlatTreeTraversal::ParentElement(parent)) {
     return;
   }
   PushParentStackFrame(parent);
@@ -289,10 +288,6 @@ void SelectorFilter::CollectIdentifierHashes(
   if (hash != end) {
     *hash = 0;
   }
-}
-
-void SelectorFilter::ParentStackFrame::Trace(Visitor* visitor) const {
-  visitor->Trace(element);
 }
 
 void SelectorFilter::Trace(Visitor* visitor) const {
