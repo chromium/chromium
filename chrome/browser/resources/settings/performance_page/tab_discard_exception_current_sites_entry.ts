@@ -41,10 +41,6 @@ export class TabDiscardExceptionCurrentSitesEntryElement extends
   private checked: boolean;
   private item: string;
 
-  setChecked(checked: boolean) {
-    this.$.checkbox.checked = checked;
-  }
-
   private onCheckedChanged_() {
     this.setAttribute('aria-selected', String(this.$.checkbox.checked));
   }
