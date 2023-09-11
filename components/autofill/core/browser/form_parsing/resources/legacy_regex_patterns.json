@@ -53,9 +53,9 @@
     ],
     "pt" : [
       {
-        "positive_pattern": "rua|avenida|((?<!do |de )endere[çc]o)|logradouro",
+        "positive_pattern": "rua|avenida|endere[çc]o|logradouro",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "(do |de )endere[çc]o",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "SEARCH"]
       }
@@ -254,9 +254,9 @@
     ],
     "de": [
       {
-        "positive_pattern": "(?<!con)firma|firmenname",
+        "positive_pattern": "firma|firmenname",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "confirma",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT"]
       }
@@ -428,9 +428,9 @@
     ],
     "pt": [
       {
-        "positive_pattern": "morada|((?<!do |de )endereço)",
+        "positive_pattern": "morada|endereço",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "(do |de )endereço",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "SEARCH"]
       }
@@ -462,16 +462,16 @@
     ],
     "tr": [
       {
-        "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)",
+        "positive_pattern": "(\\b|_)adres(\\b|_)",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "(\\b|_)adres tarifi(\\b|_)",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "SEARCH"]
       },
       {
-        "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)|(sokak|cadde).*(apartman|bina|daire|mahalle)|(apartman|bina|daire|mahalle).*(sokak|cadde)",
+        "positive_pattern": "(\\b|_)adres(\\b|_)|(sokak|cadde).*(apartman|bina|daire|mahalle)|(apartman|bina|daire|mahalle).*(sokak|cadde)",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "(\\b|_)adres tarifi(\\b|_)",
         "match_field_attributes": ["LABEL"],
         "match_field_input_types": ["TEXT", "SEARCH"]
       }
@@ -708,18 +708,18 @@
     ],
     "de": [
       {
-        "positive_pattern": "(\\b|_)land(\\b|_)(?!.*(mark.*))",
+        "positive_pattern": "(\\b|_)land(\\b|_)",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "(\\b|_)land(\\b|_).*mark.*",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
       }
     ],
     "ja": [
       {
-        "positive_pattern": "(?<!(入|出))国",
+        "positive_pattern": "国",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "(入|出)国",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
       }
@@ -1135,9 +1135,9 @@
   "STATE": {
     "en": [
       {
-        "positive_pattern": "(?<!(united|hist|history).?)state|county|region|province|county|principality",
+        "positive_pattern": "state|county|region|province|county|principality",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "(united|hist|history).?state",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
       }
@@ -1411,7 +1411,6 @@
   "NUMERIC_QUANTITY": {
     "en": [
       {
-        "pattern_identifier": "en_numeric_quantity_preserving",
         "positive_pattern": "size|height|quantity|length|amount",
         "positive_score": 0.95,
         "negative_pattern": null,
@@ -1574,9 +1573,9 @@
     ],
     "de": [
       {
-        "positive_pattern": "(?<!telefon|haus|person|fødsels|kunden)nummer",
+        "positive_pattern": "nummer",
         "positive_score": 1.0,
-        "negative_pattern": null,
+        "negative_pattern": "(telefon|haus|person|fødsels|kunden)nummer",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "TELEPHONE", "PASSWORD", "NUMBER"]
       }
@@ -1628,27 +1627,27 @@
     ],
     "es": [
       {
-        "positive_pattern": "(numero|número|numéro)(?!.*(document|fono|phone|réservation))",
+        "positive_pattern": "(numero|número|numéro)",
         "positive_score": 1.0,
-        "negative_pattern": null,
+        "negative_pattern": "(numero|número|numéro).*(document|fono|phone|réservation)",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "TELEPHONE", "PASSWORD", "NUMBER"]
       }
     ],
     "pt": [
       {
-        "positive_pattern": "(numero|número|numéro)(?!.*(document|fono|phone|réservation))",
+        "positive_pattern": "(numero|número|numéro)",
         "positive_score": 1.0,
-        "negative_pattern": null,
+        "negative_pattern": "(numero|número|numéro).*(document|fono|phone|réservation)",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "TELEPHONE", "PASSWORD", "NUMBER"]
       }
     ],
     "fr": [
       {
-        "positive_pattern": "(numero|número|numéro)(?!.*(document|fono|phone|réservation))",
+        "positive_pattern": "(numero|número|numéro)",
         "positive_score": 1.0,
-        "negative_pattern": null,
+        "negative_pattern": "(numero|número|numéro).*(document|fono|phone|réservation)",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "TELEPHONE", "PASSWORD", "NUMBER"]
       }
@@ -2198,9 +2197,9 @@
     ],
     "fr": [
       {
-        "positive_pattern": "^nom(?![a-zA-Z])",
+        "positive_pattern": "^nom",
         "positive_score": 0.9,
-        "negative_pattern": null,
+        "negative_pattern": "^nom[a-zA-Z]",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT"]
       }
@@ -2451,9 +2450,9 @@
   "LAST_NAME": {
     "en": [
       {
-        "positive_pattern": "last.*name|lname|surname(?!\\d)|last$|secondname|family.*name",
+        "positive_pattern": "last.*name|lname|surname|last$|secondname|family.*name",
         "positive_score": 0.9,
-        "negative_pattern": null,
+        "negative_pattern": "surname\\d",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT"]
       }
@@ -2478,9 +2477,9 @@
     ],
     "fr": [
       {
-        "positive_pattern": "famille|^nom(?![a-zA-Z])",
+        "positive_pattern": "famille|^nom",
         "positive_score": 0.9,
-        "negative_pattern": null,
+        "negative_pattern": "^nom[a-zA-Z]",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT"]
       }
@@ -2601,9 +2600,9 @@
   "HONORIFIC_PREFIX": {
     "en": [
       {
-        "positive_pattern": "^title:?$|(salutation(?! and given name))",
+        "positive_pattern": "^title:?$|salutation",
         "positive_score": 0.9,
-        "negative_pattern": null,
+        "negative_pattern": "salutation and given name",
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT"]
       }
