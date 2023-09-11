@@ -71,6 +71,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   void OnGetAndroidDataInfoResponse(
       uint64_t free_disk_space,
+      const base::TimeTicks& time_before_get_android_data_info,
       absl::optional<arc::data_migrator::GetAndroidDataInfoResponse> response);
 
   void CheckBatteryState();

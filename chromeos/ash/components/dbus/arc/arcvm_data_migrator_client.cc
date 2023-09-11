@@ -75,10 +75,8 @@ class ArcVmDataMigratorClientImpl : public ArcVmDataMigratorClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendProtoAsArrayOfBytes(request);
     proxy_->CallMethod(
-        // Use a longer timeout (3 minutes) than the default (25 seconds)
-        // because this can take long when the migration source has a large
-        // number of files.
-        &method_call, base::Minutes(3).InMilliseconds() /* timeout_ms */,
+        &method_call,
+        kArcVmDataMigratorGetAndroidDataInfoTimeout.InMilliseconds(),
         base::BindOnce(
             &ArcVmDataMigratorClientImpl::OnGetAndroidDataInfoResponse,
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

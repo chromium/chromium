@@ -2485,6 +2485,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.GetAndroidDataInfoDuration" units="ms"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The time taken for ArcVmDataMigrator's D-Bus method GetAndroidDataInfo to
+    return a result, measured from the caller (Chrome) side. Reported every time
+    the migration welcome screen is being set up.
+  </summary>
+</histogram>
+
 <histogram name="Arc.VmDataMigration.InitialBatteryLevel" units="%"
     expires_after="2024-03-03">
   <owner>momohatt@google.com</owner>

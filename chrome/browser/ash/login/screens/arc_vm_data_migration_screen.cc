@@ -162,6 +162,13 @@ void ReportBatteryConsumption(double battery_consumption_percent) {
       base::saturated_cast<int>(battery_consumption_percent));
 }
 
+void ReportGetAndroidDataInfoDuration(const base::TimeDelta& duration) {
+  base::UmaHistogramCustomTimes(
+      "Arc.VmDataMigration.GetAndroidDataInfoDuration", duration,
+      base::Seconds(1), kArcVmDataMigratorGetAndroidDataInfoTimeout,
+      kNumBucketsForUmaCustomCounts);
+}
+
 std::string GetChromeOsUsername(Profile* profile) {
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile));
   return cryptohome::CreateAccountIdentifierFromAccountId(account).account_id();
@@ -335,15 +342,24 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
   const uint64_t free_disk_space = reply.value();
   VLOG(1) << "Free disk space is " << free_disk_space;
 
+  const base::TimeTicks time_before_get_android_data_info =
+      tick_clock_->NowTicks();
+
   GetAndroidDataInfo(
       GetChromeOsUsername(profile_),
       base::BindOnce(&ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse,
-                     weak_ptr_factory_.GetWeakPtr(), free_disk_space));
+                     weak_ptr_factory_.GetWeakPtr(), free_disk_space,
+                     time_before_get_android_data_info));
 }
 
 void ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse(
     uint64_t free_disk_space,
+    const base::TimeTicks& time_before_get_android_data_info,
     absl::optional<arc::data_migrator::GetAndroidDataInfoResponse> response) {
+  const base::TimeDelta duration =
+      tick_clock_->NowTicks() - time_before_get_android_data_info;
+  ReportGetAndroidDataInfoDuration(duration);
+
   if (!response.has_value()) {
     LOG(ERROR) << "Failed to get the size of Android /data";
     HandleSetupFailure(
