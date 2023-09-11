@@ -7,6 +7,7 @@ module ash.mojom;
 import "ash/public/mojom/accelerator_actions.mojom";
 import "ash/public/mojom/accelerator_keys.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "ui/events/ash/mojom/extended_fkeys_modifier.mojom";
 import "ui/events/ash/mojom/modifier_key.mojom";
 import "ui/events/ash/mojom/simulate_right_click_modifier.mojom";
 import "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom";
@@ -87,6 +88,12 @@ struct KeyboardSettings {
   bool top_row_are_fkeys;
   bool suppress_meta_fkey_rewrites;
   SixPackKeyInfo? six_pack_key_remappings;
+  // Modifier key used to remap key events to the F11 key for ChromeOS
+  // keyboards.
+  ui.mojom.ExtendedFkeysModifier? f11;
+  // Modifier key used to remap key events to the F12 key for ChromeOS
+  // keyboards.
+  ui.mojom.ExtendedFkeysModifier? f12;
 };
 
 // Contains all information needed to display, apply, and update mouse

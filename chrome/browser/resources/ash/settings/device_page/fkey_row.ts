@@ -150,16 +150,16 @@ export class FkeyRowElement extends FkeyRowElementBase {
         this.keyboard.settings.topRowAreFkeys ? '' : 'Search';
     return [
       {
-        value: ExtendedFkeysModifier.SHIFT,
+        value: ExtendedFkeysModifier.kShift,
         name: this.i18n(`fKeyShiftOption${messageIdSuffix}`, topRowKeyLabel),
       },
       {
-        value: ExtendedFkeysModifier.CTRL_SHIFT,
+        value: ExtendedFkeysModifier.kCtrlShift,
         name:
             this.i18n(`fKeyCtrlShiftOption${messageIdSuffix}`, topRowKeyLabel),
       },
       {
-        value: ExtendedFkeysModifier.ALT,
+        value: ExtendedFkeysModifier.kAlt,
         name: this.i18n(`fKeyAltOption${messageIdSuffix}`, topRowKeyLabel),
       },
     ];
@@ -168,7 +168,7 @@ export class FkeyRowElement extends FkeyRowElementBase {
   protected getMenuOptions(): DropdownMenuOptionList {
     return [
       {
-        value: ExtendedFkeysModifier.DISABLED,
+        value: ExtendedFkeysModifier.kDisabled,
         name: this.i18n('perDeviceKeyboardKeyDisabled'),
       },
       ...this.getFkeyShortcutOptions(),

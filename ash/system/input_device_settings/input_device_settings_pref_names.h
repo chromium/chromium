@@ -85,6 +85,8 @@ constexpr char kSixPackKeyHome[] = "home";
 constexpr char kSixPackKeyEnd[] = "end";
 constexpr char kSixPackKeyDelete[] = "delete";
 constexpr char kSixPackKeyInsert[] = "insert";
+constexpr char kKeyboardSettingF11[] = "f11";
+constexpr char kKeyboardSettingF12[] = "f12";
 
 // Mouse settings dictionary keys.
 constexpr char kMouseSettingSwapRight[] = "swap_right";

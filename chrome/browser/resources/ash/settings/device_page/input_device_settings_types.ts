@@ -4,6 +4,7 @@
 
 import * as AcceleratorActionTypes from '../mojom-webui/accelerator_actions.mojom-webui.js';
 import * as AcceleratorKeysTypes from '../mojom-webui/accelerator_keys.mojom-webui.js';
+import * as ExtendedFkeysModifierTypes from '../mojom-webui/extended_fkeys_modifier.mojom-webui.js';
 import * as InputDeviceSettingsTypes from '../mojom-webui/input_device_settings.mojom-webui.js';
 import * as InputDeviceSettingsProviderTypes from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import * as ModifierKeyTypes from '../mojom-webui/modifier_key.mojom-webui.js';
@@ -30,6 +31,11 @@ export type SixPackShortcutModifier =
 export const SixPackShortcutModifier =
     SixPackShortcutModifierTypes.SixPackShortcutModifier;
 
+export type ExtendedFkeysModifier =
+    ExtendedFkeysModifierTypes.ExtendedFkeysModifier;
+export const ExtendedFkeysModifier =
+    ExtendedFkeysModifierTypes.ExtendedFkeysModifier;
+
 export type SixPackKeyInfo = InputDeviceSettingsTypes.SixPackKeyInfo;
 
 export enum SixPackKey {
@@ -44,13 +50,6 @@ export enum SixPackKey {
 export enum Fkey {
   F11 = 'f11',
   F12 = 'f12',
-}
-
-export enum ExtendedFkeysModifier {
-  DISABLED,
-  ALT,
-  SHIFT,
-  CTRL_SHIFT,
 }
 
 export enum TopRowActionKey {
@@ -83,15 +82,8 @@ export type PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 export const PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 
 export type KeyboardSettings = InputDeviceSettingsTypes.KeyboardSettings;
-export type Keyboard = Omit<
-    InputDeviceSettingsTypes.Keyboard&
-    Partial<{topRowActionKeys: TopRowActionKey[]}>,
-    'settings'>&{
-  settings: KeyboardSettings & Partial<{
-              f11: ExtendedFkeysModifier,
-              f12: ExtendedFkeysModifier,
-            }>,
-};
+export type Keyboard = InputDeviceSettingsTypes.Keyboard&
+                       Partial<{topRowActionKeys: TopRowActionKey[]}>;
 
 export type Touchpad = InputDeviceSettingsTypes.Touchpad;
 export type Mouse = Omit<InputDeviceSettingsTypes.Mouse, 'settings'>&{

@@ -57,8 +57,8 @@ export const fakeKeyboards: Keyboard[] = [
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: true,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
-      f11: ExtendedFkeysModifier.ALT,
-      f12: ExtendedFkeysModifier.SHIFT,
+      f11: ExtendedFkeysModifier.kAlt,
+      f12: ExtendedFkeysModifier.kShift,
     },
     topRowActionKeys: [
       TopRowActionKey.BACK,

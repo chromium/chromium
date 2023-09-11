@@ -11,6 +11,7 @@ mojom("mojom") {
   use_typescript_sources = true
   generate_legacy_js_bindings = true
   sources = [
+    "extended_fkeys_modifier.mojom",
     "modifier_key.mojom",
     "simulate_right_click_modifier.mojom",
     "six_pack_shortcut_modifier.mojom",

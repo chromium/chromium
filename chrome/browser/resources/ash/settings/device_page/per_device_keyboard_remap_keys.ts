@@ -196,7 +196,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           return {
             key: 'f11KeyPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ExtendedFkeysModifier.DISABLED,
+            value: ExtendedFkeysModifier.kDisabled,
           };
         },
       },
@@ -207,7 +207,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           return {
             key: 'f12KeyPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ExtendedFkeysModifier.DISABLED,
+            value: ExtendedFkeysModifier.kDisabled,
           };
         },
       },
