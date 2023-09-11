@@ -181,7 +181,7 @@ BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
 // mismatches in the terms.
 BASE_FEATURE(kNormalizeSearchSuggestions,
              "NormalizeSearchSuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Mainly used to enable sending INTERACTION_CLOBBER focus type for zero-prefix
 // requests with an empty input on Web/SRP on Mobile. Enabled by default on
