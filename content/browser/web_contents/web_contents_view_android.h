@@ -171,6 +171,25 @@ class WebContentsViewAndroid : public WebContentsView,
   // The native view associated with the contents of the web.
   ui::ViewAndroid view_;
 
+  // A common parent to all the native widgets as part of a web page.
+  //
+  // Layer layout:
+  // `view_`
+  //   |
+  //   |- `parent_for_web_page_widgets_`
+  //   |                |
+  //   |                |- RenderWidgetHostViewAndroid
+  //   |                |- Overscroll
+  //   |                |- SelectionHandle
+  //   |
+  //   |- `NavigationEntryScreenshot`  // TODO(https://crbug.com/1420783)
+  //
+  // ViewAndroid layout:
+  // `view_`
+  //   |
+  //   |- `RenderWidgetHostViewAndroid`
+  scoped_refptr<cc::slim::Layer> parent_for_web_page_widgets_;
+
   // Interface used to get notified of events from the synchronous compositor.
   raw_ptr<SynchronousCompositorClient> synchronous_compositor_client_;
 

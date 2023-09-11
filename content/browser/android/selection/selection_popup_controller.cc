@@ -115,13 +115,14 @@ void SelectionPopupController::SetTextHandlesTemporarilyHidden(
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>
-SelectionPopupController::CreateTouchHandleDrawable() {
+SelectionPopupController::CreateTouchHandleDrawable(
+    gfx::NativeView parent_native_view,
+    cc::slim::Layer* parent_layer) {
   ScopedJavaLocalRef<jobject> activityContext = GetContext();
   // If activityContext is null then Application context is used instead on
   // the java side in CompositedTouchHandleDrawable.
-  auto* view = web_contents()->GetNativeView();
-  return std::unique_ptr<ui::TouchHandleDrawable>(
-      new CompositedTouchHandleDrawable(view, activityContext));
+  return std::make_unique<CompositedTouchHandleDrawable>(
+      parent_native_view, parent_layer, activityContext);
 }
 
 void SelectionPopupController::MoveRangeSelectionExtent(

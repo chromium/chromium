@@ -1341,7 +1341,9 @@ TEST_F(RenderWidgetHostTest, Background) {
 #if defined(USE_AURA)
   view = new RenderWidgetHostViewAura(host_.get());
 #elif BUILDFLAG(IS_ANDROID)
-  view = new RenderWidgetHostViewAndroid(host_.get(), nullptr);
+  view = new RenderWidgetHostViewAndroid(host_.get(),
+                                         /*parent_native_view=*/nullptr,
+                                         /*parent_layer=*/nullptr);
 #elif BUILDFLAG(IS_MAC)
   view = CreateRenderWidgetHostViewMacForTesting(host_.get());
 #elif BUILDFLAG(IS_IOS)

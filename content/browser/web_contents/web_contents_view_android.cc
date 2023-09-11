@@ -123,9 +123,17 @@ WebContentsViewAndroid::WebContentsViewAndroid(
       synchronous_compositor_client_(nullptr) {
   view_.SetLayer(cc::slim::Layer::Create());
   view_.set_event_handler(this);
+
+  // `rwhva_parent_` is a child layer of `view_`.
+  parent_for_web_page_widgets_ = cc::slim::Layer::Create();
+  view_.GetLayer()->AddChild(parent_for_web_page_widgets_);
 }
 
 WebContentsViewAndroid::~WebContentsViewAndroid() {
+  // Opposite to the construction order - disconnect the child first.
+  parent_for_web_page_widgets_->RemoveFromParent();
+  parent_for_web_page_widgets_.reset();
+
   if (view_.GetLayer())
     view_.GetLayer()->RemoveFromParent();
   view_.set_event_handler(nullptr);
@@ -236,7 +244,8 @@ RenderWidgetHostViewBase* WebContentsViewAndroid::CreateViewForWidget(
   // native view (i.e. ContentView) how to obtain a reference to this widget in
   // order to paint it.
   RenderWidgetHostImpl* rwhi = RenderWidgetHostImpl::From(render_widget_host);
-  auto* rwhv = new RenderWidgetHostViewAndroid(rwhi, &view_);
+  auto* rwhv = new RenderWidgetHostViewAndroid(
+      rwhi, &view_, parent_for_web_page_widgets_.get());
   rwhv->SetSynchronousCompositorClient(synchronous_compositor_client_);
   return rwhv;
 }
@@ -244,7 +253,8 @@ RenderWidgetHostViewBase* WebContentsViewAndroid::CreateViewForWidget(
 RenderWidgetHostViewBase* WebContentsViewAndroid::CreateViewForChildWidget(
     RenderWidgetHost* render_widget_host) {
   RenderWidgetHostImpl* rwhi = RenderWidgetHostImpl::From(render_widget_host);
-  return new RenderWidgetHostViewAndroid(rwhi, nullptr);
+  return new RenderWidgetHostViewAndroid(rwhi, /*parent_native_view=*/nullptr,
+                                         /*parent_layer=*/nullptr);
 }
 
 void WebContentsViewAndroid::RenderViewReady() {
@@ -263,14 +273,14 @@ void WebContentsViewAndroid::RenderViewHostChanged(RenderViewHost* old_host,
     auto* rwhv = old_host->GetWidget()->GetView();
     if (rwhv && rwhv->GetNativeView()) {
       static_cast<RenderWidgetHostViewAndroid*>(rwhv)->UpdateNativeViewTree(
-          nullptr);
+          /*parent_native_view=*/nullptr, /*parent_layer=*/nullptr);
     }
   }
 
   auto* rwhv = new_host->GetWidget()->GetView();
   if (rwhv && rwhv->GetNativeView()) {
     static_cast<RenderWidgetHostViewAndroid*>(rwhv)->UpdateNativeViewTree(
-        GetNativeView());
+        &view_, parent_for_web_page_widgets_.get());
     SetFocus(view_.HasFocus());
   }
 }

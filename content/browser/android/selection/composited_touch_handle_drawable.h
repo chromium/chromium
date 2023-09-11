@@ -11,6 +11,7 @@
 #include "ui/touch_selection/touch_handle.h"
 
 namespace cc::slim {
+class Layer;
 class UIResourceLayer;
 }  // namespace cc::slim
 
@@ -19,7 +20,8 @@ namespace content {
 // Touch handle drawable implementation backed by a cc layer.
 class CompositedTouchHandleDrawable : public ui::TouchHandleDrawable {
  public:
-  CompositedTouchHandleDrawable(gfx::NativeView view,
+  CompositedTouchHandleDrawable(gfx::NativeView parent_native_view,
+                                cc::slim::Layer* parent_layer,
                                 const base::android::JavaRef<jobject>& context);
 
   CompositedTouchHandleDrawable(const CompositedTouchHandleDrawable&) = delete;

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "content/public/browser/android/compositor.h"
@@ -27,16 +28,19 @@ ui::HandleViewResources& GetSelectionResources() {
 }  // namespace
 
 CompositedTouchHandleDrawable::CompositedTouchHandleDrawable(
-    gfx::NativeView view,
+    gfx::NativeView parent_native_view,
+    cc::slim::Layer* parent_layer,
     const JavaRef<jobject>& context)
-    : view_(view),
-      orientation_(ui::TouchHandleOrientation::UNDEFINED),
+    : orientation_(ui::TouchHandleOrientation::UNDEFINED),
       layer_(cc::slim::UIResourceLayer::Create()) {
+  CHECK(parent_native_view);
+  CHECK(parent_layer);
+
+  view_ = parent_native_view;
   GetSelectionResources().LoadIfNecessary(context);
   drawable_horizontal_padding_ratio_ =
       GetSelectionResources().GetDrawableHorizontalPaddingRatio();
-  DCHECK(view->GetLayer());
-  view->GetLayer()->AddChild(layer_.get());
+  parent_layer->AddChild(layer_.get());
 }
 
 CompositedTouchHandleDrawable::~CompositedTouchHandleDrawable() {
