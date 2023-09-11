@@ -241,6 +241,13 @@ public final class ChromePreferenceKeys {
     public static final String DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC =
             "Chrome.RequestDesktopSiteGlobalSetting.DefaultOnCohortDisplaySpec";
 
+    /**
+     * Indicates that Chrome should show an alert to the user about data privacy if the device
+     * lock is removed.
+     */
+    public static final String DEVICE_LOCK_SHOW_ALERT_IF_REMOVED =
+            "Chrome.DeviceLock.ShowAlertIfRemoved";
+
     public static final String DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT = "ResumptionAttemptLeft";
     public static final String DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS = "ForegroundServiceObservers";
     public static final String DOWNLOAD_IS_DOWNLOAD_HOME_ENABLED =
@@ -1004,6 +1011,7 @@ public final class ChromePreferenceKeys {
                 DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
                 DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
                 DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
+                DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 DSE_NEW_TAB_URL,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,

@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Batch(Batch.UNIT_TESTS)
 public class MissingDeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     private AtomicBoolean mCreateDeviceLockButtonClicked = new AtomicBoolean();
-    private AtomicBoolean mGoToOSSettingsButtonClicked = new AtomicBoolean();
     private AtomicBoolean mContinueClicked = new AtomicBoolean();
     private AtomicBoolean mCheckboxToggled = new AtomicBoolean();
 

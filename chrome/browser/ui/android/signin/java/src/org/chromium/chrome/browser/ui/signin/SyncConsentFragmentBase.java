@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninManager.DataWipeOption;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -826,7 +827,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                 signinManager.wipeSyncUserData(() -> {
                                     onSyncAccepted(mSelectedAccountEmail, settingsClicked,
                                             () -> mIsSigninInProgress = false);
-                                });
+                                }, DataWipeOption.WIPE_SYNC_DATA);
                             } else {
                                 onSyncAccepted(mSelectedAccountEmail, settingsClicked,
                                         () -> mIsSigninInProgress = false);

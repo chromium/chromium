@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
@@ -135,6 +136,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private UiConfig mUiConfig;
 
     private Profile mProfile;
+
+    // This is only used on automotive.
+    private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
 
     @SuppressLint("InlinedApi")
     @Override
@@ -344,6 +348,18 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
             sResumedInstance = this;
             mIsNewlyCreated = false;
+        }
+
+        checkForMissingDeviceLockOnAutomotive();
+    }
+
+    private void checkForMissingDeviceLockOnAutomotive() {
+        if (BuildInfo.getInstance().isAutomotive) {
+            if (mMissingDeviceLockLauncher == null) {
+                mMissingDeviceLockLauncher = new MissingDeviceLockLauncher(
+                        this, mProfile, getModalDialogManagerSupplier().get());
+            }
+            mMissingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock();
         }
     }
 

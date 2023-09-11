@@ -445,8 +445,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
             boolean forceWipeUserData) {
         // Only one signOut at a time!
         assert mSignOutState == null;
-        // User data should not be wiped if the user is not syncing.
-        assert mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !forceWipeUserData;
 
         // Grab the management domain before nativeSignOut() potentially clears it.
         String managementDomain = getManagementDomain();
@@ -559,18 +557,32 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      * Wipes the user's bookmarks and sync data.
      *
      * @param wipeDataCallback A callback which will be called once the data is wiped.
-     *
-     * TODO(crbug.com/1272911): this function and disableSyncAndWipeData() have very similar
-     * functionality, but with different implementations.  Consider merging them.
-     *
-     * TODO(crbug.com/1272911): add test coverage for this function (including its effect on
-     * notifyCallbacksWaitingForOperation()), after resolving the TODO above.
+     * @param dataWipeOption What kind of data to delete.
      */
     @Override
-    public void wipeSyncUserData(Runnable wipeDataCallback) {
+    public void wipeSyncUserData(Runnable wipeDataCallback, @DataWipeOption int dataWipeOption) {
         assert !mWipeUserDataInProgress;
         mWipeUserDataInProgress = true;
 
+        switch (dataWipeOption) {
+            case DataWipeOption.WIPE_SYNC_DATA:
+                wipeSyncUserDataOnly(wipeDataCallback);
+                break;
+            case DataWipeOption.WIPE_ALL_PROFILE_DATA:
+                SigninManagerImplJni.get().wipeProfileData(mNativeSigninManagerAndroid, () -> {
+                    mWipeUserDataInProgress = false;
+                    wipeDataCallback.run();
+                    notifyCallbacksWaitingForOperation();
+                });
+                break;
+        }
+    }
+
+    // TODO(crbug.com/1272911): this function and disableSyncAndWipeData() have very similar
+    // functionality, but with different implementations.  Consider merging them.
+    // TODO(crbug.com/1272911): add test coverage for this function (including its effect on
+    // notifyCallbacksWaitingForOperation()), after resolving the TODO above.
+    private void wipeSyncUserDataOnly(Runnable wipeDataCallback) {
         final BookmarkModel model =
                 BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         model.finishLoadingBookmarkModel(new Runnable() {
@@ -624,11 +636,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                         mNativeSigninManagerAndroid, wipeDataCallback);
                 break;
             case SignOutState.DataWipeAction.WIPE_SYNC_DATA_ONLY:
-                wipeSyncUserData(wipeDataCallback);
+                wipeSyncUserData(wipeDataCallback, DataWipeOption.WIPE_SYNC_DATA);
                 break;
             case SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA:
-                SigninManagerImplJni.get().wipeProfileData(
-                        mNativeSigninManagerAndroid, wipeDataCallback);
+                wipeSyncUserData(wipeDataCallback, DataWipeOption.WIPE_ALL_PROFILE_DATA);
                 break;
         }
     }

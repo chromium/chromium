@@ -52,10 +52,7 @@ public class MissingDeviceLockCoordinator {
             Context context, ModalDialogManager modalDialogManager) {
         mView = MissingDeviceLockView.create(LayoutInflater.from(context));
 
-        mMediator = new MissingDeviceLockMediator((wipeAllData) -> {
-            onContinueWithoutDeviceLock.onResult(wipeAllData);
-            hideDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-        }, context);
+        mMediator = new MissingDeviceLockMediator(onContinueWithoutDeviceLock::onResult, context);
 
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, MissingDeviceLockViewBinder::bind);

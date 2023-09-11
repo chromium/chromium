@@ -1007,6 +1007,18 @@ void PersonalDataManager::DeleteLocalCreditCards(
     Refresh();
 }
 
+void PersonalDataManager::DeleteAllLocalCreditCards() {
+  std::vector<CreditCard*> credit_cards = GetLocalCreditCards();
+
+  std::vector<CreditCard> cards_to_delete;
+  cards_to_delete.reserve(credit_cards.size());
+  for (const CreditCard* card : credit_cards) {
+    cards_to_delete.push_back(*card);
+  }
+
+  DeleteLocalCreditCards(cards_to_delete);
+}
+
 void PersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   DCHECK_EQ(CreditCard::RecordType::kLocalCard, credit_card.record_type());
   CreditCard* existing_credit_card = GetCreditCardByGUID(credit_card.guid());

@@ -182,6 +182,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -409,6 +410,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private boolean mIsRecreatingForTabletModeChange;
     // Handling the dismissal of tab modal dialog.
     private TabModalLifetimeHandler mTabModalLifetimeHandler;
+    // This is only used on automotive.
+    private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
 
     protected ChromeActivity() {
         mIntentHandlerDelegate = createIntentHandlerDelegate();
@@ -1182,6 +1185,17 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         getManualFillingComponent().onResume();
+        checkForMissingDeviceLockOnAutomotive();
+    }
+
+    private void checkForMissingDeviceLockOnAutomotive() {
+        if (BuildInfo.getInstance().isAutomotive) {
+            if (mMissingDeviceLockLauncher == null) {
+                mMissingDeviceLockLauncher = new MissingDeviceLockLauncher(this,
+                        Profile.getLastUsedRegularProfile(), getModalDialogManagerSupplier().get());
+            }
+            mMissingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock();
+        }
     }
 
     private void ensureFullscreenVideoPictureInPictureController() {

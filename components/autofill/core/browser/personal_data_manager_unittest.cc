@@ -3562,6 +3562,21 @@ TEST_F(PersonalDataManagerTest, DeleteLocalCreditCards) {
   }
 }
 
+TEST_F(PersonalDataManagerTest, DeleteAllLocalCreditCards) {
+  SetUpReferenceLocalCreditCards();
+
+  // Expect 3 local credit cards.
+  EXPECT_EQ(3U, personal_data_->GetLocalCreditCards().size());
+
+  personal_data_->DeleteAllLocalCreditCards();
+
+  // Wait for the data to be refreshed.
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+
+  // Expect the local credit cards to have been deleted.
+  EXPECT_EQ(0U, personal_data_->GetLocalCreditCards().size());
+}
+
 // Tests that Wallet addresses do NOT get converted if they're stored in
 // ephemeral storage.
 TEST_F(PersonalDataManagerSyncTransportModeTest,

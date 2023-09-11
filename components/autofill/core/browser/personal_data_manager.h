@@ -262,6 +262,9 @@ class PersonalDataManager : public KeyedService,
   // Delete list of provided credit cards.
   virtual void DeleteLocalCreditCards(const std::vector<CreditCard>& cards);
 
+  // Delete all local credit cards.
+  virtual void DeleteAllLocalCreditCards();
+
   // Updates |credit_card| which already exists in the web database. This
   // can only be used on local credit cards.
   virtual void UpdateCreditCard(const CreditCard& credit_card);

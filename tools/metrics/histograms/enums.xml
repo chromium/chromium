@@ -99488,6 +99488,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     (eg. using history sync promo in recent tabs), but declined history sync
     eventually.
   </int>
+  <int value="28" label="Device lock removed on automotive">
+    If the device lock is removed from an Android automotive device, the current
+    account is automatically signed out.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">

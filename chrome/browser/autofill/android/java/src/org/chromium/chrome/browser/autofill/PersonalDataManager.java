@@ -577,6 +577,14 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
+    /**
+     * Deletes all local credit cards.
+     */
+    public void deleteAllLocalCreditCards() {
+        ThreadUtils.assertOnUiThread();
+        PersonalDataManagerJni.get().deleteAllLocalCreditCards(mPersonalDataManagerAndroid);
+    }
+
     public void clearUnmaskedCache(String guid) {
         PersonalDataManagerJni.get().clearUnmaskedCache(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
@@ -950,6 +958,7 @@ public class PersonalDataManager {
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         CreditCard getCreditCardForNumber(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String cardNumber);
+        void deleteAllLocalCreditCards(long nativePersonalDataManagerAndroid);
         String setCreditCard(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, CreditCard card);
         long getDateNDaysAgoForTesting(

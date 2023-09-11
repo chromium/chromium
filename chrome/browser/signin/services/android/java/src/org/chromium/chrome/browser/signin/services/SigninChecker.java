@@ -12,6 +12,7 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.signin.services.SigninManager.DataWipeOption;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -165,7 +166,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
                         RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin2");
                         mSigninManager.signin(
                                 childAccount, SigninAccessPoint.FORCED_SIGNIN, signInCallback);
-                    });
+                    }, DataWipeOption.WIPE_SYNC_DATA);
                     return;
                 }
             });

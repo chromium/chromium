@@ -441,6 +441,10 @@ void PersonalDataManagerAndroid::RemoveByGUID(
   personal_data_manager_->RemoveByGUID(ConvertJavaStringToUTF8(env, jguid));
 }
 
+void PersonalDataManagerAndroid::DeleteAllLocalCreditCards(JNIEnv* env) {
+  personal_data_manager_->DeleteAllLocalCreditCards();
+}
+
 void PersonalDataManagerAndroid::ClearUnmaskedCache(
     JNIEnv* env,
     const JavaParamRef<jobject>& unused_obj,

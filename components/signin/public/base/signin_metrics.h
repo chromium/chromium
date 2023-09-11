@@ -93,9 +93,12 @@ enum class ProfileSignout {
   // (eg. using history sync promo in recent tabs), but declined history sync
   // eventually.
   kUserDeclinedHistorySyncAfterDedicatedSignIn = 27,
+  // If the device lock is removed from an Android automotive device, the
+  // current account is automatically signed out.
+  kDeviceLockRemovedOnAutomotive = 28,
 
   // Keep this as the last enum.
-  kMaxValue = kUserDeclinedHistorySyncAfterDedicatedSignIn
+  kMaxValue = kDeviceLockRemovedOnAutomotive
 };
 
 // Enum values used for use with "AutoLogin.Reverse" histograms.

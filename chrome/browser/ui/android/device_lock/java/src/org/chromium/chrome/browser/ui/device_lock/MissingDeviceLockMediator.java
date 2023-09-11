@@ -20,8 +20,7 @@ public class MissingDeviceLockMediator {
     private final Callback<Boolean> mOnContinueWithoutDeviceLock;
     private final Context mContext;
 
-    public MissingDeviceLockMediator(
-            Callback<Boolean> onContinueWithoutDeviceLock, Context context) {
+    MissingDeviceLockMediator(Callback<Boolean> onContinueWithoutDeviceLock, Context context) {
         mOnContinueWithoutDeviceLock = onContinueWithoutDeviceLock;
         mContext = context;
 

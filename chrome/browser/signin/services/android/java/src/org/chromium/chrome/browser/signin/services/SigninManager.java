@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin.services;
 
 import android.accounts.Account;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
@@ -14,6 +15,9 @@ import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Android wrapper of the SigninManager which provides access from the Java layer.
@@ -26,6 +30,17 @@ import org.chromium.components.signin.metrics.SignoutReason;
  * See chrome/browser/android/signin/signin_manager_android.h for more details.
  */
 public interface SigninManager {
+    /** What type of data to delete when data deletion is requested. */
+    @IntDef({DataWipeOption.WIPE_SYNC_DATA, DataWipeOption.WIPE_ALL_PROFILE_DATA})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DataWipeOption {
+        /* Delete all syncable data from the profile (history, passwords, form data, as well as */
+        /* cache and cookies. */
+        int WIPE_SYNC_DATA = 0;
+        /* Delete all data from the profile. */
+        int WIPE_ALL_PROFILE_DATA = 1;
+    }
+
     /**
      * A SignInStateObserver is notified when the user signs in to or out of Chrome.
      */
@@ -232,6 +247,7 @@ public interface SigninManager {
      * serialization of wipe operations.
      *
      * @param wipeDataCallback A callback which will be called once the data is wiped.
+     * @param dataWipeOption What kind of data to delete.
      */
-    void wipeSyncUserData(Runnable wipeDataCallback);
+    void wipeSyncUserData(Runnable wipeDataCallback, @DataWipeOption int dataWipeOption);
 }
