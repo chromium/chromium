@@ -3727,6 +3727,9 @@ extern const char kImeFstDecoderParamsUpdateDescription[];
 extern const char kImeTrayHideVoiceButtonName[];
 extern const char kImeTrayHideVoiceButtonDescription[];
 
+extern const char kIppFirstSetupForUsbPrintersName[];
+extern const char kIppFirstSetupForUsbPrintersDescription[];
+
 extern const char kLacrosProfileMigrationForceOffName[];
 extern const char kLacrosProfileMigrationForceOffDescription[];
 

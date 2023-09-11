@@ -6468,6 +6468,12 @@ const char kImeTrayHideVoiceButtonName[] =
 const char kImeTrayHideVoiceButtonDescription[] =
     "Hides voice button in IME tray when mic icon is shown in the shelf";
 
+const char kIppFirstSetupForUsbPrintersName[] =
+    "Try to setup USB printers with IPP first";
+const char kIppFirstSetupForUsbPrintersDescription[] =
+    "When enabled, ChromeOS attempts to setup USB printers via IPP Everywhere "
+    "first, then falls back to PPD-based setup.";
+
 const char kVirtualKeyboardNewHeaderName[] =
     "Enable new header for virtual keyboard";
 const char kVirtualKeyboardNewHeaderDescription[] =

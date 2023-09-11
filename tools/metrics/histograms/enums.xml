@@ -63076,6 +63076,7 @@ from previous Chrome versions.
   <int value="-809456392" label="WebViewVulkanIntermediateBuffer:enabled"/>
   <int value="-808486493" label="NewWallpaperPicker:disabled"/>
   <int value="-807864284" label="prefer-dcheck"/>
+  <int value="-807352944" label="IppFirstSetupForUsbPrinters:disabled"/>
   <int value="-806549905"
       label="TabbedAppOverflowMenuThreeButtonActionbar:disabled"/>
   <int value="-806480547" label="SyncDeviceInfoInTransportMode:enabled"/>
@@ -66560,6 +66561,7 @@ from previous Chrome versions.
   <int value="939603162" label="BackgroundLoadingForDownloads:disabled"/>
   <int value="940302066" label="OmniboxUniformRowHeight:disabled"/>
   <int value="940705998" label="CrOSLateBootArcSwitchToKeyMintDaemon:disabled"/>
+  <int value="940751405" label="IppFirstSetupForUsbPrinters:enabled"/>
   <int value="941036016" label="ContentSuggestionsSettings:disabled"/>
   <int value="941883332" label="ProactiveTabFreezeAndDiscard:disabled"/>
   <int value="941948340" label="PlaybackSpeedButton:enabled"/>

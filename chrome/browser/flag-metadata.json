@@ -5168,6 +5168,11 @@
       "expiry_milestone": 118
   },
   {
+      "name": "ipp-first-setup-for-usb-printers",
+      "owners": [ "pawliczek", "project-bolton@google.com" ],
+      "expiry_milestone": 125
+  },
+  {
     "name": "isolate-origins",
     "owners": [ "site-isolation-dev", "alexmos", "creis", "lukasza" ],
     // This is useful for isolating additional origins beyond the normal site

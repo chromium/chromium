@@ -11019,6 +11019,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(reporting::kEnableRuntimeCountersTelemetry)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"ipp-first-setup-for-usb-printers",
+     flag_descriptions::kIppFirstSetupForUsbPrintersName,
+     flag_descriptions::kIppFirstSetupForUsbPrintersDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kIppFirstSetupForUsbPrinters)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

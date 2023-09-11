@@ -1578,6 +1578,12 @@ BASE_FEATURE(kInternalServerSideSpeechRecognitionByFinch,
 // Enables sending `client-info` values to IPP printers on ChromeOS.
 BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables new experimental IPP-first setup path for USB printers on ChromeOS.
+// Used in finch experiment.
+BASE_FEATURE(kIppFirstSetupForUsbPrinters,
+             "IppFirstSetupForUsbPrinters",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables correct handling of the function key row in Japanese.
 BASE_FEATURE(kJapaneseFunctionRow,
              "JapaneseFunctionRow",
