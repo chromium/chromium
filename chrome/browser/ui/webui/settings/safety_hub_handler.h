@@ -146,8 +146,8 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   void HandleUndoIgnoreOriginsForNotificationPermissionReview(
       const base::Value::List& args);
 
-  // Returns the Safe Browsing state.
-  void HandleGetSafeBrowsingState(const base::Value::List& args);
+  // Returns the data for Safe Browsing card.
+  void HandleGetSafeBrowsingCardData(const base::Value::List& args);
 
   // Returns the data for the password card.
   void HandleGetPasswordCardData(const base::Value::List& args);

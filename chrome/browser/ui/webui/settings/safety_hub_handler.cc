@@ -110,6 +110,18 @@ SafeBrowsingState GetSafeBrowsingState(PrefService* pref_service) {
     return SafeBrowsingState::kDisabledByExtension;
   return SafeBrowsingState::kDisabledByUser;
 }
+
+base::Value::Dict GetSafeBrowsingCardData(int header_id,
+                                          int subheader_id,
+                                          SafetyHubCardState card_state) {
+  base::Value::Dict sb_card_info;
+
+  sb_card_info.Set(kHeader, l10n_util::GetStringUTF16(header_id));
+  sb_card_info.Set(kSubheader, l10n_util::GetStringUTF16(subheader_id));
+  sb_card_info.Set(kState, static_cast<int>(card_state));
+
+  return sb_card_info;
+}
 }  // namespace
 
 SafetyHubHandler::SafetyHubHandler(Profile* profile)
@@ -367,7 +379,7 @@ void SafetyHubHandler::HandleUndoIgnoreOriginsForNotificationPermissionReview(
   SendNotificationPermissionReviewList();
 }
 
-void SafetyHubHandler::HandleGetSafeBrowsingState(
+void SafetyHubHandler::HandleGetSafeBrowsingCardData(
     const base::Value::List& args) {
   AllowJavascript();
 
@@ -376,7 +388,41 @@ void SafetyHubHandler::HandleGetSafeBrowsingState(
 
   SafeBrowsingState result = GetSafeBrowsingState(profile_->GetPrefs());
 
-  ResolveJavascriptCallback(callback_id, (int)result);
+  base::Value::Dict sb_card_info;
+
+  switch (result) {
+    case SafeBrowsingState::kEnabledEnhanced:
+      sb_card_info = GetSafeBrowsingCardData(
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER,
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER,
+          SafetyHubCardState::kSafe);
+      break;
+    case SafeBrowsingState::kEnabledStandard:
+      sb_card_info = GetSafeBrowsingCardData(
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER,
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER,
+          SafetyHubCardState::kSafe);
+      break;
+    case SafeBrowsingState::kDisabledByAdmin:
+      sb_card_info = GetSafeBrowsingCardData(
+          IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
+          IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER,
+          SafetyHubCardState::kInfo);
+      break;
+    case SafeBrowsingState::kDisabledByExtension:
+      sb_card_info = GetSafeBrowsingCardData(
+          IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
+          IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER,
+          SafetyHubCardState::kInfo);
+      break;
+    default:
+      sb_card_info =
+          GetSafeBrowsingCardData(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
+                                  IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER,
+                                  SafetyHubCardState::kWarning);
+  }
+
+  ResolveJavascriptCallback(callback_id, sb_card_info);
 }
 
 void SafetyHubHandler::HandleGetPasswordCardData(
@@ -465,7 +511,7 @@ void SafetyHubHandler::RegisterMessages() {
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getSafeBrowsingState",
-      base::BindRepeating(&SafetyHubHandler::HandleGetSafeBrowsingState,
+      base::BindRepeating(&SafetyHubHandler::HandleGetSafeBrowsingCardData,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getPasswordCardData",

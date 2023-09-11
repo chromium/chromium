@@ -149,11 +149,13 @@ class SafetyHubHandlerTest : public testing::Test {
     }
   }
 
-  void ValidateHandleSafeBrowsingState(SafeBrowsingState state) {
+  void ValidateHandleSafeBrowsingCardData(std::string header,
+                                          std::string subheader,
+                                          SafetyHubCardState state) {
     base::Value::List args;
     args.Append("getSafeBrowsingState");
 
-    handler()->HandleGetSafeBrowsingState(args);
+    handler()->HandleGetSafeBrowsingCardData(args);
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
 
@@ -163,8 +165,12 @@ class SafetyHubHandlerTest : public testing::Test {
     // arg2 is a boolean that is true if the callback is successful.
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2());
-    ASSERT_TRUE(data.arg3()->is_int());
-    EXPECT_EQ((std::int32_t)state, data.arg3()->GetInt());
+    ASSERT_TRUE(data.arg3()->is_dict());
+
+    EXPECT_EQ(header, *data.arg3()->GetDict().FindString("header"));
+    EXPECT_EQ(subheader, *data.arg3()->GetDict().FindString("subheader"));
+    EXPECT_EQ(static_cast<int>(state),
+              *data.arg3()->GetDict().FindInt("state"));
   }
 
   base::Value::List GetOriginList(int size) {
@@ -395,50 +401,97 @@ TEST_F(SafetyHubHandlerTest, HandleResetNotificationPermissionForOrigins) {
   ValidateNotificationPermissionUpdate();
 }
 
-TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_EnabledEnhanced) {
+TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingCardData_EnabledEnhanced) {
   SetPrefsForSafeBrowsing(true, true, SettingManager::USER);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledEnhanced);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER),
+      SafetyHubCardState::kSafe);
 
   SetPrefsForSafeBrowsing(true, true, SettingManager::EXTENSION);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledEnhanced);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER),
+      SafetyHubCardState::kSafe);
 
   SetPrefsForSafeBrowsing(true, true, SettingManager::ADMIN);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledEnhanced);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER),
+      SafetyHubCardState::kSafe);
 }
 
-TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_EnabledStandard) {
+TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingCardData_EnabledStandard) {
   SetPrefsForSafeBrowsing(true, false, SettingManager::USER);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledStandard);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER),
+      SafetyHubCardState::kSafe);
 
   SetPrefsForSafeBrowsing(true, false, SettingManager::EXTENSION);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledStandard);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER),
+      SafetyHubCardState::kSafe);
 
   SetPrefsForSafeBrowsing(true, false, SettingManager::ADMIN);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledStandard);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER),
+      SafetyHubCardState::kSafe);
 }
 
-TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_DisabledByAdmin) {
+TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingCardData_DisabledByAdmin) {
   SetPrefsForSafeBrowsing(false, false, SettingManager::ADMIN);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByAdmin);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER),
+      SafetyHubCardState::kInfo);
 
   SetPrefsForSafeBrowsing(false, true, SettingManager::ADMIN);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByAdmin);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER),
+      SafetyHubCardState::kInfo);
 }
 
-TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_DisabledByExtension) {
+TEST_F(SafetyHubHandlerTest,
+       HandleGetSafeBrowsingCardData_DisabledByExtension) {
   SetPrefsForSafeBrowsing(false, false, SettingManager::EXTENSION);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByExtension);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER),
+      SafetyHubCardState::kInfo);
 
   SetPrefsForSafeBrowsing(false, true, SettingManager::EXTENSION);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByExtension);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER),
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER),
+      SafetyHubCardState::kInfo);
 }
 
-TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_DisabledByUser) {
+TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingCardData_DisabledByUser) {
   SetPrefsForSafeBrowsing(false, false, SettingManager::USER);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByUser);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER),
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER),
+      SafetyHubCardState::kWarning);
 
   SetPrefsForSafeBrowsing(false, true, SettingManager::USER);
-  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByUser);
+  ValidateHandleSafeBrowsingCardData(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER),
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER),
+      SafetyHubCardState::kWarning);
 }
 
 // Test that revocation is happen correctly for all content setting types.

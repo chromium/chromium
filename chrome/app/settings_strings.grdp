@@ -4279,4 +4279,28 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SOME_TIME_AGO" desc="Subtitle of the passwords card in the Safety Hub page which explains how recently passwords were checked for issues. The passwords card contains information about password issues which are detected automatically. This text is shown below a header which explains there are no issues and indicates that passwords were checked for issues some time ago.">
     Checked <ph name="NUM_DAYS_HOURS_MINUTES">$1<ex>2 days</ex></ph> ago
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER" translateable="false" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the headline of the Safe Browsing card when the current state is Enhanced protection.">
+    Enhanced Safe Browsing is on
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER" translateable="false" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is Enhanced protection.">
+    You have Chrome's strongest security
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER" translateable="false" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the headline of the Safe Browsing card when the current state is Standard protection.">
+    Safe Browsing is on
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER" translateable="false" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is Standard protection.">
+    You're getting standard protection
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER" translateable="false" desc="Safety Hub settings page(chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting(chrome://settings/security). This string is the headline of the Safe Browsing card when the current state is No protection.">
+    Safe Browsing is off
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER" translateable="false" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is No protection because the user's organization (e.g. employer, university, etc.) has turned it off.">
+    Your organization turned off Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER" translateable="false" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is No protection because one of the extensions installed on the user's browser has turned it off.">
+    An extension turned off Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER" translateable="false" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is No protection because the user has turned it off.">
+    Turn on Safe Browsing to get protection against dangerous sites
+  </message>
 </grit-part>
