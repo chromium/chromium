@@ -134,7 +134,7 @@
     Finalizing...
   </message>
 
-  <message name="IDS_GETTING_DEVICE_READY" desc="Message that the system is getting the device ready" translateable="false">
+  <message name="IDS_GETTING_DEVICE_READY" desc="Message that the system is getting the device ready">
     Getting the device ready...
   </message>
 
