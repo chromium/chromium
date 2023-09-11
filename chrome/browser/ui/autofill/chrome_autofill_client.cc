@@ -757,12 +757,21 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
     LocalSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
+  AutofillSaveCardUiInfo ui_info =
+      AutofillSaveCardUiInfo::CreateForLocalSave(options, card);
+  auto save_card_delegate =
+      std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsAndroidBottomSheet)) {
+    if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
+      bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
+    }
+    return;
+  }
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateSaveCardInfoBarMobile(
           std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
-              AutofillSaveCardUiInfo::CreateForLocalSave(options, card),
-              std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
-                                                         options))));
+              std::move(ui_info), std::move(save_card_delegate))));
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
@@ -785,31 +794,19 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
       options, card, legal_message_lines, account_info);
-  auto common_delegate =
+  auto save_card_delegate =
       std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options);
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePaymentsAndroidBottomSheet)) {
-    if (!autofill_save_card_bottom_sheet_bridge_) {
-      // During shutdown the window may be null. There is no need to show the
-      // bottom sheet during shutdown.
-      auto* window_android = web_contents()->GetTopLevelNativeWindow();
-      TabModel* tab_model =
-          TabModelList::GetTabModelForWebContents(web_contents());
-      if (!window_android || !tab_model) {
-        return;
-      }
-      autofill_save_card_bottom_sheet_bridge_ =
-          std::make_unique<AutofillSaveCardBottomSheetBridge>(window_android,
-                                                              tab_model);
+    if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
+      bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
     }
-    autofill_save_card_bottom_sheet_bridge_->RequestShowContent(
-        ui_info, std::move(common_delegate));
     return;
   }
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateSaveCardInfoBarMobile(
           std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
-              std::move(ui_info), std::move(common_delegate))));
+              std::move(ui_info), std::move(save_card_delegate))));
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
@@ -1353,5 +1350,24 @@ std::u16string ChromeAutofillClient::GetAccountHolderEmail() {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   return base::UTF8ToUTF16(primary_account_info.email);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+AutofillSaveCardBottomSheetBridge*
+ChromeAutofillClient::GetOrCreateAutofillSaveCardBottomSheetBridge() {
+  if (!autofill_save_card_bottom_sheet_bridge_) {
+    // During shutdown the window may be null. There is no need to show the
+    // bottom sheet during shutdown.
+    auto* window_android = web_contents()->GetTopLevelNativeWindow();
+    TabModel* tab_model =
+        TabModelList::GetTabModelForWebContents(web_contents());
+    if (window_android && tab_model) {
+      autofill_save_card_bottom_sheet_bridge_ =
+          std::make_unique<AutofillSaveCardBottomSheetBridge>(window_android,
+                                                              tab_model);
+    }
+  }
+  return autofill_save_card_bottom_sheet_bridge_.get();
+}
+#endif
 
 }  // namespace autofill

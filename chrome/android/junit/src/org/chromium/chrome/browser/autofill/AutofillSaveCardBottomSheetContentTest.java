@@ -97,6 +97,7 @@ public class AutofillSaveCardBottomSheetContentTest {
     @Test
     public void testSetUiInfo_setsAllViews() {
         AutofillSaveCardUiInfo uiInfo = new AutofillSaveCardUiInfo.Builder()
+                                                .withIsForUpload(true)
                                                 .withLogoIcon(0)
                                                 .withTitleText("Title Text")
                                                 .withDescriptionText("Description Text")
@@ -128,13 +129,35 @@ public class AutofillSaveCardBottomSheetContentTest {
         assertEquals("Cancel Text", cancelButton.getText());
     }
 
+    @Test
+    public void testSetUiInfo_setsViewsToGone_whenEmptyText() {
+        // Set visibility to gone on description and legal message to remove the visually extra
+        // margins caused by empty views.
+        AutofillSaveCardUiInfo uiInfo = defaultUiInfoBuilder()
+                                                .withDescriptionText("")
+                                                .withLegalMessageLines(ImmutableList.of())
+                                                .build();
+
+        mContent.setUiInfo(uiInfo);
+
+        View contentView = mContent.getContentView();
+        assertEquals(View.GONE,
+                contentView.findViewById(R.id.autofill_save_card_description_text).getVisibility());
+        assertEquals(View.GONE, contentView.findViewById(R.id.legal_message).getVisibility());
+    }
+
     private CharSequence getTextViewText(@IdRes int resourceId) {
         return mContent.getContentView().<TextView>findViewById(resourceId).getText();
     }
 
     @Test
     public void testSetLogoIconId_visiblySetsTheImage() {
-        mContent.setUiInfo(defaultUiInfoBuilder().withLogoIcon(EXAMPLE_DRAWABLE_RES).build());
+        AutofillSaveCardUiInfo uiInfo = defaultUiInfoBuilder()
+                                                .withIsForUpload(true)
+                                                .withLogoIcon(EXAMPLE_DRAWABLE_RES)
+                                                .build();
+
+        mContent.setUiInfo(uiInfo);
 
         ImageView imageView = mContent.getContentView().findViewById(R.id.autofill_save_card_icon);
         assertThat(imageView.getDrawable(), notNullValue());
@@ -269,7 +292,7 @@ public class AutofillSaveCardBottomSheetContentTest {
 
     private static AutofillSaveCardUiInfo.Builder defaultUiInfoBuilder() {
         return new AutofillSaveCardUiInfo.Builder()
-                .withIsForUpload(false)
+                .withIsForUpload(true)
                 .withCardDetail(new CardDetail(/*iconId=*/0, /*label=*/"", /*subLabel=*/""))
                 .withLegalMessageLines(Collections.EMPTY_LIST)
                 .withTitleText("")
