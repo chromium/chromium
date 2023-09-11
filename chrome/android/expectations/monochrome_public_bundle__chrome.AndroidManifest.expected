@@ -979,10 +979,6 @@
         android:isolatedProcess="true"
         android:process=":decoder_service">
     </service>  # DIFF-ANCHOR: 53256720
-    <service  # DIFF-ANCHOR: 064aae37
-        android:name="org.chromium.chrome.browser.prerender.ChromePrerenderService"
-        android:exported="true">
-    </service>  # DIFF-ANCHOR: 064aae37
     <service  # DIFF-ANCHOR: 6d9cb216
         android:name="org.chromium.chrome.browser.services.gcm.ChromeGcmListenerService"
         android:exported="false">
