@@ -1314,7 +1314,7 @@ BASE_FEATURE(kGlanceablesV2ErrorMessage,
 // potential recovery flows, regardless of the flag value.
 BASE_FEATURE(kGaiaReauthEndpoint,
              "GaiaReauthEndpoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Game Dashboard.
 BASE_FEATURE(kGameDashboard,

@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, NoRecoveryFactor) {
                 ->GetOobeUI()
                 ->GetHandler<GaiaScreenHandler>()
                 ->GetGaiaPath(),
-            GaiaScreenHandler::GaiaPath::kDefault);
+            GaiaScreenHandler::GaiaPath::kReauth);
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
