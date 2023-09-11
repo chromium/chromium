@@ -49,7 +49,7 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         self.show_logs = True
         self._start = datetime.now()
 
-    def generate_test_name_output(self, subsuite, test_name):
+    def get_test_name_output(self, subsuite, test_name):
         if not test_name.startswith('/wpt_internal/'):
             test_name = '/external/wpt' + test_name
         return f'virtual/{subsuite}{test_name}' if subsuite else test_name[1:]
