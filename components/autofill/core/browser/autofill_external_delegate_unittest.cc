@@ -53,9 +53,7 @@ namespace {
 Matcher<const AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
     AutofillTriggerDetails details) {
   return AllOf(
-      Field(&AutofillTriggerDetails::trigger_source, details.trigger_source),
-      Field(&AutofillTriggerDetails::filling_granularity,
-            details.filling_granularity));
+      Field(&AutofillTriggerDetails::trigger_source, details.trigger_source));
 }
 
 constexpr auto kDefaultTriggerSource =

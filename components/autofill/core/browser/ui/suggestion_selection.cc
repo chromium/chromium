@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -54,49 +55,47 @@ std::u16string GetInfoInOneLine(const AutofillProfile* profile,
   return profile->GetInfo(type, app_locale);
 }
 
-// // Sets the `popup_item_id` for `suggestion` depending on
-// `last_filling_granularity`. If the `last_filling_granularity` for a certain
-// form was group filling, also add labels to give users feedback about the next
-// filling behaviour.
-// TODO(crbug.com/1466116): Possibly update the filling granularity check once
-// https://chromium-review.googlesource.com/c/chromium/src/+/4778661 has been
-// submitted.
+// Sets the `popup_item_id` for `suggestion` depending on
+// `last_targetted_fields`. If the `last_targetted_fields` for a
+// certain form section matches one of the group filling fields set, for
+// granular filling, this method also adds labels to give users feedback about
+// the next filling behaviour.
 // TODO(crbug.com/1466116): Add tests when this is actually used.
-// TODO(crbug.com/1466116): Add labels when `last_filling_granularity` is group
-// filling.
+// TODO(crbug.com/1466116): Add labels when `last_targetted_fields`
+// matches group one of the filling groups.
 void AddSuggestionDetailsForCurrentFillingGranularity(
-    FillingGranularity last_filling_granularity,
+    const ServerFieldTypeSet& last_targetted_fields,
     const AutofillType& triggering_field_type,
     Suggestion& suggestion) {
-  switch (last_filling_granularity) {
-    case FillingGranularity::kGroupFilling: {
-      switch (triggering_field_type.group()) {
-        case FieldTypeGroup::kName:
-          suggestion.popup_item_id = PopupItemId::kFillFullName;
-          return;
-        case FieldTypeGroup::kAddress:
-          suggestion.popup_item_id = PopupItemId::kFillFullAddress;
-          return;
-        case FieldTypeGroup::kPhone:
-          suggestion.popup_item_id = PopupItemId::kFillFullPhoneNumber;
-          return;
-        default:
-          // If the `current_granularity` is group filling, BUT the current
-          // focused field is not one for which group we offer group filling
-          // (kName, kAddress and kPhone), we default back to fill full form
-          // behaviour/pre-granular filling popup id.
-          suggestion.popup_item_id = PopupItemId::kAddressEntry;
-          return;
-      }
+  if (AreFieldsGranularFillingGroup(last_targetted_fields)) {
+    switch (triggering_field_type.group()) {
+      case FieldTypeGroup::kName:
+        suggestion.popup_item_id = PopupItemId::kFillFullName;
+        break;
+      case FieldTypeGroup::kAddress:
+        suggestion.popup_item_id = PopupItemId::kFillFullAddress;
+        break;
+      case FieldTypeGroup::kPhone:
+        suggestion.popup_item_id = PopupItemId::kFillFullPhoneNumber;
+        break;
+      default:
+        // If the 'current_granularity' is group filling, BUT the current
+        // focused field is not one for which group we offer group filling
+        // (kName, kAddress and kPhone), we default back to fill full form
+        // behaviour/pre-granular filling popup id.
+        suggestion.popup_item_id = PopupItemId::kAddressEntry;
     }
-    case FillingGranularity::kFieldByFieldFilling:
-      suggestion.popup_item_id = PopupItemId::kFieldByFieldFilling;
-      return;
-    case FillingGranularity::kFillForm:
-      suggestion.popup_item_id = PopupItemId::kAddressEntry;
-      return;
-    default:
-      NOTREACHED();
+  } else if (last_targetted_fields == kAllServerFieldTypes) {
+    suggestion.popup_item_id = PopupItemId::kAddressEntry;
+  } else if (last_targetted_fields.size() == 1) {
+    // Note: This does not affect SingleFieldFormFillers such
+    // Autocomplete, IBANs and merchand promo. Even though they also fill only
+    // one field, they have different code paths, therefore their suggestions
+    // are not generated here. Furthermore, we do not store
+    // `last_targetted_fields` for them.
+    suggestion.popup_item_id = PopupItemId::kFieldByFieldFilling;
+  } else {
+    NOTREACHED_NORETURN();
   }
 }
 
@@ -446,12 +445,10 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
         AddGranularFillingChildSuggestions(type, *profile, app_locale,
                                            suggestions.back());
 
-        // TODO(crbug.com/1466116): Make this hard coded value a param to
+        // TODO(crbug.com/1466116): Make kAllServerFieldTypes a param to
         // GetPrefixMatchedSuggestions.
-        const FillingGranularity kLastFillingGranularity =
-            FillingGranularity::kGroupFilling;
         AddSuggestionDetailsForCurrentFillingGranularity(
-            kLastFillingGranularity, type, suggestions.back());
+            kAllServerFieldTypes, type, suggestions.back());
       }
     }
   }

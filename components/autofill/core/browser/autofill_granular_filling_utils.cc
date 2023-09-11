@@ -17,4 +17,10 @@ ServerFieldTypeSet GetAddressFieldsForGroupFilling() {
   return fields;
 }
 
+bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& fields) {
+  return fields == GetAddressFieldsForGroupFilling() ||
+         fields == GetServerFieldTypesOfGroup(FieldTypeGroup::kName) ||
+         fields == GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone);
+}
+
 }  // namespace autofill

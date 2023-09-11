@@ -17,6 +17,11 @@ namespace autofill {
 // FieldTypeGroup::kAddress and FieldTypeGroup::kCompany.
 ServerFieldTypeSet GetAddressFieldsForGroupFilling();
 
+// Returns true if `fields` matches one of granullar
+// filling groups, i.e., FieldTypeGroup::kName fields, FieldTypeGroup::kPhone
+// fields or `GetAddressFieldsForGroupFilling` (from the method above).
+bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& fields);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_GRANULAR_FILLING_UTILS_H_

@@ -71,9 +71,7 @@ namespace {
 Matcher<const autofill::AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
     autofill::AutofillTriggerDetails details) {
   return AllOf(Field(&autofill::AutofillTriggerDetails::trigger_source,
-                     details.trigger_source),
-               Field(&autofill::AutofillTriggerDetails::filling_granularity,
-                     details.filling_granularity));
+                     details.trigger_source));
 }
 
 CreditCard GetEmptyCreditCard() {

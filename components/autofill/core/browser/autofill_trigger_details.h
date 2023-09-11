@@ -47,39 +47,10 @@ enum class AutofillTriggerSource {
   kManualFallbackForAutocompleteUnrecognized = 9
 };
 
-// Specifies the level of filling i.e granularity. This varies depending on the
-// suggestion chosen by the user. Today every use case except for address forms
-// and single field fillers (like autocomplete) will be explicitly set to
-// `kFillForm`, for example credit cards. Address forms can have other
-// granularities in the case where the user chooses a more granular suggestion,
-// like "Fill Full name" (kGroupFilling) or "Jon doe" to fill a specific field
-// (`kFieldByFieldFilling`). Single field fillers such as autocomplete, Ibans
-// and merchant promo codes do not use the concept of `FillingGranularity` and
-// they always work on a field by field case. The `FillingGranularity` is
-// ultimately used by the manager, who will use it to define which fields to
-// fill and how to generate suggestions.
-enum class FillingGranularity {
-  kNone = 0,
-  // Default autofill behaviour. Fills the form with every available information
-  // in the profile.
-  kFillForm = 1,
-  // Triggered from fields belongings to types that are either of type name,
-  // address or phone number. It will fill only field whose group match the
-  // field triggering group.
-  kGroupFilling = 2,
-  // Triggered when the user chooses to fill a single field with the provided
-  // suggestion.
-  kFieldByFieldFilling = 3
-};
-
 // Holds the details about a filling operation. The `trigger_source` field
 // defines what triggered the autofill experience, i.e kFastCheckout or kPopup.
-// the `filling_granularity` is about which fields from a form are going to be
-// filled, today it can be either the whole form (classic case), a specific
-// field group (such address fields) or specific field like the given name.
 struct AutofillTriggerDetails {
   AutofillTriggerSource trigger_source = AutofillTriggerSource::kNone;
-  FillingGranularity filling_granularity = FillingGranularity::kNone;
 };
 
 }  // namespace autofill
