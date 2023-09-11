@@ -2815,7 +2815,9 @@ ComputedStyleBuilder::MutableNonInheritedVariables() {
 
 void ComputedStyleBuilder::CopyInheritedVariablesFrom(
     const ComputedStyle* style) {
-  MutableInheritedVariablesInternal() = style->InheritedVariablesInternal();
+  if (style->InheritedVariablesInternal()) {
+    MutableInheritedVariablesInternal() = style->InheritedVariablesInternal();
+  }
 }
 
 void ComputedStyleBuilder::CopyNonInheritedVariablesFrom(
