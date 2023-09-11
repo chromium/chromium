@@ -2505,7 +2505,7 @@
   {
     "name": "enable-desktop-pwas-scope-extensions",
     "owners": [ "luhua@microsoft.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 125
   },
   {
     "name": "enable-desktop-pwas-sub-apps",
