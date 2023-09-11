@@ -204,6 +204,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
  private:
   friend class MediaTrayTest;
   friend class TrayBackgroundViewTest;
+  friend class TrayEventFilterTest;
 
   struct LayoutInputs {
     gfx::Rect bounds;

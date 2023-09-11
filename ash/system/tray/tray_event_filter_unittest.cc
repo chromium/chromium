@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/tray_event_filter.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/root_window_controller.h"
@@ -15,12 +16,13 @@
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/message_center/message_center.h"
 
@@ -28,6 +30,72 @@ using message_center::MessageCenter;
 using message_center::Notification;
 
 namespace ash {
+
+namespace {
+
+class TestTrayBackgroundView : public TrayBackgroundView {
+ public:
+  explicit TestTrayBackgroundView(Shelf* shelf)
+      : TrayBackgroundView(shelf,
+                           TrayBackgroundViewCatalogName::kTestCatalogName,
+                           RoundedCornerBehavior::kAllRounded) {
+    SetCallback(base::BindRepeating(&TestTrayBackgroundView::OnButtonPressed,
+                                    base::Unretained(this)));
+  }
+
+  TestTrayBackgroundView(const TestTrayBackgroundView&) = delete;
+  TestTrayBackgroundView& operator=(const TestTrayBackgroundView&) = delete;
+
+  ~TestTrayBackgroundView() override = default;
+
+  // TrayBackgroundView:
+  void ClickedOutsideBubble() override {
+    clicked_outside_bubble_called_ = true;
+  }
+
+  void UpdateTrayItemColor(bool is_active) override {}
+  std::u16string GetAccessibleNameForTray() override {
+    return u"TestTrayBackgroundView";
+  }
+
+  void HandleLocaleChange() override {}
+
+  void HideBubbleWithView(const TrayBubbleView* bubble_view) override {
+    if (bubble_view == bubble_->GetBubbleView()) {
+      CloseBubble();
+    }
+  }
+
+  void ShowBubble() override {
+    auto bubble_view = std::make_unique<TrayBubbleView>(
+        CreateInitParamsForTrayBubble(/*tray=*/this));
+    bubble_ = std::make_unique<TrayBubbleWrapper>(this,
+                                                  /*event_handling=*/false);
+    bubble_->ShowBubble(std::move(bubble_view));
+  }
+
+  void CloseBubble() override { bubble_.reset(); }
+
+  TrayBubbleWrapper* bubble() { return bubble_.get(); }
+
+  bool clicked_outside_bubble_called() const {
+    return clicked_outside_bubble_called_;
+  }
+
+ private:
+  void OnButtonPressed(const ui::Event& event) {
+    if (bubble_) {
+      CloseBubble();
+      return;
+    }
+    ShowBubble();
+  }
+
+  std::unique_ptr<TrayBubbleWrapper> bubble_;
+  bool clicked_outside_bubble_called_ = false;
+};
+
+}  // namespace
 
 class TrayEventFilterTest : public AshTestBase,
                             public testing::WithParamInterface<bool> {
@@ -44,6 +112,22 @@ class TrayEventFilterTest : public AshTestBase,
     scoped_feature_list_.InitWithFeatureState(features::kQsRevamp,
                                               /*enabled=*/IsQsRevampEnabed());
     AshTestBase::SetUp();
+
+    // Adds this `test_tray_background_view_` to the mock `StatusAreaWidget`.
+    // Can't use std::make_unique() here, because we need base class type for
+    // template method to link successfully without adding test code to
+    // status_area_widget.cc.
+    test_tray_background_view_ = static_cast<TestTrayBackgroundView*>(
+        StatusAreaWidgetTestHelper::GetStatusAreaWidget()->AddTrayButton(
+            std::unique_ptr<TrayBackgroundView>(
+                new TestTrayBackgroundView(GetPrimaryShelf()))));
+
+    test_tray_background_view_->SetVisiblePreferred(true);
+  }
+
+  void TearDown() override {
+    test_tray_background_view_ = nullptr;
+    AshTestBase::TearDown();
   }
 
   ui::MouseEvent outside_event() {
@@ -120,9 +204,14 @@ class TrayEventFilterTest : public AshTestBase,
     }
   }
 
+  TestTrayBackgroundView* test_tray_background_view() {
+    return test_tray_background_view_;
+  }
+
  private:
   int notification_id_ = 0;
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<TestTrayBackgroundView> test_tray_background_view_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(IsQsRevampEnabled,
@@ -149,23 +238,28 @@ TEST_P(TrayEventFilterTest, ClickingInsideDoesNotCloseBubble) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
-TEST_P(TrayEventFilterTest, DraggingInsideDoesNotCloseBubble) {
+TEST_P(TrayEventFilterTest, ClickingOnTray) {
+  auto* test_tray = test_tray_background_view();
+  LeftClickOn(test_tray);
+  EXPECT_TRUE(test_tray->bubble());
+
+  // Clicking on the tray when bubble is open will not trigger
+  // `ClickedOutsideBubble()`, since this will be handled in the tray level.
+  LeftClickOn(test_tray);
+  EXPECT_FALSE(test_tray->clicked_outside_bubble_called());
+}
+
+TEST_P(TrayEventFilterTest, CaptureMode) {
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
 
-  // Dragging within the bubble should not close the bubble.
-  const gfx::Rect tray_bounds = GetSystemTrayBoundsInScreen();
-  const gfx::Point start = tray_bounds.origin();
-  const gfx::Point end_inside = start + gfx::Vector2d(5, 5);
-  GetEventGenerator()->GestureScrollSequence(start, end_inside,
-                                             base::Milliseconds(100), 4);
-  EXPECT_TRUE(IsBubbleShown());
+  CaptureModeController::Get()->Start(CaptureModeEntryType::kQuickSettings);
 
-  // Dragging from inside to outside of the bubble should not close the bubble.
-  const gfx::Point start_inside = end_inside;
-  const gfx::Point end_outside = start + gfx::Vector2d(-5, -5);
-  GetEventGenerator()->GestureScrollSequence(start_inside, end_outside,
-                                             base::Milliseconds(100), 4);
+  // Clicking outside of the bubble during capture mode still keeps the bubble
+  // open.
+  ui::MouseEvent event = outside_event();
+  GetTrayEventFilter()->OnMouseEvent(&event);
+
   EXPECT_TRUE(IsBubbleShown());
 }
 
@@ -249,6 +343,26 @@ TEST_P(TrayEventFilterTest, ClickingOnKeyboardContainerDoesNotCloseBubble) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
+TEST_P(TrayEventFilterTest, DraggingInsideDoesNotCloseBubble) {
+  ShowSystemTrayMainView();
+  EXPECT_TRUE(IsBubbleShown());
+
+  // Dragging within the bubble should not close the bubble.
+  const gfx::Rect tray_bounds = GetSystemTrayBoundsInScreen();
+  const gfx::Point start = tray_bounds.origin();
+  const gfx::Point end_inside = start + gfx::Vector2d(5, 5);
+  GetEventGenerator()->GestureScrollSequence(start, end_inside,
+                                             base::Milliseconds(100), 4);
+  EXPECT_TRUE(IsBubbleShown());
+
+  // Dragging from inside to outside of the bubble should not close the bubble.
+  const gfx::Point start_inside = end_inside;
+  const gfx::Point end_outside = start + gfx::Vector2d(-5, -5);
+  GetEventGenerator()->GestureScrollSequence(start_inside, end_outside,
+                                             base::Milliseconds(100), 4);
+  EXPECT_TRUE(IsBubbleShown());
+}
+
 TEST_P(TrayEventFilterTest, DraggingOnTrayClosesBubble) {
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
@@ -278,6 +392,16 @@ TEST_P(TrayEventFilterTest, ClickOnCalendarBubbleClosesOtherTrays) {
   // with the calendar view, and the IME bubble should be closed.
   EXPECT_TRUE(IsBubbleShown());
   EXPECT_FALSE(ime_tray->GetBubbleWidget());
+}
+
+// Tests that when we open the calendar while Quick Settings bubble is open, the
+// bubble will not be closed.
+TEST_P(TrayEventFilterTest, TransitionFromQsToCalendar) {
+  ShowSystemTrayMainView();
+  EXPECT_TRUE(IsBubbleShown());
+
+  LeftClickOn(GetPrimaryShelf()->GetStatusAreaWidget()->date_tray());
+  EXPECT_TRUE(IsBubbleShown());
 }
 
 using TrayEventFilterQsRevampDisabledTest = TrayEventFilterTest;
