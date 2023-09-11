@@ -5,6 +5,8 @@
 #ifndef UI_WM_CORE_SHADOW_CONTROLLER_DELEGATE_H_
 #define UI_WM_CORE_SHADOW_CONTROLLER_DELEGATE_H_
 
+#include <cstdint>
+
 #include "base/component_export.h"
 
 namespace aura {
@@ -27,6 +29,12 @@ class COMPONENT_EXPORT(UI_WM) ShadowControllerDelegate {
   // Invoked when the shadow on `window` is to be modified, either normally from
   // activation change or manually.
   virtual bool ShouldHaveRoundedShadowForWindow(const aura::Window* window) = 0;
+
+  // Invoked when the `window` property changes.
+  virtual bool ShouldUpdateShadowOnWindowPropertyChange(
+      const aura::Window* window,
+      const void* key,
+      intptr_t old) = 0;
 
   // Invoked when the shadow on `window` is created to apply the window color
   // theme to its shadow.

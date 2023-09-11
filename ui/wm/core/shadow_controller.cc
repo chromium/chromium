@@ -191,6 +191,10 @@ void ShadowController::Impl::OnWindowPropertyChanged(aura::Window* window,
                          static_cast<ui::WindowShowState>(old);
   }
 
+  shadow_will_change |=
+      delegate_ &&
+      delegate_->ShouldUpdateShadowOnWindowPropertyChange(window, key, old);
+
   // Check the target visibility. IsVisible() may return false if a parent layer
   // is hidden, but |this| only observes calls to Show()/Hide() on |window|.
   if (shadow_will_change && window->TargetVisibility())

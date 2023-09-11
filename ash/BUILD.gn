@@ -3764,6 +3764,7 @@ test("ash_unittests") {
     "wm/window_state_unittest.cc",
     "wm/window_transient_descendant_iterator_unittest.cc",
     "wm/window_util_unittest.cc",
+    "wm/wm_shadow_controller_delegate_unittest.cc",
     "wm/work_area_insets_unittest.cc",
     "wm/workspace/magnetism_matcher_unittest.cc",
     "wm/workspace/multi_window_resize_controller_unittest.cc",
