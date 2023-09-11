@@ -2366,11 +2366,6 @@ BASE_FEATURE(kShimlessRMAOsUpdate,
              "ShimlessRMAOsUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the diagnostic page in the Shimless RMA flow.
-BASE_FEATURE(kShimlessRMADiagnosticPage,
-             "ShimlessRMADiagnosticPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables device compliance check in the Shimless RMA flow.
 BASE_FEATURE(kShimlessRMAComplianceCheck,
              "ShimlessRMAComplianceCheck",

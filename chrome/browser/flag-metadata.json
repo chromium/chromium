@@ -7399,11 +7399,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "shimless-rma-diagnostic-page",
-    "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "shimless-rma-os-update",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 130

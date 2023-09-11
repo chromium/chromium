@@ -6808,12 +6808,6 @@ const char kShimlessRMAOsUpdateName[] = "Enable OS updates in shimless RMA";
 const char kShimlessRMAOsUpdateDescription[] =
     "Turns on OS updating in Shimless RMA";
 
-const char kShimlessRMADiagnosticPageName[] =
-    "Enable diagnostic page in Shimless RMA";
-const char kShimlessRMADiagnosticPageDescription[] =
-    "Enable the diagnostic page in Shimless RMA for showing detailed device "
-    "information";
-
 const char kShimlessRMAComplianceCheckName[] =
     "Enable compliance check in Shimless RMA";
 const char kShimlessRMAComplianceCheckDescription[] =

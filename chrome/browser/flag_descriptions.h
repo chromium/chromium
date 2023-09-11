@@ -3915,9 +3915,6 @@ extern const char kShimlessRMAComplianceCheckDescription[];
 extern const char kShimlessRMAOsUpdateName[];
 extern const char kShimlessRMAOsUpdateDescription[];
 
-extern const char kShimlessRMADiagnosticPageName[];
-extern const char kShimlessRMADiagnosticPageDescription[];
-
 extern const char kShortcutCustomizationJellyName[];
 extern const char kShortcutCustomizationJellyDescription[];
 
