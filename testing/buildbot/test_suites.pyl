@@ -7170,6 +7170,7 @@
       },
       'system_webview_shell_instrumentation_tests': {
         'variants': [
+          'DISABLE_FIELD_TRIAL_CONFIG_WEBVIEW_COMMANDLINE',
           'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR_WEBVIEW_COMMANDLINE',
           'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR_WEBVIEW_COMMANDLINE',
         ],

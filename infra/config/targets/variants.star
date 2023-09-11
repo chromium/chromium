@@ -7,7 +7,19 @@ load("//lib/targets.star", "targets")
 targets.variant(
     name = "DISABLE_FIELD_TRIAL_CONFIG",
     identifier = "Disable Field Trial Config",
-    args = ["--disable-field-trial-config"],
+    args = [
+        "--disable-field-trial-config",
+        "--webview-verbose-logging",
+    ],
+)
+
+targets.variant(
+    name = "DISABLE_FIELD_TRIAL_CONFIG_WEBVIEW_COMMANDLINE",
+    identifier = "Disable Field Trial Config",
+    args = [
+        "--webview-command-line-arg=--disable-field-trial-config",
+        "--webview-command-line-arg=--webview-verbose-logging",
+    ],
 )
 
 targets.variant(

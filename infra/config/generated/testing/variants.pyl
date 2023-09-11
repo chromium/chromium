@@ -9,6 +9,14 @@
     'identifier': 'Disable Field Trial Config',
     'args': [
       '--disable-field-trial-config',
+      '--webview-verbose-logging',
+    ],
+  },
+  'DISABLE_FIELD_TRIAL_CONFIG_WEBVIEW_COMMANDLINE': {
+    'identifier': 'Disable Field Trial Config',
+    'args': [
+      '--webview-command-line-arg=--disable-field-trial-config',
+      '--webview-command-line-arg=--webview-verbose-logging',
     ],
   },
   'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR': {
