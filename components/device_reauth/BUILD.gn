@@ -13,7 +13,10 @@ static_library("device_reauth") {
     "device_authenticator.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
 }
 
 static_library("test_support") {

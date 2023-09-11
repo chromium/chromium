@@ -9,6 +9,9 @@
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_access_authenticator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +28,7 @@ class FakeChromeDeviceAuthenticatorCommon
   using ChromeDeviceAuthenticatorCommon::NeedsToAuthenticate;
   using ChromeDeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful;
 
-  FakeChromeDeviceAuthenticatorCommon();
+  explicit FakeChromeDeviceAuthenticatorCommon(DeviceAuthenticatorProxy* proxy);
 
   bool CanAuthenticateWithBiometrics() override;
 
@@ -46,8 +49,10 @@ class FakeChromeDeviceAuthenticatorCommon
   ~FakeChromeDeviceAuthenticatorCommon() override;
 };
 
-FakeChromeDeviceAuthenticatorCommon::FakeChromeDeviceAuthenticatorCommon() =
-    default;
+FakeChromeDeviceAuthenticatorCommon::FakeChromeDeviceAuthenticatorCommon(
+    DeviceAuthenticatorProxy* proxy)
+    : ChromeDeviceAuthenticatorCommon(proxy) {}
+
 FakeChromeDeviceAuthenticatorCommon::~FakeChromeDeviceAuthenticatorCommon() =
     default;
 
@@ -86,27 +91,43 @@ void FakeChromeDeviceAuthenticatorCommon::AuthenticateWithMessage(
 
 class ChromeDeviceAuthenticatorCommonTest : public testing::Test {
  public:
+  ChromeDeviceAuthenticatorCommonTest()
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+
   void SetUp() override {
+    proxy_ = std::make_unique<DeviceAuthenticatorProxy>();
+    other_proxy_ = std::make_unique<DeviceAuthenticatorProxy>();
+
     // Simulates platform specific DeviceAuthenticator received from the
     // factory.
     authenticator_pointer_ =
-        base::MakeRefCounted<FakeChromeDeviceAuthenticatorCommon>();
+        base::MakeRefCounted<FakeChromeDeviceAuthenticatorCommon>(proxy_.get());
+    authenticator_pointer_other_profile_ =
+        base::MakeRefCounted<FakeChromeDeviceAuthenticatorCommon>(
+            other_proxy_.get());
   }
 
-  scoped_refptr<FakeChromeDeviceAuthenticatorCommon> authenticator_pointer() {
-    return authenticator_pointer_;
+  FakeChromeDeviceAuthenticatorCommon* authenticator_pointer() {
+    return authenticator_pointer_.get();
+  }
+
+  FakeChromeDeviceAuthenticatorCommon* authenticator_pointer_other_profile() {
+    return authenticator_pointer_other_profile_.get();
   }
 
   void reset_authenticator_pointer() { authenticator_pointer_.reset(); }
 
-  base::test::SingleThreadTaskEnvironment& task_environment() {
-    return task_environment_;
-  }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<DeviceAuthenticatorProxy> proxy_;
+  std::unique_ptr<DeviceAuthenticatorProxy> other_proxy_;
+  ScopedTestingLocalState testing_local_state_;
   scoped_refptr<FakeChromeDeviceAuthenticatorCommon> authenticator_pointer_;
+  scoped_refptr<FakeChromeDeviceAuthenticatorCommon>
+      authenticator_pointer_other_profile_;
 };
 
 // Checks whether authenticator objects does not exists, after timeout if there
@@ -136,6 +157,7 @@ TEST_F(ChromeDeviceAuthenticatorCommonTest, IsObjectReleased) {
 // Checks if user can perform an operation without reauthenticating during
 // `kAuthValidityPeriod` since previous authentication. And if needs to
 // authenticate after that time.
+// Also checks that other profiles need to authenticate.
 TEST_F(ChromeDeviceAuthenticatorCommonTest, NeedAuthentication) {
   authenticator_pointer()->RecordAuthenticationTimeIfSuccessful(
       /*success=*/true);
@@ -143,6 +165,7 @@ TEST_F(ChromeDeviceAuthenticatorCommonTest, NeedAuthentication) {
   task_environment().FastForwardBy(
       PasswordAccessAuthenticator::kAuthValidityPeriod / 2);
   EXPECT_FALSE(authenticator_pointer()->NeedsToAuthenticate());
+  EXPECT_TRUE(authenticator_pointer_other_profile()->NeedsToAuthenticate());
 
   task_environment().FastForwardBy(
       PasswordAccessAuthenticator::kAuthValidityPeriod);

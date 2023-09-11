@@ -17,7 +17,8 @@ class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
   // Creates an instance of DeviceAuthenticatorWin for testing purposes
   // only.
   static scoped_refptr<DeviceAuthenticatorWin> CreateForTesting(
-      std::unique_ptr<AuthenticatorWinInterface> authenticator);
+      std::unique_ptr<AuthenticatorWinInterface> authenticator,
+      DeviceAuthenticatorProxy* proxy);
 
   // Returns true, when biometrics are available.
   bool CanAuthenticateWithBiometrics() override;
@@ -50,13 +51,15 @@ class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
   // their machine. Stores the response in a local state pref for future usage,
   // as that check is very expensive. Prefer using the cached value over calling
   // this for every auth attempt.
-  void CacheIfBiometricsAvailable();
+  static void CacheIfBiometricsAvailable(
+      AuthenticatorWinInterface* authenticator);
 
  private:
   friend class ChromeDeviceAuthenticatorFactory;
 
-  explicit DeviceAuthenticatorWin(
-      std::unique_ptr<AuthenticatorWinInterface> authenticator);
+  DeviceAuthenticatorWin(
+      std::unique_ptr<AuthenticatorWinInterface> authenticator,
+      DeviceAuthenticatorProxy* proxy);
   ~DeviceAuthenticatorWin() override;
 
   // Records authentication status and executes |callback| with |success|

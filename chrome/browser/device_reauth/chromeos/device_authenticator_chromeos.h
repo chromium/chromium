@@ -17,7 +17,8 @@ class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
   // Creates an instance of DeviceAuthenticatorChromeOS for testing purposes
   // only.
   static scoped_refptr<DeviceAuthenticatorChromeOS> CreateForTesting(
-      std::unique_ptr<AuthenticatorChromeOSInterface> authenticator);
+      std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
+      DeviceAuthenticatorProxy* proxy);
 
   bool CanAuthenticateWithBiometrics() override;
 
@@ -35,8 +36,9 @@ class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
  private:
   friend class ChromeDeviceAuthenticatorFactory;
 
-  explicit DeviceAuthenticatorChromeOS(
-      std::unique_ptr<AuthenticatorChromeOSInterface> authenticator);
+  DeviceAuthenticatorChromeOS(
+      std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
+      DeviceAuthenticatorProxy* proxy);
   ~DeviceAuthenticatorChromeOS() override;
 
   // Records authentication status and executes |callback| with |success|

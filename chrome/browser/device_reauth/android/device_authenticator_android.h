@@ -76,13 +76,14 @@ class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
   // Creates an instance of DeviceAuthenticatorAndroid for testing purposes
   // only.
   static scoped_refptr<DeviceAuthenticatorAndroid> CreateForTesting(
-      std::unique_ptr<DeviceAuthenticatorBridge> bridge);
+      std::unique_ptr<DeviceAuthenticatorBridge> bridge,
+      DeviceAuthenticatorProxy* proxy);
 
  private:
   friend class ChromeDeviceAuthenticatorFactory;
 
-  explicit DeviceAuthenticatorAndroid(
-      std::unique_ptr<DeviceAuthenticatorBridge> bridge);
+  DeviceAuthenticatorAndroid(std::unique_ptr<DeviceAuthenticatorBridge> bridge,
+                             DeviceAuthenticatorProxy* proxy);
   ~DeviceAuthenticatorAndroid() override;
 
   // Called when the authentication compeletes with the result

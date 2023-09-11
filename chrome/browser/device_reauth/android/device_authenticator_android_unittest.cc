@@ -55,8 +55,8 @@ class DeviceAuthenticatorAndroidTest : public testing::Test {
     std::unique_ptr<MockDeviceAuthenticatorBridge> bridge =
         std::make_unique<MockDeviceAuthenticatorBridge>();
     bridge_ = bridge.get();
-    authenticator_ =
-        DeviceAuthenticatorAndroid::CreateForTesting(std::move(bridge));
+    authenticator_ = DeviceAuthenticatorAndroid::CreateForTesting(
+        std::move(bridge), &proxy_);
   }
 
   DeviceAuthenticatorAndroid* authenticator() { return authenticator_.get(); }
@@ -66,6 +66,7 @@ class DeviceAuthenticatorAndroidTest : public testing::Test {
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
+  DeviceAuthenticatorProxy proxy_;
   scoped_refptr<DeviceAuthenticatorAndroid> authenticator_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

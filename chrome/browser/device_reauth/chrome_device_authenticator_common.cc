@@ -17,7 +17,9 @@ using password_manager::PasswordAccessAuthenticator;
 
 }  // namespace
 
-ChromeDeviceAuthenticatorCommon::ChromeDeviceAuthenticatorCommon() = default;
+ChromeDeviceAuthenticatorCommon::ChromeDeviceAuthenticatorCommon(
+    DeviceAuthenticatorProxy* proxy)
+    : device_authenticator_proxy_(proxy->GetWeakPtr()) {}
 ChromeDeviceAuthenticatorCommon::~ChromeDeviceAuthenticatorCommon() = default;
 
 void ChromeDeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful(
@@ -25,7 +27,7 @@ void ChromeDeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful(
   if (!success) {
     return;
   }
-  last_good_auth_timestamp_ = base::TimeTicks::Now();
+  device_authenticator_proxy_->UpdateLastGoodAuthTimestamp();
 
   // Holds scoped_refptr for kAuthValidityPeriod seconds, preventing object
   // from being deleted.
@@ -37,8 +39,11 @@ void ChromeDeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful(
 }
 
 bool ChromeDeviceAuthenticatorCommon::NeedsToAuthenticate() const {
-  return !last_good_auth_timestamp_.has_value() ||
-         base::TimeTicks::Now() - last_good_auth_timestamp_.value() >=
+  auto last_good_auth_timestamp =
+      device_authenticator_proxy_->GetLastGoodAuthTimestamp();
+
+  return !last_good_auth_timestamp.has_value() ||
+         base::TimeTicks::Now() - last_good_auth_timestamp.value() >=
              PasswordAccessAuthenticator::kAuthValidityPeriod;
 }
 

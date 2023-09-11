@@ -36,7 +36,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
         std::make_unique<MockSystemAuthenticator>();
     system_authenticator_ = system_authenticator.get();
     authenticator_ = DeviceAuthenticatorChromeOS::CreateForTesting(
-        std::move(system_authenticator));
+        std::move(system_authenticator), &proxy_);
   }
 
   DeviceAuthenticatorChromeOS* authenticator() { return authenticator_.get(); }
@@ -57,6 +57,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
   }
 
  private:
+  DeviceAuthenticatorProxy proxy_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<DeviceAuthenticatorChromeOS> authenticator_;

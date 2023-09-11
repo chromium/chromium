@@ -47,6 +47,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
@@ -638,6 +639,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   ChromeBrowsingDataLifetimeManagerFactory::GetInstance();
   ChromeBrowsingDataRemoverDelegateFactory::GetInstance();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
+  ChromeDeviceAuthenticatorFactory::GetInstance();
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::CertificateProviderServiceFactory::GetInstance();
 #endif

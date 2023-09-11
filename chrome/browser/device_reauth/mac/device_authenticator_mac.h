@@ -22,7 +22,8 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
   // Creates an instance of DeviceAuthenticatorWin for testing purposes
   // only.
   static scoped_refptr<DeviceAuthenticatorMac> CreateForTesting(
-      std::unique_ptr<AuthenticatorMacInterface> authenticator);
+      std::unique_ptr<AuthenticatorMacInterface> authenticator,
+      DeviceAuthenticatorProxy* proxy);
 
   bool CanAuthenticateWithBiometrics() override;
 
@@ -55,8 +56,9 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
 
  private:
   friend class ChromeDeviceAuthenticatorFactory;
-  explicit DeviceAuthenticatorMac(
-      std::unique_ptr<AuthenticatorMacInterface> authenticator);
+  DeviceAuthenticatorMac(
+      std::unique_ptr<AuthenticatorMacInterface> authenticator,
+      DeviceAuthenticatorProxy* proxy);
   ~DeviceAuthenticatorMac() override;
 
   // Called when the authentication completes with the result |success|.

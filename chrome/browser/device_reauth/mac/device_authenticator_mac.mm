@@ -20,16 +20,19 @@
 #include "ui/base/l10n/l10n_util.h"
 
 DeviceAuthenticatorMac::DeviceAuthenticatorMac(
-    std::unique_ptr<AuthenticatorMacInterface> authenticator)
-    : authenticator_(std::move(authenticator)) {}
+    std::unique_ptr<AuthenticatorMacInterface> authenticator,
+    DeviceAuthenticatorProxy* proxy)
+    : ChromeDeviceAuthenticatorCommon(proxy),
+      authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorMac::~DeviceAuthenticatorMac() = default;
 
 // static
 scoped_refptr<DeviceAuthenticatorMac> DeviceAuthenticatorMac::CreateForTesting(
-    std::unique_ptr<AuthenticatorMacInterface> authenticator) {
+    std::unique_ptr<AuthenticatorMacInterface> authenticator,
+    DeviceAuthenticatorProxy* proxy) {
   return base::WrapRefCounted(
-      new DeviceAuthenticatorMac(std::move(authenticator)));
+      new DeviceAuthenticatorMac(std::move(authenticator), proxy));
 }
 
 bool DeviceAuthenticatorMac::CanAuthenticateWithBiometrics() {

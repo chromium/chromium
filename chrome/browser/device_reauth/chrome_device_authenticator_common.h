@@ -6,16 +6,15 @@
 #define CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_COMMON_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Used to care of the auth validity period for biometric authenticators in
 // chrome.
 class ChromeDeviceAuthenticatorCommon
     : public device_reauth::DeviceAuthenticator {
  public:
-  ChromeDeviceAuthenticatorCommon();
+  explicit ChromeDeviceAuthenticatorCommon(DeviceAuthenticatorProxy* proxy);
 
   // Returns a weak pointer to this authenticator.
   base::WeakPtr<ChromeDeviceAuthenticatorCommon> GetWeakPtr();
@@ -30,8 +29,8 @@ class ChromeDeviceAuthenticatorCommon
   void RecordAuthenticationTimeIfSuccessful(bool success);
 
  private:
-  // Time of last successful re-auth. nullopt if there hasn't been an auth yet.
-  absl::optional<base::TimeTicks> last_good_auth_timestamp_;
+  // Used to obtain/update the last successful authentication timestamp.
+  base::WeakPtr<DeviceAuthenticatorProxy> device_authenticator_proxy_;
 
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<ChromeDeviceAuthenticatorCommon> weak_ptr_factory_{this};

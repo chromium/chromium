@@ -33,6 +33,7 @@
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -1218,7 +1219,8 @@ ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
 scoped_refptr<device_reauth::DeviceAuthenticator>
 ChromeAutofillClient::GetDeviceAuthenticator() const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  return ChromeDeviceAuthenticatorFactory::GetDeviceAuthenticator();
+  return ChromeDeviceAuthenticatorFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 #else
   return nullptr;
 #endif

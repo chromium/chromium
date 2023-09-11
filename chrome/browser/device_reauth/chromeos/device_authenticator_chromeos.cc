@@ -8,17 +8,20 @@
 #include "base/task/sequenced_task_runner.h"
 
 DeviceAuthenticatorChromeOS::DeviceAuthenticatorChromeOS(
-    std::unique_ptr<AuthenticatorChromeOSInterface> authenticator)
-    : authenticator_(std::move(authenticator)) {}
+    std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
+    DeviceAuthenticatorProxy* proxy)
+    : ChromeDeviceAuthenticatorCommon(proxy),
+      authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorChromeOS::~DeviceAuthenticatorChromeOS() = default;
 
 // static
 scoped_refptr<DeviceAuthenticatorChromeOS>
 DeviceAuthenticatorChromeOS::CreateForTesting(
-    std::unique_ptr<AuthenticatorChromeOSInterface> authenticator) {
+    std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
+    DeviceAuthenticatorProxy* proxy) {
   return base::WrapRefCounted(
-      new DeviceAuthenticatorChromeOS(std::move(authenticator)));
+      new DeviceAuthenticatorChromeOS(std::move(authenticator), proxy));
 }
 
 bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometrics() {

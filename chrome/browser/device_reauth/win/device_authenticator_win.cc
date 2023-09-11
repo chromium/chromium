@@ -35,16 +35,19 @@ void SaveAvailability(BiometricAuthenticationStatusWin availability) {
 }  // namespace
 
 DeviceAuthenticatorWin::DeviceAuthenticatorWin(
-    std::unique_ptr<AuthenticatorWinInterface> authenticator)
-    : authenticator_(std::move(authenticator)) {}
+    std::unique_ptr<AuthenticatorWinInterface> authenticator,
+    DeviceAuthenticatorProxy* proxy)
+    : ChromeDeviceAuthenticatorCommon(proxy),
+      authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorWin::~DeviceAuthenticatorWin() = default;
 
 // static
 scoped_refptr<DeviceAuthenticatorWin> DeviceAuthenticatorWin::CreateForTesting(
-    std::unique_ptr<AuthenticatorWinInterface> authenticator) {
+    std::unique_ptr<AuthenticatorWinInterface> authenticator,
+    DeviceAuthenticatorProxy* proxy) {
   return base::WrapRefCounted(
-      new DeviceAuthenticatorWin(std::move(authenticator)));
+      new DeviceAuthenticatorWin(std::move(authenticator), proxy));
 }
 
 bool DeviceAuthenticatorWin::CanAuthenticateWithBiometrics() {
@@ -88,8 +91,10 @@ void DeviceAuthenticatorWin::Cancel(
   NOTIMPLEMENTED();
 }
 
-void DeviceAuthenticatorWin::CacheIfBiometricsAvailable() {
-  authenticator_->CheckIfBiometricsAvailable(base::BindOnce(&SaveAvailability));
+// static
+void DeviceAuthenticatorWin::CacheIfBiometricsAvailable(
+    AuthenticatorWinInterface* authenticator) {
+  authenticator->CheckIfBiometricsAvailable(base::BindOnce(&SaveAvailability));
 }
 
 void DeviceAuthenticatorWin::OnAuthenticationCompleted(

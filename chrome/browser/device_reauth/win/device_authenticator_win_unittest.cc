@@ -56,7 +56,7 @@ class DeviceAuthenticatorWinTest : public testing::Test {
         std::make_unique<MockSystemAuthenticator>();
     system_authenticator_ = system_authenticator.get();
     authenticator_ = DeviceAuthenticatorWin::CreateForTesting(
-        std::move(system_authenticator));
+        std::move(system_authenticator), &proxy_);
   }
 
   DeviceAuthenticatorWin* authenticator() { return authenticator_.get(); }
@@ -81,6 +81,7 @@ class DeviceAuthenticatorWinTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  DeviceAuthenticatorProxy proxy_;
   scoped_refptr<DeviceAuthenticatorWin> authenticator_;
 
   ScopedTestingLocalState testing_local_state_;
@@ -202,7 +203,8 @@ TEST_P(DeviceAuthenticatorWinTestAvailability, AvailabilityCheck) {
       .WillOnce(testing::WithArg<0>([&test_case](auto callback) {
         std::move(callback).Run(test_case.availability);
       }));
-  authenticator()->CacheIfBiometricsAvailable();
+
+  DeviceAuthenticatorWin::CacheIfBiometricsAvailable(&system_authenticator());
 
   EXPECT_EQ(test_case.expected_result,
             authenticator()->CanAuthenticateWithBiometrics());

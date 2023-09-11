@@ -103,8 +103,9 @@ void LogCanAuthenticate(const BiometricsAvailability& availability) {
 }  // namespace
 
 DeviceAuthenticatorAndroid::DeviceAuthenticatorAndroid(
-    std::unique_ptr<DeviceAuthenticatorBridge> bridge)
-    : bridge_(std::move(bridge)) {}
+    std::unique_ptr<DeviceAuthenticatorBridge> bridge,
+    DeviceAuthenticatorProxy* proxy)
+    : ChromeDeviceAuthenticatorCommon(proxy), bridge_(std::move(bridge)) {}
 
 DeviceAuthenticatorAndroid::~DeviceAuthenticatorAndroid() = default;
 
@@ -168,9 +169,10 @@ void DeviceAuthenticatorAndroid::Cancel(
 // static
 scoped_refptr<DeviceAuthenticatorAndroid>
 DeviceAuthenticatorAndroid::CreateForTesting(
-    std::unique_ptr<DeviceAuthenticatorBridge> bridge) {
+    std::unique_ptr<DeviceAuthenticatorBridge> bridge,
+    DeviceAuthenticatorProxy* proxy) {
   return base::WrapRefCounted(
-      new DeviceAuthenticatorAndroid(std::move(bridge)));
+      new DeviceAuthenticatorAndroid(std::move(bridge), proxy));
 }
 
 void DeviceAuthenticatorAndroid::OnAuthenticationCompleted(

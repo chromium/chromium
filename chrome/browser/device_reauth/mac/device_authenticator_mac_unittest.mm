@@ -51,7 +51,7 @@ class DeviceAuthenticatorMacTest
         std::make_unique<MockSystemAuthenticator>();
     system_authenticator_ = system_authenticator.get();
     authenticator_ = DeviceAuthenticatorMac::CreateForTesting(
-        std::move(system_authenticator));
+        std::move(system_authenticator), &proxy_);
     ON_CALL(*system_authenticator_, CheckIfBiometricsAvailable)
         .WillByDefault(testing::Return(is_biometric_available()));
     ON_CALL(*system_authenticator_, CheckIfBiometricsOrScreenLockAvailable)
@@ -98,15 +98,12 @@ class DeviceAuthenticatorMacTest
 
   MockAuthResultCallback& result_callback() { return result_callback_; }
 
-  void ResetAuthenticator() { authenticator_.reset(); }
-
  private:
+  DeviceAuthenticatorProxy proxy_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState testing_local_state_;
-  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_ =
-      ChromeDeviceAuthenticatorFactory::GetInstance()
-          ->GetOrCreateDeviceAuthenticator();
+  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_;
   device::fido::mac::AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
       .metadata_secret = "TestMetadataSecret"};
