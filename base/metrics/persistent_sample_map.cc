@@ -124,10 +124,7 @@ PersistentSampleMap::PersistentSampleMap(
     Metadata* meta)
     : HistogramSamples(id, meta), allocator_(allocator) {}
 
-PersistentSampleMap::~PersistentSampleMap() {
-  if (records_)
-    records_->Release(this);
-}
+PersistentSampleMap::~PersistentSampleMap() = default;
 
 void PersistentSampleMap::Accumulate(Sample value, Count count) {
   // We have to do the following atomically, because even if the caller is using
@@ -179,12 +176,15 @@ std::unique_ptr<SampleCountIterator> PersistentSampleMap::ExtractingIterator() {
 PersistentMemoryAllocator::Reference
 PersistentSampleMap::GetNextPersistentRecord(
     PersistentMemoryAllocator::Iterator& iterator,
-    uint64_t* sample_map_id) {
+    uint64_t* sample_map_id,
+    Sample* value) {
   const SampleRecord* record = iterator.GetNextOfObject<SampleRecord>();
-  if (!record)
+  if (!record) {
     return 0;
+  }
 
   *sample_map_id = record->id;
+  *value = record->value;
   return iterator.GetAsReference(record);
 }
 
@@ -257,7 +257,7 @@ Count* PersistentSampleMap::GetOrCreateSampleCountStorage(Sample value) {
 
   // Create a new record in persistent memory for the value. |records_| will
   // have been initialized by the GetSampleCountStorage() call above.
-  DCHECK(records_);
+  CHECK(records_);
   PersistentMemoryAllocator::Reference ref = records_->CreateNew(value);
   if (!ref) {
     // If a new record could not be created then the underlying allocator is
@@ -289,38 +289,47 @@ PersistentSampleMapRecords* PersistentSampleMap::GetRecords() {
   // and if both were to grab the records object, there would be a conflict.
   // Use of a histogram, and thus a call to this method, won't occur until
   // after the histogram has been de-dup'd.
-  if (!records_)
-    records_ = allocator_->UseSampleMapRecords(id(), this);
-  return records_;
+  if (!records_) {
+    records_ = allocator_->CreateSampleMapRecords(id());
+  }
+  return records_.get();
 }
 
 Count* PersistentSampleMap::ImportSamples(absl::optional<Sample> until_value) {
-  PersistentMemoryAllocator::Reference ref;
+  std::vector<PersistentMemoryAllocator::Reference> refs;
   PersistentSampleMapRecords* records = GetRecords();
-  while ((ref = records->GetNext()) != 0) {
-    SampleRecord* record = records->GetAsObject<SampleRecord>(ref);
-    if (!record) {
-      continue;
-    }
+  while (!(refs = records->GetNextRecords(until_value)).empty()) {
+    // GetNextRecords() returns a list of new unseen records belonging to this
+    // map. Iterate through them all and store them internally. Note that if
+    // |until_value| was found, it will be the last element in |refs|.
+    for (auto ref : refs) {
+      SampleRecord* record = records->GetAsObject<SampleRecord>(ref);
+      if (!record) {
+        continue;
+      }
 
-    DCHECK_EQ(id(), record->id);
+      DCHECK_EQ(id(), record->id);
 
-    // Check if the record's value is already known.
-    if (!Contains(sample_counts_, record->value)) {
-      // No: Add it to map of known values.
-      sample_counts_[record->value] = &record->count;
-    } else {
-      // Yes: Ignore it; it's a duplicate caused by a race condition -- see
-      // code & comment in GetOrCreateSampleCountStorage() for details.
-      // Check that nothing ever operated on the duplicate record.
-      DCHECK_EQ(0, record->count);
-    }
+      // Check if the record's value is already known.
+      if (!Contains(sample_counts_, record->value)) {
+        // No: Add it to map of known values.
+        sample_counts_[record->value] = &record->count;
+      } else {
+        // Yes: Ignore it; it's a duplicate caused by a race condition -- see
+        // code & comment in GetOrCreateSampleCountStorage() for details.
+        // Check that nothing ever operated on the duplicate record.
+        DCHECK_EQ(0, record->count);
+      }
 
-    // Check if it's the value being searched for and, if so, stop here. Because
-    // race conditions can cause multiple records for a single value, be sure to
-    // return the first one found.
-    if (until_value.has_value() && record->value == until_value.value()) {
-      return &record->count;
+      // Check if it's the value being searched for and, if so, stop here.
+      // Because race conditions can cause multiple records for a single value,
+      // be sure to return the first one found.
+      if (until_value.has_value() && record->value == until_value.value()) {
+        // Ensure that this was the last value in |refs|.
+        CHECK_EQ(refs.back(), ref);
+
+        return &record->count;
+      }
     }
   }
 

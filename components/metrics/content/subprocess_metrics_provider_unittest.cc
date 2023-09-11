@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/metrics/sparse_histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,6 +29,17 @@ namespace metrics {
 namespace {
 
 const uint32_t TEST_MEMORY_SIZE = 64 << 10;  // 64 KiB
+
+struct HistogramData {
+  const std::string histogram_name;
+  const base::HistogramBase::Count total_count;
+  const int64_t sum;
+
+  bool operator==(const HistogramData& other) const {
+    return histogram_name == other.histogram_name &&
+           total_count == other.total_count && sum == other.sum;
+  }
+};
 
 class HistogramFlattenerDeltaRecorder : public base::HistogramFlattener {
  public:
@@ -45,16 +57,17 @@ class HistogramFlattenerDeltaRecorder : public base::HistogramFlattener {
     // Only record histograms that start with '_' (e.g., _foo, _bar, _baz) to
     // not record histograms from outside what is being tested.
     if (histogram.histogram_name()[0] == '_') {
-      recorded_delta_histogram_names_.push_back(histogram.histogram_name());
+      recorded_delta_histograms_.emplace_back(
+          histogram.histogram_name(), snapshot.TotalCount(), snapshot.sum());
     }
   }
 
-  std::vector<std::string> GetRecordedDeltaHistogramNames() {
-    return recorded_delta_histogram_names_;
+  const std::vector<HistogramData>& GetRecordedDeltaHistograms() {
+    return recorded_delta_histograms_;
   }
 
  private:
-  std::vector<std::string> recorded_delta_histogram_names_;
+  std::vector<HistogramData> recorded_delta_histograms_;
 };
 
 // Same as PersistentHistogramAllocator, but will call a callback on being
@@ -131,7 +144,7 @@ class SubprocessMetricsProviderTest : public testing::Test {
             base::PersistentMemoryAllocator::kReadWrite));
   }
 
-  std::vector<std::string> GetSnapshotHistogramNames() {
+  std::vector<HistogramData> GetSnapshotHistograms() {
     // Flatten what is known to see what has changed since the last time.
     HistogramFlattenerDeltaRecorder flattener;
     base::HistogramSnapshotManager snapshot_manager(&flattener);
@@ -139,7 +152,7 @@ class SubprocessMetricsProviderTest : public testing::Test {
     base::StatisticsRecorder::PrepareDeltas(true, base::Histogram::kNoFlags,
                                             base::Histogram::kNoFlags,
                                             &snapshot_manager);
-    return flattener.GetRecordedDeltaHistogramNames();
+    return flattener.GetRecordedDeltaHistograms();
   }
 
   void RegisterSubprocessAllocator(
@@ -174,8 +187,13 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {
   base::HistogramBase* foo = base::Histogram::FactoryGet("_foo", 1, 100, 10, 0);
   base::HistogramBase* bar = base::Histogram::FactoryGet("_bar", 1, 100, 10, 0);
   base::HistogramBase* baz = base::Histogram::FactoryGet("_baz", 1, 100, 10, 0);
+  base::HistogramBase* foobar = base::SparseHistogram::FactoryGet(
+      "_foobar", base::HistogramBase::kUmaTargetedHistogramFlag);
   foo->Add(42);
   bar->Add(84);
+  foobar->Add(1);
+  foobar->Add(2);
+  foobar->Add(3);
 
   // Detach the global allocator but keep it around until this method exits
   // so that the memory holding histogram data doesn't get released. Register
@@ -190,20 +208,28 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {
 
   // Recording should find the two histograms created in persistent memory.
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  EXPECT_THAT(GetSnapshotHistogramNames(),
-              UnorderedElementsAre("_foo", "_bar"));
+  EXPECT_THAT(GetSnapshotHistograms(),
+              UnorderedElementsAre(
+                  HistogramData{"_foo", /*total_count=*/1, /*sum=*/42},
+                  HistogramData{"_bar", /*total_count=*/1, /*sum=*/84},
+                  HistogramData{"_foobar", /*total_count=*/3, /*sum=*/6}));
 
   // A second run should have nothing to produce.
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  EXPECT_THAT(GetSnapshotHistogramNames(), IsEmpty());
+  EXPECT_THAT(GetSnapshotHistograms(), IsEmpty());
 
   // Create a new histogram and update existing ones. Should now report 3 items.
   baz->Add(1969);
   foo->Add(10);
   bar->Add(20);
+  foobar->Add(4);
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  EXPECT_THAT(GetSnapshotHistogramNames(),
-              UnorderedElementsAre("_foo", "_bar", "_baz"));
+  EXPECT_THAT(GetSnapshotHistograms(),
+              UnorderedElementsAre(
+                  HistogramData{"_foo", /*total_count=*/1, /*sum=*/10},
+                  HistogramData{"_bar", /*total_count=*/1, /*sum=*/20},
+                  HistogramData{"_baz", /*total_count=*/1, /*sum=*/1969},
+                  HistogramData{"_foobar", /*total_count=*/1, /*sum=*/4}));
 
   // Ensure that deregistering does a final merge of the data.
   foo->Add(10);
@@ -211,8 +237,10 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {
   DeregisterSubprocessAllocator(123);
   // Do not call MergeHistogramDeltas() here, because the call to
   // DeregisterSubprocessAllocator() should have already merged the histograms.
-  EXPECT_THAT(GetSnapshotHistogramNames(),
-              UnorderedElementsAre("_foo", "_bar"));
+  EXPECT_THAT(GetSnapshotHistograms(),
+              UnorderedElementsAre(
+                  HistogramData{"_foo", /*total_count=*/1, /*sum=*/10},
+                  HistogramData{"_bar", /*total_count=*/1, /*sum=*/20}));
   // The allocator should have been released after deregistering.
   EXPECT_TRUE(duplicate_allocator_destroyed);
 
@@ -220,7 +248,7 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {
   foo->Add(10);
   bar->Add(20);
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  EXPECT_THAT(GetSnapshotHistogramNames(), IsEmpty());
+  EXPECT_THAT(GetSnapshotHistograms(), IsEmpty());
 }
 
 TEST_F(SubprocessMetricsProviderTest, SnapshotMetricsAsync) {
@@ -236,8 +264,13 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetricsAsync) {
   base::HistogramBase* foo = base::Histogram::FactoryGet("_foo", 1, 100, 10, 0);
   base::HistogramBase* bar = base::Histogram::FactoryGet("_bar", 1, 100, 10, 0);
   base::HistogramBase* baz = base::Histogram::FactoryGet("_baz", 1, 100, 10, 0);
+  base::HistogramBase* foobar = base::SparseHistogram::FactoryGet(
+      "_foobar", base::HistogramBase::kUmaTargetedHistogramFlag);
   foo->Add(42);
   bar->Add(84);
+  foobar->Add(1);
+  foobar->Add(2);
+  foobar->Add(3);
 
   // Detach the global allocator but keep it around until this method exits
   // so that the memory holding histogram data doesn't get released. Register
@@ -250,28 +283,36 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetricsAsync) {
   // Recording should find the two histograms created in persistent memory.
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting(
       /*async=*/true, /*done_callback=*/task_environment()->QuitClosure());
-  EXPECT_THAT(GetSnapshotHistogramNames(), IsEmpty());
+  EXPECT_THAT(GetSnapshotHistograms(), IsEmpty());
   task_environment()->RunUntilQuit();
-  EXPECT_THAT(GetSnapshotHistogramNames(),
-              UnorderedElementsAre("_foo", "_bar"));
+  EXPECT_THAT(GetSnapshotHistograms(),
+              UnorderedElementsAre(
+                  HistogramData{"_foo", /*total_count=*/1, /*sum=*/42},
+                  HistogramData{"_bar", /*total_count=*/1, /*sum=*/84},
+                  HistogramData{"_foobar", /*total_count=*/3, /*sum=*/6}));
 
   // A second run should have nothing to produce.
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting(
       /*async=*/true, /*done_callback=*/task_environment()->QuitClosure());
-  EXPECT_THAT(GetSnapshotHistogramNames(), IsEmpty());
+  EXPECT_THAT(GetSnapshotHistograms(), IsEmpty());
   task_environment()->RunUntilQuit();
-  EXPECT_THAT(GetSnapshotHistogramNames(), IsEmpty());
+  EXPECT_THAT(GetSnapshotHistograms(), IsEmpty());
 
   // Create a new histogram and update existing ones. Should now report 3 items.
   baz->Add(1969);
   foo->Add(10);
   bar->Add(20);
+  foobar->Add(4);
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting(
       /*async=*/true, /*done_callback=*/task_environment()->QuitClosure());
-  EXPECT_THAT(GetSnapshotHistogramNames(), IsEmpty());
+  EXPECT_THAT(GetSnapshotHistograms(), IsEmpty());
   task_environment()->RunUntilQuit();
-  EXPECT_THAT(GetSnapshotHistogramNames(),
-              UnorderedElementsAre("_foo", "_bar", "_baz"));
+  EXPECT_THAT(GetSnapshotHistograms(),
+              UnorderedElementsAre(
+                  HistogramData{"_foo", /*total_count=*/1, /*sum=*/10},
+                  HistogramData{"_bar", /*total_count=*/1, /*sum=*/20},
+                  HistogramData{"_baz", /*total_count=*/1, /*sum=*/1969},
+                  HistogramData{"_foobar", /*total_count=*/1, /*sum=*/4}));
 
   // Ensure that deregistering does a final merge of the data.
   foo->Add(10);
@@ -280,19 +321,21 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetricsAsync) {
   // Do not call MergeHistogramDeltas() here, because the call to
   // DeregisterSubprocessAllocator() should have already scheduled a task to
   // merge the histograms.
-  EXPECT_THAT(GetSnapshotHistogramNames(), IsEmpty());
+  EXPECT_THAT(GetSnapshotHistograms(), IsEmpty());
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(GetSnapshotHistogramNames(),
-              UnorderedElementsAre("_foo", "_bar"));
+  EXPECT_THAT(GetSnapshotHistograms(),
+              UnorderedElementsAre(
+                  HistogramData{"_foo", /*total_count=*/1, /*sum=*/10},
+                  HistogramData{"_bar", /*total_count=*/1, /*sum=*/20}));
 
   // Further snapshots should be empty even if things have changed.
   foo->Add(10);
   bar->Add(20);
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting(
       /*async=*/true, /*done_callback=*/task_environment()->QuitClosure());
-  EXPECT_THAT(GetSnapshotHistogramNames(), IsEmpty());
+  EXPECT_THAT(GetSnapshotHistograms(), IsEmpty());
   task_environment()->RunUntilQuit();
-  EXPECT_THAT(GetSnapshotHistogramNames(), IsEmpty());
+  EXPECT_THAT(GetSnapshotHistograms(), IsEmpty());
 }
 
 class SubprocessMetricsProviderWithParamTest
@@ -320,8 +363,18 @@ TEST_P(SubprocessMetricsProviderWithParamTest, AllocatorRefCounted) {
 
   base::HistogramBase* foo = base::Histogram::FactoryGet("_foo", 1, 100, 10, 0);
   base::HistogramBase* bar = base::Histogram::FactoryGet("_bar", 1, 100, 10, 0);
+  base::HistogramBase* baz = base::SparseHistogram::FactoryGet(
+      "_baz", base::HistogramBase::kUmaTargetedHistogramFlag);
+  base::HistogramBase* foobar = base::SparseHistogram::FactoryGet(
+      "_foobar", base::HistogramBase::kUmaTargetedHistogramFlag);
   foo->Add(42);
   bar->Add(84);
+  baz->Add(1);
+  baz->Add(2);
+  baz->Add(3);
+  foobar->Add(4);
+  foobar->Add(5);
+  foobar->Add(6);
 
   // Detach the global allocator but keep it around until this method exits
   // so that the memory holding histogram data doesn't get released. Register
@@ -358,8 +411,12 @@ TEST_P(SubprocessMetricsProviderWithParamTest, AllocatorRefCounted) {
   EXPECT_TRUE(duplicate_allocator_destroyed);
 
   // Verify that the histograms were merged.
-  EXPECT_THAT(GetSnapshotHistogramNames(),
-              UnorderedElementsAre("_foo", "_bar"));
+  EXPECT_THAT(GetSnapshotHistograms(),
+              UnorderedElementsAre(
+                  HistogramData{"_foo", /*total_count=*/1, /*sum=*/42},
+                  HistogramData{"_bar", /*total_count=*/1, /*sum=*/84},
+                  HistogramData{"_baz", /*total_count=*/3, /*sum=*/6},
+                  HistogramData{"_foobar", /*total_count=*/3, /*sum=*/15}));
 }
 
 }  // namespace metrics

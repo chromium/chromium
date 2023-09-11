@@ -282,6 +282,59 @@ class HistogramThreadsafeTest : public testing::Test {
     histograms_.emplace_back(std::move(subprocess_numeric_histogram));
     histograms_.emplace_back(std::move(subprocess_sparse_histogram));
 
+    // Lastly, again, create two additional *different* histogram objects that
+    // point to the same underlying data as the first two (|numeric_histogram|
+    // and |sparse_histogram|). Unlike above, this is not necessarily done to
+    // simulate subprocess histograms, but rather to verify that different
+    // histogram objects created through the *same* allocator work correctly
+    // together. In particular, the sparse histogram found here will use the
+    // same "data manager" (see base::PersistentSparseHistogramDataManager) as
+    // the original |sparse_histogram|. This is in contrast to the "subprocess"
+    // histograms above, which will use a different "data manager" since those
+    // histogram objects were created through a different allocator
+    // (allocator_view_). In production, this is what happens when we try to
+    // merge the histograms of a child process multiple times concurrently
+    // (e.g. while we are merging the histograms of a certain child process in
+    // the background, the browser is backgrounded, triggering another merge but
+    // on the main thread).
+    PersistentHistogramAllocator::Iterator hist_it2(
+        GlobalHistogramAllocator::Get());
+    std::unique_ptr<HistogramBase> numeric_histogram2;
+    std::unique_ptr<HistogramBase> sparse_histogram2;
+    while (true) {
+      // GetNext() creates a new histogram instance that points to the same
+      // underlying data as the histogram the iterator is pointing to.
+      std::unique_ptr<HistogramBase> histogram = hist_it2.GetNext();
+      if (!histogram) {
+        break;
+      }
+
+      // Make sure the "local heap" histograms are not in persistent memory.
+      EXPECT_NE(local_heap_histogram_name, histogram->histogram_name());
+      EXPECT_NE(local_heap_sparse_histogram_name, histogram->histogram_name());
+
+      if (histogram->histogram_name() == numeric_histogram_name) {
+        numeric_histogram2 = std::move(histogram);
+      } else if (histogram->histogram_name() == sparse_histogram_name) {
+        sparse_histogram2 = std::move(histogram);
+      }
+    }
+    // Make sure we found the histograms, and ensure that they are not the same
+    // histogram objects. Assertions to verify that they are actually pointing
+    // to the same underlying data are not done now (to not mess up the sample
+    // counts).
+    EXPECT_TRUE(numeric_histogram2);
+    EXPECT_TRUE(sparse_histogram2);
+    histograms.push_back(numeric_histogram2.get());
+    histograms.push_back(sparse_histogram2.get());
+    EXPECT_NE(numeric_histogram, numeric_histogram2.get());
+    EXPECT_NE(sparse_histogram, sparse_histogram2.get());
+
+    // Store the histograms in |histograms_| so that they are not freed during
+    // the test.
+    histograms_.emplace_back(std::move(numeric_histogram2));
+    histograms_.emplace_back(std::move(sparse_histogram2));
+
     return histograms;
   }
 
@@ -368,22 +421,24 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
     HistogramBase::Count logged_total_samples_count = 0;
     std::vector<HistogramBase::Count> logged_bucket_counts(
         /*value=*/kHistogramMax, 0);
-    // We ignore the last two histograms since they are the same as the first
+    // We ignore the last four histograms since they are the same as the first
     // two (they are simulations of histogram instances from a subprocess that
-    // point to the same underlying data). Otherwise, we will be counting the
-    // samples from those histograms twice.
-    for (size_t i = 0; i < histograms.size() - 2; ++i) {
+    // point to the same underlying data, and different histogram instances that
+    // are created from the same allocator). Otherwise, we will be counting the
+    // samples from those histograms thrice.
+    for (size_t i = 0; i < histograms.size() - 4; ++i) {
       HistogramBase* histogram = histograms[i];
       ASSERT_EQ(histogram->SnapshotDelta()->TotalCount(), 0);
       std::unique_ptr<HistogramSamples> logged_samples =
           histogram->SnapshotSamples();
       // Each individual histograms should have been emitted to a specific
-      // amount of times. Non-"local heap" histograms were emitted to twice as
-      // much because they appeared twice in the |histograms| array -- once as a
-      // normal histogram, and once as a simulation of a subprocess histogram.
+      // amount of times. Non-"local heap" histograms were emitted to thrice as
+      // much because they appeared thrice in the |histograms| array -- once as
+      // a normal histogram, once as a simulation of a subprocess histogram, and
+      // once as a duplicate histogram created from the same allocator.
       size_t expected_logged_samples_count = kNumThreads * kNumEmissions;
       if (!strstr(histogram->histogram_name(), "LocalHeap")) {
-        expected_logged_samples_count *= 2;
+        expected_logged_samples_count *= 3;
       }
       ASSERT_EQ(static_cast<size_t>(logged_samples->TotalCount()),
                 expected_logged_samples_count);
@@ -403,10 +458,10 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
       ASSERT_EQ(logged_bucket_counts[i], real_bucket_counts[i]);
     }
 
-    // Finally, verify that our "subprocess histograms" actually point to the
-    // same underlying data as the "main browser" histograms, despite being
-    // different instances (this was verified earlier). This is done at the end
-    // of the test so as to not mess up the sample counts.
+    // Verify that our "subprocess histograms" actually point to the same
+    // underlying data as the "main browser" histograms, despite being different
+    // instances (this was verified earlier). This is done at the end of the
+    // test so as to not mess up the sample counts.
     HistogramBase* numeric_histogram = histograms[0];
     HistogramBase* subprocess_numeric_histogram = histograms[4];
     HistogramBase* sparse_histogram = histograms[1];
@@ -417,6 +472,21 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
     sparse_histogram->Add(0);
     ASSERT_EQ(subprocess_numeric_histogram->SnapshotDelta()->TotalCount(), 1);
     ASSERT_EQ(subprocess_sparse_histogram->SnapshotDelta()->TotalCount(), 1);
+    ASSERT_EQ(numeric_histogram->SnapshotDelta()->TotalCount(), 0);
+    ASSERT_EQ(sparse_histogram->SnapshotDelta()->TotalCount(), 0);
+
+    // Verify that our "duplicate histograms" created from the same allocator
+    // actually point to the same underlying data as the "main" histograms,
+    // despite being different instances (this was verified earlier). This is
+    // done at the end of the test so as to not mess up the sample counts.
+    HistogramBase* numeric_histogram2 = histograms[6];
+    HistogramBase* sparse_histogram2 = histograms[7];
+    ASSERT_EQ(numeric_histogram2->SnapshotDelta()->TotalCount(), 0);
+    ASSERT_EQ(sparse_histogram2->SnapshotDelta()->TotalCount(), 0);
+    numeric_histogram->Add(0);
+    sparse_histogram->Add(0);
+    ASSERT_EQ(numeric_histogram2->SnapshotDelta()->TotalCount(), 1);
+    ASSERT_EQ(sparse_histogram2->SnapshotDelta()->TotalCount(), 1);
     ASSERT_EQ(numeric_histogram->SnapshotDelta()->TotalCount(), 0);
     ASSERT_EQ(sparse_histogram->SnapshotDelta()->TotalCount(), 0);
   }

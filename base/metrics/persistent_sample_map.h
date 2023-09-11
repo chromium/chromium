@@ -51,11 +51,13 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   std::unique_ptr<SampleCountIterator> ExtractingIterator() override;
 
   // Uses a persistent-memory |iterator| to locate and return information about
-  // the next record holding information for a PersistentSampleMap. The record
+  // the next record holding information for a PersistentSampleMap (in
+  // particular, the reference and the sample |value| it holds). The record
   // could be for any Map so return the |sample_map_id| as well.
   static PersistentMemoryAllocator::Reference GetNextPersistentRecord(
       PersistentMemoryAllocator::Iterator& iterator,
-      uint64_t* sample_map_id);
+      uint64_t* sample_map_id,
+      HistogramBase::Sample* value);
 
   // Creates a new record in an |allocator| storing count information for a
   // specific sample |value| of a histogram with the given |sample_map_id|.
@@ -101,12 +103,11 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   // owned externally and is expected to live beyond the life of this object.
   raw_ptr<PersistentHistogramAllocator, LeakedDanglingUntriaged> allocator_;
 
-  // The object that manages sample records inside persistent memory. This is
-  // owned by the |allocator_| object (above) and so, like it, is expected to
-  // live beyond the life of this object. This value is lazily-initialized on
-  // first use via the GetRecords() accessor method.
-  raw_ptr<PersistentSampleMapRecords, LeakedDanglingUntriaged> records_ =
-      nullptr;
+  // The object that manages sample records inside persistent memory. The
+  // underlying data used is owned by the |allocator_| object (above). This
+  // value is lazily-initialized on first use via the GetRecords() accessor
+  // method.
+  std::unique_ptr<PersistentSampleMapRecords> records_ = nullptr;
 };
 
 }  // namespace base

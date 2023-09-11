@@ -358,6 +358,63 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   EXPECT_EQ(1, snapshot->GetCount(7));
 }
 
+TEST_F(PersistentHistogramAllocatorTest, MultipleSameSparseHistograms) {
+  const std::string kSparseHistogramName = "SRTSparseHistogram";
+
+  // Create a temporary SR so that histograms created during this test aren't
+  // leaked to other tests.
+  std::unique_ptr<StatisticsRecorder> local_sr =
+      StatisticsRecorder::CreateTemporaryForTesting();
+
+  // Create a sparse histogram.
+  HistogramBase* sparse = SparseHistogram::FactoryGet(kSparseHistogramName, 0);
+
+  // Get the sparse histogram that was created above. We should have two
+  // distinct objects, but both representing and pointing to the same data.
+  PersistentHistogramAllocator::Iterator iter(GlobalHistogramAllocator::Get());
+  std::unique_ptr<HistogramBase> sparse2;
+  while (true) {
+    sparse2 = iter.GetNext();
+    if (!sparse2 || kSparseHistogramName == sparse2->histogram_name()) {
+      break;
+    }
+  }
+  ASSERT_TRUE(sparse2);
+  EXPECT_NE(sparse, sparse2.get());
+
+  // Verify that both objects can coexist, i.e., samples emitted from one can be
+  // found by the other and vice versa.
+  sparse->AddCount(1, 3);
+  std::unique_ptr<HistogramSamples> snapshot =
+      sparse->SnapshotUnloggedSamples();
+  std::unique_ptr<HistogramSamples> snapshot2 =
+      sparse2->SnapshotUnloggedSamples();
+  EXPECT_EQ(snapshot->TotalCount(), 3);
+  EXPECT_EQ(snapshot2->TotalCount(), 3);
+  EXPECT_EQ(snapshot->GetCount(1), 3);
+  EXPECT_EQ(snapshot2->GetCount(1), 3);
+  snapshot = sparse->SnapshotDelta();
+  snapshot2 = sparse2->SnapshotDelta();
+  EXPECT_EQ(snapshot->TotalCount(), 3);
+  EXPECT_EQ(snapshot2->TotalCount(), 0);
+  EXPECT_EQ(snapshot->GetCount(1), 3);
+  EXPECT_EQ(snapshot2->GetCount(1), 0);
+
+  sparse2->AddCount(2, 6);
+  snapshot = sparse->SnapshotUnloggedSamples();
+  snapshot2 = sparse2->SnapshotUnloggedSamples();
+  EXPECT_EQ(snapshot->TotalCount(), 6);
+  EXPECT_EQ(snapshot2->TotalCount(), 6);
+  EXPECT_EQ(snapshot->GetCount(2), 6);
+  EXPECT_EQ(snapshot2->GetCount(2), 6);
+  snapshot2 = sparse2->SnapshotDelta();
+  snapshot = sparse->SnapshotDelta();
+  EXPECT_EQ(snapshot->TotalCount(), 0);
+  EXPECT_EQ(snapshot2->TotalCount(), 6);
+  EXPECT_EQ(snapshot->GetCount(2), 0);
+  EXPECT_EQ(snapshot2->GetCount(2), 6);
+}
+
 TEST_F(PersistentHistogramAllocatorTest, CustomRangesManager) {
   const char LinearHistogramName[] = "TestLinearHistogram";
   const size_t global_sr_initial_bucket_ranges_count =

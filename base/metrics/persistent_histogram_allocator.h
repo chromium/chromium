@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -30,13 +31,7 @@ class PersistentSparseHistogramDataManager;
 class WritableSharedMemoryRegion;
 
 // A data manager for sparse histograms so each instance of such doesn't have
-// to separately iterate over the entire memory segment. Though this class
-// will generally be accessed through the PersistentHistogramAllocator above,
-// it can be used independently on any PersistentMemoryAllocator (making it
-// useable for testing). This object supports only one instance of a sparse
-// histogram for a given id. Tests that create multiple identical histograms,
-// perhaps to simulate multiple processes, should create a separate manager
-// for each.
+// to separately iterate over the entire memory segment.
 class BASE_EXPORT PersistentSparseHistogramDataManager {
  public:
   // Constructs the data manager. The allocator must live longer than any
@@ -51,13 +46,11 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
 
   ~PersistentSparseHistogramDataManager();
 
-  // Returns the object that manages the persistent-sample-map records for a
-  // given |id|. Only one |user| of this data is allowed at a time. This does
-  // an automatic Acquire() on the records. The user must call Release() on
-  // the returned object when it is finished with it. Ownership of the records
-  // object stays with this manager.
-  PersistentSampleMapRecords* UseSampleMapRecords(uint64_t id,
-                                                  const void* user);
+  // Returns an object that manages persistent-sample-map records for a given
+  // |id|. The returned object queries |this| for records. Hence, the returned
+  // object must not outlive |this|.
+  std::unique_ptr<PersistentSampleMapRecords> CreateSampleMapRecords(
+      uint64_t id);
 
   // Convenience method that gets the object for a given reference so callers
   // don't have to also keep their own pointer to the appropriate allocator.
@@ -69,17 +62,31 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
  private:
   friend class PersistentSampleMapRecords;
 
-  // Gets the object holding records for a given sample-map id.
-  PersistentSampleMapRecords* GetSampleMapRecordsWhileLocked(uint64_t id)
+  struct ReferenceAndSample {
+    PersistentMemoryAllocator::Reference reference;
+    HistogramBase::Sample value;
+  };
+
+  // Gets the vector holding records for a given sample-map id.
+  std::vector<ReferenceAndSample>* GetSampleMapRecordsWhileLocked(uint64_t id)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Loads sample-map records looking for those belonging to the specified
-  // |load_id|. Records found for other sample-maps are held for later use
-  // without having to iterate again. This should be called only from a
-  // PersistentSampleMapRecords object because those objects have a contract
-  // that there are no other threads accessing the internal records_ field
-  // of the object that is passed in.
-  bool LoadRecords(PersistentSampleMapRecords* sample_map_records);
+  // Returns sample-map records belonging to the specified |sample_map_records|.
+  // Only records found that were not yet seen by |sample_map_records| will be
+  // returned, determined by its |seen_| field. Records found for other
+  // sample-maps are held for later use without having to iterate again. This
+  // should be called only from a PersistentSampleMapRecords object because
+  // those objects have a contract that there are no other threads accessing the
+  // internal records_ field of the object that is passed in. If |until_value|
+  // is set and a sample is found with said value, the search will stop early
+  // and the last entry in the returned vector will be that sample.
+  // Note: The returned vector is not guaranteed to contain all unseen records
+  // for |sample_map_records|. If this is needed, then repeatedly call this
+  // until an empty vector is returned, which definitely means that
+  // |sample_map_records| has seen all its records.
+  std::vector<PersistentMemoryAllocator::Reference> LoadRecords(
+      PersistentSampleMapRecords* sample_map_records,
+      absl::optional<HistogramBase::Sample> until_value);
 
   // Weak-pointer to the allocator used by the sparse histograms.
   raw_ptr<PersistentMemoryAllocator> allocator_;
@@ -88,7 +95,7 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
   PersistentMemoryAllocator::Iterator record_iterator_ GUARDED_BY(lock_);
 
   // Mapping of sample-map IDs to their sample records.
-  std::map<uint64_t, std::unique_ptr<PersistentSampleMapRecords>>
+  std::map<uint64_t, std::unique_ptr<std::vector<ReferenceAndSample>>>
       sample_records_ GUARDED_BY(lock_);
 
   base::Lock lock_;
@@ -105,9 +112,12 @@ class BASE_EXPORT PersistentSampleMapRecords {
   // Constructs an instance of this class. The manager object must live longer
   // than all instances of this class that reference it, which is not usually
   // a problem since these objects are generally managed from within that
-  // manager instance.
-  PersistentSampleMapRecords(PersistentSparseHistogramDataManager* data_manager,
-                             uint64_t sample_map_id);
+  // manager instance. The same caveats apply for for the |records| vector.
+  PersistentSampleMapRecords(
+      PersistentSparseHistogramDataManager* data_manager,
+      uint64_t sample_map_id,
+      std::vector<PersistentSparseHistogramDataManager::ReferenceAndSample>*
+          records);
 
   PersistentSampleMapRecords(const PersistentSampleMapRecords&) = delete;
   PersistentSampleMapRecords& operator=(const PersistentSampleMapRecords&) =
@@ -115,17 +125,16 @@ class BASE_EXPORT PersistentSampleMapRecords {
 
   ~PersistentSampleMapRecords();
 
-  // Resets the internal state for a new object using this data. The return
-  // value is "this" as a convenience.
-  PersistentSampleMapRecords* Acquire(const void* user);
-
-  // Indicates that the using object is done with this data.
-  void Release(const void* user);
-
-  // Gets the next reference to a persistent sample-map record. The type and
-  // layout of the data being referenced is defined entirely within the
-  // PersistentSampleMap class.
-  PersistentMemoryAllocator::Reference GetNext();
+  // Gets next references to persistent sample-map records. If |until_value| is
+  // passed, and said value is found, then it will be the last element in the
+  // returned vector. The type and layout of the data being referenced is
+  // defined entirely within the PersistentSampleMap class.
+  // Note: The returned vector is not guaranteed to contain all unseen records
+  // for |this|. If this is needed, then repeatedly call this until an empty
+  // vector is returned, which definitely means that |this| has seen all its
+  // records.
+  std::vector<PersistentMemoryAllocator::Reference> GetNextRecords(
+      absl::optional<HistogramBase::Sample> until_value);
 
   // Creates a new persistent sample-map record for sample |value| and returns
   // a reference to it.
@@ -146,30 +155,22 @@ class BASE_EXPORT PersistentSampleMapRecords {
   friend PersistentSparseHistogramDataManager;
 
   // Weak-pointer to the parent data-manager object.
-  raw_ptr<PersistentSparseHistogramDataManager> data_manager_;
+  raw_ptr<PersistentSparseHistogramDataManager, LeakedDanglingUntriaged>
+      data_manager_;
 
   // ID of PersistentSampleMap to which these records apply.
   const uint64_t sample_map_id_;
 
-  // The current user of this set of records. It is used to ensure that no
-  // more than one object is using these records at a given time.
-  raw_ptr<const void> user_ = nullptr;
-
-  // This is the count of how many "records" have already been read by the
-  // owning sample-map.
+  // This is the count of how many "records" have already been read by |this|.
   size_t seen_ = 0;
 
-  // This is the set of records previously found for a sample map. Because
-  // there is ever only one object with a given ID (typically a hash of a
-  // histogram name) and because the parent SparseHistogram has acquired
-  // its own lock before accessing the PersistentSampleMap it controls, this
-  // list can be accessed without acquiring any additional lock.
-  std::vector<PersistentMemoryAllocator::Reference> records_;
-
-  // This is the set of records found during iteration through memory. It
-  // is appended in bulk to "records". Access to this vector can be done
-  // only while holding the parent manager's lock.
-  std::vector<PersistentMemoryAllocator::Reference> found_;
+  // This is the set of records found during iteration through memory, owned by
+  // the parent manager. When GetNextRecords() is called, this is looked up to
+  // find new references. Access to this vector should only be done while
+  // holding the parent manager's lock.
+  raw_ptr<std::vector<PersistentSparseHistogramDataManager::ReferenceAndSample>,
+          LeakedDanglingUntriaged>
+      records_;
 };
 
 
@@ -245,7 +246,7 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // This method will return null if any problem is detected with the data.
   std::unique_ptr<HistogramBase> GetHistogram(Reference ref);
 
-  // Allocate a new persistent histogram. The returned histogram will not
+  // Allocates a new persistent histogram. The returned histogram will not
   // be able to be located by other allocators until it is "finalized".
   std::unique_ptr<HistogramBase> AllocateHistogram(
       HistogramType histogram_type,
@@ -274,15 +275,14 @@ class BASE_EXPORT PersistentHistogramAllocator {
   void MergeHistogramFinalDeltaToStatisticsRecorder(
       const HistogramBase* histogram);
 
-  // Returns the object that manages the persistent-sample-map records for a
-  // given |id|. Only one |user| of this data is allowed at a time. This does
-  // an automatic Acquire() on the records. The user must call Release() on
-  // the returned object when it is finished with it. Ownership stays with
-  // this allocator.
-  PersistentSampleMapRecords* UseSampleMapRecords(uint64_t id,
-                                                  const void* user);
+  // Returns an object that manages persistent-sample-map records for a given
+  // |id|. The returned object queries |sparse_histogram_data_manager_| for
+  // records. Hence, the returned object must not outlive
+  // |sparse_histogram_data_manager_| (and hence |this|).
+  std::unique_ptr<PersistentSampleMapRecords> CreateSampleMapRecords(
+      uint64_t id);
 
-  // Create internal histograms for tracking memory use and allocation sizes
+  // Creates internal histograms for tracking memory use and allocation sizes
   // for allocator of |name| (which can simply be the result of Name()). This
   // is done seperately from construction for situations such as when the
   // histograms will be backed by memory provided by this very allocator.

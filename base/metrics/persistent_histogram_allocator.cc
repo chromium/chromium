@@ -109,116 +109,108 @@ PersistentSparseHistogramDataManager::PersistentSparseHistogramDataManager(
 PersistentSparseHistogramDataManager::~PersistentSparseHistogramDataManager() =
     default;
 
-PersistentSampleMapRecords*
-PersistentSparseHistogramDataManager::UseSampleMapRecords(uint64_t id,
-                                                          const void* user) {
+std::unique_ptr<PersistentSampleMapRecords>
+PersistentSparseHistogramDataManager::CreateSampleMapRecords(uint64_t id) {
   base::AutoLock auto_lock(lock_);
-  return GetSampleMapRecordsWhileLocked(id)->Acquire(user);
+  return std::make_unique<PersistentSampleMapRecords>(
+      this, id, GetSampleMapRecordsWhileLocked(id));
 }
 
-PersistentSampleMapRecords*
+std::vector<PersistentSparseHistogramDataManager::ReferenceAndSample>*
 PersistentSparseHistogramDataManager::GetSampleMapRecordsWhileLocked(
     uint64_t id) {
-  auto found = sample_records_.find(id);
-  if (found != sample_records_.end())
-    return found->second.get();
-
-  std::unique_ptr<PersistentSampleMapRecords>& samples = sample_records_[id];
-  samples = std::make_unique<PersistentSampleMapRecords>(this, id);
-  return samples.get();
+  auto* samples = &sample_records_[id];
+  if (!samples->get()) {
+    *samples = std::make_unique<std::vector<ReferenceAndSample>>();
+  }
+  return samples->get();
 }
 
-bool PersistentSparseHistogramDataManager::LoadRecords(
-    PersistentSampleMapRecords* sample_map_records) {
-  // DataManager must be locked in order to access the found_ field of any
-  // PersistentSampleMapRecords object.
+std::vector<PersistentMemoryAllocator::Reference>
+PersistentSparseHistogramDataManager::LoadRecords(
+    PersistentSampleMapRecords* sample_map_records,
+    absl::optional<HistogramBase::Sample> until_value) {
+  // DataManager must be locked in order to access the |sample_records_|
+  // vectors.
   base::AutoLock auto_lock(lock_);
-  bool found = false;
-
-  // If there are already "found" entries for the passed object, move them.
-  if (!sample_map_records->found_.empty()) {
-    sample_map_records->records_.reserve(sample_map_records->records_.size() +
-                                         sample_map_records->found_.size());
-    sample_map_records->records_.insert(sample_map_records->records_.end(),
-                                        sample_map_records->found_.begin(),
-                                        sample_map_records->found_.end());
-    sample_map_records->found_.clear();
-    found = true;
-  }
 
   // Acquiring a lock is a semi-expensive operation so load some records with
   // each call. More than this number may be loaded if it takes longer to
   // find at least one matching record for the passed object.
-  const int kMinimumNumberToLoad = 10;
+  const size_t kMinimumNumberToLoad = 10;
   const uint64_t match_id = sample_map_records->sample_map_id_;
 
-  // Loop while no enty is found OR we haven't yet loaded the minimum number.
-  // This will continue reading even after a match is found.
-  for (int count = 0; !found || count < kMinimumNumberToLoad; ++count) {
+  // Loop while no entry is found OR we haven't yet loaded the minimum number.
+  // This will continue reading even after a match is found. Note that it is
+  // possible that entries for the passed object were already found in a
+  // different call.
+  auto& found_records = *sample_map_records->records_;
+  bool found = (found_records.size() > sample_map_records->seen_);
+  size_t new_records = 0;
+  while (!found || new_records < kMinimumNumberToLoad) {
     // Get the next sample-record. The iterator will always resume from where
     // it left off even if it previously had nothing further to return.
     uint64_t found_id;
+    HistogramBase::Sample value;
     PersistentMemoryAllocator::Reference ref =
         PersistentSampleMap::GetNextPersistentRecord(record_iterator_,
-                                                     &found_id);
+                                                     &found_id, &value);
 
     // Stop immediately if there are none.
-    if (!ref)
+    if (!ref) {
       break;
+    }
+    ++new_records;
 
     // The sample-record could be for any sparse histogram. Add the reference
     // to the appropriate collection for later use.
     if (found_id == match_id) {
-      sample_map_records->records_.push_back(ref);
+      found_records.emplace_back(ref, value);
       found = true;
     } else {
-      PersistentSampleMapRecords* samples =
+      std::vector<ReferenceAndSample>* samples =
           GetSampleMapRecordsWhileLocked(found_id);
-      DCHECK(samples);
-      samples->found_.push_back(ref);
+      CHECK(samples);
+      samples->emplace_back(ref, value);
     }
   }
 
-  return found;
+  // Return all references found that have not yet been seen by
+  // |sample_map_records|, up until |until_value| (if applicable).
+  std::vector<PersistentMemoryAllocator::Reference> new_references;
+  CHECK_GE(found_records.size(), sample_map_records->seen_);
+  auto new_found_records = base::make_span(found_records)
+                               .subspan(/*offset=*/sample_map_records->seen_);
+  new_references.reserve(new_found_records.size());
+  for (const auto& new_record : new_found_records) {
+    new_references.push_back(new_record.reference);
+    // Maybe references after |until_value| were found. Stop here immediately in
+    // such a case, since the caller will not expect any more samples after
+    // |until_value|.
+    if (until_value.has_value() && new_record.value == until_value.value()) {
+      break;
+    }
+  }
+  return new_references;
 }
-
 
 PersistentSampleMapRecords::PersistentSampleMapRecords(
     PersistentSparseHistogramDataManager* data_manager,
-    uint64_t sample_map_id)
-    : data_manager_(data_manager), sample_map_id_(sample_map_id) {}
+    uint64_t sample_map_id,
+    std::vector<PersistentSparseHistogramDataManager::ReferenceAndSample>*
+        records)
+    : data_manager_(data_manager),
+      sample_map_id_(sample_map_id),
+      records_(records) {}
 
 PersistentSampleMapRecords::~PersistentSampleMapRecords() = default;
 
-PersistentSampleMapRecords* PersistentSampleMapRecords::Acquire(
-    const void* user) {
-  DCHECK(!user_);
-  user_ = user;
-  seen_ = 0;
-  return this;
-}
-
-void PersistentSampleMapRecords::Release(const void* user) {
-  DCHECK_EQ(user_, user);
-  user_ = nullptr;
-}
-
-PersistentMemoryAllocator::Reference PersistentSampleMapRecords::GetNext() {
-  DCHECK(user_);
-
-  // If there are no unseen records, lock and swap in all the found ones.
-  if (records_.size() == seen_) {
-    if (!data_manager_->LoadRecords(this))
-      return false;
-  }
-
-  // Return the next record. Records *must* be returned in the same order
-  // they are found in the persistent memory in order to ensure that all
-  // objects using this data always have the same state. Race conditions
-  // can cause duplicate records so using the "first found" is the only
-  // guarantee that all objects always access the same one.
-  DCHECK_LT(seen_, records_.size());
-  return records_[seen_++];
+std::vector<PersistentMemoryAllocator::Reference>
+PersistentSampleMapRecords::GetNextRecords(
+    absl::optional<HistogramBase::Sample> until_value) {
+  auto references = data_manager_->LoadRecords(this, until_value);
+  seen_ += references.size();
+  return references;
 }
 
 PersistentMemoryAllocator::Reference PersistentSampleMapRecords::CreateNew(
@@ -512,10 +504,9 @@ void PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
   existing->AddSamples(*histogram->SnapshotFinalDelta());
 }
 
-PersistentSampleMapRecords* PersistentHistogramAllocator::UseSampleMapRecords(
-    uint64_t id,
-    const void* user) {
-  return sparse_histogram_data_manager_.UseSampleMapRecords(id, user);
+std::unique_ptr<PersistentSampleMapRecords>
+PersistentHistogramAllocator::CreateSampleMapRecords(uint64_t id) {
+  return sparse_histogram_data_manager_.CreateSampleMapRecords(id);
 }
 
 void PersistentHistogramAllocator::CreateTrackingHistograms(StringPiece name) {
