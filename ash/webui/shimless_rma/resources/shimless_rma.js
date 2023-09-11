@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import './critical_error_page.js';
-import './diagnostic_page.js';
 import './hardware_error_page.js';
 import './onboarding_choose_destination_page.js';
 import './onboarding_choose_wipe_device_page.js';

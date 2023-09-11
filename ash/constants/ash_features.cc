@@ -3989,10 +3989,6 @@ bool IsShimlessRMAOsUpdateEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAOsUpdate);
 }
 
-bool IsShimlessRMADiagnosticPageEnabled() {
-  return base::FeatureList::IsEnabled(kShimlessRMADiagnosticPage);
-}
-
 bool IsShimlessRMAComplianceCheckEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAComplianceCheck);
 }

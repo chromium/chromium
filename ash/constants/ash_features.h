@@ -1126,7 +1126,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfLauncherNudgeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfPalmRejectionSwipeOffsetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfStackedHotseatEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAComplianceCheckEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMADiagnosticPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSimLockPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAOsUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMA3pDiagnosticsEnabled();
