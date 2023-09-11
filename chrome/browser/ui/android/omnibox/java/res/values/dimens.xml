@@ -26,6 +26,7 @@ found in the LICENSE file.
     <dimen name="toolbar_edge_padding_modern_smaller">12dp</dimen>
     <dimen name="location_bar_vertical_margin">8dp</dimen>
     <dimen name="location_bar_url_text_size">16sp</dimen>
+    <dimen name="location_bar_url_text_size_polish">18sp</dimen>
     <dimen name="location_bar_icon_width">28dp</dimen>
     <dimen name="location_bar_action_icon_width">48dp</dimen>
     <dimen name="location_bar_action_icon_height">48dp</dimen>
@@ -40,6 +41,7 @@ found in the LICENSE file.
     <dimen name="location_bar_end_padding">8dp</dimen>
     <dimen name="fake_search_box_lateral_padding">10dp</dimen>
     <dimen name="fake_search_box_end_padding">12dp</dimen>
+    <dimen name="fake_search_box_start_padding">24dp</dimen>
     <dimen name="incognito_badge_lateral_padding">4dp</dimen>
     <dimen name="location_bar_status_icon_width">24dp</dimen>
     <dimen name="location_bar_status_icon_bg_size">32dp</dimen>

@@ -228,9 +228,12 @@ public class TasksView extends CoordinatorLayoutForPointer {
             }
         }
         mSearchBoxCoordinator.setBackground(searchBackground);
-        int hintTextColor = mContext.getColor(isIncognito ? R.color.locationbar_light_hint_text
-                                                          : R.color.locationbar_dark_hint_text);
-        mSearchBoxCoordinator.setSearchBoxHintColor(hintTextColor);
+
+        if (!mIsSurfacePolishEnabled) {
+            int hintTextColor = mContext.getColor(isIncognito ? R.color.locationbar_light_hint_text
+                                                              : R.color.locationbar_dark_hint_text);
+            mSearchBoxCoordinator.setSearchBoxHintColor(hintTextColor);
+        }
     }
 
     /**

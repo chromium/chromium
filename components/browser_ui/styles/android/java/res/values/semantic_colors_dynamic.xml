@@ -20,6 +20,7 @@ found in the LICENSE file.
     <macro name="default_text_color">?attr/colorOnSurface</macro>
     <macro name="default_text_color_accent1">?attr/colorPrimary</macro>
     <macro name="default_text_color_on_accent1">?attr/colorOnPrimary</macro>
+    <macro name="default_text_color_on_accent1_container">?attr/colorOnPrimaryContainer</macro>
     <macro name="default_text_color_on_accent2_container">?attr/colorOnSecondaryContainer</macro>
     <macro name="default_text_color_secondary" tools:ignore="UnusedResources">?attr/colorOnSurfaceVariant</macro>
 

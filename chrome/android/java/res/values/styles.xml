@@ -377,6 +377,14 @@ found in the LICENSE file.
         <item name="android:textSize">@dimen/location_bar_url_text_size</item>
         <item name="android:textColorHint">@macro/search_box_hint</item>
     </style>
+    <style name="TextAppearance_SearchBoxText_NewTabPage_SurfacePolishColorful">
+        <item name="android:textSize">@dimen/location_bar_url_text_size_polish</item>
+        <item name="android:textColorHint">@macro/search_box_hint_polish_colorful</item>
+    </style>
+    <style name="TextAppearance_SearchBoxText_NewTabPage_SurfacePolishNeutral">
+        <item name="android:textSize">@dimen/location_bar_url_text_size_polish</item>
+        <item name="android:textColorHint">@macro/search_box_hint_polish_neutral</item>
+    </style>
 
     <!-- Launcher widgets can't use theme attributes, so this should use the baseline colors for
          android:textColorHint -->

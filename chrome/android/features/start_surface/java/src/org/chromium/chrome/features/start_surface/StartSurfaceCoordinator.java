@@ -1075,7 +1075,9 @@ public class StartSurfaceCoordinator implements StartSurface {
         int realTranslationX = getPixelSize(R.dimen.location_bar_status_icon_width)
                 + getPixelSize(R.dimen.location_bar_icon_end_padding_focused)
                 + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
-                        - getPixelSize(R.dimen.search_box_start_padding));
+                        - (mIsSurfacePolishEnabled
+                                        ? getPixelSize(R.dimen.fake_search_box_start_padding)
+                                        : getPixelSize(R.dimen.search_box_start_padding)));
 
         int fakeButtonSize = mIsSurfacePolishEnabled
                 ? getPixelSize(R.dimen.location_bar_action_icon_width)
