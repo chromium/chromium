@@ -674,7 +674,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mSelectedOnStartup = mModel.isActiveModel();
             if (mPlaceholderStripReady) replacePlaceholdersForRestoredTabs();
         } else {
-            RecordHistogram.recordTimesHistogram(PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME, 0L);
+            RecordHistogram.recordMediumTimesHistogram(
+                    PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME, 0L);
 
             computeAndUpdateTabOrders(false, false);
         }
@@ -686,7 +687,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     protected void onTabStateInitialized() {
         mTabStateInitialized = true;
 
-        if (ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
+        if (ChromeFeatureList.sTabStripStartupRefactoring.isEnabled() && mPlaceholderStripReady) {
             int numLeftoverPlaceholders = 0;
             for (int i = 0; i < mStripTabs.length; i++) {
                 if (mStripTabs[i].getIsPlaceholder()) numLeftoverPlaceholders++;
