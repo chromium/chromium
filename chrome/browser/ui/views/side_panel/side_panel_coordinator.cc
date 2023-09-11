@@ -287,26 +287,33 @@ void SidePanelCoordinator::Close() {
     return;
   }
 
+  bool closing_global = false;
   if (current_entry_) {
     // Reset current_entry_ first to prevent current_entry->OnEntryHidden() from
     // calling multiple times. This could happen in the edge cases when callback
     // inside current_entry->OnEntryHidden() is calling Close() to trigger race
     // condition.
     auto* current_entry = current_entry_.get();
+    if (global_registry_->GetEntryForKey(current_entry->key()) ==
+        current_entry) {
+      closing_global = true;
+    }
     current_entry_.reset();
     current_entry->OnEntryHidden();
   }
 
-  if (global_registry_->active_entry().has_value()) {
-    last_active_global_entry_key_ =
-        global_registry_->active_entry().value()->key();
-  }
   // Reset active entry values for all observed registries and clear cache for
   // everything except remaining active entries (i.e. if another tab has an
   // active contextual entry).
-  global_registry_->ResetActiveEntry();
-  if (auto* contextual_registry = GetActiveContextualRegistry())
+  if (auto* contextual_registry = GetActiveContextualRegistry()) {
     contextual_registry->ResetActiveEntry();
+    if (closing_global) {
+      // Reset last active entry in contextual registry as global entry should
+      // take precedence.
+      contextual_registry->ResetLastActiveEntry();
+    }
+  }
+  global_registry_->ResetActiveEntry();
   ClearCachedEntryViews();
 
   // TODO(pbos): Make this button observe panel-visibility state instead.
@@ -625,25 +632,27 @@ void SidePanelCoordinator::ClearCachedEntryViews() {
 
 absl::optional<SidePanelEntry::Key>
 SidePanelCoordinator::GetLastActiveEntryKey() const {
-  // If a contextual entry is active, return that. If not, return the last
-  // active global entry. If neither exist, fall back to kReadingList.
-  if (GetActiveContextualRegistry() &&
-      GetActiveContextualRegistry()->active_entry().has_value()) {
-    return GetActiveContextualRegistry()->active_entry().value()->key();
+  // In order of preference, return the active contextual entry, the active
+  // global entry, the last active contextual entry, the last active global
+  // entry, or nullopt.
+  auto* contextual_registry = GetActiveContextualRegistry();
+
+  if (contextual_registry && contextual_registry->active_entry().has_value()) {
+    return contextual_registry->active_entry().value()->key();
   }
 
-  return GetLastActiveGlobalEntryKey();
-}
-
-absl::optional<SidePanelEntry::Key>
-SidePanelCoordinator::GetLastActiveGlobalEntryKey() const {
-  // Return the last active global entry. If neither exist, fall back to the
-  // default entry.
-  if (global_registry_->active_entry().has_value())
+  if (global_registry_->active_entry().has_value()) {
     return global_registry_->active_entry().value()->key();
+  }
 
-  if (last_active_global_entry_key_.has_value())
-    return last_active_global_entry_key_.value();
+  if (contextual_registry &&
+      contextual_registry->last_active_entry().has_value()) {
+    return contextual_registry->last_active_entry().value()->key();
+  }
+
+  if (global_registry_->last_active_entry().has_value()) {
+    return global_registry_->last_active_entry().value()->key();
+  }
 
   return absl::nullopt;
 }
@@ -886,14 +895,6 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
       SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
           SidePanelEntry::Key(GetDefaultEntry())));
     }
-  }
-
-  // If the active global entry is the entry being deregistered, reset
-  // last_active_global_entry_key_.
-  if (registry == global_registry_ &&
-      last_active_global_entry_key_.has_value() &&
-      entry->key() == last_active_global_entry_key_.value()) {
-    last_active_global_entry_key_ = absl::nullopt;
   }
 
   // Save the entry's view: if it has a cached view, retrieve it. Otherwise if
