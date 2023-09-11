@@ -100,6 +100,11 @@ declare_args() {
   # Enables a bounds check when two pointers (at least one being raw_ptr) are
   # subtracted (if supported by the underlying implementation).
   enable_pointer_subtraction_check = false
+
+  # Enables a compile-time check that all raw_ptrs to which arithmetic
+  # operations are to be applied are annotated with the AllowPtrArithmetic
+  # trait,
+  enable_pointer_arithmetic_trait_check = false
 }
 
 declare_args() {

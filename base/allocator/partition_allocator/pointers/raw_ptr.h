@@ -250,6 +250,14 @@ template <RawPtrTraits Traits>
 using UnderlyingImplForTraits = internal::RawPtrNoOpImpl;
 #endif
 
+constexpr bool IsPtrArithmeticAllowed(RawPtrTraits Traits) {
+#if BUILDFLAG(ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK)
+  return Contains(Traits, RawPtrTraits::kAllowPtrArithmetic);
+#else
+  return true;
+#endif
+}
+
 }  // namespace raw_ptr_traits
 
 namespace test {
@@ -586,19 +594,31 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   PA_ALWAYS_INLINE constexpr raw_ptr& operator++() {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, 1);
     return *this;
   }
   PA_ALWAYS_INLINE constexpr raw_ptr& operator--() {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.");
     wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, 1);
     return *this;
   }
   PA_ALWAYS_INLINE constexpr raw_ptr operator++(int /* post_increment */) {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
     raw_ptr result = *this;
     ++(*this);
     return result;
   }
   PA_ALWAYS_INLINE constexpr raw_ptr operator--(int /* post_decrement */) {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.");
     raw_ptr result = *this;
     --(*this);
     return result;
@@ -607,6 +627,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
       typename Z,
       typename = std::enable_if_t<partition_alloc::internal::is_offset_type<Z>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator+=(Z delta_elems) {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems);
     return *this;
   }
@@ -614,6 +637,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
       typename Z,
       typename = std::enable_if_t<partition_alloc::internal::is_offset_type<Z>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator-=(Z delta_elems) {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
     wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, delta_elems);
     return *this;
   }

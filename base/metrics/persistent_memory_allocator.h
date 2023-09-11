@@ -958,7 +958,8 @@ class BASE_EXPORT DelayedPersistentAllocation {
   // stored once the allocation is complete. If multiple delayed allocations
   // share the same pointer then an allocation on one will amount to an
   // allocation for all.
-  const raw_ptr<volatile std::atomic<Reference>, LeakedDanglingUntriaged>
+  const raw_ptr<volatile std::atomic<Reference>,
+                LeakedDanglingUntriaged | AllowPtrArithmetic>
       reference_;
 
   // No DISALLOW_COPY_AND_ASSIGN as it's okay to copy/move these objects.

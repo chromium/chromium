@@ -286,6 +286,35 @@ void WontCompile() {
   ptr2 = std::move(ptr);
 }
 
+// TODO(tsepez): enable once enable_pointer_arithmetic_trait_check=true.
+#elif defined(DISABLED_NCTEST_BAN_PTR_INCREMENT) // [r"static assertion failed due to requirement '.*IsPtrArithmeticAllowed.*'"]
+
+void WontCompile() {
+  raw_ptr<int> ptr = new int(3);
+  ptr++;
+}
+
+#elif defined(DISABLED_NCTEST_BAN_PTR_DECREMENT) // [r"static assertion failed due to requirement '.*IsPtrArithmeticAllowed.*'"]
+
+void WontCompile() {
+  raw_ptr<int> ptr = new int(3);
+  ptr--;
+}
+
+#elif defined(DISABLED_NCTEST_BAN_PTR_ADDITION) // [r"static assertion failed due to requirement '.*IsPtrArithmeticAllowed.*'"]
+
+void WontCompile() {
+  raw_ptr<int> ptr = new int(3);
+  raw_ptr<int> ptr2 = ptr + 1;
+}
+
+#elif defined(DISABLED_NCTEST_BAN_PTR_SUBTRACTION) // [r"static assertion failed due to requirement '.*IsPtrArithmeticAllowed.*'"]
+
+void WontCompile() {
+  raw_ptr<int> ptr = new int(3);
+  raw_ptr<int> ptr2 = ptr - 1;
+}
+
 #endif
 
 }  // namespace
