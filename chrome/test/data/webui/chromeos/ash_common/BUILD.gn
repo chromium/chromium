@@ -15,7 +15,6 @@ ts_library("build_ts") {
                                 target_gen_dir) ]
   in_files = [
     "cr_container_shadow_behavior_test.ts",
-    "cr_deprecated_test.ts",
     "cr_policy_indicator_behavior_test.ts",
     "cr_policy_strings.ts",
     "cr_scrollable_behavior_test.ts",

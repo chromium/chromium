@@ -17,7 +17,13 @@ cr.define('mobile', function() {
     this.statusMessageType_ = StatusMessageType.NOT_SET;
   }
 
-  cr.addSingletonGetter(PortalImpl);
+  /** @type {?PortalImpl} */
+  let instance = null;
+
+  /** @return {!PortalImpl} */
+  PortalImpl.getInstance = function() {
+    return instance || (instance = new PortalImpl());
+  };
 
   PortalImpl.prototype = {
     initialize() {

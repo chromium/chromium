@@ -27,18 +27,6 @@ export function dispatchSimpleEvent(target, type, bubbles, cancelable) {
 }
 
 /**
- * Adds a {@code getInstance} static method that always return the same
- * instance object.
- * @param {!Function} ctor The constructor for the class to add the static
- *     method to.
- */
-export function addSingletonGetter(ctor) {
-  ctor.getInstance = function() {
-    return ctor.instance_ || (ctor.instance_ = new ctor());
-  };
-}
-
-/**
  * Fires a property change event on the target.
  * @param {!EventTarget} target The target to dispatch the event on.
  * @param {string} propertyName The name of the property that changed.

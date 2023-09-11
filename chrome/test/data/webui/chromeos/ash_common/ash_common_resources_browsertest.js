@@ -21,18 +21,6 @@ var AshCommonResourcesBrowserTest = class extends PolymerTest {
   }
 };
 
-var AshCommonResourcesCrDeprecatedModuleTest =
-    class extends AshCommonResourcesBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=chromeos/ash_common/cr_deprecated_test.js';
-  }
-};
-
-TEST_F('AshCommonResourcesCrDeprecatedModuleTest', 'All', function() {
-  mocha.run();
-});
-
 var AshCommonResourcesListPropertyUpdateBehaviorTest =
     class extends AshCommonResourcesBrowserTest {
   /** @override */

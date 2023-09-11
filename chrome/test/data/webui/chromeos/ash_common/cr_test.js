@@ -226,30 +226,6 @@ function testDefinePropertyBoolAttrEventWithHook() {
   assertTrue(hit);
 }
 
-function testAddSingletonGetter() {
-  function Foo() {}
-  cr.addSingletonGetter(Foo);
-
-  assertEquals(
-      'function', typeof Foo.getInstance, 'Should add get instance function');
-
-  const x = Foo.getInstance();
-  assertEquals('object', typeof x, 'Should successfully create an object');
-  assertNotEqual(null, x, 'Created object should not be null');
-
-  const y = Foo.getInstance();
-  assertEquals(x, y, 'Should return the same object');
-
-  delete Foo.instance_;
-
-  const z = Foo.getInstance();
-  assertEquals('object', typeof z, 'Should work after clearing for testing');
-  assertNotEqual(null, z, 'Created object should not be null');
-
-  assertNotEqual(
-      x, z, 'Should return a different object after clearing for testing');
-}
-
 function testDefineWithGetter() {
   let v = 0;
   cr.define('foo', function() {
