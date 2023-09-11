@@ -428,6 +428,7 @@
 <translation id="1335929031622236846">మీ పరికరాన్ని నమోదు చేయండి</translation>
 <translation id="133660899895084533">బ్లూటూత్ పెరిఫెరల్స్ సమాచారం అలాగే డేటాను చదవండి</translation>
 <translation id="1336902454946927954">మీ వేలిముద్రను గుర్తించలేకపోయినందున మీ సెక్యూరిటీ కీ లాక్ చేయబడింది. దానిని అన్‌లాక్ చేయడానికి, మీ పిన్‌ను ఎంటర్ చేయండి.</translation>
+<translation id="1337066099824654054">సందర్భోచిత సహాయం ఆఫ్‌లో ఉంది</translation>
 <translation id="1338631221631423366">పెయిరింగ్...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ఈ అప్లికేషన్‌ను తెరవడానికి అనుమతి కోరుతోంది.</translation>
 <translation id="1338950911836659113">తొలగిస్తోంది...</translation>
@@ -3461,6 +3462,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> డేటా 24 గంటలలో తొలగించబడుతుంది</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" />ని తెరవాలా?</translation>
+<translation id="3740396996321407665">కొన్ని ఫీచర్‌ల నుండి సందర్భోచిత సహాయాన్ని పొందండి</translation>
 <translation id="3740945083753997630">డిస్‌ప్లే, టెక్స్ట్ సైజ్‌ను తగ్గించండి</translation>
 <translation id="3741056951918180319">ఏ సైట్‌లోనైనా ఉపయోగించడానికి, ఎల్లప్పుడూ మీరు ఎక్స్‌టెన్షన్‌ను క్లిక్ చేయవచ్చు</translation>
 <translation id="3742235229730461951">కొరియన్ కీబోర్డ్ లేఅవుట్</translation>
@@ -6423,6 +6425,7 @@
 <translation id="6173623053897475761">మీ పిన్‌ని మళ్లీ టైప్ చేయండి</translation>
 <translation id="6175314957787328458">Microsoft డొమైన్ GUID</translation>
 <translation id="6175910054050815932">లింక్‌ను పొందండి</translation>
+<translation id="6176701216248282552">సందర్భోచిత సహాయం ఆన్‌లో ఉంది. ఈ ఫీచర్‌లు ఓపెన్ పేజీలను Googleకు పంపగలవు.</translation>
 <translation id="6177412385419165772">తీసివేస్తోంది...</translation>
 <translation id="6178664161104547336">ఒక సర్టిఫికెట్‌ను ఎంచుకోండి</translation>
 <translation id="6178682841350631965">మీ సైన్-ఇన్ డేటా అప్‌డేట్ చేయబడింది</translation>

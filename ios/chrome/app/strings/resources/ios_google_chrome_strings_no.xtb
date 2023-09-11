@@ -24,6 +24,7 @@ Du bør tenke på følgende:
 
   • Hvis du synkroniserer loggen din med Google-kontoen din, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Du har den sterkeste sikkerheten i Chrome mot skadelige nettsteder</translation>
+<translation id="1657395063736185342">Søk i visuelle elementer i Chrome</translation>
 <translation id="1675955119303651351">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
         Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="1682483655351012182">Synkroniser Chrome-dataene dine</translation>
@@ -131,7 +132,6 @@ Du bør tenke på følgende:
 <translation id="6063091872902370735">Tillat Chrome-pålogging</translation>
 <translation id="6110625574506755980">Enkelte Chrome-funksjoner kommer ikke til å være tilgjengelige lenger.</translation>
 <translation id="6181930887571472871">Bytt til Chrome</translation>
-<translation id="6228768456496298352">Chrome registrerer adresser ved hjelp av Google Maps for å gi deg veibeskrivelser og lokal informasjon.</translation>
 <translation id="6238746320622508509">La Chrome låse inkognitofanene dine.</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
@@ -150,6 +150,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="6916015246697034114">Søk med stemmen i Chrome</translation>
 <translation id="6964931465519938134">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="6975725306479268850">Velg Chrome for autofyll</translation>
+<translation id="7004159181872656283">Søk i visuelle elementer i Chrome.</translation>
 <translation id="7056826488869329999">Åpner og kjører sikkerhetssjekken i Chrome.</translation>
 <translation id="7059914902409643750">Gi Chrome et personlig preg</translation>
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
@@ -157,6 +158,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7165736900384873061">Begynn å bruke Google Chrome QR-skanneren</translation>
 <translation id="7173660919484573146">Chrome bruker Face ID til å sikre at bare godkjente personer får tilgang til passordene dine.</translation>
 <translation id="7187993566681480880">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
+<translation id="7200524487407690471">Chrome kjører sikkerhetssjekken automatisk hver dag for å beskytte deg mot databrudd, utrygge nettsteder med mer. Du kan finne ut mer om sikkerhetssjekken i innstillingene.</translation>
 <translation id="72119412072970160">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPaden din.</translation>
 <translation id="7254380941803999489">Angi Chrome som standardnettleser</translation>
 <translation id="7261678641327190792">Chrome kan ikke sjekke passordene dine</translation>

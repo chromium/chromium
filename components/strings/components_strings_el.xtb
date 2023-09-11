@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">Ακόμη και ιστότοποι που είναι ασφαλείς υπό φυσιολογικές συνθήκες μερικές φορές παραβιάζονται από υπευθύνους επίθεσης. Επισκεφτείτε <ph name="BEGIN_LINK" />αυτόν τον μη ασφαλή ιστότοπο<ph name="END_LINK" /> μόνο αν είστε βέβαιοι ότι έχετε κατανοήσει τους κινδύνους.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Προσπαθήστε να επικοινωνήσετε με το διαχειριστή συστήματος.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, λήγει <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Υπολογιστής</translation>
 <translation id="1741613555002899862">Θα πρέπει να καθοριστεί μια έγκυρη συμβολοσειρά όταν η πολιτική DnsOverHttpsMode είναι <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Κλινοσκεπάσματα και λευκά είδη κλινών</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">Κρέας και θαλασσινά</translation>
 <translation id="2367567093518048410">Επίπεδο</translation>
 <translation id="23703388716193220">Εξοπλισμός γκολφ</translation>
+<translation id="2378084239755710604">Η κάρτα αποθήκευσης έκλεισε.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Εξατομίκευση εργαλείων προσβασιμότητας στις ρυθμίσεις του Chrome</translation>
 <translation id="2384307209577226199">Προεπιλογή επιχείρησης</translation>
@@ -1845,6 +1847,7 @@
 <translation id="4822493756793346865">Οι συνήθεις τιμές βασίζονται σε πληροφορίες των τελευταίων 90 ημερών από καταστήματα στον ιστό.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Φύλλο Google</translation>
 <translation id="4825507807291741242">Ισχυρό</translation>
+<translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
 <translation id="4831993743164297314">Χαρτί φωτοστοιχειοθετικής μηχανής</translation>
 <translation id="483241715238664915">Ενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4834250788637067901">Τρόποι πληρωμής, προσφορές και διευθύνσεις μέσω Google Pay</translation>
@@ -2248,6 +2251,7 @@
 <translation id="5653432653077411130">Παροχή και επεξεργασία νερού</translation>
 <translation id="5654927323611874862">Αναγνωριστικό αναφοράς σφάλματος που ανέβηκε:</translation>
 <translation id="5659593005791499971">Ηλεκτρονικό ταχυδρομείο</translation>
+<translation id="5660122698869360728">Ένας νέος, έξυπνος φάκελος που σας βοηθά να αποθηκεύετε όλες τις σελίδες αγορών σας σε ένα σημείο και να παρακολουθείτε αυτόματα τις τιμές, να λαμβάνετε insight τιμών και πολλά άλλα.</translation>
 <translation id="5663955426505430495">Ο διαχειριστής αυτής της συσκευής εγκατέστησε επεκτάσεις για επιπλέον λειτουργίες. Οι επεκτάσεις έχουν πρόσβαση σε κάποια από τα δεδομένα σας.</translation>
 <translation id="5666606186680807225">Παραλίες και νησιά</translation>
 <translation id="5667827081946850877">Ηχητικά βιβλία</translation>
@@ -2260,6 +2264,7 @@
 <translation id="5689199277474810259">Εξαγωγή σε JSON</translation>
 <translation id="5689516760719285838">Τοποθεσία</translation>
 <translation id="569000877158168851">Η τιμή DnsOverHttpsTemplates δεν είναι σχετική και δεν θα χρησιμοποιηθεί, εκτός αν η πολιτική DnsOverHttpsMode οριστεί είτε σε <ph name="SECURE_DNS_MODE_AUTOMATIC" /> είτε σε <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Η κάρτα αποθήκευσης άνοιξε σε πλήρες ύψος.</translation>
 <translation id="5695542892312572833">Χρήση του Windows Hello για επαλήθευση και ολοκλήρωση της αγοράς σας;</translation>
 <translation id="5699628521141772782">Γαλακτοκομικά προϊόντα και αυγά</translation>
 <translation id="5701381305118179107">Κέντρο</translation>
@@ -3010,6 +3015,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Πίσω τροφοδότης χαρτιού</translation>
 <translation id="725866823122871198">Δεν είναι δυνατή η επίτευξη ιδιωτικής σύνδεσης με τον τομέα <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> επειδή η ημερομηνία και η ώρα (<ph name="DATE_AND_TIME" />) του υπολογιστή σας είναι λανθασμένες.</translation>
+<translation id="7260075294900977274">Ένας νέος, έξυπνος φάκελος που σας βοηθά να αποθηκεύετε όλες τις σελίδες αγορών σας σε ένα σημείο και να παρακολουθείτε αυτόματα τις τιμές, να λαμβάνετε insight τιμών και πολλά άλλα</translation>
 <translation id="7265608370113700582">Η διεύθυνση είναι διαθέσιμη μόνο σε αυτήν τη συσκευή</translation>
 <translation id="7275334191706090484">Διαχειριζόμενοι σελιδοδείκτες</translation>
 <translation id="7277998515889183784">Μακιγιάζ και καλλυντικά</translation>
@@ -3234,6 +3240,7 @@
 <translation id="7676643023259824263">Αναζήτηση κειμένου σε πρόχειρο, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Προβολή και διαχείριση του ιστορικού περιήγησής σας στις ρυθμίσεις του Chrome</translation>
 <translation id="7679947978757153706">Μπέιζμπολ</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, λήγει <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Αθλητικά παιχνίδια φαντασίας</translation>
 <translation id="7682287625158474539">Αποστολή</translation>
 <translation id="7682451652090915298">Ράγκμπι</translation>
@@ -3311,6 +3318,7 @@
 <translation id="7822611063308883975">Φορητές κονσόλες παιχνιδιών</translation>
 <translation id="7825558994363763489">Φούρνοι μικροκυμάτων</translation>
 <translation id="782886543891417279">Το Wi-Fi που χρησιμοποιείτε (<ph name="WIFI_NAME" />) ενδέχεται να σας ζητήσει να επισκεφτείτε τη σελίδα σύνδεσής του.</translation>
+<translation id="7831993212387676366">Τι είναι η λίστα αγορών;</translation>
 <translation id="7840103971441592723">Η καταγραφή οθόνης ξεκίνησε</translation>
 <translation id="784137052867620416">Insight Αγορών</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Κανένα}=1{1 εφαρμογή (<ph name="EXAMPLE_APP_1" />)}=2{2 εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

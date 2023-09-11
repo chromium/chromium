@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2678468611080193228">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi</translation>
+<translation id="2683434792633810741">Padam &amp; tetapkan semula?</translation>
 <translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Benarkan kuki untuk tapak tertentu.</translation>
 <translation id="4046123991198612571">Lagu seterusnya</translation>
 <translation id="4053720452172726777">Sesuaikan dan kawal Google Chrome</translation>
+<translation id="4149890623864272035">Adakah anda pasti mahu memadamkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk laman web ini?</translation>
 <translation id="4149994727733219643">Paparan ringkas bagi halaman web</translation>
 <translation id="4151930093518524179">Zum lalai</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Benarkan kuki pihak ketiga</translation>
 <translation id="4428065317363009941">Pemperibadian iklan</translation>
 <translation id="4434045419905280838">Tetingkap timbul dan ubah hala</translation>
+<translation id="443552056913301231">Tindakan ini akan memadamkan semua data setempat, termasuk kuki, dan menetapkan semula semua kebenaran untuk <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Redam bunyi untuk tapak tertentu.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# kuki}other{# kuki}}</translation>
 <translation id="4478158430052450698">Mudahkan cara menyesuaikan zum untuk laman yang berbeza</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Redamkan mikrofon</translation>
 <translation id="4570913071927164677">Butiran</translation>
 <translation id="4598549027014564149">Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas beberapa laman, walaupun laman berkaitan. Aktiviti penyemakan imbas anda tidak digunakan untuk perkara seperti memeribadikan iklan. Ciri pada sesetengah laman mungkin tidak berfungsi.</translation>
+<translation id="4644713492825682049">Padam &amp; tetapkan semula</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
 <translation id="4751476147751820511">Penderia gerakan atau cahaya</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Terakhir dilawati hari ini</translation>
 <translation id="5225463052809312700">Hidupkan kamera</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
+<translation id="5246825184569358663">Tindakan ini akan memadamkan semua data setempat, termasuk kuki, dan menetapkan semula semua kebenaran untuk <ph name="DOMAIN" /> serta semua laman dalam bahagian domain ini</translation>
 <translation id="5264323282659631142">Alih keluar '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Seret dari atas dan sentuh butang kembali untuk keluar daripada skrin penuh.</translation>
 <translation id="5300589172476337783">Paparkan</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Pengecualian</translation>
 <translation id="6196640612572343990">Sekat kuki pihak ketiga</translation>
 <translation id="6205314730813004066">Privasi iklan</translation>
+<translation id="6207207788774442484">Padamkan data &amp; tetapkan semula kebenaran</translation>
 <translation id="6216432067784365534">Pilihan <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Nyahpasang '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">Berdasarkan tab terakhir anda</translation>

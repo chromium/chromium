@@ -25,11 +25,11 @@
 <translation id="1847960401032164406">Maps në Chromium</translation>
 <translation id="186734497270163706">Trokit te "Chromium" dhe më pas tek "Aplikacioni i parazgjedhur i shfletuesit".</translation>
 <translation id="1867772173333403444">4. Zgjidh Chromium</translation>
-<translation id="1940441310478179027">Chromium zbulon adresat që përdorin Google Maps për të të dhënë udhëzime dhe informacione lokale.</translation>
 <translation id="2006345422933397527">Chromium nuk mund të kontrollonte për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2042889939382983733">Shiko historikun tënd të Chromium</translation>
 <translation id="2052320862053429062">Chromium i kontrollon në mënyrë periodike fjalëkalimet e tua për t'i krahasuar me listat që janë publikuar në linjë. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit enkriptohen, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
 <translation id="2054703085270098503">Qëndro i sigurt me Chromium</translation>
+<translation id="2098023844024447022">Hap skedën time të fundit në Chromium.</translation>
 <translation id="2168108852149185974">Disa përbërës shtesë shkaktojnë ndërprerje aksidentale të Chromium. Çinstalo:</translation>
 <translation id="2178608107313874732">Chromium nuk mund të përdorë kamerën tënde për momentin</translation>
 <translation id="2195025571279539885">Dëshiron që Chromium të ofrojë përkthimin e faqeve në <ph name="LANGUAGE_NAME" /> nga ky sajt herën tjetër?</translation>
@@ -189,6 +189,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8663480472502753423">Mbaje Chromium të përditësuar</translation>
 <translation id="8685813584220679697">Identifikohu në këtë sajt dhe në Chromium.</translation>
 <translation id="8730503818204408000">Hap cilësimin e Chromium për ta caktuar atë si shfletuesin e parazgjedhur.</translation>
+<translation id="8742300022028858275">Hap skedën time të fundit në Chromium</translation>
 <translation id="8747378496147986285">Kur aktivizohet:
 <ph name="BEGIN_INDENT" />  • Ndihmo në përmirësimin e Chromium për njerëzit që e përdorin atë ashtu si ti.<ph name="END_INDENT" />
 

@@ -1036,14 +1036,6 @@ La disponibilidad de las extensiones seguirá estando controlada por otras polí
       * PIN y huella digital. Para ello, usa ["PIN", "FINGERPRINT"].
 
       Si esta política no se define o se le asigna una lista vacía, no se podrá usar ningún factor de WebAuthn en los dispositivos gestionados.</translation>
-<translation id="1881471688033371681">Los gestores de eventos <ph name="UNLOAD_EVENT_NAME" /> van a dejar de estar disponibles. <ph name="PERMISSIONS_POLICY_NAME" /> de <ph name="UNLOAD_EVENT_NAME" /> determina si se activan o no. Actualmente, la política los permite de forma predeterminada. En el futuro, pasarán a desactivarse de forma predeterminada progresivamente, y los sitios deberán habilitarlos expresamente mediante los encabezados de <ph name="PERMISSIONS_POLICY_NAME" />. Esta política de empresa se puede usar para inhabilitar esta desactivación gradual al forzar que permanezcan habilitados de forma predeterminada.
- 
-Puede que las páginas dependan de gestores de eventos <ph name="UNLOAD_EVENT_NAME" /> para guardar datos o indicar el final de una sesión de usuario al servidor. Esto no es recomendable, ya que no es fiable y afecta al rendimiento al bloquear el uso de <ph name="PRODUCT_NAME" />. Hay alternativas recomendadas, pero se ha usado el evento <ph name="UNLOAD_EVENT_NAME" /> durante mucho tiempo. Aun así, es posible que algunas aplicaciones puedan usarlas.
-
-Si se le asigna el valor false a esta política o no se define, los gestores de eventos <ph name="UNLOAD_EVENT_NAME" /> dejarán de estar disponibles progresivamente de acuerdo con el lanzamiento de la desactivación, y los sitios que no tengan definido un encabezado de <ph name="PERMISSIONS_POLICY_NAME" /> dejarán de activar eventos "unload".
-
-Si se le asigna el valor true a esta política, los gestores de eventos <ph name="UNLOAD_EVENT_NAME" /> seguirán funcionando de forma predeterminada.
-</translation>
 <translation id="1883274744253492031">Habilitar la actualización automática de contenido mixto</translation>
 <translation id="1885782360784839335">Permitir que se muestre contenido promocional que ocupe toda la pestaña</translation>
 <translation id="1888871729456797026">El token de registro de la política de nube en ordenadores</translation>

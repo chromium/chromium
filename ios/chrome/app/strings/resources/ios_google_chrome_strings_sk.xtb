@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Hrať hru Chrome Dino</translation>
 <translation id="1352919863522755794">Správcovi hesiel Google sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="1407843355326180937">Prihláste sa na tomto webe a v Chrome, aby ste mali svoje záložky a ďalšie položky vo všetkých svojich zariadeniach.</translation>
+<translation id="1436059927646026729">Otvoriť najnovšiu kartu v Chrome</translation>
 <translation id="1462727070346936664">Prihláste sa, aby ste mohli Chrome využívať naplno.</translation>
 <translation id="1479202195792305274">Keď sa prihlásite účtom Google, Chrome môže skontrolovať vaše heslá.</translation>
 <translation id="1491435845014430217">Zapnite Uzamknúť karty inkognito pri zavretí Chromu.</translation>
@@ -130,7 +131,6 @@
 <translation id="6063091872902370735">Povoliť prihlásenie do Chromu</translation>
 <translation id="6110625574506755980">Niektoré funkcie Chromu už nebudú k dispozícii.</translation>
 <translation id="6181930887571472871">Prejdite na Chrome</translation>
-<translation id="6228768456496298352">Chrome rozpoznáva adresy pomocou Máp Google, aby vám poskytoval trasy a miestne informácie.</translation>
 <translation id="6238746320622508509">Umožnite Chromu uzamknúť vaše karty inkognito.</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>
 <translation id="6412673304250309937">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže tiež odoslať webové adresy vrátane častí obsahu stránky Bezpečnému prehliadaniu.</translation>
@@ -175,6 +175,7 @@
 <translation id="7855730255114109580">Google Chrome je aktuálny</translation>
 <translation id="7897703007638178753">Zobraziť nedávne karty v Chrome</translation>
 <translation id="7925119591961387184">Vyberte Chrome.</translation>
+<translation id="7933491483529363150">Otvorenie najnovšej karty v Chrome.</translation>
 <translation id="8022947259858476807">Používajte Chrome ako predvolený prehliadač na otváranie odkazov, vyhľadávanie z miniaplikácií a automatické dopĺňanie hesiel v iných aplikáciách</translation>
 <translation id="804638182476029347">Povoľte upozornenia Chromu, aby ste mohli dostávať upozornenia na pokles ceny</translation>
 <translation id="81358522153858150">Chrome teraz podporuje pre váš spravovaný účet pravidlá pre používateľov</translation>

@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2678468611080193228">Experimente permitir os cookies de terceiros temporariamente, o que significa que tem menos proteção, mas é mais provável que as funcionalidades do site funcionem</translation>
+<translation id="2683434792633810741">Eliminar e repor?</translation>
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado).</translation>
 <translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2717722538473713889">Moradas de email</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Permita cookies para um site específico.</translation>
 <translation id="4046123991198612571">Faixa seguinte</translation>
 <translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
+<translation id="4149890623864272035">Quer mesmo eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações deste Website?</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas Web</translation>
 <translation id="4151930093518524179">Zoom predefinido</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
+<translation id="443552056913301231">Esta ação vai eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Desative o som de um site específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Facilite a personalização do zoom para diferentes sites</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
 <translation id="4598549027014564149">Quando estiver na Navegação anónima, os sites não podem usar cookies para ver a sua atividade de navegação em sites, mesmo em sites relacionados. A sua atividade de navegação não é usada para, por exemplo, personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
+<translation id="4644713492825682049">Eliminar e repor</translation>
 <translation id="4645575059429386691">Gerido pelos teus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4751476147751820511">Sensores de movimento ou de luz</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Última visita hoje</translation>
 <translation id="5225463052809312700">Ativar câmara</translation>
 <translation id="5234764350956374838">Ignorar</translation>
+<translation id="5246825184569358663">Esta ação vai eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações de <ph name="DOMAIN" /> e todos os sites a este associados</translation>
 <translation id="5264323282659631142">Remover "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Arraste a partir da parte superior e toque no botão de retrocesso para sair do ecrã inteiro.</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Excepções</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6205314730813004066">Privacidade dos anúncios</translation>
+<translation id="6207207788774442484">Eliminar dados e repor autorizações</translation>
 <translation id="6216432067784365534">Opções de <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Quer desinstalar a app "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">Com base no seu último separador</translation>

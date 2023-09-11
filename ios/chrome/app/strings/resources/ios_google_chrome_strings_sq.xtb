@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Luaj lojën Chrome Dino</translation>
 <translation id="1352919863522755794">"Menaxheri i fjalëkalimeve i Google" nuk mund t'i kontrollojë fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="1407843355326180937">Identifikohu në këtë sajt dhe Chrome për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua.</translation>
+<translation id="1436059927646026729">Hap skedën time të fundit në Chrome</translation>
 <translation id="1462727070346936664">Identifikohu për të përfituar sa më shumë nga Chrome.</translation>
 <translation id="1479202195792305274">Chrome mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
 <translation id="1491435845014430217">Aktivizo “Kyç skedat 'e fshehta' kur mbyll Chrome”.</translation>
@@ -129,7 +130,6 @@ Gjëra për të pasur parasysh:
 <translation id="6063091872902370735">Lejo identifikimin në Chrome</translation>
 <translation id="6110625574506755980">Disa veçori të Chrome nuk do të ofrohen më.</translation>
 <translation id="6181930887571472871">Kalo te Chrome</translation>
-<translation id="6228768456496298352">Chrome zbulon adresat që përdorin Google Maps për të të dhënë udhëzime dhe informacione lokale.</translation>
 <translation id="6238746320622508509">Lejo që Chrome t'i kyçë skedat "e fshehta".</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
@@ -174,6 +174,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="7855730255114109580">Google Chrome është i përditësuar</translation>
 <translation id="7897703007638178753">Shiko skedat e fundit në Chrome</translation>
 <translation id="7925119591961387184">Zgjidh "Chrome".</translation>
+<translation id="7933491483529363150">Hap skedën time të fundit në Chrome.</translation>
 <translation id="8022947259858476807">Përdor Chrome si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
 <translation id="804638182476029347">Lejo që njoftimet e Chrome të shfaqin sinjalizime për uljen e çmimeve</translation>
 <translation id="81358522153858150">Chrome tani mbështet politikat e përdoruesit për llogarinë tënde të menaxhuar</translation>

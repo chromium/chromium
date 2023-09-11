@@ -24,11 +24,11 @@
 <translation id="1847960401032164406">Mapy v prohlížeči Chromium</translation>
 <translation id="186734497270163706">Klepněte na Chromium a poté na Výchozí prohlížeč.</translation>
 <translation id="1867772173333403444">4. Vyberte Chromium.</translation>
-<translation id="1940441310478179027">Chromium zjišťuje pomocí Map Google adresy, aby vám mohl poskytovat trasy a místní informace.</translation>
 <translation id="2006345422933397527">Chromium nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="2042889939382983733">Zobrazit historii prohlížeče Chromium</translation>
 <translation id="2052320862053429062">Chromium vaše hesla pravidelně porovnává se seznamy hesel, která unikla na internet. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>
 <translation id="2054703085270098503">S prohlížečem Chromium budete v bezpečí</translation>
+<translation id="2098023844024447022">Otevřít v prohlížeči Chromium naposledy otevřenou kartu.</translation>
 <translation id="2168108852149185974">Některé doplňky způsobují selhání prohlížeče Chromium. Prosím odinstalujte:</translation>
 <translation id="2178608107313874732">Chromium teď nemůže použít fotoaparát</translation>
 <translation id="2195025571279539885">Chcete, aby prohlížeč Chromium příště pro stránky v jazyce <ph name="LANGUAGE_NAME" /> z tohoto webu nabízel překlad?</translation>
@@ -83,6 +83,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="4555020257205549924">Pokud je tato funkce zapnutá, bude Chromium nabízet překlad stránek v jiných jazycích pomocí Překladače Google.<ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Otevře stránku nastavení platebních metod v prohlížeči Chromium.</translation>
 <translation id="4585809515399340748">Nyní můžete Chromium použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
+<translation id="459080529287102949">Vyhledat obrazový materiál v prohlížeči Chromium</translation>
 <translation id="4633738821577273991">Zapněte pro tento profil prohlížeče Chromium také Vylepšené Bezpečné prohlížení</translation>
 <translation id="4654936625574199632">Za účelem vylepšování aplikace odesílá Chromium do Googlu zprávy o selháních. <ph name="BEGIN_LINK" />Spravovat<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Zapněte čtečku prohlížeče Chromium</translation>
@@ -151,6 +152,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="7045244423563602563">Přizpůsobení prohlížeče Chromium</translation>
 <translation id="7055269218854630176">Účet, ke kterému jste přihlášeni, a možné způsoby používání prohlížeče Chromium spravuje organizace <ph name="DOMAIN" />. Váš administrátor může nastavit nebo omezit určité funkce.</translation>
 <translation id="7099326575020694068">Prohlížeč Chromium nemůže používat fotoaparát v režimu Split View.</translation>
+<translation id="7163483974919055112">Vyhledat obrazový materiál v prohlížeči Chromium.</translation>
 <translation id="7165402419892018581">Vyberte Chromium pro automatické vyplňování</translation>
 <translation id="7175400662502680481">Vaše heslo bylo vyzrazeno při porušení zabezpečení údajů. Správce hesel doporučuje ihned ho změnit.</translation>
 <translation id="7192111075364461693">Oznámení prohlížeče Chromium jsou aktuálně v nastavení zařízení vypnutá.</translation>
@@ -189,6 +191,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="8663480472502753423">Udržují prohlížeč Chromium aktuální</translation>
 <translation id="8685813584220679697">Přihlaste se na tento web a do prohlížeče Chromium.</translation>
 <translation id="8730503818204408000">Otevře nastavení prohlížeče Chromium, pomocí něhož ho lze nastavit jako výchozí prohlížeč.</translation>
+<translation id="8742300022028858275">Otevřít v prohlížeči Chromium naposledy otevřenou kartu</translation>
 <translation id="8747378496147986285">Když je tato funkce zapnutá:
 <ph name="BEGIN_INDENT" />  • Pomáháte s vylepšováním prohlížeče Chromium pro lidi, kteří jej používají stejně jako vy.<ph name="END_INDENT" />
 

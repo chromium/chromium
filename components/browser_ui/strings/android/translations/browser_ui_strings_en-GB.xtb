@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2678468611080193228">Try temporarily allowing third-party cookies, which means less protection but that site features are more likely to work</translation>
+<translation id="2683434792633810741">Delete and reset?</translation>
 <translation id="2687403674020088961">Block all cookies (not recommended)</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2717722538473713889">Email addresses</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Allow cookies for a specific site.</translation>
 <translation id="4046123991198612571">Next track</translation>
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
+<translation id="4149890623864272035">Are you sure that you want to delete all local data, including cookies, and reset all permissions for this website?</translation>
 <translation id="4149994727733219643">Simplified view for web pages</translation>
 <translation id="4151930093518524179">Default zoom</translation>
 <translation id="4165986682804962316">Site settings</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Allow third-party cookies</translation>
 <translation id="4428065317363009941">Ad personalisation</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
+<translation id="443552056913301231">This action will delete all local data, including cookies, and reset all permissions for <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Mute sound for a specific site.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Make it easier to customise zoom for different sites</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4598549027014564149">While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
+<translation id="4644713492825682049">Delete and reset</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Last visited today</translation>
 <translation id="5225463052809312700">Turn on camera</translation>
 <translation id="5234764350956374838">Dismiss</translation>
+<translation id="5246825184569358663">This action will delete all local data, including cookies, and reset all permissions for <ph name="DOMAIN" /> and all sites under it</translation>
 <translation id="5264323282659631142">Remove '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
 <translation id="5300589172476337783">Show</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Exceptions</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
+<translation id="6207207788774442484">Delete data and reset permissions</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Options</translation>
 <translation id="6231752747840485235">Uninstall '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">Based on your last tab</translation>

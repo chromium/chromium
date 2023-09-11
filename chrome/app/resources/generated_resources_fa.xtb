@@ -429,6 +429,7 @@
 <translation id="1335929031622236846">دستگاهتان را ثبت‌نام کنید</translation>
 <translation id="133660899895084533">خواندن داده‌ها و اطلاعات دستگاه‌های جانبی مجهز به بلوتوث</translation>
 <translation id="1336902454946927954">کلید امنیتی شما قفل شده است زیرا اثر انگشتتان تشخیص داده نشد. برای باز کردن قفل آن، پین را وارد کنید.</translation>
+<translation id="1337066099824654054">راهنمای زمینه‌ای خاموش است</translation>
 <translation id="1338631221631423366">درحال جفت کردن…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> می‌خواهد این برنامه را باز کند.</translation>
 <translation id="1338950911836659113">در حال حذف...</translation>
@@ -3460,6 +3461,7 @@
 <translation id="3738632186060045350">داده‌های <ph name="DEVICE_TYPE" /> پس از ۲۴ ساعت حذف خواهد شد</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> باز شود؟</translation>
+<translation id="3740396996321407665">دریافت راهنمای زمینه‌ای برای برخی‌از ویژگی‌ها</translation>
 <translation id="3740945083753997630">کاهش اندازه نمایش و نوشتار</translation>
 <translation id="3741056951918180319">هرزمان خواستید از این افزونه در سایت‌ها استفاده کنید، می‌توانید روی آن کلیک کنید</translation>
 <translation id="3742235229730461951">جانمایی صفحه‌کلید کره‌ای</translation>
@@ -6422,6 +6424,7 @@
 <translation id="6173623053897475761">پین خود را دوباره تایپ کنید</translation>
 <translation id="6175314957787328458">‏GUID دامنه Microsoft</translation>
 <translation id="6175910054050815932">دریافت پیوند</translation>
+<translation id="6176701216248282552">‏راهنمای زمینه‌ای روشن است. این ویژگی‌ها می‌توانند صفحه‌های باز را به Google ارسال کنند.</translation>
 <translation id="6177412385419165772">درحال برداشتن…</translation>
 <translation id="6178664161104547336">انتخاب گواهی</translation>
 <translation id="6178682841350631965">داده‌های ورود به سیستم به‌روزرسانی شد</translation>

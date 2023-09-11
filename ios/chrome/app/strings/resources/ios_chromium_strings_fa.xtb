@@ -25,11 +25,11 @@
 <translation id="1847960401032164406">‏Maps در Chromium</translation>
 <translation id="186734497270163706">‏روی «Chromium» و سپس «برنامه مرورگر پیش‌فرض» ضربه بزنید.</translation>
 <translation id="1867772173333403444">‏۴. Chromium را انتخاب کنید</translation>
-<translation id="1940441310478179027">‏‫Chromium نشانی‌ها را بااستفاده از Google Maps شناسایی می‌کند تا مسیرها و اطلاعات محلی را به شما ارائه دهد.</translation>
 <translation id="2006345422933397527">‏Chromium موفق نشد به‌روزرسانی‌ها را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="2042889939382983733">‏مشاهده سابقه Chromium</translation>
 <translation id="2052320862053429062">‏Chromium به‌طور دوره‌ای گذرواژه‌هایتان را با فهرست‌هایی که به‌صورت آنلاین منتشر می‌شود مقایسه می‌کند. هنگام انجام این کار، نام‌های کاربری و گذرواژه‌های شما رمزگذاری می‌شود تا اشخاص دیگر، ازجمله Google نتوانند آن‌ها را بخوانند.</translation>
 <translation id="2054703085270098503">‏با Chromium ایمن بمانید</translation>
+<translation id="2098023844024447022">‏باز کردن آخرین برگه من در Chromium.</translation>
 <translation id="2168108852149185974">‏برخی از افزونه‌ها باعث خرابی Chromium می‌شود. لطفاً آن‌ها را حذف نصب کنید:</translation>
 <translation id="2178608107313874732">‏Chromium اکنون نمی‌تواند از دوربین استفاده کند</translation>
 <translation id="2195025571279539885">‏می‌خواهید دفعه دیگر Chromium پیشنهاد ترجمه صفحات <ph name="LANGUAGE_NAME" /> را از این سایت بدهد؟</translation>
@@ -190,6 +190,7 @@
 <translation id="8663480472502753423">‏به‌روز نگه داشتن Chromium</translation>
 <translation id="8685813584220679697">‏به سیستم این سایت و Chromium وارد شوید.</translation>
 <translation id="8730503818204408000">‏«تنظیمات Chromium» را برای تنظیم کردن Chromium به‌عنوان مرورگر پیش‌فرض باز می‌کند.</translation>
+<translation id="8742300022028858275">‏باز کردن آخرین برگه من در Chromium</translation>
 <translation id="8747378496147986285">‏وقتی روشن است:
 <ph name="BEGIN_INDENT" />  • به بهتر شدن Chromium برای همه کسانی که به‌شیوه‌ای مشابه شما از آن استفاده می‌کنند کمک می‌کند.<ph name="END_INDENT" />
 

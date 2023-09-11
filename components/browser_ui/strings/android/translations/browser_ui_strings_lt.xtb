@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Pateikti</translation>
 <translation id="2677748264148917807">Išeiti</translation>
 <translation id="2678468611080193228">Pabandykite laikinai leisti trečiųjų šalių slapukus, o tai reiškia, kad turėsite mažiau apsaugos, bet labiau tikėtina, kad svetainės funkcijos veiks</translation>
+<translation id="2683434792633810741">Ištrinti ir nustatyti iš naujo?</translation>
 <translation id="2687403674020088961">Blokuoti visus slapukus (nerekomenduojama)</translation>
 <translation id="2713106313042589954">Išjungti fotoaparatą</translation>
 <translation id="2717722538473713889">El. pašto adresai</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Leisti konkrečios svetainės slapukus.</translation>
 <translation id="4046123991198612571">Kitas takelis</translation>
 <translation id="4053720452172726777">Tinkinkite ir valdykite „Google Chrome“</translation>
+<translation id="4149890623864272035">Ar tikrai norite ištrinti visus vietinius duomenis, įskaitant slapukus, ir iš naujo nustatyti visus šios svetainės leidimus?</translation>
 <translation id="4149994727733219643">Supaprastinta tinklalapių peržiūra</translation>
 <translation id="4151930093518524179">Numatytasis mastelis</translation>
 <translation id="4165986682804962316">Svetainės nustatymai</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Leisti trečiųjų šalių slapukus</translation>
 <translation id="4428065317363009941">Skelbimų suasmeninimas</translation>
 <translation id="4434045419905280838">Iššok. langai ir peradresavimai</translation>
+<translation id="443552056913301231">Atlikus šį veiksmą bus ištrinti visi vietiniai duomenys, įskaitant slapukus, iš naujo nustatyti visi<ph name="ORIGIN" /> leidimai</translation>
 <translation id="4468959413250150279">Konkrečios svetainės garso išjungimas.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# slapukas}one{# slapukas}few{# slapukai}many{# slapuko}other{# slapukų}}</translation>
 <translation id="4478158430052450698">Lengviau tinkinti mastelį skirtingose svetainėse</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Nutildyti mikrofoną</translation>
 <translation id="4570913071927164677">Išsami informacija</translation>
 <translation id="4598549027014564149">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie jūsų naršymo veiklą skirtingose ar susijusiose svetainėse. Jūsų naršymo veikla nenaudojama skelbimams suasmeninti. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
+<translation id="4644713492825682049">Ištrinti ir nustatyti iš naujo</translation>
 <translation id="4645575059429386691">Tvarko vienas iš jūsų tėvų</translation>
 <translation id="4670064810192446073">Virtualioji realybė</translation>
 <translation id="4751476147751820511">Judesio arba šviesos jutikliai</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Paskutinį kartą lankytasi šiandien</translation>
 <translation id="5225463052809312700">Įjungti fotoaparatą</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
+<translation id="5246825184569358663">Atlikus šį veiksmą bus ištrinti visi vietiniai duomenys, įskaitant slapukus, taip pat bus iš naujo nustatyti visi <ph name="DOMAIN" /> ir jame esančių svetainių leidimai</translation>
 <translation id="5264323282659631142">Pašalinti „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Vilkite žymeklį nuo viršaus ir palieskite mygtuką „Atgal“, kad išeitumėte iš viso ekrano režimo.</translation>
 <translation id="5300589172476337783">Rodyti</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Išimtys</translation>
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
 <translation id="6205314730813004066">Su skelbimais susijęs privatumas</translation>
+<translation id="6207207788774442484">Ištrinti duomenis ir iš naujo nustatyti leidimus</translation>
 <translation id="6216432067784365534">„<ph name="NAME_OF_LIST_ITEM" />“ parinktys</translation>
 <translation id="6231752747840485235">Pašalinti „<ph name="APP_NAME" />“?</translation>
 <translation id="6262191102408817757">Pagal paskutinį skirtuką</translation>

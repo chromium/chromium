@@ -25,7 +25,6 @@
 <translation id="1847960401032164406">Maps in Chromium</translation>
 <translation id="186734497270163706">Tap "Chromium" then "Default Browser App."</translation>
 <translation id="1867772173333403444">4. Select Chromium</translation>
-<translation id="1940441310478179027">Chromium detects addresses using Google Maps to give you directions and local info.</translation>
 <translation id="2006345422933397527">Chromium couldn't check for updates. Try checking your Internet connection.</translation>
 <translation id="2042889939382983733">View Your Chromium History</translation>
 <translation id="2052320862053429062">Chromium periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
@@ -70,6 +69,7 @@
 <translation id="3784369638459513223">Opens a New Chromium Incognito Tab.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="3827545470516145620">You're getting standard security protection on this device</translation>
+<translation id="3833326979834193417">Chromium automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.</translation>
 <translation id="3886689467633467988">Sign in to this site and Chromium to get your bookmarks and more on all your devices.</translation>
 <translation id="394413318816989199">Passphrase encryption doesn't include payment methods and addresses.
 
@@ -85,6 +85,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 <translation id="4555020257205549924">When this feature is turned on, Chromium will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Opens The Payment Methods Setting Page in Chromium.</translation>
 <translation id="4585809515399340748">You can now use Chromium whenever you tap on links in messages, documents and other apps.</translation>
+<translation id="459080529287102949">Search visuals in Chromium</translation>
 <translation id="4633738821577273991">Get Enhanced Safe Browsing for this Chromium profile, too</translation>
 <translation id="4654936625574199632">To help improve the app, Chromium sends usage and crash data to Google. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Turn on Chromium scanner</translation>
@@ -153,6 +154,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7045244423563602563">Make Chromium your own</translation>
 <translation id="7055269218854630176">Your organisation, <ph name="DOMAIN" />, manages the account that you're signing in to and how Chromium can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="7099326575020694068">Chromium can't use your camera in Split View mode</translation>
+<translation id="7163483974919055112">Search visuals in Chromium.</translation>
 <translation id="7165402419892018581">Choose Chromium for auto-fill</translation>
 <translation id="7175400662502680481">Your password was exposed in a data breach. Password Manager recommends changing it now.</translation>
 <translation id="7192111075364461693">Chromium notifications are currently turned off in your device settings.</translation>

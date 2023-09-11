@@ -1050,14 +1050,6 @@ Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
       * PIN dan sidik jari, gunakan ["PIN", "FINGERPRINT"].
 
       Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak akan ada faktor WebAuthn yang tersedia untuk perangkat terkelola.</translation>
-<translation id="1881471688033371681">Pengendali peristiwa <ph name="UNLOAD_EVENT_NAME" /> tidak digunakan lagi. Diaktifkan atau tidaknya pengendali itu bergantung pada <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Saat ini, pengendali tersebut diizinkan oleh kebijakan secara default. Pada masa mendatang, pengendali peristiwa akan secara bertahap tidak lagi diizinkan secara default, dan situs harus secara eksplisit mengaktifkannya menggunakan header <ph name="PERMISSIONS_POLICY_NAME" />. Kebijakan perusahaan ini dapat digunakan untuk memilih tidak mengikuti penghentian bertahap ini dengan memaksa setelan default tetap aktif.
- 
-Halaman mungkin bergantung pada pengendali peristiwa <ph name="UNLOAD_EVENT_NAME" /> untuk menyimpan data atau memberi sinyal akhir sesi pengguna ke server. Tindakan ini tidak direkomendasikan karena tidak dapat diandalkan dan memengaruhi performa dengan memblokir penggunaan <ph name="PRODUCT_NAME" />. Alternatif yang direkomendasikan tersedia, tetapi peristiwa <ph name="UNLOAD_EVENT_NAME" /> telah digunakan dalam waktu yang lama. Beberapa aplikasi mungkin masih mengandalkannya.
-
-Jika kebijakan ini disetel ke salah (false) atau tidak disetel, pengendali peristiwa <ph name="UNLOAD_EVENT_NAME" /> akan dihentikan secara bertahap sesuai dengan peluncuran penghentian, dan situs yang tidak menyetel header <ph name="PERMISSIONS_POLICY_NAME" /> akan berhenti mengaktifkan peristiwa `unload`.
-
-Jika kebijakan ini disetel ke benar (true), pengendali peristiwa <ph name="UNLOAD_EVENT_NAME" /> akan terus berfungsi secara default.
-</translation>
 <translation id="1883274744253492031">Aktifkan upgrade otomatis konten campuran</translation>
 <translation id="1885782360784839335">Mengaktifkan ditampilkannya konten promosi tab penuh</translation>
 <translation id="1888871729456797026">Token pendaftaran kebijakan cloud di desktop</translation>

@@ -24,6 +24,7 @@
 
   • หากคุณซิงค์ประวัติการเข้าชมกับบัญชี Google เมตริกอาจรวมข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมด้วย<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">คุณได้รับการดูแลอย่างเข้มงวดที่สุดของ Chrome ให้ปลอดภัยจากเว็บไซต์ที่เป็นอันตราย</translation>
+<translation id="1657395063736185342">ค้นหาภาพใน Chrome</translation>
 <translation id="1675955119303651351">ยังไม่ได้บันทึกข้อมูล Chrome ของคุณบางอย่างในบัญชี Google
         โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="1682483655351012182">ซิงค์ข้อมูล Chrome</translation>
@@ -131,7 +132,6 @@
 <translation id="6063091872902370735">อนุญาตให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="6110625574506755980">ฟีเจอร์บางอย่างของ Chrome จะใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="6181930887571472871">เปลี่ยนไปใช้ Chrome</translation>
-<translation id="6228768456496298352">Chrome ตรวจหาที่อยู่โดยใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่</translation>
 <translation id="6238746320622508509">ให้ Chrome ล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="6247557882553405851">เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6412673304250309937">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
@@ -150,6 +150,7 @@
 <translation id="6916015246697034114">ค้นหาด้วยเสียงใน Chrome</translation>
 <translation id="6964931465519938134">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="6975725306479268850">เลือก Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
+<translation id="7004159181872656283">ค้นหาภาพใน Chrome</translation>
 <translation id="7056826488869329999">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chrome</translation>
 <translation id="7059914902409643750">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="7124339256045485976">อัปเดต Chrome อยู่เสมอ</translation>

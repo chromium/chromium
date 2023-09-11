@@ -305,6 +305,7 @@
 <translation id="271033894570825754">નવું</translation>
 <translation id="2712127207578915686">ફાઇલ ખોલવામાં અસમર્થ છે</translation>
 <translation id="2718352093833049315">ફક્ત વાઇ-ફાઇ પર</translation>
+<translation id="2738375676495545665">"નવું શું છે" છુપાવો</translation>
 <translation id="2747003861858887689">પાછલી ફીલ્ડ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ફૉલો કરી રહ્યાં છીએ</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
@@ -370,6 +371,7 @@
 <translation id="3037605927509011580">અરર કંઇક ભુલ થઇ!</translation>
 <translation id="3039722182465315531">સાઇન ઇન કરશો નહીં</translation>
 <translation id="3053332585453689122">તમે મુલાકાત લો છો તે URL અને પેજ કન્ટેન્ટનો નાનો નમૂનો, ડાઉનલોડ, એક્સ્ટેન્શન પ્રવૃત્તિ અને સિસ્ટમ સંબંધી માહિતી Google Safe Browsingને મોકલે છે એ ચેક કરવા કે તે નુકસાનદાયક છે કે કેમ.</translation>
+<translation id="3054631738875941048">'વાંચન સૂચિમાં ઉમેરો' છુપાવો</translation>
 <translation id="3074499504015191586">આખા પેજનો અનુવાદ કરો</translation>
 <translation id="3076846064362030967">તમને તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવામાં આવશે નહીં. જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.
 
@@ -486,8 +488,11 @@
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તે તમારા Google એકાઉન્ટ, {EMAIL}માં છે.}one{{COUNT} પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવો.}other{{COUNT} પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલા છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવો.}}</translation>
 <translation id="3709582977625132201">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
 <translation id="371230970611282515">જોખમકારક ઇવેન્ટ થાય તે પહેલાં તેનું અનુમાન લગાવીને તેના વિશે તમને ચેતવણી આપે છે.</translation>
+<translation id="371398631992790800">બુકમાર્ક છુપાવો</translation>
 <translation id="37207012422556617">વલણમાં છે એવી શોધો</translation>
 <translation id="3740397331642243698">ઇનપુટ કરેલા URLsને Google Chrome છૂપા મોડમાં ખોલે છે.</translation>
+<translation id="374357899112510277">ડાઉનલોડ છુપાવો</translation>
+<translation id="3745190878148784130">'ટેક્સ્ટ નાની-મોટી કરો' છુપાવો</translation>
 <translation id="3762232513783804601">તમારા iPad માટે બનાવાયેલું</translation>
 <translation id="3768725474733206671">છેલ્લે બંધ કરેલું ટૅબ ફરીથી ખોલો</translation>
 <translation id="3771033907050503522">છૂપા ટેબ્સ</translation>
@@ -639,6 +644,7 @@
 <translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> તરીકે આગળ વધો</translation>
 <translation id="4652817563047461855">ખાતરી કરો કે તમારા પાસવર્ડ સલામત છે, જાણો કે તેની સાથે ચેડાં થયા છે કે નહીં અને તમારી જાતને ઑનલાઇન સુરક્ષિત રાખવામાં સહાય માટે સલાહ મેળવો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="4658335131052370646">સાચવો</translation>
 <translation id="4659194143325814340">{count,plural, =1{તમારી વાંચન સૂચિમાં {count} પેજ}one{તમારી વાંચન સૂચિમાં {count} પેજ}other{તમારી વાંચન સૂચિમાં {count} પેજ}}</translation>
 <translation id="4659667755519643272">ટેબ સ્વિચરમાં દાખલ થાઓ</translation>
 <translation id="46614316059270592">પાસવર્ડ સાચવો</translation>
@@ -717,6 +723,7 @@
 <translation id="5090832849094901128">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="WEBSITE" />નું તમારું એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="5094827893301452931">ટ્વિટ પૂર્ણ કરેલ છે.</translation>
 <translation id="5100848274708256363">કોઈ ફૅમિલી ગ્રૂપમાં જોડાઓ</translation>
+<translation id="5100969332803472179">'બુકમાર્કમાં ઉમેરો' છુપાવો</translation>
 <translation id="5109892411553231226">ચુકવણી પદ્ધતિઓ મેનેજ કરો</translation>
 <translation id="5118713593561876160">રુચિઓ</translation>
 <translation id="5118764316110575523">બંધ</translation>
@@ -748,6 +755,7 @@
 <translation id="5228579091201413441">સિંક ચાલુ કરો</translation>
 <translation id="5232485538978018676">મેનેજ કરેલા એકાઉન્ટ વડે સાઇન ઇન કરો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
+<translation id="5235389474593199952">ઇતિહાસ છુપાવો</translation>
 <translation id="5238301240406177137">એકાઉન્ટમાં સાચવો</translation>
 <translation id="5245322853195994030">સિંક કરવાનું રદ કરો</translation>
 <translation id="5271265092610673171">{count,plural, =1{ફરજિયાત ભરવા માટેનું ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.}one{ફરજિયાત ભરવા માટેના કેટલાક ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.}other{ફરજિયાત ભરવા માટેના કેટલાક ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.}}</translation>
@@ -835,6 +843,7 @@
 <translation id="581659025233126501">સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="5817176759448082654">પાસવર્ડની તપાસ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવેલું બ્રાઉઝર. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="5827650163984030263">Password Manager છુપાવો</translation>
 <translation id="5833643789537100742">Chrome માટે પાસવર્ડ, ચુકવણી પદ્ધતિઓ અને સરનામા સાચવો કે જેથી પછીથી ઑટોમૅટિક રીતે ભરી શકાય.</translation>
 <translation id="5834415013958049700">તમે કૉપિ કરેલી લેન્સની છબી</translation>
 <translation id="5844284118433003733">તમે સાઇન ઇન હો ત્યારે, સમગ્ર Googleની સેવાઓમાં તમને સંરક્ષિત કરવા માટે આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, ઉદાહરણ તરીકે કોઈ સુરક્ષા સંબંધી બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
@@ -886,6 +895,7 @@
 <translation id="6064824697233747382">તમારી સંસ્થા માટે જરૂરી છે કે તમે સિંકની સુવિધા બંધ કરો.</translation>
 <translation id="6066301408025741299">રદ કરવા માટે ટેપ કરો.</translation>
 <translation id="6067849159007176401">બ્રાઉઝિંગમાં સુરક્ષિતતા વધારો</translation>
+<translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) અપલોડ કરી શકાઈ નથી</translation>
 <translation id="6084848228346514841">કોઈ ટૅબ પસંદ કરો</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયાં. સેટિંગ ખોલે છે.</translation>
 <translation id="6103540626693881831">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
@@ -1001,6 +1011,7 @@
 <translation id="6585618849026997638">તમે બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
 <translation id="6596481460663245319">Google વડે છબી શોધો</translation>
 <translation id="6598875554591387303">પ્રકાશક મુજબ સૉર્ટ કરો</translation>
+<translation id="6601302169302852717"><ph name="USER_EMAIL" /> માટે Google Photosમાં છબી સાચવી</translation>
 <translation id="6603393121510733479">તમારી સંસ્થાએ ખાનગી બ્રાઉઝિંગ બંધ કર્યું છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">સલામતી માટે તપાસની પ્રક્રિયા ચાલી રહી છે…</translation>
@@ -1071,7 +1082,9 @@
 <translation id="6930799952781667037">આ ભાષા પર બદલવા માટે ટૅપ કરો.</translation>
 <translation id="6939941780796374211">પાસવર્ડના વિકલ્પો</translation>
 <translation id="6944369514868857500">બીજું એકાઉન્ટ પસંદ કરો</translation>
+<translation id="6944935964236827145">'અનુવાદ' છુપાવો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
+<translation id="6955779377310719430">'ફૉલો કરો' છુપાવો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6973630695168034713">ફોલ્ડર્સ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1190,6 +1203,7 @@
 <translation id="7724085059277147439">{count,plural, =1{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}one{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}other{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}}</translation>
 <translation id="7726702057919861819">મેનૂ → ઇતિહાસ → બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="7729458878441927652">તમારા અન્ય ડિવાઇસમાંના ટૅબ જોવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો.</translation>
+<translation id="7730973429297233609">જેનો ઉપયોગ કરીને તમે <ph name="FILENAME" /> - <ph name="FILESIZE" />ને સાચવવા માગો છો, તે એકાઉન્ટ પસંદ કરો</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. માત્ર આ જ ડિવાઇસ પર.</translation>
 <translation id="7738120385185846461">સમસ્યાની જાણ કરો…</translation>
 <translation id="7741325291586284254">છૂપી ટૅબનું નવું પેજ</translation>
@@ -1300,12 +1314,14 @@
 <translation id="8286036467436129157">સાઇન ઇન કરો</translation>
 <translation id="8299417921174340354">પાસવર્ડનો ઉપયોગ કરવા માટે, તમારે પહેલા તમારા ડિવાઇસ પર પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="8299613349954694191">ખાનગી રૂપે વેબ બ્રાઉઝ કરવા છૂપી ટૅબ ખોલો.</translation>
+<translation id="8311853334103696030">કિંમતનું ટ્રૅકિંગ છુપાવો</translation>
 <translation id="8316944564970119719">સાઇટ અને પાસવર્ડ દાખલ કરો, પછી સાચવો</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="834783239627985533">સૌથી વધુ મુલાકાત લીધેલી સાઇટ</translation>
 <translation id="8356276002902955750">{count,plural, =1{{count} બુકમાર્ક}one{{count} બુકમાર્ક}other{{count} બુકમાર્ક}}</translation>
+<translation id="8364841868226993049"><ph name="USER_EMAIL" /> માટે Google Photosમાં છબી સાચવી રહ્યાં છીએ...</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8386068868580335421">રીસેટ કરો</translation>
 <translation id="838867811594159347">પાસફ્રેઝ દાખલ કરો…</translation>
@@ -1351,11 +1367,13 @@
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8591976964826315682">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
 <translation id="8605219856220328675">ટૅબ બંધ કરો.</translation>
+<translation id="8613883225817609844">તાજેતરના ટૅબ છુપાવો</translation>
 <translation id="8620640915598389714">ફેરફાર કરો</translation>
 <translation id="8626393685701737946">તમે સેટિંગ &gt; કન્ટેન્ટ સેટિંગમાં જઈને ડિફૉલ્ટ સાઇટ વ્યૂ બદલીને ડેસ્કટૉપ વ્યૂ મોડ કરી શકો છો</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="8637431369725868556">જોખમી સાઇટથી સુરક્ષા મેળવો.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
+<translation id="8640430998629397789">'ડેસ્કટૉપ સાઇટની વિનંતી કરો' છુપાવો</translation>
 <translation id="8654802032646794042">રદ કરો</translation>
 <translation id="8663764600409216912">તમે એવા પાસવર્ડનો ઉપયોગ કરી રહ્યાં છો જેનું અનુમાન લગાવવું મુશ્કેલ છે</translation>
 <translation id="8668210798914567634">આ પેજ, તમારી વાંચન સૂચિમાં સાચવવામાં આવ્યું છે.</translation>
@@ -1370,6 +1388,7 @@
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8727043961453758442">Chromeનો વધુને વધુ લાભ મેળવો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
+<translation id="8731958888085671579">'પેજમાં શોધો' છુપાવો</translation>
 <translation id="87371078663613140">મેનૂ બારના વિકલ્પો વિશે શોધખોળ કરો</translation>
 <translation id="8737620822084008350">{count,plural, =1{તમારા કીબોર્ડ પર {count} સાચવેલી પ્રોફાઇલ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર {count} સાચવેલી પ્રોફાઇલ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર {count} સાચવેલી પ્રોફાઇલ ઉપલબ્ધ છે.}}</translation>
 <translation id="8741995161408053644">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
@@ -1386,6 +1405,7 @@
 <translation id="8806823403540278281">તમારી સંસ્થા માટે જરૂરી છે કે તમે ખાનગી રીતે બ્રાઉઝ કરો. છૂપા મોડમાં ટૅબ સાચવવામાં આવતી નથી.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ડિફૉલ્ટ સાઇટ વ્યૂ</translation>
+<translation id="881195471495802652">આ ફાઇલ અપલોડ કરી શકાઈ નથી</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8825562130641217944">તમારા બુકમાર્ક, પાસવર્ડ અને બીજી ઘણી બાબતો મેળવો.</translation>
 <translation id="882557203579758546">પેજમાં શોધો…</translation>
@@ -1400,6 +1420,7 @@
 <translation id="8870413625673593573">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="8876882697946675716">તમારા ડિવાઇસને સિંક કરેલું રાખો</translation>
 <translation id="8877287418679067891">સેટિંગમાં ડિફૉલ્ટ બનાવો…</translation>
+<translation id="8879984884633913185">'બ્રાઉઝિંગ ડેટા સાફ કરો' છુપાવો</translation>
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> પર આ છબી શોધો</translation>
 <translation id="8891935667620843985">તમે Chromeને તમારી ડિફૉલ્ટ બ્રાઉઝર ઍપ બનાવીને ઑટોમૅટિક રીતે તેમાં લિંક ખોલી શકો છો.</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
@@ -1444,12 +1465,14 @@
 <translation id="9094033019050270033">પાસવર્ડ અપડેટ કરો</translation>
 <translation id="9097506547406246598">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="9098541895599151034">શું પાસવર્ડ <ph name="NUMBER_OF_ACCOUNTS" /> ડિલીટ કરીએ?</translation>
+<translation id="9099233023029360602">કયા એકાઉન્ટનો ઉપયોગ કરવો છે, તે દરેક વખતે પૂછો</translation>
 <translation id="9100610230175265781">પાસફ્રેઝ આવશ્યક છે</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"માંથી</translation>
 <translation id="9107664647686727385">ચેડાં કરાયેલા પાસવર્ડ ચેક કરો</translation>
 <translation id="9120217828624527905">આખા પેજના અનુવાદ પર સ્વિચ કરો</translation>
 <translation id="9124387962554796433">Search અને Googleની અન્ય સેવાઓને મનપસંદ બનાવવા માટે, Google તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="9137526406337347448">Google સેવાઓ</translation>
+<translation id="9144931028079269381">વાંચન સૂચિ છુપાવો</translation>
 <translation id="9148126808321036104">ફરીથી સાઇન ઇન કરો </translation>
 <translation id="9157836665414082580">સંવાદો નાબૂદ કરો</translation>
 <translation id="9162432979321511934">ઑટોમૅટિક રીતે પાસવર્ડ ભરવાની સુવિધા ચાલુ કરો</translation>

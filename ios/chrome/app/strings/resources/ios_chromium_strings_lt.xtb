@@ -25,7 +25,6 @@
 <translation id="1847960401032164406">Žemėlapiai naršyklėje „Chromium“</translation>
 <translation id="186734497270163706">Palieskite „Chromium“, tada – „Numatytoji naršyklės programa“.</translation>
 <translation id="1867772173333403444">4. Pasirinkite „Chromium“</translation>
-<translation id="1940441310478179027">„Chromium“ aptinka adresus, naudodama „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos.</translation>
 <translation id="2006345422933397527">„Chromium“ nepavyko patikrinti, ar yra naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="2042889939382983733">„Chromium“ istorijos peržiūra</translation>
 <translation id="2052320862053429062">„Chromium“ periodiškai tikrina, ar jūsų slaptažodžiai nebuvo įtraukti į internete paskelbtus sąrašus. Tai atliekant, slaptažodžiai ir naudotojų vardai užšifruojami, kad niekas negalėtų jų perskaityti, įskaitant „Google“.</translation>
@@ -70,6 +69,7 @@
 <translation id="3784369638459513223">Atidaromas naujas „Chromium“ inkognito skirtukas.</translation>
 <translation id="3805899903892079518">„Chromium“ nepasiekia nuotraukų ar vaizdo įr. Įgalinkite prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
 <translation id="3827545470516145620">Šiame įrenginyje naudojate įprastos apsaugos funkciją</translation>
+<translation id="3833326979834193417">„Chromium“ kasdien automatiškai vykdo saugos patikrą, kad būtumėte apsaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Daugiau apie saugos patikrą rasite skiltyje „Nustatymai“.</translation>
 <translation id="3886689467633467988">Prisijunkite prie šios svetainės ir „Chromium“, kad gautumėte žymes ir kt. visuose savo įrenginiuose.</translation>
 <translation id="394413318816989199">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų.
 
@@ -85,6 +85,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="4555020257205549924">Kai ši funkcija bus įjungta, „Chromium“ siūlys versti kitomis kalbomis parašytus puslapius naudojant „Google“ vertėją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Atidaromas „Chromium“ mokėjimo metodų nustatymo puslapis.</translation>
 <translation id="4585809515399340748">Dabar galite naudoti „Chromium“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
+<translation id="459080529287102949">Vaizdo medžiagos paieška naršyklėje „Chromium“</translation>
 <translation id="4633738821577273991">Taip pat naudokite Sustiprintą saugų naršymą šiame „Chromium“ profilyje</translation>
 <translation id="4654936625574199632">Kad padėtų tobulinti programą, „Chromium“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_LINK" />Tvarkyti<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Įjunkite „Chromium“ skaitytuvą</translation>
@@ -153,6 +154,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="7045244423563602563">Suasmeninkite „Chromium“</translation>
 <translation id="7055269218854630176">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios jungiatės, ir tai, kaip galima naudoti „Chromium“. Administratorius gali nustatyti arba apriboti tam tikras funkcijas.</translation>
 <translation id="7099326575020694068">„Chromium“ negali naudoti fotoaparato padalyto rodinio režimu</translation>
+<translation id="7163483974919055112">Ieškokite vaizdo medžiagos naršyklėje „Chromium“.</translation>
 <translation id="7165402419892018581">„Chromium“ pasirinkimas automatinio pildymo funkcijai</translation>
 <translation id="7175400662502680481">Jūsų slaptažodis atskleistas įvykus duomenų saugos pažeidimui. Slaptažodžių tvarkytuvė rekomenduoja pakeisti jį dabar.</translation>
 <translation id="7192111075364461693">„Chromium“ pranešimai šiuo metu išjungti įrenginio nustatymuose.</translation>

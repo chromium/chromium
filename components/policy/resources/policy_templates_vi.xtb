@@ -1045,14 +1045,6 @@ Khả năng sử dụng tiện ích vẫn chịu sự kiểm soát của các ch
       * Mã PIN và vân tay, hãy sử dụng ["PIN", "FINGERPRINT"].
 
       Nếu bạn không đặt hoặc đặt chính sách này thành một danh sách trống, sẽ không có yếu tố WebAuthn nào dành cho thiết bị được quản lý.</translation>
-<translation id="1881471688033371681">Các trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> sắp bị loại bỏ. Việc các trình xử lý này có kích hoạt hay không phụ thuộc vào <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />. Hiện tại, chính sách cho phép các trình xử lý này kích hoạt theo mặc định. Trong tương lai, các trình xử lý này sẽ dần chuyển sang trạng thái không được phép theo mặc định và phải được các trang web cho phép rõ ràng bằng cách sử dụng tiêu đề <ph name="PERMISSIONS_POLICY_NAME" />. Bạn có thể sử dụng chính sách doanh nghiệp này để từ chối việc loại bỏ dần này bằng cách buộc duy trì giá trị mặc định ở trạng thái cho phép.
- 
-Các trang có thể dựa vào trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> để lưu dữ liệu hoặc báo hiệu việc kết thúc phiên của người dùng với máy chủ. Cách này không được khuyến nghị do không đáng tin cậy và sẽ ảnh hưởng đến hiệu suất do việc không cho phép sử dụng <ph name="PRODUCT_NAME" />. Dù có một số lựa chọn thay thế được đề xuất, nhưng sự kiện <ph name="UNLOAD_EVENT_NAME" /> đã được sử dụng trong một thời gian dài. Một số ứng dụng có thể vẫn hoạt động dựa vào các trình xử lý sự kiện đó.
-
-Nếu bạn đặt chính sách này thành false hoặc không đặt, thì các trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> sẽ dần bị loại bỏ tương ứng với tiến độ triển khai việc loại bỏ và các trang web không đặt tiêu đề <ph name="PERMISSIONS_POLICY_NAME" /> sẽ ngừng kích hoạt các sự kiện "unload".
-
-Nếu bạn đặt chính sách này thành true, thì trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> sẽ tiếp tục hoạt động theo mặc định.
-</translation>
 <translation id="1883274744253492031">Bật tính năng tự động nâng cấp nội dung hỗn hợp</translation>
 <translation id="1885782360784839335">Cho phép hiển thị nội dung quảng cáo dưới dạng toàn bộ thẻ</translation>
 <translation id="1888871729456797026">Mã thông báo đăng ký của chính sách đám mây trên màn hình</translation>

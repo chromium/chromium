@@ -25,11 +25,11 @@
 <translation id="1847960401032164406">Chromium 的地圖</translation>
 <translation id="186734497270163706">輕按 [Chromium]，然後輕按 [預設瀏覽器應用程式]。</translation>
 <translation id="1867772173333403444">4. 選取 [Chromium]</translation>
-<translation id="1940441310478179027">Chromium 會使用 Google 地圖偵測地址，為你規劃路線及提供當地資訊。</translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="2042889939382983733">查看 Chromium 歷史記錄</translation>
 <translation id="2052320862053429062">Chromium 會定期將您的密碼與網上發佈的清單互相核對。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
 <translation id="2054703085270098503">讓 Chromium 確保您的安全</translation>
+<translation id="2098023844024447022">在 Chromium 中開啟「我的最新分頁」。</translation>
 <translation id="2168108852149185974">部份外掛程式造成 Chromium 當機。請解除安裝以下程式：</translation>
 <translation id="2178608107313874732">Chromium 目前無法使用您的相機</translation>
 <translation id="2195025571279539885">您希望 Chromium 將來翻譯此網站的<ph name="LANGUAGE_NAME" />頁面嗎？</translation>
@@ -190,6 +190,7 @@
 <translation id="8663480472502753423">取得 Chromium 最新更新</translation>
 <translation id="8685813584220679697">登入此網站和 Chromium。</translation>
 <translation id="8730503818204408000">開啟 Chromium 設定，將 Chromium 設定為預設瀏覽器。</translation>
+<translation id="8742300022028858275">在 Chromium 中開啟「我的最新分頁」</translation>
 <translation id="8747378496147986285">開啟時：
 <ph name="BEGIN_INDENT" />  • 可協助 Chromium 為使用者提供更優質的使用體驗。<ph name="END_INDENT" />
 

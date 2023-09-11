@@ -25,7 +25,6 @@
 <translation id="1847960401032164406">Maps ใน Chromium</translation>
 <translation id="186734497270163706">แตะ "Chromium" แล้วแตะ "แอปเบราว์เซอร์เริ่มต้น"</translation>
 <translation id="1867772173333403444">4. เลือก Chromium</translation>
-<translation id="1940441310478179027">Chromium ตรวจหาที่อยู่โดยใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่</translation>
 <translation id="2006345422933397527">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2042889939382983733">ดูประวัติการเข้าชมใน Chromium</translation>
 <translation id="2052320862053429062">Chromium ตรวจสอบรหัสผ่านของคุณเป็นระยะโดยเทียบกับรายการที่มีการเผยแพร่ออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
@@ -85,6 +84,7 @@
 <translation id="4555020257205549924">เมื่อเปิดฟีเจอร์นี้ Chromium จะเสนอให้แปลหน้าต่างๆ ที่เขียนด้วยภาษาอื่นโดยใช้ Google แปลภาษา <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">เปิดหน้าการตั้งค่าวิธีการชำระเงินใน Chromium</translation>
 <translation id="4585809515399340748">ตอนนี้คุณจะใช้ Chromium ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
+<translation id="459080529287102949">ค้นหาภาพใน Chromium</translation>
 <translation id="4633738821577273991">รับ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นสำหรับโปรไฟล์ Chromium นี้ด้วย</translation>
 <translation id="4654936625574199632">Chromium จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">เปิดโปรแกรมสแกนของ Chromium</translation>
@@ -153,6 +153,7 @@
 <translation id="7045244423563602563">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>
 <translation id="7055269218854630176">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chromium ผู้ดูแลระบบจะตั้งค่าหรือจำกัดฟีเจอร์บางอย่างได้</translation>
 <translation id="7099326575020694068">Chromium ไม่สามารถใช้กล้องถ่ายรูปในโหมด Split View</translation>
+<translation id="7163483974919055112">ค้นหาภาพใน Chromium</translation>
 <translation id="7165402419892018581">เลือก Chromium สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="7175400662502680481">รหัสผ่านของคุณถูกเปิดเผยในการละเมิดข้อมูล เครื่องมือจัดการรหัสผ่านแนะนำให้เปลี่ยนรหัสผ่านทันที</translation>
 <translation id="7192111075364461693">ตอนนี้การแจ้งเตือนของ Chromium ปิดอยู่ในการตั้งค่าอุปกรณ์</translation>

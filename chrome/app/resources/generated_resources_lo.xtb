@@ -428,6 +428,7 @@
 <translation id="1335929031622236846">ລົງທະບຽນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="133660899895084533">ອ່ານຂໍ້ມູນອຸປະກອນຕໍ່ພ່ວງ Bluetooth ແລະ ຂໍ້ມູນ</translation>
 <translation id="1336902454946927954">ກະແຈຄວາມປອດໄພຂອງທ່ານຖືກລັອກ ເພາະວ່າບໍ່ສາມາດຮັບຮູ້ລາຍນິ້ວມືຂອງທ່ານໄດ້. ເພື່ອປົດລັອກມັນ, ກະລຸນາປ້ອນ PIN ຂອງທ່ານ.</translation>
+<translation id="1337066099824654054">ຄວາມຊ່ວຍເຫຼືອຕາມບໍລິບົດປິດຢູ່</translation>
 <translation id="1338631221631423366">ກຳລັງຈັບຄູ່...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ຕ້ອງການເປີດແອັບພລິເຄຊັນນີ້.</translation>
 <translation id="1338950911836659113">ກໍາລັງລຶບ​...</translation>
@@ -3462,6 +3463,7 @@
 <translation id="3738632186060045350">ຂໍ້ມູນ <ph name="DEVICE_TYPE" /> ຈະຖືກລຶບໃນ 24 ຊົ່ວໂມງ</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">ເປີດ <ph name="APPLICATION" /> ບໍ?</translation>
+<translation id="3740396996321407665">ຮັບຄວາມຊ່ວຍເຫຼືອຕາມບໍລິບົດຈາກບາງຄຸນສົມບັດ</translation>
 <translation id="3740945083753997630">ຫຼຸດຂະໜາດການສະແດງຜົນ ແລະ ຂໍ້ຄວາມ</translation>
 <translation id="3741056951918180319">ທ່ານສາມາດຄລິກສ່ວນຂະຫຍາຍເພື່ອໃຊ້ມັນຢູ່ເວັບໄຊໃດກໍໄດ້ທຸກເທື່ອ</translation>
 <translation id="3742235229730461951">ໂຄງຮ່າງແປ້ນພິມພາສາເກົາຫຼີ</translation>
@@ -6423,6 +6425,7 @@
 <translation id="6173623053897475761">ພິມ PIN ຂອງທ່ານອີກຄັ້ງ</translation>
 <translation id="6175314957787328458">GUID ໂດເມນຂອງ Microsoft</translation>
 <translation id="6175910054050815932">ຂໍລິ້ງ</translation>
+<translation id="6176701216248282552">ຄວາມຊ່ວຍເຫຼືອຕາມບໍລິບົດເປີດຢູ່. ຄຸນສົມບັດເຫຼົ່ານີ້ສາມາດສົ່ງໜ້າທີ່ເປີດຢູ່ໄປຫາ Google ໄດ້.</translation>
 <translation id="6177412385419165772">ກຳລັງລຶບອອກ…</translation>
 <translation id="6178664161104547336">ເລືອກ​ໃບ​ຢັ້ງ​ຢືນ​</translation>
 <translation id="6178682841350631965">ອັບເດດຂໍ້ມູນການເຂົ້າສູ່ລະບົບຂອງທ່ານແລ້ວ</translation>

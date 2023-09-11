@@ -1047,14 +1047,6 @@ A disponibilidade das extensões ainda é controlada por outras políticas.</tra
       * o desbloqueio com PIN e impressão digital, use ["PIN", "FINGERPRINT"].
 
       Se a política for definida como uma lista vazia ou for deixada sem definição, nenhum fator de WebAuthn vai ficar disponível para dispositivos gerenciados.</translation>
-<translation id="1881471688033371681">O uso dos manipuladores de eventos <ph name="UNLOAD_EVENT_NAME" /> está sendo descontinuado. O disparo depende da <ph name="PERMISSIONS_POLICY_NAME" /> do <ph name="UNLOAD_EVENT_NAME" />. Atualmente, por padrão, eles são permitidos por política. No futuro, eles serão desativados gradualmente por padrão, e os sites precisarão ativá-los explicitamente usando cabeçalhos da <ph name="PERMISSIONS_POLICY_NAME" />. Essa política corporativa pode ser usada para desativar essa descontinuação gradual, forçando o padrão a permanecer ativado.
- 
-As páginas podem depender de manipuladores de eventos <ph name="UNLOAD_EVENT_NAME" /> para salvar dados ou sinalizar o final de uma sessão de usuário para o servidor. Isso não é recomendado porque não é confiável e afeta o desempenho ao bloquear o uso do <ph name="PRODUCT_NAME" />. Há alternativas recomendadas, mas o evento <ph name="UNLOAD_EVENT_NAME" /> é usado há muito tempo. Alguns aplicativos ainda podem depender dele.
-
-Se esta política for definida como falsa ou não for configurada, os manipuladores de eventos <ph name="UNLOAD_EVENT_NAME" /> serão descontinuados gradualmente, de acordo com o status da descontinuação, e os sites que não definirem o cabeçalho <ph name="PERMISSIONS_POLICY_NAME" /> não vão disparar eventos de "descarregamento".
-
-Se esta política for definida como verdadeira, os manipuladores de eventos <ph name="UNLOAD_EVENT_NAME" /> continuarão funcionando por padrão.
-</translation>
 <translation id="1883274744253492031">Ativar o upgrade automático do conteúdo misto</translation>
 <translation id="1885782360784839335">Ativar a exibição de conteúdo promocional em guia cheia</translation>
 <translation id="1888871729456797026">Token de inscrição da política de nuvem na área de trabalho</translation>

@@ -160,6 +160,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7780154209050837198">Wenn du Chrome optimal nutzen möchtest, meldest du dich mit deinem Google-Konto in Chrome an.</translation>
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="7897703007638178753">Zuletzt geöffnete Chrome-Tabs ansehen</translation>
+<translation id="7925119591961387184">Wähle „Chrome“ aus.</translation>
 <translation id="8022947259858476807">Verwende Chrome als deinen Standardbrowser, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="804638182476029347">Chrome-Benachrichtigungen erlauben, Benachrichtigungen zu Preisnachlässen abzurufen</translation>
 <translation id="81358522153858150">Chrome unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
@@ -178,6 +179,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 2. Tippe auf „Standard-Browser-App“
 3. Wähle Chrome aus.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Tippe auf „Chrome“ und dann auf „Standard-Browser-App“.</translation>
 <translation id="8603022514504485810">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Sicherer surfen mit Google Chrome</translation>
 <translation id="8760668027640688122">Neuen Tab in Chrome öffnen</translation>
@@ -190,6 +192,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
 <translation id="8897749957032330183">Passwörter werden auf diesem Gerät im Google Passwortmanager gespeichert.</translation>
+<translation id="8949681853939555434">Chrome als Standardbrowser festlegen</translation>
 <translation id="8969290730818637510">Wenn aktiviert:
 <ph name="BEGIN_INDENT" />  • Du hilfst, Chrome für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />
 

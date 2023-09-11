@@ -25,11 +25,11 @@
 <translation id="1847960401032164406">„Карти“ во Chromium</translation>
 <translation id="186734497270163706">Допрете „Chromium“, па „Стандардна апликација за прелистување“</translation>
 <translation id="1867772173333403444">4. Изберете Chromium</translation>
-<translation id="1940441310478179027">Chromium открива адреси со „Карти на Google“ за да ви обезбедува насоки и локални информации.</translation>
 <translation id="2006345422933397527">Chromium не може да провери дали има ажурирања. Проверете ја интернет-врската.</translation>
 <translation id="2042889939382983733">Прегледајте ја историјата на Chromium</translation>
 <translation id="2052320862053429062">Chromium повремено ги споредува лозинките со списоци објавени онлајн. Кога го прави ова, вашите лозинки и кориснички имиња се шифрирани, па нив не може да ги прочита никој, вклучително и Google.</translation>
 <translation id="2054703085270098503">Останете безбедни со Chromium</translation>
+<translation id="2098023844024447022">Ја отвора мојата последна картичка во Chromium.</translation>
 <translation id="2168108852149185974">Некои додатоци предизвикуваат пад на Chromium. Деинсталирајте:</translation>
 <translation id="2178608107313874732">Chromium не може да ја користи камерата сега</translation>
 <translation id="2195025571279539885">Дали сакате Chromium следниот пат да ви понуди да преведува страници од <ph name="LANGUAGE_NAME" /> од овој сајт?</translation>
@@ -190,6 +190,7 @@
 <translation id="8663480472502753423">Одржувајте го Chromium ажурен</translation>
 <translation id="8685813584220679697">Најавете се на сајтов и на Chromium.</translation>
 <translation id="8730503818204408000">Ја отвора поставката за Chromium за поставување на Chromium како стандарден прелистувач.</translation>
+<translation id="8742300022028858275">Отвори ја мојата последна картичка во Chromium</translation>
 <translation id="8747378496147986285">Кога е вклучено:
 <ph name="BEGIN_INDENT" />  • Помага да се подобри Chromium за луѓето што го користат исто како и вие.<ph name="END_INDENT" />
 

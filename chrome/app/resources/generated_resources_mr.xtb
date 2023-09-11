@@ -428,6 +428,7 @@
 <translation id="1335929031622236846">तुमच्या डिव्हाइसची नोंदणी करा</translation>
 <translation id="133660899895084533">ब्लूटूथ उपकरणांची माहिती आणि डेटा वाचा</translation>
 <translation id="1336902454946927954">तुमची फिंगरप्रिंट ओळखता न आल्यामुळे तुमची सिक्युरिटी की लॉक केली गेली आहे. ती अनलॉक करण्यासाठी, तुमचा पिन एंटर करा.</translation>
+<translation id="1337066099824654054">संदर्भित मदत बंद आहे</translation>
 <translation id="1338631221631423366">पेअर करत आहे...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ला हे ॲप्लिकेशन उघडायचे आहे.</translation>
 <translation id="1338950911836659113">हटवत आहे...</translation>
@@ -3462,6 +3463,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> डेटा २४ तासांमध्ये हटवला जाईल</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> उघडायचा?</translation>
+<translation id="3740396996321407665">काही वैशिष्ट्यांकडून संदर्भित मदत मिळवा</translation>
 <translation id="3740945083753997630">डिस्प्ले आणि मजकुराचा आकार कमी करा</translation>
 <translation id="3741056951918180319">कोणत्याही साइटवर एक्स्टेंशन वापरण्यासाठी तुम्ही कधीही त्यावर क्लिक करू शकता</translation>
 <translation id="3742235229730461951">कोरियन कीबोर्ड लेआउट</translation>
@@ -6423,6 +6425,7 @@
 <translation id="6173623053897475761">तुमचा पिन पुन्हा टाइप करा</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">लिंक मिळवा</translation>
+<translation id="6176701216248282552">संदर्भित मदत सुरू आहे. ही वैशिष्ट्ये Google ला खुली पेज पाठवू शकतात.</translation>
 <translation id="6177412385419165772">काढून टाकत आहे...</translation>
 <translation id="6178664161104547336">एक सर्टिफिकेट निवडा</translation>
 <translation id="6178682841350631965">तुमचा साइन-इन डेटा अपडेट केला होता</translation>

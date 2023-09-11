@@ -1051,14 +1051,6 @@ La disponibilidad de las extensiones aún se controla mediante otras políticas.
       * Para usar el PIN y la huella dactilar, usa ["PIN", "FINGERPRINT"].
 
       Si no habilitas la política o la estableces como una lista vacía, no habrá factores de WebAuthn disponibles para dispositivos administrados.</translation>
-<translation id="1881471688033371681">Los controladores del evento <ph name="UNLOAD_EVENT_NAME" /> dejarán de estar disponibles. Su activación depende de la <ph name="PERMISSIONS_POLICY_NAME" /> de <ph name="UNLOAD_EVENT_NAME" />. Actualmente, la política los admite de forma predeterminada. Paulatinamente, pasarán a estar inhabilitados de forma predeterminada, y los sitios deberán habilitarlos explícitamente mediante encabezados de la <ph name="PERMISSIONS_POLICY_NAME" />. Con esta política empresarial, se puede rechazar esta baja gradual. Para ello, se debe forzar que la configuración predeterminada permanezca habilitada.
- 
-Es posible que las páginas dependan de los controladores del evento <ph name="UNLOAD_EVENT_NAME" /> para guardar datos o indicar el final de una sesión de usuario en el servidor. Esto no se recomienda, ya que no es confiable y afecta el rendimiento porque bloquea el uso de <ph name="PRODUCT_NAME" />. Si bien existen alternativas recomendadas, el evento <ph name="UNLOAD_EVENT_NAME" /> se usa hace mucho tiempo. Es posible que algunas aplicaciones aún dependan de ellos.
-
-Si estableces esta política como falsa o no la estableces, los controladores del evento <ph name="UNLOAD_EVENT_NAME" /> dejarán de estar disponibles de manera gradual y en consonancia con el lanzamiento de la baja, y los sitios que no establezcan el encabezado de la <ph name="PERMISSIONS_POLICY_NAME" /> dejarán de activar los eventos de "descarga".
-
-Si la estableces como verdadera, los controladores del evento <ph name="UNLOAD_EVENT_NAME" /> seguirán funcionando de forma predeterminada.
-</translation>
 <translation id="1883274744253492031">Habilitar la actualización automática de contenido mixto</translation>
 <translation id="1885782360784839335">Permitir que se muestre el contenido promocional en la pestaña completa</translation>
 <translation id="1888871729456797026">El token de inscripción de la política de nube en computadoras de escritorio</translation>

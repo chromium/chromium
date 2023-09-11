@@ -426,6 +426,7 @@
 <translation id="1335929031622236846">デバイスを登録する</translation>
 <translation id="133660899895084533">Bluetooth 周辺機器の情報とデータを読み取る</translation>
 <translation id="1336902454946927954">指紋を認識できなかったため、セキュリティ キーがロックされています。ロックを解除するには PIN を入力してください。</translation>
+<translation id="1337066099824654054">コンテキスト ヘルプはオフです</translation>
 <translation id="1338631221631423366">ペア設定中...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> がこのアプリケーションを開く許可を求めています。</translation>
 <translation id="1338950911836659113">削除しています...</translation>
@@ -3441,6 +3442,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> のデータは 24 時間後に削除されます</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> を開きますか？</translation>
+<translation id="3740396996321407665">一部の機能でコンテキスト ヘルプを使用する</translation>
 <translation id="3740945083753997630">表示と文字サイズを縮小する</translation>
 <translation id="3741056951918180319">どのサイトでも、いつでも拡張機能をクリックして使用できます</translation>
 <translation id="3742235229730461951">韓国語のキーボード レイアウト</translation>
@@ -6399,6 +6401,7 @@
 <translation id="6173623053897475761">もう一度 PIN を入力してください</translation>
 <translation id="6175314957787328458">Microsoft ドメイン GUID</translation>
 <translation id="6175910054050815932">リンクの取得</translation>
+<translation id="6176701216248282552">コンテキスト ヘルプはオンです。この機能では、開いているページが Google に送信されます。</translation>
 <translation id="6177412385419165772">削除しています...</translation>
 <translation id="6178664161104547336">証明書の選択</translation>
 <translation id="6178682841350631965">ログインデータを更新しました</translation>

@@ -313,6 +313,7 @@
 <translation id="265156376773362237">標準預先載入模式</translation>
 <translation id="2656405586795711023">網頁應用程式</translation>
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
+<translation id="2673169232805572412">如果網站試圖竊取密碼，或你下載的檔案會造成傷害，Chrome 可能會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能</translation>
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
 <translation id="2708051474374549906">系統會根據你傳送到 Google 的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充功能</translation>
 <translation id="2708226184420201102">使用 <ph name="PRODUCT_NAME" /> 瀏覽器開啟</translation>
@@ -555,7 +556,6 @@
 <translation id="3958287878205277013">如要清除裝置上的無痕模式瀏覽記錄，請關閉所有無痕分頁。</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome 準備就緒後將載入你的網頁}other{Chrome 準備就緒後將載入你的網頁}}</translation>
 <translation id="3962119236270174787">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制</translation>
-<translation id="3963007978381181125">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。只有知道你通關密語的人，才能讀取加密保護的資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記自己的通關密語，或是想變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome 無法檢查你的密碼</translation>
 <translation id="3969863827134279083">上移</translation>
 <translation id="397105322502079400">計算中…</translation>

@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">即使是通常很安全的网站，有时也会遭到攻击者的入侵。请仅在您确信自己已充分了解风险的情况下访问<ph name="BEGIN_LINK" />这个不安全的网站<ph name="END_LINK" />。</translation>
 <translation id="1734864079702812349">美国运通卡</translation>
 <translation id="1734878702283171397">请尝试联系系统管理员。</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />，<ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，有效期至：<ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">计算机</translation>
 <translation id="1741613555002899862">当 DnsOverHttpsMode 是“<ph name="SECURE_DNS_MODE_SECURE" />”时，必须将此政策指定为有效字符串。</translation>
 <translation id="1743393865165844832">床上用品</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">肉类与海鲜</translation>
 <translation id="2367567093518048410">级别</translation>
 <translation id="23703388716193220">高尔夫装备</translation>
+<translation id="2378084239755710604">保存的卡片已关闭。</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">在 Chrome 设置中定制您的个性化无障碍工具</translation>
 <translation id="2384307209577226199">在企业环境中默认实施</translation>
@@ -1840,6 +1842,7 @@
 <translation id="4822493756793346865">一般价格是基于过去 90 天网上各个商店中的价格得出的。</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="4825507807291741242">强大</translation>
+<translation id="4826588772550366629">摄像头和麦克风</translation>
 <translation id="4831993743164297314">照排机用纸</translation>
 <translation id="483241715238664915">开启警告</translation>
 <translation id="4834250788637067901">Google Pay 中存储的付款方式、优惠和地址信息</translation>
@@ -2243,6 +2246,7 @@
 <translation id="5653432653077411130">供水与水处理</translation>
 <translation id="5654927323611874862">已上传的崩溃报告 ID：</translation>
 <translation id="5659593005791499971">电子邮件</translation>
+<translation id="5660122698869360728">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等。</translation>
 <translation id="5663955426505430495">此设备的管理员已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
 <translation id="5666606186680807225">海滩与岛屿</translation>
 <translation id="5667827081946850877">有声读物</translation>
@@ -2255,6 +2259,7 @@
 <translation id="5689199277474810259">导出为 JSON 格式</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates 值不相关，因此不会被使用，除非 DnsOverHttpsMode 政策设为“<ph name="SECURE_DNS_MODE_AUTOMATIC" />”或“<ph name="SECURE_DNS_MODE_SECURE" />”。</translation>
+<translation id="5691848789297492617">保存的卡片已全屏打开。</translation>
 <translation id="5695542892312572833">使用 Windows Hello 验证并完成您的购买交易？</translation>
 <translation id="5699628521141772782">乳制品和鸡蛋</translation>
 <translation id="5701381305118179107">居中</translation>
@@ -3003,6 +3008,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">后端纸匣</translation>
 <translation id="725866823122871198">您计算机的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
+<translation id="7260075294900977274">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等</translation>
 <translation id="7265608370113700582">地址只能保存在该设备上</translation>
 <translation id="7275334191706090484">受管理的书签</translation>
 <translation id="7277998515889183784">化妆品</translation>
@@ -3226,6 +3232,7 @@
 <translation id="7676643023259824263">搜索剪贴板上的文字：<ph name="TEXT" /></translation>
 <translation id="7679367271685653708">在 Chrome 设置中查看和管理您的浏览记录</translation>
 <translation id="7679947978757153706">棒球</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，有效期至：<ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">梦幻运动游戏</translation>
 <translation id="7682287625158474539">送货地址</translation>
 <translation id="7682451652090915298">橄榄球</translation>
@@ -3303,6 +3310,7 @@
 <translation id="7822611063308883975">掌上游戏机</translation>
 <translation id="7825558994363763489">微波炉</translation>
 <translation id="782886543891417279">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问其登录页面。</translation>
+<translation id="7831993212387676366">什么是购物清单？</translation>
 <translation id="7840103971441592723">已开始截屏/录屏</translation>
 <translation id="784137052867620416">购物数据洞见</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{无}=1{1 个应用（<ph name="EXAMPLE_APP_1" />）}=2{2 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>

@@ -303,6 +303,7 @@
 <translation id="271033894570825754">新</translation>
 <translation id="2712127207578915686">无法打开该文件</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
+<translation id="2738375676495545665">隐藏“新变化”</translation>
 <translation id="2747003861858887689">上一个字段</translation>
 <translation id="2749231692441336879">已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="2762000892062317888">刚刚</translation>
@@ -484,8 +485,10 @@
 <translation id="3708944822379815019">{COUNT,plural, =1{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {EMAIL}。}other{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="3709582977625132201">标记为未读</translation>
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
+<translation id="371398631992790800">隐藏“书签”</translation>
 <translation id="37207012422556617">热搜字词</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以无痕模式打开输入的网址。</translation>
+<translation id="374357899112510277">隐藏“下载内容”</translation>
 <translation id="3745190878148784130">隐藏“缩放文字”</translation>
 <translation id="3762232513783804601">专为 iPad 打造</translation>
 <translation id="3768725474733206671">重新打开最后关闭的标签页</translation>
@@ -836,6 +839,7 @@
 <translation id="581659025233126501">开启同步功能</translation>
 <translation id="5817176759448082654">密码安全检查</translation>
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="5827650163984030263">隐藏“密码管理工具”</translation>
 <translation id="5833643789537100742">保存密码、付款方式和地址，以便 Chrome 日后自动填充。</translation>
 <translation id="5834415013958049700">使用智能镜头搜索您复制的图片</translation>
 <translation id="5844284118433003733">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：于安全事件发生后在 Gmail 中加强对您的保护力度。</translation>
@@ -1301,6 +1305,7 @@
 <translation id="8286036467436129157">登录</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
+<translation id="8311853334103696030">隐藏“跟踪价格”</translation>
 <translation id="8316944564970119719">输入网站和密码，然后保存</translation>
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8328777765163860529">全部关闭</translation>
@@ -1349,6 +1354,7 @@
 <translation id="8588404856427128947">已关闭</translation>
 <translation id="8591976964826315682">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="8605219856220328675">关闭标签页。</translation>
+<translation id="8613883225817609844">隐藏“最近打开的标签页”</translation>
 <translation id="8620640915598389714">编辑</translation>
 <translation id="8626393685701737946">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版</translation>
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
@@ -1453,6 +1459,7 @@
 <translation id="9120217828624527905">切换为整页翻译</translation>
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>
 <translation id="9137526406337347448">Google 服务</translation>
+<translation id="9144931028079269381">隐藏“阅读清单”</translation>
 <translation id="9148126808321036104">重新登录</translation>
 <translation id="9157836665414082580">禁止显示对话框</translation>
 <translation id="9162432979321511934">开启“自动填充密码”</translation>

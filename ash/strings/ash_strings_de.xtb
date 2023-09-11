@@ -90,6 +90,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1293264513303784526">USB-C-Gerät (Port links)</translation>
 <translation id="1293556467332435079">Dateien</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">„Entdecken“ öffnen</translation>
 <translation id="1294929383540927798">Benachrichtigungseinstellungen für den Sperrbildschirm ändern</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">EMPFOHLENE APPS</translation>
@@ -367,6 +368,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Fenster entsperren</translation>
 <translation id="2528111225373402384">Hotspot-Einstellungen</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Tastaturnavigation aktivieren oder deaktivieren</translation>
 <translation id="2531025035050312891">Gerät ist langsam</translation>
 <translation id="2531107890083353124">Beim Ziehen des Tabs <ph name="KEY_ONE" /> drücken</translation>
@@ -389,6 +391,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2612614436418177118">App-Symbol im App-Raster verschieben</translation>
 <translation id="2620016719323068571">In deinen <ph name="CATEGORY" />, Dateien, Apps und mehr suchen…</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Gesichert</translation>
 <translation id="2624588537172718173">Audio des Geräts und über Mikrofon</translation>
 <translation id="263399434338050016">„Alles auswählen“</translation>
@@ -513,6 +516,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3161500364292033097">Desktop und Fenster schließen</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> führt ein Rollback für dein Gerät (<ph name="DEVICE_TYPE" />) durch. Das Gerät wird zurückgesetzt und alle Daten werden gelöscht.</translation>
 <translation id="3171170659304083361">Einstellungen für Eingabemethoden</translation>
+<translation id="3176221688814061633">Auf deinem Chromebook oder Bluetooth-Gerät wird eine ältere Bluetooth-Version genutzt. Für eine bessere Audioqualität kannst du „Bluetooth Super Resolution“ aktivieren oder ein internes Mikrofon verwenden.</translation>
 <translation id="3181441307743005334">Der Neustart kann etwas dauern</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Mit einem Gerät verbunden}other{Mit # Geräten verbunden}}</translation>
 <translation id="320207200541803018">Timer einstellen</translation>
@@ -1499,6 +1503,7 @@ Neuinstallation</translation>
 <translation id="7189412385142492784">Wie weit ist die Venus entfernt?</translation>
 <translation id="7198435252016571249">Kamera ist an der unteren rechten Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
 <translation id="7219573373513695352">Keine verbundenen Geräte</translation>
+<translation id="7229029500464092426">Arbeitsspeicher <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> insgesamt</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Dieses Chromebook muss zur Installation eines Updates neu gestartet werden. Dies kann bis zu einer Minute dauern.</translation>
 <translation id="7256634071279256947">Mikrofon auf der Rückseite</translation>
 <translation id="7258828758145722155">Gestern bearbeitet</translation>
@@ -1524,6 +1529,7 @@ Neuinstallation</translation>
 <translation id="7360036564632145207">Möglicherweise kannst du die Leistung optimieren, indem du die Einstellungen für den Schutz vor Datenzugriff durch Peripheriegeräte änderst</translation>
 <translation id="736045644501761622">Hintergrund und Stil festlegen</translation>
 <translation id="7371404428569700291">Fenster aufzeichnen</translation>
+<translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> von insgesamt <ph name="TOTAL_MEMORY" /> Arbeitsspeicher verfügbar</translation>
 <translation id="737315737514430195">Dies erlaubt den Mikrofonzugriff für alle Apps und Websites mit der Mikrofonberechtigung</translation>
 <translation id="7377169924702866686">Feststelltaste An</translation>
 <translation id="7377481913241237033">Verbindung per Code herstellen</translation>
@@ -1852,6 +1858,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8731487213223706745">Endet um <ph name="END_TIME" /> Uhr <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Möglicherweise versucht jemand, darüber deine Tastatureingaben zu erfassen</translation>
 <translation id="8735678380411481005">Farbe der Tastaturbeleuchtung</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Wird aktiviert…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Identität bestätigen: <ph name="ORIGIN_NAME" /> möchte sichergehen, dass du das bist</translation>

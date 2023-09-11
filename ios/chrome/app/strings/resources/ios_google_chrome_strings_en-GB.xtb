@@ -24,6 +24,7 @@ Things to consider:
 
   • If you sync your history to your Google Account, metrics may also include info about URLs you visit.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">You have Chrome's strongest security against harmful websites</translation>
+<translation id="1657395063736185342">Search visuals in Chrome</translation>
 <translation id="1675955119303651351">Some of your Chrome data hasn't been saved in your Google Account yet.
         Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="1682483655351012182">Sync your Chrome data</translation>
@@ -131,7 +132,6 @@ Things to consider:
 <translation id="6063091872902370735">Allow Chrome Sign-in</translation>
 <translation id="6110625574506755980">Some Chrome features won’t be available anymore.</translation>
 <translation id="6181930887571472871">Switch to Chrome</translation>
-<translation id="6228768456496298352">Chrome detects addresses using Google Maps to give you directions and local info.</translation>
 <translation id="6238746320622508509">Let Chrome lock your incognito tabs.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
@@ -150,6 +150,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="6916015246697034114">Search with Voice in Chrome</translation>
 <translation id="6964931465519938134">You can now use Chrome whenever you tap on links in messages, documents and other apps.</translation>
 <translation id="6975725306479268850">Choose Chrome for auto-fill</translation>
+<translation id="7004159181872656283">Search visuals in Chrome.</translation>
 <translation id="7056826488869329999">Opens and Runs Safety Check in Chrome.</translation>
 <translation id="7059914902409643750">Make Chrome your own</translation>
 <translation id="7124339256045485976">Keep Chrome up to date</translation>
@@ -157,6 +158,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7165736900384873061">Start Using Google Chrome QR Scanner</translation>
 <translation id="7173660919484573146">Chrome uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
+<translation id="7200524487407690471">Chrome automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.</translation>
 <translation id="72119412072970160">You can use the passwords that you saved to Google Password Manager in other apps on your iPad.</translation>
 <translation id="7254380941803999489">Set Chrome as default browser</translation>
 <translation id="7261678641327190792">Chrome can't check your passwords</translation>

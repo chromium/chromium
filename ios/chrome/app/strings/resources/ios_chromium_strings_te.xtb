@@ -25,11 +25,11 @@
 <translation id="1847960401032164406">Chromiumలో Maps</translation>
 <translation id="186734497270163706">"Chromium"ను ట్యాప్ చేసి, ఆపై "ఆటోమేటిక్ బ్రౌజర్ యాప్"ను ట్యాప్ చేయండి.</translation>
 <translation id="1867772173333403444">4. Chromiumను ఎంచుకోండి</translation>
-<translation id="1940441310478179027">Chromium మీకు దిశలను, స్థానిక సమాచారాన్ని అందించడానికి Google Mapsను ఉపయోగించి అడ్రస్‌లను గుర్తిస్తుంది.</translation>
 <translation id="2006345422933397527">Chromium అప్‌డేట్‌లు ఏమైనా ఉన్నాయో లేదో చెక్ చేయలేకపోయింది. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="2042889939382983733">మీ Chromium హిస్టరీని చూడండి</translation>
 <translation id="2052320862053429062">ఆన్‌లైన్‌లో పబ్లిష్ చేయబడిన లిస్ట్‌లలో మీ పాస్‌వర్డ్‌వు ఒకవేళ ఉన్నాయా అని Chromium తరచుగా చెక్ చేస్తూ ఉంటుంది. Chrome ఈ ప్రాసెస్‌ను చేస్తున్నప్పుడు, మీ పాస్‌వర్డ్‌లు, యూజర్‌నేమ్‌లు ఎన్‌క్రిప్ట్ చేయబడతాయి. కాబట్టి వాటిని Googleతో సహా ఎవరు చదవలేరు.</translation>
 <translation id="2054703085270098503">Chromiumతో సురక్షితంగా ఉండండి</translation>
+<translation id="2098023844024447022">Chromiumలో నా ఇటీవలి ట్యాబ్‌ను తెరవండి.</translation>
 <translation id="2168108852149185974">కొన్ని యాడ్-ఆన్‌లు Chromium క్రాష్ అయ్యేలా చేశాయి. దయచేసి వీటిని అన్‌ఇన్‌స్టాల్ చేయండి:</translation>
 <translation id="2178608107313874732">Chromium ప్రస్తుతం మీ కెమెరాను ఉపయోగించలేదు</translation>
 <translation id="2195025571279539885">ఈ సైట్‌లోని <ph name="LANGUAGE_NAME" /> పేజీలను మీరు తర్వాతిసారి సందర్శించినప్పుడు, వీటిని అనువదించే సదుపాయాన్ని Chromium అందించాలని కోరుకుంటున్నారా?</translation>
@@ -190,6 +190,7 @@
 <translation id="8663480472502753423">Chromiumను అప్‌డేట్‌గా ఉంచండి</translation>
 <translation id="8685813584220679697">ఈ సైట్‌కు, అలాగే Chromiumకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="8730503818204408000">Chromiumను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయడానికి Chromium సెట్టింగ్‌ను తెరుస్తుంది.</translation>
+<translation id="8742300022028858275">Chromiumలో నా ఇటీవలి ట్యాబ్‌ను తెరవండి</translation>
 <translation id="8747378496147986285">ఆన్‌లో ఉన్నప్పుడు:
 <ph name="BEGIN_INDENT" />  • మీకు లాగానే Chromiumను ఉపయోగించే వ్యక్తుల కోసం, దానిని మెరుగుపరచడంలో సహాయపడండి.<ph name="END_INDENT" />
 

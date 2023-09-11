@@ -25,11 +25,11 @@
 <translation id="1847960401032164406">Google Zemljevidi v Chromiumu</translation>
 <translation id="186734497270163706">Dotaknite se »Chromium« in nato »Default Browser App« (Privzeti brskalnik).</translation>
 <translation id="1867772173333403444">4. Izberite Chromium.</translation>
-<translation id="1940441310478179027">Chromium zazna naslove z uporabo Google Zemljevidov in prikazuje navodila za pot ter lokalne podatke.</translation>
 <translation id="2006345422933397527">Chromium ni mogel preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="2042889939382983733">Ogled zgodovine v Chromiumu</translation>
 <translation id="2052320862053429062">Chromium občasno preveri vaša gesla, tako da jih primerja s seznami gesel, objavljenimi v spletu. Pri tem so vaša gesla in uporabniška imena šifrirana, da jih ne more prebrati nihče, vključno z Googlom.</translation>
 <translation id="2054703085270098503">Ostanite varni s Chromiumom</translation>
+<translation id="2098023844024447022">Odpiranje zadnjega zavihka v Chromiumu.</translation>
 <translation id="2168108852149185974">Nekateri dodatki povzročajo zrušitve Chromiuma. Odstranite jih:</translation>
 <translation id="2178608107313874732">Chromium trenutno ne more uporabljati fotoaparata</translation>
 <translation id="2195025571279539885">Želite, da Chromium naslednjič ponudi prevod strani v jeziku <ph name="LANGUAGE_NAME" /> s tega spletnega mesta?</translation>
@@ -190,6 +190,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8663480472502753423">Posodobitev Chromiuma</translation>
 <translation id="8685813584220679697">Prijavite se na tem spletnem mestu in v Chromium.</translation>
 <translation id="8730503818204408000">Odpre nastavitev za Chromium za nastavitev Chromiuma kot privzetega brskalnika.</translation>
+<translation id="8742300022028858275">Odpiranje zadnjega zavihka v Chromiumu</translation>
 <translation id="8747378496147986285">Če je omogočeno:
 <ph name="BEGIN_INDENT" />  • Pomagate izboljšati Chromium za ljudi, ki ga uporabljajo kot vi.<ph name="END_INDENT" />
 

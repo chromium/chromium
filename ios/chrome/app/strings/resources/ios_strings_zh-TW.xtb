@@ -303,6 +303,7 @@
 <translation id="271033894570825754">全新</translation>
 <translation id="2712127207578915686">無法開啟檔案</translation>
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
+<translation id="2738375676495545665">隱藏「新功能」</translation>
 <translation id="2747003861858887689">上一個欄位</translation>
 <translation id="2749231692441336879">正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
 <translation id="2762000892062317888">剛剛</translation>
@@ -484,8 +485,10 @@
 <translation id="3708944822379815019">{COUNT,plural, =1{這 {COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({EMAIL})。}other{這 {COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({EMAIL})。}}</translation>
 <translation id="3709582977625132201">標示為未讀取</translation>
 <translation id="371230970611282515">可預測不安全事件，並在這類事件發生前顯示警告訊息。</translation>
+<translation id="371398631992790800">隱藏「書籤」</translation>
 <translation id="37207012422556617">熱門搜尋</translation>
 <translation id="3740397331642243698">在 Google Chrome 無痕模式中開啟輸入的網址。</translation>
+<translation id="374357899112510277">隱藏「下載內容」</translation>
 <translation id="3762232513783804601">專為 iPad 量身打造</translation>
 <translation id="3768725474733206671">重新開啟最近關閉的分頁</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
@@ -833,6 +836,7 @@
 <translation id="581659025233126501">開啟同步功能</translation>
 <translation id="5817176759448082654">密碼安全檢查</translation>
 <translation id="5819208479324046259">由「<ph name="MANAGER" />」管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="5827650163984030263">隱藏「密碼管理工具」</translation>
 <translation id="5833643789537100742">在 Chrome 中儲存密碼、付款方式和地址，以便稍後自動填入。</translation>
 <translation id="5834415013958049700">你複製的智慧鏡頭圖片</translation>
 <translation id="5844284118433003733">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
@@ -1298,6 +1302,7 @@
 <translation id="8286036467436129157">登入</translation>
 <translation id="8299417921174340354">你必須先在裝置上設定螢幕解鎖密碼才能使用密碼。</translation>
 <translation id="8299613349954694191">開啟無痕分頁就能以私密模式瀏覽網頁。</translation>
+<translation id="8311853334103696030">隱藏「追蹤價格」</translation>
 <translation id="8316944564970119719">輸入網站和密碼，然後儲存</translation>
 <translation id="8319076807703933069">新搜尋</translation>
 <translation id="8328777765163860529">關閉全部</translation>
@@ -1349,6 +1354,7 @@
 <translation id="8588404856427128947">關閉</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8605219856220328675">關閉分頁。</translation>
+<translation id="8613883225817609844">隱藏「最近開啟的分頁」</translation>
 <translation id="8620640915598389714">編輯</translation>
 <translation id="8626393685701737946">如要將預設的網站檢視畫面變更為電腦模式，請依序前往「設定」&gt;「內容設定」</translation>
 <translation id="8636825310635137004">如要存取您在其他裝置上開啟的分頁，請開啟同步處理功能。</translation>
@@ -1448,6 +1454,7 @@
 <translation id="9120217828624527905">切換成整頁翻譯</translation>
 <translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務。</translation>
 <translation id="9137526406337347448">Google 服務</translation>
+<translation id="9144931028079269381">隱藏「閱讀清單」</translation>
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9157836665414082580">禁止顯示對話方塊</translation>
 <translation id="9162432979321511934">開啟「自動填寫密碼」</translation>

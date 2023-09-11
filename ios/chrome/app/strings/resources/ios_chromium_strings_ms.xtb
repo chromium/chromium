@@ -25,7 +25,6 @@
 <translation id="1847960401032164406">Maps pada Chromium</translation>
 <translation id="186734497270163706">Ketik "Chromium" kemudian "Apl Penyemak Imbas Lalai".</translation>
 <translation id="1867772173333403444">4. Pilih Chromium</translation>
-<translation id="1940441310478179027">Chromium mengesan alamat dengan menggunakan Google Maps untuk memberi anda arah dan maklumat setempat.</translation>
 <translation id="2006345422933397527">Chromium tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
 <translation id="2042889939382983733">Lihat Sejarah Chromium Anda</translation>
 <translation id="2052320862053429062">Chromium menyemak kata laluan anda secara berkala pada senarai yang telah diterbitkan dalam talian. Apabila melakukan tindakan ini, kata laluan dan nama pengguna anda akan disulitkan supaya data ini tidak dapat dibaca oleh sesiapa termasuk Google.</translation>
@@ -70,6 +69,7 @@
 <translation id="3784369638459513223">Buka Tab Inkognito Chromium Baharu.</translation>
 <translation id="3805899903892079518">Chromium tidak mempunyai akses kepada foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
 <translation id="3827545470516145620">Anda mendapat perlindungan keselamatan standard pada peranti ini</translation>
+<translation id="3833326979834193417">Chromium menjalankan Pemeriksaan Keselamatan secara automatik setiap hari untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi. Anda boleh mendapatkan maklumat lanjut tentang Pemeriksaan Keselamatan dalam Tetapan.</translation>
 <translation id="3886689467633467988">Log masuk laman ini dan Chromium untuk mendapatkan penanda halaman anda dan banyak lagi pada semua peranti anda.</translation>
 <translation id="394413318816989199">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat.
 
@@ -85,6 +85,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam
 <translation id="4555020257205549924">Apabila ciri ini dihidupkan, Chromium akan menawarkan untuk menterjemah halaman yang ditulis dalam bahasa lain menggunakan Terjemahan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Buka Halaman Tetapan Kaedah Pembayaran dalam Chromium.</translation>
 <translation id="4585809515399340748">Kini, anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
+<translation id="459080529287102949">Cari Visual dalam Chromium</translation>
 <translation id="4633738821577273991">Dapatkan juga Penyemakan Imbas Selamat Dipertingkat untuk profil Chromium ini</translation>
 <translation id="4654936625574199632">Untuk membantu dalam usaha meningkatkan apl, Chromium menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Hidupkan pengimbas Chromium</translation>
@@ -153,6 +154,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="7045244423563602563">Peribadikan Chromium Anda</translation>
 <translation id="7055269218854630176">Organisasi anda, <ph name="DOMAIN" />, mengurus akaun yang anda log masuk dan cara Chromium boleh digunakan. Pentadbir anda boleh menyediakan atau mengehadkan ciri tertentu.</translation>
 <translation id="7099326575020694068">Chromium tidak dapat menggunakan kamera anda dalam mod Paparan Pisah</translation>
+<translation id="7163483974919055112">Cari Visual dalam Chromium.</translation>
 <translation id="7165402419892018581">Pilih Chromium untuk AutoLengkap</translation>
 <translation id="7175400662502680481">Kata laluan anda terdedah dalam suatu pelanggaran data. Pengurus Kata Laluan mengesyorkan agar anda menukarnya sekarang.</translation>
 <translation id="7192111075364461693">Pemberitahuan Chromium dimatikan dalam tetapan peranti anda pada masa ini.</translation>

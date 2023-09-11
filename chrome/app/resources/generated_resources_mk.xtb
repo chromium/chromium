@@ -429,6 +429,7 @@
 <translation id="1335929031622236846">Регистрирајте го уредот</translation>
 <translation id="133660899895084533">Читај ги податоците за периферни уреди со Bluetooth</translation>
 <translation id="1336902454946927954">Вашиот безбедносен клуч е заклучен бидејќи вашиот отпечаток не може да се препознае. За да го отклучите, внесете го вашиот PIN.</translation>
+<translation id="1337066099824654054">Контекстуалната помош е исклучена</translation>
 <translation id="1338631221631423366">Се спарува…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> сака да ја отвори апликацијава.</translation>
 <translation id="1338950911836659113">Се брише...</translation>
@@ -3456,6 +3457,7 @@
 <translation id="3738632186060045350">Податоците на <ph name="DEVICE_TYPE" /> ќе се избришат по 24 часа</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Да се отвори <ph name="APPLICATION" />?</translation>
+<translation id="3740396996321407665">Добијте контекстуална помош од некои од функциите</translation>
 <translation id="3740945083753997630">Намалете ги екранот и текстот</translation>
 <translation id="3741056951918180319">Секогаш може да кликнете на екстензијата за да ја користите на кој било сајт</translation>
 <translation id="3742235229730461951">Распоред на тастатурата на корејски</translation>
@@ -6414,6 +6416,7 @@
 <translation id="6173623053897475761">Напишете го вашиот PIN повторно</translation>
 <translation id="6175314957787328458">ГУИД на домен на Microsoft</translation>
 <translation id="6175910054050815932">Добијте линк</translation>
+<translation id="6176701216248282552">Контекстуалната помош е вклучена. Овие функции може да испраќаат отворени страници до Google.</translation>
 <translation id="6177412385419165772">Се отстранува…</translation>
 <translation id="6178664161104547336">Избери сертификат</translation>
 <translation id="6178682841350631965">Податоците за најавување се ажурирани</translation>

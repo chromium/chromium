@@ -1029,14 +1029,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       * PIN e impronta, usa ["PIN", "FINGERPRINT"].
 
       Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non è disponibile nessun fattore WebAuthn per i dispositivi gestiti.</translation>
-<translation id="1881471688033371681">I gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> sono in fase di ritiro. La loro attivazione dipende dal valore <ph name="UNLOAD_EVENT_NAME" /> del criterio <ph name="PERMISSIONS_POLICY_NAME" />. Attualmente sono consentiti per impostazione predefinita in base al criterio. In futuro passeranno gradualmente allo stato non consentito per impostazione predefinita e i siti dovranno attivarli in modo esplicito tramite le intestazioni <ph name="PERMISSIONS_POLICY_NAME" />. Questo criterio aziendale può essere utilizzato per disattivare questo ritiro graduale. Per farlo, è necessario mantenere attiva l'impostazione predefinita.
- 
-Le pagine potrebbero dipendere dai gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> per salvare i dati o segnalare al server la fine di una sessione utente. Questo non è consigliato perché non è affidabile e influisce sulle prestazioni bloccando l'utilizzo di <ph name="PRODUCT_NAME" />. Esistono alternative consigliate, ma l'evento <ph name="UNLOAD_EVENT_NAME" /> è utilizzato da molto tempo. Alcune applicazioni potrebbero continuare a utilizzarli.
-
-Se questo criterio viene impostato su false o se non viene configurato, i gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> verranno gradualmente ritirati in linea con l'implementazione del ritiro e i siti per i quali non viene impostata l'intestazione <ph name="PERMISSIONS_POLICY_NAME" /> smetteranno di attivare gli eventi "unload".
-
-Se questo criterio viene impostato su true, i gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> continueranno a funzionare per impostazione predefinita.
-</translation>
 <translation id="1883274744253492031">Attiva l'upgrade automatico del contenuto misto</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="1888871729456797026">Il token di registrazione della norma relativa al cloud su desktop</translation>

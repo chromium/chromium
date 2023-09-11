@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Hrát v Chromu dinosauří hru</translation>
 <translation id="1352919863522755794">Správci hesel Google se vaše hesla nepodařilo zkontrolovat. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="1407843355326180937">Když se na tento web a do Chromu přihlásíte, budete mít své záložky a další položky k dispozici na všech svých zařízeních.</translation>
+<translation id="1436059927646026729">Otevřít v prohlížeči Chrome naposledy otevřenou kartu</translation>
 <translation id="1462727070346936664">Pokud z Chromu chcete získat maximum, přihlaste se.</translation>
 <translation id="1479202195792305274">Když se přihlásíte k účtu Google, může vám Chrome kontrolovat hesla</translation>
 <translation id="1491435845014430217">Zapněte možnost Při zavření Chromu zamknout anonymní karty.</translation>
@@ -23,6 +24,7 @@ Co je třeba zvážit:
 
   • Pokud svou historii synchronizujete do účtu Google, mohou metriky zahrnovat také navštívené adresy URL.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Máte nejsilnější zabezpečení prohlížeče Chrome proti škodlivým webům</translation>
+<translation id="1657395063736185342">Vyhledat obrazový materiál v prohlížeči Chrome</translation>
 <translation id="1675955119303651351">Některá data prohlížeče Chrome ještě nebyla uložena do vašeho účtu Google.
         Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="1682483655351012182">Synchronizovat data prohlížeče Chrome</translation>
@@ -130,7 +132,6 @@ Co je třeba zvážit:
 <translation id="6063091872902370735">Povolit přihlášení do Chromu</translation>
 <translation id="6110625574506755980">Některé funkce Chromu už nebudou dostupné</translation>
 <translation id="6181930887571472871">Přepnout na Chrome</translation>
-<translation id="6228768456496298352">Chrome zjišťuje pomocí Map Google adresy, aby vám mohl poskytovat trasy a místní informace.</translation>
 <translation id="6238746320622508509">Nechat Chrome zamykat anonymní karty.</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
@@ -149,6 +150,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="6916015246697034114">Vyhledávat hlasem v prohlížeči Chrome</translation>
 <translation id="6964931465519938134">Nyní můžete Chrome použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
 <translation id="6975725306479268850">Vyberte Chrome pro automatické vyplňování</translation>
+<translation id="7004159181872656283">Vyhledat obrazový materiál v prohlížeči Chrome.</translation>
 <translation id="7056826488869329999">Otevře a spustí bezpečnostní kontrolu v prohlížeči Chrome.</translation>
 <translation id="7059914902409643750">Přizpůsobte si Chrome</translation>
 <translation id="7124339256045485976">Udržují Chrome aktuální</translation>
@@ -175,6 +177,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="7855730255114109580">Google Chrome je aktuální</translation>
 <translation id="7897703007638178753">Zobrazit nedávno použité karty prohlížeče Chrome</translation>
 <translation id="7925119591961387184">Vyberte Chrome.</translation>
+<translation id="7933491483529363150">Otevřít v prohlížeči Chrome naposledy otevřenou kartu.</translation>
 <translation id="8022947259858476807">Používejte Chrome jako výchozí prohlížeč k otevírání odkazů, vyhledávání z widgetů a automatickému vyplňování hesel v jiných aplikacích</translation>
 <translation id="804638182476029347">Pokud chcete dostávat upozornění na pokles ceny, povolte oznámení prohlížeče Chrome</translation>
 <translation id="81358522153858150">Chrome nyní podporuje zásady pro uživatele ve spravovaném účtu</translation>

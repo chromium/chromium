@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2677748264148917807">Umalis</translation>
 <translation id="2678468611080193228">Subukang payagan nang pansamantala ang third-party na cookies, na nangangahulugan na mas mahina ang proteksyon pero mas malamang na gumana ang mga feature ng site</translation>
+<translation id="2683434792633810741">I-delete at i-reset?</translation>
 <translation id="2687403674020088961">I-block ang lahat ng cookies (hindi inirerekomenda)</translation>
 <translation id="2713106313042589954">I-off ang camera</translation>
 <translation id="2717722538473713889">Mga email address</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Payagan ang cookies para sa isang partikular na site.</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
 <translation id="4053720452172726777">I-customize at kontrolin ang Google Chrome</translation>
+<translation id="4149890623864272035">Sigurado ka bang gusto mong i-delete ang lahat ng lokal na data, kabilang ang cookies, at i-reset ang lahat ng pahintulot para sa website na ito?</translation>
 <translation id="4149994727733219643">Pinasimpleng view para sa mga web page</translation>
 <translation id="4151930093518524179">Default na pag-zoom</translation>
 <translation id="4165986682804962316">Mga setting ng site</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Payagan ang third-party na cookies</translation>
 <translation id="4428065317363009941">Pag-personalize ng ad</translation>
 <translation id="4434045419905280838">Mga pop-up at pag-redirect</translation>
+<translation id="443552056913301231">Ide-delete ng pagkilos na ito ang lahat ng lokal na data, kabilang ang cookies, at ire-reset nito ang lahat ng pahintulot para sa <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">I-mute ang tunog para sa isang partikular na site.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# na cookie}}</translation>
 <translation id="4478158430052450698">Mas padalii ang pag-customize sa pag-zoom para sa iba't ibang site</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">I-mute ang mikropono</translation>
 <translation id="4570913071927164677">Mga Detalye</translation>
 <translation id="4598549027014564149">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa lahat ng site, kahit sa mga nauugnay na site. Hindi ginagamit ang iyong aktibidad sa pag-browse para sa mga bagay tulad ng pag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
+<translation id="4644713492825682049">I-delete at i-reset</translation>
 <translation id="4645575059429386691">Pinamamahalaan ng iyong magulang</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Mga motion o light sensor</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Huling binisita ngayong araw</translation>
 <translation id="5225463052809312700">I-on ang camera</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
+<translation id="5246825184569358663">Ide-delete ng pagkilos na ito ang lahat ng lokal na data, kabilang ang cookies, at ire-reset nito ang lahat ng pahintulot para sa <ph name="DOMAIN" /> at lahat ng site sa ilalim nito</translation>
 <translation id="5264323282659631142">Alisin ang '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">I-drag mula sa itaas at pindutin ang button na bumalik upang lumabas sa full screen.</translation>
 <translation id="5300589172476337783">Ipakita</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Mga Pagbubukod</translation>
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6205314730813004066">Privacy sa mga ad</translation>
+<translation id="6207207788774442484">I-delete ang data at i-reset ang mga pahintulot</translation>
 <translation id="6216432067784365534">Mga Opsyon sa <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">I-uninstall ang '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">Batay sa iyong huling tab</translation>

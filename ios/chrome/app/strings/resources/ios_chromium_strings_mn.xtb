@@ -25,11 +25,11 @@
 <translation id="1847960401032164406">Chromium-н Газрын зураг</translation>
 <translation id="186734497270163706">"Chromium" дараа нь "Өгөгдмөл хөтчийн апп"-ыг товшино уу.</translation>
 <translation id="1867772173333403444">4. Chromium-г сонгоно уу</translation>
-<translation id="1940441310478179027">Chromium танд чиглэл болон орон нутгийн мэдээллийг өгөхийн тулд Google Газрын зургийг ашиглан хаягуудыг илрүүлнэ.</translation>
 <translation id="2006345422933397527">Chromium-н шинэчлэлтийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="2042889939382983733">Chromium-н түүхээ үзэх</translation>
 <translation id="2052320862053429062">Chrome нь таны нууц үгийг онлайнаар нийтэлсэн жагсаалтуудтай үе үе харьцуулж шалгадаг. Үүнийг хийх үед таны нууц үг болон хэрэглэгчийн нэр кодчилогдсон байх бөгөөд ингэснээр Google-г оролцуулаад хэн ч тэдгээрийг унших боломжгүй болно.</translation>
 <translation id="2054703085270098503">Chromium-н тусламжтай аюулгүй байгаарай</translation>
+<translation id="2098023844024447022">Миний сүүлийн табыг Chromium-д нээнэ үү.</translation>
 <translation id="2168108852149185974">Зарим нэмэлт онцлог нь Chromium-г эвдрэхэд хүргэдэг. Тиймээс тэдгээрийг устгана уу:</translation>
 <translation id="2178608107313874732">Chromium одоогоор таны камерыг ашиглах боломжгүй байна</translation>
 <translation id="2195025571279539885">Та дараагийн удаад Chromium-г энэ сайтаас <ph name="LANGUAGE_NAME" /> хуудсыг хөрвүүлэхийг зөвшөөрөх үү?</translation>
@@ -190,6 +190,7 @@
 <translation id="8663480472502753423">Chromium-г хамгийн шинэ байлгаарай</translation>
 <translation id="8685813584220679697">Энэ сайт болон Chromium-д нэвтэрнэ үү.</translation>
 <translation id="8730503818204408000">Chromium-г өгөгдмөл хөтчөөр тохируулахын тулд Chromium-н тохиргоог нээнэ.</translation>
+<translation id="8742300022028858275">Миний сүүлийн табыг Chromium-д нээх</translation>
 <translation id="8747378496147986285">Асаалттай үед:
 <ph name="BEGIN_INDENT" />  • Chromium-г тантай адил аргаар ашигладаг хүмүүст зориулан сайжруулахад нь туслаарай.<ph name="END_INDENT" />
 

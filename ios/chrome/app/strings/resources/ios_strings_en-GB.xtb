@@ -156,6 +156,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1830634592642484976">This address is currently saved to Chrome. To use it across Google products, save it in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{Bookmarks saved in your Google Account, {email}}}</translation>
+<translation id="183878838231635348">This card shows any privacy or security issues that Safety Check automatically detects for you.</translation>
 <translation id="1847795903283049083">You can also view and manage these items in your bookmarks, Reading List, or password manager.</translation>
 <translation id="1870148520156231997">Reveal password</translation>
 <translation id="1872096359983322073">Torch</translation>
@@ -265,6 +266,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2523363575747517183">This website is repeatedly trying to open another application.</translation>
 <translation id="2529021024822217800">Open All</translation>
 <translation id="2536991091671391962">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Hide 'Safety Check'</translation>
 <translation id="2547458583188611426">Sync is not working. To start sync, enter your passphrase.</translation>
 <translation id="2551153019974022505">Account error</translation>
 <translation id="2556092377360758201">No protection (not recommended)</translation>
@@ -692,6 +694,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4881695831933465202">Open</translation>
 <translation id="488785315393301722">Show details</translation>
 <translation id="4894963374040315706">This lets you search using your voice</translation>
+<translation id="489903206070130262">Your last open tab</translation>
 <translation id="4901778704868714008">Save...</translation>
 <translation id="4904877109095351937">Mark Read</translation>
 <translation id="4908869848243824489">Discover by Google</translation>

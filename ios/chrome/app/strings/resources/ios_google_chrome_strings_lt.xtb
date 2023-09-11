@@ -24,6 +24,7 @@
 
   • Jei sinchronizuosite istoriją „Google“ paskyroje, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Turite patikimiausią „Chrome“ apsaugą nuo žalingų svetainių</translation>
+<translation id="1657395063736185342">Vaizdo medžiagos paieška naršyklėje „Chrome“</translation>
 <translation id="1675955119303651351">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje.
         Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="1682483655351012182">Sinchronizuoti „Chrome“ duomenis</translation>
@@ -131,7 +132,6 @@
 <translation id="6063091872902370735">Leisti „Chrome“ prisijungimą</translation>
 <translation id="6110625574506755980">Kai kurios „Chrome“ funkcijos nebebus pasiekiamos.</translation>
 <translation id="6181930887571472871">Perjungimas į „Chrome“</translation>
-<translation id="6228768456496298352">„Chrome“ aptinka adresus naudodama „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos.</translation>
 <translation id="6238746320622508509">Leiskite „Chrome“ užrakinti jūsų inkognito skirtukus.</translation>
 <translation id="6247557882553405851">„Google“ slaptažodžių tvarkytuvė</translation>
 <translation id="6412673304250309937">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
@@ -150,6 +150,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="6916015246697034114">Paieška balsu naršyklėje „Chrome“</translation>
 <translation id="6964931465519938134">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="6975725306479268850">„Chrome“ pasirinkimas automatinio pildymo funkcijai</translation>
+<translation id="7004159181872656283">Ieškokite vaizdo medžiagos naršyklėje „Chrome“.</translation>
 <translation id="7056826488869329999">Atidaroma ir vykdoma saugos patikra naršyklėje „Chrome“.</translation>
 <translation id="7059914902409643750">Suasmeninkite „Chrome“</translation>
 <translation id="7124339256045485976">Atnaujinkite „Chrome“</translation>
@@ -157,6 +158,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="7165736900384873061">Prad. naudoti „Google Chrome“ QR skait.</translation>
 <translation id="7173660919484573146">„Chrome“ naudoja „Face ID“, kad užtikrintų teisėtą prieigą prie slaptažodžių.</translation>
 <translation id="7187993566681480880">Apsaugo jus naršyklėje „Chrome“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
+<translation id="7200524487407690471">„Chrome“ kasdien automatiškai vykdo saugos patikrą, kad būtumėte apsaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Daugiau apie saugos patikrą rasite skiltyje „Nustatymai“.</translation>
 <translation id="72119412072970160">Galite naudoti „Google“ slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPad“ programose.</translation>
 <translation id="7254380941803999489">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="7261678641327190792">„Chrome“ negali patikrinti jūsų slaptažodžių</translation>

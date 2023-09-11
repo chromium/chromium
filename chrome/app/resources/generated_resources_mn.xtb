@@ -428,6 +428,7 @@
 <translation id="1335929031622236846">Төхөөрөмжөө бүртгүүлнэ үү</translation>
 <translation id="133660899895084533">Bluetooth-н нэмэлт хэрэгслийн мэдээлэл болон өгөгдлийг унших</translation>
 <translation id="1336902454946927954">Таны хурууны хээг таньж чадаагүй тул таны аюулгүй байдлын түлхүүрийг түгжсэн. Түгжээг нь тайлахын тулд ПИН-ээ оруулна уу.</translation>
+<translation id="1337066099824654054">Хам сэдэвт тусламж унтраалттай байна</translation>
 <translation id="1338631221631423366">Хослуулж байна...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> нь энэ хэрэглээний программыг нээх хүсэлтэй байна.</translation>
 <translation id="1338950911836659113">Устгаж байна...</translation>
@@ -3459,6 +3460,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-н өгөгдөл 24 цагийн дараа устана</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" />-г нээх үү?</translation>
+<translation id="3740396996321407665">Зарим онцлогоос хам сэдэвт тусламж авах</translation>
 <translation id="3740945083753997630">Дэлгэц болон текстийн хэмжээг жижгэрүүлэх</translation>
 <translation id="3741056951918180319">Та өргөтгөлийг дурын сайт дээр ашиглахын тулд дээр нь үргэлж товших боломжтой</translation>
 <translation id="3742235229730461951">Солонгос хэлний гарын бүдүүвч</translation>
@@ -6420,6 +6422,7 @@
 <translation id="6173623053897475761">ПИН-ээ дахин бичих</translation>
 <translation id="6175314957787328458">Microsoft Домэйн GUID</translation>
 <translation id="6175910054050815932">Холбоос авах</translation>
+<translation id="6176701216248282552">Хам сэдэвт тусламж асаалттай байна. Эдгээр онцлог нээлттэй хуудаснуудыг Google-д илгээх боломжтой.</translation>
 <translation id="6177412385419165772">Хасаж байна...</translation>
 <translation id="6178664161104547336">Гэрчилгээг сонгоно уу</translation>
 <translation id="6178682841350631965">Таны нэвтрэх өгөгдлийг шинэчилсэн</translation>

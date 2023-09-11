@@ -25,11 +25,11 @@
 <translation id="1847960401032164406">ແຜນທີ່ໃນ Chromium</translation>
 <translation id="186734497270163706">ແຕະ "Chromium" ຈາກນັ້ນເລືອກ "ແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ."</translation>
 <translation id="1867772173333403444">4. ເລືອກ Chromium</translation>
-<translation id="1940441310478179027">Chromium ກວດພົບທີ່ຢູ່ໂດຍໃຊ້ Google ແຜນທີ່ເພື່ອບອກເສັ້ນທາງ ແລະ ຂໍ້ມູນທ້ອງຖິ່ນໃຫ້ທ່ານ.</translation>
 <translation id="2006345422933397527">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
 <translation id="2042889939382983733">ເບິ່ງປະຫວັດ Chromium ຂອງທ່ານ</translation>
 <translation id="2052320862053429062">Chromium ຈະກວດສອບລະຫັດຜ່ານຂອງທ່ານເປັນໄລຍະໆເພື່ອທຽບກັບລາຍຊື່ທີ່ມີການເຜີຍແຜ່ອອນລາຍ. ໃນເວລາກວດສອບ, ລະຫັດຜ່ານ ແລະ ຊື່ຜູ້ໃຊ້ຂອງທ່ານຈະຖືກເຂົ້າລະຫັດໄວ້, ເພື່ອບໍ່ໃຫ້ໃຜກໍຕາມສາມາດອ່ານພວກມັນໄດ້, ຮວມທັງ Google ນຳ.</translation>
 <translation id="2054703085270098503">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Chromium</translation>
+<translation id="2098023844024447022">ເປີດແຖບຫຼ້າສຸດຂອງຂ້ອຍໃນ Chromium.</translation>
 <translation id="2168108852149185974">ບາງສ່ວນເສີມເຮັດໃຫ້ Chromium ຂັດຂ້ອງ. ກະລຸນາຖອນການຕິດຕັ້ງ:</translation>
 <translation id="2178608107313874732">Chromium ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ໃນຂະນະນີ້</translation>
 <translation id="2195025571279539885">ທ່ານຕ້ອງການໃຫ້ Chromium ສະເໜີແປໜ້າ <ph name="LANGUAGE_NAME" /> ຈາກເວັບໄຊນີ້ໃນຄັ້ງຕໍ່ໄປບໍ?</translation>
@@ -189,6 +189,7 @@
 <translation id="8663480472502753423">ຮັກສາໃຫ້ Chromium ໃໝ່ຫຼ້າສຸດ</translation>
 <translation id="8685813584220679697">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊນີ້ ແລະ Chromium.</translation>
 <translation id="8730503818204408000">ເປີດການຕັ້ງຄ່າ Chromium ເພື່ອຕັ້ງຄ່າ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ.</translation>
+<translation id="8742300022028858275">ເປີດແຖບຫຼ້າສຸດຂອງຂ້ອຍໃນ Chromium</translation>
 <translation id="8747378496147986285">ເມື່ອເປີດ:
 <ph name="BEGIN_INDENT" />  • ຊ່ວຍເຮັດໃຫ້ Chromium ດີຂຶ້ນສຳລັບຄົນທີ່ໃຊ້ມັນໃນແບບທີ່ທ່ານໃຊ້.<ph name="END_INDENT" />
 

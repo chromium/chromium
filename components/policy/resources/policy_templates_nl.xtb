@@ -1035,14 +1035,6 @@ De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsreg
       * Gebruik ["PIN", "FINGERPRINT"] als je een pincode en een vingerafdruk wilt toestaan.
 
       Als je het beleid niet instelt of instelt op een lege lijst, zijn er geen WebAuthn-factoren beschikbaar voor beheerde apparaten.</translation>
-<translation id="1881471688033371681"><ph name="UNLOAD_EVENT_NAME" />-gebeurtenishandlers worden beëindigd. Of ze worden geactiveerd, is afhankelijk van de <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />. Op dit moment worden ze standaard toegestaan op basis van beleid. In de toekomst worden ze geleidelijk omgezet naar standaard niet toegestaan en moeten sites ze expliciet aanzetten via <ph name="PERMISSIONS_POLICY_NAME" />-headers. Dit zakelijke beleid kan worden gebruikt om je af te melden voor deze geleidelijke beëindiging door af te dwingen dat de standaardinstelling actief blijft.
- 
-Pagina's kunnen afhankelijk zijn van <ph name="UNLOAD_EVENT_NAME" />-gebeurtenishandlers om gegevens op te slaan of het einde van een gebruikerssessie aan te geven aan de server. Dit wordt afgeraden omdat het onbetrouwbaar is en de prestaties beïnvloedt door het gebruik van <ph name="PRODUCT_NAME" /> te blokkeren. Er zijn aanbevolen alternatieven, maar de gebeurtenis <ph name="UNLOAD_EVENT_NAME" /> wordt al lange tijd gebruikt. Sommige apps zijn misschien nog steeds hiervan afhankelijk.
-
-Als je dit beleid instelt op False of niet instelt, worden de <ph name="UNLOAD_EVENT_NAME" />-gebeurtenishandlers geleidelijk beëindigd, in overeenkomst met de uitrol van de beëindiging. Sites die geen <ph name="PERMISSIONS_POLICY_NAME" />-header instellen, stoppen met de activering van unload-gebeurtenissen.
-
-Als je dit beleid instelt op True, blijven <ph name="UNLOAD_EVENT_NAME" />-gebeurtenishandlers standaard werken.
-</translation>
 <translation id="1883274744253492031">Automatisch upgraden van gemengde content aanzetten</translation>
 <translation id="1885782360784839335">Promotiecontent op volledig tabblad tonen</translation>
 <translation id="1888871729456797026">De inschrijvingstoken van het cloudbeleid op een desktop</translation>
@@ -1949,7 +1941,7 @@ Als je dit beleid niet instelt, is de standaard afhankelijk van factoren zoals o
 <translation id="2664391398878045611">De pagina Nieuw tabblad toont de aankondiging in de middelste ruimte niet, ook niet als die beschikbaar is</translation>
 <translation id="2664682171745499686">Waarschuwingen voor nagebootste domeinen onderdrukken voor domeinen</translation>
 <translation id="2665129863304939984">Gebruikers zelf laten kiezen of ze bestaande browsegegevens naar hun beheerde profiel willen overzetten</translation>
-<translation id="2665422249821137126">Grote muisaanwijzer op het inlogscherm gebruiken</translation>
+<translation id="2665422249821137126">Grote cursor op het inlogscherm gebruiken</translation>
 <translation id="2667894101494585925">Ophalen van optimalisatiegids aanzetten</translation>
 <translation id="2669157090883237118">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie niet wijzigen.</translation>
 <translation id="2672012807430078509">Bepaalt of NTLM is aangezet als verificatieprotocol voor SMB-activeringen</translation>
@@ -2115,6 +2107,14 @@ Het beleid <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> kan het gedrag van di
 <translation id="2839294585867804686">Instellingen voor Network File Shares</translation>
 <translation id="2841911109921764691">Rechterknop is primair op het inlogscherm</translation>
 <translation id="284288632677954003">URL van een XML-bestand dat URL's bevat die nooit overschakeling naar een andere browser veroorzaken.</translation>
+<translation id="28458742190197992">Dit beleid beheert <ph name="PRODUCT_NAME" />-cloudrapportage voor een bepaald beheerd profiel.
+
+Als dit beleid niet is ingesteld of niet wordt toegepast, worden er geen gegevens verzameld of geüpload.
+Als dit beleid wordt toegepast, worden de gegevens verzameld en geüpload naar <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Het rapport bevat de profielstatus en gebruiksinformatie, inclusief maar niet beperkt tot de OS-versie, browserversie, geïnstalleerde extensies en toegepaste beleidsregels.
+
+Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2846689894646472396">Snelheid voor checken van netwerkgebeurtenissen in milliseconden.</translation>
 <translation id="2847788524147474533">Platformapparaatbeleid krijgt voorrang op cloud-apparaatbeleid</translation>
 <translation id="2849275596224278787">Toegankelijkheidsopties verbergen in het systeemvakmenu op het inlogscherm</translation>
@@ -2335,15 +2335,15 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="3023172689742785487">Aanzetten van de modus Alleen HTTPS afdwingen</translation>
 <translation id="3023572080620427845">URL van een XML-bestand dat URL's bevat voor laden in een alternatieve browser.</translation>
 <translation id="302528139996622624">Instellingen voor afbeeldingen</translation>
-<translation id="3026740867910702435">Zet de toegankelijkheidsfunctie 'Grote muisaanwijzer' op het inlogscherm aan.
+<translation id="3026740867910702435">Zet de toegankelijkheidsfunctie 'Grote cursor' op het inlogscherm aan.
 
-          Als dit beleid is ingesteld op True, staat de grote muisaanwijzer altijd aan op het inlogscherm.
+          Als dit beleid is ingesteld op True, staat de grote cursor altijd aan op het inlogscherm.
 
-          Als dit beleid is ingesteld op False, staat de grote muisaanwijzer altijd uit op het inlogscherm.
+          Als dit beleid is ingesteld op False, staat de grote cursor altijd uit op het inlogscherm.
 
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
-          Als dit beleid niet is ingesteld, staat de grote muisaanwijzer in eerste instantie uit op het inlogscherm, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
+          Als dit beleid niet is ingesteld, staat de grote cursor in eerste instantie uit op het inlogscherm, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="3027837632741099453">De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt.</translation>
 <translation id="3030000825273123558">Rapportage van statistieken aanzetten</translation>
 <translation id="30300807616984726">Rapporteert app-voorraadgegevens voor aangesloten gebruikers.
@@ -3747,7 +3747,7 @@ Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert
 <translation id="4206464220361823768">Grote cursor op het inlogscherm uitzetten</translation>
 <translation id="4209297478239988291">Zet de toegankelijkheidsfunctie voor automatisch klikken aan.
 
-          Met deze functie kun je klikken zonder fysiek op de muisknop of touchpad te drukken door de muisaanwijzer op het object te plaatsen waarop je wilt klikken.
+          Met deze functie kun je klikken zonder fysiek op de muisknop of touchpad te drukken door de cursor op het object te plaatsen waarop je wilt klikken.
 
           Als dit beleid is toegepast, staat de functie voor automatisch klikken altijd aan.
 
@@ -4165,7 +4165,7 @@ Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersge
 
       Als je het beleid instelt op True of niet instelt, kunnen gebruikers opnamen van netwerkpakketten uitvoeren op het apparaat.
       Als je het beleid instelt op False, zijn opnamen van netwerkpakketten niet beschikbaar op het apparaat.</translation>
-<translation id="4600786265870346112">Grote muisaanwijzer gebruiken</translation>
+<translation id="4600786265870346112">Grote cursor gebruiken</translation>
 <translation id="4602988345256038309">Verbindingen voor externe support met deze machine toestaan</translation>
 <translation id="4607416370554533118">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven van sites waarvoor Chrome automatisch een clientcertificaat kan selecteren. De waarde is een matrix van JSON-woordenboeken met tekenreeksen, elk met de indeling <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, waarbij <ph name="URL_PATTERN_PLACEHOLDER" /> een patroon voor het instellen van content is. <ph name="FILTER_PLACEHOLDER" /> beperkt de clientcertificaten waaruit de browser automatisch kan kiezen. Onafhankelijk van het filter worden alleen certificaten geselecteerd die overeenkomen met het certificaatverzoek van de server.
 
@@ -5575,6 +5575,7 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 
       ECH is een protocol dat nog in ontwikkeling is, dus de implementatie van <ph name="PRODUCT_NAME" /> kan veranderen. Dit beleid is daarom een tijdelijke maatregel om de eerste experimentele implementatie te beheren. Het wordt vervangen door definitieve beheeropties zodra het protocol is afgerond.</translation>
 <translation id="5939656968921014919">Ontwikkelaarsmodus voor geïsoleerde apps uitzetten</translation>
+<translation id="5939873071468124100">Beperkt accounts die de <ph name="MICROSOFT_ONE_DRIVE_NAME" />-integratie kunnen gebruiken</translation>
 <translation id="5945312246863177268">Staat niet toe dat gebruikers op een Telefoonhub-melding klikken om de Eche-app te starten.</translation>
 <translation id="5946082169633555022">Bètakanaal</translation>
 <translation id="5946329690214660966">Custom planning instellen om te controleren op updates</translation>
@@ -5646,6 +5647,16 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
       Dit beleid geldt altijd voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6019162469732742754">Automatische modus gebruiken</translation>
 <translation id="6019606564278029236">Externe gebruikers toestaan om vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
+<translation id="602038990586229155">Met dit beleid worden installatieverzoeken voor <ph name="PRODUCT_NAME" />-extensies beheerd waarmee gebruikers de verzoeken ter goedkeuring naar de Google Beheerdersconsole kunnen sturen.
+
+Als het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet is ingesteld of niet wordt toegepast, wordt dit beleid genegeerd. Er worden in dit geval geen installatieverzoeken voor extensies gemaakt of geüpload.
+Als dit beleid niet is ingesteld of niet wordt toegepast, worden er geen installatieverzoeken voor extensies gemaakt of geüpload.
+Als dit beleid wordt toegepast, worden installatieverzoeken voor extensies gemaakt en geüpload naar de Google Beheerdersconsole.
+
+Er worden installatieverzoeken voor extensies gemaakt als gebruikers proberen een extensie te installeren die niet wordt toegestaan door <ph name="EXTENSION_INSTALL_ALLOWLIST" /> of <ph name="EXTENSION_SETTINGS" />.
+
+Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
+Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6022948604095165524">Actie bij starten</translation>
 <translation id="602318745029752898">Stemmen voor verbeterde tekst-naar-spraak via netwerk toestaan in Selecteer om voor te lezen.</translation>
 <translation id="6026722971789064331">Gebruik van de File System API voor schrijven beheren</translation>
@@ -5792,7 +5803,7 @@ Als je dit beleid toepast of niet instelt, kunnen gebruikers systeemsneltoetsen 
 Als je dit beleid niet toepast, staat de Sneltoetsen-app in de modus Alleen lezen en is aanpassing niet toegestaan.</translation>
 <translation id="6150320133676152520">Automatisch versturen van pincode op het vergrendel- en inlogscherm uitzetten</translation>
 <translation id="6155350825868160236">Toestaan dat gebruikers kiezen of Google-webservices worden gebruikt om spelfouten op te lossen</translation>
-<translation id="6155936611791017817">De standaardstatus van de grote muisaanwijzer op het inlogscherm instellen</translation>
+<translation id="6155936611791017817">De standaardstatus van de grote cursor op het inlogscherm instellen</translation>
 <translation id="6157537876488211233">Door komma's gescheiden lijst van regels voor proxyomzeiling</translation>
 <translation id="6158324314836466367">Naam van zakelijke webwinkel (verouderd)</translation>
 <translation id="6164441518097008843">Inloggen beperken tot een lijst gebruikers</translation>
@@ -6541,6 +6552,13 @@ Dit beleid wordt in de toekomst verwijderd uit <ph name="PRODUCT_NAME" />.</tran
       Als je het beleid toepast, wordt Snelle antwoorden aangezet.
       Als je het beleid niet toepast, wordt Snelle antwoorden uitgezet.
       Als je het beleid niet instelt, kunnen gebruikers bepalen of ze Snelle antwoorden willen aan- of uitzetten.</translation>
+<translation id="6712624291905573620">Dit beleid beheert <ph name="PRODUCT_NAME" />-cloudrapportage waarmee informatie over de browseractiviteit wordt geüpload naar <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Als dit beleid niet is ingesteld of niet wordt toegepast, worden er geen gegevens verzameld of geüpload.
+Als dit beleid wordt toegepast, worden de gegevens verzameld en geüpload naar <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid altijd van kracht.</translation>
 <translation id="6720330829631914048">Verstreken uren sinds het begin van de dag (in 24-uursnotatie).</translation>
 <translation id="6721252203593581486">WebSQL in contexten van derden (bijv. iframes voor meerdere sites) staat standaard uit vanaf M97 en wordt helemaal verwijderd in M101.
           Als je dit beleid instelt op False of niet instelt, blijft WebSQL in contexten van derden uitstaan.
@@ -8061,6 +8079,13 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="8062375903420954294">Dit beleid maakt het mogelijk om te beperken welke IP-adressen en interfaces worden gebruikt door WebRTC als naar de beste beschikbare verbinding wordt gezocht. Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Als dit niet is ingesteld, worden standaard alle beschikbare interfaces gebruikt.</translation>
 <translation id="8062485064082966327">Een anonieme Google-service gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="8071371098891664137">Als <ph name="PRINTERS_BLOCKLIST" /> wordt gekozen voor <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers niet kunnen gebruiken. Alle printers zijn beschikbaar voor de gebruiker, behalve de ID's in dit beleid. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="8072934771584553388">Met dit beleid kunnen beheerders beperken welke accounts mogen inloggen bij <ph name="MICROSOFT_ONE_DRIVE_NAME" /> als het beleid <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> wordt toegepast.
+
+Als je dit beleid niet instelt of instelt op een lege waarde, kan elk account worden gebruikt om in te loggen.
+
+Als dit beleid is ingesteld op een domeinnaam of tenant-ID (zie https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints), kunnen alleen accounts van die domeinnaam of tenant-ID worden gebruikt om in te loggen.
+
+Als je de beperking wijzigt, kunnen gebruikers worden uitgelogd van hun <ph name="MICROSOFT_ONE_DRIVE_NAME" />-account als dit niet voldoet aan de nieuwe beperking.</translation>
 <translation id="8076521374016204899">Als je het beleid toepast of niet instelt, kunnen gebruikers die een wachtwoord gebruiken voor verificatie het scherm vergrendelen.
 
       Als je het beleid niet toepast, kunnen gebruikers het scherm niet vergrendelen. (Ze kunnen alleen uitloggen van de gebruikerssessie.)</translation>
@@ -8681,6 +8706,12 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Als het beleid is ingesteld op 'True', kunnen tabbladen die minimaal vijf minuten op de achtergrond actief zijn worden vastgezet. Het vastzetten van tabbladen verlaagt het CPU-, batterij- en geheugengebruik. <ph name="PRODUCT_NAME" /> gebruikt bepaalde methoden om te voorkomen dat tabbladen worden vastgezet die nuttig werk op de achtergrond leveren (zoals meldingen tonen, geluid afspelen en video streamen). Webontwikkelaars kunnen daarnaast hun toestemming intrekken voor het vastzetten van hun site (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Als het beleid is ingesteld op 'False', worden er geen tabbladen vastgezet.</translation>
+<translation id="8612188068319977428">Hiermee bepaal je met welke frequentie Chrome-statusrapporten worden geüpload.
+
+Hieronder vallen rapporten die zijn aangezet door <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />.
+
+Als het beleid niet is ingesteld, worden rapporten elke 24 uur geüpload.
+Als het beleid is ingesteld, wordt het aantal uren tussen 2 opeenvolgende rapportuploads gedefinieerd door dit beleid.</translation>
 <translation id="8619748440665904084">Import van formuliergegevens voor automatisch invullen bij eerste uitvoering uitzetten</translation>
 <translation id="8623672932476443039">Als je het beleid toepast, hebben gebruikers toegang tot de ontwikkelaarsmodus voor geïsoleerde apps.
       Als je het beleid niet toepast, hebben gebruikers geen toegang tot deze mogelijkheden.
@@ -8964,7 +8995,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="8871974300055371298">Instellingen voor content</translation>
 <translation id="8872402969096027761">Zet de toegankelijkheidsfunctie voor automatisch klikken op het inlogscherm aan.
 
-          Deze functie maakt het mogelijk om automatisch te klikken als de muisaanwijzer stopt, zonder dat de gebruiker fysiek op een muis- of touchpadknop hoeft te drukken.
+          Deze functie maakt het mogelijk om automatisch te klikken als de cursor stopt, zonder dat de gebruiker fysiek op een muis- of touchpadknop hoeft te drukken.
 
           Als dit beleid is ingesteld op True, staat automatisch klikken altijd aan op het inlogscherm.
 

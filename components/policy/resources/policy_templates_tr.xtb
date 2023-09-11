@@ -1036,14 +1036,6 @@ Uzantıların kullanılabilirliği diğer politikalar tarafından kontrol edilme
       * PIN ve parmak iziyle kilidi açmaya izin vermek için ["PIN", "FINGERPRINT"] öğesini kullanın.
 
       Politika ayarlanmaz veya boş listeye ayarlanırsa yönetilen cihazlarda WebAuthn faktörleri kullanılamaz.</translation>
-<translation id="1881471688033371681"><ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyicilerin desteği sonlandırılıyor. Bu işleyicilerin tetiklenip tetiklenmemesi <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" /> politikasına bağlıdır. Şu anda politika bunlara varsayılan olarak izin vermektedir. Gelecekte, kademeli bir şekilde varsayılan olarak izin verilmeyecek ve sitelerin, <ph name="PERMISSIONS_POLICY_NAME" /> başlıklarını kullanarak bunları açıkça etkinleştirmesi gerekecek. Bu kurumsal politika, varsayılan ayarı etkin olarak kalmaya zorlayarak desteğin kademeli olarak sonlandırılmasını devre dışı bırakmak için kullanılabilir.
- 
-Sayfalar, verileri kaydetmek veya bir kullanıcı oturumunun sonlandırıldığını sunucuya bildirmek için <ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyicileri kullanabilir. Güvenilir olmadığı ve <ph name="PRODUCT_NAME" /> kullanımını engelleyerek performansı etkilediği için bu kullanım önerilmez. Önerilen alternatifler mevcut olsa da <ph name="UNLOAD_EVENT_NAME" /> etkinliği uzun süredir kullanılmaktadır. Bazı uygulamalar bunu kullanmaya devam edebilir.
-
-Bu politika, Yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa <ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyicilerin, desteği sonlandırma süreci doğrultusunda kademeli olarak desteği sonlandırılır ve <ph name="PERMISSIONS_POLICY_NAME" /> başlığını ayarlamayan siteler, "kaldırma" etkinliklerini tetiklemeyi bırakır.
-
-Bu politika, Doğru değerine ayarlanırsa <ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyiciler varsayılan olarak çalışmaya devam eder.
-</translation>
 <translation id="1883274744253492031">Karma içerik otomatik yükseltmesini etkinleştir</translation>
 <translation id="1885782360784839335">Tap sekme tanıtım içeriğini göstermeyi etkinleştir</translation>
 <translation id="1888871729456797026">Masaüstünde bulut politikasının kayıt jetonu</translation>
