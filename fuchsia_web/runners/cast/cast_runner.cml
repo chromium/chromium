@@ -6,7 +6,12 @@
     "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
     "inspect/client.shard.cml",
     "syslog/client.shard.cml",
-    "trace/client.shard.cml",
+
+    // `main()` intantiates tracing directly.
+    // Although the protocol is technically optional, as in this shard, not
+    // providing it will result in log spam.
+    "trace/use.shard.cml",
+
     "vulkan/client.shard.cml",
   ],
   program: {
@@ -85,7 +90,7 @@
           resolver: "cast-resolver",
           from: "self",
           scheme: "cast",
-	},
+        },
       ],
       runners: [
         {
@@ -93,6 +98,6 @@
           from: "self",
         },
       ],
-   },
+    },
   ],
 }
