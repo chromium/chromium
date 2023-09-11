@@ -239,6 +239,9 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Overridden from ShellSurfaceBase:
   float GetScale() const override;
 
+  // Overridden from SurfaceTreeHost:
+  float GetScaleFactor() const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ClientControlledShellSurfaceTest,
                            OverlayShadowBounds);
