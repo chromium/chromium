@@ -23,16 +23,16 @@ namespace browser_sync {
 // performed synchronously as no disk read is required.
 class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
  public:
-  explicit WebContentsStateSyncedTabDelegate(
-      TabAndroid* tab_android,
-      std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer);
-
   WebContentsStateSyncedTabDelegate(const WebContentsStateSyncedTabDelegate&) =
       delete;
   WebContentsStateSyncedTabDelegate& operator=(
       const WebContentsStateSyncedTabDelegate&) = delete;
 
   ~WebContentsStateSyncedTabDelegate() override;
+
+  static std::unique_ptr<WebContentsStateSyncedTabDelegate> Create(
+      TabAndroid* tab_android,
+      std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer);
 
   // SyncedTabDelegate android specific overrides:
   SessionID GetWindowId() const override;
@@ -41,7 +41,14 @@ class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   std::unique_ptr<sync_sessions::SyncedTabDelegate>
   CreatePlaceholderTabSyncedTabDelegate() override;
 
+  // Check if the synced tab delegate has a valid web contents.
+  bool HasWebContents() const;
+
  private:
+  WebContentsStateSyncedTabDelegate(
+      TabAndroid* tab_android,
+      std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer);
+
   raw_ptr<TabAndroid> tab_android_;
   std::unique_ptr<WebContentsStateByteBuffer> web_contents_buffer_;
   std::unique_ptr<content::WebContents> web_contents_;

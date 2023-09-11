@@ -20,6 +20,21 @@ WebContentsStateSyncedTabDelegate::WebContentsStateSyncedTabDelegate(
 WebContentsStateSyncedTabDelegate::~WebContentsStateSyncedTabDelegate() =
     default;
 
+std::unique_ptr<WebContentsStateSyncedTabDelegate>
+WebContentsStateSyncedTabDelegate::Create(
+    TabAndroid* tab_android,
+    std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer) {
+  auto tab_delegate = base::WrapUnique(new WebContentsStateSyncedTabDelegate(
+      tab_android, std::move(web_contents_byte_buffer)));
+
+  // If the retrieved web contents of the newly created delegate is still null,
+  // indicate for an early exit in the AssociatePlaceholderTab snapshot catch.
+  if (!tab_delegate->HasWebContents()) {
+    return nullptr;
+  }
+  return tab_delegate;
+}
+
 SessionID WebContentsStateSyncedTabDelegate::GetWindowId() const {
   return tab_android_->window_id();
 }
@@ -30,11 +45,18 @@ SessionID WebContentsStateSyncedTabDelegate::GetSessionId() const {
 }
 
 bool WebContentsStateSyncedTabDelegate::IsPlaceholderTab() const {
-  // We will check if the tab is a placeholder tab depending on if there is a
-  // valid web contents or not. If there are no valid web contents after
-  // attempted restoration then it will be caught in checks downstream at
+  // This will always return false, as this tab delegate is created as an
+  // attempt to resync a placeholder tab. That tab should no longer be a
+  // placeholder tab after creation. If the web contents of the newly
+  // created delegate are still null, the creation will return a nullptr
+  // which will be caught in checks downstream at
   // local_session_event_handler.cc.
-  return web_contents() == nullptr;
+  CHECK(web_contents());
+  return false;
+}
+
+bool WebContentsStateSyncedTabDelegate::HasWebContents() const {
+  return web_contents() != nullptr;
 }
 
 std::unique_ptr<sync_sessions::SyncedTabDelegate>
