@@ -1432,6 +1432,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2102495993840063010">Apl Android</translation>
 <translation id="2104166991923847969">Matikan tempat liputan secara automatik</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> disembunyikan</translation>
+<translation id="2108204112555497972">Diperiksa <ph name="NUM_DAYS_HOURS_MINUTES" /> lalu</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nombor telefon}other{# nombor telefon}}</translation>
 <translation id="2110941575868943054">Dibenarkan mencari peranti Bluetooth</translation>
 <translation id="211144231511833662">Kosongkan Jenis</translation>
@@ -2473,6 +2474,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2907619724991574506">URL Pemula</translation>
 <translation id="2907798539022650680">Gagal untuk menyambung ke '<ph name="NAME" />': <ph name="DETAILS" />
     Mesej pelayan: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Buka fail Word, Excel dan PowerPoint</translation>
 <translation id="2908162660801918428">Tambah Galeri Media mengikut Direktori</translation>
 <translation id="2908358077082926882">Tekan “<ph name="CURRENTKEY" />” sekali lagi untuk mengalih keluar penguntukan dan <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Tidak dapat menyambung kepada perkhidmatan Google. Periksa sambungan rangkaian anda, kemudian cuba lagi. Kod ralat: <ph name="ERROR_CODE" />.</translation>
@@ -6114,6 +6116,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5920543303088087579">Penyambungan kepada rangkaian ini dilumpuhkan oleh pentadbir anda</translation>
 <translation id="5921257443092182237">Perkhidmatan lokasi Google menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti ini.</translation>
 <translation id="5924047253200400718">Dapatkan bantuan<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Tanya sebelum menyalin atau menggerakkan fail Microsoft kepada Google Drive</translation>
 <translation id="5924527146239595929">Ambil foto baharu atau pilih foto atau ikon yang sedia ada.
     <ph name="LINE_BREAK" />
     Gambar ini akan dipaparkan pada skrin log masuk dan kunci skrin Chromebook.</translation>
@@ -6532,6 +6535,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6263284346895336537">Tidak Kritikal</translation>
 <translation id="6264365405983206840">Pilih &amp;Semua</translation>
 <translation id="6264376385120300461">Muat turun juga</translation>
+<translation id="6265159465845424232">Tanya sebelum menyalin atau menggerakkan fail Microsoft kepada Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Alih keluar port</translation>
 <translation id="6266532094411434237">Menyambung kepada <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Pilih sijil untuk mengesahkan dengan sendiri pada <ph name="HOST_NAME" /></translation>
@@ -7291,6 +7295,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6897363604023044284">Pilih tapak untuk dikosongkan</translation>
 <translation id="6897688156970667447">Membantu dalam cahaya malap dan menjimatkan bateri</translation>
 <translation id="6897972855231767338">Ketahui lebih lanjut tentang menyemak imbas sebagai tetamu</translation>
+<translation id="6898438890765871056">Buka folder OneDrive</translation>
 <translation id="6898440773573063262">Aplikasi kios kini boleh dikonfigurasikan supaya autolancar pada peranti ini.</translation>
 <translation id="6899427698619335650">Benarkan tugasan diakritik fleksibel. Contohnya, anda boleh menaip “anh1” atau “a1nh” untuk mendapatkan “ánh”.</translation>
 <translation id="6900284862687837908">Apl Latar Belakang: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8045,6 +8050,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7517959947270534934">Ahli keluarga anda tidak boleh menerima kata laluan sekarang. Minta mereka mengemaskinikan Chrome dan menyegerakkan kata laluan mereka.</translation>
 <translation id="7520766081042531487">Portal Inkognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Paparkan pintasan</translation>
+<translation id="7521430434164837205">Fail Microsoft 365</translation>
 <translation id="7522255036471229694">Sebut "Ok Google".</translation>
 <translation id="7523117833414447032">Apabila membaca huruf besar</translation>
 <translation id="7523585675576642403">Namakan Semula Profil</translation>
@@ -9774,6 +9780,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8896830132794747524">Pergerakan lebih pantas dengan tetikus anda akan menggerakkan kursor lebih jauh</translation>
 <translation id="8898140163781851592">Butang tetikus utama</translation>
 <translation id="8898786835233784856">Pilih Tab Seterusnya</translation>
+<translation id="8898790559170352647">Tambahkan akaun Microsoft anda</translation>
 <translation id="8898822736010347272">Menghantar URL sesetengah halaman yang anda lawati, maklumat sistem yang terhad dan sebahagian kandungan halaman kepada Google untuk menemukan ancaman baharu dan melindungi semua pengguna web.</translation>
 <translation id="8899851313684471736">Buka pautan dalam tetingkap &amp;baharu</translation>
 <translation id="8900413463156971200">Dayakan Selular</translation>

@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">በተለምዶ ደህንነታቸው የተጠበቀ ጣቢያዎች እንኳን አንዳንድ ጊዜ በጥቃት አድራሾች ይጠለፋሉ። ስጋቶቹን መረዳትዎን እርግጠኛ ከሆኑ ብቻ <ph name="BEGIN_LINK" />ይህ ደህንነቱ ያልተጠበቀ ጣቢያ<ph name="END_LINK" /> የሚለውን ይጎብኙ።</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">የሥርዓት አስተዳዳሪውን ለማነጋገር ይሞክሩ።</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />፣ <ph name="CARD_NETWORK_NAME" />፣ <ph name="CARD_LAST_FOUR_DIGITS" />፣ <ph name="CARD_EXPIRATION" /> ላይ ጊዜው ያበቃል</translation>
 <translation id="1736420071277903564">ኮምፒውተር</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> ሲሆን መገለጽ እና የሚሰራ ሕብረቁምፊ መሆን አለበት።</translation>
 <translation id="1743393865165844832">የአልጋ ልብሶች እና አንሶላዎች</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">ስጋ እና የባህር ምግብ</translation>
 <translation id="2367567093518048410">ደረጃ</translation>
 <translation id="23703388716193220">የጎልፍ መሣሪያዎች</translation>
+<translation id="2378084239755710604">ካርድ አስቀምጥ ዝግ ነው።</translation>
 <translation id="2380886658946992094">የሕግ</translation>
 <translation id="2383455408879745299">በChrome ቅንብሮች ውስጥ የተደራሽነት መሣሪያዎችዎ ግላዊነትን ያላብሱ</translation>
 <translation id="2384307209577226199">የንግድ ድርጅት ነባሪ</translation>
@@ -2259,6 +2261,7 @@
 <translation id="5689199277474810259">ወደ JSON ላክ</translation>
 <translation id="5689516760719285838">አካባቢ</translation>
 <translation id="569000877158168851">የDnsOverHttpsTemplates እሴቱ አይመለከተውም፣ እና ሥራ ላይ አይውልም፣ የDnsOverHttpsMode መመሪያው ወደ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ወይም <ph name="SECURE_DNS_MODE_SECURE" /> ካልተዋቀረ በስተቀር።</translation>
+<translation id="5691848789297492617">በሙሉ ቁመት የተከፈተ ካርድን ያስቀምጡ።</translation>
 <translation id="5695542892312572833">ግዢዎን ለማረጋገጥ እና ለማጠናቀቅ Windowsን ይጠቀሙ?</translation>
 <translation id="5699628521141772782">የወተት ምርት እና እንቁላሎች</translation>
 <translation id="5701381305118179107">መሃከል</translation>
@@ -3235,6 +3238,7 @@
 <translation id="7676643023259824263">የቅንጥብ ሰሌዳ ጽሁፍ <ph name="TEXT" /> ይፈልጉ</translation>
 <translation id="7679367271685653708">በChrome ቅንብሮች ውስጥ የአሰሳ ታሪክዎን ይመልከቱ እና ያቀናብሩ</translation>
 <translation id="7679947978757153706">ቤዝቦል</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />፣ <ph name="CARD_LAST_FOUR_DIGITS" />፣ <ph name="CARD_EXPIRATION" /> ላይ ጊዜው ያበቃል</translation>
 <translation id="7681273392938116652">ምናባዊ ስፖርቶች</translation>
 <translation id="7682287625158474539">ዕቃን የማጓጓዝ ሥራ</translation>
 <translation id="7682451652090915298">ራግቢ</translation>

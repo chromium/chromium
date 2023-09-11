@@ -1428,6 +1428,7 @@
 <translation id="2102495993840063010">የAndroid መተግበሪያዎች</translation>
 <translation id="2104166991923847969">መገናኛ ነጥብን በራስ ሰር አጥፋ</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ተደብቋል</translation>
+<translation id="2108204112555497972">ከ<ph name="NUM_DAYS_HOURS_MINUTES" /> በፊት ተፈትሿል</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ስልክ ቁጥር}one{# ስልክ ቁጥሮች}other{# ስልክ ቁጥሮች}}</translation>
 <translation id="2110941575868943054">የብሉቱዝ መሣሪያዎችን ለመፈለግ ይፈቀዳል</translation>
 <translation id="211144231511833662">ዓይነቶችን አጽዳ</translation>
@@ -2467,6 +2468,7 @@
 <translation id="2907619724991574506">ጀማሪ ዩ አር ኤሎች</translation>
 <translation id="2907798539022650680">ከ«<ph name="NAME" />» ጋር መገናኘት አልተቻለም፦ <ph name="DETAILS" />
 የአገልጋይ መልዕክት፦ <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word፣ Excel እና PowerPoint ፋይሎችን ይክፈቱ</translation>
 <translation id="2908162660801918428">የሚዲያ ማዕከለ ስዕላት በአቃፊ ያክሉ</translation>
 <translation id="2908358077082926882">ምደባን እና <ph name="RESPONSE" />ን ለማስወገድ «<ph name="CURRENTKEY" />»ን በድጋሜ ይጫኑ።</translation>
 <translation id="2909506265808101667">ከGoogle አገልግሎቶች ጋር መገናኘት አልተቻለም። የአውታረ መረብ ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
@@ -6105,6 +6107,7 @@
 <translation id="5920543303088087579">ከዚህ አውታረ መረብ ጋር መገናኘት በአስተዳዳሪዎ ተሰናክሏል</translation>
 <translation id="5921257443092182237">Google የዚህን መሣሪያ አካባቢ ለመገመት እንዲያግዙት እንደ Wi-Fi፣ የተንቀሳቃሽ ስልክ አውታረ መረቦች እና ዳሳሾች ያሉ ምንጮችን ይጠቀማል።</translation>
 <translation id="5924047253200400718">እገዛን ያግኙ<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">የMicrosoft ፋይሎችን ወደ Google Drive ከመቅዳትዎ ወይም ከማንቀሳቀስዎ በፊት ይጠይቁ</translation>
 <translation id="5924527146239595929">አዲስ ፎቶ ያንሱ ወይም አንድ ነባር ፎቶ ወይም አዶ ይምረጡ።
           <ph name="LINE_BREAK" />
           ይህ ሥዕል በChromebook መለያ መግቢያ ማያ ገፅ እና ማያ ገፅ ቁልፍ ላይ ይታያል።</translation>
@@ -6523,6 +6526,7 @@
 <translation id="6263284346895336537">ዋነኛ ያልሆነ</translation>
 <translation id="6264365405983206840">&amp;ሁሉንም ምረጥ</translation>
 <translation id="6264376385120300461">ለማንኛውም አውርድ</translation>
+<translation id="6265159465845424232">የMicrosoft ፋይሎችን ወደ Microsoft OneDrive ከመቅዳትዎ ወይም ከማንቀሳቀስዎ በፊት ይጠይቁ</translation>
 <translation id="6265687851677020761">ወደብን አስወግድ</translation>
 <translation id="6266532094411434237">ወደ <ph name="DEVICE" /> በመገናኘት ላይ</translation>
 <translation id="6267166720438879315">ራስዎን ለ<ph name="HOST_NAME" /> ለማረጋገጥ  ሰርቲፊኬት ይምረጡ</translation>
@@ -7284,6 +7288,7 @@
 <translation id="6897363604023044284">የሚጸዱ ጣቢያዎችን ምረጥ</translation>
 <translation id="6897688156970667447">ብርሃን ሲያንስ ይረዳል እና ባትሪ ይቆጥባል</translation>
 <translation id="6897972855231767338">እንደ እንግዳ ስለማሰስ የበለጠ ይወቁ</translation>
+<translation id="6898438890765871056">OneDrive አቃፊን ክፈት</translation>
 <translation id="6898440773573063262">አሁን የኪዮስክ መተግበሪያዎች በዚህ መሣሪያ ላይ ወደ ራስ-ጀምር መዋቀር ይችላሉ።</translation>
 <translation id="6899427698619335650">ተለዋዋጭ የንባብ ምልክት ምደባን ይፍቀዱ። ለምሳሌ፣ «ánh» ለማግኘት «anh1» ወይም «a1nh» መተየብ ይችላሉ።</translation>
 <translation id="6900284862687837908">የጀርባ መተግበሪያ፦ <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8038,6 +8043,7 @@
 <translation id="7517959947270534934">በአሁኑ ጊዜ የቤተሰብ አባልዎ የይለፍ ቃሎችን መቀበል አይችሉም። Chrome እንዲያዘምኑ እና የይለፍ ቃላቸውን እንዲያሰምሩ ይጠይቋቸው።</translation>
 <translation id="7520766081042531487">ማንነት የማያሳውቁ ሁነታ፦ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">አቋራጮችን አሳይ</translation>
+<translation id="7521430434164837205">የMicrosoft 365 ፋይሎች</translation>
 <translation id="7522255036471229694">«Ok Google» ይብሉ</translation>
 <translation id="7523117833414447032">አቢይ ሆሄያትን ስታነብ</translation>
 <translation id="7523585675576642403">መገለጫውን እንደገና ይሰይሙ</translation>
@@ -9772,6 +9778,7 @@ nil</translation>
 <translation id="8896830132794747524">የእርስዎ መዳፊት የበለጡ ፈጣን እንቅስቃሴዎች ጠቋሚውን የበለጠ ሩቅ ይወስዱታል</translation>
 <translation id="8898140163781851592">ዋና የመዳፊት አዘራር</translation>
 <translation id="8898786835233784856">ቀጣይ ትርን ምረጥ</translation>
+<translation id="8898790559170352647">የእርስዎን Microsoft መለያ ያክሉ</translation>
 <translation id="8898822736010347272">አዲስ ስጋቶችን ለማግኘት እንዲያግዝ እና በድር ላይ ያለ ሁሉንም ሰው ለመጠበቅ የጎበኟቸው የአንዳንድ ገጾች ዩአርኤሎችን፣ የተወሰነ የስርዓት መረጃን እና አንዳንድ የገጽ ይዘትን ወደ Google ይልካል።</translation>
 <translation id="8899851313684471736">አገናኙን በአዲስ &amp;መስኮት ክፈት</translation>
 <translation id="8900413463156971200">ተንቀሳቃሽ ስልክን አንቃ</translation>

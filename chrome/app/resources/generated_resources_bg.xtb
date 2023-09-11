@@ -1428,6 +1428,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2102495993840063010">Приложения за Android</translation>
 <translation id="2104166991923847969">Автоматично изключване на точката за достъп</translation>
 <translation id="2105809836724866556">„<ph name="MODULE_TITLE" />“ бе скрито</translation>
+<translation id="2108204112555497972">Проверено преди <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонен номер}other{# телефонни номера}}</translation>
 <translation id="2110941575868943054">Сайтове с разрешение за търсене на устройства с Bluetooth</translation>
 <translation id="211144231511833662">Изчистване на типовете</translation>
@@ -2469,6 +2470,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2907619724991574506">URL адреси при стартиране</translation>
 <translation id="2907798539022650680">Свързването с/ъс „<ph name="NAME" />“ не бе успешно: <ph name="DETAILS" />
 Съобщение от сървъра: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Отваряйте файлове на Word, Excel и PowerPoint</translation>
 <translation id="2908162660801918428">Добавяне на медийна галерия по директория</translation>
 <translation id="2908358077082926882">Натиснете <ph name="CURRENTKEY" /> отново, за да премахнете зададеното действие и да <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Не бе установена връзка с услугите на Google. Проверете връзката си с мрежата и опитайте отново. Код на грешката: <ph name="ERROR_CODE" />.</translation>
@@ -6112,6 +6114,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5920543303088087579">Свързването с тази мрежа е деактивирано от администратора ви</translation>
 <translation id="5921257443092182237">Услугата на Google за местоположение използва източници като Wi-Fi, мобилни мрежи и сензори, за да помага за определянето на местоположението на това устройство.</translation>
 <translation id="5924047253200400718">Получете помощ<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Извеждане на запитване преди копиране или преместване на файлове на Microsoft в Google Диск</translation>
 <translation id="5924527146239595929">Направете нова снимка или изберете съществуващо изображение или икона.
     <ph name="LINE_BREAK" />
    Снимката ще се показва на заключения екран и на този за вход в Chromebook.</translation>
@@ -6530,6 +6533,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6263284346895336537">Не е критично</translation>
 <translation id="6264365405983206840">Избиране на &amp;всички</translation>
 <translation id="6264376385120300461">Изтегляне въпреки това</translation>
+<translation id="6265159465845424232">Извеждане на запитване преди копиране или преместване на файлове на Microsoft в Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Премахване на порта</translation>
 <translation id="6266532094411434237">Установява се връзка с(ъс) <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Изберете сертификат, за удостоверите самоличността си пред <ph name="HOST_NAME" /></translation>
@@ -7289,6 +7293,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6897363604023044284">Изберете сайтовете, които да бъдат изчистени</translation>
 <translation id="6897688156970667447">Полезно при слаба светлина и пести батерията</translation>
 <translation id="6897972855231767338">Научете повече за сърфирането като гост</translation>
+<translation id="6898438890765871056">Отваряне на папката на OneDrive</translation>
 <translation id="6898440773573063262">Сега приложенията в павилионен режим могат да се конфигурират да стартират автоматично на това устройство.</translation>
 <translation id="6899427698619335650">Разрешаване на гъвкаво задаване на диакритични знаци. Можете например да въведете anh1 или a1nh, за да получите ánh.</translation>
 <translation id="6900284862687837908">Приложение на заден план: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8043,6 +8048,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7517959947270534934">Понастоящем членът на семейството ви не може да получава пароли. Помолете го да актуализира Chrome и да синхронизира паролите си.</translation>
 <translation id="7520766081042531487">Портал в режим „инкогнито“: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Показване на преки пътища</translation>
+<translation id="7521430434164837205">Файлове на Microsoft 365</translation>
 <translation id="7522255036471229694">Кажете „Ok Google“</translation>
 <translation id="7523117833414447032">При четене на главни букви</translation>
 <translation id="7523585675576642403">Преименуване на профила</translation>
@@ -9771,6 +9777,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8896830132794747524">При по-бързи движения с мишката курсорът ще се премества по-далеч</translation>
 <translation id="8898140163781851592">Основен бутон на мишката</translation>
 <translation id="8898786835233784856">Избор на следващия раздел</translation>
+<translation id="8898790559170352647">Добавяне на профил в Microsoft</translation>
 <translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
 <translation id="8899851313684471736">Отваряне на връзк&amp;ата в нов прозорец</translation>
 <translation id="8900413463156971200">Активиране на мобилната мрежа</translation>

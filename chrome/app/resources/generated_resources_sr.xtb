@@ -1418,6 +1418,7 @@
 <translation id="2102495993840063010">Android апликације</translation>
 <translation id="2104166991923847969">Аутоматски искључи хотспот</translation>
 <translation id="2105809836724866556">Скривено: <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">Проверено пре <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Број телефона}one{# број телефона}few{# броја телефона}other{# бројева телефона}}</translation>
 <translation id="2110941575868943054">Тражење Bluetooth уређаја је дозвољено</translation>
 <translation id="211144231511833662">Обриши типове</translation>
@@ -2456,6 +2457,7 @@
 <translation id="2907619724991574506">URL-ови за покретање</translation>
 <translation id="2907798539022650680">Повезивање са „<ph name="NAME" />“ није успело: <ph name="DETAILS" />
     Порука сервера: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Отварајте Word, Excel и PowerPoint фајлове</translation>
 <translation id="2908162660801918428">Додавање галерије медија према директоријуму</translation>
 <translation id="2908358077082926882">Поново притисните <ph name="CURRENTKEY" /> да бисте уклонили доделу и <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Повезивање са Google услугама није успело. Проверите мрежну везу и пробајте поново. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
@@ -6096,6 +6098,7 @@
 <translation id="5920543303088087579">Администратор је онемогућио повезивање са овом мрежом</translation>
 <translation id="5921257443092182237">Google услуга локације користи изворе као што су Wi‑Fi мреже, мобилне мреже и сензори да би одредила приближну локацију овог уређаја.</translation>
 <translation id="5924047253200400718">Потражите помоћ<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Питај пре копирања или премештања Microsoft фајлова на Google диск</translation>
 <translation id="5924527146239595929">Снимите нову слику или одаберите постојећу слику или икону.
     <ph name="LINE_BREAK" />
     Tа слика ће се приказивати на Chromebook екрану за пријављивање и закључаном екрану.</translation>
@@ -6514,6 +6517,7 @@
 <translation id="6263284346895336537">Није од пресудне важности</translation>
 <translation id="6264365405983206840">Изабери &amp;све</translation>
 <translation id="6264376385120300461">Ипак преузми</translation>
+<translation id="6265159465845424232">Питај пре копирања или премештања Microsoft фајлова у Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Уклони порт</translation>
 <translation id="6266532094411434237">Повезује се са уређајем <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Изаберите сертификат да бисте потврдили идентитет хосту <ph name="HOST_NAME" /></translation>
@@ -7277,6 +7281,7 @@
 <translation id="6897363604023044284">Одаберите сајтове за брисање</translation>
 <translation id="6897688156970667447">Корисно при слабом осветљењу и штеди батерију</translation>
 <translation id="6897972855231767338">Сазнајте више о прегледању као гост</translation>
+<translation id="6898438890765871056">Отвори OneDrive фолдер</translation>
 <translation id="6898440773573063262">Киоск апликације сада могу да се конфигуришу тако да се аутоматски покрећу на овом уређају.</translation>
 <translation id="6899427698619335650">Дозволите флексибилну доделу дијакритичког садржаја. На пример, можете да унесете „anh1“ или „a1nh“ да бисте добили „anh“.</translation>
 <translation id="6900284862687837908">Апликација у позадини: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8031,6 +8036,7 @@
 <translation id="7517959947270534934">Члан породице тренутно не може да прима лозинке. Затражите му да ажурира Chrome и синхронизује лозинке.</translation>
 <translation id="7520766081042531487">Портал у режиму без архивирања: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Прикажи пречице</translation>
+<translation id="7521430434164837205">Microsoft 365 фајлови</translation>
 <translation id="7522255036471229694">Реците „Хеј Google“</translation>
 <translation id="7523117833414447032">При читању великих слова</translation>
 <translation id="7523585675576642403">Промените назив профила</translation>
@@ -9761,6 +9767,7 @@
 <translation id="8896830132794747524">Брже кретање миша ће померати курсор даље</translation>
 <translation id="8898140163781851592">Примарно дугме миша</translation>
 <translation id="8898786835233784856">Изабери следећу картицу</translation>
+<translation id="8898790559170352647">Додајте Microsoft налог</translation>
 <translation id="8898822736010347272">Шаље Google-у URL-ове неких страница које посећујете, ограничене информације о систему и одређени садржај страница да би се откриле нове претње и заштитили сви широм веба.</translation>
 <translation id="8899851313684471736">Отвори линк у новом &amp;прозору</translation>
 <translation id="8900413463156971200">Омогући мобилну мрежу</translation>

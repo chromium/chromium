@@ -312,6 +312,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="265156376773362237">Standardforudindlæsning</translation>
 <translation id="2656405586795711023">Webapps</translation>
 <translation id="2669454659051515572">Alle, der bruger denne enhed, kan se downloadede filer</translation>
+<translation id="2673169232805572412">Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis webadresser, bl.a. uddrag af sideindhold, til Google</translation>
 <translation id="2702516483241149200">Nyhed: Del et link, der ruller til denne tekst</translation>
 <translation id="2708051474374549906">Proaktiv beskyttelse i realtid mod skadelige websites, downloads og udvidelser i realtid, der er baseret på dine browserdata, som sendes til Google</translation>
 <translation id="2708226184420201102">Åbn i <ph name="PRODUCT_NAME" />-browseren</translation>

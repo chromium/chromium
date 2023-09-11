@@ -1417,6 +1417,7 @@
 <translation id="2102495993840063010">Android ઍપ્લિકેશનો</translation>
 <translation id="2104166991923847969">હૉટસ્પૉટ ઑટોમૅટિક રીતે બંધ કરો</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> છુપાવેલા છે</translation>
+<translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> પહેલાં ચેક કર્યા</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ફોન નંબર}one{# ફોન નંબર}other{# ફોન નંબર}}</translation>
 <translation id="2110941575868943054">બ્લૂટૂથ ડિવાઇસ શોધવા માટે મંજૂરી છે</translation>
 <translation id="211144231511833662">ડિવાઇસના પ્રકારો સાફ કરો</translation>
@@ -2456,6 +2457,7 @@
 <translation id="2907619724991574506">સ્ટાર્ટઅપ URL</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' થી કનેક્ટ કરવામાં નિષ્ફળ થયું: <ph name="DETAILS" />
     સર્વર સંદેશ: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word, Excel અને PowerPointની ફાઇલો ખોલો</translation>
 <translation id="2908162660801918428">ડિરેક્ટરી દ્વારા મીડિયા ગૅલરી ઉમેરો</translation>
 <translation id="2908358077082926882">સોંપણી કાઢી નાખવા માટે, ફરી “<ph name="CURRENTKEY" />” દબાવો અને <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Googleની સેવાઓ સાથે કનેક્ટ કરી શકાયું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
@@ -6097,6 +6099,7 @@
 <translation id="5920543303088087579">તમારા વ્યવસ્થાપક દ્વારા આ નેટવર્કથી કનેક્ટ કરવાનું અક્ષમ કરેલ છે</translation>
 <translation id="5921257443092182237">Googleની સ્થાન સેવા, આ ડિવાઇસના સ્થાનનું અનુમાન લગાવવામાં સહાય માટે વાઇ-ફાઇ, મોબાઇલ નેટવર્ક અને સેન્સર જેવા સૉર્સનો ઉપયોગ કરે છે.</translation>
 <translation id="5924047253200400718">સહાય મેળવો<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Microsoft ફાઇલોને Google Driveમાં કૉપિ કરતા કે ખસેડતા પહેલાં પૂછો</translation>
 <translation id="5924527146239595929">નવો ફોટો લો અથવા અસ્તિત્વમાં છે તે ફોટો અથવા આઇકન પસંદ કરો.
     <ph name="LINE_BREAK" />
     આ ચિત્ર Chromebookની સાઇન ઇન સ્ક્રીન અને લૉક સ્ક્રીન પર દેખાશે.</translation>
@@ -6516,6 +6519,7 @@ USB ડિવાઇસ</translation>
 <translation id="6263284346895336537">મહત્વપૂર્ણ નથી</translation>
 <translation id="6264365405983206840">&amp;બધા પસંદ કરો</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
+<translation id="6265159465845424232">Microsoft ફાઇલોને Microsoft OneDriveમાં કૉપિ કરતા કે ખસેડતા પહેલાં પૂછો</translation>
 <translation id="6265687851677020761">પોર્ટ કાઢી નાખો</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />થી કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> પર પોતાને પ્રમાણિત કરવા માટે એક પ્રમાણપત્ર પસંદ કરો</translation>
@@ -7277,6 +7281,7 @@ USB ડિવાઇસ</translation>
 <translation id="6897363604023044284">સાફ કરવા માટેની સાઇટ પસંદ કરો</translation>
 <translation id="6897688156970667447">ઓછા પ્રકાશમાં સહાયરૂપ છે અને બૅટરીની બચત કરે છે</translation>
 <translation id="6897972855231767338">કોઈ અતિથિ તરીકે બ્રાઉઝ કરવા વિશે વધુ જાણો</translation>
+<translation id="6898438890765871056">OneDrive ફોલ્ડર ખોલો</translation>
 <translation id="6898440773573063262">આ ઉપકરણ પર સ્વતઃ-લોંચ થવા માટે કિઓસ્ક ઍપ્લિકેશનો હવે ગોઠવવામાં આવી શકે છે.</translation>
 <translation id="6899427698619335650">અનુકૂળ ડાયાક્રિટિક અસાઇન્મેન્ટને મંજૂરી આપો. ઉદાહરણ તરીકે, “ánh”નું આઉટપુટ મેળવવા માટે, તમે “anh1” કે “a1nh” ટાઇપ કરી શકો છો.</translation>
 <translation id="6900284862687837908">બૅકગ્રાઉન્ડ ઍપ: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8031,6 +8036,7 @@ USB ડિવાઇસ</translation>
 <translation id="7517959947270534934">તમારા કુટુંબના સભ્ય અત્યારે પાસવર્ડ મેળવી શકશે નહીં. તેમને Chrome અપડેટ કરવા તેમજ તેમના પાસવર્ડ સિંક કરવા માટે કહો.</translation>
 <translation id="7520766081042531487">છૂપું પોર્ટલ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">શૉર્ટકટ બતાવો</translation>
+<translation id="7521430434164837205">Microsoft 365 ફાઇલો</translation>
 <translation id="7522255036471229694">"Ok Google" કહો</translation>
 <translation id="7523117833414447032">કૅપિટલ વાંચતી વખતે</translation>
 <translation id="7523585675576642403">પ્રોફાઇલનું નામ બદલો</translation>
@@ -9754,6 +9760,7 @@ USB ડિવાઇસ</translation>
 <translation id="8896830132794747524">તમારા માઉસને ઝડપથી ખસેડવાથી કર્સર આગળ ખસેડાશે</translation>
 <translation id="8898140163781851592">પ્રાથમિક માઉસ બટન</translation>
 <translation id="8898786835233784856">આગલું ટૅબ પસંદ કરો</translation>
+<translation id="8898790559170352647">તમારું Microsoft એકાઉન્ટ ઉમેરો</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
 <translation id="8899851313684471736">નવી &amp;વિંડોમાં લિંક ખોલો</translation>
 <translation id="8900413463156971200">સેલ્યુલર નેટવર્ક ચાલુ કરો</translation>

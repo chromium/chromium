@@ -20,6 +20,7 @@
 <translation id="1838412507805038478">Chromium hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
 <translation id="1843424232666537147">Chromium bietet Funktionen, mit denen du deine Internetdaten und die Ladezeit von Webseiten verwalten kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps in Chromium</translation>
+<translation id="186734497270163706">Tippe auf „Chromium“ und dann auf „Standard-Browser-App“.</translation>
 <translation id="1867772173333403444">4. Wähle Chromium aus</translation>
 <translation id="2006345422933397527">Chromium konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
 <translation id="2052320862053429062">Chromium prüft in regelmäßigen Abständen, ob deine Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
@@ -110,6 +111,7 @@ Wichtige Hinweise:
 <translation id="5945387852661427312">Du meldest dich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chromium-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chromium abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="5951593919357934226">Chromium optimal nutzen.</translation>
 <translation id="5983312940147103417">Chromium verbessern</translation>
+<translation id="5985102273857091344">Wähle „Chromium“ aus.</translation>
 <translation id="6062449165341879460">Deine Organisation <ph name="DOMAIN" /> hat Zugriff auf deine Daten, Lesezeichen, Passwörter und deinen Verlauf in Chromium sowie auf andere Einstellungen, die du in diesem Konto speicherst. Wenn du dich abmeldest, werden deine Daten von diesem Gerät gelöscht.  Die Daten bleiben jedoch in deinem verwalteten Google-Konto gespeichert und können von deiner Organisation abgerufen werden. Deine Organisation kann auch spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chromium verändern können.</translation>
 <translation id="61109258320235597">Gib deine Passphrase ein, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="6119647025869519954">So legst du Chromium als Standardbrowser fest:
@@ -162,6 +164,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="8013573822802650211">Melde dich auf allen deinen Geräten an, um deine Tabs überall dort aufzurufen, wo du Chromium verwendest</translation>
 <translation id="8071041515667087705">Gehe zu den Chromium-Einstellungen.</translation>
 <translation id="8073677936375100957">Deine Chromium-Daten von diesem Gerät löschen?</translation>
+<translation id="8115308261377517697">Chromium als Standardbrowser festlegen</translation>
 <translation id="8235427517854598594">Chromium als Standardbrowser festlegen?</translation>
 <translation id="8240981428553046115">Chromium konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
 <translation id="8409374867500149834">Du nutzt den umfangreichen Schutz von Chromium vor schädlichen Websites</translation>

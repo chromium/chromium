@@ -188,7 +188,7 @@
 <translation id="1986685561493779662">この名前はすでに存在しています</translation>
 <translation id="1995884366040846621">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />をご確認ください。</translation>
 <translation id="200114059308480249">Google 検索に周辺のテキストを含めますか？</translation>
-<translation id="2009341475524975924">広告効果を測定するため、広告が表示された日時など、限られた種類のデータがウェブサイト間で共有される場合があります。</translation>
+<translation id="2009341475524975924">広告効果を測定するため、広告が表示された日時など、限られた種類のデータが関係する事業者間で共有される場合があります。</translation>
 <translation id="201060170519281460">プロフィールのロックを使用すると、同期済みのパスワードやお支払い情報などの情報を車内で安全に保護できます。</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 件のファイル}other{# 件のファイル}}</translation>
 <translation id="2021896219286479412">全画面表示時のサイトの操作項目</translation>
@@ -687,7 +687,7 @@
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> を起動</translation>
 <translation id="4619564267100705184">本人確認</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
-<translation id="4637420359569396807">広告測定では、広告効果を測定するため、広告が表示された日時など、限られた種類のデータがウェブサイトやアプリ間で共有される場合があります。</translation>
+<translation id="4637420359569396807">広告測定では、効果を測定するため、広告が表示された日時など限られた種類のデータが関係する事業者間で共有される場合があります。</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{不正使用されたパスワード: 1 件}other{不正使用されたパスワード: # 件}}</translation>
 <translation id="4645146721047390964">シークレット モードのとき、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどを行えなくなります。一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="4650364565596261010">システムのデフォルト</translation>

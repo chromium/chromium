@@ -1420,6 +1420,7 @@
 <translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2104166991923847969">自動關閉無線基地台</translation>
 <translation id="2105809836724866556">已隱藏「<ph name="MODULE_TITLE" />」</translation>
+<translation id="2108204112555497972">檢查時間：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
 <translation id="2110941575868943054">可以尋找藍牙裝置</translation>
 <translation id="211144231511833662">取消勾選類型</translation>
@@ -2458,6 +2459,7 @@
 <translation id="2907619724991574506">起始網址</translation>
 <translation id="2907798539022650680">無法連上「<ph name="NAME" />」：<ph name="DETAILS" />
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">開啟 Word、Excel 和 PowerPoint 檔案</translation>
 <translation id="2908162660801918428">依目錄新增媒體庫</translation>
 <translation id="2908358077082926882">再次按下「<ph name="CURRENTKEY" />」鍵即可移除指派設定並<ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">無法連上 Google 服務。請檢查網路連線，然後再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -6095,6 +6097,7 @@
 <translation id="5920543303088087579">你的管理員禁止使用者連線到這個網路</translation>
 <translation id="5921257443092182237">Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，推測出這部裝置的所在位置。</translation>
 <translation id="5924047253200400718">查看說明。<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">先詢問我，再將 Microsoft 檔案複製或移動到 Google 雲端硬碟</translation>
 <translation id="5924527146239595929">你可以拍一張新的相片，也可以選擇現有的相片或圖示。
     <ph name="LINE_BREAK" />
     這張圖片會顯示在 Chromebook 的登入畫面和鎖定畫面中。</translation>
@@ -6511,6 +6514,7 @@
 <translation id="6263284346895336537">非重要</translation>
 <translation id="6264365405983206840">選取全部(&amp;A)</translation>
 <translation id="6264376385120300461">仍要下載</translation>
+<translation id="6265159465845424232">先詢問我，再將 Microsoft 檔案複製或移動到 Microsoft OneDrive</translation>
 <translation id="6265687851677020761">移除連接埠</translation>
 <translation id="6266532094411434237">正在連線到 <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">請選取你在 <ph name="HOST_NAME" /> 的驗證憑證</translation>
@@ -7270,6 +7274,7 @@
 <translation id="6897363604023044284">選擇要清除資料的網站</translation>
 <translation id="6897688156970667447">適合在低光源環境中使用，且可以省電</translation>
 <translation id="6897972855231767338">進一步瞭解如何以訪客模式瀏覽</translation>
+<translation id="6898438890765871056">開啟 OneDrive 資料夾</translation>
 <translation id="6898440773573063262">Kiosk 應用程式現可設為自動在這個裝置上啟動。</translation>
 <translation id="6899427698619335650">允許彈性指定變音符號。例如，無論輸入「anh1」或「a1nh」，都能打出「ánh」這個字。</translation>
 <translation id="6900284862687837908">背景應用程式：<ph name="BACKGROUND_APP_URL" /></translation>
@@ -8024,6 +8029,7 @@
 <translation id="7517959947270534934">你的家庭成員目前無法接收密碼。請要求他們更新 Chrome 並同步處理密碼。</translation>
 <translation id="7520766081042531487">無痕模式入口網站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">顯示捷徑</translation>
+<translation id="7521430434164837205">Microsoft 365 檔案</translation>
 <translation id="7522255036471229694">說出「Ok Google」</translation>
 <translation id="7523117833414447032">朗讀大寫字母時</translation>
 <translation id="7523585675576642403">重新命名設定檔</translation>
@@ -9752,6 +9758,7 @@
 <translation id="8896830132794747524">滑鼠移動得越快，游標就移動得越遠</translation>
 <translation id="8898140163781851592">滑鼠主要按鈕</translation>
 <translation id="8898786835233784856">選取下一個分頁</translation>
+<translation id="8898790559170352647">新增 Microsoft 帳戶</translation>
 <translation id="8898822736010347272">將部分已造訪網頁的網址、特定的系統資訊和部分網頁內容傳送至 Google，以協助發現新威脅並保障所有網路使用者的安全。</translation>
 <translation id="8899851313684471736">在新視窗中開啟連結(&amp;W)</translation>
 <translation id="8900413463156971200">啟用行動數據</translation>

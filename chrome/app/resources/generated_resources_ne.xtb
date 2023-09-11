@@ -1417,6 +1417,7 @@
 <translation id="2102495993840063010">Android एपहरू</translation>
 <translation id="2104166991923847969">हटस्पट स्वतः अफ गरियोस्</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> वटा कन्सोल म्यासेज लुकाइएका छन्</translation>
+<translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> अघि जाँच गरिएको</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फोन नम्बर}other{# वटा फोन नम्बर}}</translation>
 <translation id="2110941575868943054">ब्लुटुथ डिभाइसहरू खोज्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="211144231511833662">प्रकारहरू हटाउनुहोस्</translation>
@@ -2456,6 +2457,7 @@
 <translation id="2907798539022650680">'<ph name="NAME" />'मा जडान गर्न सकिएन
         <ph name="DETAILS" />
     सर्भर सन्देश: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word, Excel, and PowerPoint फाइलहरू खोल्नुहोस्</translation>
 <translation id="2908162660801918428">डाइरेक्टरी अनुसार मिडिया ग्यालरी थप्नुहोस</translation>
 <translation id="2908358077082926882">तोकिएको की हटाएर <ph name="RESPONSE" /> "<ph name="CURRENTKEY" />" की फेरि थिच्नुहोस्</translation>
 <translation id="2909506265808101667">Google का सेवाहरूमा कनेक्ट गर्न सकिएन। इन्टरनेट जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
@@ -6093,6 +6095,7 @@
 <translation id="5920543303088087579">तपाईंका प्रशासकले यस नेवर्टकमा जडान गर्ने सुविधालाई असक्षम पार्नुभएको छ</translation>
 <translation id="5921257443092182237">Google को लोकेसन सर्भिसले यो डिभाइसको अनुमानित स्थान पत्ता लगाउन Wi-Fi, मोबाइल नेटवर्क र सेन्सरहरू जस्ता स्रोतहरूको प्रयोग गर्छ।</translation>
 <translation id="5924047253200400718">मद्दत प्राप्त गर्नुहोस्<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Microsoft फाइलहरू Google Drive मा कपी गर्नुअघि वा त्यहाँबाट सारेर अन्यत्र लैजानुअघि सोधियोस्</translation>
 <translation id="5924527146239595929">कुनै नयाँ तस्बिर खिच्नुहोस्‌ वा विद्यमान तस्बिर वा आइकन छनौट गर्नुहोस्।
     <ph name="LINE_BREAK" />
 
@@ -6512,6 +6515,7 @@
 <translation id="6263284346895336537">संवेदनशील छैन</translation>
 <translation id="6264365405983206840">&amp;सबै चयन गर्नुहोस्</translation>
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
+<translation id="6265159465845424232">Microsoft फाइलहरू Microsoft OneDrive मा कपी गर्नुअघि वा त्यहाँबाट सारेर अन्यत्र लैजानुअघि सोधियोस्</translation>
 <translation id="6265687851677020761">पोर्ट हटाउनुहोस्</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="6267166720438879315">तपाइँ आफैलाई <ph name="HOST_NAME" /> मा प्रमाणीकरण गर्नको लागि एक प्रमाणपत्र चयन गर्नुहोस्</translation>
@@ -7271,6 +7275,7 @@
 <translation id="6897363604023044284">हटाउनु पर्ने साइटहरू छनौट गर्नुहोस्</translation>
 <translation id="6897688156970667447">उज्यालो कम भएका बेलामा उपयोगी हुन्छ र यसले ब्याट्री पनि बचत गर्छ</translation>
 <translation id="6897972855231767338">अतिथिका रूपमा ब्राउज गर्ने तरिकाका बारेमा थप जान्नुहोस्</translation>
+<translation id="6898438890765871056">OneDrive फोल्डर खोल्नुहोस्</translation>
 <translation id="6898440773573063262">किअस्क एप्लिकेसनहरूलाई यस यन्त्रमा स्वत: सुरुवातका लागि अब कन्फिगर गर्न सकिन्छ।</translation>
 <translation id="6899427698619335650">फ्लेक्जिबल डायक्रिटिक असाइनमेन्ट अन गर्नुहोस्। जस्तै, तपाईं “anh1” वा “a1nh” टाइप गरेर “ánh” प्राप्त गर्न सक्नुहुन्छ।</translation>
 <translation id="6900284862687837908">पृष्ठभूमिका एप: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8024,6 +8029,7 @@
 <translation id="7517959947270534934">तपाईंको परिवारको सदस्य अहिले नै पासवर्डहरू प्राप्त गर्न सक्नुहुन्न। उहाँलाई Chrome अपडेट गर्न र आफ्ना पासवर्डहरू सिंक गर्न लगाउनुहोस्।</translation>
 <translation id="7520766081042531487">इन्कोग्निटो पोर्टल: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">सर्टकटहरू देखाइयोस्</translation>
+<translation id="7521430434164837205">Microsoft 365 फाइलहरू</translation>
 <translation id="7522255036471229694">"Ok Google" भन्नुहोस्</translation>
 <translation id="7523117833414447032">ठुला अक्षरहरू पढ्दा</translation>
 <translation id="7523585675576642403">प्रोफाइलको नाम बदल्नुहोस्</translation>
@@ -9751,6 +9757,7 @@
 <translation id="8896830132794747524">तपाईंले माउस अझ छिटो चलाउनुभयो भने कर्सर अझ टाढासम्म जान सक्छ</translation>
 <translation id="8898140163781851592">माउसको मुख्य बटन</translation>
 <translation id="8898786835233784856">अर्को ट्याब चयन गर्नुहोस्</translation>
+<translation id="8898790559170352647">आफ्नो Microsoft खाता हाल्नुहोस्</translation>
 <translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>
 <translation id="8899851313684471736">नयाँ र &amp;विंडोमा लिङ्क खोल्नुहोस्</translation>
 <translation id="8900413463156971200">सेलुलर नेटवर्क सक्षम पार्नुहोस्</translation>

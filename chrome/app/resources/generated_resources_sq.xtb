@@ -1417,6 +1417,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2102495993840063010">Aplikacionet e Android</translation>
 <translation id="2104166991923847969">Çaktivizo automatikisht zonën e qasjes për internet</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> është e fshehur</translation>
+<translation id="2108204112555497972">Kontrolluar <ph name="NUM_DAYS_HOURS_MINUTES" /> më parë</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numër telefoni}other{# numra telefoni}}</translation>
 <translation id="2110941575868943054">Lejohen të kërkojnë për pajisjet me Bluetooth</translation>
 <translation id="211144231511833662">Pastro llojet</translation>
@@ -2456,6 +2457,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2907619724991574506">URL-të e fillimit</translation>
 <translation id="2907798539022650680">Dështoi lidhja me "<ph name="NAME" />": <ph name="DETAILS" />
     Mesazhi i serverit: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Hap skedarë Word, Excel dhe PowerPoint</translation>
 <translation id="2908162660801918428">Shto galerinë e medias sipas direktorisë</translation>
 <translation id="2908358077082926882">Shtyp përsëri "<ph name="CURRENTKEY" />" për të hequr caktimin dhe <ph name="RESPONSE" />.</translation>
 <translation id="2909506265808101667">Nuk mund të lidhej me shërbimet e Google. Kontrollo lidhjen e rrjetit dhe provo përsëri. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
@@ -6096,6 +6098,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5920543303088087579">Lidhja me këtë rrjet është çaktivizuar nga administratori yt</translation>
 <translation id="5921257443092182237">Shërbimi i vendndodhjes i Google përdor burime të tilla si Wi-Fi, rrjetet celulare dhe sensorët për të ndihmuar në përllogaritjen e vendndodhjes së kësaj pajisjeje.</translation>
 <translation id="5924047253200400718">Kërko ndihmë<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Pyet përpara se të kopjosh ose zhvendosësh skedarët e Microsoft te "Disku i Google"</translation>
 <translation id="5924527146239595929">Shkrep një fotografi të re ose zgjidh një fotografi ose ikonë ekzistuese.
     <ph name="LINE_BREAK" />
     Kjo fotografi do të shfaqet në ekranin e identifikimit dhe në ekranin e kyçjes të Chromebook.</translation>
@@ -6514,6 +6517,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6263284346895336537">Jo vendimtare</translation>
 <translation id="6264365405983206840">Zgjidh të &amp;gjitha</translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
+<translation id="6265159465845424232">Pyet përpara se të kopjosh ose zhvendosësh skedarët e Microsoft te OneDrive</translation>
 <translation id="6265687851677020761">Hiq portën</translation>
 <translation id="6266532094411434237">Po lidhet me <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Zgjidh një certifikatë për të verifikuar veten te <ph name="HOST_NAME" /></translation>
@@ -7273,6 +7277,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6897363604023044284">Zgjidh sajtet për t'i pastruar</translation>
 <translation id="6897688156970667447">E dobishme në kushtet e ndriçimit të dobët dhe kursen baterinë</translation>
 <translation id="6897972855231767338">Mëso më shumë rreth shfletimit si vizitor</translation>
+<translation id="6898438890765871056">Hap dosjen OneDrive</translation>
 <translation id="6898440773573063262">Aplikacionet "kioskë" mund të konfigurohen tani për t'u hapur automatikisht në këtë pajisje.</translation>
 <translation id="6899427698619335650">Lejo caktimin elastik të shenjës diakritike. Për shembull, mund të shkruash “anh1” ose “a1nh” për të marrë “ánh”.</translation>
 <translation id="6900284862687837908">Aplikacioni i sfondit: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8026,6 +8031,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7517959947270534934">Anëtari i familjes nuk mund t'i marrë fjalëkalimet në këtë moment. Kërkoji që të përditësojë Chrome dhe sinkronizo fjalëkalimet e atij anëtari.</translation>
 <translation id="7520766081042531487">Portal i fshehtë: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Shfaq shkurtoret</translation>
+<translation id="7521430434164837205">Skedarët Microsoft 365</translation>
 <translation id="7522255036471229694">Thuaj "Ok Google"</translation>
 <translation id="7523117833414447032">Kur lexon kapitale</translation>
 <translation id="7523585675576642403">Riemërtoje profilin</translation>
@@ -9752,6 +9758,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8896830132794747524">Lëvizjet më të shpejta me miun do ta zhvendosin më larg kursorin</translation>
 <translation id="8898140163781851592">Butoni kryesor i miut</translation>
 <translation id="8898786835233784856">Zgjidh skedën tjetër</translation>
+<translation id="8898790559170352647">Shto llogarinë tënde të Microsoft</translation>
 <translation id="8898822736010347272">Dërgon te Google URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit, si dhe disa përmbajtje faqeje për të ndihmuar në zbulimin e kërcënimeve të reja dhe për t'i mbrojtur të gjithë në ueb.</translation>
 <translation id="8899851313684471736">Hape lidhjen në një &amp;dritare të re</translation>
 <translation id="8900413463156971200">Aktivizo "Rrjetin celular"</translation>

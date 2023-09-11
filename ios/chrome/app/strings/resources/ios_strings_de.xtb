@@ -89,6 +89,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1407135791313364759">Alle öffnen</translation>
 <translation id="1408847409015257906">Tippe auf „Datenschutz und Sicherheit“.</translation>
 <translation id="1430915738399379752">Drucken</translation>
+<translation id="1443958768615272145">Weitersurfen</translation>
 <translation id="1449835205994625556">Passwort ausblenden</translation>
 <translation id="1450170672351507823">Standardschutz ist aktiviert. Der erweiterte Schutz bietet noch mehr Sicherheit.</translation>
 <translation id="149095475893949513">Diese Website versucht, ein Konfigurationsprofil herunterzuladen.</translation>
@@ -166,6 +167,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1930989359703290198">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Tippe zum Kopieren hier doppelt.</translation>
 <translation id="1943478190258551035">Menü → Einstellungen</translation>
+<translation id="194449685234099560">Hier findest du alle deine geöffneten Tabs.</translation>
 <translation id="1952172573699511566">Sofern dies möglich ist, wird Text auf Websites in deiner bevorzugten Sprache angezeigt.</translation>
 <translation id="1959441496380398824">Halte ein Datum gedrückt.</translation>
 <translation id="1959679933317802873">Inhalte werden abgerufen</translation>
@@ -188,6 +190,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="20485545164632846">neues Element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> Konten mit demselben Passwort</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} gespeicherte Zahlungsmethode oben auf der Tastatur verfügbar.}other{{count} gespeicherte Zahlungsmethoden oben auf der Tastatur verfügbar.}}</translation>
+<translation id="2055515971416882518">Öffne die Einstellungen.</translation>
 <translation id="2073572773299281212">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="2074131957428911366">Du kannst in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was du synchronisieren möchtest.</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
@@ -246,6 +249,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2459155039684421202">Gib in die Adressleiste eine Aufgabe wie „Meinen Verlauf löschen“ oder „Passwörter bearbeiten“ ein.</translation>
 <translation id="2461070143328828326">Passworteinstellungen</translation>
+<translation id="2462736546165239215">Hier findest du deinen gesamten Browserverlauf.</translation>
 <translation id="2469960372084740698">Safe Browsing deaktivieren?</translation>
 <translation id="2473876017985765807">Du hast bereits ein Passwort für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2476359652512522418">Nicht ausgewählt</translation>
@@ -345,6 +349,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2952581218264071393">1. Öffne die Chrome-Einstellungen</translation>
 <translation id="2956733177489514605">Melde dich mit deinem Google-Konto an, um deine Passwörter und mehr zu synchronisieren.</translation>
+<translation id="2958271635022991876">Hier kannst du einen neuen Tab öffnen.</translation>
 <translation id="2958718410589002129">Passwörter</translation>
 <translation id="2961210776189273067">Anrede</translation>
 <translation id="2964349545761222050">Drittanbieter-Cookies blockieren</translation>
@@ -1380,6 +1385,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="8855242995793521265">Dein Browser oder Gerät wird nicht merklich verlangsamt.</translation>
 <translation id="8855781063981781621">Um den Blockierungsmodus in Chrome zu deaktivieren, musst du ihn auf deinem iPad ausschalten.</translation>
 <translation id="8863431381414769983">Wegbeschreibungen und lokale Informationen bei Google Maps abrufen</translation>
+<translation id="8865415417596392024">Chrome-Daten in meinem Konto</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} Tab}other{{count} Tabs}}</translation>
 <translation id="8870413625673593573">Kürzlich geschlossen</translation>
 <translation id="8876882697946675716">Alle Geräte immer synchronisiert</translation>
@@ -1429,6 +1435,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="9097506547406246598">Nicht mehr folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> Passwörter löschen?</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
+<translation id="9106655997975673326">Von „<ph name="SOURCE_DEVICE" />“</translation>
 <translation id="9107664647686727385">Auf gehackte Passwörter prüfen</translation>
 <translation id="9120217828624527905">Zur Übersetzung der ganzen Seite wechseln</translation>
 <translation id="9124387962554796433">Mithilfe deines Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren.</translation>

@@ -1413,6 +1413,7 @@
 <translation id="2102495993840063010">Android 应用</translation>
 <translation id="2104166991923847969">自动关闭热点</translation>
 <translation id="2105809836724866556">已隐藏<ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">上次检查时间：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{电话号码}other{# 个电话号码}}</translation>
 <translation id="2110941575868943054">可以寻找蓝牙设备</translation>
 <translation id="211144231511833662">清除类型</translation>
@@ -2450,6 +2451,7 @@
 <translation id="2907619724991574506">启动网址</translation>
 <translation id="2907798539022650680">无法连接到“<ph name="NAME" />”：<ph name="DETAILS" />
 服务器消息：<ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">打开 Word、Excel 和 PowerPoint 文件</translation>
 <translation id="2908162660801918428">按目录添加媒体库</translation>
 <translation id="2908358077082926882">再按一次“<ph name="CURRENTKEY" />”键即可撤消分配并<ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">无法连接到 Google 服务。请检查您的网络连接状况，然后重试。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -6085,6 +6087,7 @@
 <translation id="5920543303088087579">您的管理员已禁止连接到此网络</translation>
 <translation id="5921257443092182237">Google 的位置信息服务会使用 WLAN、移动网络和传感器等来源协助估测此设备所在的位置。</translation>
 <translation id="5924047253200400718">获取帮助<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">将 Microsoft 文件复制到或移到 Google 云端硬盘前询问我</translation>
 <translation id="5924527146239595929">拍摄新照片，或者选择现有照片或图标。
     <ph name="LINE_BREAK" />
     此图片将会显示在 Chromebook 的登录屏幕和锁定屏幕上。</translation>
@@ -6502,6 +6505,7 @@
 <translation id="6263284346895336537">非关键</translation>
 <translation id="6264365405983206840">全选(&amp;A)</translation>
 <translation id="6264376385120300461">仍然下载</translation>
+<translation id="6265159465845424232">将 Microsoft 文件复制到或移到 Microsoft OneDrive 前询问我</translation>
 <translation id="6265687851677020761">移除此端口</translation>
 <translation id="6266532094411434237">正在连接到<ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">请选择证书，以在 <ph name="HOST_NAME" /> 上对您本人进行身份验证</translation>
@@ -7261,6 +7265,7 @@
 <translation id="6897363604023044284">选择需要清除数据的网站</translation>
 <translation id="6897688156970667447">适应弱光条件并节省电量</translation>
 <translation id="6897972855231767338">详细了解如何以访客身份浏览</translation>
+<translation id="6898438890765871056">打开 OneDrive 文件夹</translation>
 <translation id="6898440773573063262">自助服务终端应用现在可配置为在此设备上自动启动。</translation>
 <translation id="6899427698619335650">允许灵活的变音符分配。例如，您可输入“anh1”或“a1nh”来获取“ánh”。</translation>
 <translation id="6900284862687837908">后台应用：<ph name="BACKGROUND_APP_URL" /></translation>
@@ -8015,6 +8020,7 @@
 <translation id="7517959947270534934">您的家庭成员目前无法接收密码。请让他们更新 Chrome 并同步其密码。</translation>
 <translation id="7520766081042531487">无痕式门户网站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">显示快捷方式</translation>
+<translation id="7521430434164837205">Microsoft 365 文件</translation>
 <translation id="7522255036471229694">说“Ok Google”</translation>
 <translation id="7523117833414447032">读出大写字母时</translation>
 <translation id="7523585675576642403">重命名配置文件</translation>
@@ -9742,6 +9748,7 @@
 <translation id="8896830132794747524">利用鼠标加速移动会使光标的移动幅度增大</translation>
 <translation id="8898140163781851592">鼠标主按钮</translation>
 <translation id="8898786835233784856">选择下一个标签</translation>
+<translation id="8898790559170352647">添加您的 Microsoft 账号</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8899851313684471736">在新窗口中打开链接(&amp;W)</translation>
 <translation id="8900413463156971200">启用移动网络</translation>

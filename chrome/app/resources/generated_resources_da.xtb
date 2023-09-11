@@ -1433,6 +1433,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2104166991923847969">Deaktiver hotspot automatisk</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> er skjult</translation>
+<translation id="2108204112555497972">Tjekket for <ph name="NUM_DAYS_HOURS_MINUTES" /> siden</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}one{# telefonnummer}other{# telefonnumre}}</translation>
 <translation id="2110941575868943054">Har tilladelse til at søge efter Bluetooth-enheder</translation>
 <translation id="211144231511833662">Ryd typer</translation>
@@ -2474,6 +2475,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2907619724991574506">Startwebadresser</translation>
 <translation id="2907798539022650680">Der kunne ikke oprettes forbindelse til "<ph name="NAME" />": <ph name="DETAILS" />
     Servermeddelelse: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Åbn Word-, Excel- og PowerPoint-filer</translation>
 <translation id="2908162660801918428">Tilføj mediegalleri efter mappe</translation>
 <translation id="2908358077082926882">Tryk på "<ph name="CURRENTKEY" />" igen for at fjerne tildelingen og <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Der kunne ikke oprettes forbindelse til Google-tjenester. Tjek din netværksforbindelse, og prøv igen. Fejlkode: <ph name="ERROR_CODE" />.</translation>
@@ -6115,6 +6117,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5920543303088087579">Din administrator har deaktiveret tilslutning til dette netværk</translation>
 <translation id="5921257443092182237">Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere enhedens lokation.</translation>
 <translation id="5924047253200400718">Få hjælp<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Spørg, før der kopieres eller flyttes Microsoft-filer til Google Drev</translation>
 <translation id="5924527146239595929">Tag et nyt billede, eller vælg et eksisterende billede eller ikon.
     <ph name="LINE_BREAK" />
     Dette billede vises på loginskærmen og låseskærmen på Chromebook-enheden.</translation>
@@ -6533,6 +6536,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6263284346895336537">Ikke kritisk</translation>
 <translation id="6264365405983206840">Vælg &amp;alle</translation>
 <translation id="6264376385120300461">Download alligevel</translation>
+<translation id="6265159465845424232">Spørg, før der kopieres eller flyttes Microsoft-filer til Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Fjern port</translation>
 <translation id="6266532094411434237">Der oprettes forbindelse til <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Vælg et certifikat til at bekræfte dig selv over for <ph name="HOST_NAME" /></translation>
@@ -7294,6 +7298,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6897363604023044284">Vælg de websites, der skal ryddes</translation>
 <translation id="6897688156970667447">Nyttigt i svag belysning og sparer batteri</translation>
 <translation id="6897972855231767338">Få flere oplysninger om, hvordan du browser som gæst</translation>
+<translation id="6898438890765871056">Åbn OneDrive-mappe</translation>
 <translation id="6898440773573063262">Terminalapplikationer kan nu konfigureres til at starte automatisk på enheden.</translation>
 <translation id="6899427698619335650">Tillad fleksible diakritiske tegn. Du kan f.eks. skrive "anh1" eller "a1nh" for at få "ánh".</translation>
 <translation id="6900284862687837908">Baggrundsapp: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8048,6 +8053,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7517959947270534934">Dit familiemedlem kan ikke modtage adgangskoder lige nu. Bed medlemmet om at opdatere Chrome og synkronisere sine adgangskoder.</translation>
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Se genveje</translation>
+<translation id="7521430434164837205">Microsoft 365-filer</translation>
 <translation id="7522255036471229694">Sig "Hey Google".</translation>
 <translation id="7523117833414447032">Ved oplæsning af store bogstaver</translation>
 <translation id="7523585675576642403">Omdøb profil</translation>
@@ -9777,6 +9783,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8896830132794747524">Hurtigere bevægelser med musen flytter markøren længere</translation>
 <translation id="8898140163781851592">Primær museknap</translation>
 <translation id="8898786835233784856">Vælg næste fane</translation>
+<translation id="8898790559170352647">Tilføj din Microsoft-konto</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="8899851313684471736">Åbn link i nyt &amp;vindue</translation>
 <translation id="8900413463156971200">Aktivér mobilnetværk</translation>

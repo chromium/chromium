@@ -1422,6 +1422,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2102495993840063010">Android aplikacije</translation>
 <translation id="2104166991923847969">Automatski isključi žarišnu točku</translation>
 <translation id="2105809836724866556">Skriveno: <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">Provjera je izvršena prije <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonski broj}one{# telefonski broj}few{# telefonska broja}other{# telefonskih brojeva}}</translation>
 <translation id="2110941575868943054">Dopušteno je traženje Bluetooth uređaja</translation>
 <translation id="211144231511833662">Izbriši vrste</translation>
@@ -2461,6 +2462,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2907619724991574506">URL-ovi za pokretanje</translation>
 <translation id="2907798539022650680">Povezivanje s mrežom "<ph name="NAME" />" nije uspjelo: <ph name="DETAILS" />
     Poruka poslužitelja: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Otvarajte Word, Excel i PowerPoint datoteke</translation>
 <translation id="2908162660801918428">Dodavanje galerije medija po direktoriju</translation>
 <translation id="2908358077082926882">Ponovno pritisnite tipku <ph name="CURRENTKEY" /> da biste uklonili dodjelu i <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Povezivanje s Googleovim uslugama nije uspjelo. Provjerite mrežnu vezu i pokušajte ponovo. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
@@ -6099,6 +6101,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5920543303088087579">Povezivanje s tom mrežom onemogućio je administrator</translation>
 <translation id="5921257443092182237">Za procjenu lokacije ovog uređaja Googleova usluga lokacije upotrebljava izvore kao što su Wi-Fi, mobilne mreže i senzori.</translation>
 <translation id="5924047253200400718">Potražite pomoć<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Pitaj prije kopiranja ili premještanja Microsoftovih datoteka na Google disk</translation>
 <translation id="5924527146239595929">Snimite novu fotografiju ili odaberite postojeću fotografiju ili ikonu.
     <ph name="LINE_BREAK" />
     Ta će se slika prikazivati na zaslonu za prijavu i zaključanom zaslonu Chromebooka.</translation>
@@ -6516,6 +6519,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6263284346895336537">Nije kritično</translation>
 <translation id="6264365405983206840">Odaberi &amp;sve</translation>
 <translation id="6264376385120300461">Svejedno preuzmi</translation>
+<translation id="6265159465845424232">Pitaj prije kopiranja ili premještanja Microsoftovih datoteka na Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Ukloni priključak</translation>
 <translation id="6266532094411434237">Povezivanje s uređajem <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Odaberite certifikat za svoju autentikaciju na <ph name="HOST_NAME" /></translation>
@@ -7279,6 +7283,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6897363604023044284">Odaberite web-lokacije za brisanje</translation>
 <translation id="6897688156970667447">Korisno pri slabom osvjetljenju i štedi bateriju</translation>
 <translation id="6897972855231767338">Saznajte više o pregledavanju kao gost</translation>
+<translation id="6898438890765871056">Otvori OneDrive mapu</translation>
 <translation id="6898440773573063262">Aplikacije kioska sada je moguće konfigurirati za automatsko pokretanje na ovom uređaju.</translation>
 <translation id="6899427698619335650">Dopustite fleksibilnu dodjelu dijakritičkih znakova. Na primjer, možete upisati "anh1" ili "a1nh" da biste dobili "ánh".</translation>
 <translation id="6900284862687837908">Aplikacija u pozadini: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8033,6 +8038,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7517959947270534934">Član obitelji trenutačno ne može primati zaporke. Zamolite člana da ažurira Chrome i sinkronizira svoje zaporke.</translation>
 <translation id="7520766081042531487">Portal u anonimnom načinu: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Prikaži prečace</translation>
+<translation id="7521430434164837205">Microsoft 365 datoteke</translation>
 <translation id="7522255036471229694">Recite "Ok Google"</translation>
 <translation id="7523117833414447032">Prilikom čitanja velikih slova</translation>
 <translation id="7523585675576642403">Preimenujte profil</translation>
@@ -9763,6 +9769,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8896830132794747524">Brzi pokreti mišem dalje će pomaknuti pokazivač</translation>
 <translation id="8898140163781851592">Primarni gumb miša</translation>
 <translation id="8898786835233784856">Odaberi sljedeću karticu</translation>
+<translation id="8898790559170352647">Dodajte svoj Microsoft račun</translation>
 <translation id="8898822736010347272">Šalje URL-ove određenih stranica koje posjećujete, ograničene podatke o sustavu i sadržaj određenih stranica Googleu kako bi se pomoglo pri otkrivanju novih prijetnji i kako bi se zaštitili svi korisnici na webu.</translation>
 <translation id="8899851313684471736">Otvori vezu u novom &amp;prozoru</translation>
 <translation id="8900413463156971200">Omogućivanje mobilne mreže</translation>

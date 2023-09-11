@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Zu 1:1-Wiedergabe gewechselt</translation>
 <translation id="2031987842108996681">Rotkanal</translation>
 <translation id="2060505056492490888">Das Punktzeichen "<ph name="DOT" />" steht in "<ph name="INVALIDDOMAIN" />" an einer falschen Stelle.</translation>
+<translation id="2068711044993563745">Der Mindestwert (<ph name="MINIMUM" />) muss kleiner als der Höchstwert (<ph name="MAXIMUM" />) sein.</translation>
 <translation id="2148716181193084225">Heute</translation>
 <translation id="2226276347425096477">Kürze diesen Text auf max. <ph name="MAX_CHARACTERS" /> Zeichen. Zurzeit verwendest du <ph name="CURRENT_LENGTH" /> Zeichen.</translation>
 <translation id="2247351761944213033">Woche <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

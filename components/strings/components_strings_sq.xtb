@@ -388,6 +388,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1733762317901693627">Edhe sajtet që janë zakonisht të sigurta, ndonjëherë kompromentohen nga sulmuesit. Vizito <ph name="BEGIN_LINK" />këtë sajt të pasigurt<ph name="END_LINK" /> vetëm nëse je i sigurt që i kupton rreziqet.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Provo të kontaktosh me administratorin e sistemit.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, skadon më <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Kompjuter</translation>
 <translation id="1741613555002899862">Duhet të jetë e specifikuar dhe një varg i vlefshëm kur DnsOverHttpsMode është <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Çarçafë dhe mbulesa krevati</translation>
@@ -682,6 +683,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2366689192918515749">Mish dhe prodhime deti</translation>
 <translation id="2367567093518048410">Niveli</translation>
 <translation id="23703388716193220">Pajisje për golf</translation>
+<translation id="2378084239755710604">Karta e ruajtur u mbyll.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalizo veglat e qasshmërisë te cilësimet e Chrome</translation>
 <translation id="2384307209577226199">Parazgjedhja e ndërmarrjes</translation>
@@ -2260,6 +2262,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5689199277474810259">Eksporto në JSON</translation>
 <translation id="5689516760719285838">Vendndodhja</translation>
 <translation id="569000877158168851">Vlera e DnsOverHttpsTemplates nuk është e përshtatshme dhe nuk do të përdoret, përveçse nëse politika DnsOverHttpsMode është caktuar te <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ose <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Karta e ruajtur u hap në lartësi të plotë.</translation>
 <translation id="5695542892312572833">Dëshiron të përdorësh Windows Hello për të verifikuar dhe përfunduar blerjen?</translation>
 <translation id="5699628521141772782">Bulmet dhe vezë</translation>
 <translation id="5701381305118179107">Qendër</translation>
@@ -3235,6 +3238,7 @@ Detaje shtesë:
 <translation id="7676643023259824263">Kërko për tekstin e kujtesës së fragmenteve, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Shiko dhe menaxho historikun e shfletimit te cilësimet e Chrome</translation>
 <translation id="7679947978757153706">Bejsbolli</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, skadon më <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Sportet fantazi</translation>
 <translation id="7682287625158474539">Transporti</translation>
 <translation id="7682451652090915298">Ragbi</translation>

@@ -1420,6 +1420,7 @@
 <translation id="2102495993840063010">Android-ის აპები</translation>
 <translation id="2104166991923847969">უსადენო ქსელის ავტოგამორთვა</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> დამალულია</translation>
+<translation id="2108204112555497972">შემოწმებიდან გავიდა <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ტელეფონის ნომერი}other{# ტელეფონის ნომერი}}</translation>
 <translation id="2110941575868943054">დაშვებული აქვს Bluetooth მოწყობილობების მოძიება</translation>
 <translation id="211144231511833662">ტიპების გასუფთავება</translation>
@@ -2458,6 +2459,7 @@
 <translation id="2907619724991574506">გაშვების URL-ები</translation>
 <translation id="2907798539022650680">„<ph name="NAME" />“-თან დაკავშირება ვერ მოხერხდა: <ph name="DETAILS" />
     სერვერის შეტყობინება: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">გახსენით Word, Excel და PowerPoint ფაილები</translation>
 <translation id="2908162660801918428">მედია გალერეის დამატება დირექტორიის მიხედვით</translation>
 <translation id="2908358077082926882">მიმაგრების გაუქმება და <ph name="RESPONSE" /> რომ შესრულდეს, ხელახლა დააჭირეთ „<ph name="CURRENTKEY" />“-ს</translation>
 <translation id="2909506265808101667">Google სერვისებთან დაკავშირება ვერ მოხერხდა. შეამოწმეთ ქსელთან კავშირი და ხელახლა ცადეთ. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
@@ -6098,6 +6100,7 @@
 <translation id="5920543303088087579">ამ ქსელთან დაკავშირება გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="5921257443092182237">ამ მოწყობილობის მიახლოებითი მდებარეობის დასადგენად Google-ის მდებარეობის სერვისები იყენებს ისეთ წყაროებს, როგორიცაა Wi‑Fi, მობილური ქსელები და სენსორები.</translation>
 <translation id="5924047253200400718">დახმარების მიღება<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">მკითხეთ Microsoft ფაილების Google Drive-ში კოპირებამდე ან გადატანამდე</translation>
 <translation id="5924527146239595929">გადაიღეთ ახალი ფოტო ან აირჩიეთ არსებული ფოტო/ხატულა.
     <ph name="LINE_BREAK" />
     ეს სურათი გამოჩნდება Chromebook-ის შესვლის და ჩაკეტილ ეკრანებზე.</translation>
@@ -6516,6 +6519,7 @@
 <translation id="6263284346895336537">არ არის კრიტიკული</translation>
 <translation id="6264365405983206840">ყ&amp;ველას არჩევა</translation>
 <translation id="6264376385120300461">მაინც ჩამოტვირთვა</translation>
+<translation id="6265159465845424232">მკითხეთ Microsoft ფაილების Microsoft OneDrive-ში კოპირებამდე ან გადატანამდე</translation>
 <translation id="6265687851677020761">პორტის ამოშლა</translation>
 <translation id="6266532094411434237">მიმდინარეობს <ph name="DEVICE" />-თან დაკავშირება</translation>
 <translation id="6267166720438879315">თქვენი ვინაობის ავთენტიფიკაციისათვის, აირჩიეთ სერთიფიკატი <ph name="HOST_NAME" /></translation>
@@ -7275,6 +7279,7 @@
 <translation id="6897363604023044284">გასასუფთავებლად აირჩიეთ საიტები</translation>
 <translation id="6897688156970667447">დაგეხმარებათ ცუდი განათების პირობებში და დაგიზოგავთ ბატარეას</translation>
 <translation id="6897972855231767338">შეიტყვეთ მეტი ვების სტუმრის სტატუსით დათვალიერების შესახებ</translation>
+<translation id="6898438890765871056">OneDrive-ის საქაღალდის გახსნა</translation>
 <translation id="6898440773573063262">ახლა შეგიძლიათ ისე დააკონფიგურიროთ კიოსკის პროგრამები, რომ ავტომატურად გაიშვას ამ მოწყობილობაში.</translation>
 <translation id="6899427698619335650">დიაკრიტიკული ნიშნების მოქნილი დასმის დაშვება. მაგალითად, შეძლებთ, აკრიფოთ „anh1“ ან „a1nh“, „ánh“ რომ მიიღოთ.</translation>
 <translation id="6900284862687837908">ფონური აპი: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8027,6 +8032,7 @@
 <translation id="7517959947270534934">თქვენს ოჯახის წევრს ამჟამად არ შეუძლია პაროლების მიღება. სთხოვეთ მას, განაახლოს Chrome და შეასრულოს თავისი პაროლების სინქრონიზაცია.</translation>
 <translation id="7520766081042531487">ინკოგნიტო პორტალი: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">მალსახმობების ჩვენება</translation>
+<translation id="7521430434164837205">Microsoft 365-ის ფაილები</translation>
 <translation id="7522255036471229694">წარმოთქვით „Ok Google“</translation>
 <translation id="7523117833414447032">მთავრული ასოების წაკითხვისას</translation>
 <translation id="7523585675576642403">პროფილის გადარქმევა</translation>
@@ -9754,6 +9760,7 @@
 <translation id="8896830132794747524">მაუსით უფრო სწრაფი მოძრაობები კურსორს უფრო შორს გადასწევს</translation>
 <translation id="8898140163781851592">მაუსის მთავარი ღილაკი</translation>
 <translation id="8898786835233784856">აირჩიეთ შემდეგი ჩანართი</translation>
+<translation id="8898790559170352647">დაამატეთ თქვენი Microsoft ანგარიში</translation>
 <translation id="8898822736010347272">Google-ს გაუგზავნის თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ებს, სისტემის შეზღუდულ ინფორმაციასა და გვერდების გარკვეულ კონტენტს ვების ყველა მომხმარებლისთვის ახალი საფრთხეების აღმოსაჩენად და დასაბლოკად.</translation>
 <translation id="8899851313684471736">ბმულის გახსნა ახალ &amp;ფანჯარაში</translation>
 <translation id="8900413463156971200">ფიჭური ქსელის ჩართვა</translation>

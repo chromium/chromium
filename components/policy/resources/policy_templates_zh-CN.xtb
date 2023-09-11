@@ -2098,6 +2098,14 @@
 <translation id="2839294585867804686">网络文件共享功能设置</translation>
 <translation id="2841911109921764691">在登录屏幕上，鼠标右键是主按键</translation>
 <translation id="284288632677954003">包含始终不应触发浏览器切换的网址的 XML 文件对应的网址。</translation>
+<translation id="28458742190197992">此政策旨在控制是否为特定受管理个人资料启用 <ph name="PRODUCT_NAME" /> 云报告功能。
+
+如果此政策未设置或已停用，系统将不会收集或上传任何数据。
+如果此政策已启用，系统便会收集数据并将其上传到 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
+
+该报告包含个人资料状态和使用情况信息，包括但不限于操作系统版本、浏览器版本、已安装的扩展程序和应用的政策。
+
+此政策只能作为云端用户政策进行设置。</translation>
 <translation id="2846689894646472396">网络事件检查时间间隔（以毫秒为单位）。</translation>
 <translation id="2847788524147474533">平台设备政策的优先级高于云端设备政策</translation>
 <translation id="2849275596224278787">在登录屏幕的系统任务栏菜单中隐藏无障碍选项</translation>
@@ -5548,6 +5556,7 @@
 
       ECH 是一种会不断演变的协议，因此 <ph name="PRODUCT_NAME" /> 的实现可能会发生变化。所以，此政策只是一项临时措施，用于控制最初的实验性实现。待该协议演变完毕后，此政策将被替换为最终控件。</translation>
 <translation id="5939656968921014919">停用已隔离应用的开发者模式</translation>
+<translation id="5939873071468124100">限制哪些账号可以使用 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 集成</translation>
 <translation id="5945312246863177268">禁止用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
 <translation id="5946082169633555022">测试版</translation>
 <translation id="5946329690214660966">设置自定义时间表来指定何时检查是否有更新</translation>
@@ -5619,6 +5628,16 @@
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="6019162469732742754">使用自动模式</translation>
 <translation id="6019606564278029236">允许远程用户在远程协助会话中操控提权后的窗口</translation>
+<translation id="602038990586229155">此政策旨在控制 <ph name="PRODUCT_NAME" /> 扩展程序安装请求，可允许用户将请求发送到 Google 管理控制台以供审批。
+
+如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策，并且不会创建或上传扩展程序安装请求。
+如果此政策未设置或已停用，系统将不会创建或上传扩展程序安装请求。
+如果此政策已启用，系统将会创建扩展程序安装请求并将其上传到 Google 管理控制台。
+
+当用户尝试安装 <ph name="EXTENSION_INSTALL_ALLOWLIST" /> 或 <ph name="EXTENSION_SETTINGS" /> 所不允许的扩展程序时，系统将会创建扩展程序安装请求。
+
+对于 <ph name="PRODUCT_NAME" />，此政策仅在已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后有效。
+对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="6022948604095165524">启动时的操作</translation>
 <translation id="602318745029752898">允许在“随选朗读”功能中使用增强型网络文字转语音的语音</translation>
 <translation id="6026722971789064331">控制 File System API 在写入方面的使用</translation>
@@ -6515,6 +6534,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已启用，系统将启用快速解答功能。
       如果此政策已停用，系统将停用快速解答功能。
       如果此政策未设置，用户可以自行决定是否启用快速解答功能。</translation>
+<translation id="6712624291905573620">此政策旨在控制 <ph name="PRODUCT_NAME" /> 云报告功能，该功能可将与浏览器操作相关的信息上传到 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
+
+如果此政策未设置或已停用，系统将不会收集或上传任何数据。
+如果此政策已启用，系统便会收集数据并将其上传到 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
+
+对于 <ph name="PRODUCT_NAME" />，此政策仅在已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后有效。
+对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="6720330829631914048">自当天开始后已流逝的小时数（24 小时制）。</translation>
 <translation id="6721252203593581486">自 M97 起，第三方情境（例如跨网站 iframe）下的 WebSQL 默认处于关闭状态，并将在 M101 中被完全移除。
           如果此政策设为 false 或未设置，第三方情境下的 WebSQL 将保持关闭状态。
@@ -8030,6 +8056,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8062375903420954294">通过设置此政策，您可以限制 WebRTC 在尝试查找最佳的可用连接时会使用的 IP 地址和接口。若要了解详情，请参阅 RFC 8828 第 5.2 条 (https://tools.ietf.org/html/rfc8828.html#section-5.2)。如果您未设置此政策，WebRTC 会默认使用所有可用接口。</translation>
 <translation id="8062485064082966327">使用匿名 Google 服务为无标签图片提供自动说明</translation>
 <translation id="8071371098891664137">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
+<translation id="8072934771584553388">当 <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> 处于启用状态时，此政策让管理员能够限制哪些账号可以登录 <ph name="MICROSOFT_ONE_DRIVE_NAME" />。
+
+如果此政策未设置或设为空值，任何账号都可用于登录。
+
+如果此政策设为一个域名或租户 ID（参阅 https://learn.microsoft.com/zh-cn/azure/active-directory/develop/v2-protocols#endpoints），只有来自该域名或租户 ID 的账号可用于登录。
+
+如果更改限制条件，则可能会导致不符合新限制条件的 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 账号的用户被强制退出该账号。</translation>
 <translation id="8076521374016204899">如果此政策已启用或未设置，使用密码验证身份的用户便可以锁定屏幕。
 
       如果此政策已停用，用户将无法锁定屏幕（只能退出用户会话）。</translation>
@@ -8646,6 +8679,12 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策设为 true，系统可能会冻结已在后台运行至少 5 分钟的标签页。冻结标签页可以降低 CPU、电池和内存使用量。<ph name="PRODUCT_NAME" /> 会使用试探法来避免冻结在后台执行有用工作（例如显示通知、播放声音、流式传输视频）的标签页。网络开发者也可选择停用用于冻结网站标签页的功能 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
 
       如果此政策设为 false，系统将不会冻结任何标签页。</translation>
+<translation id="8612188068319977428">控制 Chrome 状态报告上传频率。
+
+包括 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 启用的报告。
+
+如果此政策未设置，系统每 24 小时会上传一次此类报告。
+如果此政策已设置，所设值便决定了两次连续的报告上传操作之间应间隔的小时数。</translation>
 <translation id="8619748440665904084">禁止在首次运行时导入自动填充表单数据</translation>
 <translation id="8623672932476443039">如果启用此政策，用户可以访问已隔离应用的开发者模式。
       如果停用此政策，用户将无法使用这些功能。

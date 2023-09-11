@@ -2118,6 +2118,14 @@ La règle <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> peut ignorer le compor
 <translation id="2839294585867804686">Paramètres de la fonctionnalité Partages de fichiers en réseau</translation>
 <translation id="2841911109921764691">Le bouton de droite est le bouton principal sur l'écran de connexion</translation>
 <translation id="284288632677954003">URL d'un fichier XML qui contient des URL qui ne doivent jamais déclencher un changement de navigateur.</translation>
+<translation id="28458742190197992">Cette règle permet de contrôler la création de rapports cloud <ph name="PRODUCT_NAME" /> pour un profil géré donné.
+
+Si cette règle n'est pas configurée ou si elle est désactivée, aucune donnée n'est collectée ni importée.
+Si elle est activée, les données sont collectées et importées dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Le rapport contient l'état du profil ainsi que des informations sur l'utilisation, y compris, mais sans s'y limiter, la version de l'OS et du navigateur, les extensions installées et les règles applicables.
+
+Cette règle ne peut être configurée que comme règle relative aux utilisateurs du cloud.</translation>
 <translation id="2846689894646472396">Fréquence de vérification des événements réseau en millisecondes.</translation>
 <translation id="2847788524147474533">Prioriser les règles de plate-forme relatives à la machine avant celles de cloud</translation>
 <translation id="2849275596224278787">Masquer les options d'accessibilité dans le menu de la barre d'état système de l'écran de connexion</translation>
@@ -5602,6 +5610,7 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 
       ECH est un protocole qui évolue. L'implémentation de <ph name="PRODUCT_NAME" /> est donc susceptible d'être modifiée. Par conséquent, cette règle est une mesure temporaire pour contrôler l'implémentation expérimentale initiale. Elle sera remplacée par les commandes finales à la fin du protocole.</translation>
 <translation id="5939656968921014919">Désactiver le mode développeur pour les applis isolées</translation>
+<translation id="5939873071468124100">Limite les comptes pouvant utiliser l'intégration <ph name="MICROSOFT_ONE_DRIVE_NAME" />.</translation>
 <translation id="5945312246863177268">Empêche les utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
 <translation id="5946082169633555022">Version bêta</translation>
 <translation id="5946329690214660966">Planifier de manière personnalisée la recherche de mises à jour</translation>
@@ -5673,6 +5682,16 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
       Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6019162469732742754">Utiliser le mode Auto</translation>
 <translation id="6019606564278029236">Activer les interactions des utilisateurs distants avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
+<translation id="602038990586229155">Cette règle contrôle les demandes d'installation d'extension de <ph name="PRODUCT_NAME" /> et permet aux utilisateurs d'envoyer les demandes à la console d'administration Google pour approbation.
+
+Si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas configurée ou si elle est désactivée, cette règle est ignorée, et les demandes d'installation d'extension ne sont pas créées ni importées.
+Si cette règle n'est pas définie ou si elle est désactivée, les demandes d'installation d'extension ne sont ni créées ni importées.
+Si cette règle est activée, les demandes d'installation d'extension sont créées et importées dans la console d'administration Google.
+
+Les demandes d'installation d'extension sont créées lorsque les utilisateurs tentent d'installer une extension qui n'est pas autorisée par <ph name="EXTENSION_INSTALL_ALLOWLIST" /> ou <ph name="EXTENSION_SETTINGS" />.
+
+Cette règle n'est appliquée que si l'ordinateur est inscrit avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
+Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6022948604095165524">Action au démarrage</translation>
 <translation id="602318745029752898">Autoriser la synthèse vocale améliorée via le réseau pour Sélectionner pour prononcer</translation>
 <translation id="6026722971789064331">Contrôler l'utilisation de l'API File System pour l'accès en écriture</translation>
@@ -6570,6 +6589,13 @@ Cette règle sera supprimée prochainement de <ph name="PRODUCT_NAME" />.</trans
       Si elle est activée, cela active Réponses rapides.
       Si elle est désactivée, cela désactive Réponses rapides.
       Si elle n'est pas configurée, les utilisateurs peuvent décider d'activer ou de désactiver Réponses rapides.</translation>
+<translation id="6712624291905573620">Cette règle permet de contrôler la création de rapports cloud <ph name="PRODUCT_NAME" />, une option qui permet d'importer des informations sur le fonctionnement du navigateur dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Si cette règle n'est pas configurée ou si elle est désactivée, aucune donnée n'est collectée ni importée.
+Si elle est activée, les données sont collectées et importées dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Concernant <ph name="PRODUCT_NAME" />, cette règle n'est appliquée que si l'appareil est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6720330829631914048">Heures écoulées depuis le début de la journée (format 24 heures).</translation>
 <translation id="6721252203593581486">WebSQL dans des contextes tiers (ex. : les cadres iFrame intersites) est désactivé par défaut à partir de M97 et sera entièrement supprimé dans M101.
           Si cette règle est définie sur "False" ou n'est pas configurée, WebSQL dans des contextes tiers restera désactivé.
@@ -8101,6 +8127,13 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="8062375903420954294">Cette règle permet de limiter les adresses IP et interfaces utilisées par WebRTC pour tenter d'identifier la meilleure connexion disponible. Consultez le document RFC 8828, section 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Lorsqu'elle n'est pas définie, toutes les interfaces disponibles sont utilisées par défaut.</translation>
 <translation id="8062485064082966327">Utiliser un service Google anonyme pour qu'une description soit ajoutée automatiquement aux images sans libellé</translation>
 <translation id="8071371098891664137">Si <ph name="PRINTERS_BLOCKLIST" /> est choisi pour <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, le fait de définir <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> indique les imprimantes indisponibles pour les utilisateurs. Toutes les imprimantes sont proposées aux utilisateurs, sauf celles dont les ID sont répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="8072934771584553388">Cette règle permet aux administrateurs de limiter les comptes autorisés à se connecter à <ph name="MICROSOFT_ONE_DRIVE_NAME" /> lorsque la règle <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> est activée.
+
+Si cette règle n'est pas configurée ou si elle est définie sur une valeur vide, n'importe quel compte peut être utilisé pour se connecter.
+
+Si cette règle est définie sur un nom de domaine ou un ID de locataire (voir https://learn.microsoft.com/fr-fr/azure/active-directory/develop/v2-protocols#endpoints), seuls les comptes de ce nom de domaine ou de cet ID de locataire peuvent être utilisés pour se connecter.
+
+Si vous modifiez la restriction, il se peut que les utilisateurs soient déconnectés de leur compte <ph name="MICROSOFT_ONE_DRIVE_NAME" /> si celui-ci ne respecte pas la nouvelle restriction.</translation>
 <translation id="8076521374016204899">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs qui s'authentifient avec un mot de passe peuvent verrouiller l'écran.
 
       En revanche, si cette règle est désactivée, les utilisateurs ne peuvent pas verrouiller l'écran (ils peuvent uniquement se déconnecter de leur session utilisateur).</translation>
@@ -8722,6 +8755,12 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
       Si cette règle est définie sur "True", les onglets en arrière-plan depuis au moins cinq minutes peuvent être figés. En figeant ces onglets, vous sollicitez moins le processeur, la batterie et la mémoire. <ph name="PRODUCT_NAME" /> utilise des heuristiques pour ne pas figer les onglets qui exécutent une tâche utile en arrière-plan (par exemple, l'affichage de notifications, la lecture audio d'un contenu, la diffusion d'une vidéo en streaming). Notez que les développeurs Web peuvent également choisir de ne pas figer les pages de leur site (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si cette règle est définie sur "False", aucun onglet n'est figé.</translation>
+<translation id="8612188068319977428">Définit la fréquence à laquelle les rapports d'état Chrome sont importés,
+
+y compris les rapports activés par <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />.
+
+Lorsque cette règle n'est pas définie, les rapports sont importés toutes les 24 heures.
+Lorsqu'elle est définie, elle définit le nombre d'heures entre deux importations.</translation>
 <translation id="8619748440665904084">Désactiver l'importation des données de saisie automatique à la première exécution</translation>
 <translation id="8623672932476443039">Si cette règle est activée, elle permet aux utilisateurs d'accéder au mode développeur pour les applis isolées.
       Si elle est désactivée, les utilisateurs ne pourront pas bénéficier de ce mode.

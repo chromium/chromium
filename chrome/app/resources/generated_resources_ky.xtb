@@ -1432,6 +1432,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2102495993840063010">Android Колдонмолору</translation>
 <translation id="2104166991923847969">Байланыш түйүнү автоматтык түрдө өчөт</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> жашырылды</translation>
+<translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> мурда текшерилди</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефон номери}other{# телефон номери}}</translation>
 <translation id="2110941575868943054">Bluetooth түзмөктөрүн издөөгө уруксат берилди</translation>
 <translation id="211144231511833662">Белгиленген кутучаларды тандоодон чыгаруу</translation>
@@ -2473,6 +2474,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2907619724991574506">URL'дерди иштетип баштоо</translation>
 <translation id="2907798539022650680">"<ph name="NAME" />" менен байланыш үзүлдү: <ph name="DETAILS" />
     Сервердин билдирүүсү: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word, Excel жана PowerPoint файлдарын ачуу</translation>
 <translation id="2908162660801918428">Медиа галереяны каталог боюнча кошуу</translation>
 <translation id="2908358077082926882">Дайындоону өчүрүү жана чыгуу үчүн "<ph name="CURRENTKEY" />" баскычын кайра басыңыз жана <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Google кызматтарына туташпай калды. Тармакка туташууңузду текшерип, дагы бир жолу аракет кылыңыз. Ката коду: <ph name="ERROR_CODE" />.</translation>
@@ -6114,6 +6116,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5920543303088087579">Бул тармакка туташуу администраторуңуз тарабынан өчүрүлгөн</translation>
 <translation id="5921257443092182237">Google'дун жайгашкан жерди аныктоо кызматы түзмөктүн жайгашкан жерин болжолдоп билүү үчүн Wi‑Fi, мобилдик тармактар жана сенсорлор сыяктуу булактарды колдонот.</translation>
 <translation id="5924047253200400718">Жардам алыңыз<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Microsoft файлдарын Google Drive'га көчүрүп же жылдыруудан мурда уруксат суралсын</translation>
 <translation id="5924527146239595929">Жаңы сүрөткө түшүңүз же колуңузда болгон сүрөтүңүздү же сүрөтчөнү тандаңыз.
           <ph name="LINE_BREAK" />
           Ушул сүрөт Chromebook'ка кирүү экранында жана кулпуланган экранда көрүнөт.</translation>
@@ -6532,6 +6535,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6263284346895336537">Коркунучтуу эмес</translation>
 <translation id="6264365405983206840">&amp;Баарын тандоо</translation>
 <translation id="6264376385120300461">Баары бир жүктөп алуу</translation>
+<translation id="6265159465845424232">Microsoft файлдарын Microsoft OneDrive'га көчүрүп же жылдыруудан мурда уруксат суралсын</translation>
 <translation id="6265687851677020761">Оюкчаны өчүрүү</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> түзмөгүнө туташууда</translation>
 <translation id="6267166720438879315">Бул жерде <ph name="HOST_NAME" /> аныктыгыңызды текшерүү үчүн тастыктама тандаңыз</translation>
@@ -7291,6 +7295,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6897363604023044284">Тазалана турган сайттарды тандоо</translation>
 <translation id="6897688156970667447">Бүлбүл жарыкта пайдасы тийет жана батареянын кубатын үнөмдөйт</translation>
 <translation id="6897972855231767338">Конок режиминде серептөө жөнүндө кеңири маалымат</translation>
+<translation id="6898438890765871056">OneDrive папкасын ачуу</translation>
 <translation id="6898440773573063262">Киоск колдонмолорун эми ушул түзмөктө автоматтык түрдө иштей тургандай кылып конфигурацияласаңыз болот.</translation>
 <translation id="6899427698619335650">Ийкемдүү диакритикалык дайындоолорго уруксат бериңиз. Мисалы, "anh1" же "a1nh" деп терип, "ánh" сөзүн алууга болот.</translation>
 <translation id="6900284862687837908">Фондук колдонмо: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8044,6 +8049,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7517959947270534934">Үй-бүлөлүк тобуңуздун мүчөсү учурда сырсөздөрдү ала албайт. Андан Chrome'ду жаңыртуусун жана сырсөздөрдү шайкештирүүсүн сураныңыз.</translation>
 <translation id="7520766081042531487">Жашыруун портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Ыкчам баскычтарды көрсөтүү</translation>
+<translation id="7521430434164837205">Microsoft 365 файлдары</translation>
 <translation id="7522255036471229694">"Ok Google" деп айтыңыз</translation>
 <translation id="7523117833414447032">Баш тамгаларды окуганда</translation>
 <translation id="7523585675576642403">Профилдин аталышын өзгөртүү</translation>
@@ -9771,6 +9777,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8896830132794747524">Чычканды тезирээк жылдырсаңыз, курсор алысыраак жылат</translation>
 <translation id="8898140163781851592">Чычкандагы негизги баскыч</translation>
 <translation id="8898786835233784856">Кийинки өтмөктү тандоо</translation>
+<translation id="8898790559170352647">Microsoft аккаунтуңузду кошуңуз</translation>
 <translation id="8898822736010347272">Сиз баш баккан айрым барактардын URL даректерин, чектелген тутум маалыматын жана айрым барактардын мазмунун бардык колдонуучулар үчүн мүмкүн болгон коркунучтарды аныктап, бөгөттөө үчүн Google'га жөнөтөт.</translation>
 <translation id="8899851313684471736">Шилтеме жаңы &amp;терезеде ачылсын</translation>
 <translation id="8900413463156971200">Мобилдик тармакты күйгүзүү</translation>

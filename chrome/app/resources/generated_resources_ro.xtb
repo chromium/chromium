@@ -1421,6 +1421,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2102495993840063010">Aplicații Android</translation>
 <translation id="2104166991923847969">Dezactivează automat hotspotul</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ascunse</translation>
+<translation id="2108204112555497972">Verificate acum <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Număr de telefon}few{# numere de telefon}other{# de numere de telefon}}</translation>
 <translation id="2110941575868943054">Pot căuta dispozitive Bluetooth</translation>
 <translation id="211144231511833662">Șterge tipurile</translation>
@@ -2459,6 +2460,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2907619724991574506">Adrese URL de pornire</translation>
 <translation id="2907798539022650680">Nu s-a putut stabili conexiunea la „<ph name="NAME" />”: <ph name="DETAILS" />
 Mesaj de la server: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Deschide fișiere Word, Excel și PowerPoint</translation>
 <translation id="2908162660801918428">Adăugați galeria media după directoare</translation>
 <translation id="2908358077082926882">Apasă din nou pe <ph name="CURRENTKEY" /> pentru eliminarea atribuirii și <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Nu s-a putut conecta la serviciile Google. Verifică starea conexiunii la rețea și încearcă din nou. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
@@ -6099,6 +6101,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5920543303088087579">Conectarea la această rețea este dezactivată de administrator</translation>
 <translation id="5921257443092182237">Serviciul de localizare Google folosește surse precum rețelele Wi-Fi, rețelele mobile și senzorii pentru a estima locația acestui dispozitiv.</translation>
 <translation id="5924047253200400718">Obține ajutor <ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Întreabă înainte de a copia sau a muta fișiere Microsoft în Google Drive</translation>
 <translation id="5924527146239595929">Fotografiază sau alege o fotografie ori o pictogramă existentă.
     <ph name="LINE_BREAK" />
     Această fotografie se va afișa pe ecranul de conectare și de blocare al Chromebookului.</translation>
@@ -6517,6 +6520,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6263284346895336537">Non-critic</translation>
 <translation id="6264365405983206840">Select&amp;ează tot</translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
+<translation id="6265159465845424232">Întreabă înainte de a copia sau a muta fișiere Microsoft în Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Elimină portul</translation>
 <translation id="6266532094411434237">Se conectează la <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Selectează un certificat pentru a te autentifica pe <ph name="HOST_NAME" /></translation>
@@ -7278,6 +7282,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6897363604023044284">Alege site-urile de șters</translation>
 <translation id="6897688156970667447">Util în condiții de lumină slabă și economisește bateria</translation>
 <translation id="6897972855231767338">Află mai multe despre navigarea ca invitat</translation>
+<translation id="6898438890765871056">Deschide dosarul OneDrive</translation>
 <translation id="6898440773573063262">Acum, aplicațiile de tip chioșc pot fi configurate pentru a se lansa automat pe acest dispozitiv.</translation>
 <translation id="6899427698619335650">Permite atribuirea diacritică flexibilă. De exemplu, poți introduce „anh1” sau „a1nh” pentru a obține „ánh”.</translation>
 <translation id="6900284862687837908">Aplicația de fundal: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8032,6 +8037,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7517959947270534934">Momentan, membrul familiei nu poate primi parole. Solicită-i să actualizeze Chrome și să-și sincronizeze parolele.</translation>
 <translation id="7520766081042531487">Portal incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Afișează comenzile rapide</translation>
+<translation id="7521430434164837205">Fișiere Microsoft 365</translation>
 <translation id="7522255036471229694">Rostește „Ok Google”</translation>
 <translation id="7523117833414447032">Când se citesc majuscule</translation>
 <translation id="7523585675576642403">Redenumește profilul</translation>
@@ -9761,6 +9767,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8896830132794747524">Mișcările mai rapide ale mouse-ului vor deplasa mai mult cursorul</translation>
 <translation id="8898140163781851592">Butonul principal al mouse-ului</translation>
 <translation id="8898786835233784856">Selectează următoarea filă</translation>
+<translation id="8898790559170352647">Adaugă contul Microsoft</translation>
 <translation id="8898822736010347272">Trimite la Google adrese URL ale unor pagini pe care le accesezi, informații despre sistem limitate și o parte din conținutul paginii pentru a identifica amenințările noi și a proteja toți utilizatorii de pe web.</translation>
 <translation id="8899851313684471736">Deschide linkul într-o &amp;fereastră nouă</translation>
 <translation id="8900413463156971200">Activează rețeaua mobilă</translation>
