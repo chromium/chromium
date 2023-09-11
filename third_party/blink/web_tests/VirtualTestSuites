@@ -2514,6 +2514,17 @@
     "owners": ["dizhangg@chromium.org"],
     "expires": "Dec 21, 2023"
   },
+  {
+    "prefix": "cookie-deprecation-label",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/cookie-deprecation-label"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=CookieDeprecationFacilitatedTestingLabels:label/label_test",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "expires": "Dec 31, 2023"
+  },
   "Suite fot tests that should run with single threaded compositing",
   "(As opposed to threaded compositing, which is the default for web tests)",
   "It uses the field `skip_base_tests` to indicate tests that should not run",

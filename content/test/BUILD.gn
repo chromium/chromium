@@ -88,6 +88,7 @@ static_library("test_support") {
     "../browser/browsing_data/browsing_data_test_utils.h",
     "../browser/browsing_topics/test_util.cc",
     "../browser/browsing_topics/test_util.h",
+    "../browser/cookie_deprecation_label/cookie_deprecation_label_test_utils.h",
     "../browser/file_system_access/mock_file_system_access_permission_context.cc",
     "../browser/file_system_access/mock_file_system_access_permission_context.h",
     "../browser/file_system_access/mock_file_system_access_permission_grant.cc",

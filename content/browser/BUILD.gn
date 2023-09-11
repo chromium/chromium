@@ -740,6 +740,8 @@ source_set("browser") {
     "content_index/content_index_database.h",
     "content_index/content_index_service_impl.cc",
     "content_index/content_index_service_impl.h",
+    "cookie_deprecation_label/cookie_deprecation_label_document_service.cc",
+    "cookie_deprecation_label/cookie_deprecation_label_document_service.h",
     "cookie_deprecation_label/cookie_deprecation_label_manager.cc",
     "cookie_deprecation_label/cookie_deprecation_label_manager.h",
     "cookie_store/cookie_change_subscription.cc",
