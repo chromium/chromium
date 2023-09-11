@@ -29,6 +29,8 @@
 
 namespace blink {
 
+class EventDispatcher;
+
 class MutationEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -79,6 +81,8 @@ class MutationEvent final : public Event {
   uint16_t attrChange() const { return attr_change_; }
 
   const AtomicString& InterfaceName() const override;
+
+  DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
   void Trace(Visitor*) const override;
 

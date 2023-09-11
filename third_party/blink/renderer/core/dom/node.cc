@@ -2917,8 +2917,9 @@ DispatchEventResult Node::DispatchEventInternal(Event& event) {
 }
 
 void Node::DispatchSubtreeModifiedEvent() {
-  if (IsInShadowTree())
+  if (IsInShadowTree() || GetDocument().ShouldSuppressMutationEvents()) {
     return;
+  }
 
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());

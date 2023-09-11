@@ -232,19 +232,6 @@ DispatchEventResult EventDispatcher::Dispatch() {
     }
   }
 
-#if DCHECK_IS_ON()
-  // If Mutation Events are disabled, we should never dispatch trusted ones.
-  if (event_->isTrusted() &&
-      (event_->type() == event_type_names::kDOMCharacterDataModified ||
-       event_->type() == event_type_names::kDOMSubtreeModified ||
-       event_->type() == event_type_names::kDOMNodeInserted ||
-       event_->type() == event_type_names::kDOMNodeInsertedIntoDocument ||
-       event_->type() == event_type_names::kDOMNodeRemoved ||
-       event_->type() == event_type_names::kDOMNodeRemovedFromDocument)) {
-    DCHECK(document.SupportsLegacyDOMMutations());
-  }
-#endif
-
   // 6. Let isActivationEvent be true, if event is a MouseEvent object and
   // event's type attribute is "click", and false otherwise.
   //

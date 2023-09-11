@@ -1373,25 +1373,26 @@ StaticElementList* ContainerNode::QuerySelectorAll(
 }
 
 static void DispatchChildInsertionEvents(Node& child) {
-  if (child.IsInShadowTree())
+  Document& document = child.GetDocument();
+  if (child.IsInShadowTree() || document.ShouldSuppressMutationEvents()) {
     return;
+  }
 
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
 
   Node* c = &child;
-  Document* document = &child.GetDocument();
 
   if (c->parentNode() &&
-      document->HasListenerType(Document::kDOMNodeInsertedListener)) {
+      document.HasListenerType(Document::kDOMNodeInsertedListener)) {
     c->DispatchScopedEvent(
         *MutationEvent::Create(event_type_names::kDOMNodeInserted,
                                Event::Bubbles::kYes, c->parentNode()));
   }
 
   // dispatch the DOMNodeInsertedIntoDocument event to all descendants
-  if (c->isConnected() && document->HasListenerType(
+  if (c->isConnected() && document.HasListenerType(
                               Document::kDOMNodeInsertedIntoDocumentListener)) {
     for (; c; c = NodeTraversal::Next(*c, &child)) {
       c->DispatchScopedEvent(*MutationEvent::Create(
@@ -1401,8 +1402,10 @@ static void DispatchChildInsertionEvents(Node& child) {
 }
 
 static void DispatchChildRemovalEvents(Node& child) {
-  if (child.IsInShadowTree()) {
-    probe::WillRemoveDOMNode(&child);
+  probe::WillRemoveDOMNode(&child);
+
+  Document& document = child.GetDocument();
+  if (child.IsInShadowTree() || document.ShouldSuppressMutationEvents()) {
     return;
   }
 
@@ -1410,10 +1413,7 @@ static void DispatchChildRemovalEvents(Node& child) {
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
 
-  probe::WillRemoveDOMNode(&child);
-
   Node* c = &child;
-  Document& document = child.GetDocument();
 
   // Dispatch pre-removal mutation events.
   if (c->parentNode() &&

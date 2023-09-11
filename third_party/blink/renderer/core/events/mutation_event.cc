@@ -22,6 +22,8 @@
 
 #include "third_party/blink/renderer/core/events/mutation_event.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 
 namespace blink {
@@ -67,6 +69,20 @@ void MutationEvent::initMutationEvent(const AtomicString& type,
 
 const AtomicString& MutationEvent::InterfaceName() const {
   return event_interface_names::kMutationEvent;
+}
+
+DispatchEventResult MutationEvent::DispatchEvent(EventDispatcher& dispatcher) {
+  Event& event = dispatcher.GetEvent();
+  if (event.isTrusted()) {
+    Document& document = dispatcher.GetNode().GetDocument();
+
+    // If Mutation Events are disabled, we should never dispatch trusted ones.
+    CHECK(document.SupportsLegacyDOMMutations());
+
+    CHECK(!document.ShouldSuppressMutationEvents());
+  }
+
+  return Event::DispatchEvent(dispatcher);
 }
 
 void MutationEvent::Trace(Visitor* visitor) const {

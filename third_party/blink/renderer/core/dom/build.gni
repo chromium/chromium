@@ -138,6 +138,7 @@ blink_core_sources_dom = [
   "events/event_target.h",
   "events/event_target_impl.cc",
   "events/event_target_impl.h",
+  "events/mutation_event_suppression_scope.h",
   "events/native_event_listener.h",
   "events/node_event_context.cc",
   "events/node_event_context.h",
