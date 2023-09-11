@@ -277,7 +277,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
 
   // Note that `format` is implicitly assumed to not be using per-plane
   // sampling as we create only one TextureHolderVk below.
-  VkFormat vk_format = ToVkFormatSinglePlanar(format);
+  VkFormat vk_format = format.PrefersExternalSampler()
+                           ? ToVkFormatExternalSampler(format)
+                           : ToVkFormatSinglePlanar(format);
   auto image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
       device_queue, handle.Clone(), size, vk_format, color_space);
   if (!image) {
