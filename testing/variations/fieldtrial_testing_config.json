@@ -14801,21 +14801,6 @@
             ]
         }
     ],
-    "SecagentdEnableCoalesceTerminates": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230614",
-                    "enable_features": [
-                        "CrOSLateBootSecagentdCoalesceTerminates"
-                    ]
-                }
-            ]
-        }
-    ],
     "SecagentdEnableXDRAuthenticateEvents": [
         {
             "platforms": [
