@@ -17,6 +17,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
+#include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
@@ -35,6 +36,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/tab_slider_button.h"
 #include "ash/utility/cursor_setter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_dimmer.h"
@@ -1270,6 +1272,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(should_update_opacity)));
 
+  auto* capture_source_view = capture_mode_bar_view_->GetCaptureSourceView();
   const bool is_in_count_down = IsInCountDownAnimation();
   ui::KeyboardCode key_code = event->key_code();
   switch (key_code) {
@@ -1296,8 +1299,15 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       event->StopPropagation();
       if (!is_in_count_down) {
         // Pressing enter while an item is focused should behave exactly like
-        // pressing the space bar on it.
-        if (focus_cycler_->OnSpacePressed()) {
+        // pressing the space bar on it, unless it's the fullscreen source
+        // button, and we are already in fullscreen mode, in this case hitting
+        // enter should perform the capture.
+        views::View* ignore_view = nullptr;
+        if (capture_source_view &&
+            controller_->source() == CaptureModeSource::kFullscreen) {
+          ignore_view = capture_source_view->fullscreen_toggle_button();
+        }
+        if (focus_cycler_->MaybeActivateFocusedView(ignore_view)) {
           *should_update_opacity_ptr = true;
           return;
         }
@@ -1311,15 +1321,23 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       event->StopPropagation();
       event->SetHandled();
 
-      if (focus_cycler_->OnSpacePressed()) {
+      // Hitting space on the region toggle button when we are already in region
+      // mode should do nothing as we will take care of it below by creating a
+      // default region if needed.
+      views::View* ignore_view = nullptr;
+      const bool is_in_region_mode =
+          controller_->source() == CaptureModeSource::kRegion;
+      if (capture_source_view && is_in_region_mode) {
+        ignore_view = capture_source_view->region_toggle_button();
+      }
+      if (focus_cycler_->MaybeActivateFocusedView(ignore_view)) {
         *should_update_opacity_ptr = true;
         return;
       }
 
       // Create a default region if we are in region mode and there is no
       // existing region.
-      if (controller_->source() == CaptureModeSource::kRegion &&
-          controller_->user_capture_region().IsEmpty()) {
+      if (is_in_region_mode && controller_->user_capture_region().IsEmpty()) {
         SelectDefaultRegion();
       }
       return;

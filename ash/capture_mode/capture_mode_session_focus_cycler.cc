@@ -20,7 +20,6 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/shell.h"
-#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/tab_slider_button.h"
@@ -315,13 +314,13 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoBlur() {
   focus_ring_->SchedulePaint();
 }
 
-void CaptureModeSessionFocusCycler::HighlightableView::ClickView() {
+bool CaptureModeSessionFocusCycler::HighlightableView::ClickView() {
   views::View* view = GetView();
   DCHECK(view);
 
   views::Button* button = views::Button::AsButton(view);
   if (!button) {
-    return;
+    return false;
   }
 
   // `button` such as the close button or the capture button may be destroyed
@@ -329,11 +328,16 @@ void CaptureModeSessionFocusCycler::HighlightableView::ClickView() {
   // this and skip `NotifyAccessibilityEvent` in this case.
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
 
+  bool handled = false;
   if (button->AcceleratorPressed(
-          ui::Accelerator(ui::VKEY_SPACE, /*modifiers=*/0)) &&
-      weak_ptr) {
-    button->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+          ui::Accelerator(ui::VKEY_SPACE, /*modifiers=*/0))) {
+    handled = true;
+    if (weak_ptr) {
+      button->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+    }
   }
+
+  return handled;
 }
 
 CaptureModeSessionFocusCycler::HighlightableView::HighlightableView() = default;
@@ -376,8 +380,9 @@ void CaptureModeSessionFocusCycler::HighlightableWindow::PseudoBlur() {
   has_focus_ = false;
 }
 
-void CaptureModeSessionFocusCycler::HighlightableWindow::ClickView() {
+bool CaptureModeSessionFocusCycler::HighlightableWindow::ClickView() {
   // A HighlightableWindow is not clickable.
+  return false;
 }
 
 void CaptureModeSessionFocusCycler::HighlightableWindow::OnWindowDestroying(
@@ -566,7 +571,8 @@ bool CaptureModeSessionFocusCycler::HasFocus() const {
   return current_focus_group_ != FocusGroup::kNone;
 }
 
-bool CaptureModeSessionFocusCycler::OnSpacePressed() {
+bool CaptureModeSessionFocusCycler::MaybeActivateFocusedView(
+    views::View* ignore_view) {
   if (current_focus_group_ == FocusGroup::kNone ||
       current_focus_group_ == FocusGroup::kSelection ||
       current_focus_group_ == FocusGroup::kPendingSettings ||
@@ -586,22 +592,14 @@ bool CaptureModeSessionFocusCycler::OnSpacePressed() {
   DCHECK_LT(focus_index_, views.size());
   HighlightableView* view = views[focus_index_];
 
-  // Let the session handle the space key event if the region toggle button
-  // currently has focus and we are already in region mode, as we still want to
-  // create a default region in this case.
-  CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
-  if (const CaptureModeSourceView* capture_source_view =
-          bar_view->GetCaptureSourceView();
-      capture_source_view &&
-      view->GetView() == capture_source_view->region_toggle_button() &&
-      CaptureModeController::Get()->source() == CaptureModeSource::kRegion) {
+  auto* underlying_view = view->GetView();
+  if (underlying_view && underlying_view == ignore_view) {
     return false;
   }
 
   // ClickView comes last as it will destroy |this| if |view| is the close
   // button.
-  view->ClickView();
-  return true;
+  return view->ClickView();
 }
 
 bool CaptureModeSessionFocusCycler::RegionGroupFocused() const {

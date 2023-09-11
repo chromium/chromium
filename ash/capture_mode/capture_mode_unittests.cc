@@ -4003,6 +4003,94 @@ TEST_F(CaptureModeTest, KeyboardNavigationDefaultRegion) {
   EXPECT_EQ(gfx::Rect(), controller->user_capture_region());
 }
 
+TEST_F(CaptureModeTest, A11yEnterWithNoFocus) {
+  auto* controller = StartImageRegionCapture();
+  SelectRegion(gfx::Rect(20, 20, 200, 200));
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kNone,
+            test_api.GetCurrentFocusGroup());
+
+  // When nothing is focused, the `Enter` key should perform the capture.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_RETURN, event_generator);
+  EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(CaptureModeTest, A11yEnterWithFocusOnRegionKnob) {
+  auto* controller = StartImageRegionCapture();
+  SelectRegion(gfx::Rect(20, 20, 200, 200));
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Tab until you reach the region adjustment focus group.
+  auto* event_generator = GetEventGenerator();
+  while (test_api.GetCurrentFocusGroup() !=
+         CaptureModeSessionFocusCycler::FocusGroup::kSelection) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
+
+  // Tab twice more to be on one of the knobs.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/2);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSelection,
+            test_api.GetCurrentFocusGroup());
+
+  // Enter should perform capture.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(CaptureModeTest, A11yEnterWithFocusOnWindow) {
+  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Tab until you reach the window to be captured.
+  auto* event_generator = GetEventGenerator();
+  while (test_api.GetCurrentFocusGroup() !=
+         CaptureModeSessionFocusCycler::FocusGroup::kCaptureWindow) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
+
+  // Enter should perform capture.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(CaptureModeTest, A11yEnterWithFocusOnFullscreenButton) {
+  auto* controller = StartImageRegionCapture();
+  EXPECT_EQ(controller->source(), CaptureModeSource::kRegion);
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Tab once to enter focus into the bar.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kTypeSource,
+            test_api.GetCurrentFocusGroup());
+
+  // Tab until you reach the fullscreen toggle button.
+  auto* fullscreen_toggle_button = test_api.GetCaptureModeBarView()
+                                       ->GetCaptureSourceView()
+                                       ->fullscreen_toggle_button();
+  while (test_api.GetCurrentFocusedView()->GetView() !=
+         fullscreen_toggle_button) {
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  }
+
+  // The first Enter will switch the source to `kFullscreen`.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
+
+  // The focus should not change.
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
+            fullscreen_toggle_button);
+
+  // The second Enter should perform capture.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  EXPECT_FALSE(controller->IsActive());
+}
+
 // Tests that the UAF issue caused by `NotifyAccessibilityEvent` after the
 // button been destroyed has been handled without leading to a crash.
 TEST_F(CaptureModeTest, KeyboardNavigationButtonDestroyedAfterBeenActivated) {
