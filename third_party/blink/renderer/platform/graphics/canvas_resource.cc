@@ -59,7 +59,7 @@ namespace {
 
 BASE_FEATURE(kAlwaysUseMappableSIForSoftwareCanvas,
              "AlwaysUseMappableSIForSoftwareCanvas",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
