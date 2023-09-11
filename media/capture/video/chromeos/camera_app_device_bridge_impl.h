@@ -49,6 +49,8 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   void OnDeviceMojoDisconnected(const std::string& device_id);
 
+  void OnReceiverDisconnected(uint32_t reason, const std::string& description);
+
   void UpdateCameraInfo(const std::string& device_id);
 
   void InvalidateDevicePtrsOnDeviceIpcThread(const std::string& device_id,

@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/device_event_log/device_event_log.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
@@ -25,6 +26,9 @@ CameraAppDeviceBridgeImpl::CameraAppDeviceBridgeImpl() {
       command_line->HasSwitch(switches::kUseFileForFakeVideoCapture);
   is_supported_ =
       ShouldUseCrosCameraService() && !use_fake_camera && !use_file_camera;
+  receivers_.set_disconnect_with_reason_handler(
+      base::BindRepeating(&CameraAppDeviceBridgeImpl::OnReceiverDisconnected,
+                          base::Unretained(this)));
 }
 
 CameraAppDeviceBridgeImpl::~CameraAppDeviceBridgeImpl() {
@@ -108,6 +112,13 @@ void CameraAppDeviceBridgeImpl::OnDeviceMojoDisconnected(
     }
   }
   std::move(remove_device).Run();
+}
+
+void CameraAppDeviceBridgeImpl::OnReceiverDisconnected(
+    uint32_t reason,
+    const std::string& description) {
+  CAMERA_LOG(EVENT) << "Receiver disconnected, reason " << reason << " ("
+                    << description << ")";
 }
 
 void CameraAppDeviceBridgeImpl::UpdateCameraInfo(const std::string& device_id) {
