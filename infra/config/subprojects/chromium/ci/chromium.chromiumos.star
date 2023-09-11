@@ -646,7 +646,7 @@ ci.builder(
             target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = "kevin:arm64-generic",
+            target_cros_boards = "arm64-generic",
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
         skylab_upload_location = builder_config.skylab_upload_location(

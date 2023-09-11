@@ -23,7 +23,7 @@
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_cros_boards": [
-                  "kevin:arm64-generic"
+                  "arm64-generic"
                 ],
                 "target_platform": "chromeos"
               },
