@@ -91,11 +91,10 @@ TEST(DOMWindowWebDatabaseTest, WebSQLDefault) {
   V8TestingScope scope;
   OpenWebDatabaseInWindow("https://example.test:0/", "first_party/empty.html",
                           scope.GetExceptionState());
-  // Insufficient state exists to actually open a database, but this error
-  // means it was tried.
+  // This error means the database opening was rejected.
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().Code(),
-            static_cast<int>(DOMExceptionCode::kInvalidStateError));
+            static_cast<int>(DOMExceptionCode::kSecurityError));
 }
 
 TEST(DOMWindowWebDatabaseTest, WebSQLSwitchOnFeatureOn) {

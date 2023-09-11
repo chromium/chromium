@@ -2030,7 +2030,7 @@ BASE_FEATURE(kWebRtcUseMinMaxVEADimensions,
 );
 
 // Allow access to WebSQL APIs.
-BASE_FEATURE(kWebSQLAccess, "kWebSQLAccess", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebSQLAccess, "kWebSQLAccess", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables small accelerated canvases for webview (crbug.com/1004304)
 BASE_FEATURE(kWebviewAccelerateSmallCanvases,

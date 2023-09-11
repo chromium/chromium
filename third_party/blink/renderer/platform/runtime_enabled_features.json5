@@ -1268,7 +1268,7 @@
     {
       name: "Database",
       public: true,
-      status: "stable",
+      status: "test",
       base_feature: "none",
       origin_trial_feature_name: "WebSQL",
     },
