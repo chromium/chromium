@@ -108,7 +108,7 @@ class V4L2VideoDecoderBackend {
   virtual bool StopInputQueueOnResChange() const = 0;
   // Returns the amount of OUTPUT queue buffers needed or estimated to be
   // needed by the specific backend.
-  virtual size_t GetNumOUTPUTQueueBuffers() const = 0;
+  virtual size_t GetNumOUTPUTQueueBuffers(bool secure_mode) const = 0;
 
  protected:
   V4L2VideoDecoderBackend(Client* const client,

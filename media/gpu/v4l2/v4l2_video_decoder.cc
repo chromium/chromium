@@ -468,7 +468,8 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
     return V4L2Status::Codes::kBadFormat;
   }
 
-  const size_t num_OUTPUT_buffers = backend_->GetNumOUTPUTQueueBuffers();
+  const size_t num_OUTPUT_buffers =
+      backend_->GetNumOUTPUTQueueBuffers(!!cdm_context_ref_);
   // Secure playback uses dmabufs for the OUTPUT queue, otherwise we use mmap
   // buffers.
   v4l2_memory input_queue_memory =

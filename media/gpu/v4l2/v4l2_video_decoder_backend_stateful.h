@@ -52,7 +52,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   void OnChangeResolutionDone(CroStatus status) override;
   void ClearPendingRequests(DecoderStatus status) override;
   bool StopInputQueueOnResChange() const override;
-  size_t GetNumOUTPUTQueueBuffers() const override;
+  size_t GetNumOUTPUTQueueBuffers(bool secure_mode) const override;
 
  private:
   // TODO(b:149663704): merge with stateless?

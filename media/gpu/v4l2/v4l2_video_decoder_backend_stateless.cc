@@ -673,15 +673,18 @@ bool V4L2StatelessVideoDecoderBackend::StopInputQueueOnResChange() const {
   return true;
 }
 
-size_t V4L2StatelessVideoDecoderBackend::GetNumOUTPUTQueueBuffers() const {
+size_t V4L2StatelessVideoDecoderBackend::GetNumOUTPUTQueueBuffers(
+    bool secure_mode) const {
   // Some H.264 test vectors (CAPCM*1_Sand_E.h264) need 16 reference frames; add
   // one to calculate the number of OUTPUT buffers, to account for the frame
   // being decoded.
+  // For secure mode, we are very memory constrained so only allocate 8 buffers.
   // TODO(b/249325255): reduce this number to e.g. 8 or even less when it does
   // not artificially limit the size of the CAPTURE (decoded video frames)
   // queue.
   constexpr size_t kNumInputBuffers = 16 + 1;
-  return kNumInputBuffers;
+  constexpr size_t kNumInputBuffersSecureMode = 8;
+  return secure_mode ? kNumInputBuffersSecureMode : kNumInputBuffers;
 }
 
 bool V4L2StatelessVideoDecoderBackend::IsSupportedProfile(

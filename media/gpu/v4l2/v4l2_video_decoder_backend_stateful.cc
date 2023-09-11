@@ -778,7 +778,9 @@ bool V4L2StatefulVideoDecoderBackend::StopInputQueueOnResChange() const {
   return false;
 }
 
-size_t V4L2StatefulVideoDecoderBackend::GetNumOUTPUTQueueBuffers() const {
+size_t V4L2StatefulVideoDecoderBackend::GetNumOUTPUTQueueBuffers(
+    bool secure_mode) const {
+  CHECK(!secure_mode);
   constexpr size_t kNumInputBuffers = 8;
   return kNumInputBuffers;
 }
