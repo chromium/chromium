@@ -63,6 +63,18 @@ ReadingListModel* ReadingListModelFactory::GetForBrowserState(
 }
 
 // static
+reading_list::DualReadingListModel*
+ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
+    ChromeBrowserState* browser_state) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReadingListEnableDualReadingListModel)) {
+    return nullptr;
+  }
+  return static_cast<reading_list::DualReadingListModel*>(
+      GetForBrowserState(browser_state));
+}
+
+// static
 ReadingListModelFactory* ReadingListModelFactory::GetInstance() {
   static base::NoDestructor<ReadingListModelFactory> instance;
   return instance.get();

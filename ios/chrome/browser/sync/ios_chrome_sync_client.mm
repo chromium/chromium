@@ -17,6 +17,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/browser_sync/browser_sync_switches.h"
 #import "components/browser_sync/sync_api_component_factory_impl.h"
+#import "components/browser_sync/sync_client_utils.h"
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/dom_distiller/core/dom_distiller_service.h"
 #import "components/history/core/browser/history_service.h"
@@ -26,8 +27,10 @@
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
+#import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/supervised_user/core/common/buildflags.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/sync_api_component_factory.h"
@@ -36,7 +39,9 @@
 #import "components/sync_user_events/user_event_service.h"
 #import "components/trusted_vault/trusted_vault_service.h"
 #import "components/variations/service/google_groups_updater_service.h"
+#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
 #import "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
@@ -69,6 +74,31 @@
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+namespace {
+syncer::ModelTypeSet FilterTypesWithAccountStorage(
+    syncer::ModelTypeSet types,
+    ChromeBrowserState* browser_state) {
+  if (types.Has(syncer::PASSWORDS) &&
+      !IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+          browser_state, ServiceAccessType::IMPLICIT_ACCESS)) {
+    DVLOG(1) << "Passwords account-storage is not enabled.";
+    types.Remove(syncer::PASSWORDS);
+  }
+  if (types.Has(syncer::BOOKMARKS) &&
+      !ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state)) {
+    DVLOG(1) << "Bookmarks account-storage is not enabled";
+    types.Remove(syncer::BOOKMARKS);
+  }
+  if (types.Has(syncer::READING_LIST) &&
+      !ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
+          browser_state)) {
+    DVLOG(1) << "Reading List account-storage is not enabled";
+    types.Remove(syncer::READING_LIST);
+  }
+  return types;
+}
+}  // namespace
 
 IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
     : browser_state_(browser_state) {
@@ -106,6 +136,22 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
               browser_state_),
           PowerBookmarkServiceFactory::GetForBrowserState(browser_state_),
           supervised_user_settings_service);
+
+  local_data_query_helper_ =
+      std::make_unique<browser_sync::LocalDataQueryHelper>(
+          profile_password_store_.get(),
+          ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+              browser_state_),
+          ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
+              browser_state_));
+  local_data_migration_helper_ =
+      std::make_unique<browser_sync::LocalDataMigrationHelper>(
+          profile_password_store_.get(), account_password_store_.get(),
+          ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+              browser_state_),
+          ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_),
+          ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
+              browser_state_));
 }
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}
@@ -256,4 +302,19 @@ void IOSChromeSyncClient::OnLocalSyncTransportDataCleared() {
   if (google_groups_updater != nullptr) {
     google_groups_updater->ClearSigninScopedState();
   }
+}
+
+void IOSChromeSyncClient::GetLocalDataDescriptions(
+    syncer::ModelTypeSet types,
+    base::OnceCallback<void(
+        std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback) {
+  local_data_query_helper_->Run(
+      FilterTypesWithAccountStorage(types, browser_state_),
+      std::move(callback));
+}
+
+void IOSChromeSyncClient::TriggerLocalDataMigration(
+    syncer::ModelTypeSet types) {
+  local_data_migration_helper_->Run(
+      FilterTypesWithAccountStorage(types, browser_state_));
 }

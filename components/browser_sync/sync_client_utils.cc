@@ -27,6 +27,9 @@ namespace browser_sync {
 
 namespace {
 
+const syncer::ModelTypeSet kSupportedTypes = {
+    syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST};
+
 std::string GetDomainFromUrl(const GURL& url) {
   // TODO(crbug.com/1451508): Use url_formatter helpers instead.
   return net::registry_controlled_domains::GetDomainAndRegistry(
@@ -67,17 +70,16 @@ class LocalDataQueryHelper::LocalDataQueryRequest
       base::OnceCallback<void(
           std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback)
       : helper_(helper),
-        types_(types),
+        types_(base::Intersection(types, kSupportedTypes)),
         barrier_callback_(base::BarrierClosure(
-            types.Size(),
+            types_.Size(),
             base::BindOnce(&LocalDataQueryHelper::OnRequestComplete,
                            base::Unretained(helper_),
                            base::Unretained(this),
                            std::move(callback)))) {
-    CHECK(syncer::ModelTypeSet(
-              {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST})
-              .HasAll(types_))
-        << "Only PASSWORDS, BOOKMARKS and READING_LIST are supported.";
+    if (types_ != types) {
+      DVLOG(1) << "Only PASSWORDS, BOOKMARKS and READING_LIST are supported.";
+    }
   }
 
   ~LocalDataQueryRequest() override = default;
@@ -205,7 +207,11 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
  public:
   LocalDataMigrationRequest(LocalDataMigrationHelper* helper,
                             syncer::ModelTypeSet types)
-      : helper_(helper), types_(types) {}
+      : helper_(helper), types_(base::Intersection(types, kSupportedTypes)) {
+    if (types_ != types) {
+      DVLOG(1) << "Only PASSWORDS, BOOKMARKS and READING_LIST are supported.";
+    }
+  }
 
   ~LocalDataMigrationRequest() override = default;
 
