@@ -2353,6 +2353,13 @@ void RenderWidgetHostViewAndroid::SendGestureEvent(
             event.TimeStamp(), event.PositionInWidget());
         break;
 
+      case blink::WebInputEvent::Type::kGestureTapDown:
+        if (event.data.tap_down.tap_down_count == 2) {
+          touch_selection_controller_->HandleDoublePressEvent(
+              event.TimeStamp(), event.PositionInWidget());
+        }
+        break;
+
       case blink::WebInputEvent::Type::kGestureTap:
         touch_selection_controller_->HandleTapEvent(event.PositionInWidget(),
                                                     event.data.tap.tap_count);
