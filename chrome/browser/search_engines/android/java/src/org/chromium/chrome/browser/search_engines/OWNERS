@@ -1,0 +1,3 @@
+file://components/search_engines/OWNERS
+
+per-file DseNewTabUrlManager*.java=hanxi@chromium.org

@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
@@ -286,7 +287,6 @@ public class ReturnToChromeUtilUnitTest {
 
         // Verifies that when the preference key isn't stored, return
         // START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue() as default value, i.e., 8 hours.
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
         Assert.assertEquals(START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
                 ReturnToChromeUtil.getReturnTimeFromSegmentation(
                         START_SURFACE_RETURN_TIME_SECONDS));
@@ -298,7 +298,7 @@ public class ReturnToChromeUtilUnitTest {
         // Return time from segmentation model is enabled for 1 min:
         long returnTimeSeconds = 60; // One minute
         long returnTimeMs = returnTimeSeconds * DateUtils.SECOND_IN_MILLIS; // One minute
-        sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
         SegmentSelectionResult result =
                 new SegmentSelectionResult(true, showStartId, (float) returnTimeSeconds);
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
@@ -524,6 +524,30 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
 
         Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
+    public void testStartSurfaceIsEnabledWithNewTabSearchEngineUrlDisabled() {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.IS_DSE_GOOGLE, false);
+
+        Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
+        SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.IS_DSE_GOOGLE);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
+    public void testStartSurfaceMayBeDisabledWithNewTabSearchEngineUrlEnabled() {
+        Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
+
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.IS_DSE_GOOGLE, false);
+        Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
+
+        SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.IS_DSE_GOOGLE);
     }
 
     @Test

@@ -12,7 +12,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogHelper.java",
     "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEnginePromoDialog.java",
     "java/src/org/chromium/chrome/browser/search_engines/DseNewTabUrlManager.java",
-    "java/src/org/chromium/chrome/browser/search_engines/DseNewTabUrlManagerUtils.java",
     "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java",
     "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceNotification.java",
     "java/src/org/chromium/chrome/browser/search_engines/SearchEnginePromoState.java",

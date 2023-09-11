@@ -138,7 +138,6 @@ import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.DseNewTabUrlManager;
-import org.chromium.chrome.browser.search_engines.DseNewTabUrlManagerUtils;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -1672,7 +1671,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
 
-        if (DseNewTabUrlManagerUtils.isNewTabSearchEngineUrlAndroidEnabled()) {
+        if (DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled()) {
             mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
         }
     }

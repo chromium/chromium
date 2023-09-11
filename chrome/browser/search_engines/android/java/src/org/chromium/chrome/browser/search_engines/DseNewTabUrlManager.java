@@ -9,10 +9,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
 
@@ -39,12 +41,12 @@ public class DseNewTabUrlManager {
      * @param isIncognito Whether it is an incognito Tab.
      */
     public GURL maybeGetOverrideUrl(GURL gurl, boolean isIncognito) {
-        if (isIncognito || !DseNewTabUrlManagerUtils.isNewTabSearchEngineUrlAndroidEnabled()
-                || isDefaultSearchEngineGoogle() || !UrlUtilities.isNTPUrl(gurl)) {
+        if (isIncognito || !isNewTabSearchEngineUrlAndroidEnabled() || isDefaultSearchEngineGoogle()
+                || !UrlUtilities.isNTPUrl(gurl)) {
             return gurl;
         }
 
-        return new GURL(DseNewTabUrlManagerUtils.getDSENewTabUrl(mTemplateUrlService));
+        return new GURL(getDSENewTabUrl(mTemplateUrlService));
     }
 
     /**
@@ -52,17 +54,7 @@ public class DseNewTabUrlManager {
      */
     @Nullable
     public String getDSENewTabUrl() {
-        return DseNewTabUrlManagerUtils.getDSENewTabUrl(mTemplateUrlService);
-    }
-
-    /**
-     * Returns whether the default search engine is Google. Returns a cached value if the
-     * TemplateUrlService isn't ready yet.
-     */
-    public boolean isDefaultSearchEngineGoogle() {
-        return mTemplateUrlService != null ? mTemplateUrlService.isDefaultSearchEngineGoogle()
-                                           : SharedPreferencesManager.getInstance().readBoolean(
-                                                   ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+        return getDSENewTabUrl(mTemplateUrlService);
     }
 
     public void destroy() {
@@ -75,6 +67,45 @@ public class DseNewTabUrlManager {
             mTemplateUrlService.removeObserver(this::onTemplateURLServiceChanged);
             mTemplateUrlService = null;
         }
+    }
+
+    /**
+     * Returns whether the feature NewTabSearchEngineUrlAndroid is enabled.
+     */
+    public static boolean isNewTabSearchEngineUrlAndroidEnabled() {
+        return ChromeFeatureList.sNewTabSearchEngineUrlAndroid.isEnabled();
+    }
+
+    /**
+     * Returns cached value of {@link ChromePreferenceKeys.IS_DSE_GOOGLE} in the SharedPreference.
+     */
+    public static boolean isDefaultSearchEngineGoogle() {
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+    }
+
+    /**
+     * Returns the new Tab URL of the default search engine:
+     * 1. Returns the cached value ChromePreferenceKeys.DSE_NEW_TAB_URL in the SharedPreference if
+     *    the templateUrlService is null.
+     * 2. Returns null if the DSE is Google.
+     * 3. Returns the default search engine's URL if the DSE doesn't provide a new Tab Url.
+     * @param templateUrlService The instance of {@link TemplateUrlService}.
+     */
+    @Nullable
+    public static String getDSENewTabUrl(TemplateUrlService templateUrlService) {
+        if (templateUrlService == null) {
+            return SharedPreferencesManager.getInstance().readString(
+                    ChromePreferenceKeys.DSE_NEW_TAB_URL, null);
+        }
+
+        if (templateUrlService.isDefaultSearchEngineGoogle()) return null;
+
+        TemplateUrl templateUrl = templateUrlService.getDefaultSearchEngineTemplateUrl();
+        if (templateUrl == null) return null;
+
+        String newTabUrl = templateUrl.getNewTabURL();
+        return newTabUrl != null ? newTabUrl : templateUrl.getURL();
     }
 
     @VisibleForTesting
@@ -95,8 +126,8 @@ public class DseNewTabUrlManager {
         if (isDSEGoogle) {
             SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.DSE_NEW_TAB_URL);
         } else {
-            SharedPreferencesManager.getInstance().writeString(ChromePreferenceKeys.DSE_NEW_TAB_URL,
-                    DseNewTabUrlManagerUtils.getDSENewTabUrl(mTemplateUrlService));
+            SharedPreferencesManager.getInstance().writeString(
+                    ChromePreferenceKeys.DSE_NEW_TAB_URL, getDSENewTabUrl(mTemplateUrlService));
         }
     }
 
