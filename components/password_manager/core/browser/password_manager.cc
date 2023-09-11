@@ -432,8 +432,7 @@ void PasswordManager::OnPresaveGeneratedPassword(
     // Provisionally save entire |form_data| to make sure the form is parsed
     // properly afterwards (crbug.com/1170351).
     // TODO(crbug/1399524): Invoke this from SharedPasswordController.
-    form_manager->ProvisionallySave(form_data, driver,
-                                    base::OptionalToPtr(possible_username_));
+    form_manager->ProvisionallySave(form_data, driver, &possible_usernames_);
 #endif  // BUILDFLAG(IS_IOS)
   }
 }
@@ -468,7 +467,7 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
   // Reset |possible_username_| if the navigation cannot be a result of form
   // submission.
   if (!form_may_be_submitted)
-    possible_username_.reset();
+    possible_usernames_.Clear();
 
   for (std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
     if (form_may_be_submitted && manager->is_submitted()) {
@@ -478,7 +477,7 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
   }
   form_managers_.clear();
 
-  TryToFindPredictionsToPossibleUsernameData();
+  TryToFindPredictionsToPossibleUsernames();
   predictions_.clear();
   store_password_called_ = false;
 }
@@ -518,7 +517,7 @@ void PasswordManager::DropFormManagers() {
   form_managers_.clear();
   owned_submitted_form_manager_.reset();
   visible_forms_data_.clear();
-  TryToFindPredictionsToPossibleUsernameData();
+  TryToFindPredictionsToPossibleUsernames();
   predictions_.clear();
 }
 
@@ -625,10 +624,11 @@ void PasswordManager::OnUserModifiedNonPasswordField(
     bool is_likely_otp) {
   // |driver| might be empty on iOS or in tests.
   int driver_id = driver ? driver->GetId() : 0;
-  possible_username_.emplace(GetSignonRealm(driver->GetLastCommittedURL()),
-                             renderer_id, value, base::Time::Now(), driver_id,
-                             autocomplete_attribute_has_username,
-                             is_likely_otp);
+  possible_usernames_.Put(
+      PossibleUsernameFieldIdentifier(driver_id, renderer_id),
+      PossibleUsernameData(GetSignonRealm(driver->GetLastCommittedURL()),
+                           renderer_id, value, base::Time::Now(), driver_id,
+                           autocomplete_attribute_has_username, is_likely_otp));
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kForgotPasswordFormSupport)) {
@@ -801,21 +801,25 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
     return nullptr;
   }
 
-  TryToFindPredictionsToPossibleUsernameData();
-  const PossibleUsernameData* possible_username =
-      possible_username_ ? &possible_username_.value() : nullptr;
+  TryToFindPredictionsToPossibleUsernames();
   if (!matched_manager->ProvisionallySave(submitted_form, driver,
-                                          possible_username)) {
+                                          &possible_usernames_)) {
     return nullptr;
   }
 
   // |matched_manager->ProvisionallySave| returning true means that there is a
-  // nonempty password field. If such |matched_manager| contains
-  // |possible_username|, reset and do not consider for single username.
-  if (possible_username &&
-      matched_manager->ObservedFormHasField(possible_username->driver_id,
-                                            possible_username->renderer_id)) {
-    possible_username_.reset();
+  // nonempty password field. If such |matched_manager| contains any of
+  // possible usernames, clear it from single username candidates.
+  for (auto possible_username_iterator = possible_usernames_.begin();
+       possible_username_iterator != possible_usernames_.end();) {
+    if (matched_manager->ObservedFormHasField(
+            possible_username_iterator->first.driver_id,
+            possible_username_iterator->first.renderer_id)) {
+      possible_username_iterator =
+          possible_usernames_.Erase(possible_username_iterator);
+    } else {
+      ++possible_username_iterator;
+    }
   }
 
   // Set all other form managers to no submission state.
@@ -1389,13 +1393,14 @@ absl::optional<FormPredictions> PasswordManager::FindPredictionsForField(
   return absl::nullopt;
 }
 
-void PasswordManager::TryToFindPredictionsToPossibleUsernameData() {
-  if (!possible_username_ || possible_username_->form_predictions) {
-    return;
+void PasswordManager::TryToFindPredictionsToPossibleUsernames() {
+  for (auto& [unique_identifier, possible_username] : possible_usernames_) {
+    if (possible_username.form_predictions) {
+      continue;
+    }
+    possible_username.form_predictions = FindPredictionsForField(
+        unique_identifier.renderer_id, unique_identifier.driver_id);
   }
-
-  possible_username_->form_predictions = FindPredictionsForField(
-      possible_username_->renderer_id, possible_username_->driver_id);
 }
 
 void PasswordManager::ShowManualFallbackForSaving(

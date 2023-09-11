@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -28,6 +29,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_form_prediction_waiter.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
+#include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -88,14 +90,13 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // |submitted_form| and |driver|) then saves |submitted_form| to
   // |submitted_form_| field, sets |is_submitted| = true and returns true.
   // Otherwise returns false.
-  // If as a result of the parsing the username is not found, the
-  // |possible_username->value| is chosen as username if it looks like an
-  // username and came from the same domain as |submitted_form|.
-  // If |possible_username->value| matches username field value, try sending
-  // single username vote to the form |possible_username| belongs to.
-  bool ProvisionallySave(const autofill::FormData& submitted_form,
-                         const PasswordManagerDriver* driver,
-                         const PossibleUsernameData* possible_username);
+  // In case a username is missed from the form, heuristically determines if one
+  // of the |possible_usernames| outside of the form can be used as a username.
+  bool ProvisionallySave(
+      const autofill::FormData& submitted_form,
+      const PasswordManagerDriver* driver,
+      const base::LRUCache<PossibleUsernameFieldIdentifier,
+                           PossibleUsernameData>* possible_usernames);
 
   // If |submitted_form| is managed by *this then saves |submitted_form| to
   // |submitted_form_| field, sets |is_submitted| = true and returns true.

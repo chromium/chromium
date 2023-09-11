@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -761,7 +762,8 @@ void PasswordFormManager::CreatePendingCredentials() {
 bool PasswordFormManager::ProvisionallySave(
     const FormData& submitted_form,
     const PasswordManagerDriver* driver,
-    const PossibleUsernameData* possible_username) {
+    const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>*
+        possible_usernames) {
   DCHECK(DoesManage(submitted_form.unique_renderer_id, driver));
   DCHECK(client_->IsSavingAndFillingEnabled(submitted_form.url));
   std::unique_ptr<PasswordForm> parsed_submitted_form =
@@ -790,24 +792,29 @@ bool PasswordFormManager::ProvisionallySave(
   metrics_recorder_->set_possible_username_used(false);
   votes_uploader_.clear_single_username_vote_data();
 
-  // `possible_username` is considered for single username vote in 2 cases:
-  // 1) There is a password field and no username field in the current form.
-  // 2) There are both password and username fields, and the username value
-  // matches the username value (`possible_username`) in the single username
-  // form.
-  // TODO(crbug.com/4037883): The distinction between (1) and (2), i.e.
-  // `password_form_had_possible_username`, is used only to assess the impact of
-  // (2) with metrics. The variable can be removed once the metrics are not
-  // needed anymore.
-  bool password_form_had_possible_username =
-      possible_username && FormMatchesUsername(parsed_submitted_form_.get(),
-                                               possible_username->value);
-  if (IsPasswordFormWithoutUsername(
-          parsed_submitted_form_.get()) ||    // Case (1).
-      password_form_had_possible_username) {  // Case (2).
-    // TODO(crbug.com/959776): Reset `possible_username` after it's used.
-    HandleUsernameFirstFlow(possible_username,
-                            password_form_had_possible_username);
+  if (possible_usernames && !possible_usernames->empty()) {
+    // TODO: crbug.com/1470586 - Pick the most probable |possible_username|.
+    PossibleUsernameData possible_username =
+        possible_usernames->begin()->second;
+
+    // `possible_username` is considered for single username vote in 2 cases:
+    // 1) There is a password field and no username field in the current form.
+    // 2) There are both password and username fields, and the username value
+    // matches the username value (`possible_username`) in the single username
+    // form.
+    // TODO(crbug.com/4037883): The distinction between (1) and (2), i.e.
+    // `password_form_had_possible_username`, is used only to assess the impact
+    // of (2) with metrics. The variable can be removed once the metrics are not
+    // needed anymore.
+    bool password_form_had_possible_username = FormMatchesUsername(
+        parsed_submitted_form_.get(), possible_username.value);
+    if (IsPasswordFormWithoutUsername(
+            parsed_submitted_form_.get()) ||    // Case (1).
+        password_form_had_possible_username) {  // Case (2).
+      // TODO(crbug.com/959776): Reset `possible_username` after it's used.
+      HandleUsernameFirstFlow(&possible_username,
+                              password_form_had_possible_username);
+    }
   }
   HandleForgotPasswordFormData();
 

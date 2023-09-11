@@ -12,6 +12,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -31,6 +32,7 @@
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 class PrefRegistrySimple;
 
@@ -55,6 +57,10 @@ class PasswordFormManager;
 class PasswordManagerMetricsRecorder;
 struct PasswordForm;
 struct PossibleUsernameData;
+
+// If |kUsernameFirstFlowWithIntermediateValues| is enabled, the size of LRU
+// cache that stores all username candidates outside the form.
+constexpr int kMaxSingleUsernameFieldsToStore = 10;
 
 // Per-tab password manager. Handles creation and management of UI elements,
 // receiving password form data from the renderer and managing the password
@@ -205,6 +211,13 @@ class PasswordManager : public PasswordManagerInterface {
   void set_leak_factory(std::unique_ptr<LeakDetectionCheckFactory> factory) {
     leak_delegate_.set_leak_factory(std::move(factory));
   }
+
+  std::vector<std::pair<PossibleUsernameFieldIdentifier, PossibleUsernameData>>
+  possible_usernames() {
+    return std::vector<
+        std::pair<PossibleUsernameFieldIdentifier, PossibleUsernameData>>(
+        possible_usernames_.begin(), possible_usernames_.end());
+  }
 #endif  // defined(UNIT_TEST)
 
 #if BUILDFLAG(USE_BLINK)
@@ -320,9 +333,9 @@ class PasswordManager : public PasswordManagerInterface {
       int driver_id);
 
   //  If |possible_username_.form_predictions| is missing, this functions tries
-  //  to find predictions for the form which contains |possible_username_| in
+  //  to find predictions for the forms which contains |possible_usernames_| in
   //  |predictions_|.
-  void TryToFindPredictionsToPossibleUsernameData();
+  void TryToFindPredictionsToPossibleUsernames();
 
   // Handles a request to show manual fallback for password saving, i.e. the
   // omnibox icon with the anchored hidden prompt. todo
@@ -399,7 +412,14 @@ class PasswordManager : public PasswordManagerInterface {
   // Helper for making the requests on leak detection.
   LeakDetectionDelegate leak_delegate_;
 
-  absl::optional<PossibleUsernameData> possible_username_;
+  // Fields that can be considered for username in case of Username First Flow.
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames_ = base::LRUCache<PossibleUsernameFieldIdentifier,
+                                           PossibleUsernameData>(
+          base::FeatureList::IsEnabled(
+              password_manager::features::kUsernameFirstFlowStoreSeveralValues)
+              ? kMaxSingleUsernameFieldsToStore
+              : 1);
 };
 
 }  // namespace password_manager

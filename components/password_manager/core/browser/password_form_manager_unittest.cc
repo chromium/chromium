@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -559,6 +560,22 @@ class PasswordFormManagerTest : public testing::Test,
         StartUploadRequest(AllOf(SignatureIs(form_signature),
                                  UploadedSingleUsernameVoteTypeIs(vote_type)),
                            _, ServerFieldTypeSet{field_type}, _, _, _, _));
+  }
+  // Creates LRU cache simulating user modifying non-password field outside of
+  // the form.
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+  MakePossibleUsernamesCache(
+      std::vector<PossibleUsernameData> possible_usernames_data) {
+    base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+        cache = base::LRUCache<PossibleUsernameFieldIdentifier,
+                               PossibleUsernameData>(
+            possible_usernames_data.size());
+    for (auto possible_username_data : possible_usernames_data) {
+      cache.Put({{possible_username_data.driver_id,
+                  possible_username_data.renderer_id},
+                 possible_username_data});
+    }
+    return cache;
   }
 };
 
@@ -2468,8 +2485,11 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowProvisionalSave) {
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
 
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
+
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 
   // Without server predictions the username should not be taken from the
   // single username form.
@@ -2478,9 +2498,12 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowProvisionalSave) {
 
   // Create form predictions and set them to |possible_username_data|.
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+  possible_usernames.Put(
+      {{possible_username_data.driver_id, possible_username_data.renderer_id},
+       possible_username_data});
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 
   // Check that a username is chosen from |possible_username_data| now.
   EXPECT_EQ(possible_username,
@@ -2502,12 +2525,14 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 
   // |possible_username_data| has different domain than |submitted_form|. Check
   // that no username is chosen.
@@ -2528,6 +2553,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSignupForm) {
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   FormData submitted_form = observed_form_only_password_fields_;
   // Imitate sign-up flow: the only filled password field is a new password.
@@ -2535,7 +2562,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSignupForm) {
   submitted_form.fields[0].value = u"strongpassword";
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 
   // Check that single username is not chosen.
   EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
@@ -2570,13 +2597,15 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
   field_prediction.type = autofill::UNKNOWN_TYPE;
   predictions.fields.push_back(field_prediction);
   possible_username_data.form_predictions = predictions;
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   // Simulate submitting the form.
   FormData submitted_form = observed_form_;
   submitted_form.fields[1].value = possible_username;
   submitted_form.fields[2].value = u"strongpassword";
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 
   // Check that no SINGLE_USERNAME vote is sent (PASSWORD != SINGLE_USERNAME).
   auto expected_votes = ServerFieldTypeSet{autofill::PASSWORD};
@@ -2612,6 +2641,9 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
         /*driver_id=*/0,
         /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
     possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+    base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+        possible_usernames =
+            MakePossibleUsernamesCache({possible_username_data});
 
     // Simulate submitting a form without a username. Data from
     // |possible_username_data| will be taken for setting username.
@@ -2623,7 +2655,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     }
 
     ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                                 &possible_username_data));
+                                                 &possible_usernames));
     EXPECT_EQ(form_manager_->IsPasswordUpdate(), is_password_update);
 
     // Check that uploads for both username and password form happen.
@@ -2701,9 +2733,11 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
       /*driver_id=*/0,
       /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 
   // Check that uploads for both single username and sign-up form happen.
   testing::InSequence in_sequence;
@@ -2781,13 +2815,15 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
       .type = SINGLE_USERNAME,
   });
   possible_username_data.form_predictions = std::move(predictions);
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   // Simulate submission a form without username. Data from
   // |possible_username_data| will be taken for setting username.
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 
   // Simulate showing the prompt and saving the suggested value.
   // TODO(crbug/959776) Add a unittest for the case when this method is not
@@ -2863,9 +2899,11 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
       single_username_value, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/true);
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
   // Check that a username is not chosen from |possible_username_data|.
   EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
 
@@ -2914,12 +2952,15 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
          .type = prediction});
 
     possible_username_data.form_predictions = form_predictions;
+    base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+        possible_usernames =
+            MakePossibleUsernamesCache({possible_username_data});
 
     CreateFormManager(observed_form_only_password_fields_);
     fetcher_->NotifyFetchCompleted();
 
     ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                                 &possible_username_data));
+                                                 &possible_usernames));
 
     if (prediction == SINGLE_USERNAME) {
       // Check that a username is chosen from |possible_username_data|.
@@ -2931,6 +2972,47 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
           form_manager_->GetPendingCredentials().username_value.empty());
     }
   }
+}
+
+// Tests that the most recent possible username is used, even if there
+// is a `SINGLE_USERNAME` server prediction for a less recent possible username
+// in Username First Flow.
+// TODO: crbug.com/1470586 - Update the test once server predictions are
+// prioritized.
+TEST_P(PasswordFormManagerTest, PossibleUsernamesPrioritizeMostRecent) {
+  const std::u16string possible_username_with_prediction =
+      u"possible_username_with_prediction";
+  PossibleUsernameData possible_username_data_with_prediction(
+      saved_match_.signon_realm, autofill::FieldRendererId(102u),
+      possible_username_with_prediction, base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  const std::u16string possible_username_without_prediction =
+      u"possible_username_without_prediction";
+  PossibleUsernameData possible_username_data_without_prediction(
+      saved_match_.signon_realm, autofill::FieldRendererId(103u),
+      possible_username_without_prediction, base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  FormData submitted_form = observed_form_only_password_fields_;
+  submitted_form.fields[0].value = u"strongpassword";
+
+  possible_username_data_with_prediction.form_predictions =
+      MakeSingleUsernamePredictions();
+  // The most recent username doesn't have a prediction, while the least recent
+  // has.
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache(
+          {possible_username_data_with_prediction,
+           possible_username_data_without_prediction});
+
+  CreateFormManager(observed_form_only_password_fields_);
+  fetcher_->NotifyFetchCompleted();
+
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                               &possible_usernames));
+  EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
 }
 
 // Tests that boolean representing autocomplete = "username" is taken into
@@ -2955,10 +3037,12 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameFromAutocomplete) {
       single_username_value, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/true,
       /*is_likely_otp=*/false);
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   // Provisionally save the form on user input.
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 
   // Check that a username is chosen from |possible_username_data|.
   EXPECT_EQ(single_username_value,
@@ -2985,10 +3069,12 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTPWithServerOverride) {
       /*is_likely_otp=*/false);
   // Create form predictions and set them to |possible_username_data|.
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   // Provisionally save the form on user input.
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 
   // Check that a username is chosen from |possible_username_data|.
   EXPECT_EQ(possible_username,
@@ -3995,6 +4081,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
@@ -4003,7 +4091,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
               CreatePendingCredentials(FormHasUsernameValue(possible_username),
                                        _, _, _, _));
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
 }
 
 // Tests that username is not taken when a possible username is not valid.
@@ -4020,6 +4108,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
@@ -4027,7 +4117,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   EXPECT_CALL(*mock_password_save_manager(), CreatePendingCredentials)
       .WillOnce(SaveArg<0>(&parsed_submitted_form));
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+                                               &possible_usernames));
   EXPECT_TRUE(parsed_submitted_form.username_value.empty());
 }
 
