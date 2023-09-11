@@ -21,10 +21,5 @@ if (use_goma && goma_dir == "") {
   goma_dir = exec_script("get_goma_dir.py", [], "string")
 }
 
-declare_args() {
-  # TODO(crbug.com/726475): true if use_goma = true in the future.
-  use_java_goma = false
-}
-
 assert(!is_win || !use_goma || is_clang,
        "cl.exe does not work on goma, use clang")

@@ -3111,13 +3111,6 @@ if (enable_java_templates) {
         ]
       }
 
-      if (use_java_goma) {
-        args += [ "--gomacc-path=$goma_dir/gomacc" ]
-
-        # Override the default action_pool when goma is enabled.
-        pool = "//build/config/android:goma_javac_pool"
-      }
-
       # Flag enable_kythe_annotations requires
       # checkout_android_prebuilts_build_tools=True in .gclient.
       if (enable_kythe_annotations && !invoker.enable_errorprone) {
@@ -3245,13 +3238,6 @@ if (enable_java_templates) {
       }
 
       args += [ "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)" ]
-
-      if (use_java_goma) {
-        args += [ "--gomacc-path=$goma_dir/gomacc" ]
-
-        # Override the default action_pool when goma is enabled.
-        pool = "//build/config/android:goma_javac_pool"
-      }
 
       if (_chromium_code) {
         args += [ "--chromium-code" ]

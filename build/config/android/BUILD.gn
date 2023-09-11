@@ -144,11 +144,6 @@ config("default_orderfile_instrumentation") {
 }
 
 if (current_toolchain == default_toolchain) {
-  pool("goma_javac_pool") {
-    # Override action_pool when goma is enabled for javac.
-    depth = 10000
-  }
-
   # nocompile tests share output directory to avoid them all needing to rebuild
   # things. But this also means they can't run in parallel.
   pool("nocompile_pool") {
