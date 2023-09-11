@@ -15,8 +15,7 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:focusable="true"
-        android:screenReaderFocusable="true"
-        android:background="@drawable/status_view_ripple">
+        android:screenReaderFocusable="true">
 
         <!-- End padding is adjusted programmatically. -->
         <ViewStub

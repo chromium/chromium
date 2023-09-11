@@ -26,6 +26,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -105,11 +106,27 @@ public class StatusView extends LinearLayout {
         configureAccessibilityDescriptions();
 
         // Set tooltip text in StatusView.
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            TooltipCompat.setTooltipText((View) this,
-                    mStatusIconView.getContext().getString(R.string.accessibility_menu_info));
-        }
+        setTooltipText(mStatusIconView.getContext().getString(R.string.accessibility_menu_info));
     }
+
+    /**
+     * Only set tooltip and hover highlight text when StatusIconView is visible.
+     */
+    // @TODO(crbug.com/1481178): Move this to StatusViewBinder and StatusProperties.
+    public void setHoverActionOnVisibilityChange() {
+        if (isSearchEngineStatusIconVisible()) {
+            // Set tooltip text.
+            setTooltipText(
+                    mStatusIconView.getContext().getString(R.string.accessibility_menu_info));
+
+            // Set hover highlight.
+            setBackground(
+                    AppCompatResources.getDrawable(getContext(), R.drawable.status_view_ripple));
+        } else {
+            setTooltipText(null);
+            setBackground(null);
+        }
+    };
 
     /**
      * Return whether search engine status icon is visible.
@@ -167,7 +184,10 @@ public class StatusView extends LinearLayout {
             mAnimatingStatusIconHide = false;
             mAnimatingStatusIconShow = true;
             keepControlsShownForAnimation();
-            mStatusIconView.setVisibility(View.VISIBLE);
+
+            // Set StatusIcon visibility and check whether we should set hover action on StatusView.
+            setStatusIconVisibility(View.VISIBLE);
+
             mIconView.animate()
                     .alpha(1.0f)
                     .setDuration(getIconAnimationDuration())
@@ -193,7 +213,10 @@ public class StatusView extends LinearLayout {
                     .setDuration(mAnimationsEnabled ? getIconAnimationDuration() : 0)
                     .alpha(0.0f)
                     .withEndAction(() -> {
-                        mStatusIconView.setVisibility(View.GONE);
+                        // Set StatusIcon visibility and check whether we should set hover action on
+                        // StatusView.
+                        setStatusIconVisibility(View.GONE);
+
                         mIconView.setAlpha(1f);
                         mAnimatingStatusIconHide = false;
                         allowBrowserControlsHide();
@@ -266,6 +289,13 @@ public class StatusView extends LinearLayout {
                 mIconView.setImageDrawable(targetIcon);
             }
         }
+    }
+
+    private void setStatusIconVisibility(int visibility) {
+        mStatusIconView.setVisibility(visibility);
+
+        // Set tooltip text and hover highlight when search engine StatusIcon is visible.
+        setHoverActionOnVisibilityChange();
     }
 
     /** Returns a rotated version of the icon passed in. */
@@ -349,7 +379,9 @@ public class StatusView extends LinearLayout {
         // Check if layout was requested before changing our child view.
         boolean wasLayoutPreviouslyRequested = isLayoutRequested();
 
-        mStatusIconView.setVisibility(showIcon ? VISIBLE : GONE);
+        // Set StatusIcon visibility and check whether we should set hover action on StatusView.
+        setStatusIconVisibility(showIcon ? VISIBLE : GONE);
+
         updateTouchDelegate();
         if (mIsAnimatingStatusIconChange && !showIcon) {
             // If the icon view is hidden before it gets a chance to draw, our animation status will
@@ -425,11 +457,18 @@ public class StatusView extends LinearLayout {
     /**
      * Specify visibility of the verbose status text.
      */
-    void setVerboseStatusTextVisible(boolean visible) {
+    public void setVerboseStatusTextVisible(boolean visible) {
         int visibility = visible ? View.VISIBLE : View.GONE;
         mVerboseStatusTextView.setVisibility(visibility);
         mSeparatorView.setVisibility(visibility);
         mStatusExtraSpace.setVisibility(visibility);
+
+        if (visibility != View.VISIBLE) {
+            setBackground(
+                    AppCompatResources.getDrawable(getContext(), R.drawable.status_view_ripple));
+        } else {
+            setBackground(null);
+        }
     }
 
     /**
@@ -550,6 +589,15 @@ public class StatusView extends LinearLayout {
     private boolean isIconVisible() {
         return mStatusIconDrawable != null && mStatusIconView.getIconVisibility() != GONE
                 && mIconView.getAlpha() != 0;
+    }
+
+    /**
+     * Set tooltip text on StatusView for API >= 26.
+     */
+    private void setTooltipText(String tooltip) {
+        if (VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            TooltipCompat.setTooltipText((View) this, tooltip);
+        }
     }
 
     private void keepControlsShownForAnimation() {
