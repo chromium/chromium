@@ -33,13 +33,13 @@ const BIDDING_LOGIC_SCRIPT_ERRORS = [
   // Bad return values:
   'generateBid=return 5;',
   'generateBid=return "Foo";',
-  'generateBid=return interestGroup.ads[0].renderUrl;',
+  'generateBid=return interestGroup.ads[0].renderURL;',
   'generateBid=return {bid: 1, render: "https://not-in-ads-array.test/"};',
   'generateBid=return {bid: 1};',
-  'generateBid=return {render: interestGroup.ads[0].renderUrl};',
+  'generateBid=return {render: interestGroup.ads[0].renderURL};',
   // These are not bidding rather than errors.
-  'generateBid=return {bid:0, render: interestGroup.ads[0].renderUrl};',
-  'generateBid=return {bid:-1, render: interestGroup.ads[0].renderUrl};',
+  'generateBid=return {bid:0, render: interestGroup.ads[0].renderURL};',
+  'generateBid=return {bid:-1, render: interestGroup.ads[0].renderURL};',
 ];
 
 const DECISION_LOGIC_SCRIPT_ERRORS = [

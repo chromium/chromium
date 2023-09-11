@@ -6614,7 +6614,7 @@ TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
                                          std::string(R"(
 function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                  browserSignals) {
-  let signal = trustedScoringSignals.renderUrl[browserSignals.renderURL];
+  let signal = trustedScoringSignals.renderURL[browserSignals.renderURL];
   if (browserSignals.dataVersion !== 2) {
     throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
   }

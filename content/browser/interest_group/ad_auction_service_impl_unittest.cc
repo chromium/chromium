@@ -8432,13 +8432,13 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin(
       {test_origin, "cars"},
-      R"({"renderUrl": "https://c.test/ad.html", "adRenderId": "1234"})");
+      R"({"renderURL": "https://c.test/ad.html", "adRenderId": "1234"})");
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin(
-      {test_origin, "cars"}, R"({"renderUrl": "https://c.test/ad2.html"})");
+      {test_origin, "cars"}, R"({"renderURL": "https://c.test/ad2.html"})");
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin({test_origin, "cars"},
-                                   R"({"renderUrl": "corrupt JSON)");
+                                   R"({"renderURL": "corrupt JSON)");
   task_environment()->FastForwardBy(base::Seconds(1));
 
   std::vector<uint8_t> msg;
@@ -8541,10 +8541,10 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
       test_origin_a.GetURL().Resolve("/example.html"));
   manager_->RecordInterestGroupWin(
       {test_origin_a, "cars"},
-      R"({"renderUrl": "https://c.test/ad.html", "adRenderId": "1234"})");
+      R"({"renderURL": "https://c.test/ad.html", "adRenderId": "1234"})");
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin(
-      {test_origin_a, "cars"}, R"({"renderUrl": "https://c.test/ad2.html"})");
+      {test_origin_a, "cars"}, R"({"renderURL": "https://c.test/ad2.html"})");
 
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->JoinInterestGroup(
@@ -8734,10 +8734,10 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithOmitAds) {
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin(
       {test_origin, "cars"},
-      R"({"renderUrl": "https://c.test/ad.html", "adRenderId": "1234"})");
+      R"({"renderURL": "https://c.test/ad.html", "adRenderId": "1234"})");
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin(
-      {test_origin, "cars"}, R"({"renderUrl": "https://c.test/ad2.html"})");
+      {test_origin, "cars"}, R"({"renderURL": "https://c.test/ad2.html"})");
 
   std::vector<uint8_t> msg;
   base::flat_map<url::Origin, std::vector<std::string>> group_names;
@@ -8787,10 +8787,10 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin(
       {test_origin, "cars"},
-      R"({"renderUrl": "https://c.test/ad.html", "adRenderId": "1234"})");
+      R"({"renderURL": "https://c.test/ad.html", "adRenderId": "1234"})");
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin(
-      {test_origin, "cars"}, R"({"renderUrl": "https://c.test/ad2.html"})");
+      {test_origin, "cars"}, R"({"renderURL": "https://c.test/ad2.html"})");
 
   std::vector<uint8_t> msg;
   base::flat_map<url::Origin, std::vector<std::string>> group_names;
@@ -8805,19 +8805,20 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAUOlZ3ZlcnNpb24AaXB1Ymxpc2hlcm5odHRwczovL2EudGVzdGxnZW5lcmF0aW9uSWR4"
-      "JDAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMG5pbnRlcmVzdEdyb3Vwc6Fu"
-      "aHR0cHM6Ly9hLnRlc3RYth+"
-      "LCAAAAAAAAAB1zjEOgkAQBVDxJJ4AIlrZWhgTK4yxHnZGdhF2ycwC0Q5uonJQDYkx0dj86v+"
-      "83z0UoHSDLskDgodzVRAIzYQsGn4F8SHZNdr7SlZRpEJP4iPAUPuyMGKutGFXV+"
-      "rkXA6YjIMt4jxeLNFCSaiAxabsWiHem8xCIUPGpMiqy1SnBteutn6iK6bmaKz0/"
-      "eT2hrlof+B4lPvg/"
-      "in9eff9x+"
-      "TO2FELntrMPCL3AAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AgAAAT+"
+      "lZ3ZlcnNpb24AaXB1Ymxpc2hlcm5odHRwczovL2EudGVzdGxnZW5lcmF0aW9uSWR4JDAwMDA"
+      "wMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMG5pbnRlcmVzdEdyb3Vwc6FuaHR0cHM"
+      "6Ly9hLnRlc3RYsh+"
+      "LCAAAAAAAAACFzjEOgkAQhWHwJJ4AIlrZWhgTK4yxHnZGdhF2ycwC0Q5uonJQDY2JFjave/"
+      "n+/"
+      "qkApR91RR4QPFzqkkBoLmTR8HuIj+m+"
+      "1d7Xso5jFXkSHwNG2lelEXOjLbumVmfnCsB0OuwQF8lyhRYqQgUsNmPXCfHB5BZKGXMmRVZd"
+      "ZzozuHGN9YGumdqTsTIMwf0Ddz9wMslD+"
+      "Phb991jCmfspIUvY92wlPcAAAB0ZW5hYmxlRGVidWdSZXBvcnRpbmf1AAAAAAAAAAAAAAAAA"
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAA=";
+      "AAAAAAAAAAAAAAAAAA=";
   EXPECT_EQ(1, absl::popcount(msg.size()));  // Should be a power of 2.
   EXPECT_EQ(expected, base::Base64Encode(msg));
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -8850,10 +8851,10 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin(
       {test_origin, "cars"},
-      R"({"renderUrl": "https://c.test/ad.html", "adRenderId": "1234"})");
+      R"({"renderURL": "https://c.test/ad.html", "adRenderId": "1234"})");
   task_environment()->FastForwardBy(base::Seconds(1));
   manager_->RecordInterestGroupWin(
-      {test_origin, "cars"}, R"({"renderUrl": "https://c.test/ad2.html"})");
+      {test_origin, "cars"}, R"({"renderURL": "https://c.test/ad2.html"})");
   task_environment()->FastForwardBy(base::Seconds(1));
 
   manager_->JoinInterestGroup(

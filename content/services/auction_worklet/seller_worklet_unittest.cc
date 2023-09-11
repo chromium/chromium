@@ -1645,7 +1645,7 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
   // milliseconds before the request is send over the wire, waiting for other
   // requests.
   RunScoreAdWithReturnValueExpectingResultInExactTime(
-      "trustedScoringSignals.renderUrl['https://render.url.test/']",
+      "trustedScoringSignals.renderURL['https://render.url.test/']",
       4 /* Magic value in trustedScoringSignals */,
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
@@ -1682,7 +1682,7 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
       kTrustedScoringSignalsResponse, /*data_version=*/5);
 
   RunScoreAdWithReturnValueExpectingResultInExactTime(
-      "trustedScoringSignals.renderUrl['https://render.url.test/']",
+      "trustedScoringSignals.renderURL['https://render.url.test/']",
       4 /* Magic value in trustedScoringSignals */,
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
@@ -1922,7 +1922,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsNotBatched) {
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript(
-          "trustedScoringSignals.renderUrl[browserSignals.renderURL]"));
+          "trustedScoringSignals.renderURL[browserSignals.renderURL]"));
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
   auto seller_worklet = CreateWorklet();
@@ -1996,7 +1996,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched1) {
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript(
-          "trustedScoringSignals.renderUrl[browserSignals.renderURL]"));
+          "trustedScoringSignals.renderURL[browserSignals.renderURL]"));
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
   auto seller_worklet = CreateWorklet();
@@ -2103,7 +2103,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched2) {
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript(
-          "trustedScoringSignals.renderUrl[browserSignals.renderURL]"));
+          "trustedScoringSignals.renderURL[browserSignals.renderURL]"));
   task_environment_.RunUntilIdle();
 
   // Provide a single response for the merged URL request.
@@ -2201,7 +2201,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript(
-          "trustedScoringSignals.renderUrl[browserSignals.renderURL]"));
+          "trustedScoringSignals.renderURL[browserSignals.renderURL]"));
 
   // All ScoreAd() calls should succeed with the expected scores.
   run_loop.Run();

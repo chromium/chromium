@@ -79,23 +79,23 @@ async function generateURNFromFledgeRawURL(
 
   const ad_components_list = nested_urls.map((url) => {
     return ad_with_size ?
-      { renderUrl: url, sizeGroup: "group1" } :
-      { renderUrl: url }
+      { renderURL: url, sizeGroup: "group1" } :
+      { renderURL: url }
   });
 
   let interestGroup =
       {
         name: 'testAd1',
         owner: location.origin,
-    biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
-        ads: [{renderUrl: href, bid: 1}],
+        biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
+        ads: [{renderURL: href, bid: 1}],
         userBiddingSignals: {biddingToken: bidding_token},
         trustedBiddingSignalsKeys: ['key1'],
         adComponents: ad_components_list,
       };
 
   let biddingURLParams =
-    new URLSearchParams(interestGroup.biddingLogicURL.search);
+      new URLSearchParams(interestGroup.biddingLogicURL.search);
   if (requested_size)
     biddingURLParams.set(
         'requested-size', requested_size[0] + '-' + requested_size[1]);
@@ -462,8 +462,8 @@ async function readValueFromServer(key) {
   // Resolve the key if it is a Promise.
   key = await key;
 
-  const serverUrl = `${STORE_URL}?key=${key}`;
-  const response = await fetch(serverUrl);
+  const serverURL = `${STORE_URL}?key=${key}`;
+  const response = await fetch(serverURL);
   if (!response.ok)
     throw new Error('An error happened in the server');
   const value = await response.text();
@@ -496,8 +496,8 @@ async function nextValueFromServer(key) {
 
 // Reads the data from the latest automatic beacon sent to the server.
 async function readAutomaticBeaconDataFromServer() {
-  const serverUrl = `${BEACON_URL}`;
-  const response = await fetch(serverUrl);
+  const serverURL = `${BEACON_URL}`;
+  const response = await fetch(serverURL);
   if (!response.ok)
     throw new Error('An error happened in the server');
   const value = await response.text();
@@ -530,8 +530,8 @@ async function writeValueToServer(key, value, origin = '') {
   // Resolve the key if it is a Promise.
   key = await key;
 
-  const serverUrl = `${origin}${STORE_URL}?key=${key}&value=${value}`;
-  await fetch(serverUrl, {"mode": "no-cors"});
+  const serverURL = `${origin}${STORE_URL}?key=${key}&value=${value}`;
+  await fetch(serverURL, {"mode": "no-cors"});
 }
 
 // Simulates a user gesture.

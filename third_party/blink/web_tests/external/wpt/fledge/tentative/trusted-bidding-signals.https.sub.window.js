@@ -42,9 +42,9 @@ async function runTrustedBiddingSignalsDataVersionTest(
               `if (!(${check})) return false;`,
           reportWin:
               `if (!(${check}))
-                sendReportTo('${createBidderReportUrl(uuid, 'error')}');
+                sendReportTo('${createBidderReportURL(uuid, 'error')}');
               else
-                sendReportTo('${createBidderReportUrl(uuid)}');` });
+                sendReportTo('${createBidderReportURL(uuid)}');` });
   await joinInterestGroup(test, uuid, interestGroupOverrides);
 
   const auctionConfigOverrides = {
@@ -55,13 +55,12 @@ async function runTrustedBiddingSignalsDataVersionTest(
                 return false;`,
           reportResult:
               `if (browserSignals.dataVersion !== undefined)
-                 sendReportTo('${createSellerReportUrl(uuid, 'error')}')
-               sendReportTo('${createSellerReportUrl(uuid)}')`,
-        })
+                 sendReportTo('${createSellerReportURL(uuid, 'error')}')
+               sendReportTo('${createSellerReportURL(uuid)}')`, })
   }
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
   await waitForObservedRequests(
-      uuid, [createBidderReportUrl(uuid), createSellerReportUrl(uuid)]);
+      uuid, [createBidderReportURL(uuid), createSellerReportURL(uuid)]);
 }
 
 promise_test(async test => {

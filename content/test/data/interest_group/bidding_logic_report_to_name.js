@@ -7,7 +7,7 @@ function generateBid(
     browserSignals) {
   const ad = interestGroup.ads[0];
   forDebuggingOnly.reportAdAuctionWin(interestGroup.name + '_debug_win_report');
-  return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL};
 }
 
 function reportWin(

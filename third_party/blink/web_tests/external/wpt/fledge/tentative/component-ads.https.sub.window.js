@@ -7,14 +7,14 @@
 
 // Creates a tracker URL for a component ad. These are fetched from component ad URLs.
 function createComponentAdTrackerURL(uuid, id) {
-  return createTrackerUrl(window.location.origin, uuid, 'track_get',
+  return createTrackerURL(window.location.origin, uuid, 'track_get',
                           `component_ad_${id}`)
 }
 
 // Returns a component ad render URL that fetches the correspondinding component ad
 // tracker URL.
 function createComponentAdRenderURL(uuid, id) {
-  return createRenderUrl(
+  return createRenderURL(
       uuid,
       `fetch("${createComponentAdTrackerURL(uuid, id)}");`);
 }
@@ -51,7 +51,7 @@ async function runComponentAdLoadingTest(test, uuid, numComponentAdsInInterestGr
     interestGroupAdComponents.push(adComponent);
   }
 
-  const renderURL = createRenderUrl(
+  const renderURL = createRenderURL(
       uuid,
       `// "status" is passed to the beacon URL, to be verified by waitForObservedRequests().
        let status = "ok";
@@ -79,7 +79,7 @@ async function runComponentAdLoadingTest(test, uuid, numComponentAdsInInterestGr
   }
 
   // In these tests, the bidder should always request a beacon URL.
-  let expectedTrackerURLs = [`${createBidderBeaconUrl(uuid)}, body: ok`];
+  let expectedTrackerURLs = [`${createBidderBeaconURL(uuid)}, body: ok`];
   // Figure out which, if any, elements of "componentAdsToLoad" correspond to
   // component ads listed in bid.adComponents, and for those ads, add a tracker URL
   // to "expectedTrackerURLs".
@@ -107,7 +107,7 @@ async function runComponentAdLoadingTest(test, uuid, numComponentAdsInInterestGr
                    }
                    return ${JSON.stringify(bid)}`,
               reportWin:
-                  `registerAdBeacon({beacon: '${createBidderBeaconUrl(uuid)}'});` }),
+                  `registerAdBeacon({beacon: '${createBidderBeaconURL(uuid)}'});` }),
         ads: [{renderURL: renderURL}],
         adComponents: interestGroupAdComponents});
 
@@ -136,7 +136,7 @@ async function runComponentAdLoadingTest(test, uuid, numComponentAdsInInterestGr
 promise_test(async test => {
   const uuid = generateUuid(test);
 
-  const renderURL = createRenderUrl(
+  const renderURL = createRenderURL(
     uuid,
     `let status = "ok";
      const nestedConfigsLength = window.fence.getNestedConfigs().length
@@ -154,7 +154,7 @@ promise_test(async test => {
               generateBid:
                   'if (interestGroup.componentAds !== undefined) throw "unexpected componentAds"',
               reportWin:
-                  `registerAdBeacon({beacon: "${createBidderBeaconUrl(uuid)}"});` }),
+                  `registerAdBeacon({beacon: "${createBidderBeaconURL(uuid)}"});` }),
         ads: [{renderUrl: renderURL}]});
   await runBasicFledgeAuctionAndNavigate(
       test, uuid,
@@ -162,7 +162,7 @@ promise_test(async test => {
         uuid,
         { scoreAd: `if (browserSignals.adComponents !== undefined)
                       throw "adComponents should be undefined"`})});
-  await waitForObservedRequests(uuid, [`${createBidderBeaconUrl(uuid)}, body: ok`]);
+  await waitForObservedRequests(uuid, [`${createBidderBeaconURL(uuid)}, body: ok`]);
 }, 'Group has no component ads, no adComponents in bid.');
 
 promise_test(async test => {
@@ -321,7 +321,7 @@ promise_test(async test => {
 
 promise_test(async test => {
   const uuid = generateUuid(test);
-  const renderURL = createRenderUrl(uuid);
+  const renderURL = createRenderURL(uuid);
 
   let adComponents = [];
   let adComponentsList = [];
@@ -347,7 +347,7 @@ promise_test(async test => {
 
 promise_test(async test => {
   const uuid = generateUuid(test);
-  const renderURL = createRenderUrl(uuid);
+  const renderURL = createRenderURL(uuid);
 
   let adComponents = [];
   let adComponentsList = [];
@@ -378,14 +378,14 @@ promise_test(async test => {
   // which should not be sent (but not throw an exception), and then request a
   // a tracker URL via fetch, which should be requested from the server.
   const componentRenderURL =
-      createRenderUrl(
+      createRenderURL(
         uuid,
         `window.fence.reportEvent({eventType: "beacon",
                                    eventData: "Should not be sent",
                                    destination: ["buyer", "seller"]});
          fetch("${createComponentAdTrackerURL(uuid, 0)}");`);
 
-  const renderURL = createRenderUrl(
+  const renderURL = createRenderURL(
       uuid,
       `let fencedFrame = document.createElement("fencedframe");
        fencedFrame.mode = "opaque-ads";
@@ -415,7 +415,7 @@ promise_test(async test => {
                            render: "${renderURL}",
                            adComponents: ["${componentRenderURL}"]};`,
               reportWin:
-                  `registerAdBeacon({beacon: '${createBidderBeaconUrl(uuid)}'});` }),
+                  `registerAdBeacon({beacon: '${createBidderBeaconURL(uuid)}'});` }),
         ads: [{renderURL: renderURL}],
         adComponents: [{renderURL: componentRenderURL}]});
 
@@ -423,13 +423,13 @@ promise_test(async test => {
     test, uuid,
     {decisionLogicURL: createDecisionScriptURL(
         uuid,
-        { reportResult: `registerAdBeacon({beacon: '${createSellerBeaconUrl(uuid)}'});`})});
+        { reportResult: `registerAdBeacon({beacon: '${createSellerBeaconURL(uuid)}'});` }) });
 
   // Only the renderURL should have sent any beacons, though the component ad should have sent
   // a tracker URL fetch request.
   await waitForObservedRequests(uuid, [createComponentAdTrackerURL(uuid, 0),
-                                       `${createBidderBeaconUrl(uuid)}, body: top-ad`,
-                                       `${createSellerBeaconUrl(uuid)}, body: top-ad`]);
+                                       `${createBidderBeaconURL(uuid)}, body: top-ad`,
+                                       `${createSellerBeaconURL(uuid)}, body: top-ad`]);
 
 
 }, 'Reports not sent from component ad.');

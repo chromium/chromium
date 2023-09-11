@@ -20,7 +20,7 @@ const TRUSTED_SCORING_SIGNALS_URL =
 // `dispatch` affects what the tracker script does.
 // `id` can be used to uniquely identify tracked requests. It has no effect
 //     on behavior of the script; it only serves to make the URL unique.
-function createTrackerUrl(origin, uuid, dispatch, id = null) {
+function createTrackerURL(origin, uuid, dispatch, id = null) {
   let url = new URL(`${origin}${BASE_PATH}resources/request-tracker.py`);
   url.searchParams.append('uuid', uuid);
   url.searchParams.append('dispatch', dispatch);
@@ -30,25 +30,25 @@ function createTrackerUrl(origin, uuid, dispatch, id = null) {
 }
 
 // Create tracked bidder/seller URLs. The only difference is the prefix added
-// to the `id` passed to createTrackerUrl. The optional `id` field allows
+// to the `id` passed to createTrackerURL. The optional `id` field allows
 // multiple bidder/seller report URLs to be distinguishable from each other.
-function createBidderReportUrl(uuid, id = '1') {
-  return createTrackerUrl(window.location.origin, uuid, `track_get`,
+function createBidderReportURL(uuid, id = '1') {
+  return createTrackerURL(window.location.origin, uuid, `track_get`,
                           `bidder_report_${id}`);
 }
-function createSellerReportUrl(uuid, id = '1') {
-  return createTrackerUrl(window.location.origin, uuid, `track_get`,
+function createSellerReportURL(uuid, id = '1') {
+  return createTrackerURL(window.location.origin, uuid, `track_get`,
                           `seller_report_${id}`);
 }
 
-// Much like above ReportUrl methods, except designed for beacons, which
+// Much like above ReportURL methods, except designed for beacons, which
 // are expected to be POSTs.
-function createBidderBeaconUrl(uuid, id = '1') {
-  return createTrackerUrl(window.location.origin, uuid, `track_post`,
+function createBidderBeaconURL(uuid, id = '1') {
+  return createTrackerURL(window.location.origin, uuid, `track_post`,
                           `bidder_beacon_${id}`);
 }
-function createSellerBeaconUrl(uuid, id = '1') {
-  return createTrackerUrl(window.location.origin, uuid, `track_post`,
+function createSellerBeaconURL(uuid, id = '1') {
+  return createTrackerURL(window.location.origin, uuid, `track_post`,
                           `seller_beacon_${id}`);
 }
 
@@ -58,8 +58,8 @@ function createSellerBeaconUrl(uuid, id = '1') {
 function generateUuid(test) {
   let uuid = token();
   test.add_cleanup(async () => {
-    let cleanupUrl = createTrackerUrl(window.location.origin, uuid, 'clean_up');
-    let response = await fetch(cleanupUrl, {credentials: 'omit', mode: 'cors'});
+    let cleanupURL = createTrackerURL(window.location.origin, uuid, 'clean_up');
+    let response = await fetch(cleanupURL, {credentials: 'omit', mode: 'cors'});
     assert_equals(await response.text(), 'cleanup complete',
                   `Sever state cleanup failed`);
   });
@@ -76,18 +76,18 @@ function generateUuid(test) {
 // If any other strings are received from the tracking script, or the tracker
 // script reports an error, fails the test.
 async function waitForObservedRequests(uuid, expectedRequests) {
-  let trackedRequestsUrl = createTrackerUrl(window.location.origin, uuid,
+  let trackedRequestsURL = createTrackerURL(window.location.origin, uuid,
                                             'request_list');
   // Sort array for easier comparison, since order doesn't matter.
   expectedRequests.sort();
   while (true) {
-    let response = await fetch(trackedRequestsUrl,
+    let response = await fetch(trackedRequestsURL,
                                {credentials: 'omit', mode: 'cors'});
     let trackerData = await response.json();
 
     // Fail on fetch error.
     if (trackerData.error) {
-      throw trackedRequestsUrl + ' fetch failed:' +
+      throw trackedRequestsURL + ' fetch failed:' +
           JSON.stringify(trackerData);
     }
 
@@ -140,7 +140,7 @@ function createBiddingScriptURL(params = {}) {
 }
 
 // Creates a decision script with the provided code in the method bodies. The
-// decision script's scoreAd() method will reject ads with renderUrls that
+// decision script's scoreAd() method will reject ads with renderURLs that
 // don't ends with "uuid", and will return a score equal to the bid, after the
 // passed in code in the "scoreAd" input argument has been run, unless it
 // returns something or throws.
@@ -158,12 +158,12 @@ function createDecisionScriptURL(uuid, params = {}) {
   return url.toString();
 }
 
-// Creates a renderUrl for an ad that runs the passed in "script". "uuid" has
+// Creates a renderURL for an ad that runs the passed in "script". "uuid" has
 // no effect, beyond making the URL distinct between tests, and being verified
 // by the decision logic script before accepting a bid. "uuid" is expected to
 // be last.  "signalsParams" also has no effect, but is used by
 // trusted-scoring-signals.py to affect the response.
-function createRenderUrl(uuid, script, signalsParams) {
+function createRenderURL(uuid, script, signalsParams) {
   let url = new URL(`${BASE_URL}resources/fenced-frame.sub.py`);
   if (script)
     url.searchParams.append('script', script);
@@ -175,8 +175,8 @@ function createRenderUrl(uuid, script, signalsParams) {
 
 // Joins an interest group that, by default, is owned by the current frame's
 // origin, is named DEFAULT_INTEREST_GROUP_NAME, has a bidding script that
-// issues a bid of 9 with a renderUrl of "https://not.checked.test/${uuid}",
-// and sends a report to createBidderReportUrl(uuid) if it wins. Waits for the
+// issues a bid of 9 with a renderURL of "https://not.checked.test/${uuid}",
+// and sends a report to createBidderReportURL(uuid) if it wins. Waits for the
 // join command to complete. Adds cleanup command to `test` to leave the
 // interest group when the test completes.
 //
@@ -188,8 +188,8 @@ async function joinInterestGroup(test, uuid, interestGroupOverrides = {},
     owner: window.location.origin,
     name: DEFAULT_INTEREST_GROUP_NAME,
     biddingLogicURL: createBiddingScriptURL(
-      { reportWin: `sendReportTo('${createBiddingScriptURL(uuid)}');` }),
-    ads: [{renderUrl: createRenderUrl(uuid)}],
+      { reportWin: `sendReportTo('${createBidderReportURL(uuid)}');` }),
+    ads: [{ renderURL: createRenderURL(uuid) }],
     ...interestGroupOverrides
   };
 
@@ -215,7 +215,7 @@ async function leaveInterestGroup(interestGroupOverrides = {}) {
 // current frame's origin, and the only buyer is as well. The seller script
 // rejects bids for URLs that don't contain "uuid" (to avoid running into issues
 // with any interest groups from other tests), and reportResult() sends a report
-// to createSellerReportUrl(uuid).
+// to createSellerReportURL(uuid).
 //
 // `auctionConfigOverrides` may be used to override fields in the auction
 // configuration.
@@ -224,7 +224,7 @@ async function runBasicFledgeAuction(test, uuid, auctionConfigOverrides = {}) {
     seller: window.location.origin,
     decisionLogicURL: createDecisionScriptURL(
         uuid,
-        { reportResult: `sendReportTo('${createSellerReportUrl(uuid)}');` }),
+        { reportResult: `sendReportTo('${createSellerReportURL(uuid)}');` }),
     interestGroupBuyers: [window.location.origin],
     resolveToConfig: true,
     ...auctionConfigOverrides
@@ -295,13 +295,13 @@ async function runBasicFledgeTestExpectingNoWinner(test, testConfig = {}) {
 // the seller worklet that triggers a sendReportTo() to an 'error' URL if not
 // met.
 //
-// `renderUrlOverride` allows the ad URL of the joined InterestGroup to
+// `renderURLOverride` allows the ad URL of the joined InterestGroup to
 // to be set by the caller.
 //
 // Requesting error report URLs causes waitForObservedRequests() to throw
 // rather than hang.
-async function runReportTest(test, uuid, codeToInsert, expectedReportUrls,
-                             renderUrlOverride) {
+async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
+                             renderURLOverride) {
   let scoreAd = codeToInsert.scoreAd;
   let reportResultSuccessCondition = codeToInsert.reportResultSuccessCondition;
   let reportResult = codeToInsert.reportResult;
@@ -311,7 +311,7 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportUrls,
 
   if (reportResultSuccessCondition) {
     reportResult = `if (!(${reportResultSuccessCondition})) {
-                      sendReportTo('${createSellerReportUrl(uuid, 'error')}');
+                      sendReportTo('${createSellerReportURL(uuid, 'error')}');
                       return false;
                     }
                     ${reportResult}`;
@@ -329,7 +329,7 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportUrls,
 
   if (reportWinSuccessCondition) {
     reportWin = `if (!(${reportWinSuccessCondition})) {
-                   sendReportTo('${createSellerReportUrl(uuid, 'error')}');
+                   sendReportTo('${createSellerReportURL(uuid, 'error')}');
                    return false;
                  }
                  ${reportWin}`;
@@ -346,9 +346,9 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportUrls,
     biddingScriptURLParams.error = 'no-reportWin';
 
   let interestGroupOverrides =
-    { biddingLogicURL: createBiddingScriptURL(biddingScriptURLParams) };
-  if (renderUrlOverride)
-    interestGroupOverrides.ads = [{renderUrl: renderUrlOverride}]
+      { biddingLogicURL: createBiddingScriptURL(biddingScriptURLParams) };
+  if (renderURLOverride)
+    interestGroupOverrides.ads = [{ renderURL: renderURLOverride }]
 
   await joinInterestGroup(test, uuid, interestGroupOverrides);
   await runBasicFledgeAuctionAndNavigate(
@@ -356,5 +356,5 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportUrls,
     {
       decisionLogicURL: createDecisionScriptURL(
                               uuid, decisionScriptURLParams) });
-  await waitForObservedRequests(uuid, expectedReportUrls);
+  await waitForObservedRequests(uuid, expectedReportURLs);
 }

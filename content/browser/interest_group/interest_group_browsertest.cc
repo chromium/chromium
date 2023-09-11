@@ -8011,7 +8011,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionRepro1451572) {
     owner: $1,
     name: "name_1",
     biddingLogicURL: $3,
-    ads: [{renderUrl: $1}],
+    ads: [{renderURL: $1}],
   };
 
   const ig_2 = {
@@ -8020,7 +8020,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionRepro1451572) {
     // Intentionally use invalid bidding logic URL -- this results in the bid
     // being filtered.
     biddingLogicURL: $1,
-    ads: [{renderUrl: $1}],
+    ads: [{renderURL: $1}],
     enableBiddingSignalsPrioritization: true,
     trustedBiddingSignalsURL: $1
   };
@@ -8816,7 +8816,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, CrossOrigin) {
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   // Reject bits if trustedScoringSignals is not received.
-  if (trustedScoringSignals.renderUrl[browserSignals.renderUrl] === "foo")
+  if (trustedScoringSignals.renderURL[browserSignals.renderURL] === "foo")
     return bid;
   return 0;
 }
@@ -16038,13 +16038,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         // Signal to the top-level seller to allow participation in a component
         // auction.
         auctionSignals: "sellerAllowsComponentAuction",
         componentAuctions: [{
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1],
           // Signal to the bidder and component seller to allow participation in
           // a component auction.
@@ -16110,13 +16110,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         // Signal to the top-level seller to allow participation in a component
         // auction.
         auctionSignals: "sellerAllowsComponentAuction",
         componentAuctions: [{
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1],
           // Signal to the bidder and component seller to allow participation in
           // a component auction.

@@ -41,7 +41,7 @@ def main(request, response):
               {{GET[generateBid]}};
               return {
                 'bid': 9,
-                'render': interestGroup.ads[0].renderUrl
+                'render': interestGroup.ads[0].renderURL
               };
             }"""
     bid = request.GET.first(b"bid", None)

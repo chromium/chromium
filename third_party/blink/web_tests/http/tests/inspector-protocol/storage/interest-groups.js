@@ -11,7 +11,7 @@
         owner: "${baseOrigin}",
         biddingLogicURL: "${base}fledge_bidding_logic.js.php",
         ads: [{
-          renderUrl: 'https://example.com/render' + ${id},
+          renderURL: 'https://example.com/render' + ${id},
           metadata: {ad: 'metadata', here: [1, 2, 3]}
         }]
       }, 3000)`;

@@ -375,24 +375,24 @@ const SIMPLE_JOIN_LEAVE_TEST_CASES = [
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     ads: [{renderUrl: 'https://somewhere.test/'}] }
+                     ads: [{renderURL: 'https://somewhere.test/'}] }
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     ads: [{renderUrl: 'https://somewhere.test/'},
-                           {renderUrl: 'https://somewhere-else.test/'}] }
+                     ads: [{renderURL: 'https://somewhere.test/'},
+                           {renderURL: 'https://somewhere-else.test/'}] }
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     ads: [{renderUrl: 'https://somewhere.test/',
+                     ads: [{renderURL: 'https://somewhere.test/',
                             metadata: null}] }
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     ads: [{renderUrl: 'https://somewhere.test/',
+                     ads: [{renderURL: 'https://somewhere.test/',
                             metadata: null,
                             someOtherField: 'foo'}] }
   },
@@ -431,24 +431,24 @@ const SIMPLE_JOIN_LEAVE_TEST_CASES = [
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     adComponents: [{renderUrl: 'https://somewhere.test/'}] }
+                     adComponents: [{renderURL: 'https://somewhere.test/'}] }
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     adComponents: [{renderUrl: 'https://somewhere.test/'},
-                                    {renderUrl: 'https://elsewhere.test/'}] }
+                     adComponents: [{renderURL: 'https://somewhere.test/'},
+                                    {renderURL: 'https://elsewhere.test/'}] }
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     adComponents: [{renderUrl: 'https://somewhere.test/',
+                     adComponents: [{renderURL: 'https://somewhere.test/',
                                      metadata: null}] }
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     adComponents: [{renderUrl: 'https://somewhere.test/',
+                     adComponents: [{renderURL: 'https://somewhere.test/',
                                      metadata: null,
                                      someOtherField: 'foo'}] }
   },

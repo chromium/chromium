@@ -80,15 +80,15 @@ async function generateURNFromFledgeRawURL(
 
   const ad_components_list = nested_urls.map((url) => {
     return ad_with_size ?
-      { renderUrl: url, sizeGroup: "group1" } :
-      { renderUrl: url }
+      { renderURL: url, sizeGroup: "group1" } :
+      { renderURL: url }
   });
 
   let interestGroup = {
     name: 'testAd1',
     owner: location.origin,
     biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
-    ads: [{renderUrl: href, bid: 1}],
+    ads: [{renderURL: href, bid: 1}],
     userBiddingSignals: {biddingToken: bidding_token},
     trustedBiddingSignalsKeys: ['key1'],
     adComponents: ad_components_list,
