@@ -170,6 +170,16 @@ bool API_AVAILABLE(macos(12.3))
   return false;
 }
 
+bool API_AVAILABLE(macos(12.3))
+    ContainsWindow(NSArray<SCWindow*>* array, CGWindowID window_id) {
+  for (SCWindow* window in array) {
+    if (window.windowID == window_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
     : public ThumbnailCapturer {
  public:
@@ -199,7 +209,10 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 
   void UpdateWindowsList();
   void OnRecurrentShareableContent(SCShareableContent* content);
-  bool ExcludeWindowFromSourceList(SCWindow* window) const;
+  void UpdateShareableWindows(SCShareableContent* content);
+  bool IsShareable(SCWindow* window) const;
+  NSArray<SCWindow*>* FilterOutUnshareable(NSArray<SCWindow*>* windows);
+  void RemoveStream(SourceId id);
   void OnCapturedFrame(CGImageRef image, SourceId source_id);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -223,7 +236,8 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 ThumbnailCapturerMac::ThumbnailCapturerMac(const gfx::Size& thumbnail_size)
     : thumbnail_size_(thumbnail_size),
       max_frame_rate_(kThumbnailCapturerMacMaxFrameRate.Get()),
-      minimum_window_size_(kThumbnailCapturerMacMinWindowSize.Get()) {}
+      minimum_window_size_(kThumbnailCapturerMacMinWindowSize.Get()),
+      shareable_windows_([[NSArray<SCWindow*> alloc] init]) {}
 
 void ThumbnailCapturerMac::Start(Consumer* consumer) {
   consumer_ = consumer;
@@ -241,20 +255,14 @@ void ThumbnailCapturerMac::SetMaxFrameRate(uint32_t max_frame_rate) {
 
 bool ThumbnailCapturerMac::GetSourceList(SourceList* sources) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
   sources->clear();
-  if (!shareable_windows_) {
-    return false;
-  }
 
   // Discover how many windows are associated with each application,
   // so as to use this as part of the set of conditions for which
   // windows are valid sources.
   std::unordered_map<pid_t, size_t> application_to_window_count;
   for (SCWindow* window in shareable_windows_) {
-    if (ExcludeWindowFromSourceList(window)) {
-      continue;
-    }
-
     const pid_t pid = window.owningApplication.processID;
     if (!base::Contains(application_to_window_count, pid)) {
       application_to_window_count[pid] = 1;
@@ -265,10 +273,6 @@ bool ThumbnailCapturerMac::GetSourceList(SourceList* sources) {
 
   // Add relevant sources.
   for (SCWindow* window in shareable_windows_) {
-    if (ExcludeWindowFromSourceList(window)) {
-      continue;
-    }
-
     // Skip windows with empty titles, unless they are their app's only window
     // or fullscreen.
     const pid_t pid = window.owningApplication.processID;
@@ -315,44 +319,79 @@ void ThumbnailCapturerMac::OnRecurrentShareableContent(
     return;
   }
 
-  shareable_windows_ = [content windows];
   shareable_displays_ = [content displays];
-
-  // Filter out windows that should not be shareable.
-  std::unordered_set<SourceId> source_list_windows;
-  for (SCWindow* window in shareable_windows_) {
-    if (!ExcludeWindowFromSourceList(window)) {
-      source_list_windows.insert(window.windowID);
-    }
-  }
-
-  // Remove all streams for windows that are not active anymore. New streams are
-  // created once the consumer calls SelectSources().
-  for (auto it = streams_.begin(); it != streams_.end();) {
-    if (source_list_windows.find(it->first) == source_list_windows.end()) {
-      it = streams_.erase(it);
-    } else {
-      ++it;
-    }
-  }
+  UpdateShareableWindows(content);
 
   // TODO(https://crbug.com/1471931): Only call update if the list is changed:
   // windows opened/closed, order of the list, and title.
   consumer_->OnSourceListUpdated();
 }
 
-bool ThumbnailCapturerMac::ExcludeWindowFromSourceList(SCWindow* window) const {
+void ThumbnailCapturerMac::UpdateShareableWindows(SCShareableContent* content) {
+  // Produce a list of shareable windows.
+  NSArray<SCWindow*>* current_windows = FilterOutUnshareable([content windows]);
+
+  // Prepare to segment the list of new window as pre-existing / newly-added.
+  NSMutableArray<SCWindow*>* existing_windows = [[NSMutableArray alloc] init];
+  NSMutableArray<SCWindow*>* added_windows = [[NSMutableArray alloc] init];
+
+  // Iterate over the windows from last time and ensure that all of them
+  // which are still relevant, are maintained in their original order.
+  //
+  // On the same pass, stop producing thumbnails for any window which was
+  // previously trakced but which is no longer tracked.
+  for (SCWindow* window in shareable_windows_) {
+    if (ContainsWindow(current_windows, window.windowID)) {
+      [existing_windows addObject:window];
+    } else {
+      // `window` was in `shareable_windows_` but won't be there now,
+      // so no sense in keeping around an SCStream for it.
+      RemoveStream(window.windowID);
+    }
+  }
+
+  // All other windows in `current_windows` are new by definition.
+  for (SCWindow* window in current_windows) {
+    if (!ContainsWindow(existing_windows, window.windowID)) {
+      [added_windows addObject:window];
+    }
+  }
+
+  shareable_windows_ =
+      [existing_windows arrayByAddingObjectsFromArray:added_windows];
+}
+
+bool ThumbnailCapturerMac::IsShareable(SCWindow* window) const {
   // Always exclude windows from the source list based on the following
   // conditions:
   // 1. Exclude windows with layer!=0 (menu, dock).
-  // 2. Exclude small windows with either height or width less than 40 pixels.
-  // These windows are generally to no interest of the user and clutters the
-  // thumbnail picker. For example, on macOS 14, each window that is captured
-  // has an indicator that the window is being captured. This indicator is a
-  // window itself with a very small height.
-  return window.windowLayer != 0 ||
-         window.frame.size.height < minimum_window_size_ ||
-         window.frame.size.width < minimum_window_size_;
+  // 2. Exclude small windows with either height or width less than the minimum.
+  //    Such windows are generally of no interest to the user, cluttering the
+  //    thumbnail picker and serving only as a footgun for the user.
+  //    For example, on macOS 14, each window that is captured has an indicator
+  //    that the window is being captured. This indicator is a window itself,
+  //    but is of no use for the user.
+  return window.windowLayer == 0 &&
+         window.frame.size.height >= minimum_window_size_ &&
+         window.frame.size.width >= minimum_window_size_;
+}
+
+NSArray<SCWindow*>* ThumbnailCapturerMac::FilterOutUnshareable(
+    NSArray<SCWindow*>* windows) {
+  NSMutableArray<SCWindow*>* result = [[NSMutableArray<SCWindow*> alloc] init];
+  for (SCWindow* window in windows) {
+    if (IsShareable(window)) {
+      [result addObject:window];
+    }
+  }
+  return result;
+}
+
+void ThumbnailCapturerMac::RemoveStream(SourceId id) {
+  auto it = streams_.find(id);
+  if (it != streams_.end()) {
+    streams_.erase(it);
+  }
 }
 
 void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids) {
