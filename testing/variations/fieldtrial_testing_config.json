@@ -16279,6 +16279,29 @@
             ]
         }
     ],
+    "ThreadCacheMinCachedMemoryForPurging": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "size_500kb_20230909",
+                    "params": {
+                        "ThreadCacheMinCachedMemoryForPurgingBytes": "512000"
+                    },
+                    "enable_features": [
+                        "EnableConfigurableThreadCacheMinCachedMemoryForPurging"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThreadCachePurgeInterval": [
         {
             "platforms": [
