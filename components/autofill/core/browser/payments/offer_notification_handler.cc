@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/search/ntp_features.h"
 #include "net/base/url_util.h"
@@ -77,11 +78,11 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     //   implemented).
     AutofillOfferData* offer = offer_manager_->GetOfferForUrl(url);
     CHECK(IsOfferValid(offer));
-
+    int64_t offer_id = offer->GetOfferId();
     client->UpdateOfferNotification(
-        offer, shown_notification_ids_.contains(offer->GetOfferId()),
-        /*expand_notification_icon=*/false);
-    shown_notification_ids_.insert(offer->GetOfferId());
+        offer, {.notification_has_been_shown =
+                    shown_notification_ids_.contains(offer_id)});
+    shown_notification_ids_.insert(offer_id);
   } else {
     client->DismissOfferNotification();
   }
@@ -120,9 +121,10 @@ void OfferNotificationHandler::UpdateOfferNotificationForShoppingServiceOffer(
   }
 
   int64_t offer_id = offer.GetOfferId();
-  client->UpdateOfferNotification(&offer,
-                                  shown_notification_ids_.contains(offer_id),
-                                  /*expand_notification_icon=*/true);
+  client->UpdateOfferNotification(
+      &offer, {.notification_has_been_shown =
+                   shown_notification_ids_.contains(offer_id),
+               .expand_notification_icon = true});
   shown_notification_ids_.insert(offer_id);
 }
 

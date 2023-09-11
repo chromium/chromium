@@ -186,9 +186,9 @@ void AutofillClient::OnUnmaskOtpVerificationResult(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
-void AutofillClient::UpdateOfferNotification(const AutofillOfferData* offer,
-                                             bool notification_has_been_shown,
-                                             bool expand_notification_icon) {
+void AutofillClient::UpdateOfferNotification(
+    const AutofillOfferData* offer,
+    const OfferNotificationOptions& options) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop and Clank) implement this.
 }

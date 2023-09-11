@@ -69,6 +69,7 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
@@ -1044,8 +1045,7 @@ void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
 
 void ChromeAutofillClient::UpdateOfferNotification(
     const AutofillOfferData* offer,
-    bool notification_has_been_shown,
-    bool expand_notification_icon) {
+    const OfferNotificationOptions& options) {
   DCHECK(offer);
   CreditCard* card =
       offer->GetEligibleInstrumentIds().empty()
@@ -1057,7 +1057,7 @@ void ChromeAutofillClient::UpdateOfferNotification(
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  if (notification_has_been_shown) {
+  if (options.notification_has_been_shown) {
     // For Android, if notification has been shown on this merchant, don't show
     // it again.
     return;
@@ -1070,9 +1070,7 @@ void ChromeAutofillClient::UpdateOfferNotification(
   OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
   OfferNotificationBubbleControllerImpl* controller =
       OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
-  controller->ShowOfferNotificationIfApplicable(
-      offer, card, /*should_show_icon_only_=*/notification_has_been_shown,
-      expand_notification_icon);
+  controller->ShowOfferNotificationIfApplicable(offer, card, options);
 #endif
 }
 
