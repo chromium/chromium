@@ -518,13 +518,14 @@ chromium-metrics-reviews@google.com.
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records whether an ESB user has sent a Protego ping to the Safe Browsing API
-    servers within the last 24 hours. If a ping was sent since the last time
-    this metric was logged, then this metric will report the type of that ping,
-    otherwise it will report that none was sent. If the user has sent a ping of
-    multiple types since the last time this metric was logged, then only the
-    type of the most recent ping will be reported. This metric is logged at most
-    once per day and only for users that have enhanced protection enabled.
+    Records whether an ESB user has sent a Protego ping to the Safe Browsing
+    consumer API servers within the last 24 hours. If a ping was sent since the
+    last time this metric was logged, then this metric will report the type of
+    that ping, otherwise it will report that none was sent. If the user has sent
+    a ping of multiple types since the last time this metric was logged, then
+    only the type of the most recent ping will be reported. This metric is
+    logged at most once per day and only for users that have enhanced protection
+    enabled.
   </summary>
 </histogram>
 
