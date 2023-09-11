@@ -1075,7 +1075,14 @@ void ClientControlledShellSurface::InitializeWindowState(
 }
 
 float ClientControlledShellSurface::GetScale() const {
-  return GetScaleFactor();
+  return !use_default_scale_cancellation_
+             ? ShellSurfaceBase::GetScaleFactor()
+             : ::exo::GetDefaultDeviceScaleFactor();
+}
+
+float ClientControlledShellSurface::GetScaleFactor() const {
+  // TODO(andreaorru): consolidate Scale and ScaleFactor.
+  return GetScale();
 }
 
 absl::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds()
