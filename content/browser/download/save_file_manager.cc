@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -215,7 +216,7 @@ void SaveFileManager::SaveURL(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Insert started saving job to tracking list.
-  DCHECK(packages_.find(save_item_id) == packages_.end());
+  DCHECK(!base::Contains(packages_, save_item_id));
   packages_[save_item_id] = save_package;
 
   // Register a saving job.

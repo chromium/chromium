@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "content/browser/devtools/shared_storage_worklet_devtools_agent_host.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
@@ -29,7 +30,7 @@ void SharedStorageWorkletDevToolsManager::WorkletCreated(
     SharedStorageWorkletHost& worklet_host,
     const base::UnguessableToken& devtools_worklet_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(hosts_.find(&worklet_host) == hosts_.end());
+  CHECK(!base::Contains(hosts_, &worklet_host));
 
   hosts_[&worklet_host] = MakeRefCounted<SharedStorageWorkletDevToolsAgentHost>(
       worklet_host, devtools_worklet_token);

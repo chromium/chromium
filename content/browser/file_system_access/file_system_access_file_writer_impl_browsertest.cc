@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -361,8 +362,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
       "{create:false});"
       "return (await self.swapFile.createWritable());"
       "})()");
-  EXPECT_TRUE(result.error.find("modifications are not allowed.") !=
-              std::string::npos)
+  EXPECT_TRUE(base::Contains(result.error, "modifications are not allowed."))
       << result.error;
 
   auto close_result = EvalJs(shell(),
@@ -421,8 +421,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
   auto result = EvalJs(shell(),
                        "(async () => {"
                        "  return (await self.entry.createWritable()); })()");
-  EXPECT_TRUE(result.error.find("Cannot write to a read-only file.") !=
-              std::string::npos)
+  EXPECT_TRUE(base::Contains(result.error, "Cannot write to a read-only file."))
       << result.error;
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)

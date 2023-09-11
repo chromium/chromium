@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
@@ -2199,7 +2200,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     SCOPED_TRACE(from_here.ToString());
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     std::string file_name = url.path();
-    CHECK(cookie_headers_map_.find(file_name) != cookie_headers_map_.end());
+    CHECK(base::Contains(cookie_headers_map_, file_name));
     std::string header = cookie_headers_map_[file_name];
     EXPECT_EQ(expected_value, header);
     cookie_headers_map_.erase(file_name);
@@ -2214,8 +2215,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     SCOPED_TRACE(from_here.ToString());
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     std::string file_name = url.path();
-    CHECK(sec_fetch_dest_headers_map_.find(file_name) !=
-          sec_fetch_dest_headers_map_.end());
+    CHECK(base::Contains(sec_fetch_dest_headers_map_, file_name));
     std::string header = sec_fetch_dest_headers_map_[file_name];
     EXPECT_EQ(expected_value, header);
     sec_fetch_dest_headers_map_.erase(file_name);
@@ -4785,7 +4785,7 @@ class FencedFrameReportEventBrowserTest
         ASSERT_FALSE(step.destination.path.empty());
         int redirect_index = 0;
         for (auto& redirect_destination : step.redirects) {
-          ASSERT_TRUE(paths.find(redirect_destination.path) == paths.end());
+          ASSERT_FALSE(base::Contains(paths, redirect_destination.path));
           ASSERT_FALSE(redirect_destination.origin.empty());
           ASSERT_FALSE(redirect_destination.path.empty());
           paths.insert(redirect_destination.path);

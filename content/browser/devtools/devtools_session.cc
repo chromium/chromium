@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
@@ -388,7 +389,7 @@ void DevToolsSession::FallThrough(int call_id,
   // In browser-only mode, we should've handled everything in dispatcher.
   DCHECK(!browser_only_);
 
-  if (waiting_for_response_.find(call_id) != waiting_for_response_.end()) {
+  if (base::Contains(waiting_for_response_, call_id)) {
     DispatchProtocolMessageToClient(
         crdtp::CreateErrorResponse(call_id,
                                    crdtp::DispatchResponse::InvalidRequest(
@@ -626,7 +627,7 @@ void DevToolsSession::DetachChildSession(const std::string& session_id) {
 }
 
 bool DevToolsSession::HasChildSession(const std::string& session_id) {
-  return child_sessions_.find(session_id) != child_sessions_.end();
+  return base::Contains(child_sessions_, session_id);
 }
 
 void DevToolsSession::AddObserver(ChildObserver* obs) {

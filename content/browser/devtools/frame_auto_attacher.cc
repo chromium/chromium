@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/frame_auto_attacher.h"
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/auction_worklet_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
@@ -28,9 +29,10 @@ void GetMatchingHostsByScopeMap(
   for (const GURL& url : urls)
     host_name_set.insert(url.DeprecatedGetOriginAsURL());
   for (const auto& host : agent_hosts) {
-    if (host_name_set.find(host->scope().DeprecatedGetOriginAsURL()) ==
-        host_name_set.end())
+    if (!base::Contains(host_name_set,
+                        host->scope().DeprecatedGetOriginAsURL())) {
       continue;
+    }
     const auto& it = scope_agents_map->find(host->scope());
     if (it == scope_agents_map->end()) {
       std::unique_ptr<ServiceWorkerDevToolsAgentHost::List> new_list(
@@ -244,8 +246,9 @@ void FrameAutoAttacher::WorkerCreated(ServiceWorkerDevToolsAgentHost* host,
       render_frame_host_->GetProcess()->GetBrowserContext();
   auto hosts = GetMatchingServiceWorkers(browser_context,
                                          GetFrameUrls(render_frame_host_));
-  if (hosts.find(host->GetId()) == hosts.end())
+  if (!base::Contains(hosts, host->GetId())) {
     return;
+  }
 
   *should_pause_on_start = wait_for_debugger_on_start();
   DispatchAutoAttach(host, *should_pause_on_start);

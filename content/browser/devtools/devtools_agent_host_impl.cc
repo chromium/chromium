@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -187,8 +188,7 @@ DevToolsAgentHost::List DevToolsAgentHost::GetOrCreateAll() {
 #if DCHECK_IS_ON()
   for (auto it : result) {
     DevToolsAgentHostImpl* host = static_cast<DevToolsAgentHostImpl*>(it.get());
-    DCHECK(GetDevtoolsInstances().find(host->id_) !=
-           GetDevtoolsInstances().end());
+    DCHECK(base::Contains(GetDevtoolsInstances(), host->id_));
   }
 #endif
 
@@ -303,8 +303,7 @@ bool DevToolsAgentHostImpl::AttachInternal(
     return false;
   renderer_channel_.AttachSession(session);
   sessions_.push_back(session);
-  DCHECK(session_by_client_.find(session->GetClient()) ==
-         session_by_client_.end());
+  DCHECK(!base::Contains(session_by_client_, session->GetClient()));
   session_by_client_.emplace(session->GetClient(), std::move(session_owned));
   if (sessions_.size() == 1)
     NotifyAttached();
@@ -532,7 +531,7 @@ std::string DevToolsAgentHostImpl::GetSubtype() {
 }
 
 void DevToolsAgentHostImpl::NotifyCreated() {
-  DCHECK(GetDevtoolsInstances().find(id_) == GetDevtoolsInstances().end());
+  DCHECK(!base::Contains(GetDevtoolsInstances(), id_));
   GetDevtoolsInstances()[id_] = this;
   for (auto& observer : GetDevtoolsObservers())
     observer.DevToolsAgentHostCreated(this);
@@ -559,7 +558,7 @@ void DevToolsAgentHostImpl::NotifyCrashed(base::TerminationStatus status) {
 }
 
 void DevToolsAgentHostImpl::NotifyDestroyed() {
-  DCHECK(GetDevtoolsInstances().find(id_) != GetDevtoolsInstances().end());
+  DCHECK(base::Contains(GetDevtoolsInstances(), id_));
   for (auto& observer : GetDevtoolsObservers())
     observer.DevToolsAgentHostDestroyed(this);
   GetDevtoolsInstances().erase(id_);

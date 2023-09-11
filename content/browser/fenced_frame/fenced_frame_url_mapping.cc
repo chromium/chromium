@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
@@ -408,12 +409,11 @@ FencedFrameURLMapping::Id FencedFrameURLMapping::GetNextId() {
 }
 
 bool FencedFrameURLMapping::IsMapped(const GURL& urn_uuid) const {
-  return urn_uuid_to_url_map_.find(urn_uuid) != urn_uuid_to_url_map_.end();
+  return base::Contains(urn_uuid_to_url_map_, urn_uuid);
 }
 
 bool FencedFrameURLMapping::IsPendingMapped(const GURL& urn_uuid) const {
-  return pending_urn_uuid_to_url_map_.find(urn_uuid) !=
-         pending_urn_uuid_to_url_map_.end();
+  return base::Contains(pending_urn_uuid_to_url_map_, urn_uuid);
 }
 
 bool FencedFrameURLMapping::IsFull() const {

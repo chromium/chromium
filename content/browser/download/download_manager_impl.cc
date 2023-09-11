@@ -1061,8 +1061,7 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
   auto in_progress_download = RetrieveInProgressDownload(id);
 
   // Return null to clear cancelled or non-resumable download.
-  if (cleared_download_guids_on_startup_.find(guid) !=
-      cleared_download_guids_on_startup_.end()) {
+  if (base::Contains(cleared_download_guids_on_startup_, guid)) {
     return nullptr;
   }
 

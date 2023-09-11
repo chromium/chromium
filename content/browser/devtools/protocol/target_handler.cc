@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -837,8 +838,9 @@ bool TargetHandler::AutoAttach(TargetAutoAttacher* source,
   DCHECK(auto_attach_target_filter_);
   if (!auto_attach_target_filter_->Match(*host))
     return false;
-  if (auto_attached_sessions_.find(host) != auto_attached_sessions_.end())
+  if (base::Contains(auto_attached_sessions_, host)) {
     return false;
+  }
   if (!auto_attach_service_workers_ &&
       host->GetType() == DevToolsAgentHost::kTypeServiceWorker) {
     return false;
@@ -877,19 +879,20 @@ void TargetHandler::SetAttachedTargetsOfType(
     if (host->GetType() == type &&
         entry.second->auto_attacher_id_ ==
             reinterpret_cast<uintptr_t>(source) &&
-        new_hosts.find(host) == new_hosts.end()) {
+        !base::Contains(new_hosts, host)) {
       AutoDetach(source, host.get());
     }
   }
   for (auto& host : new_hosts) {
-    if (old_sessions.find(host.get()) == old_sessions.end())
+    if (!base::Contains(old_sessions, host.get())) {
       AutoAttach(source, host.get(), false);
+    }
   }
 }
 
 void TargetHandler::TargetInfoChanged(DevToolsAgentHost* host) {
   // Only send target info for targets we reported in any way.
-  if (!reported_hosts_.count(host) &&
+  if (!base::Contains(reported_hosts_, host) &&
       auto_attached_sessions_.find(host) == auto_attached_sessions_.end()) {
     return;
   }
@@ -1260,7 +1263,7 @@ void TargetHandler::DevToolsAgentHostCreated(DevToolsAgentHost* host) {
     return;
   // If we start discovering late, all existing agent hosts will be reported,
   // but we could have already attached to some.
-  if (reported_hosts_.find(host) == reported_hosts_.end()) {
+  if (!base::Contains(reported_hosts_, host)) {
     frontend_->TargetCreated(BuildTargetInfo(host));
     reported_hosts_.insert(host);
   }
@@ -1271,8 +1274,9 @@ void TargetHandler::DevToolsAgentHostNavigated(DevToolsAgentHost* host) {
 }
 
 void TargetHandler::DevToolsAgentHostDestroyed(DevToolsAgentHost* host) {
-  if (reported_hosts_.find(host) == reported_hosts_.end())
+  if (!base::Contains(reported_hosts_, host)) {
     return;
+  }
   frontend_->TargetDestroyed(host->GetId());
   reported_hosts_.erase(host);
 }
@@ -1287,8 +1291,9 @@ void TargetHandler::DevToolsAgentHostDetached(DevToolsAgentHost* host) {
 
 void TargetHandler::DevToolsAgentHostCrashed(DevToolsAgentHost* host,
                                              base::TerminationStatus status) {
-  if (reported_hosts_.find(host) == reported_hosts_.end())
+  if (!base::Contains(reported_hosts_, host)) {
     return;
+  }
   frontend_->TargetCrashed(host->GetId(), TerminationStatusToString(status),
                            host->GetWebContents()
                                ? host->GetWebContents()->GetCrashedErrorCode()

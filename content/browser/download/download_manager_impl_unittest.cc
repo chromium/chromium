@@ -14,6 +14,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -194,8 +195,9 @@ MockDownloadItemFactory::MockDownloadItemFactory()
 MockDownloadItemFactory::~MockDownloadItemFactory() {}
 
 download::MockDownloadItemImpl* MockDownloadItemFactory::GetItem(int id) {
-  if (items_.find(id) == items_.end())
+  if (!base::Contains(items_, id)) {
     return nullptr;
+  }
   return items_[id];
 }
 
@@ -210,7 +212,7 @@ download::MockDownloadItemImpl* MockDownloadItemFactory::PopItem() {
 }
 
 void MockDownloadItemFactory::RemoveItem(int id) {
-  DCHECK(items_.find(id) != items_.end());
+  DCHECK(base::Contains(items_, id));
   items_.erase(id);
 }
 
@@ -242,7 +244,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreatePersistedItem(
     base::Time last_access_time,
     bool transient,
     const std::vector<download::DownloadItem::ReceivedSlice>& received_slices) {
-  DCHECK(items_.find(download_id) == items_.end());
+  DCHECK(!base::Contains(items_, download_id));
   download::MockDownloadItemImpl* result =
       new StrictMock<download::MockDownloadItemImpl>(&item_delegate_);
   EXPECT_CALL(*result, GetId())
@@ -257,7 +259,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreateActiveItem(
     download::DownloadItemImplDelegate* delegate,
     uint32_t download_id,
     const download::DownloadCreateInfo& info) {
-  DCHECK(items_.find(download_id) == items_.end());
+  DCHECK(!base::Contains(items_, download_id));
 
   download::MockDownloadItemImpl* result =
       new StrictMock<download::MockDownloadItemImpl>(&item_delegate_);
@@ -325,7 +327,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreateSavePageItem(
     const GURL& url,
     const std::string& mime_type,
     download::DownloadJob::CancelRequestCallback cancel_request_callback) {
-  DCHECK(items_.find(download_id) == items_.end());
+  DCHECK(!base::Contains(items_, download_id));
 
   download::MockDownloadItemImpl* result =
       new StrictMock<download::MockDownloadItemImpl>(&item_delegate_);

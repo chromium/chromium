@@ -1268,22 +1268,19 @@ class DownloadContentTestWithoutStrongValidators : public DownloadContentTest {
 
     // The second request is a range request.
     std::string value;
-    ASSERT_TRUE(requests[1]->http_request.headers.find(
-                    net::HttpRequestHeaders::kIfRange) ==
-                requests[1]->http_request.headers.end());
+    ASSERT_FALSE(base::Contains(requests[1]->http_request.headers,
+                                net::HttpRequestHeaders::kIfRange));
 
-    ASSERT_TRUE(requests[1]->http_request.headers.find(
-                    net::HttpRequestHeaders::kRange) !=
-                requests[1]->http_request.headers.end());
+    ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
+                               net::HttpRequestHeaders::kRange));
     EXPECT_EQ(
         base::StringPrintf("bytes=%" PRId64 "-",
                            interruption_offset - kValidationLength),
         requests[1]->http_request.headers.at(net::HttpRequestHeaders::kRange));
     if (fail_content_validation) {
       // The third request is a restart request.
-      ASSERT_TRUE(requests[2]->http_request.headers.find(
-                      net::HttpRequestHeaders::kRange) ==
-                  requests[2]->http_request.headers.end());
+      ASSERT_FALSE(base::Contains(requests[2]->http_request.headers,
+                                  net::HttpRequestHeaders::kRange));
       EXPECT_EQ(parameters.size, requests[2]->transferred_byte_count);
     }
   }
@@ -2144,15 +2141,13 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeWithStrongValidators) {
             requests[1]->transferred_byte_count);
 
   std::string value;
-  ASSERT_TRUE(requests[1]->http_request.headers.find(
-                  net::HttpRequestHeaders::kIfRange) !=
-              requests[1]->http_request.headers.end());
+  ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
+                             net::HttpRequestHeaders::kIfRange));
   EXPECT_EQ(parameters.etag, requests[1]->http_request.headers.at(
                                  net::HttpRequestHeaders::kIfRange));
 
-  ASSERT_TRUE(
-      requests[1]->http_request.headers.find(net::HttpRequestHeaders::kRange) !=
-      requests[1]->http_request.headers.end());
+  ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
+                             net::HttpRequestHeaders::kRange));
   EXPECT_EQ(
       base::StringPrintf("bytes=%" PRId64 "-", interruption_offset),
       requests[1]->http_request.headers.at(net::HttpRequestHeaders::kRange));
@@ -2619,15 +2614,13 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, RestartIfNotPartialResponse) {
   // The second request transfers the entire response.
   EXPECT_EQ(parameters.size, requests[1]->transferred_byte_count);
 
-  ASSERT_TRUE(requests[1]->http_request.headers.find(
-                  net::HttpRequestHeaders::kIfRange) !=
-              requests[1]->http_request.headers.end());
+  ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
+                             net::HttpRequestHeaders::kIfRange));
   EXPECT_EQ(parameters.etag, requests[1]->http_request.headers.at(
                                  net::HttpRequestHeaders::kIfRange));
 
-  ASSERT_TRUE(
-      requests[1]->http_request.headers.find(net::HttpRequestHeaders::kRange) !=
-      requests[1]->http_request.headers.end());
+  ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
+                             net::HttpRequestHeaders::kRange));
   EXPECT_EQ(
       base::StringPrintf("bytes=%" PRId64 "-", interruption_offset),
       requests[1]->http_request.headers.at(net::HttpRequestHeaders::kRange));
@@ -2671,12 +2664,10 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, RestartIfNoETag) {
 
   // Neither If-Range nor Range headers should be present in the second request.
   ASSERT_EQ(2u, requests.size());
-  EXPECT_TRUE(requests[1]->http_request.headers.find(
-                  net::HttpRequestHeaders::kIfRange) ==
-              requests[1]->http_request.headers.end());
-  EXPECT_TRUE(
-      requests[1]->http_request.headers.find(net::HttpRequestHeaders::kRange) ==
-      requests[1]->http_request.headers.end());
+  EXPECT_FALSE(base::Contains(requests[1]->http_request.headers,
+                              net::HttpRequestHeaders::kIfRange));
+  EXPECT_FALSE(base::Contains(requests[1]->http_request.headers,
+                              net::HttpRequestHeaders::kRange));
 }
 
 // Partial file goes missing before the download is resumed. The download should
