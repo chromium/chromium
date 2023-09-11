@@ -82,7 +82,7 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   void DoHide();
 
   // Ensure the child views are not rendered beyond the popup border
-  // boundaries. Should be overridden together with CreateBorder.
+  // boundaries.
   void UpdateClipPath();
 
   // Returns the bounds of the containing browser window in screen space.
@@ -95,9 +95,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // popup, it hides and thus deletes |this| and returns false. (virtual for
   // testing).
   virtual bool DoUpdateBoundsAndRedrawPopup();
-
-  // Returns the border to be applied to the popup.
-  virtual std::unique_ptr<views::Border> CreateBorder();
 
   // Returns the optimal bounds to place the popup with |preferred_size| and
   // places an arrow on the popup border to point towards |element_bounds|

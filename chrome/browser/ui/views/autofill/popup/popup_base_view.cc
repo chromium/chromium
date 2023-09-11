@@ -66,6 +66,20 @@ constexpr int kMaximumPixelsToMoveSuggestionToCenter = 120;
 // center of the focused field.
 constexpr int kMaximumWidthPercentageToMoveTheSuggestionToCenter = 50;
 
+// Creates a border for a popup.
+std::unique_ptr<views::Border> CreateBorder() {
+  auto border = std::make_unique<views::BubbleBorder>(
+      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
+      ui::kColorDropdownBackground);
+  border->SetCornerRadius(PopupBaseView::GetCornerRadius());
+  border->set_md_shadow_elevation(
+      ChromeLayoutProvider::Get()->GetShadowElevationMetric(
+          base::FeatureList::IsEnabled(features::kAutofillMoreProminentPopup)
+              ? views::Emphasis::kMaximum
+              : views::Emphasis::kMedium));
+  return border;
+}
+
 }  // namespace
 
 // static
@@ -489,20 +503,6 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   UpdateClipPath();
   SchedulePaint();
   return true;
-}
-
-std::unique_ptr<views::Border> PopupBaseView::CreateBorder() {
-  auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      ui::kColorDropdownBackground);
-  border->SetCornerRadius(GetCornerRadius());
-  views::Emphasis emphasis =
-      base::FeatureList::IsEnabled(features::kAutofillMoreProminentPopup)
-          ? views::Emphasis::kMaximum
-          : views::Emphasis::kMedium;
-  border->set_md_shadow_elevation(
-      ChromeLayoutProvider::Get()->GetShadowElevationMetric(emphasis));
-  return border;
 }
 
 void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
