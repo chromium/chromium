@@ -284,6 +284,10 @@
 #include "ui/display/types/display_constants.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/preloading/preview/preview_manager.h"
+#endif
+
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
 using content::NavigationController;
@@ -1990,8 +1994,12 @@ std::unique_ptr<content::EyeDropper> Browser::OpenEyeDropper(
 
 void Browser::InitiatePreview(content::WebContents& web_contents,
                               const GURL& url) {
-  // TODO(b/292184832): Implement PreviewManager and communicate with it here.
-  NOTIMPLEMENTED();
+#if !BUILDFLAG(IS_ANDROID)
+  PreviewManager::CreateForWebContents(&web_contents);
+  PreviewManager* manager = PreviewManager::FromWebContents(&web_contents);
+  CHECK(manager);
+  manager->InitiatePreview(url);
+#endif
 }
 
 void Browser::DidFinishNavigation(

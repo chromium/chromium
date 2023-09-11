@@ -22,6 +22,7 @@ const char kDefaultSearchEngineMetricSuffix[] = "DefaultSearchEngine";
 const char kDirectUrlInputMetricSuffix[] = "DirectURLInput";
 const char kBookmarkBarMetricSuffix[] = "BookmarkBar";
 const char kNewTabPageMetricSuffix[] = "NewTabPage";
+const char kLinkPreviewMetricsSuffix[] = "LinkPreview";
 // LINT.ThenChange()
 
 bool IsDirectUrlInputPrerenderEnabled() {
