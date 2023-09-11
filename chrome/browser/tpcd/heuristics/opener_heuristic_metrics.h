@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_METRICS_H_
 
 #include <cstdint>
-#include <functional>
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 
-// Quantize `td` into 50 buckets, distributed non-linearly similarly to
-// UmaHistogramMediumTimes().
+// Bucketize `sample` into 50 buckets, capped at maximum and distributed
+// non-linearly similarly to base::Histogram::InitializeBucketRanges.
 int32_t Bucketize3PCDHeuristicTimeDelta(
-    base::TimeDelta td,
-    base::TimeDelta maximum,
+    base::TimeDelta sample_td,
+    base::TimeDelta maximum_td,
     base::RepeatingCallback<int64_t(const base::TimeDelta*)> cast_time_delta);
 
 #endif  // CHROME_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_METRICS_H_

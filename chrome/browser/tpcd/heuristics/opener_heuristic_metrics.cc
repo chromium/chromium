@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 
@@ -17,62 +18,54 @@
 
 using base::TimeDelta;
 
-namespace {
-
-std::unique_ptr<base::BucketRanges> CreateBucketRanges(
-    size_t bucket_count,
-    base::HistogramBase::Sample maximum) {
-  auto ranges = std::make_unique<base::BucketRanges>(bucket_count + 1);
-  base::Histogram::InitializeBucketRanges(1, maximum, ranges.get());
-  return ranges;
-}
-
-base::Histogram::Sample Bucketize(base::Histogram::Sample value,
-                                  const base::BucketRanges& bucket_ranges) {
-  // Copied from SampleVectorBase::GetBucketIndex()
-  size_t under = 0;
-  size_t over = bucket_ranges.size();
-  size_t mid;
-  do {
-    DCHECK_GE(over, under);
-    mid = under + (over - under) / 2;
-    if (mid == under) {
-      break;
-    }
-    if (bucket_ranges.range(mid) <= value) {
-      under = mid;
-    } else {
-      over = mid;
-    }
-  } while (true);
-
-  DCHECK_LE(bucket_ranges.range(mid), value);
-  if (mid < bucket_ranges.size() - 1) {
-    CHECK_GT(bucket_ranges.range(mid + 1), value);
-  }
-  return bucket_ranges.range(mid);
-}
-
-}  // namespace
-
 int32_t Bucketize3PCDHeuristicTimeDelta(
-    base::TimeDelta td,
-    base::TimeDelta maximum,
+    base::TimeDelta sample_td,
+    base::TimeDelta maximum_td,
     base::RepeatingCallback<int64_t(const base::TimeDelta*)> cast_time_delta) {
   constexpr size_t bucket_count = 50;
+  int64_t sample = cast_time_delta.Run(&sample_td);
+  int64_t maximum = cast_time_delta.Run(&maximum_td);
 
-  const base::BucketRanges& bucket_ranges = *[=]() {
-    auto ranges =
-        CreateBucketRanges(bucket_count, cast_time_delta.Run(&maximum));
-    ANNOTATE_LEAKING_OBJECT_PTR(ranges.get());
-    return ranges.release();
-  }();
-
-  td = std::clamp(td, TimeDelta(), maximum);
-  int64_t td_cast = cast_time_delta.Run(&td);
-  if (td_cast > INT32_MAX) {
-    td_cast = INT32_MAX;
+  // Clamp the sample between 0 and maximum, and to the max int32 value (only
+  // int32 is supported by histograms).
+  if (sample <= 0) {
+    return 0;
+  }
+  if (sample > std::min(maximum, static_cast<int64_t>(INT32_MAX))) {
+    return std::min(maximum, static_cast<int64_t>(INT32_MAX));
   }
 
-  return Bucketize(td_cast, bucket_ranges);
+  // This bucketing implementation is based heavily on
+  // base::Histogram::InitializeBucketRanges, but without allocating extra
+  // memory.
+  base::Histogram::Sample current = 1;
+  double log_current = 0;
+  double log_max = log(static_cast<double>(maximum));
+  // Iterate over buckets and return the one closest to the sample.
+  // Two of the buckets are 0 and `maximum`. Loop over the remaining buckets.
+  size_t cutoff_count = bucket_count - 2;
+  for (size_t cutoff_index = 0; cutoff_index < cutoff_count; cutoff_index++) {
+    // Increment the log of the bucket proportional to the current log over the
+    // number of remaining buckets.
+    double log_next =
+        log_current + (log_max - log_current) / (cutoff_count - cutoff_index);
+    base::Histogram::Sample next = static_cast<int>(std::round(exp(log_next)));
+
+    // If the difference between the buckets is too close, just add 1 to the
+    // previous bucket.
+    if (next <= current) {
+      next = current + 1;
+    }
+
+    // Check if the sample falls in the bucket, and return the lower bound if
+    // it does.
+    if (sample < next) {
+      return current;
+    }
+
+    // Increment the current values to the next values.
+    current = next;
+    log_current = log_next;
+  }
+  return maximum;
 }
