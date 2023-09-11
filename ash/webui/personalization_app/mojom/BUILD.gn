@@ -14,6 +14,7 @@ mojom("mojom") {
   use_typescript_sources = true
 
   public_deps = [
+    "//ash/style/mojom:color_scheme",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -72,10 +73,6 @@ mojom("mojom") {
         {
           mojom = "ash.personalization_app.mojom.AmbientUiVisibility"
           cpp = "::ash::AmbientUiVisibility"
-        },
-        {
-          mojom = "ash.personalization_app.mojom.ColorScheme"
-          cpp = "::ash::ColorScheme"
         },
         {
           mojom = "ash.personalization_app.mojom.SampleColorScheme"

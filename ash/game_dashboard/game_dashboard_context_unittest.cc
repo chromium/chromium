@@ -24,6 +24,7 @@
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
 #include "ash/system/unified/feature_tile.h"
@@ -891,7 +892,7 @@ TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
 
   // Update and verify the color scheme doesn't change.
   Shell::Get()->color_palette_controller()->SetColorScheme(
-      ColorScheme::kExpressive,
+      ash::style::mojom::ColorScheme::kExpressive,
       AccountId::FromUserEmailGaiaId("user@gmail.com", "user@gmail.com"),
       base::DoNothing());
   for (auto* widget : widgets) {

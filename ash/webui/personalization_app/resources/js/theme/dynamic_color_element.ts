@@ -19,7 +19,8 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {ColorScheme, SampleColorScheme, STATIC_COLOR_DARK_GREEN, STATIC_COLOR_GOOGLE_BLUE, STATIC_COLOR_LIGHT_PINK, STATIC_COLOR_LIGHT_PURPLE, StaticColor} from '../../personalization_app.mojom-webui.js';
+import {ColorScheme} from '../../color_scheme.mojom-webui.js';
+import {SampleColorScheme, STATIC_COLOR_DARK_GREEN, STATIC_COLOR_GOOGLE_BLUE, STATIC_COLOR_LIGHT_PINK, STATIC_COLOR_LIGHT_PURPLE, StaticColor} from '../../personalization_app.mojom-webui.js';
 import {logDynamicColorColorSchemeButtonClick, logDynamicColorStaticColorButtonClick, logDynamicColorToggleButtonClick} from '../personalization_metrics_logger.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {convertToRgbHexStr} from '../utils.js';

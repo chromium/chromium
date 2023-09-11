@@ -14,6 +14,7 @@
 #include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/style/color_palette_controller.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/unguessable_token.h"
@@ -155,17 +156,9 @@ struct EnumTraits<ash::personalization_app::mojom::AmbientUiVisibility,
 };
 
 template <>
-struct EnumTraits<ash::personalization_app::mojom::ColorScheme,
-                  ash::ColorScheme> {
-  using MojomColorScheme = ::ash::personalization_app::mojom::ColorScheme;
-  static MojomColorScheme ToMojom(ash::ColorScheme input);
-  static bool FromMojom(MojomColorScheme input, ash::ColorScheme* output);
-};
-
-template <>
 struct StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
                     ash::SampleColorScheme> {
-  static ash::ColorScheme scheme(
+  static ash::style::mojom::ColorScheme scheme(
       const ash::SampleColorScheme& sample_color_scheme);
   static SkColor primary(const ash::SampleColorScheme& sample_color_scheme);
   static SkColor secondary(const ash::SampleColorScheme& sample_color_scheme);

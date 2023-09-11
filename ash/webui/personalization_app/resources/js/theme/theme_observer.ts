@@ -4,7 +4,8 @@
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme, SampleColorScheme, ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
+import {ColorScheme} from '../../color_scheme.mojom-webui.js';
+import {SampleColorScheme, ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setSampleColorSchemesAction, setStaticColorAction} from './theme_actions.js';

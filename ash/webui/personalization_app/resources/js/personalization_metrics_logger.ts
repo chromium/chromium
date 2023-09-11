@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {ColorScheme, StaticColor} from '../personalization_app.mojom-webui.js';
+import {ColorScheme} from '../color_scheme.mojom-webui.js';
+import {StaticColor} from '../personalization_app.mojom-webui.js';
 
 import {Paths} from './personalization_router_element.js';
 

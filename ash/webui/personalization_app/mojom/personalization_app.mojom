@@ -4,6 +4,7 @@
 
 module ash.personalization_app.mojom;
 
+import "ash/style/mojom/color_scheme.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -359,18 +360,6 @@ interface WallpaperProvider {
     CancelPreviewWallpaper();
 };
 
-// Color scheme options used to generate the system UI's color palette.
-// These options are based off the user's wallpaper.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum ColorScheme {
-  kStatic = 0,
-  kTonalSpot = 1,
-  kNeutral = 2,
-  kExpressive = 3,
-  kVibrant = 4,
-};
-
 // Static color options used to generate the system UI's color palette. These
 // options are not based off the user's wallpaper.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -390,7 +379,7 @@ const uint32 kStaticColorLightPurple = 0xCBBFFF;
 
 // Samples of a color scheme for the tri-color scheme preview.
 struct SampleColorScheme {
-  ColorScheme scheme;
+  ash.style.mojom.ColorScheme scheme;
   skia.mojom.SkColor primary;
   skia.mojom.SkColor secondary;
   skia.mojom.SkColor tertiary;
@@ -407,7 +396,7 @@ interface ThemeObserver {
   OnColorModeAutoScheduleChanged(bool enabled);
 
   //Notifies the JS side about the current state of the color scheme.
-  OnColorSchemeChanged(ColorScheme color_scheme);
+  OnColorSchemeChanged(ash.style.mojom.ColorScheme color_scheme);
 
   // Notifies the JS side that the sample color schemes have changed.
   OnSampleColorSchemesChanged(array<SampleColorScheme> sample_color_schemes);
@@ -429,14 +418,14 @@ interface ThemeProvider {
 
   // Sets the color scheme for dynamic color.
   // @see //ash/style/color_palette_controller.h
-  SetColorScheme(ColorScheme colorScheme);
+  SetColorScheme(ash.style.mojom.ColorScheme colorScheme);
 
   // Sets the seed color for dynamic color.
   // @see //ash/style/color_palette_controller.h
   SetStaticColor(skia.mojom.SkColor static_color);
 
   // Retrieves the color scheme for dynamic color.
-  GetColorScheme() => (ColorScheme color_scheme);
+  GetColorScheme() => (ash.style.mojom.ColorScheme color_scheme);
 
   // Retrieves the static seed color for dynamic color.
   GetStaticColor() => (skia.mojom.SkColor? static_color);

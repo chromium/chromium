@@ -148,8 +148,14 @@ build_webui("build") {
     "css/wallpaper.css",
   ]
 
-  mojo_files_deps = [ "../mojom:mojom_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/ash/webui/personalization_app/mojom/personalization_app.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "../mojom:mojom_ts__generator",
+    "//ash/style/mojom:color_scheme_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/ash/webui/personalization_app/mojom/personalization_app.mojom-webui.ts",
+    "$root_gen_dir/ash/style/mojom/color_scheme.mojom-webui.ts",
+  ]
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]

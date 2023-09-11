@@ -3809,6 +3809,7 @@ test("ash_unittests") {
     "//ash/shortcut_viewer:unit_tests",
     "//ash/strings",
     "//ash/style",
+    "//ash/style/mojom:color_scheme_shared_cpp_sources",
     "//ash/webui/diagnostics_ui/mojom",
     "//ash/webui/personalization_app/mojom:mojom_shared_cpp_sources",
     "//ash/webui/personalization_app/proto",

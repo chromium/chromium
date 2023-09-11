@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -61,7 +62,8 @@ class TestThemeObserver
     color_mode_auto_schedule_enabled_ = enabled;
   }
 
-  void OnColorSchemeChanged(ash::ColorScheme color_scheme) override {
+  void OnColorSchemeChanged(
+      ash::style::mojom::ColorScheme color_scheme) override {
     color_scheme_ = color_scheme;
   }
 
@@ -98,7 +100,7 @@ class TestThemeObserver
     return color_mode_auto_schedule_enabled_;
   }
 
-  ash::ColorScheme GetColorScheme() {
+  ash::style::mojom::ColorScheme GetColorScheme() {
     if (theme_observer_receiver_.is_bound()) {
       theme_observer_receiver_.FlushForTesting();
     }
@@ -119,7 +121,8 @@ class TestThemeObserver
 
   bool dark_mode_enabled_ = false;
   bool color_mode_auto_schedule_enabled_ = false;
-  ash::ColorScheme color_scheme_ = ash::ColorScheme::kTonalSpot;
+  ash::style::mojom::ColorScheme color_scheme_ =
+      ash::style::mojom::ColorScheme::kTonalSpot;
   absl::optional<::SkColor> static_color_ = absl::nullopt;
   std::vector<ash::SampleColorScheme> sample_color_schemes_;
 };
@@ -192,7 +195,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
     return test_theme_observer_.is_color_mode_auto_schedule_enabled();
   }
 
-  ash::ColorScheme GetColorScheme() {
+  ash::style::mojom::ColorScheme GetColorScheme() {
     if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
     }
@@ -324,7 +327,7 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest,
 TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetColorScheme) {
   SetThemeObserver();
   theme_provider_remote()->FlushForTesting();
-  auto color_scheme = ash::ColorScheme::kExpressive;
+  auto color_scheme = ash::style::mojom::ColorScheme::kExpressive;
   EXPECT_NE((int)color_scheme,
             GetUserPrefService()->GetInteger(prefs::kDynamicColorColorScheme));
 
@@ -338,7 +341,7 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest,
        ObserveColorSchemeChanges) {
   SetThemeObserver();
   theme_provider_remote()->FlushForTesting();
-  auto color_scheme = ash::ColorScheme::kExpressive;
+  auto color_scheme = ash::style::mojom::ColorScheme::kExpressive;
   EXPECT_NE((int)color_scheme,
             GetUserPrefService()->GetInteger(prefs::kDynamicColorColorScheme));
 
@@ -365,10 +368,14 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest,
 
   // Matcher for the vector in the callback.
   auto matcher = testing::UnorderedElementsAre(
-      testing::Field(&SampleColorScheme::scheme, ColorScheme::kTonalSpot),
-      testing::Field(&SampleColorScheme::scheme, ColorScheme::kNeutral),
-      testing::Field(&SampleColorScheme::scheme, ColorScheme::kVibrant),
-      testing::Field(&SampleColorScheme::scheme, ColorScheme::kExpressive));
+      testing::Field(&SampleColorScheme::scheme,
+                     ash::style::mojom::ColorScheme::kTonalSpot),
+      testing::Field(&SampleColorScheme::scheme,
+                     ash::style::mojom::ColorScheme::kNeutral),
+      testing::Field(&SampleColorScheme::scheme,
+                     ash::style::mojom::ColorScheme::kVibrant),
+      testing::Field(&SampleColorScheme::scheme,
+                     ash::style::mojom::ColorScheme::kExpressive));
 
   base::RunLoop run_loop;
   EXPECT_CALL(generate_sample_color_schemes_callback, Run(matcher))

@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -58,7 +59,7 @@ class PersonalizationAppThemeProviderImpl
 
   void IsDarkModeEnabled(IsDarkModeEnabledCallback callback) override;
 
-  void SetColorScheme(ColorScheme color_scheme) override;
+  void SetColorScheme(ash::style::mojom::ColorScheme color_scheme) override;
 
   void SetStaticColor(SkColor static_color) override;
 

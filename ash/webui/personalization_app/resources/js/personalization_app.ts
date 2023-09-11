@@ -80,6 +80,7 @@ export {ZoneCustomizationElement} from './keyboard_backlight/zone_customization_
 export {Actions, DismissErrorAction, dismissErrorAction, PersonalizationActionName, SetErrorAction} from './personalization_actions.js';
 
 export * from './../personalization_app.mojom-webui.js';
+export {ColorScheme} from './../color_scheme.mojom-webui.js';
 export {PersonalizationBreadcrumbElement} from './personalization_breadcrumb_element.js';
 export {PersonalizationMainElement} from './personalization_main_element.js';
 export {reduce} from './personalization_reducers.js';

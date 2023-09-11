@@ -23,6 +23,7 @@
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/style/style_viewer/system_ui_components_style_viewer_view.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/status_area_widget.h"
@@ -175,7 +176,7 @@ void HandleClearKMeansPref() {
   // cleared. Tonal spot is the default color scheme, which is necessary to see
   // the k means color.
   Shell::Get()->color_palette_controller()->SetColorScheme(
-      ColorScheme::kTonalSpot, account_id, base::DoNothing());
+      style::mojom::ColorScheme::kTonalSpot, account_id, base::DoNothing());
 }
 
 void HandleToggleGlanceables() {

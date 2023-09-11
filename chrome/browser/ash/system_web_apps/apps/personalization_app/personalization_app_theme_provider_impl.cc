@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/color_util.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
@@ -20,11 +21,11 @@ namespace ash::personalization_app {
 
 // This array represents the order, number, and types of color schemes
 // represented by the color scheme buttons in the app.
-const std::array<ColorScheme, 4> kColorSchemeButtons{
-    ColorScheme::kTonalSpot,
-    ColorScheme::kNeutral,
-    ColorScheme::kVibrant,
-    ColorScheme::kExpressive,
+const std::array<ash::style::mojom::ColorScheme, 4> kColorSchemeButtons{
+    ash::style::mojom::ColorScheme::kTonalSpot,
+    ash::style::mojom::ColorScheme::kNeutral,
+    ash::style::mojom::ColorScheme::kVibrant,
+    ash::style::mojom::ColorScheme::kExpressive,
 };
 
 PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
@@ -178,7 +179,7 @@ void PersonalizationAppThemeProviderImpl::GetColorScheme(
 }
 
 void PersonalizationAppThemeProviderImpl::SetColorScheme(
-    ColorScheme color_scheme) {
+    ash::style::mojom::ColorScheme color_scheme) {
   if (!chromeos::features::IsJellyEnabled()) {
     theme_receiver_.ReportBadMessage(
         "Cannot call SetColorScheme without Jelly enabled.");

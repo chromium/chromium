@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -39,8 +40,10 @@ namespace {
 
 const char kUser[] = "user@gmail.com";
 const AccountId kAccountId = AccountId::FromUserEmailGaiaId(kUser, kUser);
-const ColorScheme kLocalColorScheme = ColorScheme::kVibrant;
-const ColorScheme kDefaultColorScheme = ColorScheme::kTonalSpot;
+const style::mojom::ColorScheme kLocalColorScheme =
+    style::mojom::ColorScheme::kVibrant;
+const style::mojom::ColorScheme kDefaultColorScheme =
+    style::mojom::ColorScheme::kTonalSpot;
 const SkColor kCelebiColor = gfx::kGoogleBlue400;
 
 // Returns a wallpaper info that captures the time of day wallpaper.
@@ -177,14 +180,14 @@ TEST_F(ColorPaletteControllerTest,
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kStatic, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(style::mojom::ColorScheme::kStatic,
+                                             kAccountId, base::DoNothing());
   EXPECT_EQ(
       kDefaultColorScheme,
       color_palette_controller()->GetColorPaletteSeed(kAccountId)->scheme);
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kExpressive,
-                                             kAccountId, base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kExpressive, kAccountId, base::DoNothing());
   EXPECT_EQ(
       kDefaultColorScheme,
       color_palette_controller()->GetColorPaletteSeed(kAccountId)->scheme);
@@ -196,7 +199,8 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
-  const ColorScheme color_scheme = ColorScheme::kExpressive;
+  const style::mojom::ColorScheme color_scheme =
+      style::mojom::ColorScheme::kExpressive;
 
   color_palette_controller()->SetColorScheme(color_scheme, kAccountId,
                                              base::DoNothing());
@@ -212,7 +216,8 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
   auto local_color_scheme =
       user_manager::KnownUser(local_state())
           .FindIntPath(kAccountId, prefs::kDynamicColorColorScheme);
-  EXPECT_EQ(color_scheme, static_cast<ColorScheme>(local_color_scheme.value()));
+  EXPECT_EQ(color_scheme,
+            static_cast<style::mojom::ColorScheme>(local_color_scheme.value()));
 }
 
 TEST_F(ColorPaletteControllerTest, SetStaticColor) {
@@ -225,17 +230,17 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor) {
 
   EXPECT_EQ(static_color,
             color_palette_controller()->GetStaticColor(kAccountId));
-  EXPECT_EQ(ColorScheme::kStatic,
+  EXPECT_EQ(style::mojom::ColorScheme::kStatic,
             color_palette_controller()->GetColorScheme(kAccountId));
   auto color_palette_seed =
       color_palette_controller()->GetColorPaletteSeed(kAccountId);
-  EXPECT_EQ(ColorScheme::kStatic, color_palette_seed->scheme);
+  EXPECT_EQ(style::mojom::ColorScheme::kStatic, color_palette_seed->scheme);
   EXPECT_EQ(static_color, color_palette_seed->seed_color);
   auto local_color_scheme =
       user_manager::KnownUser(local_state())
           .FindIntPath(kAccountId, prefs::kDynamicColorColorScheme);
-  EXPECT_EQ(ColorScheme::kStatic,
-            static_cast<ColorScheme>(local_color_scheme.value()));
+  EXPECT_EQ(style::mojom::ColorScheme::kStatic,
+            static_cast<style::mojom::ColorScheme>(local_color_scheme.value()));
   const base::Value* value =
       user_manager::KnownUser(local_state())
           .FindPath(kAccountId, prefs::kDynamicColorSeedColor);
@@ -254,8 +259,8 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor_JellyDisabled_AlwaysKMeans) {
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kStatic, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(style::mojom::ColorScheme::kStatic,
+                                             kAccountId, base::DoNothing());
   color_palette_controller()->SetStaticColor(SK_ColorRED, kAccountId,
                                              base::DoNothing());
 
@@ -268,11 +273,12 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor_JellyDisabled_AlwaysKMeans) {
 
 TEST_F(ColorPaletteControllerTest, UpdateColorScheme_NotifiesObserver) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
-  color_palette_controller()->SetColorScheme(ColorScheme::kVibrant, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
   SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(SK_ColorBLUE);
-  const ColorScheme color_scheme = ColorScheme::kExpressive;
+  const style::mojom::ColorScheme color_scheme =
+      style::mojom::ColorScheme::kExpressive;
   PrefService* pref_service =
       Shell::Get()->session_controller()->GetUserPrefServiceForUser(kAccountId);
 
@@ -292,8 +298,8 @@ TEST_F(ColorPaletteControllerTest, UpdateColorScheme_NotifiesObserver) {
 
 TEST_F(ColorPaletteControllerTest, UpdateStaticColor_NotifiesObserver) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
-  color_palette_controller()->SetColorScheme(ColorScheme::kVibrant, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
   SimulateUserLogin(kAccountId);
   color_palette_controller()->SetStaticColor(SK_ColorRED, kAccountId,
                                              base::DoNothing());
@@ -317,8 +323,8 @@ TEST_F(ColorPaletteControllerTest, UpdateStaticColor_NotifiesObserver) {
 
 TEST_F(ColorPaletteControllerTest, UpdateUseKMeans_NotifiesObserver) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
-  color_palette_controller()->SetColorScheme(ColorScheme::kTonalSpot,
-                                             kAccountId, base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
   SetUseKMeansPref(true);
   UpdateWallpaperColor(kCelebiColor);
   SimulateUserLogin(kAccountId);
@@ -328,11 +334,11 @@ TEST_F(ColorPaletteControllerTest, UpdateUseKMeans_NotifiesObserver) {
                           ColorPaletteController::Observer>
       observation(&observer);
   observation.Observe(color_palette_controller());
-  EXPECT_CALL(
-      observer,
-      OnColorPaletteChanging(testing::AllOf(
-          testing::Field(&ColorPaletteSeed::scheme, ColorScheme::kTonalSpot),
-          testing::Field(&ColorPaletteSeed::seed_color, kCelebiColor))))
+  EXPECT_CALL(observer,
+              OnColorPaletteChanging(testing::AllOf(
+                  testing::Field(&ColorPaletteSeed::scheme,
+                                 style::mojom::ColorScheme::kTonalSpot),
+                  testing::Field(&ColorPaletteSeed::seed_color, kCelebiColor))))
       .Times(1);
 
   SetUseKMeansPref(false);
@@ -422,8 +428,8 @@ TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyEnabled) {
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors({}, SK_ColorWHITE, kCelebiColor));
-  color_palette_controller()->SetColorScheme(ColorScheme::kVibrant, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
 
   TestObserver observer;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
@@ -491,8 +497,9 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme) {
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors({}, SK_ColorWHITE, seed));
 
-  const ColorScheme schemes[] = {ColorScheme::kExpressive,
-                                 ColorScheme::kTonalSpot};
+  const style::mojom::ColorScheme schemes[] = {
+      style::mojom::ColorScheme::kExpressive,
+      style::mojom::ColorScheme::kTonalSpot};
   std::vector<SampleColorScheme> results;
   base::RunLoop runner;
   color_palette_controller()->GenerateSampleColorSchemes(
@@ -504,11 +511,11 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme) {
           }));
 
   runner.Run();
-  EXPECT_THAT(
-      results,
-      testing::UnorderedElementsAre(
-          Sample(ColorScheme::kTonalSpot, SkColorSetRGB(0xff, 0xb3, 0xae)),
-          Sample(ColorScheme::kExpressive, SkColorSetRGB(0xc8, 0xbf, 0xff))));
+  EXPECT_THAT(results, testing::UnorderedElementsAre(
+                           Sample(style::mojom::ColorScheme::kTonalSpot,
+                                  SkColorSetRGB(0xff, 0xb3, 0xae)),
+                           Sample(style::mojom::ColorScheme::kExpressive,
+                                  SkColorSetRGB(0xc8, 0xbf, 0xff))));
 }
 
 TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
@@ -521,7 +528,8 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors({}, SK_ColorWHITE, seed));
 
-  const ColorScheme schemes[] = {ColorScheme::kVibrant};
+  const style::mojom::ColorScheme schemes[] = {
+      style::mojom::ColorScheme::kVibrant};
   std::vector<SampleColorScheme> results;
   base::RunLoop runner;
   color_palette_controller()->GenerateSampleColorSchemes(
@@ -536,7 +544,7 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
   ASSERT_THAT(results, testing::SizeIs(1));
   auto& result = results.front();
   EXPECT_THAT(result, testing::Eq(SampleColorScheme{
-                          .scheme = ColorScheme::kVibrant,
+                          .scheme = style::mojom::ColorScheme::kVibrant,
                           .primary = SkColorSetRGB(0x00, 0xc3, 0x82),
                           .secondary = SkColorSetRGB(0x00, 0x88, 0x59),
                           .tertiary = SkColorSetRGB(0x70, 0xb7, 0xb7)}));
@@ -603,8 +611,8 @@ TEST_F(ColorPaletteControllerTest,
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
   SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(kCelebiColor);
-  color_palette_controller()->SetColorScheme(ColorScheme::kTonalSpot,
-                                             kAccountId, base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
   SetUseKMeansPref(true);
 
   SkColor color =
@@ -618,8 +626,8 @@ TEST_F(ColorPaletteControllerTest,
   base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(kCelebiColor);
-  color_palette_controller()->SetColorScheme(ColorScheme::kVibrant, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
   SetUseKMeansPref(true);
 
   SkColor color =
@@ -634,8 +642,8 @@ TEST_F(ColorPaletteControllerTest,
   SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(kCelebiColor);
   SetUseKMeansPref(false);
-  color_palette_controller()->SetColorScheme(ColorScheme::kTonalSpot,
-                                             kAccountId, base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
 
   SkColor color =
       color_palette_controller()->GetUserWallpaperColorOrDefault(SK_ColorBLUE);
@@ -687,23 +695,23 @@ TEST_F(ColorPaletteControllerTest, UseKMeansColor_OnlyTonalSpotUsesKMeans) {
   UpdateWallpaperColor(kCelebiColor);
   base::RunLoop().RunUntilIdle();
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kTonalSpot,
-                                             kAccountId, base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
   ASSERT_EQ(ColorUtil::AdjustKMeansColor(kKMeanColor, dark_mode),
             color_palette_controller()->GetCurrentSeed()->seed_color);
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kNeutral, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kNeutral, kAccountId, base::DoNothing());
   ASSERT_EQ(kCelebiColor,
             color_palette_controller()->GetCurrentSeed()->seed_color);
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kVibrant, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
   ASSERT_EQ(kCelebiColor,
             color_palette_controller()->GetCurrentSeed()->seed_color);
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kExpressive,
-                                             kAccountId, base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kExpressive, kAccountId, base::DoNothing());
   ASSERT_EQ(kCelebiColor,
             color_palette_controller()->GetCurrentSeed()->seed_color);
 }
@@ -716,23 +724,23 @@ TEST_F(ColorPaletteControllerTest, WithoutUseKMeansColor_AllSchemesUseCelebi) {
   UpdateWallpaperColor(SK_ColorBLUE);
   base::RunLoop().RunUntilIdle();
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kTonalSpot,
-                                             kAccountId, base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
   ASSERT_EQ(celebi_color,
             color_palette_controller()->GetCurrentSeed()->seed_color);
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kNeutral, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kNeutral, kAccountId, base::DoNothing());
   ASSERT_EQ(celebi_color,
             color_palette_controller()->GetCurrentSeed()->seed_color);
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kVibrant, kAccountId,
-                                             base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
   ASSERT_EQ(celebi_color,
             color_palette_controller()->GetCurrentSeed()->seed_color);
 
-  color_palette_controller()->SetColorScheme(ColorScheme::kExpressive,
-                                             kAccountId, base::DoNothing());
+  color_palette_controller()->SetColorScheme(
+      style::mojom::ColorScheme::kExpressive, kAccountId, base::DoNothing());
   ASSERT_EQ(celebi_color,
             color_palette_controller()->GetCurrentSeed()->seed_color);
 }
@@ -749,8 +757,9 @@ TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors({}, SK_ColorWHITE, seed));
 
-  const ColorScheme schemes[] = {ColorScheme::kExpressive,
-                                 ColorScheme::kTonalSpot};
+  const style::mojom::ColorScheme schemes[] = {
+      style::mojom::ColorScheme::kExpressive,
+      style::mojom::ColorScheme::kTonalSpot};
   std::vector<SampleColorScheme> results;
   base::RunLoop runner;
   color_palette_controller()->GenerateSampleColorSchemes(
@@ -764,11 +773,11 @@ TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
   runner.Run();
   // The tonal spot primary color differs from that in the
   // |GenerateSampleScheme| test, but the expressive primary color does not.
-  EXPECT_THAT(
-      results,
-      testing::UnorderedElementsAre(
-          Sample(ColorScheme::kTonalSpot, SkColorSetRGB(0x74, 0xd5, 0xe4)),
-          Sample(ColorScheme::kExpressive, SkColorSetRGB(0xc8, 0xbf, 0xff))));
+  EXPECT_THAT(results, testing::UnorderedElementsAre(
+                           Sample(style::mojom::ColorScheme::kTonalSpot,
+                                  SkColorSetRGB(0x74, 0xd5, 0xe4)),
+                           Sample(style::mojom::ColorScheme::kExpressive,
+                                  SkColorSetRGB(0xc8, 0xbf, 0xff))));
 }
 
 class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
@@ -786,11 +795,11 @@ class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
                         static_cast<int>(kLocalColorScheme));
   }
 
-  ColorScheme GetLocalColorScheme() {
+  style::mojom::ColorScheme GetLocalColorScheme() {
     auto local_color_scheme =
         user_manager::KnownUser(local_state())
             .FindIntPath(kAccountId, prefs::kDynamicColorColorScheme);
-    return static_cast<ColorScheme>(local_color_scheme.value());
+    return static_cast<style::mojom::ColorScheme>(local_color_scheme.value());
   }
 
   absl::optional<bool> GetLocalUseKMeans() {
@@ -853,11 +862,11 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
                           ColorPaletteController::Observer>
       observation(&observer);
   observation.Observe(color_palette_controller());
-  EXPECT_CALL(
-      observer,
-      OnColorPaletteChanging(testing::AllOf(
-          testing::Field(&ColorPaletteSeed::scheme, ColorScheme::kTonalSpot),
-          testing::Field(&ColorPaletteSeed::seed_color, kCelebiColor))))
+  EXPECT_CALL(observer,
+              OnColorPaletteChanging(testing::AllOf(
+                  testing::Field(&ColorPaletteSeed::scheme,
+                                 style::mojom::ColorScheme::kTonalSpot),
+                  testing::Field(&ColorPaletteSeed::seed_color, kCelebiColor))))
       .Times(1);
 
   color_palette_controller()->SelectLocalAccount(kAccountId);
@@ -879,13 +888,13 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
                           ColorPaletteController::Observer>
       observation(&observer);
   observation.Observe(color_palette_controller());
-  EXPECT_CALL(
-      observer,
-      OnColorPaletteChanging(testing::AllOf(
-          testing::Field(&ColorPaletteSeed::scheme, ColorScheme::kTonalSpot),
-          testing::Field(
-              &ColorPaletteSeed::seed_color,
-              ColorUtil::AdjustKMeansColor(kKMeanColor, dark_mode)))))
+  EXPECT_CALL(observer,
+              OnColorPaletteChanging(testing::AllOf(
+                  testing::Field(&ColorPaletteSeed::scheme,
+                                 style::mojom::ColorScheme::kTonalSpot),
+                  testing::Field(
+                      &ColorPaletteSeed::seed_color,
+                      ColorUtil::AdjustKMeansColor(kKMeanColor, dark_mode)))))
       .Times(1);
 
   color_palette_controller()->SelectLocalAccount(kAccountId);
@@ -905,11 +914,11 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
                           ColorPaletteController::Observer>
       observation(&observer);
   observation.Observe(color_palette_controller());
-  EXPECT_CALL(
-      observer,
-      OnColorPaletteChanging(testing::AllOf(
-          testing::Field(&ColorPaletteSeed::scheme, ColorScheme::kVibrant),
-          testing::Field(&ColorPaletteSeed::seed_color, kCelebiColor))))
+  EXPECT_CALL(observer,
+              OnColorPaletteChanging(testing::AllOf(
+                  testing::Field(&ColorPaletteSeed::scheme,
+                                 style::mojom::ColorScheme::kVibrant),
+                  testing::Field(&ColorPaletteSeed::seed_color, kCelebiColor))))
       .Times(1);
 
   color_palette_controller()->SelectLocalAccount(kAccountId);
@@ -930,7 +939,7 @@ TEST_F(ColorPaletteControllerLocalPrefTest, NoLocalAccount_TimeOfDayScheme) {
 
   // Since `kAccountId` is not logged in, this triggers default local_state
   // behavior.
-  EXPECT_EQ(ColorScheme::kNeutral,
+  EXPECT_EQ(style::mojom::ColorScheme::kNeutral,
             color_palette_controller()->GetColorScheme(kAccountId));
 }
 

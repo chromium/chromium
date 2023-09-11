@@ -11,6 +11,7 @@
 #include "ash/public/cpp/default_user_image.h"
 #include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/notreached.h"
@@ -33,7 +34,6 @@ using MojomTopicSource = ash::personalization_app::mojom::TopicSource;
 using MojomTemperatureUnit = ash::personalization_app::mojom::TemperatureUnit;
 using MojomAmbientUiVisibility =
     ash::personalization_app::mojom::AmbientUiVisibility;
-using MojomColorScheme = ash::personalization_app::mojom::ColorScheme;
 
 MojomWallpaperLayout
 EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::ToMojom(
@@ -464,46 +464,6 @@ bool EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::FromMojom(
   return false;
 }
 
-MojomColorScheme EnumTraits<MojomColorScheme, ash::ColorScheme>::ToMojom(
-    ash::ColorScheme input) {
-  switch (input) {
-    case ash::ColorScheme::kTonalSpot:
-      return MojomColorScheme::kTonalSpot;
-    case ash::ColorScheme::kNeutral:
-      return MojomColorScheme::kNeutral;
-    case ash::ColorScheme::kExpressive:
-      return MojomColorScheme::kExpressive;
-    case ash::ColorScheme::kVibrant:
-      return MojomColorScheme::kVibrant;
-    case ash::ColorScheme::kStatic:
-      return MojomColorScheme::kStatic;
-  }
-}
-
-bool EnumTraits<MojomColorScheme, ash::ColorScheme>::FromMojom(
-    MojomColorScheme input,
-    ash::ColorScheme* output) {
-  switch (input) {
-    case MojomColorScheme::kTonalSpot:
-      *output = ash::ColorScheme::kTonalSpot;
-      return true;
-    case MojomColorScheme::kNeutral:
-      *output = ash::ColorScheme::kNeutral;
-      return true;
-    case MojomColorScheme::kExpressive:
-      *output = ash::ColorScheme::kExpressive;
-      return true;
-    case MojomColorScheme::kVibrant:
-      *output = ash::ColorScheme::kVibrant;
-      return true;
-    case MojomColorScheme::kStatic:
-      *output = ash::ColorScheme::kStatic;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
 SkColor
 StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
              ash::SampleColorScheme>::primary(const ash::SampleColorScheme&
@@ -525,7 +485,7 @@ StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
   return sample_color_scheme.tertiary;
 }
 
-ash::ColorScheme
+ash::style::mojom::ColorScheme
 StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
              ash::SampleColorScheme>::scheme(const ash::SampleColorScheme&
                                                  sample_color_scheme) {

@@ -8,6 +8,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/metrics/histogram_functions.h"
@@ -57,7 +58,7 @@ bool PersonalizationAppThemeMetricsProvider::ProvideHistograms() {
 
   const ash::ColorPaletteSeed color_palette_seed =
       optional_color_palette_seed.value();
-  if (color_palette_seed.scheme == ash::ColorScheme::kStatic) {
+  if (color_palette_seed.scheme == ash::style::mojom::ColorScheme::kStatic) {
     const SkColor seed_color = color_palette_seed.seed_color;
     const ash::personalization_app::mojom::StaticColor static_color =
         kSkColorToStaticColor.contains(seed_color)

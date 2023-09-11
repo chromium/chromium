@@ -5,6 +5,7 @@
 #include "ash/webui/personalization_app/test/personalization_app_mojom_banned_mocha_test_base.h"
 
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
@@ -111,7 +112,7 @@ class MockPersonalizationAppThemeProvider
   MOCK_METHOD(void, SetColorModePref, (bool dark_mode_enabled), (override));
   MOCK_METHOD(void,
               SetColorScheme,
-              (ash::ColorScheme color_scheme),
+              (ash::style::mojom::ColorScheme color_scheme),
               (override));
   MOCK_METHOD(void, SetStaticColor, (::SkColor static_color), (override));
   MOCK_METHOD(void,

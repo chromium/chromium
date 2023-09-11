@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
@@ -28,28 +29,13 @@ namespace ash {
 class DarkLightModeController;
 class WallpaperControllerImpl;
 
-// Types of ColorSchemes. For a given seed color, each ColorScheme will generate
-// a different color palette/set of ref colors.
-// TODO(b/277378801): Remove this enum and use the one defined in
-// personalization_app.mojom instead.
-enum class ASH_EXPORT ColorScheme {
-  kStatic = 0,  // TonalSpot but with a static color.
-  kTonalSpot = 1,
-  kNeutral = 2,
-  kExpressive = 3,
-  kVibrant = 4,
-
-  // Max value is needed for metrics.
-  kMaxValue = kVibrant,
-};
-
 // An encapsulation of the data which Ash provides for the generation of a color
 // palette.
 struct ASH_EXPORT ColorPaletteSeed {
   // The color which the palette is generated from.
   SkColor seed_color = gfx::kGoogleBlue400;
   // The type of palette which is being generated.
-  ColorScheme scheme = ColorScheme::kStatic;
+  style::mojom::ColorScheme scheme = style::mojom::ColorScheme::kStatic;
   // Dark or light palette.
   ui::ColorProviderKey::ColorMode color_mode =
       ui::ColorProviderKey::ColorMode::kLight;
@@ -62,7 +48,7 @@ struct ASH_EXPORT ColorPaletteSeed {
 
 // Samples of color schemes for the tri-color scheme previews.
 struct ASH_EXPORT SampleColorScheme {
-  ColorScheme scheme;
+  style::mojom::ColorScheme scheme;
   SkColor primary;
   SkColor secondary;
   SkColor tertiary;
@@ -113,7 +99,7 @@ class ASH_EXPORT ColorPaletteController : public SessionObserver,
   // sampled wallpaper color. Calls `on_complete` after the scheme has been
   // applied i.e. after NativeThemeObservers have executed. `on_complete` is
   // called after the change has been applied to the UI.
-  virtual void SetColorScheme(ColorScheme scheme,
+  virtual void SetColorScheme(style::mojom::ColorScheme scheme,
                               const AccountId& account_id,
                               base::OnceClosure on_complete) = 0;
 
@@ -138,7 +124,8 @@ class ASH_EXPORT ColorPaletteController : public SessionObserver,
   // Returns true if using a color scheme based on the current wallpaper.
   virtual bool UsesWallpaperSeedColor(const AccountId& account_id) const = 0;
 
-  virtual ColorScheme GetColorScheme(const AccountId& account_id) const = 0;
+  virtual style::mojom::ColorScheme GetColorScheme(
+      const AccountId& account_id) const = 0;
 
   // Iff a static color is the currently selected scheme, returns that color.
   virtual absl::optional<SkColor> GetStaticColor(
@@ -157,7 +144,7 @@ class ASH_EXPORT ColorPaletteController : public SessionObserver,
   using SampleColorSchemeCallback =
       base::OnceCallback<void(const std::vector<ash::SampleColorScheme>&)>;
   virtual void GenerateSampleColorSchemes(
-      base::span<const ColorScheme> color_scheme_buttons,
+      base::span<const style::mojom::ColorScheme> color_scheme_buttons,
       SampleColorSchemeCallback callback) const = 0;
 };
 
