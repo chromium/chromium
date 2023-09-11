@@ -22,7 +22,12 @@ def __parse(ctx, cfg_file):
             reproxy_config["download_outputs"] = line.removeprefix("download_outputs=").lower() == "true"
 
         if line.startswith("exec_strategy="):
-            reproxy_config["exec_strategy"] = line.removeprefix("exec_strategy=")
+            exec_strategy = line.removeprefix("exec_strategy=")
+            # TODO: b/299611869 - Racing performance has not yet been validated with Siso,
+            # Once performance has been validated either remove this comment or enable racing
+            if exec_strategy == "racing":
+                exec_strategy = "remote_local_fallback"
+            reproxy_config["exec_strategy"] = exec_strategy
 
         if line.startswith("exec_timeout="):
             reproxy_config["exec_timeout"] = line.removeprefix("exec_timeout=")
