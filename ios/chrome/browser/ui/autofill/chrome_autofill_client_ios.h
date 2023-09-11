@@ -133,9 +133,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void HideAutofillPopup(PopupHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
-  void PropagateAutofillPredictionsDeprecated(
-      AutofillDriver* driver,
-      const std::vector<FormStructure*>& forms) override;
   void DidFillOrPreviewForm(mojom::AutofillActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;

@@ -1022,8 +1022,6 @@ void AutofillManager::OnLoadedServerPredictions(
 
   LogAutofillTypePredictionsAvailable(log_manager_, queried_forms);
 
-  client().PropagateAutofillPredictionsDeprecated(&driver(), queried_forms);
-
   for (const FormStructure* form : queried_forms) {
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
                     Observer::FieldTypeSource::kAutofillServer);

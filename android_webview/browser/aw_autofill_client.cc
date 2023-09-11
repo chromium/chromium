@@ -339,10 +339,6 @@ bool AwAutofillClient::IsPasswordManagerEnabled() {
   return false;
 }
 
-void AwAutofillClient::PropagateAutofillPredictionsDeprecated(
-    autofill::AutofillDriver* driver,
-    const std::vector<autofill::FormStructure*>& forms) {}
-
 void AwAutofillClient::DidFillOrPreviewForm(
     autofill::mojom::AutofillActionPersistence action_persistence,
     autofill::AutofillTriggerSource trigger_source,

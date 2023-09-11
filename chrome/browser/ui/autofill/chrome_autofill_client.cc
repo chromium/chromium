@@ -63,7 +63,6 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -1149,11 +1148,6 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() {
       PasswordManagerSettingsServiceFactory::GetForProfile(GetProfile());
   return settings_service->IsSettingEnabled(
       password_manager::PasswordManagerSetting::kOfferToSavePasswords);
-}
-
-void ChromeAutofillClient::PropagateAutofillPredictionsDeprecated(
-    AutofillDriver* autofill_driver,
-    const std::vector<FormStructure*>& forms) {
 }
 
 void ChromeAutofillClient::DidFillOrPreviewForm(

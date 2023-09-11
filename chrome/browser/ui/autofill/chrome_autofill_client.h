@@ -260,9 +260,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       base::OnceClosure no_interactive_authentication_callback) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
-  void PropagateAutofillPredictionsDeprecated(
-      AutofillDriver* driver,
-      const std::vector<FormStructure*>& forms) override;
   void DidFillOrPreviewForm(mojom::AutofillActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;

@@ -93,7 +93,6 @@ class CreditCardCvcAuthenticator;
 enum class CreditCardFetchResult;
 class CreditCardOtpAuthenticator;
 class FormDataImporter;
-class FormStructure;
 class Iban;
 class IbanManager;
 class LogManager;
@@ -834,14 +833,6 @@ class AutofillClient : public RiskDataLoader {
 
   // Returns whether password management is enabled as per the user preferences.
   virtual bool IsPasswordManagerEnabled() = 0;
-
-  // Pass the form structures to the password manager to choose correct username
-  // and to the password generation manager to detect account creation forms.
-  //
-  // TODO(crbug.com/1466435): Do not use or rely on this function anymore.
-  virtual void PropagateAutofillPredictionsDeprecated(
-      AutofillDriver* driver,
-      const std::vector<FormStructure*>& forms) = 0;
 
   // Inform the client that the form has been filled.
   virtual void DidFillOrPreviewForm(
