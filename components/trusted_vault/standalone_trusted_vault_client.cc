@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -377,6 +378,19 @@ void StandaloneTrustedVaultClient::
       base::BindOnce(&StandaloneTrustedVaultBackend::
                          GetLastAddedRecoveryMethodPublicKeyForTesting,
                      backend_),
+      std::move(callback));
+}
+
+void StandaloneTrustedVaultClient::GetLastKeyVersionForTesting(
+    const std::string& gaia_id,
+    base::OnceCallback<void(int last_key_version)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting, backend_,
+          gaia_id),
       std::move(callback));
 }
 

@@ -783,6 +783,16 @@ StandaloneTrustedVaultBackend::GetLastAddedRecoveryMethodPublicKeyForTesting()
   return last_added_recovery_method_public_key_for_testing_;
 }
 
+int StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting(
+    const std::string& gaia_id) {
+  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(gaia_id);
+  if (!per_user_vault) {
+    return -1;
+  }
+  return per_user_vault->last_vault_key_version();
+}
+
 void StandaloneTrustedVaultBackend::SetDeviceRegisteredVersionForTesting(
     const std::string& gaia_id,
     int version) {

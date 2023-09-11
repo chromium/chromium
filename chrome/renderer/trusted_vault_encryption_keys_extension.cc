@@ -66,7 +66,7 @@ SyncEncryptionKeysToTrustedVaultKeys(
     // set all the other versions to -1. The remaining version numbers will be
     // ignored by the sync service.
     const bool last_key =
-        encryption_keys.size() == trusted_vault_keys.size() - 1;
+        trusted_vault_keys.size() + 1 == encryption_keys.size();
     trusted_vault_keys.push_back(chrome::mojom::TrustedVaultKey::New(
         /*version=*/last_key ? last_key_version : -1,
         /*bytes=*/ArrayBufferAsBytes(encryption_key)));
