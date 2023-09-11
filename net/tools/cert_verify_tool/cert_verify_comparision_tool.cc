@@ -25,7 +25,6 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/system_trust_store.h"
-#include "net/cert/trial_comparison_cert_verifier_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
@@ -186,45 +185,21 @@ void PrintStats() {
   }
 }
 
-std::string TrialComparisonResultToString(net::TrialComparisonResult result) {
-  switch (result) {
-    case net::TrialComparisonResult::kInvalid:
-      return "invalid";
-    case net::TrialComparisonResult::kEqual:
-      return "equal";
-    case net::TrialComparisonResult::kPrimaryValidSecondaryError:
-      return "primary_valid_secondary_error";
-    case net::TrialComparisonResult::kPrimaryErrorSecondaryValid:
-      return "primary_error_secondary_valid";
-    case net::TrialComparisonResult::kBothValidDifferentDetails:
-      return "both_valid_different_details";
-    case net::TrialComparisonResult::kBothErrorDifferentDetails:
-      return "both_error_different_details";
-    case net::TrialComparisonResult::
-        kIgnoredMultipleEVPoliciesAndOneMatchesRoot:
-      return "ignored_multiple_ev_policies_one_matches_root";
-    case net::TrialComparisonResult::kIgnoredDifferentPathReVerifiesEquivalent:
-      return "ignored_different_path_reverifies_equivalent";
-    case net::TrialComparisonResult::kIgnoredConfigurationChanged:
-      return "ignored_configuration_changed";
-    case net::TrialComparisonResult::kIgnoredSHA1SignaturePresent:
-      return "ignored_sha1_signature_present";
-    case net::TrialComparisonResult::kIgnoredBothAuthorityInvalid:
-      return "ignored_both_authority_invalid";
-    case net::TrialComparisonResult::kIgnoredBothKnownRoot:
-      return "ignored_both_known_root";
-    case net::TrialComparisonResult::
-        kIgnoredBuiltinAuthorityInvalidPlatformSymantec:
-      return "ignored_builtin_authority_invalid_platform_symantec";
-    case net::TrialComparisonResult::kIgnoredLetsEncryptExpiredRoot:
-      return "ignored_lets_encrypt_expired_root";
-    case net::TrialComparisonResult::kIgnoredAndroidErrorDatePriority:
-      return "ignored_android_error_date_priority";
-  }
-}
-
 void PrintUsage(const char* argv0) {
   std::cerr << "Usage: " << argv0 << kUsage;
+}
+
+// Note: This ignores the result of stapled OCSP (which is the same for both
+// verifiers) and informational statuses about the certificate algorithms and
+// the hashes, since they will be the same if the certificate chains are the
+// same.
+bool CertVerifyResultEqual(const net::CertVerifyResult& a,
+                           const net::CertVerifyResult& b) {
+  return std::tie(a.cert_status, a.is_issued_by_known_root) ==
+             std::tie(b.cert_status, b.is_issued_by_known_root) &&
+         (!!a.verified_cert == !!b.verified_cert) &&
+         (!a.verified_cert ||
+          a.verified_cert->EqualsIncludingChain(b.verified_cert.get()));
 }
 
 // Returns -1 if an error occurred.
@@ -296,24 +271,16 @@ int RunCert(base::File* input_file,
   builtin_proc->VerifyCert(*x509_target_and_intermediates, cert_chain.host(),
                            &builtin_result, &builtin_error);
 
-  if (net::CertVerifyResultEqual(platform_result, builtin_result) &&
+  if (CertVerifyResultEqual(platform_result, builtin_result) &&
       platform_error == builtin_error) {
     chain_processing_stats["equal"]++;
   } else {
-    net::TrialComparisonResult result = net::IsSynchronouslyIgnorableDifference(
-        platform_error, platform_result, builtin_error, builtin_result,
-        /*sha1_local_anchors_enabled=*/false);
-
-    if (result != net::TrialComparisonResult::kInvalid) {
-      chain_processing_stats["ignorable_diff"]++;
-      ignorable_difference_stats[TrialComparisonResultToString(result)]++;
-      return 0;
-    }
-
-    // Much of the below code is lifted from
+    // Much of the below code was originally lifted from
     // TrialComparisonCertVerifier::Job::OnTrialJobCompleted as it wasn't
     // obvious how to easily refactor the code here to prevent copying this
-    // section of code.
+    // section of code. The TrialComparisonCertVerifier is now gone, but we
+    // retain our ability here to show the differences between a result
+    // returned by the builtin verifier and the native platform verifier.
     const bool chains_equal =
         platform_result.verified_cert->EqualsIncludingChain(
             builtin_result.verified_cert.get());
@@ -328,8 +295,8 @@ int RunCert(base::File* input_file,
       platform_proc->VerifyCert(
           *builtin_result.verified_cert, cert_chain.host(),
           &platform_reverification_result, &platform_reverification_error);
-      if (net::CertVerifyResultEqual(platform_reverification_result,
-                                     builtin_result) &&
+      if (CertVerifyResultEqual(platform_reverification_result,
+                                builtin_result) &&
           platform_reverification_error == builtin_error) {
         chain_processing_stats["reverify_ignorable"]++;
         return 0;

@@ -213,10 +213,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShortLaxAllowUnsafeThreshold);
 // This only has an effect if the cookie defaults to SameSite=Lax.
 NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-NET_EXPORT BASE_DECLARE_FEATURE(kCertDualVerificationTrialFeature);
-#endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 // When enabled, use the Chrome Root Store instead of the system root store
 NET_EXPORT BASE_DECLARE_FEATURE(kChromeRootStoreUsed);

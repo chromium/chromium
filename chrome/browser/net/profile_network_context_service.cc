@@ -109,10 +109,6 @@
 #include "net/ssl/client_cert_store_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-#include "chrome/browser/net/trial_comparison_cert_verifier_controller.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif
@@ -981,35 +977,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   }
 
   network_context_params->ct_policy = GetCTPolicy();
-
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  DCHECK(cert_verifier_creation_params);
-  if (!in_memory &&
-      TrialComparisonCertVerifierController::MaybeAllowedForProfile(profile_)) {
-    mojo::PendingRemote<
-        cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
-        config_client;
-    auto config_client_receiver =
-        config_client.InitWithNewPipeAndPassReceiver();
-
-    cert_verifier_creation_params->trial_comparison_cert_verifier_params =
-        cert_verifier::mojom::TrialComparisonCertVerifierParams::New();
-
-    if (!trial_comparison_cert_verifier_controller_) {
-      trial_comparison_cert_verifier_controller_ =
-          std::make_unique<TrialComparisonCertVerifierController>(profile_);
-    }
-    trial_comparison_cert_verifier_controller_->AddClient(
-        std::move(config_client),
-        cert_verifier_creation_params->trial_comparison_cert_verifier_params
-            ->report_client.InitWithNewPipeAndPassReceiver());
-    cert_verifier_creation_params->trial_comparison_cert_verifier_params
-        ->initial_allowed =
-        trial_comparison_cert_verifier_controller_->IsAllowed();
-    cert_verifier_creation_params->trial_comparison_cert_verifier_params
-        ->config_client_receiver = std::move(config_client_receiver);
-  }
-#endif
 
   if (domain_reliability::ShouldCreateService()) {
     network_context_params->enable_domain_reliability = true;

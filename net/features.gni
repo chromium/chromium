@@ -39,11 +39,6 @@ declare_args() {
   # connections use HTTPS.
   include_transport_security_state_preload_list = true
 
-  # Platforms where the cert verifier comparison trial is supported.
-  # See https://crbug.com/649026.
-  trial_comparison_cert_verifier_supported =
-      (is_android && !is_cronet_build) || is_linux || is_chromeos
-
   # Platforms for which certificate verification can be performed using the
   # builtin cert verifier with the Chrome Root Store, and this can be
   # configured using the ChromeRootStoreUsed feature flag. When the feature

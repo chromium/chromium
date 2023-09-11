@@ -1165,11 +1165,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "cert-dual-verification-enabled",
-    "owners": ["hchao", "mattm", "davidben", "chrome-trusty-transport-core@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "chip-location-bar-icon-override",
     "owners": [
       "fjacky",

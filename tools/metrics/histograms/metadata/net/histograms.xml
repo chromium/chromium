@@ -788,18 +788,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CertVerifier_TrialComparisonResult"
-    enum="CertVerifierTrialComparisonResult" expires_after="2024-02-20">
-  <owner>mattm@chromium.org</owner>
-  <owner>rsleevi@chromium.org</owner>
-  <summary>
-    If the CertDualVerificationTrial is enabled, each certificate verification
-    associated with a (non-incognito) profile which is opted-in to SBER2(Scout)
-    will record the outcome of comparing the primary verifier and secondary
-    verifier results.
-  </summary>
-</histogram>
-
 <histogram name="Net.ConnectionInfo.MainFrame" enum="ConnectionInfo"
     expires_after="2024-02-25">
   <owner>dschinazi@chromium.org</owner>

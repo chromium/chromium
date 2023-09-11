@@ -630,7 +630,6 @@ data/path_builder_unittest/validity_date_prioritization/root.pem
 data/path_builder_unittest/validity_date_prioritization/target.pem
 data/spdy_tests/examples_07.hpack
 data/test.html
-data/trial_comparison_cert_verifier_unittest/target-multiple-policies/chain.pem
 data/url_request_unittest/308-without-location-header
 data/url_request_unittest/308-without-location-header.mock-http-headers
 data/url_request_unittest/BullRunSpeech.txt

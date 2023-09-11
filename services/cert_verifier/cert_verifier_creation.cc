@@ -29,10 +29,6 @@
 #include "net/cert/internal/trust_store_chrome.h"
 #endif
 
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-#include "services/cert_verifier/trial_comparison_cert_verifier_mojo.h"
-#endif
-
 namespace cert_verifier {
 
 namespace {
@@ -173,46 +169,11 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 #endif
 };
 
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-// Returns true if creation_params are requesting the creation of a
-// TrialComparisonCertVerifier.
-bool IsTrialVerificationOn(
-    const mojom::CertVerifierCreationParams* creation_params) {
-  // Check to see if we have trial comparison cert verifier params.
-  return creation_params &&
-         creation_params->trial_comparison_cert_verifier_params;
-}
-
-// Should only be called if IsTrialVerificationOn(creation_params) == true.
-std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateTrialCertVerifier(
-    mojom::CertVerifierCreationParams* creation_params,
-    scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    const net::CertVerifyProcFactory::ImplParams& impl_params) {
-  DCHECK(IsTrialVerificationOn(creation_params));
-
-  scoped_refptr<net::CertVerifyProcFactory> proc_factory =
-      base::MakeRefCounted<CertVerifyProcFactoryImpl>(creation_params);
-
-#if !BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-#error "CHROME_ROOT_STORE_OPTIONAL must be true"
-#endif
-
-  return std::make_unique<TrialComparisonCertVerifierMojo>(
-      creation_params->trial_comparison_cert_verifier_params->initial_allowed,
-      std::move(creation_params->trial_comparison_cert_verifier_params
-                    ->config_client_receiver),
-      std::move(creation_params->trial_comparison_cert_verifier_params
-                    ->report_client),
-      std::move(proc_factory), cert_net_fetcher, impl_params);
-}
-#endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-
 }  // namespace
 
 bool IsUsingCertNetFetcher() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||      \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||       \
-    BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) || \
     BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   return true;
 #else
@@ -225,13 +186,6 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     const net::CertVerifyProcFactory::ImplParams& impl_params) {
   DCHECK(cert_net_fetcher || !IsUsingCertNetFetcher());
-
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  if (IsTrialVerificationOn(creation_params)) {
-    return CreateTrialCertVerifier(creation_params, cert_net_fetcher,
-                                   impl_params);
-  }
-#endif
 
   scoped_refptr<net::CertVerifyProcFactory> proc_factory =
       base::MakeRefCounted<CertVerifyProcFactoryImpl>(creation_params);

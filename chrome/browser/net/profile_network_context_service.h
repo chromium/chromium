@@ -31,7 +31,6 @@
 
 class PrefRegistrySimple;
 class Profile;
-class TrialComparisonCertVerifierController;
 
 namespace net {
 class ClientCertStore;
@@ -204,13 +203,6 @@ class ProfileNetworkContextService
 
   // Used to post schedule CT policy updates
   base::OneShotTimer ct_policy_update_timer_;
-
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  // Controls the cert verification trial. May be null if the trial is disabled
-  // or not allowed for this profile.
-  std::unique_ptr<TrialComparisonCertVerifierController>
-      trial_comparison_cert_verifier_controller_;
-#endif
 
   // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>

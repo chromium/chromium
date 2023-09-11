@@ -5039,11 +5039,6 @@ if (!is_android) {
           [ "../browser/ui/screen_capture_notification_ui_browsertest.cc" ]
     }
 
-    if (trial_comparison_cert_verifier_supported) {
-      sources +=
-          [ "../browser/net/trial_comparison_cert_verifier_browsertest.cc" ]
-    }
-
     if (enable_webui_tab_strip) {
       sources += [
         "../browser/ui/views/frame/webui_tab_strip_field_trial_browsertest.cc",
@@ -9648,11 +9643,6 @@ test("unit_tests") {
   }
   if (!is_android && use_nss_certs) {
     sources += [ "../common/net/x509_certificate_model_nss_unittest.cc" ]
-  }
-  if (trial_comparison_cert_verifier_supported) {
-    sources += [
-      "../browser/net/trial_comparison_cert_verifier_controller_unittest.cc",
-    ]
   }
   if (enable_supervised_users) {
     sources += [

@@ -1741,13 +1741,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="DriveCommon.RemoteSearch.TextSearchTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DualCertVerifierTrial" separator="_">
-  <suffix name="TrialPrimary" label=""/>
-  <suffix name="TrialSecondary" label=""/>
-  <affected-histogram name="Net.CertVerifier_First_Job_Latency"/>
-  <affected-histogram name="Net.CertVerifier_Job_Latency"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="EncryptionLevel" separator=".">
   <suffix name="0RTT" label="Packets sent at 0-RTT encryption only."/>
   <suffix name="ForwardSecure"

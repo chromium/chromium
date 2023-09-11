@@ -14,10 +14,6 @@
 #include "net/cert/cert_verifier.h"
 #include "net/net_buildflags.h"
 
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-#include "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom.h"
-#endif
-
 namespace base {
 class Time;
 }  // namespace base
@@ -27,7 +23,6 @@ class NetworkTimeTracker;
 }  // namespace network_time
 
 namespace net {
-class CertVerifyResult;
 class SSLInfo;
 class X509Certificate;
 }  // namespace net
@@ -65,25 +60,6 @@ class CertificateErrorReport {
   // properties in |ssl_info|.
   CertificateErrorReport(const std::string& hostname,
                          const net::SSLInfo& ssl_info);
-
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  // Constructs a dual verification trial report for the given |hostname|, the
-  // cert and chain sent by the server, the result from the primary verifier,
-  // and the result from the trial verifier.
-  // TODO(mattm): remove this when the trial is done. (https://crbug.com/649026)
-  CertificateErrorReport(
-      const std::string& hostname,
-      const net::X509Certificate& unverified_cert,
-      bool enable_rev_checking,
-      bool require_rev_checking_local_anchors,
-      bool enable_sha1_local_anchors,
-      bool disable_symantec_enforcement,
-      const std::string& stapled_ocsp,
-      const std::string& sct_list,
-      const net::CertVerifyResult& primary_result,
-      const net::CertVerifyResult& trial_result,
-      cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info);
-#endif
 
   ~CertificateErrorReport();
 
