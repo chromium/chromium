@@ -21,6 +21,7 @@ struct AutofillMetadata;
 // PersonalDataManager.
 class AutofillDataModel : public FormGroup {
  public:
+  // TODO(crbug.com/1174203): Remove.
   enum ValidityState {
     // The field has not been validated.
     UNVALIDATED = 0,
@@ -32,13 +33,6 @@ class AutofillDataModel : public FormGroup {
     INVALID = 3,
     // The validation for the field is unsupported.
     UNSUPPORTED = 4,
-  };
-
-  enum ValidationSource {
-    // The validity state is according to the client validation.
-    CLIENT = 0,
-    // The validity state is according to the server validation.
-    SERVER = 1,
   };
 
   explicit AutofillDataModel(const std::string& guid);
