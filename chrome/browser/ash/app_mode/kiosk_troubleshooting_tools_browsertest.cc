@@ -309,7 +309,14 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsForward) {
   EXPECT_FALSE(newly_opened_browser->window()->IsActive());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsBackward) {
+// TODO(crbug.com/1481017): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SwitchWindowsBackward DISABLED_SwitchWindowsBackward
+#else
+#define MAYBE_SwitchWindowsBackward SwitchWindowsBackward
+#endif
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
+                       MAYBE_SwitchWindowsBackward) {
   InitializeRegularOnlineKiosk();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
   Browser* main_browser = BrowserList::GetInstance()->get(0);
