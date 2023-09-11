@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("bring_android_tabs") {
+source_set("model") {
   sources = [
     "bring_android_tabs_to_ios_service.h",
     "bring_android_tabs_to_ios_service.mm",
@@ -56,7 +56,7 @@ source_set("test_support") {
     "fake_bring_android_tabs_to_ios_service.mm",
   ]
   deps = [
-    ":bring_android_tabs",
+    ":model",
     "//components/prefs",
     "//components/segmentation_platform/embedder/default_model",
     "//ios/chrome/browser/sync",
@@ -68,9 +68,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "bring_android_tabs_to_ios_service_unittest.mm" ]
   deps = [
-    ":bring_android_tabs",
     ":features",
     ":metrics",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//components/prefs",

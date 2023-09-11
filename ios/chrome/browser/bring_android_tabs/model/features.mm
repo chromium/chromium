@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bring_android_tabs/features.h"
+#import "ios/chrome/browser/bring_android_tabs/model/features.h"
 
 #import "base/metrics/field_trial_params.h"
 

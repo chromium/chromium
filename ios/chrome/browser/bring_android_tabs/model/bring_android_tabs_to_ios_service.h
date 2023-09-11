@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BRING_ANDROID_TABS_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
-#define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
+#define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
 
 #import <memory>
 #import <vector>
@@ -109,4 +109,4 @@ class BringAndroidTabsToIOSService : public KeyedService {
   std::vector<std::tuple<size_t, size_t>> position_of_tabs_in_synced_sessions_;
 };
 
-#endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_

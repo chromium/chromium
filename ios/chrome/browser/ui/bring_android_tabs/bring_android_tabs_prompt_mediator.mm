@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_mediator.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
-#import "ios/chrome/browser/bring_android_tabs/metrics.h"
+#import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
+#import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
 
 @implementation BringAndroidTabsPromptMediator {

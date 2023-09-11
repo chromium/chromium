@@ -6,9 +6,9 @@
 
 #import "base/check_op.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
-#import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
-#import "ios/chrome/browser/bring_android_tabs/features.h"
+#import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
+#import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
+#import "ios/chrome/browser/bring_android_tabs/model/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/bring_android_tabs_commands.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_mediator.h"

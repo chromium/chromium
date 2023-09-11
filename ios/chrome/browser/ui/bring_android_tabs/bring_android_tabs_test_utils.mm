@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_utils.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/bring_android_tabs/features.h"
+#import "ios/chrome/browser/bring_android_tabs/model/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
+#import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 
 #import "base/i18n/number_formatting.h"
 #import "base/strings/utf_string_conversions.h"
@@ -29,8 +29,8 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/session_sync_test_helper.h"
 #import "components/sync_sessions/synced_session.h"
-#import "ios/chrome/browser/bring_android_tabs/features.h"
-#import "ios/chrome/browser/bring_android_tabs/metrics.h"
+#import "ios/chrome/browser/bring_android_tabs/model/features.h"
+#import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

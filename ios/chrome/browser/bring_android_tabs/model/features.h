@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BRING_ANDROID_TABS_FEATURES_H_
-#define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_FEATURES_H_
+#ifndef IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_FEATURES_H_
+#define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_FEATURES_H_
 
 #import "base/feature_list.h"
 
@@ -28,4 +28,4 @@ extern const char kBringYourOwnTabsIOSParam[];
 // "BringYourOwnTabsIOS", and start the experiment.
 BringYourOwnTabsPromptType GetBringYourOwnTabsPromptType();
 
-#endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_FEATURES_H_
+#endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_FEATURES_H_

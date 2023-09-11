@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BRING_ANDROID_TABS_FAKE_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
-#define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_FAKE_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_FAKE_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
+#define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_FAKE_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
 
-#import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
+#import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 
 // A fake BringAndroidTabsToIOSService for testing purpose. Takes a set of tabs
 // as input.
@@ -42,4 +42,4 @@ class FakeBringAndroidTabsToIOSService : public BringAndroidTabsToIOSService {
   std::vector<size_t> opened_tabs_at_indices_;
 };
 
-#endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_FAKE_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_FAKE_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_
