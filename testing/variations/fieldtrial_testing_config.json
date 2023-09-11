@@ -3389,17 +3389,17 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledGroupC_20230103",
+                    "name": "EnabledGroupA_20230911",
                     "params": {
-                        "CrOSZramWritebackWritebackBackoffTimeSec": "1800",
+                        "CrOSZramWritebackWritebackBackoffTimeSec": "3600",
                         "ZramWritebackHuge": "false",
                         "ZramWritebackHugeIdle": "true",
                         "ZramWritebackIdle": "true",
-                        "ZramWritebackIdleMaxTimeSec": "86400",
-                        "ZramWritebackIdleMinTimeSec": "43200",
-                        "ZramWritebackMaxPages": "51200",
-                        "ZramWritebackMinPages": "1280",
-                        "ZramWritebackPeriodicTimeSec": "600"
+                        "ZramWritebackIdleMaxTimeSec": "108000",
+                        "ZramWritebackIdleMinTimeSec": "64800",
+                        "ZramWritebackMaxPages": "76800",
+                        "ZramWritebackMinPages": "2560",
+                        "ZramWritebackPeriodicTimeSec": "1800"
                     },
                     "enable_features": [
                         "ChromeOSZramWriteback"
