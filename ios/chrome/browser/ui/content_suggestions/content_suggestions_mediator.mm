@@ -1089,25 +1089,39 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   for (NSNumber* moduleNumber : _magicStackOrderFromSegmentation) {
     ContentSuggestionsModuleType moduleType =
         (ContentSuggestionsModuleType)[moduleNumber intValue];
-    if (moduleType == ContentSuggestionsModuleType::kSafetyCheck) {
-      if (!IsSafetyCheckMagicStackEnabled() ||
-          safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
-        continue;
-      }
-      // If ShouldHideIrrelevantModules() is enabled and it is not the first
-      // ranked module, do not add it to the Magic Stack.
-      if (!ShouldHideIrrelevantModules() || [magicStackOrder count] == 0) {
-        [self addSafetyCheckToMagicStackOrder:magicStackOrder];
-      }
-    } else if (moduleType == ContentSuggestionsModuleType::kTabResumption) {
-      if (IsTabResumptionEnabled() &&
-          !tab_resumption_prefs::IsTabResumptionDisabled(_localState) &&
-          _tabResumptionItem) {
+    switch (moduleType) {
+      case ContentSuggestionsModuleType::kMostVisited:
+        if (ShouldPutMostVisitedSitesInMagicStack()) {
+          [magicStackOrder addObject:moduleNumber];
+        }
+        break;
+      case ContentSuggestionsModuleType::kTabResumption:
+        if (IsTabResumptionEnabled() &&
+            !tab_resumption_prefs::IsTabResumptionDisabled(_localState) &&
+            _tabResumptionItem) {
+          [magicStackOrder addObject:moduleNumber];
+        }
+        break;
+      case ContentSuggestionsModuleType::kSafetyCheck:
+        if (!IsSafetyCheckMagicStackEnabled() ||
+            safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
+                _localState)) {
+          break;
+        }
+        // If ShouldHideIrrelevantModules() is enabled and it is not the first
+        // ranked module, do not add it to the Magic Stack.
+        if (!ShouldHideIrrelevantModules() || [magicStackOrder count] == 0) {
+          [self addSafetyCheckToMagicStackOrder:magicStackOrder];
+        }
+        break;
+      case ContentSuggestionsModuleType::kShortcuts:
         [magicStackOrder addObject:moduleNumber];
-      }
-
-    } else {
-      [magicStackOrder addObject:moduleNumber];
+        break;
+      default:
+        // These module types should not have been added by the logic receiving
+        // the order list from Segmentation.
+        NOTREACHED();
+        break;
     }
   }
   return magicStackOrder;
