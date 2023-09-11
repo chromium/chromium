@@ -83,8 +83,8 @@ bool IsFormInteresting(const FormData& form, bool has_autofillable_form_field) {
 void ClearSelectOrSelectListElement(
     WebFormControlElement& element,
     const std::map<FieldRendererId, std::u16string>& initial_values) {
-  auto initial_value_iter = initial_values.find(
-      FieldRendererId(element.UniqueRendererFormControlId()));
+  auto initial_value_iter =
+      initial_values.find(form_util::GetFieldRendererId(element));
   if (initial_value_iter != initial_values.end() &&
       element.Value().Utf16() != initial_value_iter->second) {
     element.SetAutofillValue(
@@ -262,7 +262,7 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
   } else if (form_util::IsCheckableElement(web_input_element)) {
     WebInputElement input_element = control_element.To<WebInputElement>();
     auto checkable_element_it = initial_checked_state_.find(
-        FieldRendererId(input_element.UniqueRendererFormControlId()));
+        form_util::GetFieldRendererId(input_element));
     if (checkable_element_it != initial_checked_state_.end() &&
         input_element.IsChecked() != checkable_element_it->second) {
       input_element.SetChecked(checkable_element_it->second, true,
@@ -334,8 +334,8 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
         form_util::GetUnownedAutofillableFormFieldElements(document);
   } else {
     for (const WebFormElement& form_element : frame_->GetDocument().Forms()) {
-      FormRendererId form_id(form_element.UniqueRendererFormId());
-      if (form_id == form.data.unique_renderer_id) {
+      if (form_util::GetFormRendererId(form_element) ==
+          form.data.unique_renderer_id) {
         control_elements =
             form_util::ExtractAutofillableElementsInForm(form_element);
         break;
@@ -354,9 +354,10 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
     WebFormControlElement& element = control_elements[i];
 
     const FormFieldData& field_data = form.data.fields[i];
-    FieldRendererId field_id(element.UniqueRendererFormControlId());
-    if (field_id != field_data.unique_renderer_id)
+    if (form_util::GetFieldRendererId(element) !=
+        field_data.unique_renderer_id) {
       continue;
+    }
     const FormFieldDataPredictions& field = form.fields[i];
 
     element.SetFormElementPiiType(
@@ -470,16 +471,14 @@ void FormCache::SaveInitialValues(
   for (const WebFormControlElement& element : control_elements) {
     if (form_util::IsSelectElement(element)) {
       initial_select_values_.insert(
-          {FieldRendererId(element.UniqueRendererFormControlId()),
-           element.Value().Utf16()});
+          {form_util::GetFieldRendererId(element), element.Value().Utf16()});
     } else if (form_util::IsSelectListElement(element)) {
       initial_selectlist_values_.insert(
-          {FieldRendererId(element.UniqueRendererFormControlId()),
-           element.Value().Utf16()});
+          {form_util::GetFieldRendererId(element), element.Value().Utf16()});
     } else if (form_util::IsCheckableElement(element)) {
       const WebInputElement input_element = element.To<WebInputElement>();
       initial_checked_state_.insert(
-          {FieldRendererId(input_element.UniqueRendererFormControlId()),
+          {form_util::GetFieldRendererId(input_element),
            input_element.IsChecked()});
     }
   }

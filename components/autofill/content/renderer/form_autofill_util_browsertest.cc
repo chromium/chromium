@@ -89,8 +89,7 @@ void VerifyButtonTitleCache(const WebFormElement& form_target,
 
 bool HaveSameFormControlId(const WebFormControlElement& element,
                            const FormFieldData& field) {
-  FieldRendererId element_renderer_id(element.UniqueRendererFormControlId());
-  return element_renderer_id == field.unique_renderer_id;
+  return GetFieldRendererId(element) == field.unique_renderer_id;
 }
 
 class FormAutofillUtilsTest : public content::RenderViewTest {
@@ -214,8 +213,8 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
     WebVector<WebElement> web_to_skip =
         web_frame->GetDocument().QuerySelectorAll("div[class='skip']");
     std::set<WebNode> to_skip;
-    for (size_t i = 0; i < web_to_skip.size(); ++i) {
-      to_skip.insert(web_to_skip[i]);
+    for (const WebElement& element : web_to_skip) {
+      to_skip.insert(element);
     }
 
     EXPECT_EQ(test_case.expected_label,
@@ -547,8 +546,9 @@ TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
     EXPECT_EQ(form, FindFormByUniqueRendererId(doc, GetFormRendererId(form)));
 
   // Expect null form element for non-existing form id.
-  FormRendererId non_existing_id(forms[0].UniqueRendererFormId() + 1000);
-  EXPECT_TRUE(FindFormByUniqueRendererId(doc, non_existing_id).IsNull());
+  FormRendererId non_existing_form_id(GetFormRendererId(forms[0]).value() +
+                                      1000);
+  EXPECT_TRUE(FindFormByUniqueRendererId(doc, non_existing_form_id).IsNull());
 }
 
 // Used in ParameterizedFindFormControlByRendererIdTest.
@@ -626,10 +626,12 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdNoForm) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto input1 = GetFormControlElementById(doc, "i1");
   auto input3 = GetFormControlElementById(doc, "i3");
-  FieldRendererId non_existing_id(input3.UniqueRendererFormControlId() + 1000);
+  FieldRendererId non_existing_field_id(GetFieldRendererId(input3).value() +
+                                        1000);
 
-  std::vector<FieldRendererId> renderer_ids = {
-      GetFieldRendererId(input3), non_existing_id, GetFieldRendererId(input1)};
+  std::vector<FieldRendererId> renderer_ids = {GetFieldRendererId(input3),
+                                               non_existing_field_id,
+                                               GetFieldRendererId(input1)};
 
   auto elements = FindFormControlElementsByUniqueRendererId(doc, renderer_ids);
 
@@ -647,10 +649,12 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdWithForm) {
   auto form = GetFormElementById(doc, "f1");
   auto input1 = GetFormControlElementById(doc, "i1");
   auto input3 = GetFormControlElementById(doc, "i3");
-  FieldRendererId non_existing_id(input3.UniqueRendererFormControlId() + 1000);
+  FieldRendererId non_existing_field_id(GetFieldRendererId(input3).value() +
+                                        1000);
 
-  std::vector<FieldRendererId> renderer_ids = {
-      GetFieldRendererId(input3), non_existing_id, GetFieldRendererId(input1)};
+  std::vector<FieldRendererId> renderer_ids = {GetFieldRendererId(input3),
+                                               non_existing_field_id,
+                                               GetFieldRendererId(input1)};
 
   auto elements = FindFormControlElementsByUniqueRendererId(
       doc, GetFormRendererId(form), renderer_ids);
@@ -662,7 +666,7 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdWithForm) {
   EXPECT_EQ(input1, elements[2]);
 
   // Expect that no elements are returned for non existing form id.
-  FormRendererId non_existing_form_id(form.UniqueRendererFormId() + 1000);
+  FormRendererId non_existing_form_id(GetFormRendererId(form).value() + 1000);
   elements = FindFormControlElementsByUniqueRendererId(
       doc, non_existing_form_id, renderer_ids);
   ASSERT_EQ(3u, elements.size());

@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -184,8 +185,12 @@ uint32_t EnumToBitmask(enumType outcome) {
 absl::optional<uint64_t> GetFormRendererId(HitTestResult& result) {
   if (auto* text_control_element =
           DynamicTo<TextControlElement>(result.InnerNode())) {
-    if (text_control_element->Form() != nullptr)
-      return text_control_element->Form()->UniqueRendererFormId();
+    if (text_control_element->Form() != nullptr) {
+      return (base::FeatureList::IsEnabled(
+                 features::kAutofillUseDomNodeIdForRendererId))
+                 ? text_control_element->Form()->GetDomNodeId()
+                 : text_control_element->Form()->UniqueRendererFormId();
+    }
   }
   return absl::nullopt;
 }
@@ -193,7 +198,10 @@ absl::optional<uint64_t> GetFormRendererId(HitTestResult& result) {
 absl::optional<uint64_t> GetFieldRendererId(HitTestResult& result) {
   if (auto* text_control_element =
           DynamicTo<TextControlElement>(result.InnerNode())) {
-    return text_control_element->UniqueRendererFormControlId();
+    return (base::FeatureList::IsEnabled(
+               features::kAutofillUseDomNodeIdForRendererId))
+               ? text_control_element->GetDomNodeId()
+               : text_control_element->UniqueRendererFormControlId();
   }
   return absl::nullopt;
 }

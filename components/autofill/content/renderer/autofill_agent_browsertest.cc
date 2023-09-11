@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -239,37 +240,37 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewFormUnowned) {
 }
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewForm) {
-  EXPECT_CALL(autofill_driver_,
-              FormsSeen(HasSingleElementWhich(HasFormId(1), HasNumFields(1),
-                                              HasNumChildFrames(0)),
-                        SizeIs(0)));
+  EXPECT_CALL(
+      autofill_driver_,
+      FormsSeen(HasSingleElementWhich(HasNumFields(1), HasNumChildFrames(0)),
+                SizeIs(0)));
   LoadHTML(R"(<body> <form><input></form> </body>)");
   WaitForFormsSeen();
 }
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewIframe) {
-  EXPECT_CALL(autofill_driver_,
-              FormsSeen(HasSingleElementWhich(HasFormId(1), HasNumFields(0),
-                                              HasNumChildFrames(1)),
-                        SizeIs(0)));
+  EXPECT_CALL(
+      autofill_driver_,
+      FormsSeen(HasSingleElementWhich(HasNumFields(0), HasNumChildFrames(1)),
+                SizeIs(0)));
   LoadHTML(R"(<body> <form><iframe></iframe></form> </body>)");
   WaitForFormsSeen();
 }
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
   {
-    EXPECT_CALL(autofill_driver_,
-                FormsSeen(HasSingleElementWhich(HasFormId(1), HasNumFields(1),
-                                                HasNumChildFrames(0)),
-                          SizeIs(0)));
+    EXPECT_CALL(
+        autofill_driver_,
+        FormsSeen(HasSingleElementWhich(HasNumFields(1), HasNumChildFrames(0)),
+                  SizeIs(0)));
     LoadHTML(R"(<body> <form><input></form> </body>)");
     WaitForFormsSeen();
   }
   {
-    EXPECT_CALL(autofill_driver_,
-                FormsSeen(HasSingleElementWhich(HasFormId(1), HasNumFields(2),
-                                                HasNumChildFrames(0)),
-                          SizeIs(0)));
+    EXPECT_CALL(
+        autofill_driver_,
+        FormsSeen(HasSingleElementWhich(HasNumFields(2), HasNumChildFrames(0)),
+                  SizeIs(0)));
     ExecuteJavaScriptForTests(
         R"(document.forms[0].appendChild(document.createElement('input'));)");
     WaitForFormsSeen();
@@ -283,8 +284,7 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedInput) {
     WaitForFormsSeen();
   }
   {
-    EXPECT_CALL(autofill_driver_,
-                FormsSeen(SizeIs(0), HasSingleElementWhich(IsFormId(1))));
+    EXPECT_CALL(autofill_driver_, FormsSeen(SizeIs(0), SizeIs(1)));
     ExecuteJavaScriptForTests(R"(document.forms[0].elements[0].remove();)");
     WaitForFormsSeen();
   }
@@ -322,7 +322,9 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestions) {
   WaitForFormsSeen();
   EXPECT_CALL(autofill_driver_, AskForValuesToFill);
   autofill_agent_->TriggerSuggestions(
-      FieldRendererId(1),
+      FieldRendererId(1 +
+                      base::FeatureList::IsEnabled(
+                          blink::features::kAutofillUseDomNodeIdForRendererId)),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 

@@ -141,6 +141,12 @@ BASE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill,
              "AutofillSendUnidentifiedKeyAfterFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill will start identifying web elements using DOMNodeIds
+// instead of static counters.
+BASE_FEATURE(kAutofillUseDomNodeIdForRendererId,
+             "AutofillUseDomNodeIdForRendererId",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Apply lazy-loading to ad frames which have embeds likely impacting Core Web
 // Vitals.
 BASE_FEATURE(kAutomaticLazyFrameLoadingToAds,

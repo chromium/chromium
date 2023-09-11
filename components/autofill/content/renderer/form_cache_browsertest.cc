@@ -138,6 +138,14 @@ TEST_F(FormCacheBrowserTest, RemovedForms) {
                                    HasName("form2")));
   EXPECT_TRUE(forms.removed_forms.empty());
 
+  std::vector<FormRendererId> forms_renderer_id;
+  for (const FormData& form : forms.updated_forms) {
+    if (form.unique_renderer_id != FormRendererId()) {
+      forms_renderer_id.push_back(form.unique_renderer_id);
+    }
+  }
+  ASSERT_EQ(forms_renderer_id.size(), 2u);
+
   ExecuteJavaScriptForTests(R"(
     document.getElementById("form1").remove();
     document.getElementById("form2").innerHTML = "";
@@ -147,7 +155,7 @@ TEST_F(FormCacheBrowserTest, RemovedForms) {
 
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_THAT(forms.removed_forms,
-              UnorderedElementsAre(FormRendererId(1), FormRendererId(2)));
+              UnorderedElementsAre(forms_renderer_id[0], forms_renderer_id[1]));
 
   ExecuteJavaScriptForTests(R"(
     document.getElementById("unowned_element").remove();

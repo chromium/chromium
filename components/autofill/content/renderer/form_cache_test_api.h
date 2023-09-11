@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
+#include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 
@@ -23,9 +24,8 @@ class FormCacheTestApi {
   // filling on form interaction.
   bool IsFormElementEligibleForManualFilling(
       const blink::WebFormControlElement& control_element) {
-    return base::Contains(
-        form_cache_->fields_eligible_for_manual_filling_,
-        FieldRendererId(control_element.UniqueRendererFormControlId()));
+    return base::Contains(form_cache_->fields_eligible_for_manual_filling_,
+                          form_util::GetFieldRendererId(control_element));
   }
 
   size_t initial_select_values_size() {

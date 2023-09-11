@@ -771,8 +771,7 @@ void AutofillAgent::TriggerSuggestions(
 void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
                                        const std::u16string& value) {
   if (last_queried_element_.IsNull() ||
-      field_id != FieldRendererId(
-                      last_queried_element_.UniqueRendererFormControlId())) {
+      field_id != form_util::GetFieldRendererId(last_queried_element_)) {
     return;
   }
 
@@ -786,8 +785,7 @@ void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
 void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
                                           const std::u16string& value) {
   if (last_queried_element_.IsNull() ||
-      field_id != FieldRendererId(
-                      last_queried_element_.UniqueRendererFormControlId())) {
+      field_id != form_util::GetFieldRendererId(last_queried_element_)) {
     return;
   }
 
@@ -810,8 +808,7 @@ void AutofillAgent::SetSuggestionAvailability(
     FieldRendererId field_id,
     const mojom::AutofillState state) {
   if (last_queried_element_.IsNull() ||
-      field_id != FieldRendererId(
-                      last_queried_element_.UniqueRendererFormControlId())) {
+      field_id != form_util::GetFieldRendererId(last_queried_element_)) {
     return;
   }
 
@@ -843,8 +840,7 @@ void AutofillAgent::AcceptDataListSuggestion(
     FieldRendererId field_id,
     const std::u16string& suggested_value) {
   if (last_queried_element_.IsNull() ||
-      field_id != FieldRendererId(
-                      last_queried_element_.UniqueRendererFormControlId())) {
+      field_id != form_util::GetFieldRendererId(last_queried_element_)) {
     return;
   }
 
@@ -1288,7 +1284,7 @@ bool AutofillAgent::IsPrerendering() const {
 void AutofillAgent::FormControlElementClicked(
     const WebFormControlElement& element) {
   last_clicked_form_control_element_for_testing_ =
-      FieldRendererId(element.UniqueRendererFormControlId());
+      form_util::GetFieldRendererId(element);
   was_last_action_fill_ = false;
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
@@ -1404,7 +1400,7 @@ void AutofillAgent::OnProvisionallySaveForm(
             });
       }
       formless_elements_user_edited_.insert(
-          FieldRendererId(element.UniqueRendererFormControlId()));
+          form_util::GetFieldRendererId(element));
       provisionally_saved_form_ = absl::make_optional<FormData>();
       if (!CollectFormlessElements(&provisionally_saved_form_.value())) {
         provisionally_saved_form_.reset();

@@ -40,7 +40,9 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -1021,9 +1023,8 @@ void SortByFieldRendererIds(std::vector<WebFormControlElement>& elements) {
     // to_be_inserted.
     const auto& to_be_inserted = *it;
     const auto insertion_point = base::ranges::upper_bound(
-        elements.begin(), it, to_be_inserted.UniqueRendererFormControlId(),
-        base::ranges::less{},
-        &WebFormControlElement::UniqueRendererFormControlId);
+        elements.begin(), it, GetFieldRendererId(to_be_inserted),
+        base::ranges::less{}, &GetFieldRendererId);
 
     // Shift all elements from [insertion_point, it) right and move |it| to the
     // front.
@@ -1188,7 +1189,7 @@ void PreviewFormField(const FormFieldData& data,
   }
 }
 
-// A less-than comparator for FormFieldDatas pointer by their FieldRendererId.
+// A less-than comparator for FormFieldData's pointer by their FieldRendererId.
 // It also supports direct comparison of a FieldRendererId with a FormFieldData
 // pointer.
 struct CompareByRendererId {
@@ -1967,13 +1968,21 @@ std::u16string GetFormIdentifier(const WebFormElement& form) {
 }
 
 FormRendererId GetFormRendererId(const blink::WebFormElement& form) {
-  return form.IsNull() ? FormRendererId()
-                       : FormRendererId(form.UniqueRendererFormId());
+  if (form.IsNull()) {
+    return FormRendererId();
+  }
+  return base::FeatureList::IsEnabled(
+             blink::features::kAutofillUseDomNodeIdForRendererId)
+             ? FormRendererId(form.GetDomNodeId())
+             : FormRendererId(form.UniqueRendererFormId());
 }
 
 FieldRendererId GetFieldRendererId(const blink::WebFormControlElement& field) {
   DCHECK(!field.IsNull());
-  return FieldRendererId(field.UniqueRendererFormControlId());
+  return base::FeatureList::IsEnabled(
+             blink::features::kAutofillUseDomNodeIdForRendererId)
+             ? FieldRendererId(field.GetDomNodeId())
+             : FieldRendererId(field.UniqueRendererFormControlId());
 }
 
 base::i18n::TextDirection GetTextDirectionForElement(
@@ -2020,12 +2029,13 @@ void WebFormControlElementToFormField(
   DCHECK(element.GetDocument().GetFrame());
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+  const FieldRendererId renderer_id = GetFieldRendererId(element);
   // Save both id and name attributes, if present. If there is only one of them,
   // it will be saved to |name|. See HTMLFormControlElement::nameForAutofill.
   field->name = element.NameForAutofill().Utf16();
   field->id_attribute = element.GetIdAttribute().Utf16();
   field->name_attribute = GetAttribute<kName>(element).Utf16();
-  field->unique_renderer_id = GetFieldRendererId(element);
+  field->unique_renderer_id = renderer_id;
   field->host_form_id = GetFormRendererId(form_element);
   field->form_control_ax_id = element.GetAxId();
   field->form_control_type = element.FormControlTypeForAutofill().Utf8();
@@ -2049,7 +2059,6 @@ void WebFormControlElementToFormField(
     field->css_classes = GetAttribute<kClass>(element).Utf16();
   }
 
-  const FieldRendererId renderer_id(element.UniqueRendererFormControlId());
   if (field_data_manager && field_data_manager->HasFieldData(renderer_id)) {
     field->properties_mask =
         field_data_manager->GetFieldPropertiesMask(renderer_id);

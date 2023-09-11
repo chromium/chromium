@@ -43,6 +43,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/data_driven_testing/data_driven_test.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -60,7 +61,7 @@ const base::FilePath::CharType kFeatureName[] = FILE_PATH_LITERAL("autofill");
 const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("heuristics");
 
 // To disable a data driven test, please add the name of the test file
-// (i.e., "NNN_some_site.html") as a literal to the initializer_list given
+// (i.e., FILE_PATH_LITERAL("NNN_some_site.html")) to the initializer_list given
 // to the failing_test_names constructor.
 const auto& GetFailingTestNames() {
   static std::set<base::FilePath::StringType> failing_test_names{};
@@ -107,10 +108,9 @@ std::string FormStructuresToString(
   std::string forms_string;
   // The forms are sorted by their global ID, which should make the order
   // deterministic.
-  for (const auto& kv : forms) {
-    const auto* form = kv.second.get();
+  for (const auto& [form_id, form_structure] : forms) {
     std::map<std::string, int> section_to_index;
-    for (const auto& field : *form) {
+    for (const auto& field : *form_structure) {
       std::string section = field->section.ToString();
 
       if (field->section.is_from_fieldidentifier()) {
@@ -228,7 +228,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
        // TODO(crbug.com/1317961): Remove once launched. This feature is
        // disabled since it is not supported on iOS.
-       features::kAutofillAlwaysParsePlaceholders});
+       features::kAutofillAlwaysParsePlaceholders,
+       // TODO(crbug.com/1427131): Remove once launched.
+       blink::features::kAutofillUseDomNodeIdForRendererId});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() = default;

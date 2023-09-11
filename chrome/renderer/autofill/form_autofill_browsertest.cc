@@ -2993,8 +2993,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
   EXPECT_TRUE(WebFormElementToFormData(forms[0], input_element, nullptr,
                                        EXTRACT_VALUE, &form, &field));
   EXPECT_EQ(u"TestForm", form.name);
-  EXPECT_EQ(FormRendererId(forms[0].UniqueRendererFormId()),
-            form.unique_renderer_id);
+  EXPECT_EQ(GetFormRendererId(forms[0]), form.unique_renderer_id);
   EXPECT_EQ(GURL("http://cnn.com/submit/"), form.action);
 
   const std::vector<FormFieldData>& fields = form.fields;
@@ -3053,9 +3052,8 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
   WebVector<WebFormControlElement> form_control_elements =
       forms[0].GetFormControlElements();
   for (size_t i = 0; i < fields.size(); ++i)
-    EXPECT_EQ(
-        FieldRendererId(form_control_elements[i].UniqueRendererFormControlId()),
-        fields[i].unique_renderer_id);
+    EXPECT_EQ(GetFieldRendererId(form_control_elements[i]),
+              fields[i].unique_renderer_id);
 }
 
 TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {

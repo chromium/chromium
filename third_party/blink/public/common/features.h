@@ -102,6 +102,9 @@ BASE_DECLARE_FEATURE(kAutofillDetectRemovedFormControls);
 BLINK_COMMON_EXPORT
 BASE_DECLARE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill);
 
+BLINK_COMMON_EXPORT
+BASE_DECLARE_FEATURE(kAutofillUseDomNodeIdForRendererId);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutomaticLazyFrameLoadingToAds);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kTimeoutMillisForLazyAds;

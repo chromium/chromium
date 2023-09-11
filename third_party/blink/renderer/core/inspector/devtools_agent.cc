@@ -7,8 +7,10 @@
 #include <v8-inspector.h>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -342,7 +344,10 @@ void DevToolsAgent::GetUniqueFormControlId(
     GetUniqueFormControlIdCallback callback) {
   auto* node = blink::DOMNodeIds::NodeForId(nodeId);
   if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
-    std::move(callback).Run(form_control->UniqueRendererFormControlId());
+    std::move(callback).Run(base::FeatureList::IsEnabled(
+                                features::kAutofillUseDomNodeIdForRendererId)
+                                ? form_control->GetDomNodeId()
+                                : form_control->UniqueRendererFormControlId());
     return;
   }
   std::move(callback).Run(0);  // invalid ID.

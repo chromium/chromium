@@ -465,9 +465,10 @@ size_t GetIndexOfElement(const FormData& form_data,
     return form_data.fields.size();
   }
   for (size_t i = 0; i < form_data.fields.size(); ++i) {
-    if (form_data.fields[i].unique_renderer_id.value() ==
-        element.UniqueRendererFormControlId())
+    if (form_data.fields[i].unique_renderer_id ==
+        form_util::GetFieldRendererId(element)) {
       return i;
+    }
   }
   return form_data.fields.size();
 }
@@ -769,9 +770,9 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
   WebInputElement mutable_element = element;  // We need a non-const.
 
   const std::u16string element_value = element.Value().Utf16();
-  const FieldRendererId element_id(element.UniqueRendererFormControlId());
-  field_data_manager_->UpdateFieldDataMap(element_id, element_value,
-                                          FieldPropertiesFlags::kUserTyped);
+  field_data_manager_->UpdateFieldDataMap(
+      form_util::GetFieldRendererId(element), element_value,
+      FieldPropertiesFlags::kUserTyped);
 
   InformBrowserAboutUserInput(element.Form(), element);
 
@@ -905,9 +906,9 @@ void PasswordAutofillAgent::FillField(WebInputElement* input,
   DCHECK(input);
   DCHECK(!input->IsNull());
   input->SetAutofillValue(WebString::FromUTF16(credential));
-  const FieldRendererId input_id(input->UniqueRendererFormControlId());
   field_data_manager_->UpdateFieldDataMap(
-      input_id, credential, FieldPropertiesFlags::kAutofilledOnUserTrigger);
+      form_util::GetFieldRendererId(*input), credential,
+      FieldPropertiesFlags::kAutofilledOnUserTrigger);
   TrackAutofilledElement(*input);
 }
 
@@ -1632,7 +1633,6 @@ void PasswordAutofillAgent::InformAboutFormClearing(
   if (!FrameCanAccessPasswordManager())
     return;
   for (const auto& element : form.GetFormControlElements()) {
-    FieldRendererId element_id(element.UniqueRendererFormControlId());
     // Notify PasswordManager if |form| has password fields that have user typed
     // input or input autofilled on user trigger.
     if (IsPasswordFieldFilledByUser(element)) {
@@ -1647,7 +1647,7 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
   if (!FrameCanAccessPasswordManager())
     return;
   DCHECK(cleared_element.Value().IsEmpty());
-  FieldRendererId field_id(cleared_element.UniqueRendererFormControlId());
+  FieldRendererId field_id = form_util::GetFieldRendererId(cleared_element);
   // Ignore fields that had no user input or autofill on user trigger.
   if (!field_data_manager_->DidUserType(field_id) &&
       !field_data_manager_->WasAutofilledOnUserTrigger(field_id)) {
@@ -2134,8 +2134,8 @@ bool PasswordAutofillAgent::WasFormStructureChanged(
 void PasswordAutofillAgent::TryFixAutofilledForm(
     std::vector<WebFormControlElement>* control_elements) const {
   for (auto& element : *control_elements) {
-    const FieldRendererId element_id(element.UniqueRendererFormControlId());
-    auto cached_element = autofilled_elements_cache_.find(element_id);
+    auto cached_element =
+        autofilled_elements_cache_.find(form_util::GetFieldRendererId(element));
     if (cached_element == autofilled_elements_cache_.end())
       continue;
 
@@ -2152,7 +2152,7 @@ void PasswordAutofillAgent::TryFixAutofilledForm(
 void PasswordAutofillAgent::AutofillField(const std::u16string& value,
                                           WebInputElement field) {
   // Do not autofill on load fields that have any user typed input.
-  const FieldRendererId field_id(field.UniqueRendererFormControlId());
+  const FieldRendererId field_id = form_util::GetFieldRendererId(field);
   if (field_data_manager_->DidUserType(field_id))
     return;
 
@@ -2187,7 +2187,7 @@ bool PasswordAutofillAgent::CanShowPopupWithoutPasswords(
 
 bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
     const WebFormControlElement& element) const {
-  FieldRendererId element_id(element.UniqueRendererFormControlId());
+  FieldRendererId element_id = form_util::GetFieldRendererId(element);
   return element.FormControlTypeForAutofill() == "password" &&
          (field_data_manager_->DidUserType(element_id) ||
           field_data_manager_->WasAutofilledOnUserTrigger(element_id));

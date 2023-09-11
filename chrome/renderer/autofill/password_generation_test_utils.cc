@@ -37,7 +37,7 @@ autofill::FieldRendererId GetRendererId(WebDocument document,
                                         const char* input_id) {
   WebElement element = document.GetElementById(WebString::FromUTF8(input_id));
   blink::WebInputElement input = element.To<blink::WebInputElement>();
-  return autofill::FieldRendererId(input.UniqueRendererFormControlId());
+  return autofill::form_util::GetFieldRendererId(input);
 }
 
 }  // namespace

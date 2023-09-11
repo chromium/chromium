@@ -6,6 +6,7 @@
 
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/form_autofill_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -24,7 +25,7 @@ FieldRendererId GetFieldRendererId(blink::WebElement element) {
       element.To<blink::WebFormControlElement>();
   if (field.IsNull())
     return {};
-  return FieldRendererId(field.UniqueRendererFormControlId());
+  return form_util::GetFieldRendererId(field);
 }
 
 }  // namespace

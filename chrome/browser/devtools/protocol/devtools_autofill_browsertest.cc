@@ -264,6 +264,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
   params.Set("fieldId", backend_node_id);
   params.Set("card", GetTestCreditCard());
 
+  ASSERT_TRUE(result());
   SendCommandSync("Autofill.trigger", std::move(params));
   EXPECT_EQ(*result(), base::Value::Dict());
   EXPECT_EQ(GetFilledOutForm(""), GetTestCreditCard());
@@ -324,6 +325,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
     params.Set("card", GetTestCreditCard());
     params.Set("frameId", frame_id);
     SendCommandSync("Autofill.trigger", std::move(params));
+    ASSERT_TRUE(result());
     EXPECT_EQ(*result(), base::Value::Dict());
   }
 
