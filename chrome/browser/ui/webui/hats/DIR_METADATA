@@ -1,3 +1,5 @@
 monorail {
   component: "UI>Browser>HaTS"
 }
+
+team_email: "permissions-dev@chromium.org"
