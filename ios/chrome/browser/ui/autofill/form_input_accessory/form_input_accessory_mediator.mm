@@ -110,6 +110,10 @@ class PasswordCounterDelegateBridge
 // Used to present alerts.
 @property(nonatomic, weak) id<SecurityAlertCommands> securityAlertHandler;
 
+// ID of the latest query to get suggestions. Using a uint to handle overflow
+// which will realistically never happen, but just in case.
+@property(nonatomic, assign) uint latestQueryId;
+
 @end
 
 @implementation FormInputAccessoryMediator {
@@ -231,6 +235,8 @@ class PasswordCounterDelegateBridge
     // Prevent a flicker from happening by starting with valid activity. This
     // will get updated as soon as a form is interacted.
     _validActivityForAccessoryView = YES;
+
+    _latestQueryId = 0;
   }
   return self;
 }
@@ -508,15 +514,28 @@ class PasswordCounterDelegateBridge
 
   __weak id<FormInputSuggestionsProvider> weakProvider = self.provider;
   __weak __typeof(self) weakSelf = self;
+
+  // Get the query ID for this query.
+  uint queryID = ++_latestQueryId;
+
   [weakProvider
       retrieveSuggestionsForForm:params
                         webState:self.webState
         accessoryViewUpdateBlock:^(NSArray<FormSuggestion*>* suggestions,
                                    id<FormInputSuggestionsProvider> provider) {
-          // No suggestions found, return.
+          // Ignore suggestions if the results aren't from the latest query
+          // which provides the most relevant suggestions to fit the current
+          // context (i.e. for the field being focused).
+          if (queryID != weakSelf.latestQueryId) {
+            return;
+          }
+
+          // No suggestions found, return and don't update suggestions in view
+          // model.
           if (!suggestions) {
             return;
           }
+
           [weakSelf updateWithProvider:provider suggestions:suggestions];
         }];
 }

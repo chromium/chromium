@@ -78,6 +78,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:test_support",
+    "//ios/chrome/browser/autofill:autofill_shared",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
