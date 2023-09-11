@@ -40,20 +40,12 @@ class GraphiteImageProvider : public skgpu::graphite::ImageProvider {
     }
 
     bool operator==(const ImageKey& other) const {
-      // TODO(crbug.com/1457525): This should just use `required_properties_`
-      // for future-proofing, but SkImage::RequiredProperties doesn't define an
-      // equality operator. If that is added, then this should be changed to
-      // just use `required_properties`.
-      return std::tie(values_, required_properties_.fMipmapped) ==
-             std::tie(other.values_, other.required_properties_.fMipmapped);
+      return std::tie(values_, required_properties_) ==
+             std::tie(other.values_, other.required_properties_);
     }
     bool operator<(const ImageKey& other) const {
-      // TODO(crbug.com/1457525): This should just use `required_properties_`
-      // for future-proofing, but SkImage::RequiredProperties doesn't define a
-      // < operator. If that is added, then this should be changed to just use
-      // `required_properties`.
-      return std::tie(values_, required_properties_.fMipmapped) <
-             std::tie(other.values_, other.required_properties_.fMipmapped);
+      return std::tie(values_, required_properties_) <
+             std::tie(other.values_, other.required_properties_);
     }
 
    private:
