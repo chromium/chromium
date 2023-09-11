@@ -119,6 +119,8 @@ source_set("web_applications") {
     "isolated_web_apps/remove_isolated_web_app_browsing_data.h",
     "isolated_web_apps/signed_web_bundle_reader.cc",
     "isolated_web_apps/signed_web_bundle_reader.h",
+    "jobs/install_from_info_job.cc",
+    "jobs/install_from_info_job.h",
     "jobs/install_placeholder_job.cc",
     "jobs/install_placeholder_job.h",
     "jobs/uninstall/remove_install_source_job.cc",
