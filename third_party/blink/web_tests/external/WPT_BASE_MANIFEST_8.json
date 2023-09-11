@@ -280656,16 +280656,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "60e3fb1f6e3dc13d172e84d27ad84cc9ba91ee15",
-     []
-    ],
-    "mtime.json": [
-     "1dec9c315c7b1870c6cf00bc470f78018d9c744f",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -288417,6 +288407,10 @@
        "190420736dfbd6aaaa468656c236209c25ed11f5",
        []
       ],
+      "manifest_with_account_auto_selected_flag.json": [
+       "39d2b1eec88c58c184e4e3ff4dcfc2c6702ec81c",
+       []
+      ],
       "manifest_with_no_accounts.json": [
        "ad3f295ea8543a94401d346cbe4a407de38522a4",
        []
@@ -288446,11 +288440,15 @@
        []
       ],
       "token.py": [
-       "54150325524728ab3c86bea5731d2a0f8b708ddf",
+       "6d495adeed5634c88316fc019c06dee281afc3f9",
+       []
+      ],
+      "token_with_account_auto_selected_flag.py": [
+       "9075d25c8c3f2302fc72b69bb1e1e00781a36325",
        []
       ],
       "token_with_account_id.py": [
-       "4b8ae9a5651105d53b7e36ac242055c6edc52848",
+       "49edf93c3457d1a41ec337bd855032de6af235ca",
        []
       ],
       "two_accounts.py": [
@@ -427252,7 +427250,7 @@
    },
    "webcodecs": {
     "META.yml": [
-     "b5b838a4cf9767d555df2b08f057636e1e7b86ee",
+     "8570ee05e5a29b7835b28f9113db32b9677ca535",
      []
     ],
     "README.md": [
@@ -472061,6 +472059,15 @@
     ],
     "fedcm-abort.https.html": [
      "0f03bff832f800c9ce69de69003c88bbbd471fca",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "fedcm-account-auto-selected-flag.https.html": [
+     "ac3515596ae6699285ab9abe028585cd5d70b631",
      [
       null,
       {
@@ -721612,10 +721619,19 @@
          ]
         ],
         "pointer_mouse.py": [
-         "f4a4e52dcbf1fb0142602af61987e25332f2febd",
+         "a1b2532dd729797323728c429533f39e7ffbb4aa",
          [
           null,
           {}
+         ]
+        ],
+        "pointer_mouse_drag.py": [
+         "7cd2e386c67ee435401ee672d1ce142510d0bb38",
+         [
+          null,
+          {
+           "timeout": "long"
+          }
          ]
         ],
         "pointer_mouse_modifier.py": [
