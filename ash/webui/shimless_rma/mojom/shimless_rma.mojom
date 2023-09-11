@@ -687,16 +687,16 @@ interface ShimlessRmaService {
   GetRegionList() => (array<string> regions);
   // Get the list of OEM SKUs for this device.
   GetSkuList() => (array<uint64> skus);
-  // Get the list of valid white-labels for this device.
-  GetWhiteLabelList() => (array<string> whiteLabels);
+  // Get the list of valid custom-labels for this device.
+  GetCustomLabelList() => (array<string> custom_labels);
   // Get the device serial number at RMA start.
   GetOriginalSerialNumber() => (string serial_number);
   // Get the device region index at RMA start.
   GetOriginalRegion() => (int32 region_index);
   // Get the device SKU index at RMA start.
   GetOriginalSku() => (int32 sku_index);
-  // Get the device white-label index at RMA start.
-  GetOriginalWhiteLabel() => (int32 white_label_index);
+  // Get the device custom-label index at RMA start.
+  GetOriginalCustomLabel() => (int32 custom_label_index);
   // Get the device dram part number at RMA start.
   GetOriginalDramPartNumber() => (string dram_part_number);
   // Get the device feature level at RMA start.
@@ -705,8 +705,8 @@ interface ShimlessRmaService {
   // Returns the next state to display and an error code.
   SetDeviceInformation(
       string serial_number, int32 region_index, int32 sku_index,
-      int32 white_label_index, string dram_part_number, bool is_chassis_branded,
-      int32 hw_compliance_version)
+      int32 custom_label_index, string dram_part_number,
+      bool is_chassis_branded, int32 hw_compliance_version)
           => (StateResult state_result);
 
   ///////////////////////////////////////

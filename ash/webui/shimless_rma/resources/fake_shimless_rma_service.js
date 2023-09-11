@@ -497,17 +497,17 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!{whiteLabels: !Array<string>}>}
+   * @return {!Promise<!{customLabels: !Array<string>}>}
    */
-  getWhiteLabelList() {
-    return this.methods_.resolveMethod('getWhiteLabelList');
+  getCustomLabelList() {
+    return this.methods_.resolveMethod('getCustomLabelList');
   }
 
   /**
-   * @param {!Array<string>} whiteLabels
+   * @param {!Array<string>} customLabels
    */
-  setGetWhiteLabelListResult(whiteLabels) {
-    this.methods_.setResult('getWhiteLabelList', {whiteLabels: whiteLabels});
+  setGetCustomLabelListResult(customLabels) {
+    this.methods_.setResult('getCustomLabelList', {customLabels: customLabels});
   }
 
   /**
@@ -554,18 +554,18 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!{whiteLabelIndex: number}>}
+   * @return {!Promise<!{customLabelIndex: number}>}
    */
-  getOriginalWhiteLabel() {
-    return this.methods_.resolveMethod('getOriginalWhiteLabel');
+  getOriginalCustomLabel() {
+    return this.methods_.resolveMethod('getOriginalCustomLabel');
   }
 
   /**
-   * @param {number} whiteLabelIndex
+   * @param {number} customLabelIndex
    */
-  setGetOriginalWhiteLabelResult(whiteLabelIndex) {
+  setGetOriginalCustomLabelResult(customLabelIndex) {
     this.methods_.setResult(
-        'getOriginalWhiteLabel', {whiteLabelIndex: whiteLabelIndex});
+        'getOriginalCustomLabel', {customLabelIndex: customLabelIndex});
   }
 
   /**
@@ -602,14 +602,14 @@ export class FakeShimlessRmaService {
    * @param {string} serialNumber
    * @param {number} regionIndex
    * @param {number} skuIndex
-   * @param {number} whiteLabelIndex
+   * @param {number} customLabelIndex
    * @param {string} dramPartNumber
    * @param {boolean} isChassisBranded
    * @param {number} hwComplianceVersion
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setDeviceInformation(
-      serialNumber, regionIndex, skuIndex, whiteLabelIndex, dramPartNumber,
+      serialNumber, regionIndex, skuIndex, customLabelIndex, dramPartNumber,
       isChassisBranded, hwComplianceVersion) {
     // TODO(gavindodd): Validate range of region and sku.
     return this.getNextStateForMethod_(
@@ -1329,11 +1329,11 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('getRegionList');
     this.methods_.register('getSkuList');
-    this.methods_.register('getWhiteLabelList');
+    this.methods_.register('getCustomLabelList');
     this.methods_.register('getOriginalSerialNumber');
     this.methods_.register('getOriginalRegion');
     this.methods_.register('getOriginalSku');
-    this.methods_.register('getOriginalWhiteLabel');
+    this.methods_.register('getOriginalCustomLabel');
     this.methods_.register('getOriginalDramPartNumber');
     this.methods_.register('getOriginalFeatureLevel');
     this.methods_.register('setDeviceInformation');

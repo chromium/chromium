@@ -680,19 +680,20 @@ void ShimlessRmaService::GetSkuList(GetSkuListCallback callback) {
   std::move(callback).Run(std::move(skus));
 }
 
-void ShimlessRmaService::GetWhiteLabelList(GetWhiteLabelListCallback callback) {
-  std::vector<std::string> whiteLabels;
+void ShimlessRmaService::GetCustomLabelList(
+    GetCustomLabelListCallback callback) {
+  std::vector<std::string> custom_labels;
   if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
     LOG(ERROR) << "GetSkuList called from incorrect state "
                << state_proto_.state_case();
   } else {
-    whiteLabels.reserve(
-        state_proto_.update_device_info().whitelabel_list_size());
-    whiteLabels.assign(
-        state_proto_.update_device_info().whitelabel_list().begin(),
-        state_proto_.update_device_info().whitelabel_list().end());
+    custom_labels.reserve(
+        state_proto_.update_device_info().custom_label_list_size());
+    custom_labels.assign(
+        state_proto_.update_device_info().custom_label_list().begin(),
+        state_proto_.update_device_info().custom_label_list().end());
   }
-  std::move(callback).Run(std::move(whiteLabels));
+  std::move(callback).Run(std::move(custom_labels));
 }
 
 void ShimlessRmaService::GetOriginalSerialNumber(
@@ -729,18 +730,18 @@ void ShimlessRmaService::GetOriginalSku(GetOriginalSkuCallback callback) {
       state_proto_.update_device_info().original_sku_index());
 }
 
-void ShimlessRmaService::GetOriginalWhiteLabel(
-    GetOriginalWhiteLabelCallback callback) {
+void ShimlessRmaService::GetOriginalCustomLabel(
+    GetOriginalCustomLabelCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
     // TODO(gavindodd): Consider replacing all invalid call handling with
     // mojo::ReportBadMessage("error message");
-    LOG(ERROR) << "GetOriginalWhiteLabel called from incorrect state "
+    LOG(ERROR) << "GetOriginalCustomLabel called from incorrect state "
                << state_proto_.state_case();
     std::move(callback).Run(0);
     return;
   }
   std::move(callback).Run(
-      state_proto_.update_device_info().original_whitelabel_index());
+      state_proto_.update_device_info().original_custom_label_index());
 }
 
 void ShimlessRmaService::GetOriginalDramPartNumber(
@@ -774,7 +775,7 @@ void ShimlessRmaService::SetDeviceInformation(
     const std::string& serial_number,
     int32_t region_index,
     int32_t sku_index,
-    int32_t white_label_index,
+    int32_t custom_label_index,
     const std::string& dram_part_number,
     bool is_chassis_branded,
     int32_t hw_compliance_version,
@@ -788,18 +789,14 @@ void ShimlessRmaService::SetDeviceInformation(
   state_proto_.mutable_update_device_info()->set_serial_number(serial_number);
   state_proto_.mutable_update_device_info()->set_region_index(region_index);
   state_proto_.mutable_update_device_info()->set_sku_index(sku_index);
-  state_proto_.mutable_update_device_info()->set_whitelabel_index(
-      white_label_index);
+  state_proto_.mutable_update_device_info()->set_custom_label_index(
+      custom_label_index);
   state_proto_.mutable_update_device_info()->set_dram_part_number(
       dram_part_number);
   state_proto_.mutable_update_device_info()->set_is_chassis_branded(
       is_chassis_branded);
   state_proto_.mutable_update_device_info()->set_hw_compliance_version(
       hw_compliance_version);
-  // Set the value of custom_label_index to a sentinel invalid value to help
-  // with the transition to using custom_label instead of white_label.
-  // See b/230689891 for context.
-  state_proto_.mutable_update_device_info()->set_custom_label_index(-1);
   TransitionNextStateGeneric(std::move(callback));
 }
 

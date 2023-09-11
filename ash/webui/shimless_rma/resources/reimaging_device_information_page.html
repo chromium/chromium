@@ -294,24 +294,24 @@
           </div>
         </div>
         <div class="input-row">
-          <label id="whiteLabelLabel" class="cr-form-field-label">
-            [[i18n('confirmDeviceInfoWhiteLabelLabel')]]
+          <label id="customLabelLabel" class="cr-form-field-label">
+            [[i18n('confirmDeviceInfoCustomLabelLabel')]]
           </label>
           <div class="input-holder">
-            <select id="whiteLabelSelect" class="md-select"
-                on-change="onSelectedWhiteLabelChange_"
-                aria-labelledby="whiteLabelLabel"
+            <select id="customLabelSelect" class="md-select"
+                on-change="onSelectedCustomLabelChange_"
+                aria-labelledby="customLabelLabel"
                 disabled="[[allButtonsDisabled]]">
-              <template is="dom-repeat" items="[[whiteLabels_]]" as="whiteLabel">
-                <option value="[[whiteLabel]]">
-                  [[whiteLabel]]
+              <template is="dom-repeat" items="[[customLabels_]]" as="customLabel">
+                <option value="[[customLabel]]">
+                  [[customLabel]]
                 </option>
               </template>
             </select>
-            <cr-button id="resetWhiteLabel"
-                on-click="onResetWhiteLabelButtonClicked_"
-                disabled="[[disableResetWhiteLabel_]]"
-                aria-describedby="whiteLabelLabel">
+            <cr-button id="resetCustomLabel"
+                on-click="onResetCustomLabelButtonClicked_"
+                disabled="[[disableResetCustomLabel_]]"
+                aria-describedby="customLabelLabel">
               [[i18n('confirmDeviceInfoResetButtonLabel')]]
             </cr-button>
           </div>

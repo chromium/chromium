@@ -86,12 +86,12 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       ContinueFinalizationAfterRestockCallback callback) override;
   void GetRegionList(GetRegionListCallback callback) override;
   void GetSkuList(GetSkuListCallback callback) override;
-  void GetWhiteLabelList(GetWhiteLabelListCallback callback) override;
+  void GetCustomLabelList(GetCustomLabelListCallback callback) override;
   void GetOriginalSerialNumber(
       GetOriginalSerialNumberCallback callback) override;
   void GetOriginalRegion(GetOriginalRegionCallback callback) override;
   void GetOriginalSku(GetOriginalSkuCallback callback) override;
-  void GetOriginalWhiteLabel(GetOriginalWhiteLabelCallback callback) override;
+  void GetOriginalCustomLabel(GetOriginalCustomLabelCallback callback) override;
   void GetOriginalDramPartNumber(
       GetOriginalDramPartNumberCallback callback) override;
   void GetOriginalFeatureLevel(
@@ -99,7 +99,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void SetDeviceInformation(const std::string& serial_number,
                             int32_t region_index,
                             int32_t sku_index,
-                            int32_t white_label_index,
+                            int32_t custom_label_index,
                             const std::string& dram_part_number,
                             bool is_chassis_branded,
                             int32_t hw_compliance_version,

@@ -485,18 +485,18 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     });
   });
 
-  test('GetWhiteLabelListDefaultUndefined', () => {
-    return service.getWhiteLabelList().then((whiteLabels) => {
-      assertEquals(whiteLabels, undefined);
+  test('GetCustomLabelListDefaultUndefined', () => {
+    return service.getCustomLabelList().then((customLabels) => {
+      assertEquals(customLabels, undefined);
     });
   });
 
-  test('SetGetWhiteLabelListResultUpdatesResult', () => {
-    const whiteLabelList =
-        ['White-label 10', 'White-label 0', 'White-label 9999'];
-    service.setGetWhiteLabelListResult(whiteLabelList);
-    return service.getWhiteLabelList().then((whiteLabels) => {
-      assertDeepEquals(whiteLabels.whiteLabels, whiteLabelList);
+  test('SetGetCustomLabelListResultUpdatesResult', () => {
+    const customLabelList =
+        ['Custom-label 10', 'Custom-label 0', 'Custom-label 9999'];
+    service.setGetCustomLabelListResult(customLabelList);
+    return service.getCustomLabelList().then((customLabels) => {
+      assertDeepEquals(customLabels.customLabels, customLabelList);
     });
   });
 
@@ -542,17 +542,17 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     });
   });
 
-  test('GetOriginalWhiteLabelDefaultUndefined', () => {
-    return service.getOriginalWhiteLabel().then((whiteLabel) => {
-      assertEquals(whiteLabel, undefined);
+  test('GetOriginalCustomLabelDefaultUndefined', () => {
+    return service.getOriginalCustomLabel().then((customLabel) => {
+      assertEquals(customLabel, undefined);
     });
   });
 
-  test('SetGetOriginalWhiteLabelResultUpdatesResult', () => {
-    const expectedWhiteLabel = 1;
-    service.setGetOriginalWhiteLabelResult(expectedWhiteLabel);
-    return service.getOriginalWhiteLabel().then((whiteLabel) => {
-      assertEquals(whiteLabel.whiteLabelIndex, expectedWhiteLabel);
+  test('SetGetOriginalCustomLabelResultUpdatesResult', () => {
+    const expectedCustomLabel = 1;
+    service.setGetOriginalCustomLabelResult(expectedCustomLabel);
+    return service.getOriginalCustomLabel().then((customLabel) => {
+      assertEquals(customLabel.customLabelIndex, expectedCustomLabel);
     });
   });
 

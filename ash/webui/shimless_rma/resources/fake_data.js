@@ -314,8 +314,8 @@ export const fakeDeviceRegions = ['EMEA', 'APAC', 'AMER'];
 export const fakeDeviceSkus = [1, 2, 3];
 
 /** @type {!Array<string>} */
-export const fakeDeviceWhiteLabels =
-    ['White-label 1', 'White-label 2', 'White-label 3', ''];
+export const fakeDeviceCustomLabels =
+    ['Custom-label 1', 'Custom-label 2', 'Custom-label 3', ''];
 
 /** @type {string} */
 export const fakeLog =

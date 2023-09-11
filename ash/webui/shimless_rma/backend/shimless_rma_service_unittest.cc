@@ -2233,15 +2233,15 @@ TEST_F(ShimlessRmaServiceTest, GetSkuListWrongStateEmpty) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetWhiteLabelList) {
+TEST_F(ShimlessRmaServiceTest, GetCustomLabelList) {
   rmad::GetStateReply update_device_info_state =
       CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
   update_device_info_state.mutable_state()
       ->mutable_update_device_info()
-      ->add_whitelabel_list("White-label 1");
+      ->add_custom_label_list("Custom-label 1");
   update_device_info_state.mutable_state()
       ->mutable_update_device_info()
-      ->add_whitelabel_list("White-label 5");
+      ->add_custom_label_list("Custom-label 5");
   const std::vector<rmad::GetStateReply> fake_states = {
       update_device_info_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
@@ -2256,17 +2256,17 @@ TEST_F(ShimlessRmaServiceTest, GetWhiteLabelList) {
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->GetWhiteLabelList(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& whiteLabels) {
-        EXPECT_EQ(whiteLabels.size(), 2UL);
-        EXPECT_EQ(whiteLabels[0], "White-label 1");
-        EXPECT_EQ(whiteLabels[1], "White-label 5");
+  shimless_rma_provider_->GetCustomLabelList(base::BindLambdaForTesting(
+      [&](const std::vector<std::string>& custom_labels) {
+        EXPECT_EQ(custom_labels.size(), 2UL);
+        EXPECT_EQ(custom_labels[0], "Custom-label 1");
+        EXPECT_EQ(custom_labels[1], "Custom-label 5");
         run_loop.Quit();
       }));
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetWhiteLabelListWrongStateEmpty) {
+TEST_F(ShimlessRmaServiceTest, GetCustomLabelListWrongStateEmpty) {
   const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
       rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
@@ -2278,9 +2278,9 @@ TEST_F(ShimlessRmaServiceTest, GetWhiteLabelListWrongStateEmpty) {
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->GetWhiteLabelList(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& whiteLabels) {
-        EXPECT_EQ(whiteLabels.size(), 0UL);
+  shimless_rma_provider_->GetCustomLabelList(base::BindLambdaForTesting(
+      [&](const std::vector<std::string>& custom_labels) {
+        EXPECT_EQ(custom_labels.size(), 0UL);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -2388,15 +2388,15 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSkuFromWrongStateEmpty) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabel) {
+TEST_F(ShimlessRmaServiceTest, GetOriginalCustomLabel) {
   rmad::GetStateReply update_device_info_state =
       CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
   update_device_info_state.mutable_state()
       ->mutable_update_device_info()
-      ->set_original_whitelabel_index(3);
+      ->set_original_custom_label_index(3);
   update_device_info_state.mutable_state()
       ->mutable_update_device_info()
-      ->set_whitelabel_index(1);
+      ->set_custom_label_index(1);
   const std::vector<rmad::GetStateReply> fake_states = {
       update_device_info_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
@@ -2411,15 +2411,15 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabel) {
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->GetOriginalWhiteLabel(
-      base::BindLambdaForTesting([&](int32_t white_label) {
-        EXPECT_EQ(white_label, 3);
+  shimless_rma_provider_->GetOriginalCustomLabel(
+      base::BindLambdaForTesting([&](int32_t custom_label) {
+        EXPECT_EQ(custom_label, 3);
         run_loop.Quit();
       }));
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabelFromWrongStateEmpty) {
+TEST_F(ShimlessRmaServiceTest, GetOriginalCustomLabelFromWrongStateEmpty) {
   const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
       rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
@@ -2431,9 +2431,9 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabelFromWrongStateEmpty) {
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->GetOriginalWhiteLabel(
-      base::BindLambdaForTesting([&](int32_t white_label) {
-        EXPECT_EQ(white_label, 0);
+  shimless_rma_provider_->GetOriginalCustomLabel(
+      base::BindLambdaForTesting([&](int32_t custom_label) {
+        EXPECT_EQ(custom_label, 0);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -2554,7 +2554,7 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
         EXPECT_EQ(state.update_device_info().serial_number(), "serial number");
         EXPECT_EQ(state.update_device_info().region_index(), 1L);
         EXPECT_EQ(state.update_device_info().sku_index(), 2L);
-        EXPECT_EQ(state.update_device_info().whitelabel_index(), 3L);
+        EXPECT_EQ(state.update_device_info().custom_label_index(), 3L);
         EXPECT_EQ(state.update_device_info().dram_part_number(), "123-456-789");
         EXPECT_EQ(state.update_device_info().is_chassis_branded(), true);
         EXPECT_EQ(state.update_device_info().hw_compliance_version(), 22u);

@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
-import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeComponents, fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels, fakeLog, fakeLogSavePath, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
+import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeComponents, fakeDeviceCustomLabels, fakeDeviceRegions, fakeDeviceSkus, fakeLog, fakeLogSavePath, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js';
 import {CalibrationSetupInstruction, FeatureLevel, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
 
@@ -70,8 +70,8 @@ function setupFakeShimlessRmaService_() {
   service.setGetOriginalRegionResult(1);
   service.setGetSkuListResult(fakeDeviceSkus);
   service.setGetOriginalSkuResult(1);
-  service.setGetWhiteLabelListResult(fakeDeviceWhiteLabels);
-  service.setGetOriginalWhiteLabelResult(1);
+  service.setGetCustomLabelListResult(fakeDeviceCustomLabels);
+  service.setGetOriginalCustomLabelResult(1);
   service.setGetOriginalDramPartNumberResult('dram# 0123');
   service.setGetOriginalFeatureLevelResult(
       FeatureLevel.kRmadFeatureLevelUnsupported);
