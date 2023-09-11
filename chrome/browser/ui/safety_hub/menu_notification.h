@@ -21,6 +21,10 @@ constexpr char kSafetyHubMenuNotificationLastImpressionKey[] =
     "lastImpressionTime";
 constexpr char kSafetyHubMenuNotificationResultKey[] = "result";
 
+constexpr base::TimeDelta kSafetyHubMenuNotificationMinNotificationDuration =
+    base::Days(3);
+constexpr int kSafetyHubMenuNotificationMinImpressionCount = 5;
+
 // Class that represents the notifications of Safety Hub that are shown in the
 // Chrome menu.
 class SafetyHubMenuNotification {
@@ -47,18 +51,53 @@ class SafetyHubMenuNotification {
     return notification;
   }
 
+  // Called when the menu notification will be shown. This will make the
+  // notification the currently active one.
+  void Show();
+
+  // Called when an active menu notification should no longer be shown, e.g.,
+  // when it has been shown a sufficient number of times.
+  void Dismiss();
+
+  // Determines whether the notification should be shown given the maximum
+  // interval at which this type of notification should be shown. This does not
+  // take into account whether the notification is currently active.
+  bool ShouldBeShown(base::TimeDelta interval) const;
+
+  // Returns whether the notification is actively being shown.
+  bool IsCurrentlyActive() const;
+
+  // Called whenever a new result for this class of menu notification is
+  // available. If the updated result is similar to the current one, no changes
+  // are made. Otherwise, the menu notification will be considered as a new one.
+  void UpdateResult(std::unique_ptr<SafetyHubService::Result> result);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SafetyHubMenuNotificationTest, ToFromDictValue);
   friend class SafetyHubMenuNotificationTest;
 
+  // Used to determine whether the notification has been shown enough times and
+  // for a long enough period.
+  bool IsShownEnough() const;
+  // For the given interval, it is determined whether a notification of the same
+  // type can be shown again.
+  bool HasIntervalPassed(base::TimeDelta interval) const;
+  // Returns whether any notification for the same type of result has been
+  // shown.
+  bool HasAnyNotificationBeenShown() const;
+
   // Indicates whether the notification is actively being shown.
   bool is_currently_active_ = false;
+  // Determines whether the notification should be shown as soon as the interval
+  // has passed.
+  bool should_be_shown_after_interval_ = false;
   // Represents how often the notification has been shown to the user.
   int impression_count_ = 0;
   // The first time that the notification was shown to the user, will be nullopt
   // when the notification has never been shown.
   absl::optional<base::Time> first_impression_time_;
-  // Similar, but the last time that the notification was shown.
+  // Indicates the last time that a notification was shown, even when it is
+  // related to a different result.
   absl::optional<base::Time> last_impression_time_;
   // The result for which the notification may be shown.
   std::unique_ptr<SafetyHubService::Result> result_ = nullptr;
