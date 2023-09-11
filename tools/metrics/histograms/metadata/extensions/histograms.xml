@@ -824,37 +824,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime.{RegexRulesetSize}"
-    units="microseconds" expires_after="2024-08-28">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
-  <summary>
-    The time taken to evaluate regex rules for a single declarativeNetRequest
-    ruleset where the ruleset has {RegexRulesetSize}. Emitted once per ruleset
-    per evaluated request. This is recorded only for clients with
-    high-resolution clocks.
-  </summary>
-  <token key="RegexRulesetSize">
-    <variant name="15To100Rules" summary="15 to 100 regex rules"/>
-    <variant name="100To500Rules" summary="100 to 500 regex rules"/>
-    <variant name="LessThan15Rules" summary="less than 15 regex rules"/>
-    <variant name="Over500Rules" summary="Over 500 regex rules"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Extensions.DeclarativeNetRequest.RegexRulesEvaluationPercentage"
-    units="%" expires_after="2024-08-28">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
-  <summary>
-    For a single declarativeNetRequest ruleset, the percent of the total amount
-    of time spent on evaluating regex rules. Emitted once per ruleset per
-    evaluated request if the ruleset has at least one regex rule.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.DeclarativeNetRequest.RegexRuleSize" units="bytes"
     expires_after="2024-06-01">
   <owner>kelvinjiang@chromium.org</owner>
@@ -936,27 +905,6 @@ chromium-metrics-reviews@google.com.
     DeclarativeNetRequest API. Recorded for each network request during the
     OnHeadersReceived stage. Multiple samples can be recorded per request.
   </summary>
-</histogram>
-
-<histogram
-    name="Extensions.DeclarativeNetRequest.RulesetMatchingBeforeRequestActionTime.{RulesetSize}"
-    units="microseconds" expires_after="2024-08-28">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
-  <summary>
-    The time taken to determine the appropriate declarativeNetRequest action for
-    a given request from a single ruleset in an extension where the ruleset has
-    {RulesetSize}. This is recorded only for clients with high-resolution
-    clocks.
-  </summary>
-  <token key="RulesetSize">
-    <variant name="1000To10000Rules" summary="1,000 to 10,000 rules"/>
-    <variant name="10000To30000Rules" summary="10,000 to 30,000 rules"/>
-    <variant name="30000To100000Rules" summary="30,000 to 100,000 rules"/>
-    <variant name="100000To300000Rules" summary="100,000 to 300,000 rules"/>
-    <variant name="LessThan1000Rules" summary="less than 1,000 rules"/>
-    <variant name="Over300000Rules" summary="over 300,000 rules"/>
-  </token>
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RulesetReindexSuccessful"

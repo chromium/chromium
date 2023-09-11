@@ -286,21 +286,14 @@ TEST_P(RulesetManagerTest, IncognitoRequests) {
 // Tests that
 // Extensions.DeclarativeNetRequest.EvaluateRequestTime.AllExtensions3
 // is only emitted when there are active rulesets.
-TEST_P(RulesetManagerTest, EvaluationHistograms) {
+TEST_P(RulesetManagerTest, TotalEvaluationTimeHistogram) {
   WebRequestInfo example_com_request(
       GetRequestParamsForURL("http://example.com"));
   WebRequestInfo google_com_request(
       GetRequestParamsForURL("http://google.com"));
   bool is_incognito_context = false;
-  static constexpr char kEvaluationTimeHistogramName[] =
+  const char* kHistogramName =
       "Extensions.DeclarativeNetRequest.EvaluateRequestTime.AllExtensions3";
-  static constexpr char kBeforeRequestRegexTimeHistogramName[] =
-      "Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime."
-      "LessThan15Rules";
-  static constexpr char kBeforeRequestRulesetTimeHistogramName[] =
-      "Extensions.DeclarativeNetRequest."
-      "RulesetMatchingBeforeRequestActionTime."
-      "LessThan1000Rules";
   {
     base::HistogramTester tester;
 
@@ -310,20 +303,17 @@ TEST_P(RulesetManagerTest, EvaluationHistograms) {
     manager()->EvaluateRequest(google_com_request, is_incognito_context);
     EXPECT_TRUE(google_com_request.dnr_actions->empty());
 
-    tester.ExpectTotalCount(kEvaluationTimeHistogramName, 0);
-    tester.ExpectTotalCount(kBeforeRequestRegexTimeHistogramName, 0);
-    tester.ExpectTotalCount(kBeforeRequestRulesetTimeHistogramName, 0);
+    tester.ExpectTotalCount(kHistogramName, 0);
     example_com_request.dnr_actions.reset();
     google_com_request.dnr_actions.reset();
   }
 
   // Add an extension ruleset which blocks requests to "example.com".
   TestRule rule = CreateGenericRule();
-  TestRule regex_rule = CreateRegexRule(2);
   rule.condition->url_filter = std::string("example.com");
   std::unique_ptr<CompositeMatcher> matcher;
   ASSERT_NO_FATAL_FAILURE(
-      CreateMatcherForRules({rule, regex_rule}, "test_extension", &matcher));
+      CreateMatcherForRules({rule}, "test_extension", &matcher));
   manager()->AddRuleset(last_loaded_extension()->id(), std::move(matcher));
 
   {
@@ -336,17 +326,12 @@ TEST_P(RulesetManagerTest, EvaluationHistograms) {
                   kMinValidStaticRulesetID, last_loaded_extension()->id()),
               (*example_com_request.dnr_actions)[0]);
 
-    tester.ExpectTotalCount(kEvaluationTimeHistogramName, 1);
-    tester.ExpectTotalCount(kBeforeRequestRegexTimeHistogramName, 1);
-    tester.ExpectTotalCount(kBeforeRequestRulesetTimeHistogramName, 1);
+    tester.ExpectTotalCount(kHistogramName, 1);
 
     manager()->EvaluateRequest(google_com_request, is_incognito_context);
     EXPECT_TRUE(google_com_request.dnr_actions->empty());
 
-    tester.ExpectTotalCount(kEvaluationTimeHistogramName, 2);
-    tester.ExpectTotalCount(kBeforeRequestRegexTimeHistogramName, 2);
-    tester.ExpectTotalCount(kBeforeRequestRulesetTimeHistogramName, 2);
-
+    tester.ExpectTotalCount(kHistogramName, 2);
     example_com_request.dnr_actions.reset();
     google_com_request.dnr_actions.reset();
   }
