@@ -122,6 +122,17 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
       seen_pps_data_[pps->pps_pic_parameter_set_id];
   if (vps_data != active_vps_data_ || sps_data != active_sps_data_ ||
       pps_data != active_pps_data_) {
+    // If we're not at a keyframe and only the PPS has changed, put the new PPS
+    // in-band and don't create a new format.
+    // TODO(crbug.com/1331597): Record that this PPS has been provided and avoid
+    // sending it again.
+    if (!slice_hdr->irap_pic && vps_data == active_vps_data_ &&
+        sps_data == active_sps_data_) {
+      slice_nalu_data_.push_back(
+          base::make_span(pps_data.data(), pps_data.size()));
+      return Status::kOk;
+    }
+
     active_format_.reset();
 
     const uint8_t* nalu_data[3] = {vps_data.data(), sps_data.data(),
