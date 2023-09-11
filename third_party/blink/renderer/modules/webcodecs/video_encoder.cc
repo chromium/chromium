@@ -527,20 +527,16 @@ VideoEncoderConfig* CopyConfig(
   if (config.hasLatencyMode())
     result->setLatencyMode(config.latencyMode());
 
-  if (parsed_config.codec == media::VideoCodec::kH264) {
-    if (config.hasAvc() && config.avc()->hasFormat()) {
-      auto* avc = AvcEncoderConfig::Create();
-      avc->setFormat(config.avc()->format());
-      result->setAvc(avc);
-    }
+  if (config.hasAvc() && config.avc()->hasFormat()) {
+    auto* avc = AvcEncoderConfig::Create();
+    avc->setFormat(config.avc()->format());
+    result->setAvc(avc);
   }
 
-  if (parsed_config.codec == media::VideoCodec::kHEVC) {
-    if (config.hasHevc() && config.hevc()->hasFormat()) {
-      auto* hevc = HevcEncoderConfig::Create();
-      hevc->setFormat(config.hevc()->format());
-      result->setHevc(hevc);
-    }
+  if (config.hasHevc() && config.hevc()->hasFormat()) {
+    auto* hevc = HevcEncoderConfig::Create();
+    hevc->setFormat(config.hevc()->format());
+    result->setHevc(hevc);
   }
 
   return result;

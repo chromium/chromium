@@ -361,10 +361,10 @@ AudioEncoderConfig* CopyConfig(const AudioEncoderConfig& config) {
     result->setBitrateMode(config.bitrateMode());
   }
 
-  if (config.codec() == String("opus") && config.hasOpus()) {
+  if (config.hasOpus()) {
     result->setOpus(CopyOpusConfig(*config.opus()));
   }
-  if (config.codec() == String("aac") && config.hasAac()) {
+  if (config.hasAac()) {
     result->setAac(CopyAacConfig(*config.aac()));
   }
 
