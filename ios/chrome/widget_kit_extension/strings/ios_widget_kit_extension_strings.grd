@@ -306,7 +306,7 @@ type URL
         Search
 passwords
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_A11Y_LABEL" desc="Accessibility label for the search widget. [CHAR_LIMIT=40][iOS only]" meaning="Accessibility label for the search widget. Sentence-cased.">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_A11Y_LABEL" desc="Accessibility label for the search widget. [iOS only]" meaning="Accessibility label for the search widget. Sentence-cased.">
         Search passwords on Google Password Manager
       </message>
     </messages>
