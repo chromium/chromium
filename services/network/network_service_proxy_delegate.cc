@@ -167,8 +167,8 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     net::ProxyList proxy_list;
     if (!net::features::kIpPrivacyDirectOnly.Get()) {
       for (auto& proxy_hostname : ipp_config_cache_->ProxyList()) {
-        proxy_list.AddProxyServer(
-            net::ProxyServer::ForIpProtection(proxy_hostname));
+        proxy_list.AddProxyServer(net::ProxyServer::FromSchemeHostAndPort(
+            net::ProxyServer::SCHEME_HTTPS, proxy_hostname, absl::nullopt));
       }
     }
     // Final fallback is to DIRECT.
@@ -209,7 +209,7 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyServer& bad_proxy,
                                              int net_error) {
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
-  if (bad_proxy.is_for_ip_protection() && ipp_config_cache_) {
+  if (IsProxyForIpProtection(bad_proxy) && ipp_config_cache_) {
     ipp_config_cache_->RequestRefreshProxyList();
   }
 
@@ -227,7 +227,7 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
   if (IsInProxyConfig(proxy_server)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
   }
-  if (IsForIpProtection() && proxy_server.is_for_ip_protection()) {
+  if (IsForIpProtection() && IsProxyForIpProtection(proxy_server)) {
     if (ipp_config_cache_) {
       auto token = ipp_config_cache_->GetAuthToken();
       if (token) {
@@ -315,6 +315,24 @@ bool NetworkServiceProxyDelegate::IsForIpProtection() {
   // Only IP protection uses the network service proxy allow list, so this
   // config represents IP protection if and only if the allow list is in use.
   return proxy_config_->rules.restrict_to_network_service_proxy_allow_list;
+}
+
+bool NetworkServiceProxyDelegate::IsProxyForIpProtection(
+    const net::ProxyServer& proxy_server) const {
+  if (!ipp_config_cache_) {
+    return false;
+  }
+
+  // This list will typically be quite short (2-3), so linear search is
+  // adequate.
+  std::string proxy_server_host = proxy_server.GetHost();
+  for (auto& list_host : ipp_config_cache_->ProxyList()) {
+    if (list_host == proxy_server_host) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool NetworkServiceProxyDelegate::EligibleForProxy(

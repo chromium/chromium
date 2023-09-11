@@ -77,6 +77,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   // Checks whether |proxy_server| is present in the current proxy config.
   bool IsInProxyConfig(const net::ProxyServer& proxy_server) const;
 
+  bool IsProxyForIpProtection(const net::ProxyServer& proxy_server) const;
+
   // Whether the current config may proxy |url|.
   bool MayProxyURL(const GURL& url) const;
 
