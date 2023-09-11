@@ -131,9 +131,6 @@ void OverlayWindowAndroid::OnAttachCompositor() {
 void OverlayWindowAndroid::OnDetachCompositor() {
   window_android_->GetCompositor()->RemoveChildFrameSink(
       surface_layer_->surface_id().frame_sink_id());
-  // After this callback, `WindowAndroid` clears all the observers.  We don't
-  // really have any guarantee on its lifetime after this.
-  window_android_ = nullptr;
 }
 
 void OverlayWindowAndroid::OnActivityStopped() {
@@ -235,11 +232,9 @@ void OverlayWindowAndroid::CloseInternal() {
   if (java_ref_.is_uninitialized())
     return;
 
-  if (window_android_) {
-    window_android_->RemoveObserver(this);
-    window_android_ = nullptr;
-  }
-
+  DCHECK(window_android_);
+  window_android_->RemoveObserver(this);
+  window_android_ = nullptr;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_close(env, java_ref_.get(env));
 
