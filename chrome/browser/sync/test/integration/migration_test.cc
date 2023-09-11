@@ -120,9 +120,6 @@ class MigrationTest : public SyncTest {
     // Doesn't make sense to migrate commit only types.
     preferred_data_types.RemoveAll(syncer::CommitOnlyTypes());
 
-    // TODO(crbug.com/1365291): Remove this once TYPED_URLS is fully gone.
-    preferred_data_types.Remove(syncer::TYPED_URLS);
-
     return preferred_data_types;
   }
 

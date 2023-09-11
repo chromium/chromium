@@ -102,8 +102,6 @@ class EnableDisableSingleClientTest : public SyncTest {
         })));
 
     registered_data_types_ = GetSyncService(0)->GetRegisteredDataTypesForTest();
-    // TODO(crbug.com/1365291): Remove this once TYPED_URLS is fully gone.
-    registered_data_types_.Remove(syncer::TYPED_URLS);
 
     multi_grouped_types_ = MultiGroupTypes(registered_data_types_);
     registered_selectable_types_ = GetRegisteredSelectableTypes(0);

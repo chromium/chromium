@@ -4,19 +4,13 @@
 
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 
-#include <stddef.h>
-
-#include <vector>
-
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "components/browser_sync/browser_sync_switches.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/pref_names.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
@@ -90,7 +84,6 @@ class SyncServiceFactoryTest : public PlatformTest {
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
     datatypes.Put(syncer::PROXY_TABS);
-    datatypes.Put(syncer::TYPED_URLS);
     datatypes.Put(syncer::USER_EVENTS);
     datatypes.Put(syncer::USER_CONSENTS);
     datatypes.Put(syncer::SEND_TAB_TO_SELF);
