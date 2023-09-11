@@ -25,8 +25,8 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_message_port_converter.h"
@@ -82,10 +82,10 @@ base::WeakPtr<JsBinding> JsBinding::Install(
   CHECK(!js_object_name.empty())
       << "JavaScript wrapper name shouldn't be empty";
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context =
-      render_frame->GetWebFrame()->MainWorldScriptContext();
+  v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   if (context.IsEmpty())
     return nullptr;
 
@@ -131,12 +131,11 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
   if (!js_communication_)
     return;
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::HandleScope handle_scope(isolate);
-
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
   if (!web_frame)
     return;
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
 
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   if (context.IsEmpty())
