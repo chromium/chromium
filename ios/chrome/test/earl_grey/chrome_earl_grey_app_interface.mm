@@ -1138,10 +1138,6 @@ NSString* SerializedValue(const base::Value* value) {
   return base::FeatureList::IsEnabled(metrics::kDemographicMetricsReporting);
 }
 
-+ (BOOL)isSyncHistoryDataTypeEnabled {
-  return base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType);
-}
-
 + (BOOL)isReplaceSyncWithSigninEnabled {
   return base::FeatureList::IsEnabled(
       syncer::kReplaceSyncPromosWithSignInPromos);

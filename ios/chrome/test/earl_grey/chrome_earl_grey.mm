@@ -1345,10 +1345,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isDemographicMetricsReportingEnabled];
 }
 
-- (BOOL)isSyncHistoryDataTypeEnabled {
-  return [ChromeEarlGreyAppInterface isSyncHistoryDataTypeEnabled];
-}
-
 - (BOOL)isReplaceSyncWithSigninEnabled {
   return [ChromeEarlGreyAppInterface isReplaceSyncWithSigninEnabled];
 }

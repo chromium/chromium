@@ -307,19 +307,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Add a typed URL and wait for it to show up on the server.
   [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
-  if ([ChromeEarlGrey isSyncHistoryDataTypeEnabled]) {
     NSArray<NSURL*>* URLs = @[
       net::NSURLWithGURL(mockURL),
     ];
     [ChromeEarlGrey waitForSyncServerHistoryURLs:URLs
                                          timeout:kSyncOperationTimeout];
-  } else {
-    [ChromeEarlGrey triggerSyncCycleForType:syncer::TYPED_URLS];
-    [ChromeEarlGrey waitForSyncServerEntitiesWithType:syncer::TYPED_URLS
-                                                 name:mockURL.spec()
-                                                count:1
-                                              timeout:kSyncOperationTimeout];
-  }
 
   [self loadTestURLs];
   [self openHistoryPanel];

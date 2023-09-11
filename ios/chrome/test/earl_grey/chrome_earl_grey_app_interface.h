@@ -510,9 +510,6 @@
 // Returns YES if DemographicMetricsReporting feature is enabled.
 + (BOOL)isDemographicMetricsReportingEnabled [[nodiscard]];
 
-// Returns YES if the SyncEnableHistoryDataType feature is enabled.
-+ (BOOL)isSyncHistoryDataTypeEnabled [[nodiscard]];
-
 // Returns YES if the ReplaceSyncPromosWithSignInPromos feature is enabled.
 + (BOOL)isReplaceSyncWithSigninEnabled [[nodiscard]];
 
