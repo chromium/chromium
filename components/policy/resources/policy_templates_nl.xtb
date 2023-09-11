@@ -1900,7 +1900,7 @@ Voor een URL-patroon wordt deze indeling gehanteerd (https://support.google.com/
 <translation id="2661628029848851543">Alle typen gebruik van beheerde accounts zijn toegestaan</translation>
 <translation id="2664391398878045611">De pagina Nieuw tabblad toont de aankondiging in de middelste ruimte niet, ook niet als die beschikbaar is</translation>
 <translation id="2664682171745499686">Waarschuwingen voor nagebootste domeinen onderdrukken voor domeinen</translation>
-<translation id="2665422249821137126">Grote muisaanwijzer op het inlogscherm gebruiken</translation>
+<translation id="2665422249821137126">Grote cursor op het inlogscherm gebruiken</translation>
 <translation id="2667894101494585925">Ophalen van optimalisatiegids aanzetten</translation>
 <translation id="2669157090883237118">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie niet wijzigen.</translation>
 <translation id="2672012807430078509">Bepaalt of NTLM is aangezet als verificatieprotocol voor SMB-activeringen</translation>
@@ -2283,15 +2283,15 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="3023172689742785487">Aanzetten van de modus Alleen HTTPS afdwingen</translation>
 <translation id="3023572080620427845">URL van een XML-bestand dat URL's bevat voor laden in een alternatieve browser.</translation>
 <translation id="302528139996622624">Instellingen voor afbeeldingen</translation>
-<translation id="3026740867910702435">Zet de toegankelijkheidsfunctie 'Grote muisaanwijzer' op het inlogscherm aan.
+<translation id="3026740867910702435">Zet de toegankelijkheidsfunctie 'Grote cursor' op het inlogscherm aan.
 
-          Als dit beleid is ingesteld op True, staat de grote muisaanwijzer altijd aan op het inlogscherm.
+          Als dit beleid is ingesteld op True, staat de grote cursor altijd aan op het inlogscherm.
 
-          Als dit beleid is ingesteld op False, staat de grote muisaanwijzer altijd uit op het inlogscherm.
+          Als dit beleid is ingesteld op False, staat de grote cursor altijd uit op het inlogscherm.
 
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
-          Als dit beleid niet is ingesteld, staat de grote muisaanwijzer in eerste instantie uit op het inlogscherm, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
+          Als dit beleid niet is ingesteld, staat de grote cursor in eerste instantie uit op het inlogscherm, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="3027837632741099453">De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt.</translation>
 <translation id="3030000825273123558">Rapportage van statistieken aanzetten</translation>
 <translation id="30300807616984726">Rapporteert app-voorraadgegevens voor aangesloten gebruikers.
@@ -3692,7 +3692,7 @@ Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert
 <translation id="4206464220361823768">Grote cursor op het inlogscherm uitzetten</translation>
 <translation id="4209297478239988291">Zet de toegankelijkheidsfunctie voor automatisch klikken aan.
 
-          Met deze functie kun je klikken zonder fysiek op de muisknop of touchpad te drukken door de muisaanwijzer op het object te plaatsen waarop je wilt klikken.
+          Met deze functie kun je klikken zonder fysiek op de muisknop of touchpad te drukken door de cursor op het object te plaatsen waarop je wilt klikken.
 
           Als dit beleid is toegepast, staat de functie voor automatisch klikken altijd aan.
 
@@ -4118,7 +4118,7 @@ Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersge
 
       Als je het beleid instelt op True of niet instelt, kunnen gebruikers opnamen van netwerkpakketten uitvoeren op het apparaat.
       Als je het beleid instelt op False, zijn opnamen van netwerkpakketten niet beschikbaar op het apparaat.</translation>
-<translation id="4600786265870346112">Grote muisaanwijzer gebruiken</translation>
+<translation id="4600786265870346112">Grote cursor gebruiken</translation>
 <translation id="4602988345256038309">Verbindingen voor externe support met deze machine toestaan</translation>
 <translation id="4607416370554533118">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven van sites waarvoor Chrome automatisch een clientcertificaat kan selecteren. De waarde is een matrix van JSON-woordenboeken met tekenreeksen, elk met de indeling <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, waarbij <ph name="URL_PATTERN_PLACEHOLDER" /> een patroon voor het instellen van content is. <ph name="FILTER_PLACEHOLDER" /> beperkt de clientcertificaten waaruit de browser automatisch kan kiezen. Onafhankelijk van het filter worden alleen certificaten geselecteerd die overeenkomen met het certificaatverzoek van de server.
 
@@ -5732,7 +5732,7 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
 <translation id="614753473456574270">Niet toestaan dat gebruikers een zwakke pincode instellen</translation>
 <translation id="6150320133676152520">Automatisch versturen van pincode op het vergrendel- en inlogscherm uitzetten</translation>
 <translation id="6155350825868160236">Toestaan dat gebruikers kiezen of Google-webservices worden gebruikt om spelfouten op te lossen</translation>
-<translation id="6155936611791017817">De standaardstatus van de grote muisaanwijzer op het inlogscherm instellen</translation>
+<translation id="6155936611791017817">De standaardstatus van de grote cursor op het inlogscherm instellen</translation>
 <translation id="6157537876488211233">Door komma's gescheiden lijst van regels voor proxyomzeiling</translation>
 <translation id="6158324314836466367">Naam van zakelijke webwinkel (verouderd)</translation>
 <translation id="6164441518097008843">Inloggen beperken tot een lijst gebruikers</translation>
@@ -8842,7 +8842,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="8871974300055371298">Instellingen voor content</translation>
 <translation id="8872402969096027761">Zet de toegankelijkheidsfunctie voor automatisch klikken op het inlogscherm aan.
 
-          Deze functie maakt het mogelijk om automatisch te klikken als de muisaanwijzer stopt, zonder dat de gebruiker fysiek op een muis- of touchpadknop hoeft te drukken.
+          Deze functie maakt het mogelijk om automatisch te klikken als de cursor stopt, zonder dat de gebruiker fysiek op een muis- of touchpadknop hoeft te drukken.
 
           Als dit beleid is ingesteld op True, staat automatisch klikken altijd aan op het inlogscherm.
 

@@ -351,7 +351,7 @@
 <translation id="168693727862418163">このポリシーの値は、スキーマの検証でエラーとなったため無視されます。</translation>
 <translation id="168841957122794586">サーバー証明書に脆弱な暗号鍵が含まれています。</translation>
 <translation id="1689333818294560261">ニックネーム</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> Chrome では、4 週間以上経過したトピックは自動削除されます。ウェブサイトを引き続き閲覧していると、トピックがリストに再度表示される場合もあります。また、Chrome の設定で、いつでもウェブサイトと共有しないトピックをブロックしたり、広告のトピックを無効にしたりすることができます。</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> Chrome では、4 週間以上経過したトピックは自動的に削除されます。ウェブサイトを引き続き閲覧していると、トピックがリストに再度表示されることがあります。また Chrome の設定で、いつでもウェブサイトと共有しないトピックをブロックしたり、広告のトピックを無効にしたりすることができます。</translation>
 <translation id="1697532407822776718">設定が完了しました。</translation>
 <translation id="1699651774646344471">Google アカウントに保存した住所を使用できるようになりました</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -384,7 +384,7 @@
 <translation id="1736420071277903564">パソコン</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
 <translation id="1743393865165844832">寝具</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Google によるこのデータの使用:<ph name="END_BOLD" /> Chrome では、ユーザーのブラウジング時に興味 / 関心のあるトピックが記録されます。トピックのラベルは事前定義されていて、「アート、エンターテインメント」、「ショッピング」、「スポーツ」などがあります。その後、アクセスするサイトでは、表示する広告をパーソナライズするため、Chrome に（閲覧履歴ではなく）いくつかのトピックを提示するよう要求されることがあります。</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Google によるこのデータの使用:<ph name="END_BOLD" /> Chrome では、ユーザーによるウェブサイト閲覧時にそのユーザーの興味 / 関心のあるトピックが記録されます。トピックのラベルは、「アートやエンターテインメント」、「ショッピング」、「スポーツ」など事前に定義されています。その後、ユーザーが訪れるウェブサイトは、表示する広告をパーソナライズするため、Chrome に（閲覧履歴ではなく）いくつかのトピックを提示するよう要求できます。</translation>
 <translation id="1746113442205726301">画像の Y 軸移動</translation>
 <translation id="1746531169546376413">0°</translation>
 <translation id="1752021286346845558">用紙受け 8</translation>
@@ -952,7 +952,7 @@
 <translation id="301521992641321250">自動でブロックされました</translation>
 <translation id="3016780570757425217">ユーザーの現在地の認識</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> です。Tab キー、Enter キーの順に押すと、候補を削除します。</translation>
-<translation id="3023165109041533893">ウェブサイトによる広告の提案は、閲覧履歴と個人情報を保護しながら、サイトで関連性の高い広告を表示できるようにする機能です。アクセスするサイトでは、ユーザーのアクティビティに基づき、関連する広告をそれ以降のブラウジング時に提案できます。設定で、これらのサイトのリストを確認したり、必要のないサイトをブロックしたりできます。</translation>
+<translation id="3023165109041533893">ユーザーの閲覧履歴と個人情報を保護しつつ、関連性の高い広告を表示できるようにするウェブサイトによる広告の提案機能。ユーザーの訪れるウェブサイトが、ユーザーの行動に基づき、それ以降のウェブサイト閲覧時に関連する広告を提案します。設定でウェブサイトのリストを確認したり、必要のないサイトをブロックしたりすることができます。</translation>
 <translation id="3024663005179499861">ポリシー タイプが間違っています</translation>
 <translation id="3029752078111257850">世界のニュース</translation>
 <translation id="3036894576201005614">家庭用掃除用品</translation>
@@ -1068,7 +1068,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google カレンダーで新しいイベントをすばやく作成します</translation>
 <translation id="3261488570342242926">仮想カードについて</translation>
 <translation id="3262698603497362968">購入のオプション</translation>
-<translation id="3266367459139339908">パーソナライズド広告を表示するサイトが、ユーザーについて把握できる情報を制限するために、次のような方法が新たに導入されます。</translation>
+<translation id="3266367459139339908">パーソナライズド広告を表示するウェブサイトがユーザーについて把握できる情報を制限するため、次のような機能を新たに実装します。</translation>
 <translation id="3266793032086590337">値（競合）</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{ブロックされているサイトはありません（関連サイトを含む）}=1{1 件のサイトがブロックされています（関連サイトを含む）}other{# 件のサイトがブロックされています（関連サイトを含む）}}</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
@@ -1102,7 +1102,7 @@
 <translation id="3339440062908617027">ランニング、ウォーキング</translation>
 <translation id="3339446062576134663">クラウド（Ash）</translation>
 <translation id="3340978935015468852">設定</translation>
-<translation id="3342018947887487892">その後、ユーザーがアクセスする別のウェブサイトから、この情報（広告のトピックまたはアクセスしたウェブサイトによる広告の提案）を求められることがあります。</translation>
+<translation id="3342018947887487892">その後、ユーザーがアクセスする別のウェブサイトは、この情報（広告のトピックまたはアクセスしたウェブサイトによる広告の提案）を要求することができます。</translation>
 <translation id="3342366525167526994">ボディアート</translation>
 <translation id="334438173029876234">スケートボード用品</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1381,7 +1381,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">埋め込みコンテンツの詳細</translation>
 <translation id="3911401144270344103">この設定は Chrome の設定でいつでも変更できます</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> 30 日以上経過したウェブサイトは自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。また、Chrome の設定でいつでも、ウェブサイトによる広告の提案をブロックしたり、無効にしたりすることができます。</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> 30 日以上経過したウェブサイトは自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。また、Chrome の設定でいつでも、ウェブサイトからの広告の提案をブロックしたり、無効にしたりすることができます。</translation>
 <translation id="3921869355029467742">セキュリティ コードを入力する</translation>
 <translation id="3927932062596804919">拒否</translation>
 <translation id="3930260846839546333">ハンドバッグ、財布</translation>
@@ -2444,7 +2444,7 @@
 <translation id="6157754950574419155">履歴からすべて削除</translation>
 <translation id="6157877588268064908">配送方法と要件を確認するには、住所を選択してください</translation>
 <translation id="6159554577634054750">害虫駆除</translation>
-<translation id="6160391204859821737">広告のプライバシー機能をオンにする</translation>
+<translation id="6160391204859821737">広告のプライバシー機能を有効にする</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6167577165590485365">最後に取得を試行した時間:</translation>
 <translation id="6169916984152623906">現在、シークレット モードで閲覧しています。あなたのアクティビティは、このデバイスを利用する他のユーザーには表示されません。ただし、ダウンロードしたファイルとブックマークは通常どおり保存されます。</translation>
@@ -2603,7 +2603,7 @@
 <translation id="6472874020827012601">布（非光沢）</translation>
 <translation id="647330291963761005">アップデートをインストールしています</translation>
 <translation id="6474220430271405609">ポリシーテスト</translation>
-<translation id="6475672344094591109">アクセスするサイトが、広告のパフォーマンスを測定するための情報を提示するよう Chrome に求めることがあります。Chrome では、サイト間で共有できる情報を制限することにより、ユーザーのプライバシーを保護しています。</translation>
+<translation id="6475672344094591109">ユーザーが訪れたウェブサイトから Chrome に対して、広告の効果を測定するための情報を要求されることがあります。Chrome は、関係する事業者間で共有できる情報を制限することでユーザーのプライバシーを保護します。</translation>
 <translation id="6476284679642588870">お支払い方法を管理</translation>
 <translation id="6480864723214312258">家庭用電池</translation>
 <translation id="6486200200930923183">ドキュメンタリー映画</translation>
@@ -3103,7 +3103,8 @@
 <translation id="7508255263130623398">返されたポリシーのデバイス ID が空であるか、現在のデバイス ID と一致しません</translation>
 <translation id="7508577201115425418">コピー、印刷サービス</translation>
 <translation id="7508870219247277067">アボカド グリーン</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />サイトによるこのデータの使用:<ph name="END_BOLD" /> サイトでは、ユーザーの興味 / 関心に関する情報を Chrome に保存できます。たとえば、マラソン トレーニングのサイトにアクセスした場合、ユーザーはランニング シューズに関心があると判断されます。その後、別のサイトにアクセスすると、最初にアクセスしたサイトにより提案されたランニング シューズの広告が表示されます。</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />ウェブサイトによるこのデータの使用:<ph name="END_BOLD" /> 多くのウェブサイトでは、アクセスしたユーザーの興味 / 関心を記録して、ユーザー体験をカスタマイズするのが一般的です。そうしたウェブサイトでは、ユーザーの興味 / 関心についての情報を Chrome に保存する場合があります。
+たとえば、ユーザーが長距離ランニング用シューズを販売しているウェブサイトにアクセスすると、ウェブサイトが、そのユーザーはマラソンに興味があると判断するかもしれません。その後、ユーザーがアクセスした別のウェブサイトでは、最初にアクセスしたウェブサイトからの提案によってランニング用シューズの広告を表示することができます。</translation>
 <translation id="7510269639068718544">猫</translation>
 <translation id="7511955381719512146">ご利用の Wi-Fi では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="7512685745044087310">このポリシーは「True」に設定して必須にすることはできません。このため、推奨値に変更されました。</translation>
@@ -3576,7 +3577,7 @@
 <translation id="8449836157089738489">すべてを新しいタブグループで開く</translation>
 <translation id="8457125768502047971">無期限</translation>
 <translation id="8458202188076138974">レター エクストラ</translation>
-<translation id="8460854335417802511">オンにする</translation>
+<translation id="8460854335417802511">有効にする</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 件のクレジット カード}other{# 件のクレジット カード}}</translation>
 <translation id="8468358362970107653">C3 封筒</translation>
@@ -3645,7 +3646,7 @@
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> このデバイスで Chrome を使用してアクセスしたサイトでのアクティビティ。</translation>
 <translation id="8601456038554914806">ウォーター スポーツ用品</translation>
 <translation id="8606726445206553943">MIDI デバイスの使用</translation>
-<translation id="8606988009912891950">広告のトピックは、閲覧履歴と個人情報を保護しながら、サイトで関連性の高い広告を表示できるようにする機能です。Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。その後、ユーザーが訪れた別のウェブサイトにてパーソナライズド広告を表示させるために、これらの情報が求められます。</translation>
+<translation id="8606988009912891950">広告のトピックは、ユーザーの閲覧履歴と個人情報を保護しつつ、ウェブサイトで関連性の高い広告を表示できるようにする機能です。Chrome は、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。その後にユーザーが訪れたウェブサイトは、表示する広告をパーソナライズするためのトピックを Chrome に要求できます。</translation>
 <translation id="8617269623452051934">デバイスのアクティブ状態</translation>
 <translation id="861775596732816396">サイズ 4</translation>
 <translation id="8620276786115098679">角形 7 号封筒</translation>
@@ -3930,7 +3931,7 @@
 <translation id="934634059306213385"><ph name="APP_NAME" /> アプリに Wi-Fi ネットワークのセットアップを許可しますか？</translation>
 <translation id="936602727769022409">Google アカウントにアクセスできなくなる可能性があります。Chromium で今すぐパスワードを変更することをおすすめします。変更の際には、ログインするよう求められます。</translation>
 <translation id="937457230470581909">動物園、水族館、自然保護地域</translation>
-<translation id="937804173274050966"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 広告のトピックは、最近の閲覧履歴（このデバイスで Chrome を使用してアクセスしたサイトのリスト）に基づきます。</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 該当のデバイスで Chrome を使用して訪れたウェブサイトにおけるアクティビティ。</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="940053046584497293">旅行、交通</translation>
 <translation id="945855313015696284">下記の情報を確認し、無効なカードがあれば削除してください</translation>
