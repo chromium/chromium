@@ -3914,7 +3914,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_beta_arm64',
+          'mac_13_arm64',
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_web_tests_content_shell',
@@ -7028,7 +7028,7 @@
       },
       'mac13.arm64-blink-rel': {
         'mixins': [
-          'mac_beta_arm64',
+          'mac_13_arm64',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
