@@ -390,13 +390,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     return;
   }
   autofill::FormDataAndServerPredictions forms_and_predictions =
-      autofill::GetFormDataAndServerPredictions(
-          base::make_span(&form_structure, 1u));
+      autofill::GetFormDataAndServerPredictions(*form_structure);
   // `GetFormDataAndServerPredictions` returns the same number of `FormData` as
   // `FormStructure` that are passed to it, i.e. one in this case. Therefore
   // take the front.
   std::array<const autofill::FormData*, 1> form_pointers = {
-      &forms_and_predictions.form_datas.front()};
+      &forms_and_predictions.form_data};
   _passwordManager->ProcessAutofillPredictions(
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
                                                                frame),

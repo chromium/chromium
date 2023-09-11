@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -33,7 +32,7 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
   }
 
   FormDataAndServerPredictions form_and_predictions =
-      GetFormDataAndServerPredictions(base::make_span(&browser_form, 1u));
+      GetFormDataAndServerPredictions(*browser_form);
   RendererFormsWithServerPredictions result;
   result.predictions = std::move(form_and_predictions.predictions);
   if (base::FeatureList::IsEnabled(
@@ -45,7 +44,7 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
     const AutofillDriverRouter& router =
         client.GetAutofillDriverFactory()->router();
     std::vector<FormData> renderer_forms =
-        router.GetRendererForms(form_and_predictions.form_datas.front());
+        router.GetRendererForms(form_and_predictions.form_data);
 
     result.renderer_forms.reserve(renderer_forms.size());
     base::flat_map<LocalFrameToken, content::GlobalRenderFrameHostId>
@@ -78,7 +77,7 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
 
   ContentAutofillDriver& driver =
       static_cast<ContentAutofillDriver&>(manager.driver());
-  result.renderer_forms = {{std::move(form_and_predictions.form_datas[0]),
+  result.renderer_forms = {{std::move(form_and_predictions.form_data),
                             driver.render_frame_host()->GetGlobalId()}};
   return result;
 }

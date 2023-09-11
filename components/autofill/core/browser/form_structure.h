@@ -693,7 +693,6 @@ class FormStructure {
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);
 std::ostream& operator<<(std::ostream& buffer, const FormStructure& form);
 
-// TODO(crbug.com/1466435): Remove once the refactoring is complete.
 // Helper struct for `GetFormDataAndServerPredictions`.
 struct FormDataAndServerPredictions {
   FormDataAndServerPredictions();
@@ -703,14 +702,13 @@ struct FormDataAndServerPredictions {
   FormDataAndServerPredictions& operator=(FormDataAndServerPredictions&&);
   ~FormDataAndServerPredictions();
 
-  std::vector<FormData> form_datas;
+  FormData form_data;
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions;
 };
 
-// Returns the `FormData` and `ServerPrediction` objects underlying
-// `form_structures`.
+// Returns the `FormData` and `ServerPrediction` objects underlying `form`.
 FormDataAndServerPredictions GetFormDataAndServerPredictions(
-    base::span<const FormStructure* const> form_structures);
+    const FormStructure& form);
 
 }  // namespace autofill
 
