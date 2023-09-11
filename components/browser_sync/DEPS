@@ -20,9 +20,10 @@ include_rules = [
   "+components/sync_preferences",
   "+components/sync_sessions",
   "+components/sync_user_events",
+  "+components/url_formatter",
   "+components/version_info",
   "+components/webdata/common",
   "+components/webdata_services",
-  "+net/base",
   "+services/network/test",
+  "+ui/base",
 ]
