@@ -3626,10 +3626,6 @@
       status: "stable",
     },
     {
-      name: "SvgMapLocalToAncestorFix",
-      status: "stable",
-    },
-    {
       name: "SvgNoPixelSnappingScaleAdjustment",
       status: "stable",
     },
