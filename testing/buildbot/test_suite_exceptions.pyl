@@ -1859,6 +1859,10 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter',
         ],
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
       },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
@@ -1880,6 +1884,18 @@
           'shards': 30,
         },
       },
+      'Linux Tests': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
+      },
+      'Linux Tests (Wayland)': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
+      },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
         'experiment_percentage': 100,
       },
@@ -1894,6 +1910,10 @@
         },
       },
       'Mac13 Tests': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 12,
         },
@@ -1918,6 +1938,10 @@
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
       },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,
@@ -2026,6 +2050,10 @@
             'cores': '8',
           },
         },
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
       },
       'android-oreo-x86-rel': {
         'args': [
@@ -2043,6 +2071,10 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
         ],
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
         'swarming': {
           # TODO(crbug.com/1462745): Temporarily increase the shard by 5 for the surging number of tests.
           # Recover to default number of shards(20) after the bug is fixed.
@@ -2124,6 +2156,10 @@
         },
       },
       'linux-chromeos-rel': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 6,
         },
@@ -2149,6 +2185,12 @@
       # https://crbug.com/1111979
       'linux-lacros-tester-fyi-rel': {
         'experiment_percentage': 100,
+      },
+      'linux-lacros-tester-rel': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
       },
       'mac-code-coverage': {
         'args': [
