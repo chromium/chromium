@@ -2070,7 +2070,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
     }
   }
 
-  bool is_account_auto_selected = dialog_type_ == kAutoReauth;
+  bool is_account_auto_selected =
+      IsFedCmAccountAutoSelectedFlagEnabled() && dialog_type_ == kAutoReauth;
 
   CleanUp();
 

@@ -29,5 +29,5 @@ def main(request, response):
 
   response.headers.set(b"Content-Type", b"application/json")
 
-  account_id = request.POST.get(b"account_id")
-  return "{\"token\": \"account_id=" + account_id.decode("utf-8") + "\"}"
+  is_account_auto_selected = request.POST.get(b"is_account_auto_selected")
+  return "{\"token\": \"is_account_auto_selected=" + is_account_auto_selected.decode("utf-8") + "\"}"

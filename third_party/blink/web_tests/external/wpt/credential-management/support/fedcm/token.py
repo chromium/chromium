@@ -24,6 +24,8 @@ def main(request, response):
     return (537, [], "Missing 'account_id' POST parameter")
   if not request.POST.get(b"disclosure_text_shown"):
     return (538, [], "Missing 'disclosure_text_shown' POST parameter")
+  if not request.POST.get(b"is_account_auto_selected"):
+    return (541, [], "Missing 'is_account_auto_selected' POST parameter")
 
   response.headers.set(b"Content-Type", b"application/json")
 

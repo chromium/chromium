@@ -296,7 +296,7 @@ const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
 // entry: https://chromestatus.com/feature/5384360374566912
 BASE_FEATURE(kFedCmAccountAutoSelectedFlag,
              "FedCmAccountAutoSelectedFlag",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM Authz API.
 BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_DISABLED_BY_DEFAULT);
