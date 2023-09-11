@@ -56,7 +56,7 @@ the whole device.
 ## Device policies
 
 Device policies are defined in the [chrome_device_policy proto file](https://cs.chromium.org/chromium/src/components/policy/proto/chrome_device_policy.proto).
-They are also mentioned in the [policy templates file](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json)
+They are also mentioned in the [policy templates files](https://cs.chromium.org/chromium/src/components/policy/resources/templates/)
 with `'device_only': True` for documentation purposes.
 
 Device policies are applied to all users on the device (and even if no user
@@ -70,7 +70,7 @@ or its wrapper [CrosSettings](https://cs.chromium.org/chromium/src/chrome/browse
 
 ## User policies
 
-User policies are defined in the [policy templates file](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json);
+User policies are defined in the [policy templates files](https://cs.chromium.org/chromium/src/components/policy/resources/templates/);
 only entries without `'device_only': True` are user policies.
 
 User policies are bound to user accounts, so a personal account on
