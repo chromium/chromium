@@ -18,6 +18,7 @@ from typing import NamedTuple, Optional, Set, Tuple
 from urllib.parse import urljoin
 
 from blinkpy.common import path_finder
+from blinkpy.common.memoized import memoized
 from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.w3c import wpt_metadata
@@ -28,7 +29,7 @@ from blinkpy.w3c.buganizer import BuganizerClient
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 
 path_finder.bootstrap_wpt_imports()
-from wptrunner import manifestexpected, metadata
+from wptrunner import manifestexpected
 from wptrunner.wptmanifest.backends import static
 
 _log = logging.getLogger(__name__)
@@ -39,8 +40,7 @@ SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
 USE_BUGANIZER = False
 BUGANIZER_WPT_COMPONENT = "1415957"
 
-MetadataChange = Tuple[manifestexpected.ExpectedManifest,
-                       manifestexpected.ExpectedManifest]
+MetadataChange = Tuple[io.BytesIO, io.BytesIO]
 
 
 class ImportNotifier:
@@ -197,11 +197,21 @@ class ImportNotifier:
                     and not self.host.project_config.switched_to_wptrunner):
                 continue
             failing_tests = set()
+            contents_before, contents_after = self._load_metadata_change(
+                test_path)
             for config in self._configs:
-                exp_before, exp_after = self._load_metadata_change(
-                    test_path, config)
-                exp_before.set('type', test_type)
-                exp_after.set('type', test_type)
+                for contents in (contents_before, contents_after):
+                    contents.seek(0)
+                exp_before = static.compile(contents_before,
+                                            config.data,
+                                            manifestexpected.data_cls_getter,
+                                            test_path=test_path)
+                exp_after = static.compile(contents_after,
+                                           config.data,
+                                           manifestexpected.data_cls_getter,
+                                           test_path=test_path)
+                for exp in (exp_before, exp_after):
+                    exp.set('type', test_type)
                 failing_tests.update(
                     self._detect_new_metadata_failures(exp_before, exp_after))
             for test_name in failing_tests:
@@ -212,27 +222,18 @@ class ImportNotifier:
                     TestFailure.from_file(test_name, changed_file,
                                           gerrit_url_with_ps))
 
-    def _load_metadata_change(self, test_path: str,
-                              config: metadata.RunInfo) -> MetadataChange:
+    @memoized
+    def _load_metadata_change(self, test_path: str) -> MetadataChange:
         try:
             rel_test_path = path_finder.RELATIVE_WEB_TESTS + test_path
             contents_before = self.git.show_blob(
                 rel_test_path + wpt_metadata.METADATA_EXTENSION)
         except ScriptError:
             contents_before = b''
-        exp_before = static.compile(io.BytesIO(contents_before),
-                                    config.data,
-                                    manifestexpected.data_cls_getter,
-                                    test_path=test_path)
         metadata_path = self.finder.path_from_web_tests(
             test_path + wpt_metadata.METADATA_EXTENSION)
-        with self.host.filesystem.open_binary_file_for_reading(
-                metadata_path) as metadata_file:
-            exp_after = static.compile(metadata_file,
-                                       config.data,
-                                       manifestexpected.data_cls_getter,
-                                       test_path=test_path)
-        return exp_before, exp_after
+        contents_after = self.host.filesystem.read_binary_file(metadata_path)
+        return io.BytesIO(contents_before), io.BytesIO(contents_after)
 
     def _detect_new_metadata_failures(
             self, exp_before: manifestexpected.ExpectedManifest,
