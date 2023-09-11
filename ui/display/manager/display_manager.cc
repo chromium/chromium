@@ -686,7 +686,7 @@ bool DisplayManager::GetActiveModeForDisplayId(int64_t display_id,
 
   for (const auto& display_mode : display_modes) {
     if (display::IsInternalDisplayId(display_id)) {
-      if (display_modes.size() == 1) {
+      if (display_modes.size() == 1 || display_mode.native()) {
         *mode = display_mode;
         return true;
       }
@@ -695,6 +695,7 @@ bool DisplayManager::GetActiveModeForDisplayId(int64_t display_id,
       return true;
     }
   }
+
   return false;
 }
 
