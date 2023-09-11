@@ -171,11 +171,10 @@ Developers can check the related HTTP request and response headers
   `transferSize` property of `PerformanceResourceTiming` for shared dictionary
   compressed response are wrong. Currently it returns as if the response is not
   compressed.
-- [crbug.com/1479465](crbug.com/1479465): Can't sotre large (>40 MB) dictionary.
-  We are setting [100 MB size limit](100mb-limit-line) if there is enough disk
-  space. But Chrome M117 can't store dictionaries larger than 40 MB. Fixed in
-  M118.
-- [cbrbug.com/1479809](crbug.com/1479809): Can't use large (>8MB) dictionary
+- [crbug.com/1479465](crbug.com/1479465): Can't store large (>40 MB)
+  dictionaries. Fixed in M118, by setting a [100 MB size limit](100mb-limit-line)
+  if there is enough disk space.
+- [cbrbug.com/1479809](crbug.com/1479809): Can't use large (>8MB) dictionaries
   for Shared Zstd. Fixed in M118.
 
 ## Demo sites
