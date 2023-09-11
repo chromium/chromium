@@ -533,6 +533,8 @@ public final class ProductionSupportedFlagList {
                             + "usage < 0.001% and shows a deprecation warning."),
             Flag.baseFeature(ContentFeatures.SERVICE_WORKER_STATIC_ROUTER,
                     "Enables Service Worker static routing API."),
+            Flag.baseFeature(ContentFeatures.BACK_FORWARD_CACHE_MEDIA_SESSION_SERVICE,
+                    "Enables media session usage when bfcache is enabled"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
