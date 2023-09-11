@@ -8252,7 +8252,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="DocumentCreated">
-  <owner>beccahughes@chromium.org</owner>
+  <owner>rakina@chromium.org</owner>
+  <owner>navigation-dev@chromium.org</owner>
   <summary>
     Recorded when a Document object is created and records the source ID of the
     navigation and whether the document was in the main frame. This can be used
