@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
@@ -514,6 +515,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kObsoleteIosSettingsPromoAlreadySeen, false);
   registry->RegisterIntegerPref(kObsoleteIosSettingsSigninPromoDisplayedCount,
                                 0);
+  // Register prefs used to skip too frequent History Sync Opt-In prompt.
+  history_sync::RegisterBrowserStatePrefs(registry);
 }
 
 // This method should be periodically pruned of year+ old migrations.

@@ -12,11 +12,16 @@ source_set("history_sync") {
     "history_sync_mediator.mm",
     "history_sync_popup_coordinator.h",
     "history_sync_popup_coordinator.mm",
+    "history_sync_utils.h",
+    "history_sync_utils.mm",
   ]
   deps = [
+    ":pref_names",
     ":ui",
     "resources:history_sync_opt_in_background",
     "//base",
+    "//components/pref_registry",
+    "//components/prefs",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/service",
     "//components/unified_consent",
@@ -47,5 +52,12 @@ source_set("ui") {
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
+  ]
+}
+
+source_set("pref_names") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
   ]
 }
