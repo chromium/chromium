@@ -39,8 +39,7 @@ class ReadWriteCardsManager : public KeyedService {
   // Returns the supported controller for the input params. Could be nullptr if
   // it is not supported.
   ReadWriteCardController* GetController(
-      const content::ContextMenuParams& params,
-      bool is_password_field);
+      const content::ContextMenuParams& params);
 
   chromeos::editor_menu::EditorMenuControllerImpl* editor_menu_for_testing() {
     return editor_menu_controller_.get();

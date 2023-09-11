@@ -14,7 +14,6 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 namespace {
 
@@ -41,11 +40,8 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
     return;
   }
 
-  bool is_password_field =
-      params.input_field_type ==
-      blink::mojom::ContextMenuDataInputFieldType::kPassword;
   read_write_card_controller_ =
-      read_write_cards_manager_->GetController(params, is_password_field);
+      read_write_cards_manager_->GetController(params);
   if (!read_write_card_controller_) {
     return;
   }

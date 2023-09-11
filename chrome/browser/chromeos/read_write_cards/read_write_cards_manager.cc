@@ -15,6 +15,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 namespace chromeos {
 
@@ -40,14 +41,16 @@ void ReadWriteCardsManager::Shutdown() {
 }
 
 ReadWriteCardController* ReadWriteCardsManager::GetController(
-    const content::ContextMenuParams& params,
-    bool is_password_field) {
+    const content::ContextMenuParams& params) {
   // Currently only return QuickAnswersControllerImpl.
   if (!QuickAnswersState::Get()->is_eligible()) {
     return nullptr;
   }
 
   // Skip password input field.
+  bool is_password_field =
+      params.input_field_type ==
+      blink::mojom::ContextMenuDataInputFieldType::kPassword;
   if (is_password_field) {
     return nullptr;
   }

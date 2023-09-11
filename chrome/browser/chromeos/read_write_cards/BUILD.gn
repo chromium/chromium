@@ -31,6 +31,7 @@ source_set("read_write_cards") {
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//content/public/browser",
+    "//content/public/common",
     "//services/network/public/cpp",
   ]
 }
