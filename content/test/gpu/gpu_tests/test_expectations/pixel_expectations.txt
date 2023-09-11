@@ -335,6 +335,8 @@ crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
 # Nexus 5x failure while using DMSAA for Tiles.
 crbug.com/1479154 [ android android-nexus-5x no-passthrough ] Pixel_GpuRasterization_ConcavePaths [ Failure ]
+crbug.com/1479154 [ android android-sm-a135m no-passthrough ] Pixel_GpuRasterization_ConcavePaths [ Failure ]
+crbug.com/1479154 [ android android-sm-a235m no-passthrough ] Pixel_GpuRasterization_ConcavePaths [ Failure ]
 
 # WebGPU interop fails -- pixel color diff
 crbug.com/1395227 [ amd-0x7340 no-clang-coverage release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
