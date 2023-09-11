@@ -71,3 +71,17 @@ steps:
       - "build-chromium-linux-x86_64"
       - "build-chromium-mac-x86_64"
       - "build-chromium-mac-arm64"
+  - label: "Metabase Test Suite"
+    depends_on: "build-chromium-linux-x86_64"
+    if: build.branch == "master"
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=linux"
+      - "queue=runtime"
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1: ~
+      - seek-oss/aws-sm#v2.3.1:
+          region: us-east-2
+          env:
+            GITHUB_AUTH_SECRET: "prod/metabase-github-secret"
+    command: "/home/ubuntu/chromium/src/replay_build_scripts/metabase.sh"
