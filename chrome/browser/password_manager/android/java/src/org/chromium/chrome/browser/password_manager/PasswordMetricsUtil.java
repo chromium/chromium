@@ -56,7 +56,7 @@ public class PasswordMetricsUtil {
     public static final String PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING =
             "PasswordManager.PasswordMigrationWarning.SheetStateAtClosing";
     public static final String PASSWORD_MIGRATION_WARNING_EMPTY_SHEET_TRIGGER =
-            "PasswordManager.PasswordMigrationWarning.EmptySheetTrigger";
+            "PasswordManager.PasswordMigrationWarning.EmptySheetTrigger2";
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.

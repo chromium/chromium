@@ -413,14 +413,22 @@ public class PasswordMigrationWarningMediatorTest {
     }
 
     @Test
-    public void testResetTimestampSetsTheWarningShownTimestampToZero() {
+    public void testSheetClosedResetsTimestampWhenNoFragment() {
         mMediator.onSheetClosed(StateChangeReason.NONE, false);
 
         verify(mPrefService).setString(Pref.LOCAL_PASSWORDS_MIGRATION_WARNING_SHOWN_TIMESTAMP, "0");
     }
 
     @Test
-    public void testRecordEmptySheetTriggerWritesToTheHistogram() {
+    public void testSheetClosedDoesntResetTimestampWhenFragmentSet() {
+        mMediator.onSheetClosed(StateChangeReason.NONE, true);
+
+        verify(mPrefService, never())
+                .setString(Pref.LOCAL_PASSWORDS_MIGRATION_WARNING_SHOWN_TIMESTAMP, "0");
+    }
+
+    @Test
+    public void testRecordEmptySheetTriggerWhenFragmentWasNeverSet() {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -428,13 +436,22 @@ public class PasswordMigrationWarningMediatorTest {
                                 PasswordMigrationWarningTriggers.CHROME_STARTUP)
                         .build();
 
+        mMediator.onSheetClosed(StateChangeReason.NONE, false);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testDontRecordEmptySheetTriggerWhenFragmentWasSet() {
+        var histogram = HistogramWatcher.newBuilder().build();
+
         mMediator.onSheetClosed(StateChangeReason.NONE, true);
 
         histogram.assertExpected();
     }
 
     @Test
-    public void testRecordSheetStateAtClosingRecordsEmptySheetClosedWithoutUserInteraction() {
+    public void testRecordEmptySheetClosedWithoutUserInteraction() {
         var histogram = HistogramWatcher.newBuilder()
                                 .expectIntRecords(
                                         PasswordMetricsUtil
@@ -449,7 +466,7 @@ public class PasswordMigrationWarningMediatorTest {
     }
 
     @Test
-    public void testRecordSheetStateAtClosingRecordsEmptySheetClosedByUserInteraction() {
+    public void testRecordEmptySheetClosedByUserInteraction() {
         var histogram = HistogramWatcher.newBuilder()
                                 .expectIntRecords(
                                         PasswordMetricsUtil
@@ -464,7 +481,7 @@ public class PasswordMigrationWarningMediatorTest {
     }
 
     @Test
-    public void testRecordSheetStateAtClosingRecordsClosingTheSheetWithFullContent() {
+    public void testRecordClosingTheSheetWithFullContent() {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(

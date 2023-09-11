@@ -2385,14 +2385,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordMigrationWarning.EmptySheetTrigger"
+<histogram name="PasswordManager.PasswordMigrationWarning.EmptySheetTrigger2"
     enum="PasswordMigrationWarningTriggers" expires_after="2024-01-29">
   <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     This histogram logs the UI surface that led to showing an empty local
     passwords migration warning sheet. Recorded when the sheet is closing, but
-    only if it was blank. Android only.
+    only if it was blank. Android only. This replaces
+    PasswordManager.PasswordMigrationWarning.EmptySheetTrigger which had a bug
+    causing it to also report triggers of non-empty sheets.
   </summary>
 </histogram>
 
