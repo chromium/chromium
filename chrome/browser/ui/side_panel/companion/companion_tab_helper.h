@@ -93,6 +93,9 @@ class CompanionTabHelper
   // handler or an empty pointer if none.
   std::unique_ptr<side_panel::mojom::ImageQuery> GetImageQuery();
 
+  // Returns the most recently set start time for the text query entry point.
+  std::unique_ptr<base::Time> GetTextQueryStartTime();
+
   // Called when the companion side panel is closed. Used for cleaning up any
   // local state.
   void OnCompanionSidePanelClosed();
@@ -142,6 +145,7 @@ class CompanionTabHelper
   std::unique_ptr<side_panel::mojom::ImageQuery> image_query_;
   std::unique_ptr<Delegate> delegate_;
   std::string text_query_;
+  std::unique_ptr<base::Time> text_query_start_time_;
 
   // Caches the trigger source for an in-progress companion page open action in
   // the current tab. Should be cleared after the open action is complete.

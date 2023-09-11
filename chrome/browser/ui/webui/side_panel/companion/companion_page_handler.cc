@@ -297,6 +297,8 @@ bool CompanionPageHandler::OnSearchTextQuery() {
   auto* helper = companion::CompanionTabHelper::FromWebContents(web_contents());
   CHECK(helper);
   const std::string query = helper->GetTextQuery();
+  std::unique_ptr<base::Time> query_start_time =
+      helper->GetTextQueryStartTime();
   if (query.empty()) {
     return false;
   }
@@ -306,7 +308,8 @@ bool CompanionPageHandler::OnSearchTextQuery() {
     page_url = web_contents()->GetVisibleURL();
   }
 
-  GURL companion_url = url_builder_->BuildCompanionURL(page_url, query);
+  GURL companion_url = url_builder_->BuildCompanionURL(
+      page_url, query, std::move(query_start_time));
   page_->LoadCompanionPage(companion_url);
   return true;
 }

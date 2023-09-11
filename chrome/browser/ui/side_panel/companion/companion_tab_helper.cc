@@ -136,8 +136,13 @@ std::string CompanionTabHelper::GetTextQuery() {
   return copy;
 }
 
+std::unique_ptr<base::Time> CompanionTabHelper::GetTextQueryStartTime() {
+  return std::move(text_query_start_time_);
+}
+
 void CompanionTabHelper::SetTextQuery(const std::string& text_query) {
   CHECK(!text_query.empty());
+  text_query_start_time_ = std::make_unique<base::Time>(base::Time::Now());
   text_query_ = text_query;
   if (companion_page_handler_) {
     companion_page_handler_->OnSearchTextQuery();

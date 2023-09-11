@@ -5,6 +5,7 @@
 #include "chrome/browser/companion/core/companion_url_builder.h"
 
 #include "base/base64url.h"
+#include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_permission_utils.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
@@ -51,19 +52,24 @@ GURL CompanionUrlBuilder::BuildCompanionURL(const GURL& page_url) {
   return BuildCompanionURL(page_url, /*text_query=*/"");
 }
 
-GURL CompanionUrlBuilder::BuildCompanionURL(const GURL& page_url,
-                                            const std::string& text_query) {
+GURL CompanionUrlBuilder::BuildCompanionURL(
+    const GURL& page_url,
+    const std::string& text_query,
+    std::unique_ptr<base::Time> text_query_start_time) {
   return AppendCompanionParamsToURL(GURL(GetHomepageURLForCompanion()),
-                                    page_url, text_query);
+                                    page_url, text_query,
+                                    std::move(text_query_start_time));
 }
 
 GURL CompanionUrlBuilder::AppendCompanionParamsToURL(
     const GURL& base_url,
     const GURL& page_url,
-    const std::string& text_query) {
+    const std::string& text_query,
+    std::unique_ptr<base::Time> text_query_start_time) {
   GURL url_with_query_params = base_url;
   // Fill the protobuf with the required query params.
-  std::string base64_encoded_proto = BuildCompanionUrlParamProto(page_url);
+  std::string base64_encoded_proto =
+      BuildCompanionUrlParamProto(page_url, std::move(text_query_start_time));
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kCompanionRequestQueryParameterKey,
       base64_encoded_proto);
@@ -88,7 +94,8 @@ GURL CompanionUrlBuilder::AppendCompanionParamsToURL(
 }
 
 std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
-    const GURL& page_url) {
+    const GURL& page_url,
+    std::unique_ptr<base::Time> text_query_start_time) {
   // Fill the protobuf with the required query params.
   companion::proto::CompanionUrlParams url_params;
   if (IsUserPermittedToSharePageInfoWithCompanion(pref_service_) &&
@@ -104,6 +111,18 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
   url_params.set_is_signed_in(signin_delegate_->IsSignedIn());
   url_params.set_links_open_in_new_tab(
       !companion::ShouldOpenLinksInCurrentTab());
+  if (text_query_start_time) {
+    // Add the query start time to the parameters if present.
+    companion::proto::Timestamp* query_start_time =
+        url_params.mutable_query_start_time();
+    int64_t nanoseconds_in_milliseconds = 1e6;
+    int64_t time_nanoseconds =
+        text_query_start_time->ToJavaTime() * nanoseconds_in_milliseconds;
+    query_start_time->set_seconds(time_nanoseconds /
+                                  base::Time::kNanosecondsPerSecond);
+    query_start_time->set_nanos(time_nanoseconds %
+                                base::Time::kNanosecondsPerSecond);
+  }
 
 // Need to BUILDFLAG these lines because kSidePanelCompanionEntryPinnedToToolbar
 // and kVisualSearchSuggestions do not exist on Android and will break try-bots

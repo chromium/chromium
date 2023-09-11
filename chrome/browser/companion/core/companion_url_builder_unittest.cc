@@ -293,6 +293,28 @@ TEST_F(CompanionUrlBuilderTest, WithoutTextQuery) {
   EXPECT_EQ(value, kOrigin);
 }
 
+TEST_F(CompanionUrlBuilderTest, WithQueryStartTime) {
+  auto time = base::Time::Now();
+  auto timestamp = std::make_unique<base::Time>(time);
+  int64_t nanoseconds_in_milliseconds = 1e6;
+  int64_t time_nanoseconds = time.ToJavaTime() * nanoseconds_in_milliseconds;
+  GURL page_url(kValidUrl);
+  std::string encoded_proto =
+      url_builder_->BuildCompanionUrlParamProto(page_url, std::move(timestamp));
+
+  // Deserialize the query param into protobuf.
+  companion::proto::CompanionUrlParams proto =
+      DeserializeCompanionRequest(encoded_proto);
+
+  companion::proto::Timestamp* query_start_time =
+      proto.mutable_query_start_time();
+  EXPECT_TRUE(query_start_time);
+  EXPECT_EQ(query_start_time->seconds(),
+            time_nanoseconds / base::Time::kNanosecondsPerSecond);
+  EXPECT_EQ(query_start_time->nanos(),
+            time_nanoseconds % base::Time::kNanosecondsPerSecond);
+}
+
 class CompanionUrlBuilderCurrentTabTest : public CompanionUrlBuilderTest {
  public:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
