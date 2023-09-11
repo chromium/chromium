@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -143,6 +144,8 @@ class CONTENT_EXPORT TrustedSignals {
   // There are no lifetime constraints of `url_loader_factory`.
   static std::unique_ptr<TrustedSignals> LoadBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
       std::set<std::string> interest_group_names,
       std::set<std::string> bidding_signals_keys,
       const std::string& hostname,
@@ -154,6 +157,8 @@ class CONTENT_EXPORT TrustedSignals {
   // Just like LoadBiddingSignals() above, but for fetching seller signals.
   static std::unique_ptr<TrustedSignals> LoadScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
       std::set<std::string> render_urls,
       std::set<std::string> ad_component_render_urls,
       const std::string& hostname,
@@ -163,13 +168,16 @@ class CONTENT_EXPORT TrustedSignals {
       LoadSignalsCallback load_signals_callback);
 
  private:
-  TrustedSignals(absl::optional<std::set<std::string>> interest_group_names,
-                 absl::optional<std::set<std::string>> bidding_signals_keys,
-                 absl::optional<std::set<std::string>> render_urls,
-                 absl::optional<std::set<std::string>> ad_component_render_urls,
-                 const GURL& trusted_signals_url,
-                 scoped_refptr<AuctionV8Helper> v8_helper,
-                 LoadSignalsCallback load_signals_callback);
+  TrustedSignals(
+      absl::optional<std::set<std::string>> interest_group_names,
+      absl::optional<std::set<std::string>> bidding_signals_keys,
+      absl::optional<std::set<std::string>> render_urls,
+      absl::optional<std::set<std::string>> ad_component_render_urls,
+      const GURL& trusted_signals_url,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      LoadSignalsCallback load_signals_callback);
 
   // Starts downloading `url`, which should be the bidding or scoring signals
   // URL with the query parameter correctly set.
@@ -224,6 +232,9 @@ class CONTENT_EXPORT TrustedSignals {
   std::unique_ptr<AuctionDownloader> auction_downloader_;
   // Used only for metrics; time when download started.
   base::TimeTicks download_start_time_;
+
+  mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+      auction_network_events_handler_;
 
   base::WeakPtrFactory<TrustedSignals> weak_ptr_factory{this};
 };

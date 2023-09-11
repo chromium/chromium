@@ -64,14 +64,13 @@ class CONTENT_EXPORT AuctionDownloader {
     NetworkEventsDelegate() = default;
     virtual ~NetworkEventsDelegate();
 
-    virtual void OnSendRequest(const network::ResourceRequest& request) = 0;
-    virtual void OnResponseReceived(
-        const GURL& final_url,
-        scoped_refptr<net::HttpResponseHeaders> headers) = 0;
+    virtual void OnNetworkSendRequest(network::ResourceRequest& request) = 0;
+    virtual void OnNetworkResponseReceived(
+        const GURL& url,
+        const network::mojom::URLResponseHead& head) = 0;
 
-    virtual void OnRequestComplete(
-        const std::string& devtools_request_id,
-        const absl::optional<network::URLLoaderCompletionStatus>& status) = 0;
+    virtual void OnNetworkRequestComplete(
+        const network::URLLoaderCompletionStatus& status) = 0;
   };
 
   // Starts loading `source_url` on construction. Callback will be invoked

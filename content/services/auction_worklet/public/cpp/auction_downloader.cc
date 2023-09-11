@@ -180,7 +180,7 @@ AuctionDownloader::AuctionDownloader(
                                       MimeTypeToString(mime_type_));
 
   if (network_events_delegate_ != nullptr) {
-    network_events_delegate_->OnSendRequest(*resource_request);
+    network_events_delegate_->OnNetworkSendRequest(*resource_request);
   }
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
@@ -236,9 +236,15 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
   auto simple_url_loader = std::move(simple_url_loader_);
   std::string allow_fledge;
   std::string auction_allowed;
+  network::URLLoaderCompletionStatus completion_status =
+      network::URLLoaderCompletionStatus(simple_url_loader->NetError());
+
+  if (simple_url_loader->CompletionStatus()) {
+    completion_status = simple_url_loader->CompletionStatus().value();
+  }
+
   if (network_events_delegate_ != nullptr) {
-    network_events_delegate_->OnRequestComplete(
-        request_id_, simple_url_loader->CompletionStatus());
+    network_events_delegate_->OnNetworkRequestComplete(completion_status);
   }
 
   if (!body) {
@@ -332,8 +338,8 @@ void AuctionDownloader::OnResponseStarted(
     const GURL& final_url,
     const network::mojom::URLResponseHead& response_head) {
   if (network_events_delegate_ != nullptr) {
-    network_events_delegate_->OnResponseReceived(final_url,
-                                                 response_head.headers);
+    network_events_delegate_->OnNetworkResponseReceived(final_url,
+                                                        response_head);
   }
   TRACE_EVENT_INSTANT1(
       "devtools.timeline", "ResourceReceiveResponse", TRACE_EVENT_SCOPE_THREAD,

@@ -16,13 +16,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-wasm.h"
 
 namespace auction_worklet {
-
 WorkletLoaderBase::Result::Result()
     : state_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
 
@@ -67,6 +68,8 @@ void WorkletLoaderBase::Result::V8Data::SetModule(
 
 WorkletLoaderBase::WorkletLoaderBase(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     const GURL& source_url,
     AuctionDownloader::MimeType mime_type,
     scoped_refptr<AuctionV8Helper> v8_helper,
@@ -82,12 +85,19 @@ WorkletLoaderBase::WorkletLoaderBase(
   DCHECK(mime_type == AuctionDownloader::MimeType::kJavascript ||
          mime_type == AuctionDownloader::MimeType::kWebAssembly);
 
+  std::unique_ptr<MojoNetworkEventsDelegate> network_events_delegate;
+
+  if (auction_network_events_handler.is_valid()) {
+    network_events_delegate = std::make_unique<MojoNetworkEventsDelegate>(
+        std::move(auction_network_events_handler));
+  }
+
   auction_downloader_ = std::make_unique<AuctionDownloader>(
       url_loader_factory, source_url,
       AuctionDownloader::DownloadMode::kActualDownload, mime_type,
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
                      base::Unretained(this)),
-      /*network_events_delegate=*/nullptr);
+      /*network_events_delegate=*/std::move(network_events_delegate));
 }
 
 WorkletLoaderBase::~WorkletLoaderBase() = default;
@@ -208,11 +218,14 @@ void WorkletLoaderBase::DeliverCallbackOnUserThread(
 
 WorkletLoader::WorkletLoader(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     const GURL& source_url,
     scoped_refptr<AuctionV8Helper> v8_helper,
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
     LoadWorkletCallback load_worklet_callback)
     : WorkletLoaderBase(url_loader_factory,
+                        std::move(auction_network_events_handler),
                         source_url,
                         AuctionDownloader::MimeType::kJavascript,
                         std::move(v8_helper),
@@ -232,11 +245,14 @@ v8::Global<v8::UnboundScript> WorkletLoader::TakeScript(Result&& result) {
 
 WorkletWasmLoader::WorkletWasmLoader(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     const GURL& source_url,
     scoped_refptr<AuctionV8Helper> v8_helper,
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
     LoadWorkletCallback load_worklet_callback)
     : WorkletLoaderBase(url_loader_factory,
+                        std::move(auction_network_events_handler),
                         source_url,
                         AuctionDownloader::MimeType::kWebAssembly,
                         std::move(v8_helper),

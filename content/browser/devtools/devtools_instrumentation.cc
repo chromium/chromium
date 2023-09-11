@@ -38,6 +38,7 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -74,10 +75,12 @@ template <typename Handler, typename... MethodArgs, typename... Args>
 void DispatchToAgents(DevToolsAgentHostImpl* host,
                       void (Handler::*method)(MethodArgs...),
                       Args&&... args) {
-  if (!host)
+  if (!host) {
     return;
-  for (auto* h : Handler::ForAgentHost(host))
+  }
+  for (auto* h : Handler::ForAgentHost(host)) {
     (h->*method)(std::forward<Args>(args)...);
+  }
 }
 
 template <typename Handler, typename... MethodArgs, typename... Args>
@@ -94,8 +97,9 @@ void DispatchToAgents(int frame_tree_node_id,
                       void (Handler::*method)(MethodArgs...),
                       Args&&... args) {
   FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (ftn)
+  if (ftn) {
     DispatchToAgents(ftn, method, std::forward<Args>(args)...);
+  }
 }
 
 template <typename Handler, typename... MethodArgs, typename... Args>
@@ -526,8 +530,9 @@ void OnNavigationResponseReceived(const NavigationRequest& nav_request,
                                   const network::mojom::URLResponseHead& head) {
   // This response is artificial (see CachedNavigationURLLoader), so we don't
   // want to report it.
-  if (nav_request.IsPageActivation())
+  if (nav_request.IsPageActivation()) {
     return;
+  }
 
   FrameTreeNode* ftn = nav_request.frame_tree_node();
   std::string id = nav_request.devtools_navigation_token().ToString();
@@ -555,8 +560,9 @@ void BackForwardCacheNotUsed(
 void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node) {
   auto* host = static_cast<RenderFrameDevToolsAgentHost*>(
       RenderFrameDevToolsAgentHost::GetFor(&old_node));
-  if (!host || host->HasSessionsWithoutTabTargetSupport())
+  if (!host || host->HasSessionsWithoutTabTargetSupport()) {
     return;
+  }
   // The new node may have a previous host associated, disconnect it first.
   scoped_refptr<RenderFrameDevToolsAgentHost> previous_host =
       static_cast<RenderFrameDevToolsAgentHost*>(
@@ -569,8 +575,9 @@ void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node) {
   // If the child frame is an OOPIF, we emit Page.frameDetached event which
   // otherwise might be lost because the OOPIF target is being destroyed.
   content::RenderFrameHostImpl* parent = frame_tree_node.parent();
-  if (!parent)
+  if (!parent) {
     return;
+  }
   if (RenderFrameDevToolsAgentHost::GetFor(&frame_tree_node) !=
       RenderFrameDevToolsAgentHost::GetFor(parent)) {
     DispatchToAgents(
@@ -599,8 +606,9 @@ bool IsPrerenderAllowed(FrameTree& frame_tree) {
 void WillInitiatePrerender(FrameTree& frame_tree) {
   DCHECK(frame_tree.is_prerendering());
   auto* wc = WebContentsImpl::FromFrameTreeNode(frame_tree.root());
-  if (auto* host = WebContentsDevToolsAgentHost::GetFor(wc))
+  if (auto* host = WebContentsDevToolsAgentHost::GetFor(wc)) {
     host->WillInitiatePrerender(frame_tree.root());
+  }
 }
 
 void DidActivatePrerender(const NavigationRequest& nav_request,
@@ -752,8 +760,9 @@ void OnNavigationRequestFailed(
 
   // If a BFCache navigation fails, it will be restarted as a regular
   // navigation, so we don't want to report this failure.
-  if (nav_request.IsServedFromBackForwardCache())
+  if (nav_request.IsServedFromBackForwardCache()) {
     return;
+  }
 
   // Activation of a prerender page is synchronous with its own activation flow
   // (crrev.com/c/2992411); if the prerender is cancelled (e.g. speculation rule
@@ -768,12 +777,14 @@ void OnNavigationRequestFailed(
 bool ShouldBypassCSP(const NavigationRequest& nav_request) {
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(nav_request.frame_tree_node());
-  if (!agent_host)
+  if (!agent_host) {
     return false;
+  }
 
   for (auto* page : protocol::PageHandler::ForAgentHost(agent_host)) {
-    if (page->ShouldBypassCSP())
+    if (page->ShouldBypassCSP()) {
       return true;
+    }
   }
   return false;
 }
@@ -792,15 +803,17 @@ void ApplyNetworkOverridesForDownload(
 
 void WillBeginDownload(download::DownloadCreateInfo* info,
                        download::DownloadItem* item) {
-  if (!item)
+  if (!item) {
     return;
+  }
   auto* rfh = static_cast<RenderFrameHostImpl*>(
       RenderFrameHost::FromID(info->render_process_id, info->render_frame_id));
   FrameTreeNode* ftn =
       rfh ? FrameTreeNode::GloballyFindByID(rfh->GetFrameTreeNodeId())
           : nullptr;
-  if (!ftn)
+  if (!ftn) {
     return;
+  }
   DispatchToAgents(ftn, &protocol::BrowserHandler::DownloadWillBegin, ftn,
                    item);
   DispatchToAgents(ftn, &protocol::PageHandler::DownloadWillBegin, ftn, item);
@@ -955,21 +968,24 @@ void ThrottleServiceWorkerMainScriptFetch(
   // If we have a requesting_frame_id, we should have a frame and a frame tree
   // node. However since the lifetime of these objects can be complex, we check
   // at each step that we indeed can go reach all the way to the FrameTreeNode.
-  if (!requesting_frame_id)
+  if (!requesting_frame_id) {
     return;
+  }
 
   RenderFrameHostImpl* requesting_frame =
       RenderFrameHostImpl::FromID(requesting_frame_id);
-  if (!requesting_frame)
+  if (!requesting_frame) {
     return;
+  }
 
   FrameTreeNode* ftn = requesting_frame->frame_tree_node();
   DCHECK(ftn);
 
   DevToolsAgentHostImpl* requesting_agent_host =
       RenderFrameDevToolsAgentHost::GetFor(ftn);
-  if (!requesting_agent_host)
+  if (!requesting_agent_host) {
     return;
+  }
 
   ThrottleForServiceWorkerAgentHost(agent_host, requesting_agent_host,
                                     throttle_handle);
@@ -982,13 +998,15 @@ void ThrottleWorkerMainScriptFetch(
   WorkerDevToolsAgentHost* agent_host =
       WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
           devtools_worker_token);
-  if (!agent_host)
+  if (!agent_host) {
     return;
+  }
 
   RenderFrameHostImpl* rfh =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id);
-  if (!rfh)
+  if (!rfh) {
     return;
+  }
 
   FrameTreeNode* ftn = rfh->frame_tree_node();
   DispatchToAgents(ftn, &protocol::TargetHandler::AddWorkerThrottle, agent_host,
@@ -999,8 +1017,9 @@ bool ShouldWaitForDebuggerInWindowOpen() {
   for (auto* browser_agent_host : BrowserDevToolsAgentHost::Instances()) {
     for (auto* target_handler :
          protocol::TargetHandler::ForAgentHost(browser_agent_host)) {
-      if (target_handler->ShouldThrottlePopups())
+      if (target_handler->ShouldThrottlePopups()) {
         return true;
+      }
     }
   }
   return false;
@@ -1042,13 +1061,15 @@ void ApplyNetworkRequestOverrides(
   bool disable_cache = false;
   DevToolsAgentHostImpl* agent_host =
       GetDevToolsAgentHostForNetworkOverrides(frame_tree_node);
-  if (!agent_host)
+  if (!agent_host) {
     return;
+  }
   net::HttpRequestHeaders headers;
   headers.AddHeadersFromString(begin_params->headers);
   for (auto* network : protocol::NetworkHandler::ForAgentHost(agent_host)) {
-    if (!network->enabled())
+    if (!network->enabled()) {
       continue;
+    }
     *report_raw_headers = true;
     network->ApplyOverrides(&headers, &begin_params->skip_service_worker,
                             &disable_cache, devtools_accepted_stream_types);
@@ -1078,12 +1099,14 @@ bool ApplyUserAgentMetadataOverrides(
     absl::optional<blink::UserAgentMetadata>* override_out) {
   DevToolsAgentHostImpl* agent_host =
       GetDevToolsAgentHostForNetworkOverrides(frame_tree_node);
-  if (!agent_host)
+  if (!agent_host) {
     return false;
+  }
 
   bool result = false;
-  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host))
+  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
     result = emulation->ApplyUserAgentMetadataOverrides(override_out) || result;
+  }
 
   return result;
 }
@@ -1098,8 +1121,9 @@ bool MaybeCreateProxyForInterception(
     bool is_navigation,
     bool is_download,
     network::mojom::URLLoaderFactoryOverride* agent_override) {
-  if (!agent_host)
+  if (!agent_host) {
     return false;
+  }
   bool had_interceptors = false;
   const auto& handlers = HandlerType::ForAgentHost(agent_host);
   for (const auto& handler : base::Reversed(handlers)) {
@@ -1177,8 +1201,9 @@ bool WillCreateURLLoaderFactoryInternal(
             is_navigation, is_download, handler_override) ||
         had_interceptors;
   }
-  if (!had_interceptors)
+  if (!had_interceptors) {
     return false;
+  }
   DCHECK(handler_override->overriding_factory);
   DCHECK(handler_override->overridden_factory_receiver);
   if (!factory_override) {
@@ -1243,8 +1268,9 @@ bool WillCreateURLLoaderFactoryForSharedWorker(
     SharedWorkerHost* host,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
   auto* worker_agent_host = SharedWorkerDevToolsAgentHost::GetFor(host);
-  if (!worker_agent_host)
+  if (!worker_agent_host) {
     return false;
+  }
 
   RenderProcessHost* rph = worker_agent_host->GetProcessHost();
   DCHECK(rph);
@@ -1334,6 +1360,68 @@ void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
                    request_id, body, is_base64_encoded);
 }
 
+void OnAuctionWorkletNetworkRequestWillBeSent(
+    int frame_tree_node_id,
+    const network::ResourceRequest& request,
+    base::TimeTicks timestamp) {
+  if (request.devtools_request_id->empty()) {
+    return;
+  }
+
+  network::mojom::URLRequestDevToolsInfoPtr request_info =
+      network::ExtractDevToolsInfo(request);
+
+  GURL initiator_url;
+  if (request.request_initiator.has_value()) {
+    initiator_url = request.request_initiator->GetURL();
+  }
+  // if we cannot get the loader_id from the parent, use an empty string.
+  std::string loader_id = "";
+  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+
+    const absl::optional<base::UnguessableToken>& devtools_navigation_token =
+        ftn->current_frame_host()->GetDevToolsNavigationToken();
+
+    if (devtools_navigation_token.has_value()) {
+      loader_id = devtools_navigation_token->ToString();
+    }
+
+    DispatchToAgents(
+        frame_tree_node_id, &protocol::NetworkHandler::RequestSent,
+        /*request_id=*/request.devtools_request_id.value(),
+        /*loader_id=*/loader_id, request.headers, *request_info,
+        /*initiator_type=*/protocol::Network::Initiator::TypeEnum::Other,
+        initiator_url,
+        /*initiator_devtools_request_id=*/"", timestamp);
+  }
+}
+
+void OnAuctionWorkletNetworkResponseReceived(
+    int frame_tree_node_id,
+    const std::string& request_id,
+    const std::string& loader_id,
+    const GURL& request_url,
+    const network::mojom::URLResponseHead& headers) {
+  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+      network::ExtractDevToolsInfo(headers);
+  DispatchToAgents(frame_tree_node_id,
+                   &protocol::NetworkHandler::ResponseReceived, request_id,
+                   loader_id, request_url,
+                   /*resource_type=*/protocol::Network::ResourceTypeEnum::Other,
+                   *head_info, base::ToString(frame_tree_node_id));
+}
+
+void OnAuctionWorkletNetworkRequestComplete(
+    int frame_tree_node_id,
+    const std::string& request_id,
+    const network::URLLoaderCompletionStatus& status) {
+  DispatchToAgents(frame_tree_node_id,
+                   &protocol::NetworkHandler::LoadingComplete, request_id,
+                   /*resource_type=*/protocol::Network::ResourceTypeEnum::Other,
+                   status);
+}
+
 void OnNavigationRequestWillBeSent(
     const NavigationRequest& navigation_request) {
   // Note this intentionally deviates from the usual instrumentation signal
@@ -1345,20 +1433,23 @@ void OnNavigationRequestWillBeSent(
            navigation_request.frame_tree_node()->current_frame_host();
        rfh; rfh = rfh->GetParentOrOuterDocument()) {
     // Only check frames that qualify as DevTools targets, i.e. (local)? roots.
-    if (!RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(rfh))
+    if (!RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(rfh)) {
       continue;
+    }
     auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
         RenderFrameDevToolsAgentHost::GetFor(rfh));
-    if (!agent_host)
+    if (!agent_host) {
       continue;
+    }
     agent_host->OnNavigationRequestWillBeSent(navigation_request);
   }
 
   // We use CachedNavigationURLLoader for page activation (BFCache navigations
   // and Prerender activations) and don't actually send a network request, so we
   // don't report this request to DevTools.
-  if (navigation_request.IsPageActivation())
+  if (navigation_request.IsPageActivation()) {
     return;
+  }
 
   // Make sure both back-ends yield the same timestamp.
   auto timestamp = base::TimeTicks::Now();
@@ -1435,8 +1526,9 @@ void PortalActivated(Portal& portal) {
   WebContents* host_contents = portal.GetPortalHostContents();
   UpdatePortals(reinterpret_cast<RenderFrameHostImpl*>(
       host_contents->GetPrimaryMainFrame()));
-  if (auto* host = WebContentsDevToolsAgentHost::GetFor(host_contents))
+  if (auto* host = WebContentsDevToolsAgentHost::GetFor(host_contents)) {
     host->PortalActivated(portal);
+  }
 }
 
 void FencedFrameCreated(
@@ -1445,8 +1537,9 @@ void FencedFrameCreated(
   auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
       RenderFrameDevToolsAgentHost::GetFor(
           owner_render_frame_host->frame_tree_node()));
-  if (!agent_host)
+  if (!agent_host) {
     return;
+  }
   agent_host->DidCreateFencedFrame(fenced_frame);
 }
 
@@ -1676,8 +1769,9 @@ void AddIssueToIssueStorage(
 void ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
                                  protocol::Audits::InspectorIssue* issue) {
   FrameTreeNode* ftn = frame->frame_tree_node();
-  if (!ftn)
+  if (!ftn) {
     return;
+  }
 
   AddIssueToIssueStorage(frame, issue->Clone());
   DispatchToAgents(ftn, &protocol::AuditsHandler::OnIssueAdded, issue);
@@ -1719,8 +1813,9 @@ void OnWebTransportHandshakeFailed(
     const GURL& url,
     const absl::optional<net::WebTransportError>& error) {
   FrameTreeNode* ftn = frame->frame_tree_node();
-  if (!ftn)
+  if (!ftn) {
     return;
+  }
   std::string text = base::StringPrintf(
       "Failed to establish a connection to %s", url.spec().c_str());
   if (error) {
@@ -1751,17 +1846,20 @@ void OnServiceWorkerMainScriptFetchingFailed(
   // If we have a requesting_frame_id, we should have a frame and a frame tree
   // node. However since the lifetime of these objects can be complex, we check
   // at each step that we indeed can go reach all the way to the FrameTreeNode.
-  if (!requesting_frame_id)
+  if (!requesting_frame_id) {
     return;
+  }
 
   RenderFrameHostImpl* requesting_frame =
       RenderFrameHostImpl::FromID(requesting_frame_id);
-  if (!requesting_frame)
+  if (!requesting_frame) {
     return;
+  }
 
   FrameTreeNode* ftn = requesting_frame->frame_tree_node();
-  if (!ftn)
+  if (!ftn) {
     return;
+  }
 
   auto entry = protocol::Log::LogEntry::Create()
                    .SetSource(protocol::Log::LogEntry::SourceEnum::Network)
@@ -1823,8 +1921,9 @@ void MaybeAssignResourceRequestId(DevToolsAgentHostImpl* host,
 void MaybeAssignResourceRequestId(FrameTreeNode* ftn,
                                   const std::string& id,
                                   network::ResourceRequest& request) {
-  if (auto* host = RenderFrameDevToolsAgentHost::GetFor(ftn))
+  if (auto* host = RenderFrameDevToolsAgentHost::GetFor(ftn)) {
     MaybeAssignResourceRequestId(host, id, request);
+  }
 }
 
 void OnServiceWorkerMainScriptRequestWillBeSent(
@@ -1835,13 +1934,15 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
   // Currently, `requesting_frame_id` is invalid when payment apps and
   // extensions register a service worker. See the callers of
   // ServiceWorkerContextWrapper::RegisterServiceWorker().
-  if (!requesting_frame_id)
+  if (!requesting_frame_id) {
     return;
+  }
 
   RenderFrameHostImpl* requesting_frame =
       RenderFrameHostImpl::FromID(requesting_frame_id);
-  if (!requesting_frame)
+  if (!requesting_frame) {
     return;
+  }
 
   auto timestamp = base::TimeTicks::Now();
   network::mojom::URLRequestDevToolsInfoPtr request_info =
@@ -1875,8 +1976,9 @@ void OnWorkerMainScriptLoadingFailed(
 
   std::string id = worker_token.ToString();
 
-  if (status.blocked_by_response_reason)
+  if (status.blocked_by_response_reason) {
     ReportBlockedByResponseIssue(url, id, ftn, ancestor_rfh, status);
+  }
 
   DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete, id,
                    protocol::Network::ResourceTypeEnum::Other, status);
@@ -1903,8 +2005,9 @@ void OnWorkerMainScriptRequestWillBeSent(
       network::ExtractDevToolsInfo(request);
 
   auto* owner_host = RenderFrameDevToolsAgentHost::GetFor(ftn);
-  if (!owner_host)
+  if (!owner_host) {
     return;
+  }
   MaybeAssignResourceRequestId(owner_host, worker_token.ToString(), request);
   DispatchToAgents(
       ftn, &protocol::NetworkHandler::RequestSent, worker_token.ToString(),
@@ -1917,8 +2020,9 @@ void LogWorkletMessage(RenderFrameHostImpl& frame_host,
                        blink::mojom::ConsoleMessageLevel log_level,
                        const std::string& message) {
   FrameTreeNode* ftn = frame_host.frame_tree_node();
-  if (!ftn)
+  if (!ftn) {
     return;
+  }
 
   std::string log_level_string;
   switch (log_level) {
@@ -2063,8 +2167,9 @@ void DidRejectCrossOriginPortalMessage(
 void UpdateDeviceRequestPrompt(RenderFrameHost* render_frame_host,
                                DevtoolsDeviceRequestPromptInfo* prompt_info) {
   FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
-  if (!ftn)
+  if (!ftn) {
     return;
+  }
   DispatchToAgents(ftn,
                    &protocol::DeviceAccessHandler::UpdateDeviceRequestPrompt,
                    prompt_info);
@@ -2073,8 +2178,9 @@ void UpdateDeviceRequestPrompt(RenderFrameHost* render_frame_host,
 void CleanUpDeviceRequestPrompt(RenderFrameHost* render_frame_host,
                                 DevtoolsDeviceRequestPromptInfo* prompt_info) {
   FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
-  if (!ftn)
+  if (!ftn) {
     return;
+  }
   DispatchToAgents(ftn,
                    &protocol::DeviceAccessHandler::CleanUpDeviceRequestPrompt,
                    prompt_info);

@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -23,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "gin/converter.h"
 #include "net/base/parse_number.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -347,6 +349,8 @@ TrustedSignals::Result::~Result() = default;
 
 std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        devtools_pending_remote,
     std::set<std::string> interest_group_names,
     std::set<std::string> bidding_signals_keys,
     const std::string& hostname,
@@ -361,8 +365,8 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
           std::move(interest_group_names), std::move(bidding_signals_keys),
           /*render_urls=*/absl::nullopt,
           /*ad_component_render_urls=*/absl::nullopt,
-          trusted_bidding_signals_url, std::move(v8_helper),
-          std::move(load_signals_callback)));
+          trusted_bidding_signals_url, std::move(devtools_pending_remote),
+          std::move(v8_helper), std::move(load_signals_callback)));
 
   std::string query_params = base::StrCat(
       {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
@@ -386,6 +390,8 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
 
 std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     std::set<std::string> render_urls,
     std::set<std::string> ad_component_render_urls,
     const std::string& hostname,
@@ -400,7 +406,8 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
           /*interest_group_names=*/absl::nullopt,
           /*bidding_signals_keys=*/absl::nullopt, std::move(render_urls),
           std::move(ad_component_render_urls), trusted_scoring_signals_url,
-          std::move(v8_helper), std::move(load_signals_callback)));
+          std::move(auction_network_events_handler), std::move(v8_helper),
+          std::move(load_signals_callback)));
 
   // TODO(crbug.com/1432707): Find a way to rename renderUrls to renderURLs.
   std::string query_params = base::StrCat(
@@ -429,6 +436,8 @@ TrustedSignals::TrustedSignals(
     absl::optional<std::set<std::string>> render_urls,
     absl::optional<std::set<std::string>> ad_component_render_urls,
     const GURL& trusted_signals_url,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback)
     : interest_group_names_(std::move(interest_group_names)),
@@ -437,7 +446,9 @@ TrustedSignals::TrustedSignals(
       ad_component_render_urls_(std::move(ad_component_render_urls)),
       trusted_signals_url_(trusted_signals_url),
       v8_helper_(std::move(v8_helper)),
-      load_signals_callback_(std::move(load_signals_callback)) {
+      load_signals_callback_(std::move(load_signals_callback)),
+      auction_network_events_handler_(
+          std::move(auction_network_events_handler)) {
   DCHECK(v8_helper_);
   DCHECK(load_signals_callback_);
 
@@ -454,13 +465,20 @@ void TrustedSignals::StartDownload(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& full_signals_url) {
   download_start_time_ = base::TimeTicks::Now();
+
+  std::unique_ptr<MojoNetworkEventsDelegate> network_events_delegate;
+
+  if (auction_network_events_handler_.is_valid()) {
+    network_events_delegate = std::make_unique<MojoNetworkEventsDelegate>(
+        std::move(auction_network_events_handler_));
+  }
   auction_downloader_ = std::make_unique<AuctionDownloader>(
       url_loader_factory, full_signals_url,
       AuctionDownloader::DownloadMode::kActualDownload,
       AuctionDownloader::MimeType::kJson,
       base::BindOnce(&TrustedSignals::OnDownloadComplete,
                      base::Unretained(this)),
-      /*network_events_delegate=*/nullptr);
+      /*network_events_delegate=*/std::move(network_events_delegate));
 }
 
 void TrustedSignals::OnDownloadComplete(

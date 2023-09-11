@@ -18,7 +18,10 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -114,12 +117,15 @@ class CONTENT_EXPORT WorkletLoaderBase {
   // occurred, on the current thread. Destroying this is guaranteed to cancel
   // the callback. `mime_type` will inform both download checking and the
   // compilation method used.
-  WorkletLoaderBase(network::mojom::URLLoaderFactory* url_loader_factory,
-                    const GURL& source_url,
-                    AuctionDownloader::MimeType mime_type,
-                    scoped_refptr<AuctionV8Helper> v8_helper,
-                    scoped_refptr<AuctionV8Helper::DebugId> debug_id,
-                    LoadWorkletCallback load_worklet_callback);
+  WorkletLoaderBase(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
+      const GURL& source_url,
+      AuctionDownloader::MimeType mime_type,
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+      LoadWorkletCallback load_worklet_callback);
   ~WorkletLoaderBase();
 
  private:
@@ -182,11 +188,14 @@ class CONTENT_EXPORT WorkletLoader : public WorkletLoaderBase {
   // asynchronously once the data has been fetched and compiled or an error has
   // occurred, on the current thread. Destroying this is guaranteed to cancel
   // the callback.
-  WorkletLoader(network::mojom::URLLoaderFactory* url_loader_factory,
-                const GURL& source_url,
-                scoped_refptr<AuctionV8Helper> v8_helper,
-                scoped_refptr<AuctionV8Helper::DebugId> debug_id,
-                LoadWorkletCallback load_worklet_callback);
+  WorkletLoader(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
+      const GURL& source_url,
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+      LoadWorkletCallback load_worklet_callback);
 
   // The returned value is a compiled script not bound to any context. It
   // can be repeatedly bound to different contexts and executed, without
@@ -203,11 +212,14 @@ class CONTENT_EXPORT WorkletWasmLoader : public WorkletLoaderBase {
   // asynchronously once the data has been fetched and compiled or an error has
   // occurred, on the current thread. Destroying this is guaranteed to cancel
   // the callback.
-  WorkletWasmLoader(network::mojom::URLLoaderFactory* url_loader_factory,
-                    const GURL& source_url,
-                    scoped_refptr<AuctionV8Helper> v8_helper,
-                    scoped_refptr<AuctionV8Helper::DebugId> debug_id,
-                    LoadWorkletCallback load_worklet_callback);
+  WorkletWasmLoader(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
+      const GURL& source_url,
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+      LoadWorkletCallback load_worklet_callback);
 
   // The returned value is a module object. Since it's a JS object, it
   // should not be shared between contexts that must be isolated, as the code

@@ -1,0 +1,33 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module auction_worklet.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+import "services/network/public/mojom/url_loader_completion_status.mojom";
+import "services/network/public/mojom/url_response_head.mojom";
+import "services/network/public/mojom/url_request.mojom";
+
+
+// Interface used by the auction worklets to handle sending
+// requests and responses from the worklet process to the devtools
+// frontend within the browser process.
+interface AuctionNetworkEventsHandler {
+    // Method called when the auction worklet sends a request to the devtools.
+    OnNetworkSendRequest(network.mojom.URLRequest request,
+        mojo_base.mojom.TimeTicks timestamp);
+    // Method called when the auction worklet request's body has been received.
+    OnNetworkResponseReceived(
+        string request_id,
+        string loader_id,
+        url.mojom.Url request_url,
+        network.mojom.URLResponseHead headers);
+    // Method called when the auction worklet's request has been completed.
+    OnNetworkRequestComplete(
+        string request_id,
+        network.mojom.URLLoaderCompletionStatus status);
+    // Binds another pipe to this same implementation.
+    Clone(pending_receiver<AuctionNetworkEventsHandler> receiver);
+};

@@ -27,6 +27,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -495,8 +496,9 @@ class MockAuctionProcessManager
       // Ignore closed receivers. ReportWin() will result in re-loading a
       // worklet, after closing the original worklet, which may require
       // re-creating the AuctionWorkletService.
-      if (receiver_set_.HasReceiver(receiver.first))
+      if (receiver_set_.HasReceiver(receiver.first)) {
         EXPECT_NE(receiver.second, display_name);
+      }
     }
 
     receiver_display_name_map_[receiver_id] = display_name;
@@ -527,6 +529,8 @@ class MockAuctionProcessManager
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
       const GURL& script_source_url,
       const absl::optional<GURL>& bidding_wasm_helper_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
@@ -561,6 +565,8 @@ class MockAuctionProcessManager
       bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
       const GURL& script_source_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
@@ -580,8 +586,9 @@ class MockAuctionProcessManager
         std::move(pending_url_loader_factory), script_source_url,
         trusted_scoring_signals_url, top_window_origin);
 
-    if (seller_worklet_run_loop_)
+    if (seller_worklet_run_loop_) {
       seller_worklet_run_loop_->Quit();
+    }
   }
 
   std::unique_ptr<MockBidderWorklet> WaitForBidderWorklet() {

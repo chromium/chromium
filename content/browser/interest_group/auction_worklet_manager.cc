@@ -31,8 +31,10 @@
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -323,9 +325,12 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
 
   Delegate* delegate = worklet_manager_->delegate();
   mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
+  mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+      auction_network_events_handler;
   RenderFrameHostImpl* const rfh = delegate->GetFrame();
   url_loader_factory_proxy_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
       url_loader_factory.InitWithNewPipeAndPassReceiver(),
+      auction_network_events_handler.InitWithNewPipeAndPassReceiver(),
       base::BindRepeating(&Delegate::GetFrameURLLoaderFactory,
                           base::Unretained(delegate)),
       base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
@@ -339,7 +344,8 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       /*is_for_seller_=*/worklet_info_.type == WorkletType::kSeller,
       delegate->GetClientSecurityState(), worklet_info_.script_url,
       worklet_info_.wasm_url, worklet_info_.signals_url,
-      worklet_info_.needs_cors_for_additional_bid);
+      worklet_info_.needs_cors_for_additional_bid,
+      rfh->frame_tree_node()->frame_tree_node_id());
 
   switch (worklet_info_.type) {
     case WorkletType::kBidder: {
@@ -354,7 +360,8 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
               delegate->GetFrame(),
               url::Origin::Create(worklet_info_.script_url)),
           worklet_debug_->should_pause_on_start(),
-          std::move(url_loader_factory), worklet_info_.script_url,
+          std::move(url_loader_factory),
+          std::move(auction_network_events_handler), worklet_info_.script_url,
           worklet_info_.wasm_url, worklet_info_.signals_url,
           worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
@@ -378,7 +385,8 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
               delegate->GetFrame(),
               url::Origin::Create(worklet_info_.script_url)),
           worklet_debug_->should_pause_on_start(),
-          std::move(url_loader_factory), worklet_info_.script_url,
+          std::move(url_loader_factory),
+          std::move(auction_network_events_handler), worklet_info_.script_url,
           worklet_info_.signals_url, worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
                                                   worklet_info_.script_url),

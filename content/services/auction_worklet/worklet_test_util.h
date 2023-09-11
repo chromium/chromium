@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -114,6 +115,38 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
 
  private:
   std::vector<Request> observed_requests_;
+};
+
+class TestAuctionNetworkEventsHandler
+    : public mojom::AuctionNetworkEventsHandler {
+ public:
+  TestAuctionNetworkEventsHandler();
+  ~TestAuctionNetworkEventsHandler() override;
+
+  void OnNetworkSendRequest(const ::network::ResourceRequest& request,
+                            ::base::TimeTicks timestamp) override;
+
+  void OnNetworkResponseReceived(
+      const std::string& request_id,
+      const std::string& loader_id,
+      const ::GURL& request_url,
+      ::network::mojom::URLResponseHeadPtr headers) override;
+
+  void OnNetworkRequestComplete(
+      const std::string& request_id,
+      const ::network::URLLoaderCompletionStatus& status) override;
+
+  void Clone(
+      ::mojo::PendingReceiver<AuctionNetworkEventsHandler> receiver) override;
+
+  mojo::PendingRemote<AuctionNetworkEventsHandler> CreateRemote();
+
+  const std::vector<std::string>& GetObservedRequests();
+
+ private:
+  std::vector<std::string> observed_requests_;
+  mojo::ReceiverSet<auction_worklet::mojom::AuctionNetworkEventsHandler>
+      auction_network_events_handlers_;
 };
 
 }  // namespace auction_worklet

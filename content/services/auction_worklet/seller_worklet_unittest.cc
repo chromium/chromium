@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -22,11 +23,13 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -712,7 +715,8 @@ class SellerWorkletTest : public testing::Test {
     auto seller_worklet_impl = std::make_unique<SellerWorklet>(
         v8_helper_, std::move(shared_storage_host_remote_),
         pause_for_debugger_on_start, std::move(url_loader_factory),
-        decision_logic_url_, trusted_scoring_signals_url_, top_window_origin_,
+        auction_network_events_handler_.CreateRemote(), decision_logic_url_,
+        trusted_scoring_signals_url_, top_window_origin_,
         permissions_policy_state_.Clone(), experiment_group_id_);
     auto* seller_worklet_ptr = seller_worklet_impl.get();
     mojo::ReceiverId receiver_id =
@@ -811,6 +815,8 @@ class SellerWorkletTest : public testing::Test {
   network::TestURLLoaderFactory alternate_url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
 
+  TestAuctionNetworkEventsHandler auction_network_events_handler_;
+
   mojo::PendingRemote<mojom::AuctionSharedStorageHost>
       shared_storage_host_remote_;
 
@@ -835,6 +841,12 @@ TEST_F(SellerWorkletTest, NetworkError) {
   auto sellet_worklet = CreateWorklet();
   EXPECT_EQ("Failed to load https://url.test/ HTTP status = 404 Not Found.",
             WaitForDisconnect());
+
+  EXPECT_THAT(
+      auction_network_events_handler_.GetObservedRequests(),
+      testing::ElementsAre(
+          "Sent URL: https://url.test/", "Received URL: https://url.test/",
+          "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
 TEST_F(SellerWorkletTest, CompileError) {
@@ -851,6 +863,11 @@ TEST_F(SellerWorkletTest, ScoreAd) {
   // Base case. Also serves to make sure the script returned by
   // CreateBasicSellAdScript() does indeed work.
   RunScoreAdWithJavascriptExpectingResult(CreateBasicSellAdScript(), 1);
+
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::ElementsAre("Sent URL: https://url.test/",
+                                   "Received URL: https://url.test/",
+                                   "Completion Status: net::OK"));
 
   // Test returning results with the object format.
   RunScoreAdWithReturnValueExpectingResult("{desirability:3}", 3);

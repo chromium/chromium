@@ -29,6 +29,7 @@
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
@@ -565,6 +566,8 @@ SellerWorklet::SellerWorklet(
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
@@ -576,19 +579,23 @@ SellerWorklet::SellerWorklet(
           base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helper_.get())),
       url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(decision_logic_url),
-      trusted_signals_request_manager_(
-          trusted_scoring_signals_url
-              ? std::make_unique<TrustedSignalsRequestManager>(
-                    TrustedSignalsRequestManager::Type::kScoringSignals,
-                    url_loader_factory_.get(),
-                    /*automatically_send_requests=*/true,
-                    top_window_origin,
-                    *trusted_scoring_signals_url,
-                    /*experiment_group_id=*/experiment_group_id,
-                    v8_helper_.get())
-              : nullptr),
-      v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)) {
+      v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)),
+      auction_network_events_handler_(
+          std::move(auction_network_events_handler)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  trusted_signals_request_manager_ =
+      (trusted_scoring_signals_url
+           ? std::make_unique<TrustedSignalsRequestManager>(
+                 TrustedSignalsRequestManager::Type::kScoringSignals,
+                 url_loader_factory_.get(),
+                 /*auction_network_events_handler=*/
+                 CreateNewAuctionNetworkEventsHandlerRemote(
+                     auction_network_events_handler_),
+                 /*automatically_send_requests=*/true, top_window_origin,
+                 *trusted_scoring_signals_url,
+                 /*experiment_group_id=*/experiment_group_id, v8_helper_.get())
+           : nullptr);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper_, debug_id_, std::move(shared_storage_host_remote),
@@ -1667,7 +1674,10 @@ void SellerWorklet::Start() {
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.ScoringScriptJS",
       script_source_url_.spec().size());
   worklet_loader_ = std::make_unique<WorkletLoader>(
-      url_loader_factory_.get(), script_source_url_, v8_helper_, debug_id_,
+      url_loader_factory_.get(), /*auction_network_events_handler=*/
+      CreateNewAuctionNetworkEventsHandlerRemote(
+          auction_network_events_handler_),
+      script_source_url_, v8_helper_, debug_id_,
       base::BindOnce(&SellerWorklet::OnDownloadComplete,
                      base::Unretained(this)));
 }

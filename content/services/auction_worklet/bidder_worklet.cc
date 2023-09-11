@@ -31,6 +31,7 @@
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -293,6 +294,8 @@ BidderWorklet::BidderWorklet(
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     const GURL& script_source_url,
     const absl::optional<GURL>& wasm_helper_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
@@ -306,20 +309,24 @@ BidderWorklet::BidderWorklet(
       url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(script_source_url),
       wasm_helper_url_(wasm_helper_url),
-      trusted_signals_request_manager_(
-          trusted_bidding_signals_url
-              ? std::make_unique<TrustedSignalsRequestManager>(
-                    TrustedSignalsRequestManager::Type::kBiddingSignals,
-                    url_loader_factory_.get(),
-                    /*automatically_send_requests=*/false,
-                    top_window_origin,
-                    *trusted_bidding_signals_url,
-                    experiment_group_id,
-                    v8_helper_.get())
-              : nullptr),
       top_window_origin_(top_window_origin),
-      v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)) {
+      v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)),
+      auction_network_events_handler_(
+          std::move(auction_network_events_handler)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  trusted_signals_request_manager_ =
+      (trusted_bidding_signals_url
+           ? std::make_unique<TrustedSignalsRequestManager>(
+                 TrustedSignalsRequestManager::Type::kBiddingSignals,
+                 url_loader_factory_.get(),
+                 /*auction_network_events_handler=*/
+                 CreateNewAuctionNetworkEventsHandlerRemote(
+                     auction_network_events_handler_),
+                 /*automatically_send_requests=*/false, top_window_origin,
+                 *trusted_bidding_signals_url, experiment_group_id,
+                 v8_helper_.get())
+           : nullptr);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper, debug_id_, std::move(shared_storage_host_remote),
@@ -1587,12 +1594,15 @@ void BidderWorklet::ResumeIfPaused() {
 void BidderWorklet::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   DCHECK(!paused_);
-
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.BiddingScriptJS",
       script_source_url_.spec().size());
   worklet_loader_ = std::make_unique<WorkletLoader>(
-      url_loader_factory_.get(), script_source_url_, v8_helper_, debug_id_,
+      url_loader_factory_.get(),
+      /*auction_network_events_handler=*/
+      CreateNewAuctionNetworkEventsHandlerRemote(
+          auction_network_events_handler_),
+      script_source_url_, v8_helper_, debug_id_,
       base::BindOnce(&BidderWorklet::OnScriptDownloaded,
                      base::Unretained(this)));
 
@@ -1601,8 +1611,11 @@ void BidderWorklet::Start() {
         "Ads.InterestGroup.Net.RequestUrlSizeBytes.BiddingScriptWasm",
         wasm_helper_url_->spec().size());
     wasm_loader_ = std::make_unique<WorkletWasmLoader>(
-        url_loader_factory_.get(), wasm_helper_url_.value(), v8_helper_,
-        debug_id_,
+        url_loader_factory_.get(),
+        /*auction_network_events_handler=*/
+        CreateNewAuctionNetworkEventsHandlerRemote(
+            auction_network_events_handler_),
+        wasm_helper_url_.value(), v8_helper_, debug_id_,
         base::BindOnce(&BidderWorklet::OnWasmDownloaded,
                        base::Unretained(this)));
   }

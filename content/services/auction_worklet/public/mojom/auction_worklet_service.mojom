@@ -6,6 +6,7 @@ module auction_worklet.mojom;
 
 import "content/services/auction_worklet/public/mojom/bidder_worklet.mojom";
 import "content/services/auction_worklet/public/mojom/seller_worklet.mojom";
+import "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom";
 import "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
@@ -88,6 +89,7 @@ interface AuctionWorkletService {
       pending_remote<AuctionSharedStorageHost>? shared_storage_host,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
+      pending_remote<AuctionNetworkEventsHandler> auction_network_events_handler,
       url.mojom.Url script_source_url,
       url.mojom.Url? wasm_helper_url,
       url.mojom.Url? trusted_bidding_signals_url,
@@ -146,6 +148,7 @@ interface AuctionWorkletService {
       pending_remote<AuctionSharedStorageHost>? shared_storage_host,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
+      pending_remote<AuctionNetworkEventsHandler> auction_network_events_handler,
       url.mojom.Url script_source_url,
       url.mojom.Url? trusted_scoring_signals_url,
       url.mojom.Origin top_window_origin,

@@ -4,9 +4,11 @@
 
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 
+#include <cmath>
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -18,7 +20,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -29,6 +33,8 @@ namespace auction_worklet {
 TrustedSignalsRequestManager::TrustedSignalsRequestManager(
     Type type,
     network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     bool automatically_send_requests,
     const url::Origin& top_level_origin,
     const GURL& trusted_signals_url,
@@ -40,7 +46,9 @@ TrustedSignalsRequestManager::TrustedSignalsRequestManager(
       top_level_origin_(top_level_origin),
       trusted_signals_url_(trusted_signals_url),
       experiment_group_id_(experiment_group_id),
-      v8_helper_(v8_helper) {}
+      v8_helper_(v8_helper),
+      auction_network_events_handler_(
+          std::move(auction_network_events_handler)) {}
 
 TrustedSignalsRequestManager::~TrustedSignalsRequestManager() {
   // All outstanding Requests should have been destroyed before `this`.
@@ -109,8 +117,12 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
       request->bidder_keys_.reset();
       request->batched_request_ = batched_request;
     }
+
     batched_request->trusted_signals = TrustedSignals::LoadBiddingSignals(
-        url_loader_factory_, std::move(interest_group_names), std::move(keys),
+        url_loader_factory_, /*auction_network_events_handler=*/
+        CreateNewAuctionNetworkEventsHandlerRemote(
+            auction_network_events_handler_),
+        std::move(interest_group_names), std::move(keys),
         top_level_origin_.host(), trusted_signals_url_, experiment_group_id_,
         v8_helper_,
         base::BindOnce(&TrustedSignalsRequestManager::OnSignalsLoaded,
@@ -132,9 +144,13 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
     request->batched_request_ = batched_request;
   }
   batched_request->trusted_signals = TrustedSignals::LoadScoringSignals(
-      url_loader_factory_, std::move(render_urls),
-      std::move(ad_component_render_urls), top_level_origin_.host(),
-      trusted_signals_url_, experiment_group_id_, v8_helper_,
+      url_loader_factory_,
+      /*auction_network_events_handler=*/
+      CreateNewAuctionNetworkEventsHandlerRemote(
+          auction_network_events_handler_),
+      std::move(render_urls), std::move(ad_component_render_urls),
+      top_level_origin_.host(), trusted_signals_url_, experiment_group_id_,
+      v8_helper_,
       base::BindOnce(&TrustedSignalsRequestManager::OnSignalsLoaded,
                      base::Unretained(this), batched_request));
 }
@@ -160,8 +176,9 @@ TrustedSignalsRequestManager::RequestImpl::RequestImpl(
       trusted_signals_request_manager_(trusted_signals_request_manager) {}
 
 TrustedSignalsRequestManager::RequestImpl::~RequestImpl() {
-  if (trusted_signals_request_manager_)
+  if (trusted_signals_request_manager_) {
     trusted_signals_request_manager_->OnRequestDestroyed(this);
+  }
 }
 
 TrustedSignalsRequestManager::BatchedTrustedSignalsRequest::
@@ -199,8 +216,9 @@ void TrustedSignalsRequestManager::OnRequestDestroyed(RequestImpl* request) {
     size_t removed = queued_requests_.erase(request);
     DCHECK_EQ(removed, 1u);
     // If there are no more requests, stop the timer.
-    if (queued_requests_.empty())
+    if (queued_requests_.empty()) {
       timer_.Stop();
+    }
     return;
   }
 

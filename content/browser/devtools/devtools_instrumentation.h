@@ -180,6 +180,24 @@ void OnNavigationResponseReceived(
 void OnNavigationRequestFailed(
     const NavigationRequest& nav_request,
     const network::URLLoaderCompletionStatus& status);
+
+void OnAuctionWorkletNetworkRequestWillBeSent(
+    int frame_tree_node_id,
+    const network::ResourceRequest& request,
+    base::TimeTicks timestamp);
+
+void OnAuctionWorkletNetworkResponseReceived(
+    int frame_tree_node_id,
+    const std::string& request_id,
+    const std::string& loader_id,
+    const GURL& request_url,
+    const network::mojom::URLResponseHead& headers);
+
+void OnAuctionWorkletNetworkRequestComplete(
+    int frame_tree_node_id,
+    const std::string& request_id,
+    const network::URLLoaderCompletionStatus& status);
+
 bool ShouldBypassCSP(const NavigationRequest& nav_request);
 
 void ApplyNetworkOverridesForDownload(

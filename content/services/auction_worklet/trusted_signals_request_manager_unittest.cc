@@ -18,8 +18,10 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
@@ -93,6 +95,8 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
         bidding_request_manager_(
             TrustedSignalsRequestManager::Type::kBiddingSignals,
             &url_loader_factory_,
+            /*auction_network_events_handler=*/
+            auction_network_events_handler_.CreateRemote(),
             /*automatically_send_requests=*/false,
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
@@ -101,6 +105,8 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
         scoring_request_manager_(
             TrustedSignalsRequestManager::Type::kScoringSignals,
             &url_loader_factory_,
+            /*auction_network_events_handler=*/
+            auction_network_events_handler_.CreateRemote(),
             /*automatically_send_requests=*/false,
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
@@ -240,6 +246,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
 
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
+  TestAuctionNetworkEventsHandler auction_network_events_handler_;
   TrustedSignalsRequestManager bidding_request_manager_;
   TrustedSignalsRequestManager scoring_request_manager_;
 };
@@ -254,6 +261,15 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsError) {
       "https://url.test/?hostname=publisher&keys=key1&interestGroupNames=name1 "
       "HTTP status = 404 Not Found.",
       error_msg_);
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::ElementsAre(
+                  "Sent URL: "
+                  "https://url.test/"
+                  "?hostname=publisher&keys=key1&interestGroupNames=name1",
+                  "Received URL: "
+                  "https://url.test/"
+                  "?hostname=publisher&keys=key1&interestGroupNames=name1",
+                  "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsError) {
@@ -269,6 +285,13 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsError) {
       "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F "
       "HTTP status = 404 Not Found.",
       error_msg_);
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::ElementsAre(
+                  "Sent URL: https://url.test/"
+                  "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F",
+                  "Received URL: https://url.test/"
+                  "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F",
+                  "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
@@ -308,6 +331,15 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
   run_loop2.Run();
   EXPECT_FALSE(signals2);
   EXPECT_EQ(kExpectedError, error_msg2);
+
+  EXPECT_THAT(
+      auction_network_events_handler_.GetObservedRequests(),
+      testing::ElementsAre(
+          "Sent URL: https://url.test/"
+          "?hostname=publisher&keys=key1,key2&interestGroupNames=name1,name2",
+          "Received URL: https://url.test/"
+          "?hostname=publisher&keys=key1,key2&interestGroupNames=name1,name2",
+          "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequestError) {
@@ -348,6 +380,15 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequestError) {
   run_loop2.Run();
   EXPECT_FALSE(signals2);
   EXPECT_EQ(kExpectedError, error_msg2);
+
+  EXPECT_THAT(
+      auction_network_events_handler_.GetObservedRequests(),
+      testing::ElementsAre(
+          "Sent URL: https://url.test/?hostname=publisher"
+          "&renderUrls=https%3A%2F%2Fbar.test%2F,https%3A%2F%2Ffoo.test%2F",
+          "Received URL: https://url.test/?hostname=publisher"
+          "&renderUrls=https%3A%2F%2Fbar.test%2F,https%3A%2F%2Ffoo.test%2F",
+          "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequestNullKeys) {
@@ -380,6 +421,13 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
+  EXPECT_THAT(
+      auction_network_events_handler_.GetObservedRequests(),
+      testing::ElementsAre("Sent URL: https://url.test/?hostname=publisher"
+                           "&keys=key1,key2&interestGroupNames=name1",
+                           "Received URL: https://url.test/?hostname=publisher"
+                           "&keys=key1,key2&interestGroupNames=name1",
+                           "Completion Status: net::OK"));
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsOneRequest) {
@@ -982,6 +1030,8 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
   // enabled.
   TrustedSignalsRequestManager bidding_request_manager(
       TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/absl::nullopt, v8_helper_.get());
@@ -1062,6 +1112,8 @@ TEST_F(TrustedSignalsRequestManagerTest,
   // enabled.
   TrustedSignalsRequestManager bidding_request_manager(
       TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/absl::nullopt, v8_helper_.get());
@@ -1119,6 +1171,8 @@ TEST_F(TrustedSignalsRequestManagerTest,
   // enabled.
   TrustedSignalsRequestManager bidding_request_manager(
       TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/absl::nullopt, v8_helper_.get());
@@ -1169,6 +1223,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingExperimentGroupIds) {
   // Create a new bidding request manager with `experiment_group_id` set.
   TrustedSignalsRequestManager bidding_request_manager(
       TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/false,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/934u, v8_helper_.get());
@@ -1207,6 +1263,8 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringExperimentGroupIds) {
   // Create a new bidding request manager with `experiment_group_id` set.
   TrustedSignalsRequestManager scoring_request_manager(
       TrustedSignalsRequestManager::Type::kScoringSignals, &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/false,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/344u, v8_helper_.get());

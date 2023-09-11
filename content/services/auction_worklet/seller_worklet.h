@@ -70,6 +70,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
       const GURL& decision_logic_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
@@ -555,6 +557,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   absl::optional<std::string> load_script_error_msg_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  mojo::Remote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+      auction_network_events_handler_;
 
   SEQUENCE_CHECKER(user_sequence_checker_);
 

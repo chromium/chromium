@@ -655,6 +655,7 @@ class BidderWorkletTest : public testing::Test {
     auto bidder_worklet_impl = std::make_unique<BidderWorklet>(
         v8_helper_, std::move(shared_storage_host_remote_),
         pause_for_debugger_on_start, std::move(url_loader_factory),
+        auction_network_events_handler_.CreateRemote(),
         url.is_empty() ? interest_group_bidding_url_ : url,
         interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
         top_window_origin_, permissions_policy_state_.Clone(),
@@ -970,6 +971,8 @@ class BidderWorkletTest : public testing::Test {
   network::TestURLLoaderFactory alternate_url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
 
+  TestAuctionNetworkEventsHandler auction_network_events_handler_;
+
   mojo::PendingRemote<mojom::AuctionSharedStorageHost>
       shared_storage_host_remote_;
 
@@ -1007,6 +1010,12 @@ TEST_F(BidderWorkletTest, NetworkError) {
   GenerateBidExpectingNeverCompletes(bidder_worklet.get());
   EXPECT_EQ("Failed to load https://url.test/ HTTP status = 404 Not Found.",
             WaitForDisconnect());
+
+  EXPECT_THAT(
+      auction_network_events_handler_.GetObservedRequests(),
+      testing::ElementsAre(
+          "Sent URL: https://url.test/", "Received URL: https://url.test/",
+          "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
 TEST_F(BidderWorkletTest, CompileError) {
@@ -1029,6 +1038,11 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
           blink::AdDescriptor(GURL("https://response.test/")),
           /*ad_component_descriptors=*/absl::nullopt,
           /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
+
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::ElementsAre("Sent URL: https://url.test/",
+                                   "Received URL: https://url.test/",
+                                   "Completion Status: net::OK"));
 
   // Explicitly setting an undefined ad value acts just like not setting an ad
   // value.
