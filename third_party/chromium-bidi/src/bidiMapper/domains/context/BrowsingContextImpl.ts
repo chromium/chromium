@@ -26,7 +26,6 @@ import {
   UnableToCaptureScreenException,
   UnknownErrorException,
   UnsupportedOperationException,
-  type EmptyResult,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/deferred.js';
@@ -650,7 +649,7 @@ export class BrowsingContextImpl {
   async reload(
     ignoreCache: boolean,
     wait: BrowsingContext.ReadinessState
-  ): Promise<EmptyResult> {
+  ): Promise<BrowsingContext.NavigateResult> {
     await this.targetUnblockedOrThrow();
 
     await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
@@ -670,7 +669,13 @@ export class BrowsingContextImpl {
         break;
     }
 
-    return {};
+    return {
+      navigation:
+        wait === BrowsingContext.ReadinessState.None
+          ? null
+          : this.navigableId ?? null,
+      url: this.url,
+    };
   }
 
   async setViewport(viewport: BrowsingContext.Viewport | null) {
