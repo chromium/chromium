@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/console_message.h"
@@ -28,6 +29,8 @@ namespace ash::shimless_rma {
 namespace {
 
 ExternalAppDialog* g_instance = nullptr;
+base::RepeatingCallback<void(const ExternalAppDialog::InitParams&)>
+    g_mock_show_function;
 
 constexpr double kRelativeScreenWidth = 0.9;
 constexpr double kRelativeScreenHeight = 0.8;
@@ -96,12 +99,22 @@ void ExternalAppDialog::Show(const InitParams& params) {
     LOG(ERROR) << "Can only show one ExternalAppDialog";
     return;
   }
+  if (g_mock_show_function) {
+    g_mock_show_function.Run(params);
+    return;
+  }
   new ExternalAppDialog(params);
 }
 
 // static
 content::WebContents* ExternalAppDialog::GetWebContents() {
   return g_instance ? g_instance->web_dialog_view_->web_contents() : nullptr;
+}
+
+// static
+void ExternalAppDialog::SetMockShowForTesting(
+    base::RepeatingCallback<void(const InitParams& params)> callback) {
+  g_mock_show_function = callback;
 }
 
 ExternalAppDialog::ExternalAppDialog(const InitParams& params)

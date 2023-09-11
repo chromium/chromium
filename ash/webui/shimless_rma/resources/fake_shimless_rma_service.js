@@ -795,6 +795,12 @@ export class FakeShimlessRmaService {
   get3pDiagnosticsProvider() {}
 
   /**
+   * @return {!Promise<{result:
+   *     ash.shimlessRma.mojom.Show3pDiagnosticsAppResult}>}
+   */
+  show3pDiagnosticsApp() {}
+
+  /**
    * Implements ShimlessRmaServiceInterface.ObserveError.
    * @param {!ErrorObserverRemote} remote
    */

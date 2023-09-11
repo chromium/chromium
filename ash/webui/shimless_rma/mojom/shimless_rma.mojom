@@ -430,6 +430,13 @@ enum FeatureLevel {
   kRmadFeatureLevel1 = 3,
 };
 
+// Results of showing 3p diagnostics app.
+enum Show3pDiagnosticsAppResult {
+  kOk = 0,
+  kAppNotInstalled = 1,
+  kFailedToLoad = 2,
+};
+
 // Implemented by clients to receive errors from the rmad service.
 // rmad runs a lot of asynchronous processing and errors can occur at any time.
 interface ErrorObserver {
@@ -808,6 +815,8 @@ interface ShimlessRmaService {
   // Get the 3p diagnostics provider name. It is the manufacturer of this device
   // if the manufacturer provides any 3p diagnostics app.
   Get3pDiagnosticsProvider() => (string? provider);
+  // Show the installed 3p diagnostics app.
+  Show3pDiagnosticsApp() => (Show3pDiagnosticsAppResult result);
 
   ///////////////////////////////////////
   // Observers

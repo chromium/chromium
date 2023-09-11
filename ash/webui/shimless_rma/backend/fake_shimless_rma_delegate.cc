@@ -21,6 +21,16 @@ void FakeShimlessRmaDelegate::GenerateQrCode(
   std::move(callback).Run(url);
 }
 
+void FakeShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContext(
+    const base::FilePath& crx_path,
+    const base::FilePath& swbn_path,
+    PrepareDiagnosticsAppBrowserContextCallback callback) {
+  last_load_crx_path_ = crx_path;
+  last_load_swbn_path_ = swbn_path;
+
+  std::move(callback).Run(prepare_diagnostics_app_result_);
+}
+
 bool FakeShimlessRmaDelegate::IsChromeOSSystemExtensionProvider(
     const std::string& manufacturer) {
   return is_chromeos_system_extension_provider_;

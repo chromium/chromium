@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
+#include "ash/webui/shimless_rma/3p_diagnostics/external_app_dialog.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
@@ -37,6 +38,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/version/version_loader.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -1509,6 +1511,73 @@ void ShimlessRmaService::OnGetSystemInfoFor3pDiag(
   }
 
   std::move(callback).Run(absl::nullopt);
+}
+
+void ShimlessRmaService::Show3pDiagnosticsApp(
+    Show3pDiagnosticsAppCallback callback) {
+  if (!shimless_app_browser_context_) {
+    RmadClient::Get()->GetInstalledDiagnosticsApp(
+        base::BindOnce(&ShimlessRmaService::GetInstalledDiagnosticsApp,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  ExternalAppDialog::InitParams params;
+  params.context = shimless_app_browser_context_;
+  params.app_name = shimless_3p_diag_app_name_;
+  params.content_url = GURL("isolated-app://" + shimless_3p_diag_iwa_id_->id());
+  ExternalAppDialog::Show(params);
+  std::move(callback).Run(
+      ash::shimless_rma::mojom::Show3pDiagnosticsAppResult::kOk);
+}
+
+void ShimlessRmaService::GetInstalledDiagnosticsApp(
+    Show3pDiagnosticsAppCallback callback,
+    absl::optional<rmad::GetInstalledDiagnosticsAppReply> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to call rmad::GetInstalledDiagnosticsApp";
+    std::move(callback).Run(
+        ash::shimless_rma::mojom::Show3pDiagnosticsAppResult::kFailedToLoad);
+    return;
+  }
+
+  switch (response->error()) {
+    case rmad::RmadErrorCode::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND:
+      std::move(callback).Run(ash::shimless_rma::mojom::
+                                  Show3pDiagnosticsAppResult::kAppNotInstalled);
+      return;
+    case rmad::RmadErrorCode::RMAD_ERROR_OK:
+      shimless_rma_delegate_->PrepareDiagnosticsAppBrowserContext(
+          base::FilePath{response->diagnostics_app_crx_path()},
+          base::FilePath{response->diagnostics_app_swbn_path()},
+          base::BindOnce(&ShimlessRmaService::On3pDiagnosticsAppLoadForShow,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    default:
+      LOG(ERROR) << "rmad::GetInstalledDiagnosticsApp returned "
+                 << response->error();
+      std::move(callback).Run(
+          ash::shimless_rma::mojom::Show3pDiagnosticsAppResult::kFailedToLoad);
+      return;
+  }
+}
+
+void ShimlessRmaService::On3pDiagnosticsAppLoadForShow(
+    Show3pDiagnosticsAppCallback callback,
+    base::expected<
+        ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult,
+        std::string> result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Failed to load 3p diag app: " << result.error();
+    std::move(callback).Run(
+        ash::shimless_rma::mojom::Show3pDiagnosticsAppResult::kFailedToLoad);
+    return;
+  }
+
+  shimless_app_browser_context_ = result.value().context;
+  shimless_3p_diag_iwa_id_ = result.value().iwa_id;
+  shimless_3p_diag_app_name_ = result.value().name;
+  Show3pDiagnosticsApp(std::move(callback));
 }
 
 }  // namespace shimless_rma

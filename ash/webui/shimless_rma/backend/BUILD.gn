@@ -55,6 +55,7 @@ source_set("unit_tests") {
     "//ash",
     "//ash:test_support",
     "//ash/public/cpp:cpp",
+    "//ash/webui/shimless_rma/3p_diagnostics",
     "//ash/webui/shimless_rma/mojom",
     "//base",
     "//base/test:test_support",

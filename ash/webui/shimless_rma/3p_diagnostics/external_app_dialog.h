@@ -60,6 +60,10 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
   // not ready.
   static content::WebContents* GetWebContents();
 
+  // Sets a callback to mock `Show` in test.
+  static void SetMockShowForTesting(
+      base::RepeatingCallback<void(const InitParams& params)> callback);
+
  protected:
   explicit ExternalAppDialog(const InitParams& params);
   ExternalAppDialog(const ExternalAppDialog&) = delete;
