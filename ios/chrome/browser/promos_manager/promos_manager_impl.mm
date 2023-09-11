@@ -540,14 +540,7 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
   auto compare_promo = [&impression_history](
                            std::pair<promos_manager::Promo, PromoContext> lhs,
                            std::pair<promos_manager::Promo, PromoContext> rhs) {
-    // Choice types are to be displayed first.
-    if (lhs.first == Promo::Choice) {
-      return true;
-    }
-    if (rhs.first == Promo::Choice) {
-      return false;
-    }
-    // PostRestoreDefaultBrowser comes next.
+    // PostRestoreDefaultBrowser comes first.
     if (lhs.first == Promo::PostRestoreDefaultBrowserAlert) {
       return true;
     }
@@ -561,6 +554,13 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
     }
     if (rhs.first == Promo::PostRestoreSignInFullscreen ||
         rhs.first == Promo::PostRestoreSignInAlert) {
+      return false;
+    }
+    // Choice screen promo comes next.
+    if (lhs.first == Promo::Choice) {
+      return true;
+    }
+    if (rhs.first == Promo::Choice) {
       return false;
     }
     // prefer the promo with pending state to the other without.

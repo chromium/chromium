@@ -674,8 +674,8 @@ TEST_F(PromosManagerImplTest,
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
-// Tests `SortPromos` sorts `Choice` promos before others and
-// `PostRestoreSignIn` next.
+// Tests `SortPromos` sorts `PostRestoreSignIn` promos before others and
+// `Choice` next.
 TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
   CreatePromosManager();
 
@@ -704,11 +704,11 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
   std::vector<promos_manager::Promo> sorted =
       promos_manager_->SortPromos(active_promos);
   EXPECT_EQ(sorted.size(), (size_t)5);
-  // Choice comes first
-  EXPECT_TRUE(sorted[0] == promos_manager::Promo::Choice);
   // tied for the type.
-  EXPECT_TRUE(sorted[1] == promos_manager::Promo::PostRestoreSignInFullscreen ||
-              sorted[1] == promos_manager::Promo::PostRestoreSignInAlert);
+  EXPECT_TRUE(sorted[0] == promos_manager::Promo::PostRestoreSignInFullscreen ||
+              sorted[0] == promos_manager::Promo::PostRestoreSignInAlert);
+  // Choice comes next
+  EXPECT_TRUE(sorted[2] == promos_manager::Promo::Choice);
   // with pending state, before the less recently shown promo (Test).
   EXPECT_EQ(sorted[3], promos_manager::Promo::DefaultBrowser);
   EXPECT_EQ(sorted[4], promos_manager::Promo::Test);
