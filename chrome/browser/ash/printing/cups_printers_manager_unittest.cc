@@ -53,6 +53,8 @@ using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
 using ::chromeos::PrinterSearchData;
 
+constexpr base::TimeDelta kMetricsDelayTimerInterval = base::Seconds(60);
+
 // Fake backend for EnterprisePrintersProvider.  This allows us to poke
 // arbitrary changes in the enterprise printer lists.
 class FakeEnterprisePrintersProvider : public EnterprisePrintersProvider {
@@ -1032,19 +1034,25 @@ TEST_F(CupsPrintersManagerTest, RecordTotalNetworkPrinterCounts) {
   manager_->SavePrinter(Printer("DiscoveredNetworkPrinter0"));
   usb_detector_->AddDetections({MakeDiscoveredPrinter("DiscoveredUSBPrinter"),
                                 MakeAutomaticPrinter("AutomaticUSBPrinter")});
+  task_environment_.FastForwardBy(kMetricsDelayTimerInterval);
+  histogram_tester.ExpectBucketCount("Printing.CUPS.TotalNetworkPrintersCount2",
+                                     0, 1);
   manager_->RecordNearbyNetworkPrinterCounts();
   task_environment_.RunUntilIdle();
-  histogram_tester.ExpectBucketCount("Printing.CUPS.TotalNetworkPrintersCount",
-                                     0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Printing.CUPS.TotalNetworkPrintersCount2.SettingsOpened", 0, 1);
   zeroconf_detector_->AddDetections(
       {MakeDiscoveredPrinter("DiscoveredNetworkPrinter0"),
        MakeDiscoveredPrinter("DiscoveredNetworkPrinter1"),
        MakeAutomaticPrinter("AutomaticNetworkPrinter0"),
        MakeAutomaticPrinter("AutomaticNetworkPrinter1")});
+  task_environment_.FastForwardBy(kMetricsDelayTimerInterval);
+  histogram_tester.ExpectBucketCount("Printing.CUPS.TotalNetworkPrintersCount2",
+                                     4, 1);
   manager_->RecordNearbyNetworkPrinterCounts();
   task_environment_.RunUntilIdle();
-  histogram_tester.ExpectBucketCount("Printing.CUPS.TotalNetworkPrintersCount",
-                                     4, 1);
+  histogram_tester.ExpectBucketCount(
+      "Printing.CUPS.TotalNetworkPrintersCount2.SettingsOpened", 4, 1);
 }
 
 // Test that RecordNearbyNetworkPrinterCounts logs the number of

@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/printing/automatic_usb_printer_configurer.h"
 #include "chrome/browser/ash/printing/cups_printer_status_creator.h"
 #include "chrome/browser/ash/printing/enterprise_printers_provider.h"
@@ -56,6 +57,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
+constexpr base::TimeDelta kMetricsDelayTimerInterval = base::Minutes(1);
 
 bool IsIppUri(const chromeos::Uri& uri) {
   return (uri.GetScheme() == chromeos::kIppScheme ||
@@ -118,7 +121,12 @@ class CupsPrintersManagerImpl
         usb_notification_controller_(std::move(usb_notification_controller)),
         print_servers_manager_(std::move(print_servers_manager)),
         enterprise_printers_provider_(std::move(enterprise_printers_provider)),
-        event_tracker_(event_tracker) {
+        event_tracker_(event_tracker),
+        nearby_printers_metric_delay_timer_(
+            FROM_HERE,
+            kMetricsDelayTimerInterval,
+            /*receiver=*/this,
+            &CupsPrintersManagerImpl::RecordTotalNearbyNetworkPrinterCounts) {
     auto_usb_printer_configurer_ =
         std::make_unique<AutomaticUsbPrinterConfigurer>(
             this, usb_notification_controller_.get(), ppd_provider_.get(),
@@ -311,6 +319,8 @@ class CupsPrintersManagerImpl
         break;
       case kZeroconfDetector:
         zeroconf_detections_ = printers;
+        // Start timer for recording the # of nearby printers.
+        nearby_printers_metric_delay_timer_.Reset();
         break;
       case kPrintServerDetector:
         servers_detections_ = printers;
@@ -448,8 +458,9 @@ class CupsPrintersManagerImpl
       }
     }
 
-    base::UmaHistogramCounts100("Printing.CUPS.TotalNetworkPrintersCount",
-                                total_network_printers_count);
+    base::UmaHistogramCounts100(
+        "Printing.CUPS.TotalNetworkPrintersCount2.SettingsOpened",
+        total_network_printers_count);
     base::UmaHistogramCounts100("Printing.CUPS.NearbyNetworkPrintersCount",
                                 nearby_zeroconf_printers_count);
   }
@@ -863,6 +874,11 @@ class CupsPrintersManagerImpl
     ResetNearbyPrintersLists();
   }
 
+  void RecordTotalNearbyNetworkPrinterCounts() {
+    base::UmaHistogramCounts100("Printing.CUPS.TotalNetworkPrintersCount2",
+                                zeroconf_detections_.size());
+  }
+
   SEQUENCE_CHECKER(sequence_);
 
   // Source lists for detected printers.
@@ -932,6 +948,10 @@ class CupsPrintersManagerImpl
 
   // Holds the current value of the pref |UserPrintersAllowed|.
   BooleanPrefMember user_printers_allowed_;
+
+  // Timer used to prevent the total nearby printers from immediately recording
+  // each time the mDNS reports printers.
+  base::DelayTimer nearby_printers_metric_delay_timer_;
 
   base::WeakPtrFactory<CupsPrintersManagerImpl> weak_ptr_factory_{this};
 };
