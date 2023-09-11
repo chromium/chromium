@@ -44,9 +44,10 @@ static_library("browser_sync") {
     "//components/sync_preferences",
     "//components/sync_sessions",
     "//components/sync_user_events",
+    "//components/url_formatter",
     "//components/version_info",
     "//components/version_info:generate_version_info",
-    "//net",
+    "//ui/base",
   ]
 
   if (is_chromeos_ash) {
