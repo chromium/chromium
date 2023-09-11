@@ -384,7 +384,9 @@ void PowerHandler::SendPowerSources() {
       "power-sources-changed", sources_list,
       base::Value(proto->external_power_source_id()),
       base::Value(proto->external_power() ==
-                  power_manager::PowerSupplyProperties_ExternalPower_USB));
+                  power_manager::PowerSupplyProperties_ExternalPower_USB),
+      base::Value(proto->external_power() ==
+                  power_manager::PowerSupplyProperties_ExternalPower_AC));
 }
 
 void PowerHandler::SendPowerManagementSettings(bool force) {

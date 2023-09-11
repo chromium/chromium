@@ -2532,13 +2532,14 @@ suite('SettingsDevicePage', function() {
      * @param {string} powerSourceId
      * @param {bool} isLowPowerCharger
      */
-    function setPowerSources(sources, powerSourceId, isLowPowerCharger) {
+    function setPowerSources(
+        sources, powerSourceId, isExternalPowerUSB, isExternalPowerAC) {
       const sourcesCopy = sources.map(function(source) {
         return Object.assign({}, source);
       });
       webUIListenerCallback(
           'power-sources-changed', sourcesCopy, powerSourceId,
-          isLowPowerCharger);
+          isExternalPowerUSB, isExternalPowerAC);
     }
 
     suite('power settings', function() {
@@ -2650,14 +2651,12 @@ suite('SettingsDevicePage', function() {
         };
         webUIListenerCallback(
             'battery-status-changed', Object.assign({}, batteryStatus));
-        setPowerSources([], '', false);
+        setPowerSources([], '', false, false);
         flush();
 
         // Power sources row is visible but dropdown is hidden.
         assertFalse(powerSourceRow.hidden);
         assertTrue(powerSourceSelect.hidden);
-        // Battery saver should be toggleable when not charging.
-        assertFalse(batterySaverToggle.disabled);
 
         // Attach a dual-role USB device.
         const powerSource = {
@@ -2665,33 +2664,27 @@ suite('SettingsDevicePage', function() {
           is_dedicated_charger: false,
           description: 'USB-C device',
         };
-        setPowerSources([powerSource], '', false);
+        setPowerSources([powerSource], '', false, false);
         flush();
 
         // "Battery" should be selected.
         assertFalse(powerSourceSelect.hidden);
         assertEquals('', powerSourceSelect.value);
-        // We are charging on a non-low power charger, battery saver should be
-        // grayed out.
-        assertTrue(batterySaverToggle.disabled);
 
         // Select the power source.
-        setPowerSources([powerSource], powerSource.id, true);
+        setPowerSources([powerSource], powerSource.id, true, false);
         flush();
         assertFalse(powerSourceSelect.hidden);
         assertEquals(powerSource.id, powerSourceSelect.value);
-        // Charging, but on a low-power charger, battery saver should be
-        // toggleable.
-        assertFalse(batterySaverToggle.disabled);
 
         // Send another power source; the first should still be selected.
         const otherPowerSource = Object.assign({}, powerSource);
         otherPowerSource.id = '3';
-        setPowerSources([otherPowerSource, powerSource], powerSource.id, true);
+        setPowerSources(
+            [otherPowerSource, powerSource], powerSource.id, true, false);
         flush();
         assertFalse(powerSourceSelect.hidden);
         assertEquals(powerSource.id, powerSourceSelect.value);
-        assertFalse(batterySaverToggle.disabled);
       });
 
       test('choose power source', function() {
@@ -2711,7 +2704,7 @@ suite('SettingsDevicePage', function() {
           is_dedicated_charger: false,
           description: 'USB-C device',
         };
-        setPowerSources([powerSource], '', false);
+        setPowerSources([powerSource], '', false, false);
         flush();
 
         // Select the device.
@@ -2731,7 +2724,7 @@ suite('SettingsDevicePage', function() {
         };
         webUIListenerCallback(
             'battery-status-changed', Object.assign({}, batteryStatus));
-        setPowerSources([], '', false);
+        setPowerSources([], '', false, false);
         flush();
 
         acIdleSelect =
@@ -3243,7 +3236,7 @@ suite('SettingsDevicePage', function() {
           statusText: '5 hours left',
         });
         // There are no power sources.
-        setPowerSources([], '', false);
+        setPowerSources([], '', false, false);
         // Battery saver feature is enabled.
         sendPowerManagementSettings(
             [
@@ -3266,6 +3259,18 @@ suite('SettingsDevicePage', function() {
         // Battery saver should be visible and toggleable.
         assertFalse(batterySaverToggle.hidden);
         assertFalse(batterySaverToggle.disabled);
+
+        // Connect a dedicated AC power adapter.
+        const mainsPowerSource = {
+          id: '1',
+          is_dedicated_charger: true,
+          description: 'USB-C device',
+        };
+        setPowerSources([mainsPowerSource], '1', false, true);
+
+        // Battery saver should be visible but not toggleable.
+        assertFalse(batterySaverToggle.hidden);
+        assertTrue(batterySaverToggle.disabled);
       });
 
       test('Battery Saver updates when pref updates', () => {
