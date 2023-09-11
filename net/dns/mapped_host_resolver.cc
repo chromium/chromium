@@ -43,13 +43,13 @@ MappedHostResolver::CreateRequest(
   switch (result) {
     case HostMappingRules::RewriteResult::kRewritten:
       DCHECK(rewritten_url.is_valid());
-      DCHECK_NE(rewritten_url.host_piece(), "~NOTFOUND");
+      DCHECK_NE(rewritten_url.host_piece(), "^NOTFOUND");
       return impl_->CreateRequest(url::SchemeHostPort(rewritten_url),
                                   std::move(network_anonymization_key),
                                   std::move(source_net_log),
                                   std::move(optional_parameters));
     case HostMappingRules::RewriteResult::kInvalidRewrite:
-      // Treat any invalid mapping as if it was "~NOTFOUND" (which should itself
+      // Treat any invalid mapping as if it was "^NOTFOUND" (which should itself
       // result in `kInvalidRewrite`).
       return CreateFailingRequest(ERR_NAME_NOT_RESOLVED);
     case HostMappingRules::RewriteResult::kNoMatchingRule:
@@ -68,8 +68,9 @@ MappedHostResolver::CreateRequest(
   HostPortPair rewritten = host;
   rules_.RewriteHost(&rewritten);
 
-  if (rewritten.host() == "~NOTFOUND")
+  if (rewritten.host() == "^NOTFOUND") {
     return CreateFailingRequest(ERR_NAME_NOT_RESOLVED);
+  }
 
   return impl_->CreateRequest(rewritten, network_anonymization_key,
                               source_net_log, optional_parameters);

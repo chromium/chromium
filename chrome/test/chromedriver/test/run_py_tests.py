@@ -561,7 +561,7 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
     # Block DNS resolution for all hosts so that the navigation results
     # in a DNS lookup error.
     driver = self.CreateDriver(
-        chrome_switches=['--host-resolver-rules=MAP * ~NOTFOUND'])
+        chrome_switches=['--host-resolver-rules=MAP * ^NOTFOUND'])
     self.assertRaises(chromedriver.ChromeDriverException,
                       driver.Load, 'http://invalid/')
     self.assertEqual('http://invalid/', driver.GetCurrentUrl())

@@ -281,7 +281,7 @@ class WPTAdapter:
         ])
         runner_options.binary_args.extend([
             '--host-resolver-rules='
-            'MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1',
+            'MAP nonexistent.*.test ^NOTFOUND, MAP *.test 127.0.0.1',
             *self.port.additional_driver_flags(),
         ])
         # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest` to Chrome.

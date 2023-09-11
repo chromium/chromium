@@ -41,7 +41,7 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
   //   "EXCLUDE" <hostname_pattern>
   //
   // The <replacement_host> can be either a hostname, or an IP address literal,
-  // or "~NOTFOUND". If it is "~NOTFOUND" then all matched hostnames will fail
+  // or "^NOTFOUND". If it is "^NOTFOUND" then all matched hostnames will fail
   // to be resolved with ERR_NAME_NOT_RESOLVED.
   //
   // Returns true if the rule was successfully parsed and added.

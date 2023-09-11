@@ -136,7 +136,7 @@ class PerfTest : public CronetTestBase,
 
     NSString* rules = base::SysUTF8ToNSString(
         base::StringPrintf("MAP test.example.com 127.0.0.1:%d,"
-                           "MAP notfound.example.com ~NOTFOUND",
+                           "MAP notfound.example.com ^NOTFOUND",
                            net::QuicSimpleTestServer::GetPort()));
     [Cronet setHostResolverRulesForTesting:rules];
     // This is the end of the behavior normally performed by StartCronet()

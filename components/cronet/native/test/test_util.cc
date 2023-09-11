@@ -58,7 +58,7 @@ Cronet_EnginePtr CreateTestEngine(int quic_server_port) {
   // Add Host Resolver Rules.
   std::string host_resolver_rules = base::StringPrintf(
       "MAP test.example.com 127.0.0.1:%d,"
-      "MAP notfound.example.com ~NOTFOUND",
+      "MAP notfound.example.com ^NOTFOUND",
       quic_server_port);
   Cronet_EngineParams_experimental_options_set(
       engine_params,

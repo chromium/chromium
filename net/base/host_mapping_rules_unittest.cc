@@ -177,11 +177,11 @@ TEST(HostMappingRulesTest, IgnoresInvalidReplacementUrls) {
   EXPECT_EQ(url, GURL("http://initial.test"));
 }
 
-// Remapping to "~NOTFOUND" is documented as a special case for
+// Remapping to "^NOTFOUND" is documented as a special case for
 // MappedHostResolver usage. Ensure that it is handled as invalid as expected.
 TEST(HostMappingRulesTest, NotFoundIgnoredAsInvalidUrl) {
   HostMappingRules rules;
-  rules.AddRuleFromString("MAP initial.test ~NOTFOUND");
+  rules.AddRuleFromString("MAP initial.test ^NOTFOUND");
 
   GURL url("http://initial.test");
   EXPECT_EQ(rules.RewriteUrl(url),

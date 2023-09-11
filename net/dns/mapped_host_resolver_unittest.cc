@@ -349,7 +349,7 @@ TEST(MappedHostResolverTest, MapToError) {
       std::make_unique<MappedHostResolver>(std::move(resolver_impl));
 
   // Remap *.google.com to resolving failures.
-  EXPECT_TRUE(resolver->AddRuleFromString("MAP *.google.com ~NOTFOUND"));
+  EXPECT_TRUE(resolver->AddRuleFromString("MAP *.google.com ^NOTFOUND"));
 
   // Try resolving www.google.com --> Should give an error.
   TestCompletionCallback callback1;
@@ -383,7 +383,7 @@ TEST(MappedHostResolverTest, MapHostWithSchemeToError) {
   // Create a remapped resolver that uses `resolver_impl`.
   auto resolver =
       std::make_unique<MappedHostResolver>(std::move(resolver_impl));
-  ASSERT_TRUE(resolver->AddRuleFromString("MAP host.test ~NOTFOUND"));
+  ASSERT_TRUE(resolver->AddRuleFromString("MAP host.test ^NOTFOUND"));
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(

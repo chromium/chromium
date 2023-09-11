@@ -41,7 +41,7 @@ class NET_EXPORT_PRIVATE HostMappingRules {
   // If `url` is rewritten, returns `kRewritten`. If no matching rule is found,
   // returns `kNoMatchingRule` and `url` is not modified. If a matching rule is
   // found but it results in an invalid URL, e.g. if the rule maps to
-  // "~NOTFOUND", returns `kInvalidRewrite` and `url` is not modified.
+  // "^NOTFOUND", returns `kInvalidRewrite` and `url` is not modified.
   RewriteResult RewriteUrl(GURL& url) const;
 
   // Adds a rule to this mapper. The format of the rule can be one of:

@@ -235,7 +235,7 @@ void WebTestBrowserMainRunner::Initialize() {
   command_line.AppendSwitch(switches::kEnablePreciseMemoryInfo);
 
   command_line.AppendSwitchASCII(network::switches::kHostResolverRules,
-                                 "MAP nonexistent.*.test ~NOTFOUND,"
+                                 "MAP nonexistent.*.test ^NOTFOUND,"
                                  "MAP web-platform.test:443 127.0.0.1:8444,"
                                  "MAP not-web-platform.test:443 127.0.0.1:8444,"
                                  "MAP devtools.test:443 127.0.0.1:8443,"
