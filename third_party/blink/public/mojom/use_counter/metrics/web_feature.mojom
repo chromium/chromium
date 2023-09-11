@@ -3992,6 +3992,7 @@ enum WebFeature {
   kFetchLaterInvokeStateActivated = 4652,
   kFetchLaterErrorUnknownBodyLength = 4653,
   kFetchLaterErrorQuotaExceeded = 4654,
+  kV8FileSystemHandle_GetCloudIdentifiers_Method = 4655,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
