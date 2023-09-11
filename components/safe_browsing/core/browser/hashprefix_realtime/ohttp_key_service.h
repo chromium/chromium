@@ -43,6 +43,24 @@ class OhttpKeyService : public KeyedService {
     base::Time expiration;
   };
 
+  // The reason that a key fetch is triggered.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FetchTriggerReason {
+    // The key fetch is triggered during hash real-time lookup because there is
+    // no available cached key.
+    kDuringHashRealTimeLookup = 0,
+    // The key fetch is triggered asynchronously by background scheduler.
+    kAsyncFetch = 1,
+    // The key fetch is triggered because the response from real-time lookup
+    // contains key related error code.
+    kKeyRelatedHttpErrorCode = 2,
+    // The key fetch is triggered because the response from real-time lookup
+    // contains key rotated header.
+    kKeyRotatedHeader = 3,
+    kMaxValue = kKeyRotatedHeader
+  };
+
   OhttpKeyService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service);
@@ -86,8 +104,8 @@ class OhttpKeyService : public KeyedService {
 
   // Starts to fetch a new key from the Safe Browsing key hosting endpoint. It
   // may be triggered by sync (|GetOhttpKey|) or async (|MaybeStartAsyncFetch|)
-  // workflows.
-  void StartFetch(Callback callback);
+  // workflows. |trigger_reason| is used for logging metrics.
+  void StartFetch(Callback callback, FetchTriggerReason trigger_reason);
 
   // Called when the response from the Safe Browsing key hosting endpoint is
   // received.
@@ -109,8 +127,9 @@ class OhttpKeyService : public KeyedService {
 
   // Server triggered workflow:
   // Starts a key fetch if the |previous_key| is different from |ohttp_key_| or
-  // the |ohttp_key_| is empty.
-  void MaybeStartServerTriggeredFetch(std::string previous_key);
+  // the |ohttp_key_| is empty. |trigger_reason| is used for logging metrics.
+  void MaybeStartServerTriggeredFetch(std::string previous_key,
+                                      FetchTriggerReason trigger_reason);
 
   // Pref functions:
   // Gets the key and expiration time from pref. If there is an unexpired key,

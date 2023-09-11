@@ -94443,6 +94443,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Not populated due to SB pref changing"/>
 </enum>
 
+<enum name="SafeBrowsingOhttpFetchKeyTriggerReason">
+  <int value="0" label="DuringHashRealTimeLookup"/>
+  <int value="1" label="AsyncFetch"/>
+  <int value="2" label="KeyRelatedHttpErrorCode"/>
+  <int value="3" label="KeyRotatedHeader"/>
+</enum>
+
 <enum name="SafeBrowsingPageLoadTokenClearReason">
   <int value="0" label="Safe Browsing state changed"/>
   <int value="1" label="Cookies deleted"/>

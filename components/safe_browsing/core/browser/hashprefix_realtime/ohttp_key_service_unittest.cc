@@ -9,6 +9,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -121,6 +122,7 @@ class OhttpKeyServiceTest : public ::testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestingPrefServiceSimple pref_service_;
   std::string key_param_;
+  base::HistogramTester histogram_tester_;
 
  private:
   hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding_;
@@ -145,6 +147,11 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
   EXPECT_EQ(pref_service_.GetTime(
                 prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime),
             base::Time::Now() + base::Days(7));
+
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
+      /*sample=*/OhttpKeyService::FetchTriggerReason::kDuringHashRealTimeLookup,
+      /*expected_count=*/1);
 }
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Failure) {
@@ -291,6 +298,10 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch) {
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
             original_expiration);
 
+  int32_t original_bucket_count = histogram_tester_.GetBucketCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
+      /*sample=*/OhttpKeyService::FetchTriggerReason::kAsyncFetch);
+
   task_environment_.FastForwardBy(base::Days(5));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
@@ -301,6 +312,11 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch) {
   // OHTTP key is extended by async fetch.
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
             original_expiration + base::Days(6));
+
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
+      /*sample=*/OhttpKeyService::FetchTriggerReason::kAsyncFetch,
+      /*expected_count=*/original_bucket_count + 1);
 }
 
 TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges) {
@@ -444,6 +460,11 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHint) {
             kTestOldOhttpKey);
 
   FastForwardAndVerifyKeyValue(kTestNewOhttpKey);
+
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
+      /*sample=*/OhttpKeyService::FetchTriggerReason::kKeyRotatedHeader,
+      /*expected_count=*/1);
 }
 
 TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHintOnDifferentKey) {
@@ -466,6 +487,7 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHintWithError) {
 
 TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_KeyRelatedHttpFailure) {
   SetupOldKeyAndPendingNewKey();
+  task_environment_.RunUntilIdle();
 
   ohttp_key_service_->NotifyLookupResponse(
       kTestOldOhttpKey, net::HTTP_UNPROCESSABLE_CONTENT, /*headers=*/nullptr);
@@ -473,6 +495,11 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_KeyRelatedHttpFailure) {
   EXPECT_FALSE(ohttp_key_service_->get_ohttp_key_for_testing().has_value());
 
   FastForwardAndVerifyKeyValue(kTestNewOhttpKey);
+
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
+      /*sample=*/OhttpKeyService::FetchTriggerReason::kKeyRelatedHttpErrorCode,
+      /*expected_count=*/1);
 }
 
 TEST_F(OhttpKeyServiceTest, Shutdown) {

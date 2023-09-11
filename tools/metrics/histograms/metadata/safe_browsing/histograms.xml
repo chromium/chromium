@@ -1313,6 +1313,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason"
+    enum="SafeBrowsingOhttpFetchKeyTriggerReason" expires_after="2024-03-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs how the key fetch is triggered. Logs whenever a key fetch request is
+    about to be attempted (either triggered by hash prefix lookup, asynchronous
+    workflow or server hint), which will not go through if the service is in
+    backoff mode.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.OhttpKeyService.HasCachedKey"
     enum="BooleanHasKey" expires_after="2024-02-04">
   <owner>xinghuilu@chromium.org</owner>
