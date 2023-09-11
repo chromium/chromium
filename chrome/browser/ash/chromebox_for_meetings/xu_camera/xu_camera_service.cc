@@ -511,7 +511,21 @@ void XuCameraService::GetDevicePath(
 
   content::RenderFrameHost* frame_host =
       content::RenderFrameHost::FromID(host_id);
+
+  if (frame_host == nullptr) {
+    VLOG(4) << __func__ << " frame_host == nullptr";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
   content::BrowserContext* browser_context = frame_host->GetBrowserContext();
+
+  if (browser_context == nullptr) {
+    VLOG(4) << __func__ << " browser_context == nullptr";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
   url::Origin security_origin = frame_host->GetLastCommittedOrigin();
   TranslateDeviceId(hashed_device_id, std::move(callback),
                     std::move(security_origin),
