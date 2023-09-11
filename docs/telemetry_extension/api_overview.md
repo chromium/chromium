@@ -165,7 +165,7 @@ and **events**.
 | Function Name | Definition | Permission needed to access | Released in `dpsl` version |
 ------------ | ------------- | ------------- | ------------- |
 | getAvailableRoutines | () => Promise<List<RoutineType\>\> | `os.diagnostics` | M96 |
-| getRoutineUpdate | (params: GetRoutineUpdateRequest) => Promise<GetRoutineUpdateResponse>\> | `os.diagnostics` | M96 |
+| getRoutineUpdate | (params: GetRoutineUpdateRequest) => Promise<GetRoutineUpdateResponse\> | `os.diagnostics` | M96 |
 | runAcPowerRoutine | (params: RunAcPowerRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M105 |
 | runAudioDriverRoutine | () => Promise<Routine\> | `os.diagnostics` | M117 |
 | runBatteryCapacityRoutine | () => Promise<Routine\> | `os.diagnostics` | M96 |
@@ -535,8 +535,8 @@ and **events**.
 | inputMute | boolean | Is the active input device mute or not |
 | underruns | number | Number of underruns |
 | severeUnderruns | number | Number of severe underruns |
-| outputNodes | Array<AudioOutputNodeInfo> | Output nodes |
-| inputNodes | Array<AudioInputNodeInfo> | Input nodes |
+| outputNodes | Array<AudioOutputNodeInfo\> | Output nodes |
+| inputNodes | Array<AudioInputNodeInfo\> | Input nodes |
 
 ### BatteryInfo
 | Property Name | Type | Description |
@@ -556,12 +556,17 @@ and **events**.
 | voltageMinDesign | number | Desired minimum output voltage |
 | voltageNow | number | Battery's voltage (V) |
 
-### BlockDeviceInfo
+### NonRemovableBlockDeviceInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | name | string | The name of the block device. |
 | type | string | The type of the block device, (e.g. "MMC", "NVMe" or "ATA"). |
 | size | number | The device size in bytes. |
+
+### NonRemovableBlockDeviceInfoResponse
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| deviceInfos | Array<NonRemovableBlockDeviceInfo\> | The list of block devices. |
 
 ### Enum CpuArchitectureEnum
 | Property Name |
@@ -574,13 +579,13 @@ and **events**.
 ### PhysicalCpuInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
-| logicalCpus | Array<LogicalCpuInfo> | Logical CPUs corresponding to this physical CPU |
+| logicalCpus | Array<LogicalCpuInfo\> | Logical CPUs corresponding to this physical CPU |
 | modelName | string | The CPU model name |
 
 ### LogicalCpuInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
-| cStates | Array<CpuCStateInfo> | Information about the logical CPU's time in various C-states |
+| cStates | Array<CpuCStateInfo\> | Information about the logical CPU's time in various C-states |
 | idleTimeMs | number | Idle time since last boot, in milliseconds |
 | maxClockSpeedKhz | number | The max CPU clock speed in kilohertz |
 | scalingCurrentFrequencyKhz | number | Current frequency the CPU is running at |
@@ -853,7 +858,7 @@ Source:
 | getBatteryInfo | () => Promise<BatteryInfo\> | `os.telemetry`, `os.telemetry.serial_number` for serial number field | M102 |
 | getStatefulPartitionInfo | () => Promise<StatefulPartitionInfo\> | `os.telemetry` | M105 |
 | getOsVersionInfo | () => Promise<OsVersionInfo\> | `os.telemetry` | M105 |
-| getNonRemovableBlockDevicesInfo | () => Promise<BlockDeviceInfo\> | `os.telemetry` | M108 |
+| getNonRemovableBlockDevicesInfo | () => Promise<NonRemovableBlockDeviceInfoResponse\> | `os.telemetry` | M108 |
 | getInternetConnectivityInfo | () => Promise<InternetConnectivityInfo\> | `os.telemetry`, `os.telemetry.network_info` for MAC address field | M108 - Mac address in M111 |
 | getTpmInfo | () => Promise<TpmInfo\> | `os.telemetry` | M108 |
 | getAudioInfo | () => Promise<AudioInfo\> | `os.telemetry` | M111 |
