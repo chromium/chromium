@@ -62,3 +62,9 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory());
 }
+
+// Create this service when the profile is created to support populating the
+// local map of plus addresses before the user interacts with the feature.
+bool PlusAddressServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}

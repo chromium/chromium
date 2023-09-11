@@ -38,6 +38,7 @@ class PlusAddressServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 #endif  // CHROME_BROWSER_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_FACTORY_H_
