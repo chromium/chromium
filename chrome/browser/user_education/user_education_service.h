@@ -9,6 +9,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_registry.h"
 
@@ -33,12 +34,16 @@ class UserEducationService : public KeyedService {
   user_education::FeaturePromoRegistry& feature_promo_registry() {
     return feature_promo_registry_;
   }
+  user_education::ProductMessagingController& product_messaging_controller() {
+    return product_messaging_controller_;
+  }
 
  private:
   user_education::TutorialRegistry tutorial_registry_;
   user_education::HelpBubbleFactoryRegistry help_bubble_factory_registry_;
   user_education::FeaturePromoRegistry feature_promo_registry_;
   BrowserTutorialService tutorial_service_;
+  user_education::ProductMessagingController product_messaging_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_USER_EDUCATION_SERVICE_H_

@@ -10554,6 +10554,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/user_education/help_bubble_factory_webui_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_handler_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_view_interactive_uitest.cc",
+        "../browser/ui/views/user_education/product_messaging_controller_interactive_uitest.cc",
         "../browser/ui/views/user_education/tutorial_interactive_uitest.cc",
         "interaction/interaction_sequence_interactive_uitest.cc",
         "interaction/interaction_test_util_browser_interactive_uitest.cc",
