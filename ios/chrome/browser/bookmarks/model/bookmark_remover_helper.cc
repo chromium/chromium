@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -63,8 +64,7 @@ void BookmarkRemoverHelper::RemoveAllUserBookmarksIOS(Callback completion) {
   bookmark_model_observations_.AddObservation(local_or_syncable_bookmark_model);
 
   bookmarks::BookmarkModel* account_bookmark_model =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browser_state_);
+      ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_);
   if (account_bookmark_model) {
     bookmark_model_observations_.AddObservation(account_bookmark_model);
   }

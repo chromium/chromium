@@ -21,7 +21,9 @@
 
 using bookmarks::BookmarkNode;
 
-BookmarkIOSUnitTestSupport::BookmarkIOSUnitTestSupport() = default;
+BookmarkIOSUnitTestSupport::BookmarkIOSUnitTestSupport(
+    bool wait_for_initialization)
+    : wait_for_initialization_(wait_for_initialization) {}
 BookmarkIOSUnitTestSupport::~BookmarkIOSUnitTestSupport() = default;
 
 void BookmarkIOSUnitTestSupport::SetUp() {
@@ -48,12 +50,14 @@ void BookmarkIOSUnitTestSupport::SetUp() {
   local_or_syncable_bookmark_model_ =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  bookmarks::test::WaitForBookmarkModelToLoad(
-      local_or_syncable_bookmark_model_);
+  if (wait_for_initialization_) {
+    bookmarks::test::WaitForBookmarkModelToLoad(
+        local_or_syncable_bookmark_model_);
+  }
   account_bookmark_model_ =
       ios::AccountBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  if (account_bookmark_model_) {
+  if (wait_for_initialization_ && account_bookmark_model_) {
     bookmarks::test::WaitForBookmarkModelToLoad(account_bookmark_model_);
   }
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());

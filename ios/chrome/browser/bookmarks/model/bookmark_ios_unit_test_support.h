@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_IOS_UNIT_TEST_SUPPORT_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_IOS_UNIT_TEST_SUPPORT_H_
 
-#import <Foundation/Foundation.h>
-
 #include <memory>
 #include <string>
 
@@ -28,7 +26,7 @@ class ManagedBookmarkService;
 // Provides common bookmark testing infrastructure.
 class BookmarkIOSUnitTestSupport : public PlatformTest {
  public:
-  BookmarkIOSUnitTestSupport();
+  explicit BookmarkIOSUnitTestSupport(bool wait_for_initialization = true);
   ~BookmarkIOSUnitTestSupport() override;
 
  protected:
@@ -48,6 +46,7 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   bookmarks::BookmarkModel* GetBookmarkModelForNode(
       const bookmarks::BookmarkNode* node);
 
+  const bool wait_for_initialization_;
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;

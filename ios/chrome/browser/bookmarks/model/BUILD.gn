@@ -91,6 +91,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bookmark_model_bridge_observer_unittest.mm",
+    "bookmark_remover_helper_unittest.cc",
     "bookmarks_utils_unittest.mm",
   ]
   deps = [
@@ -99,6 +100,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//components/bookmarks/test",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/test:test_support",
