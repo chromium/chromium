@@ -1192,7 +1192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SortOrderOnSessionStart.{TabletOrClamshell}"
-    enum="AppListSortOrder" expires_after="M112">
+    enum="AppListSortOrder" expires_after="M125">
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -2181,7 +2181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.Launcher.AppListSortClearAction.{TabletOrClamshell}"
-    enum="AppListOrderUpdateEvent" expires_after="M112">
+    enum="AppListOrderUpdateEvent" expires_after="M125">
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -2193,7 +2193,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.Launcher.DragReorderAnimationSmoothness.{TabletOrClamshell}"
-    units="%" expires_after="M112">
+    units="%" expires_after="M125">
   <owner>mmourgos@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -2205,7 +2205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.Launcher.ProductivityReorderAction.{TabletOrClamshell}"
-    enum="AppListSortOrder" expires_after="M112">
+    enum="AppListSortOrder" expires_after="M125">
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -2217,7 +2217,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.Launcher.ProductivityReorderAnimationSmoothness.{TabletOrClamshell}"
-    units="%" expires_after="M112">
+    units="%" expires_after="M125">
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
