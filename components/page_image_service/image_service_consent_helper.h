@@ -24,6 +24,8 @@ class ConsentThrottle;
 
 namespace page_image_service {
 
+enum class PageImageServiceConsentStatus;
+
 // Helper class that observes SyncService for when it is appropriate to fetch
 // images for synced entities that have been viewed in the past.
 class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
@@ -39,7 +41,8 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
   // If Sync downloads for `model_type_` have already been initialized, this
   // method calls `callback` synchronously with the result. If not, it will hold
   // the request up until the timeout for the consent helper to initialize.
-  void EnqueueRequest(base::OnceCallback<void(bool)> callback);
+  void EnqueueRequest(
+      base::OnceCallback<void(PageImageServiceConsentStatus)> callback);
 
  private:
   // Returns whether it is appropriate to fetch images for synced entities of
@@ -61,7 +64,8 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
 
   // Requests waiting for the consent throttle to initialize. Requests are
   // stored in the queue in order of their arrival.
-  std::vector<base::OnceCallback<void(bool)>> enqueued_request_callbacks_;
+  std::vector<base::OnceCallback<void(PageImageServiceConsentStatus)>>
+      enqueued_request_callbacks_;
 
   // Consent throttle to be used if sync service is not being directly observed.
   std::unique_ptr<unified_consent::ConsentThrottle> consent_throttle_;

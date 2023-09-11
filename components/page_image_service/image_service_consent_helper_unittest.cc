@@ -11,11 +11,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/page_image_service/features.h"
+#include "components/page_image_service/metrics_util.h"
 #include "components/sync/test/test_sync_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace page_image_service {
 namespace {
+
+using ::testing::ElementsAre;
 
 class ImageServiceConsentHelperTest : public testing::Test {
  public:
@@ -37,13 +41,11 @@ class ImageServiceConsentHelperTest : public testing::Test {
     test_sync_service_->FireStateChanged();
   }
 
-  bool GetResultSynchronously() {
-    absl::optional<bool> out_result;
-    consent_helper_->EnqueueRequest(
-        base::BindLambdaForTesting([&](bool result) { out_result = result; }));
-    EXPECT_TRUE(out_result.has_value())
-        << "The consent helper must have run the callback.";
-    return *out_result;
+  PageImageServiceConsentStatus GetResultSynchronously() {
+    PageImageServiceConsentStatus out_result;
+    consent_helper_->EnqueueRequest(base::BindLambdaForTesting(
+        [&](PageImageServiceConsentStatus result) { out_result = result; }));
+    return out_result;
   }
 
   void FastForwardBy(base::TimeDelta duration) {
@@ -67,44 +69,50 @@ class ImageServiceConsentHelperTest : public testing::Test {
 TEST_F(ImageServiceConsentHelperTest, EnabledAndDisabledRunSynchronously) {
   SetDownloadStatusAndFireNotification(
       syncer::SyncService::ModelTypeDownloadStatus::kError);
-  EXPECT_FALSE(GetResultSynchronously());
+  EXPECT_EQ(GetResultSynchronously(), PageImageServiceConsentStatus::kFailure);
 
   SetDownloadStatusAndFireNotification(
       syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
-  EXPECT_TRUE(GetResultSynchronously());
+  EXPECT_EQ(GetResultSynchronously(), PageImageServiceConsentStatus::kSuccess);
 }
 
 TEST_F(ImageServiceConsentHelperTest, ExpireOldRequests) {
   SetDownloadStatusAndFireNotification(
       syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
 
-  std::vector<bool> results;
-  consent_helper()->EnqueueRequest(base::BindLambdaForTesting(
-      [&](bool result) { results.push_back(result); }));
+  std::vector<PageImageServiceConsentStatus> results;
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+      }));
 
   EXPECT_TRUE(results.empty()) << "Callback should not be run immediately.";
   FastForwardBy(base::Seconds(3));
   EXPECT_TRUE(results.empty()) << "Callback should not be run after 3 seconds.";
 
   // Add another request while the first request is still pending.
-  consent_helper()->EnqueueRequest(base::BindLambdaForTesting(
-      [&](bool result) { results.push_back(result); }));
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+      }));
 
   FastForwardBy(base::Seconds(10));
   ASSERT_EQ(results.size(), 2U) << "Both callbacks should expire as false.";
-  EXPECT_FALSE(results[0]);
-  EXPECT_FALSE(results[1]);
+  EXPECT_THAT(results, ElementsAre(PageImageServiceConsentStatus::kTimedOut,
+                                   PageImageServiceConsentStatus::kTimedOut));
 
   // Enqueuing another one should restart the timer, which should expire after
   // a second delay of 10 seconds.
-  consent_helper()->EnqueueRequest(base::BindLambdaForTesting(
-      [&](bool result) { results.push_back(result); }));
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+      }));
   EXPECT_EQ(results.size(), 2U) << "Callback should not be run immediately.";
   FastForwardBy(base::Seconds(3));
   EXPECT_EQ(results.size(), 2U);
   FastForwardBy(base::Seconds(10));
   ASSERT_EQ(results.size(), 3U);
-  EXPECT_FALSE(results[2]);
+  EXPECT_EQ(results[2], PageImageServiceConsentStatus::kTimedOut);
 }
 
 TEST_F(ImageServiceConsentHelperTest, InitializationFulfillsAllQueuedRequests) {
@@ -112,36 +120,41 @@ TEST_F(ImageServiceConsentHelperTest, InitializationFulfillsAllQueuedRequests) {
       syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
 
   // Enqueue two requests, 2 seconds apart.
-  std::vector<bool> results;
-  consent_helper()->EnqueueRequest(base::BindLambdaForTesting(
-      [&](bool result) { results.push_back(result); }));
+  std::vector<PageImageServiceConsentStatus> results;
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+      }));
   ASSERT_TRUE(results.empty());
   FastForwardBy(base::Seconds(2));
-  consent_helper()->EnqueueRequest(base::BindLambdaForTesting(
-      [&](bool result) { results.push_back(result); }));
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+      }));
   ASSERT_TRUE(results.empty()) << "Still nothing should be run yet.";
 
   SetDownloadStatusAndFireNotification(
       syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
   ASSERT_EQ(results.size(), 2U)
       << "Requests should have been immediately fulfilled as true.";
-  EXPECT_TRUE(results[0]);
-  EXPECT_TRUE(results[1]);
+  EXPECT_THAT(results, ElementsAre(PageImageServiceConsentStatus::kSuccess,
+                                   PageImageServiceConsentStatus::kSuccess));
 }
 
 TEST_F(ImageServiceConsentHelperTest, InitializationDisabledCase) {
   SetDownloadStatusAndFireNotification(
       syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
 
-  std::vector<bool> results;
-  consent_helper()->EnqueueRequest(base::BindLambdaForTesting(
-      [&](bool result) { results.push_back(result); }));
+  std::vector<PageImageServiceConsentStatus> results;
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+      }));
   ASSERT_TRUE(results.empty());
 
   SetDownloadStatusAndFireNotification(
       syncer::SyncService::ModelTypeDownloadStatus::kError);
-  ASSERT_EQ(results.size(), 1U);
-  EXPECT_FALSE(results[0]);
+  EXPECT_THAT(results, ElementsAre(PageImageServiceConsentStatus::kFailure));
 }
 
 class ImageServiceConsentHelperDownloadStatusKillSwitchTest
@@ -162,13 +175,13 @@ TEST_F(ImageServiceConsentHelperDownloadStatusKillSwitchTest,
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kHistory});
   sync_service()->FireStateChanged();
-  EXPECT_TRUE(GetResultSynchronously());
+  EXPECT_EQ(GetResultSynchronously(), PageImageServiceConsentStatus::kSuccess);
 
   // Error notification would normally be false but we shouldn't be listening to
   // the download status.
   SetDownloadStatusAndFireNotification(
       syncer::SyncService::ModelTypeDownloadStatus::kError);
-  EXPECT_TRUE(GetResultSynchronously());
+  EXPECT_EQ(GetResultSynchronously(), PageImageServiceConsentStatus::kSuccess);
 }
 
 }  // namespace

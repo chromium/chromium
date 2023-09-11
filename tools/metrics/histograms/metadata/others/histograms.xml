@@ -9059,14 +9059,16 @@ chromium-metrics-reviews@google.com.
   <token key="ClientId" variants="PageImageServiceClientId"/>
 </histogram>
 
-<histogram name="PageImageService.ConsentSuccess{ClientId}"
-    enum="BooleanSuccess" expires_after="2024-02-20">
+<histogram name="PageImageService.ConsentStatus{ClientId}"
+    enum="PageImageServiceConsentStatus" expires_after="2024-02-20">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
-    Records whether the URL consent check was successfully passed for this
-    request.
+    Records the result of the URL consent check for this request.
+
+    Note that only success and failure are captured if the &quot;old&quot;
+    unified consent throttle is used.
   </summary>
   <token key="ClientId" variants="PageImageServiceClientId"/>
 </histogram>

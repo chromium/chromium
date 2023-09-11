@@ -92,16 +92,18 @@ class ImageServiceTest : public testing::Test {
         std::make_unique<TestSchemeClassifier>());
   }
 
-  bool GetConsentToFetchImageAwaitResult(mojom::ClientId client_id) {
-    bool out_consent = false;
+  PageImageServiceConsentStatus GetConsentStatusToFetchImageAwaitResult(
+      mojom::ClientId client_id) {
+    PageImageServiceConsentStatus out_status;
     base::RunLoop loop;
     image_service_->GetConsentToFetchImage(
-        client_id, base::BindLambdaForTesting([&](bool result) {
-          out_consent = result;
+        client_id,
+        base::BindLambdaForTesting([&](PageImageServiceConsentStatus status) {
+          out_status = status;
           loop.Quit();
         }));
     loop.Run();
-    return out_consent;
+    return out_status;
   }
 
   ImageServiceTest(const ImageServiceTest&) = delete;
@@ -156,25 +158,37 @@ TEST_F(ImageServiceTest, GetConsentToFetchImage) {
       syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
   test_sync_service_->FireStateChanged();
 
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Journeys));
-  EXPECT_FALSE(
-      GetConsentToFetchImageAwaitResult(mojom::ClientId::JourneysSidePanel));
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpRealbox));
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpQuests));
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Bookmarks));
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Journeys),
+            PageImageServiceConsentStatus::kTimedOut);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(
+                mojom::ClientId::JourneysSidePanel),
+            PageImageServiceConsentStatus::kTimedOut);
+  EXPECT_EQ(
+      GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::NtpRealbox),
+      PageImageServiceConsentStatus::kFailure);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::NtpQuests),
+            PageImageServiceConsentStatus::kTimedOut);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Bookmarks),
+            PageImageServiceConsentStatus::kTimedOut);
 
   test_sync_service_->SetDownloadStatusFor(
       {syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
       syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
   test_sync_service_->FireStateChanged();
 
-  EXPECT_TRUE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Journeys));
-  EXPECT_TRUE(
-      GetConsentToFetchImageAwaitResult(mojom::ClientId::JourneysSidePanel));
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Journeys),
+            PageImageServiceConsentStatus::kSuccess);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(
+                mojom::ClientId::JourneysSidePanel),
+            PageImageServiceConsentStatus::kSuccess);
   // NTP Realbox still false as it does not have an approved privacy model yet.
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpRealbox));
-  EXPECT_TRUE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpQuests));
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Bookmarks));
+  EXPECT_EQ(
+      GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::NtpRealbox),
+      PageImageServiceConsentStatus::kFailure);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::NtpQuests),
+            PageImageServiceConsentStatus::kSuccess);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Bookmarks),
+            PageImageServiceConsentStatus::kTimedOut);
 }
 
 TEST_F(ImageServiceTest, SyncInitialization) {

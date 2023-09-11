@@ -81676,6 +81676,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Optimization Guide"/>
 </enum>
 
+<enum name="PageImageServiceConsentStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed">The user is not consented to fetch images.</int>
+  <int value="2" label="Timed out">
+    An image was requested but the request to get the consent status timed out.
+  </int>
+</enum>
+
 <enum name="PageImageServiceResult">
   <int value="0" label="Success"/>
   <int value="1" label="Response missing">

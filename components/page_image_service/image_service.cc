@@ -218,7 +218,7 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
 
 void ImageService::GetConsentToFetchImage(
     mojom::ClientId client_id,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(PageImageServiceConsentStatus)> callback) {
   switch (client_id) {
     case mojom::ClientId::Journeys:
     case mojom::ClientId::JourneysSidePanel:
@@ -227,7 +227,7 @@ void ImageService::GetConsentToFetchImage(
     }
     case mojom::ClientId::NtpRealbox:
       // TODO(b/244507194): Figure out consent story for NTP realbox case.
-      return std::move(callback).Run(false);
+      return std::move(callback).Run(PageImageServiceConsentStatus::kFailure);
     case mojom::ClientId::Bookmarks: {
       return bookmarks_consent_helper_->EnqueueRequest(std::move(callback));
     }
@@ -238,13 +238,13 @@ void ImageService::OnConsentResult(mojom::ClientId client_id,
                                    const GURL& page_url,
                                    const mojom::Options& options,
                                    ResultCallback callback,
-                                   bool consent_is_enabled) {
-  base::UmaHistogramBoolean(kConsentSuccessHistogramName, consent_is_enabled);
-  base::UmaHistogramBoolean(std::string(kConsentSuccessHistogramName) + "." +
-                                ClientIdToString(client_id),
-                            consent_is_enabled);
+                                   PageImageServiceConsentStatus status) {
+  base::UmaHistogramEnumeration(kConsentStatusHistogramName, status);
+  base::UmaHistogramEnumeration(std::string(kConsentStatusHistogramName) + "." +
+                                    ClientIdToString(client_id),
+                                status);
 
-  if (!consent_is_enabled) {
+  if (status != PageImageServiceConsentStatus::kSuccess) {
     return std::move(callback).Run(GURL());
   }
 

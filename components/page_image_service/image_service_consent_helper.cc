@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "components/page_image_service/features.h"
+#include "components/page_image_service/metrics_util.h"
 #include "components/sync/service/sync_service.h"
 #include "components/unified_consent/consent_throttle.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -15,6 +16,13 @@ namespace page_image_service {
 namespace {
 
 constexpr base::TimeDelta kTimeout = base::Seconds(10);
+
+void RunConsentThrottleCallback(
+    base::OnceCallback<void(PageImageServiceConsentStatus)> callback,
+    bool success) {
+  std::move(callback).Run(success ? PageImageServiceConsentStatus::kSuccess
+                                  : PageImageServiceConsentStatus::kFailure);
+}
 
 }  // namespace
 
@@ -42,15 +50,18 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
 ImageServiceConsentHelper::~ImageServiceConsentHelper() = default;
 
 void ImageServiceConsentHelper::EnqueueRequest(
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(PageImageServiceConsentStatus)> callback) {
   if (consent_throttle_) {
-    consent_throttle_->EnqueueRequest(std::move(callback));
+    consent_throttle_->EnqueueRequest(
+        base::BindOnce(&RunConsentThrottleCallback, std::move(callback)));
     return;
   }
 
   absl::optional<bool> consent_status = GetConsentStatus();
   if (consent_status.has_value()) {
-    std::move(callback).Run(*consent_status);
+    std::move(callback).Run(*consent_status
+                                ? PageImageServiceConsentStatus::kSuccess
+                                : PageImageServiceConsentStatus::kFailure);
     return;
   }
 
@@ -74,7 +85,9 @@ void ImageServiceConsentHelper::OnStateChanged(
   }
 
   for (auto& request_callback : enqueued_request_callbacks_) {
-    std::move(request_callback).Run(*consent_status);
+    std::move(request_callback)
+        .Run(*consent_status ? PageImageServiceConsentStatus::kSuccess
+                             : PageImageServiceConsentStatus::kFailure);
   }
 
   enqueued_request_callbacks_.clear();
@@ -106,7 +119,7 @@ absl::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
 
 void ImageServiceConsentHelper::OnTimeoutExpired() {
   for (auto& request_callback : enqueued_request_callbacks_) {
-    std::move(request_callback).Run(false);
+    std::move(request_callback).Run(PageImageServiceConsentStatus::kTimedOut);
   }
   enqueued_request_callbacks_.clear();
 }
