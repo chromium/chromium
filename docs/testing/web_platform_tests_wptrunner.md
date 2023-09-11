@@ -33,7 +33,7 @@ The main differences between `run_web_tests.py` and `wptrunner` are that:
 First, build the [ninja target][1] for the product you wish to test:
 
 ``` sh
-autoninja -C out/Release chrome_wpt
+autoninja -C out/Release chrome_wpt_tests
 autoninja -C out/Release content_shell_wpt
 autoninja -C out/Release system_webview_wpt   # `android_webview`
 autoninja -C out/Release chrome_public_wpt    # `chrome_android` (Clank)

@@ -1095,24 +1095,7 @@ if (use_blink && !is_cronet_build) {
   }
 
   if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
-    script_test("webdriver_wpt_tests") {
-      script = "//third_party/blink/tools/run_wpt_tests.py"
-      args = [
-        "--product=chrome",
-        "--no-show-results",
-        "--zero-tests-executed-ok",
-        "--test-type=wdspec",
-      ]
-      data_deps = [
-        "//chrome:chrome",
-        "//chrome/test/chromedriver:chromedriver_server",
-        "//third_party/blink/tools:wpt_tests_isolate",
-      ]
-      if (is_win) {
-        data_deps += [ "//build/win:copy_cdb_to_output" ]
-      }
-    }
-    script_test("chrome_wpt") {
+    script_test("chrome_wpt_tests") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
         "--product=chrome",

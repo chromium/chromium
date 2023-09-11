@@ -221,8 +221,8 @@ directory.
 You can use the following commands to run them:
 
 ```bash
-autoninja -C out/Default webdriver_wpt_tests
-out/Default/bin/run_webdriver_wpt_tests -t Default webdriver/path/to/test/or/dir.py
+autoninja -C out/Default chrome_wpt_tests
+out/Default/bin/run_chrome_wpt_tests -t Default webdriver/path/to/test/or/dir.py
 ```
 
 This will invoke [`//third_party/blink/tools/run_wpt_tests.py`][1], a thin

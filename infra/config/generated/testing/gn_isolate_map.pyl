@@ -458,16 +458,8 @@
     "label": "//chrome/test:chromeos_integration_tests",
     "type": "windowed_test_launcher",
   },
-  "webdriver_wpt_tests": {
-    "label": "//:webdriver_wpt_tests",
-    "type": "generated_script",
-    "args": [
-      "--results-directory",
-      "${ISOLATED_OUTDIR}",
-    ],
-  },
-  "chrome_wpt": {
-    "label": "//:chrome_wpt",
+  "chrome_wpt_tests": {
+    "label": "//:chrome_wpt_tests",
     "type": "generated_script",
     "args": [
       "--results-directory",

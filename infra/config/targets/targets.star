@@ -576,17 +576,8 @@ targets.windowed_test_launcher(
 )
 
 targets.generated_script(
-    name = "webdriver_wpt_tests",
-    label = "//:webdriver_wpt_tests",
-    args = [
-        "--results-directory",
-        "${ISOLATED_OUTDIR}",
-    ],
-)
-
-targets.generated_script(
-    name = "chrome_wpt",
-    label = "//:chrome_wpt",
+    name = "chrome_wpt_tests",
+    label = "//:chrome_wpt_tests",
     args = [
         "--results-directory",
         "${ISOLATED_OUTDIR}",

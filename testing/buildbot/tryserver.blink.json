@@ -201,7 +201,10 @@
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
-        "isolate_name": "webdriver_wpt_tests",
+        "args": [
+          "--test-type=wdspec"
+        ],
+        "isolate_name": "chrome_wpt_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -218,9 +221,9 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 2
         },
-        "test_id_prefix": "ninja://:webdriver_wpt_tests/"
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
       }
     ]
   },
