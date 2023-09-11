@@ -646,7 +646,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1535753739390684432">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om voor te lezen' onderaan het scherm en markeer daarna de tekst.</translation>
 <translation id="1536754031901697553">Verbinding verbreken...</translation>
 <translation id="1537254971476575106">Volledig scherm vergroten</translation>
-<translation id="15373452373711364">Grote muisaanwijzer</translation>
+<translation id="15373452373711364">Grote cursor</translation>
 <translation id="1540605929960647700">Demomodus aanzetten</translation>
 <translation id="1541346352678737112">Geen netwerk gevonden</translation>
 <translation id="154198613844929213">{0,plural, =0{Deze gegevens worden nu verwijderd}=1{Deze gegevens worden over 1 seconde verwijderd}other{Deze gegevens worden over # seconden verwijderd}}</translation>
@@ -836,7 +836,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="167997285881077031">Spraakinstellingen voor tekst-naar-spraak</translation>
 <translation id="1680849702532889074">Er is een fout opgetreden tijdens de installatie van je Linux-app.</translation>
 <translation id="1682548588986054654">Nieuw incognitovenster</translation>
-<translation id="1682696837763999627">Grote muisaanwijzer</translation>
+<translation id="1682696837763999627">Grote cursor</translation>
 <translation id="1682867089915960590">Browsen met navigatietoetsen aanzetten?</translation>
 <translation id="1686550358074589746">Typen door te swipen aanzetten</translation>
 <translation id="168715261339224929">Zet de synchronisatie aan om al je bookmarks op al je apparaten te bekijken.</translation>
@@ -2035,7 +2035,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2663302507110284145">Taal</translation>
 <translation id="2665394472441560184">Een nieuw woord toevoegen</translation>
 <translation id="2665647207431876759">Verlopen</translation>
-<translation id="2665717534925640469">Deze pagina wordt nu op volledig scherm weergegeven en heeft je muisaanwijzer uitgezet.</translation>
+<translation id="2665717534925640469">Deze pagina wordt nu op volledig scherm weergegeven en heeft je cursor uitgezet.</translation>
 <translation id="2665919335226618153">Asjemenou! Er is iets misgegaan bij het formatteren.</translation>
 <translation id="2666247341166669829">Batterijniveau links: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> ondersteunde links openen.</translation>
@@ -2414,7 +2414,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2977480621796371840">Uit groep verwijderen</translation>
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
 <translation id="2979893796619951531">Site uitsluiten</translation>
-<translation id="2981113813906970160">Grote muisaanwijzer bekijken</translation>
+<translation id="2981113813906970160">Grote cursor bekijken</translation>
 <translation id="2981293774053328982">Dit bestand bevat malware die misschien een risico vormt voor je persoonlijke of socialmedia-accounts.</translation>
 <translation id="2983102365694924129">Gebaseerd op je activiteit op een site. Deze instelling staat uit.</translation>
 <translation id="2983373101216420412">Batterijniveau case: <ph name="PERCENTAGE" />%.</translation>
@@ -2540,7 +2540,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Tijdelijk geblokkeerd ter bescherming van je veiligheid</translation>
-<translation id="3083899879156272923">Scherm meebewegen met de muisaanwijzer midden op het scherm</translation>
+<translation id="3083899879156272923">Scherm meebewegen met de cursor midden op het scherm</translation>
 <translation id="3083998949001524405">Toestemming om cookies van derden te gebruiken</translation>
 <translation id="3084548735795614657">Neerzetten om te installeren</translation>
 <translation id="3084771660770137092">Chrome beschikt over onvoldoende geheugen of het webpaginaproces is om een andere reden beëindigd. Laad de pagina opnieuw of ga naar een andere pagina om door te gaan.</translation>
@@ -4848,7 +4848,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5097349930204431044">Sites die je bezoekt, kunnen vaststellen wat je leuk vindt en daarna advertenties voorstellen terwijl je verder browst.</translation>
 <translation id="5097649414558628673">Tool: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatisch klikken als de cursor stopt</translation>
-<translation id="5101839224773798795">Automatisch klikken wanneer de muisaanwijzer stopt</translation>
+<translation id="5101839224773798795">Automatisch klikken wanneer de cursor stopt</translation>
 <translation id="5106350808162641062">Verwijderen</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> staat onder toezicht van Family Link. Je kunt schoolaccounts toevoegen om toegang tot hulpbronnen van school te krijgen met ouderlijk toezicht.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> nooit tonen</translation>
@@ -6461,7 +6461,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6512808201725371249">Er is al een wachtwoord voor dit account opgeslagen in je Google Wachtwoordmanager (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome maakt gebruik van mobiele data als je geen verbinding hebt met een ander netwerk.</translation>
 <translation id="6514010653036109809">Beschikbaar apparaat:</translation>
-<translation id="6514565641373682518">Deze pagina heeft je muisaanwijzer uitgezet.</translation>
+<translation id="6514565641373682518">Deze pagina heeft je cursor uitgezet.</translation>
 <translation id="6517709704288360414">Je apparaat werkt misschien niet meer goed en je kunt beveiligings- en prestatieproblemen ondervinden. Als je updates uitzet, kan dit ook van invloed zijn op je recht op juridische eisen als je problemen ondervindt.</translation>
 <translation id="6518014396551869914">A&amp;fbeelding kopiëren</translation>
 <translation id="6518133107902771759">Controleren</translation>
@@ -7454,7 +7454,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7371917887111892735">Tabbladen krimpen tot de breedte van vastgezette tabbladen</translation>
 <translation id="7374376573160927383">USB-apparaten beheren</translation>
 <translation id="7376124766545122644">Kan deze link niet gebruiken. Check of je link begint met 'http://' of 'https://' als je het opnieuw wilt proberen.</translation>
-<translation id="7376553024552204454">De muisaanwijzer markeren terwijl deze beweegt</translation>
+<translation id="7376553024552204454">De cursor markeren terwijl deze beweegt</translation>
 <translation id="7377250337652426186">Als je meer dan 1 pagina wilt teruggaan, houd je de terugknop ingedrukt.</translation>
 <translation id="737728204345822099">Er kan een record van je bezoek aan deze site worden geregistreerd in je beveiligingssleutel.</translation>
 <translation id="7377451353532943397">Toegang tot sensoren blijven blokkeren</translation>
@@ -8541,7 +8541,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8261378640211443080">Deze extensie wordt niet vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en is mogelijk zonder je medeweten toegevoegd.</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8263336784344783289">Deze groep een naam geven</translation>
-<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> heeft je muisaanwijzer uitgezet.</translation>
+<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> heeft je cursor uitgezet.</translation>
 <translation id="8264024885325823677">Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="8264718194193514834">'<ph name="EXTENSION_NAME" />' heeft het volledige scherm geactiveerd.</translation>
 <translation id="8265018477030547118">Alleen op dit apparaat</translation>
@@ -8782,7 +8782,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8471959340398751476">Kortingen staan uit. Je kunt ze aanzetten via het menu Aanpassen.</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Je wachtwoorden zijn uniek}=1{{COUNT} hergebruikt wachtwoord}other{{COUNT} hergebruikte wachtwoorden}}</translation>
 <translation id="8472623782143987204">hardware-ondersteund</translation>
-<translation id="8473540203671727883">Spreek tekst onder de muisaanwijzer uit</translation>
+<translation id="8473540203671727883">Spreek tekst onder de cursor uit</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
 <translation id="8474733733775441349">Wachtwoorden van je Google-account tonen</translation>
 <translation id="8475313423285172237">Een ander programma op je computer heeft een extensie toegevoegd die de manier waarop Chrome werkt kan wijzigen.</translation>
@@ -8995,7 +8995,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8666321716757704924">Rechten opnieuw toegestaan voor <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">Over browsergebaseerde advertentiepersonalisatie</translation>
 <translation id="8667261224612332309">Je hebt wachtwoorden die kunnen worden verbeterd</translation>
-<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> is nu een volledig scherm en heeft je muisaanwijzer uitgezet.</translation>
+<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> is nu een volledig scherm en heeft je cursor uitgezet.</translation>
 <translation id="8667760277771450375">We testen nieuwe manieren om tracering op meerdere sites te voorkomen en tegelijkertijd te zorgen dat sites advertentiespam en fraude kunnen bestrijden.</translation>
 <translation id="8668378421690365723">Je apparaat werkt misschien niet meer goed en kan beveiligings- en prestatieproblemen ondervinden.</translation>
 <translation id="8669284339312441707">Warmer</translation>
