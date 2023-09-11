@@ -522,6 +522,13 @@ void PasswordManager::DropFormManagers() {
   predictions_.clear();
 }
 
+const std::vector<const PasswordForm*>* PasswordManager::GetBestMatches(
+    PasswordManagerDriver* driver,
+    autofill::FormRendererId form_id) {
+  PasswordFormManager* manager = GetMatchedManager(driver, form_id);
+  return manager ? &(manager->GetBestMatches()) : nullptr;
+}
+
 bool PasswordManager::IsPasswordFieldDetectedOnPage() const {
   return !form_managers_.empty();
 }

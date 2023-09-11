@@ -7,16 +7,19 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
-#import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -28,6 +31,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -41,8 +45,7 @@ using ReauthenticationEvent::kMissingPasscode;
 using ReauthenticationEvent::kSuccess;
 
 @interface PasswordSuggestionBottomSheetMediator () <WebStateListObserving,
-                                                     CRWWebStateObserver,
-                                                     PasswordFetcherDelegate>
+                                                     CRWWebStateObserver>
 
 // The object that provides suggestions while filling forms.
 @property(nonatomic, weak) id<FormInputSuggestionsProvider> suggestionsProvider;
@@ -52,9 +55,6 @@ using ReauthenticationEvent::kSuccess;
 
 // Default globe favicon when no favicon is available.
 @property(nonatomic, readonly) FaviconAttributes* defaultGlobeIconAttributes;
-
-// The password fetcher to query the user profile.
-@property(nonatomic, strong) PasswordFetcher* passwordFetcher;
 
 @end
 
@@ -148,22 +148,18 @@ using ReauthenticationEvent::kSuccess;
       self.suggestionsProvider = tabHelper->GetAccessoryViewProvider();
       DCHECK(self.suggestionsProvider);
 
+      __weak __typeof(self) weakSelf = self;
       [self.suggestionsProvider
           retrieveSuggestionsForForm:params
                             webState:activeWebState
             accessoryViewUpdateBlock:^(
                 NSArray<FormSuggestion*>* suggestions,
                 id<FormInputSuggestionsProvider> formInputSuggestionsProvider) {
-              self.suggestions = suggestions;
+              weakSelf.suggestions = suggestions;
+              [weakSelf fetchCredentialsForForm:params.unique_form_id
+                                       webState:activeWebState
+                                     webFrameId:params.frame_id];
             }];
-
-      // Fetch passwords related to the suggestions.
-      _credentials.clear();
-      self.passwordFetcher = [[PasswordFetcher alloc]
-          initWithProfilePasswordStore:_profilePasswordStore
-                  accountPasswordStore:_accountPasswordStore
-                              delegate:self
-                                   URL:url::Origin::Create(_URL).GetURL()];
     }
   }
   return self;
@@ -364,19 +360,6 @@ using ReauthenticationEvent::kSuccess;
   [self onWebStateChange];
 }
 
-#pragma mark - PasswordFetcherDelegate
-
-- (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
-      didFetchPasswords:
-          (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
-              passwords {
-  std::vector<password_manager::CredentialUIEntry> credentials;
-  for (const auto& form : passwords) {
-    credentials.push_back(password_manager::CredentialUIEntry(*form));
-  }
-  _credentials = credentials;
-}
-
 #pragma mark - Private
 
 - (void)onWebStateChange {
@@ -432,6 +415,43 @@ using ReauthenticationEvent::kSuccess;
 // Logs reauthentication events.
 - (void)logReauthEvent:(ReauthenticationEvent)event {
   base::UmaHistogramEnumeration("IOS.Reauth.Password.BottomSheet", event);
+}
+
+// Fetches all credentials for the current form.
+- (void)fetchCredentialsForForm:(autofill::FormRendererId)formId
+                       webState:(web::WebState*)webState
+                     webFrameId:(const std::string&)frameId {
+  _credentials.clear();
+
+  if (![self hasSuggestions]) {
+    return;
+  }
+
+  PasswordTabHelper* tabHelper = PasswordTabHelper::FromWebState(webState);
+  if (!tabHelper) {
+    return;
+  }
+
+  password_manager::PasswordManager* passwordManager =
+      tabHelper->GetPasswordManager();
+  CHECK(passwordManager);
+
+  web::WebFramesManager* webFramesManager =
+      AutofillBottomSheetJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          webState);
+  web::WebFrame* frame = webFramesManager->GetFrameWithId(frameId);
+
+  password_manager::PasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
+  const std::vector<const password_manager::PasswordForm*>* passwordForms =
+      passwordManager->GetBestMatches(driver, formId);
+  if (!passwordForms) {
+    return;
+  }
+
+  for (const auto* form : *passwordForms) {
+    _credentials.push_back(password_manager::CredentialUIEntry(*form));
+  }
 }
 
 @end

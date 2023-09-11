@@ -23,9 +23,9 @@ source_set("bottom_sheet") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/autofill/bottom_sheet",
-    "//ios/chrome/browser/autofill/manual_fill",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:password_controller_delegate",
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -38,6 +38,7 @@ source_set("bottom_sheet") {
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//ui/base",
     "//url",
   ]
