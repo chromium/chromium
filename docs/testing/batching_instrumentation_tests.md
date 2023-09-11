@@ -2,7 +2,7 @@
 
 ## What is Test Batching?
 
-Outside of Chromium, it most common to run all tests of a test suite using a
+Outside of Chromium, it is most common to run all tests of a test suite using a
 single `adb shell am instrument` command (a single execution / OS process).
 However, Chromium's test runner runs each test using a separate command, which
 means tests cannot interfere with one another, but also that tests take much
@@ -16,9 +16,10 @@ All on-device tests would ideally be annotated with one of:
 * `@Batch(Batch.PER_CLASS)`: For test classes where the process does need to be
   restarted between `@Test`s within the class.
 * `@DoNotBatch(reason="..."`: For tests classes that require the process to be
-  restarted for each test.
+  restarted for each test or are infeasible to batch.
 
-Tests that are not annotated are treated as `@DoNotBatch`.
+Tests that are not annotated are treated as `@DoNotBatch` and are assumed to
+have not yet been assessed.
 
 ## How to Batch a Test
 
@@ -59,12 +60,12 @@ to take advantage of feature annotations in your test you will have to use
 ### [PER_CLASS](https://source.chromium.org/chromium/chromium/src/+/main:base/test/android/javatests/src/org/chromium/base/test/util/Batch.java;bpv=1;bpt=1;l=39?q=Batch.java&ss=chromium%2Fchromium%2Fsrc&originalUrl=https:%2F%2Fcs.chromium.org%2F&gsn=PER_CLASS&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Djava%3Fpath%3Dorg.chromium.base.test.util.Batch%23780b702db42a1901f05647fd29f75d443bc4efd2db588848b4aedf826ddf9e21)
 
 This batching type is typically for larger and more complex test suites, and
-will run the suite in its own batch. This will reduce the complexity of managing
-and leaking state from these tests as you only have to think about tests within
-the suite. For smaller and less complex test suites, see Custom below.
+will run the suite in its own batch. This will limit side-effects and reduce
+the complexity of managing state from these tests as you only have to think
+about tests within the suite.
 
 Tests with different `@Features` annotations (`@EnableFeatures` and
-`@DisableFeatures`) will be run in separate batches.
+`@DisableFeatures`) or `@CommandLineFlags` will be run in separate batches.
 
 ### Custom
 
@@ -88,7 +89,10 @@ which shared state is relevant.
 ### Running Test Batches
 
 Run all tests with `@Batch=UnitTests`:
+
 ```shell
+out/<dir>/bin/run_chrome_public_unit_test_apk -A Batch=UnitTests
+
 out/<dir>/bin/run_chrome_public_test_apk -A Batch=UnitTests
 ```
 
