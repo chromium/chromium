@@ -318,6 +318,12 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
     return wgpu::TextureFormat::R8Unorm;
   } else if (format == viz::SinglePlaneFormat::kRG_88) {
     return wgpu::TextureFormat::RG8Unorm;
+  } else if (format == viz::SinglePlaneFormat::kR_16) {
+    return wgpu::TextureFormat::R16Unorm;
+  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
+    return wgpu::TextureFormat::R16Float;
+  } else if (format == viz::SinglePlaneFormat::kRG_1616) {
+    return wgpu::TextureFormat::RG16Unorm;
   } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     return wgpu::TextureFormat::RGBA16Float;
   } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
