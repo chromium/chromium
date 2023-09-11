@@ -42,6 +42,8 @@ class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
       const base::FilePath& crx_path,
       const base::FilePath& swbn_path,
       PrepareDiagnosticsAppBrowserContextCallback callback) override;
+  bool IsChromeOSSystemExtensionProvider(
+      const std::string& manufacturer) override;
 
   void SetQRCodeServiceForTesting(
       base::RepeatingCallback<

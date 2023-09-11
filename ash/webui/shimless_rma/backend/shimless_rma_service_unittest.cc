@@ -14,7 +14,7 @@
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
+#include "ash/webui/shimless_rma/backend/fake_shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom-shared.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/files/file_path.h"
@@ -107,28 +107,6 @@ class FakeRmadClientForTest : public FakeRmadClient {
   uint32_t record_browser_action_metric_counter_ = 0;
   bool metric_diagnostics = false;
   bool metric_os_update = false;
-};
-
-// A fake impl of ShimlessRmaDelegate.
-class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
- public:
-  FakeShimlessRmaDelegate() = default;
-
-  FakeShimlessRmaDelegate(const FakeShimlessRmaDelegate&) = delete;
-  FakeShimlessRmaDelegate& operator=(const FakeShimlessRmaDelegate&) = delete;
-
-  void ExitRmaThenRestartChrome() override {}
-  void ShowDiagnosticsDialog() override {}
-  void RefreshAccessibilityManagerProfile() override {}
-  void GenerateQrCode(const std::string& url,
-                      base::OnceCallback<void(const std::string& qr_code_image)>
-                          callback) override {
-    std::move(callback).Run(url);
-  }
-  void PrepareDiagnosticsAppBrowserContext(
-      const base::FilePath& crx_path,
-      const base::FilePath& swbn_path,
-      PrepareDiagnosticsAppBrowserContextCallback callback) override {}
 };
 
 // A fake DiagnosticsBrowserDelegate.
@@ -3428,8 +3406,9 @@ class FakeCalibrationObserver : public mojom::CalibrationObserver {
   }
 
   mojo::PendingRemote<mojom::CalibrationObserver> GenerateRemote() {
-    if (receiver.is_bound())
+    if (receiver.is_bound()) {
       receiver.reset();
+    }
 
     mojo::PendingRemote<mojom::CalibrationObserver> remote;
     receiver.Bind(remote.InitWithNewPipeAndPassReceiver());

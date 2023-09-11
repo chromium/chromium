@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -128,6 +129,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       CriticalErrorExitToLoginCallback callback) override;
   void CriticalErrorReboot(CriticalErrorRebootCallback callback) override;
   void ShutDownAfterHardwareError() override;
+  void Get3pDiagnosticsProvider(
+      Get3pDiagnosticsProviderCallback callback) override;
   void ObserveError(
       ::mojo::PendingRemote<mojom::ErrorObserver> observer) override;
   void ObserveOsUpdateProgress(
@@ -266,6 +269,11 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void OnQrCodeGenerated(
       GetRsuDisableWriteProtectChallengeQrCodeCallback callback,
       const std::string& qr_code_image);
+
+  // Handles the response from cros_healthd for 3p diag provider.
+  void OnGetSystemInfoFor3pDiag(
+      Get3pDiagnosticsProviderCallback callback,
+      ash::cros_healthd::mojom::TelemetryInfoPtr telemetry_info);
 
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>

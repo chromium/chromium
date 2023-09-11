@@ -790,6 +790,11 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * @return {!Promise<!{provider: !string}>}
+   */
+  get3pDiagnosticsProvider() {}
+
+  /**
    * Implements ShimlessRmaServiceInterface.ObserveError.
    * @param {!ErrorObserverRemote} remote
    */

@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
+#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "content/public/browser/web_ui.h"
@@ -106,6 +107,11 @@ void ChromeShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContext(
   CHECK(::ash::features::IsShimlessRMA3pDiagnosticsEnabled());
   PrepareDiagnosticsAppProfile(diagnostics_app_profile_helper_delegete_ptr_,
                                crx_path, swbn_path, std::move(callback));
+}
+
+bool ChromeShimlessRmaDelegate::IsChromeOSSystemExtensionProvider(
+    const std::string& manufacturer) {
+  return chromeos::IsChromeOSSystemExtensionProvider(manufacturer);
 }
 
 void ChromeShimlessRmaDelegate::

@@ -75,6 +75,10 @@ class ShimlessRmaDelegate {
       const base::FilePath& crx_path,
       const base::FilePath& swbn_path,
       PrepareDiagnosticsAppBrowserContextCallback callback) = 0;
+
+  // Check if `manufacturer` provides any chromeos system extension.
+  virtual bool IsChromeOSSystemExtensionProvider(
+      const std::string& manufacturer) = 0;
 };
 
 }  // namespace ash::shimless_rma

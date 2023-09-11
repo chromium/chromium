@@ -30,10 +30,14 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/version/version_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace ash {
@@ -1472,6 +1476,39 @@ void ShimlessRmaService::OsUpdateOrNextRmadStateCallback(
 void ShimlessRmaService::SetCriticalErrorOccurredForTest(
     bool critical_error_occurred) {
   critical_error_occurred_ = critical_error_occurred;
+}
+
+////////////////////////////////
+// Methods related to 3p diagnostics.
+void ShimlessRmaService::Get3pDiagnosticsProvider(
+    Get3pDiagnosticsProviderCallback callback) {
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetProbeService()
+      ->ProbeTelemetryInfo(
+          {ash::cros_healthd::mojom::ProbeCategoryEnum::kSystem},
+          base::BindOnce(&ShimlessRmaService::OnGetSystemInfoFor3pDiag,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ShimlessRmaService::OnGetSystemInfoFor3pDiag(
+    Get3pDiagnosticsProviderCallback callback,
+    ash::cros_healthd::mojom::TelemetryInfoPtr telemetry_info) {
+  if (!telemetry_info->system_result ||
+      !telemetry_info->system_result->is_system_info() ||
+      !telemetry_info->system_result->get_system_info()->os_info->oem_name) {
+    LOG(ERROR) << "Failed to get oem name from cros_healthd";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  const std::string& oem_name = telemetry_info->system_result->get_system_info()
+                                    ->os_info->oem_name.value();
+  if (shimless_rma_delegate_->IsChromeOSSystemExtensionProvider(oem_name)) {
+    std::move(callback).Run(oem_name);
+    return;
+  }
+
+  std::move(callback).Run(absl::nullopt);
 }
 
 }  // namespace shimless_rma

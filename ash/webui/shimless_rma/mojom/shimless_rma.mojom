@@ -799,6 +799,17 @@ interface ShimlessRmaService {
   CriticalErrorReboot() => (RmadErrorCode error);
 
   ///////////////////////////////////////
+  // Methods for 3p diagnostics
+  //
+  // Third-party (3p) diagnostics is diagnostics features provided by device
+  // manufacturer. These methods are related to loading and showing the
+  // 3p diagnostics to users.
+  //
+  // Get the 3p diagnostics provider name. It is the manufacturer of this device
+  // if the manufacturer provides any 3p diagnostics app.
+  Get3pDiagnosticsProvider() => (string? provider);
+
+  ///////////////////////////////////////
   // Observers
   //
   // Registers an observer for any out of band error that occurs, such as a
