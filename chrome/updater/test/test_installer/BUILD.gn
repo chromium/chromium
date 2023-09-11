@@ -62,23 +62,39 @@ if (is_win) {
       ]
       deps = [ ":test_installer" ]
     }
+  }
+
+  if (host_os == "win" && !is_debug) {
+    test_app_installer("app1") {
+      setup_script = "test_app1_setup.py"
+    }
+
+    test_app_installer("app2") {
+      setup_script = "test_app2_setup.cmd"
+    }
+  } else {
+    copy("test_app2_installer") {
+      sources =
+          [ "//chrome/updater/test/data/test_installer/Testapp2Setup.exe" ]
+      outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+    }
+  }
+
+  template("test_app_installer_crx") {
+    testonly = true
+    app_name = "test_" + target_name
+    inputs = [ "$root_build_dir/test_installer/" + invoker.setup_name + ".exe" ]
+    deps = [ ":" + app_name + "_installer" ]
 
     crx3(app_name + "_installer_crx") {
       base_dir = "$root_build_dir/test_installer"
       key = "//chrome/updater/test/data/selfupdate_test_key.der"
-      output = "$root_build_dir/test_installer/" + setup_name + ".crx3"
-
-      inputs = [ output_installer ]
-      deps = [ ":" + app_name + "_installer" ]
+      output = "$root_build_dir/test_installer/" + invoker.setup_name + ".crx3"
     }
   }
 
-  test_app_installer("app1") {
-    setup_script = "test_app1_setup.py"
-  }
-
-  test_app_installer("app2") {
-    setup_script = "test_app2_setup.cmd"
+  test_app_installer_crx("app2") {
+    setup_name = "Testapp2Setup"
   }
 
   template("test_msi_installer") {

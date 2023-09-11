@@ -1644,7 +1644,7 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
   static constexpr char kAppId1[] = "test1";
   static constexpr char kAppId2[] = "test2";
   static constexpr char kAppId3[] = "test3";
-  static constexpr char kAppCRX[] = "TestApp2Setup.crx3";
+  static constexpr char kAppCRX[] = "Testapp2Setup.crx3";
 };
 
 TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
