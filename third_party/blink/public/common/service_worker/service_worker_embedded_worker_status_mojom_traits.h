@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_EMBEDDED_WORKER_STATUS_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_EMBEDDED_WORKER_STATUS_MOJOM_TRAITS_H_
 
-#include "mojo/public/cpp/bindings/struct_traits.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
+#include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_embedded_worker_status.mojom-shared.h"
 
