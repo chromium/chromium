@@ -261,11 +261,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   _model = model;
   if (_model) {
     [self initializeModel];
-    [self updateModel];
+    [self updateModelItemsState];
     // Any state that is required for re-ordering the menu overall (e.g. badges)
     // must be ready by this point. After this, the only order-based changes
     // that will be observed are those that show/hide whole destinations.
     [_menuOrderer reorderDestinationsForInitialMenu];
+    [self updateModel];
   }
 }
 
@@ -1193,47 +1194,18 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Updates the model to match the current page state.
 - (void)updateModel {
+  // First update the items' states, and then update all the orders.
+  [self updateModelItemsState];
+  [self updateModelOrdering];
+}
+
+// Updates the state of the individual model items (actions, destinations,
+// group footers).
+- (void)updateModelItemsState {
   // If the model hasn't been created, there's no need to update.
   if (!self.model) {
     return;
   }
-
-  [self.menuOrderer updateDestinations];
-
-  NSMutableArray<OverflowMenuAction*>* appActions =
-      [[NSMutableArray alloc] init];
-
-  // The reload/stop action is only shown when the reload button is not in the
-  // toolbar. The reload button is shown in the toolbar when the toolbar is not
-  // split.
-  if (IsSplitToolbarMode(self.baseViewController)) {
-    OverflowMenuAction* reloadStopAction =
-        ([self isPageLoading]) ? self.stopLoadAction : self.reloadAction;
-    [appActions addObject:reloadStopAction];
-  }
-
-  [appActions
-      addObjectsFromArray:@[ self.openTabAction, self.openIncognitoTabAction ]];
-
-  if (base::ios::IsMultipleScenesSupported()) {
-    [appActions addObject:self.openNewWindowAction];
-  }
-
-  self.appActionsGroup.actions = appActions;
-
-  [self.menuOrderer updatePageActions];
-
-  NSMutableArray<OverflowMenuAction*>* helpActions =
-      [[NSMutableArray alloc] init];
-
-  if (ios::provider::IsUserFeedbackSupported()) {
-    [helpActions addObject:self.reportIssueAction];
-  }
-
-  [helpActions addObject:self.helpAction];
-  [helpActions addObject:self.shareChromeAction];
-
-  self.helpActionsGroup.actions = helpActions;
 
   bool hasMachineLevelPolicies =
       _browserPolicyConnector &&
@@ -1284,6 +1256,51 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       IsIncognitoModeForced(self.browserStatePrefs);
   self.openIncognitoTabAction.enterpriseDisabled =
       IsIncognitoModeDisabled(self.browserStatePrefs);
+}
+
+// Updates the order of the items in each section or group.
+- (void)updateModelOrdering {
+  // If the model hasn't been created, there's no need to update.
+  if (!self.model) {
+    return;
+  }
+
+  [self.menuOrderer updateDestinations];
+
+  NSMutableArray<OverflowMenuAction*>* appActions =
+      [[NSMutableArray alloc] init];
+
+  // The reload/stop action is only shown when the reload button is not in the
+  // toolbar. The reload button is shown in the toolbar when the toolbar is not
+  // split.
+  if (IsSplitToolbarMode(self.baseViewController)) {
+    OverflowMenuAction* reloadStopAction =
+        ([self isPageLoading]) ? self.stopLoadAction : self.reloadAction;
+    [appActions addObject:reloadStopAction];
+  }
+
+  [appActions
+      addObjectsFromArray:@[ self.openTabAction, self.openIncognitoTabAction ]];
+
+  if (base::ios::IsMultipleScenesSupported()) {
+    [appActions addObject:self.openNewWindowAction];
+  }
+
+  self.appActionsGroup.actions = appActions;
+
+  [self.menuOrderer updatePageActions];
+
+  NSMutableArray<OverflowMenuAction*>* helpActions =
+      [[NSMutableArray alloc] init];
+
+  if (ios::provider::IsUserFeedbackSupported()) {
+    [helpActions addObject:self.reportIssueAction];
+  }
+
+  [helpActions addObject:self.helpAction];
+  [helpActions addObject:self.shareChromeAction];
+
+  self.helpActionsGroup.actions = helpActions;
 }
 
 // Returns whether the page can be manually translated. If `forceMenuLogging` is
