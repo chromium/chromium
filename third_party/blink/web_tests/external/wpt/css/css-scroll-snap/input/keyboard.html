@@ -14,6 +14,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
 <script src="../support/common.js"></script>
 
 
@@ -46,8 +47,9 @@ function ScrollCounter(test, eventTarget) {
 async function initializeScrollPosition(scroller, x, y) {
   return new Promise(async (resolve) => {
     if (scroller.scrollLeft != x || scroller.scrollTop != y) {
+      const scrollEndPromise = waitForScrollEnd(scroller);
       scroller.scrollTo(x, y);
-      await waitForScrollEnd(scroller);
+      await scrollEndPromise;
     }
     resolve();
   });
@@ -57,8 +59,9 @@ promise_test(async t => {
   await initializeScrollPosition(scroller, 0, 0);
   assert_equals(scroller.scrollTop, 0, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
+  const scrollEndPromise = waitForScrollEnd(scroller);
   await keyPress(scroller, "ArrowDown");
-  await waitForScrollEnd(scroller);
+  await scrollEndPromise;
   assert_equals(scroller.scrollTop, 400);
   // Make sure we don't jump directly to the new snap position.
   assert_greater_than(scrollCounter.count, 1);
@@ -68,8 +71,9 @@ promise_test(async t => {
   await initializeScrollPosition(scroller, 0, 400);
   assert_equals(scroller.scrollTop, 400, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
+  const scrollEndPromise = waitForScrollEnd(scroller);
   await keyPress(scroller, "ArrowUp");
-  await waitForScrollEnd(scroller);
+  await scrollEndPromise;
   assert_equals(scroller.scrollTop, 0);
   // Make sure we don't jump directly to the new snap position.
   assert_greater_than(scrollCounter.count, 1);
@@ -79,8 +83,9 @@ promise_test(async t => {
   await initializeScrollPosition(scroller, 0, 0);
   assert_equals(scroller.scrollTop, 0, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
+  const scrollEndPromise = waitForScrollEnd(scroller);
   await keyPress(scroller, "ArrowRight");
-  await waitForScrollEnd(scroller);
+  await scrollEndPromise;
   assert_equals(scroller.scrollLeft, 400);
   // Make sure we don't jump directly to the new snap position.
   assert_greater_than(scrollCounter.count, 1);
@@ -90,8 +95,9 @@ promise_test(async t => {
   await initializeScrollPosition(scroller, 400, 0);
   assert_equals(scroller.scrollLeft, 400, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
+  const scrollEndPromise = waitForScrollEnd(scroller);
   await keyPress(scroller, "ArrowLeft");
-  await waitForScrollEnd(scroller);
+  await scrollEndPromise;
   assert_equals(scroller.scrollLeft, 0);
   // Make sure we don't jump directly to the new snap position.
   assert_greater_than(scrollCounter.count, 1);
@@ -110,8 +116,9 @@ promise_test(async t => {
   topRight.style.left = "500px";
   await initializeScrollPosition(scroller, 0, 0);
   assert_equals(scroller.scrollLeft, 0, "verify test pre-condition");
+  const scrollEndPromise = waitForScrollEnd(scroller);
   await keyPress(scroller, "ArrowRight");
-  await waitForScrollEnd(scroller);
+  await scrollEndPromise;
   assert_between_exclusive(scroller.scrollLeft, 0, 500);
 }, "If the original intended offset is valid as making a snap area cover the"
 + "snapport, and there's no other snap offset in between, use the original"
@@ -131,8 +138,9 @@ promise_test(async t => {
   topRight.style.scrollSnapStop = "always";
   await initializeScrollPosition(scroller, 0, 0);
   assert_equals(scroller.scrollLeft, 0, "verify test pre-condition");
+  const scrollEndPromise = waitForScrollEnd(scroller);
   await keyPress(scroller, "ArrowRight");
-  await waitForScrollEnd(scroller);
+  await scrollEndPromise;
   assert_equals(scroller.scrollLeft, 20);
 }, "If the original intended offset is valid as making a snap area cover the "
 + "snapport, but there's a defined snap offset in between, use the defined snap"
@@ -141,7 +149,7 @@ promise_test(async t => {
 promise_test(async t => {
   await initializeScrollPosition(scroller, 400, 0);
   await keyPress(scroller, "ArrowRight");
-  await waitForScrollEnd(scroller);
+  await waitForScrollStop(scroller);
   assert_equals(scroller.scrollLeft, 400);
 }, "If there is no valid snap offset on the arrow key's direction other than "
 + "the current offset, and the scroll-snap-type is mandatory, stay at the "
@@ -164,8 +172,9 @@ promise_test(async t => {
 
   await initializeScrollPosition(scroller, 400, 0);
   assert_equals(scroller.scrollLeft, 400, "verify test pre-condition");
+  const scrollEndPromise = waitForScrollEnd(scroller);
   await keyPress(scroller, "ArrowRight");
-  await waitForScrollEnd(scroller);
+  await scrollEndPromise;
   assert_greater_than(scroller.scrollLeft, 400);
 }, "If there is no valid snap offset on the arrow key's direction other than "
 + "the current offset, and the scroll-snap-type is proximity, go to the "
