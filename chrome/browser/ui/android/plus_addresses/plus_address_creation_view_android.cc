@@ -1,0 +1,48 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
+
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationViewBridge_jni.h"
+#include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/android/view_android.h"
+#include "ui/android/window_android.h"
+
+namespace plus_addresses {
+PlusAddressCreationViewAndroid::PlusAddressCreationViewAndroid(
+    base::WeakPtr<PlusAddressCreationController> controller,
+    content::WebContents* web_contents)
+    : controller_(controller), web_contents_(web_contents) {}
+
+PlusAddressCreationViewAndroid::~PlusAddressCreationViewAndroid() = default;
+
+void PlusAddressCreationViewAndroid::Show() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  java_object_.Reset(Java_PlusAddressCreationViewBridge_create(
+      env, reinterpret_cast<intptr_t>(this)));
+  Java_PlusAddressCreationViewBridge_show(
+      env, java_object_,
+      web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
+}
+
+void PlusAddressCreationViewAndroid::OnConfirmed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  controller_->OnConfirmed();
+}
+
+void PlusAddressCreationViewAndroid::OnCanceled(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  controller_->OnCanceled();
+}
+
+void PlusAddressCreationViewAndroid::PromptDismissed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  controller_->OnDialogDestroyed();
+}
+}  // namespace plus_addresses
