@@ -98,11 +98,12 @@ export class RemoteCall {
       }
       window.currentStep = new Promise(resolve => {
         finishCurrentStep = () => {
+          console.groupEnd();
           window.currentStep = null;
           resolve();
         };
       });
-      console.info('Executing: ' + func + ' on ' + appId + ' with args: ');
+      console.group('Executing: ' + func + ' on ' + appId + ' with args: ');
       console.info(args);
       if (window.autostep !== true) {
         await new Promise((onFulfilled) => {
