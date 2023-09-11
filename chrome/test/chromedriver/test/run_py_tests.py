@@ -11,13 +11,13 @@
 # TODO (crbug.com/857239): Remove above comment when adb version
 # is updated in Devil.
 
+import argparse
 import base64
 import codecs
 import http.client
 import imghdr
 import json
 import math
-import optparse
 import os
 import re
 import shutil
@@ -6839,42 +6839,40 @@ class ZChromeStartRetryCountTest(unittest.TestCase):
                       ', \n'.join(chromedriver.ChromeDriver.retried_tests))
 
 if __name__ == '__main__':
-  parser = optparse.OptionParser()
-  parser.add_option(
-      '', '--chromedriver',
-      help='Path to chromedriver server (REQUIRED!)')
-  parser.add_option(
-      '', '--log-path',
-      help='Output verbose server logs to this file')
-  parser.add_option(
-      '', '--replayable',
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--chromedriver',
+                      help='Path to chromedriver server (REQUIRED!)')
+  parser.add_argument('--log-path',
+                      help='Output verbose server logs to this file')
+  parser.add_argument(
+      '--replayable',
       help="Don't truncate long strings in the log so that the log can be "
-          "replayed.")
-  parser.add_option(
-      '', '--chrome', help='Path to a build of the chrome binary')
-  parser.add_option(
-      '', '--filter', type='string', default='',
+      "replayed.")
+  parser.add_argument('--chrome', help='Path to a build of the chrome binary')
+  parser.add_argument(
+      '--filter',
+      default='',
       help='Filter for specifying what tests to run, \"*\" will run all,'
       'including tests excluded by default. E.g., *testRunMethod')
-  parser.add_option(
-      '', '--android-package',
-      help=('Android package key. Possible values: ' +
-            str(list(_ANDROID_NEGATIVE_FILTER.keys()))))
+  parser.add_argument('--android-package',
+                      help=('Android package key. Possible values: ' +
+                            str(list(_ANDROID_NEGATIVE_FILTER.keys()))))
 
-  parser.add_option(
-      '', '--isolated-script-test-output',
-      help='JSON output file used by swarming')
-  parser.add_option(
-      '', '--test-type',
+  parser.add_argument('--isolated-script-test-output',
+                      help='JSON output file used by swarming')
+  parser.add_argument(
+      '--test-type',
       help='Select type of tests to run. Possible value: integration')
-  parser.add_option(
-      '', '--vendor',
+  parser.add_argument(
+      '--vendor',
       help='Vendor id for vendor specific tests. Defaults to "goog"')
-  parser.add_option(
-      '', '--disable-build-check', action='store_true', default=False,
+  parser.add_argument(
+      '--disable-build-check',
+      action='store_true',
+      default=False,
       help='Allow ChromeDriver to run with an incompatible Chrome version')
 
-  options, args = parser.parse_args()
+  options = parser.parse_args()
 
   if options.chromedriver is None:
     parser.error('--chromedriver is required.\n' +
