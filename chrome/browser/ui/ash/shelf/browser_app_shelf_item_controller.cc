@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/grit/theme_resources.h"
@@ -66,6 +67,13 @@ BrowserAppShelfItemController::BrowserAppShelfItemController(
 
 BrowserAppShelfItemController::~BrowserAppShelfItemController() = default;
 
+// This function is responsible for handling mouse and key events that are
+// triggered when Lacros is the Chrome browser and when (1) the Lacros browser
+// icon or (2) an Ash-backed SWA icon or (3) a Lacros-backed PWA icon on the
+// shelf is clicked, or when the Alt+N accelerator is triggered for the said
+// Lacros/SWA/PWA. For Ash-chrome please refer to
+// BrowserShortcutShelfItemController. For SWA and PWA when Lacros is disabled
+// please refer to AppShortcutShelfItemController.
 void BrowserAppShelfItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,
     int64_t display_id,
@@ -73,6 +81,67 @@ void BrowserAppShelfItemController::ItemSelected(
     ItemSelectedCallback callback,
     const ItemFilterPredicate& filter_predicate) {
   auto instances = GetMatchingInstances(filter_predicate);
+  // Here we check the implicit assumption that the type of the event that gets
+  // passed in is never ui::ET_KEY_PRESSED. One may find it strange as usually
+  // ui::ET_KEY_RELEASED comes in pair with ui::ET_KEY_PRESSED, i.e, if we need
+  // to handle ui::ET_KEY_RELEASED, then we probably need to handle
+  // ui::ET_KEY_PRESSED too. However this is not the case here. The ui::KeyEvent
+  // that gets passed in is manufactured as an ui::ET_KEY_RELEASED typed
+  // KeyEvent right before being passed in. This is similar to the situations of
+  // BrowserShortcutShelfItemController and AppShortcutShelfItemController.
+  //
+  // One other thing regarding the KeyEvent here that one may find confusing is
+  // that even though the code here says ET_KEY_RELEASED, one only needs to
+  // conduct a press action (e.g., pressing Alt+1 on a physical device without
+  // letting go) to trigger this ItemSelected() function call. The subsequent
+  // key release action is not required. This naming disparity comes from the
+  // fact that while the key accelerator is triggered and handled by
+  // ui::AcceleratorManager::Process() with a KeyEvent instance as one of its
+  // inputs, further down the callstack, the same KeyEvent instance is not
+  // passed over into ash::Shelf::ActivateShelfItemOnDisplay(). Instead, a new
+  // KeyEvent instance is fabricated inside
+  // ash::Shelf::ActivateShelfItemOnDisplay(), with its type being
+  // ET_KEY_RELEASED, to represent the original KeyEvent, whose type is
+  // ET_KEY_PRESSED.
+  //
+  // The fabrication of the release typed key event was first introduced in this
+  // CL in 2013.
+  // https://chromiumcodereview.appspot.com/14551002/patch/41001/42001
+  //
+  // A bug is filed to track future works for fixing this confusing naming
+  // disparity. https://crbug.com/1473895
+  DCHECK(!(event && event->type() == ui::ET_KEY_PRESSED));
+  if (event && event->type() == ui::ET_KEY_RELEASED && instances.size() > 0) {
+    auto target_id = instances[0].second;
+    if (instances.size() > 1) {
+      for (size_t i = 0; i < instances.size(); i++) {
+        if (registry_->IsInstanceActive(instances[i].second) &&
+            i + 1 < instances.size()) {
+          target_id = instances[i + 1].second;
+        }
+      }
+      registry_->ActivateInstance(target_id);
+    } else {
+      if (registry_->IsInstanceActive(target_id)) {
+        aura::Window* window = nullptr;
+        if (shelf_id().app_id == app_constants::kLacrosAppId) {
+          const apps::BrowserWindowInstance* instance =
+              registry_->GetBrowserWindowInstanceById(target_id);
+          window = instance->window;
+        } else {
+          const apps::BrowserAppInstance* instance =
+              registry_->GetAppInstanceById(target_id);
+          window = instance->window;
+        }
+        ash_util::BounceWindow(window);
+        return;
+      }
+      // If however the single instance is not active, the code will fall
+      // through and the instance will be handled and maximized by the rest of
+      // the logic in this function that handles mouse events.
+    }
+  }
+
   if (instances.size() == 0 ||
       ShouldLaunchNewLacrosWindow(app_id(), instances, *registry_)) {
     // No instances or if this is a lacros window and there isn't already one on
