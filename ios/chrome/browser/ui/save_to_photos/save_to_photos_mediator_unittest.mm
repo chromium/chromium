@@ -14,10 +14,12 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/photos/photos_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
@@ -35,8 +37,7 @@
 
 namespace {
 
-// Email for the primary account when signing-in.
-const char kPrimaryAccountEmail[] = "peter.parker@example.org";
+NSString* const kGooglePhotosAppProductIdentifier = @"962194608";
 
 // Fake image URL.
 const char kFakeImageUrl[] = "http://example.com/image.png";
@@ -129,6 +130,11 @@ class SaveToPhotosMediatorTest : public PlatformTest {
     browser_state_ = builder.Build();
     web_state_ = std::make_unique<web::FakeWebState>();
     FakeImageFetchTabHelper::CreateForWebState(web_state_.get());
+    fake_identity_ = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(fake_identity_);
 
     mock_application_ = OCMClassMock([UIApplication class]);
     OCMStub([mock_application_ sharedApplication]).andReturn(mock_application_);
@@ -169,7 +175,8 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   void SignIn() {
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
-        kPrimaryAccountEmail, signin::ConsentLevel::kSignin);
+        base::SysNSStringToUTF8(fake_identity_.userEmail),
+        signin::ConsentLevel::kSignin);
   }
 
   // Returns the TestPhotosService tied to the browser state.
@@ -178,7 +185,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         PhotosServiceFactory::GetForBrowserState(browser_state_.get()));
   }
 
-  // Returns the FakeImageFetchTabHelper tied to the web state.
+  // Returns the FakeImageFetchTabHelper tied to the WebState.
   FakeImageFetchTabHelper* GetFakeImageFetchTabHelper() {
     return static_cast<FakeImageFetchTabHelper*>(
         ImageFetchTabHelper::FromWebState(web_state_.get()));
@@ -188,6 +195,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
   id mock_application_;
+  id<SystemIdentity> fake_identity_;
 };
 
 // Tests that the mediator attempts to fetch the image data when started.
@@ -207,7 +215,7 @@ TEST_F(SaveToPhotosMediatorTest, StartGetsImageData) {
 
 // Tests that the mediator shows the account picker if preferences do not
 // contain a default account choice for Save to Photos.
-TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefault) {
+TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
   // The feature requires the user being signed-in.
   SignIn();
 
@@ -219,8 +227,8 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefault) {
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
   id mock_save_to_photos_mediator_delegate =
       OCMStrictProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
-  mediator.delegate =
-      (id<SaveToPhotosMediatorDelegate>)mock_save_to_photos_mediator_delegate;
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
 
   // Expect that the mediator will show the account picker with this
   // configuration.
@@ -258,10 +266,50 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefault) {
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
 }
 
-// Tests that upon identity selection, the SaveToPhotosMediator uploads the
-// image it has fetched from the web state and shows snackbar messages when it
-// starts uploading the image and when the PhotosService reports upload
-// completion.
+// Tests that the mediator skips the account picker if preferences do contain a
+// default account choice for Save to Photos.
+TEST_F(SaveToPhotosMediatorTest,
+       DoesNotShowAccountPickerIfDefaultAccountInPrefs) {
+  // The feature requires the user being signed-in.
+  SignIn();
+
+  // This test assumes there is no default account memorized for Save to Photos.
+  browser_state_->GetPrefs()->SetString(
+      prefs::kIosSaveToPhotosDefaultGaiaId,
+      base::SysNSStringToUTF8(fake_identity_.gaiaID).c_str());
+
+  // Create a mediator and set up with mock delegate.
+  SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
+  id mock_save_to_photos_mediator_delegate =
+      OCMProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
+
+  // Check that the Photos service has not been called yet.
+  EXPECT_TRUE(GetTestPhotosService()->IsAvailable());
+  EXPECT_EQ(GetTestPhotosService()->GetIdentity(), nil);
+
+  // Start the mediator and run until the image has been fetched and
+  // processed by the mediator.
+  SetUpImageFetchTabHelperQuitClosure();
+  [mediator startWithImageURL:GURL(kFakeImageUrl)
+                     referrer:web::Referrer()
+                     webState:web_state_.get()];
+  task_environment_.RunUntilQuit();
+
+  // Test that the Photos service has already been called with the identity from
+  // the prefs.
+  EXPECT_FALSE(GetTestPhotosService()->IsAvailable());
+  EXPECT_EQ(GetTestPhotosService()->GetIdentity(), fake_identity_);
+
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+}
+
+// Tests that upon identity selection, the SaveToPhotosMediator hides the
+// account picker, and once the account picker is hidden, it uploads the image
+// it has fetched from the image fetch tab helper and shows snackbar messages
+// 1. when it starts uploading the image and,
+// 2. when the PhotosService reports upload completion.
 TEST_F(SaveToPhotosMediatorTest,
        DidSelectIdentityUploadsImageAndShowsSnackbarMessages) {
   // The feature requires the user being signed-in.
@@ -271,8 +319,8 @@ TEST_F(SaveToPhotosMediatorTest,
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
   id mock_save_to_photos_mediator_delegate =
       OCMProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
-  mediator.delegate =
-      (id<SaveToPhotosMediatorDelegate>)mock_save_to_photos_mediator_delegate;
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
 
   // Start the mediator and run until the image has been fetched and processed
   // by the mediator.
@@ -286,22 +334,28 @@ TEST_F(SaveToPhotosMediatorTest,
   EXPECT_TRUE(GetTestPhotosService()->IsAvailable());
   EXPECT_EQ(GetTestPhotosService()->GetIdentity(), nil);
 
-  // Expect that the mediator will start uploading and show a snackbar when it
-  // knows what identity has been selected.
-  FakeSystemIdentity* selected_identity = [FakeSystemIdentity fakeIdentity1];
+  // Expect that the mediator will hide the account picker when it knows what
+  // identity has been selected.
+  OCMExpect([mock_save_to_photos_mediator_delegate hideAccountPicker]);
+
+  // Give the selected identity to the mediator and verify that the mediator
+  // asked to hide the account picker.
+  [mediator accountPickerDidSelectIdentity:fake_identity_ askEveryTime:YES];
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+
+  // Expect the the mediator will start uploading and show a snackbar when the
+  // account picker has been hidden.
   NSString* expected_message = l10n_util::GetNSStringF(
       IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_SAVING_IMAGE_MESSAGE,
-      base::SysNSStringToUTF16(selected_identity.userEmail));
+      base::SysNSStringToUTF16(fake_identity_.userEmail));
   NSString* expected_button_text = l10n_util::GetNSString(IDS_CANCEL);
   OCMExpect([mock_save_to_photos_mediator_delegate
       showSnackbarWithMessage:expected_message
                    buttonText:expected_button_text
                 messageAction:[OCMArg isNotNil]
              completionAction:[OCMArg isNil]]);
-
-  // Give the selected identity to the mediator.
   SetUpPhotosServiceQuitClosure();
-  [mediator accountPickerDidSelectIdentity:selected_identity askEveryTime:YES];
+  [mediator accountPickerWasHidden];
 
   // Verify the first snackbar has been shown.
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
@@ -312,13 +366,13 @@ TEST_F(SaveToPhotosMediatorTest,
   EXPECT_NSEQ(GetTestPhotosService()->GetImageName(),
               base::SysUTF8ToNSString(GURL(kFakeImageUrl).ExtractFileName()));
   EXPECT_NSEQ(GetTestPhotosService()->GetImageData(), GetFakeImageData());
-  EXPECT_EQ(GetTestPhotosService()->GetIdentity(), selected_identity);
+  EXPECT_EQ(GetTestPhotosService()->GetIdentity(), fake_identity_);
 
   // Expect that the second snackbar is shown once the PhotosService is done
   // uploading.
   expected_message = l10n_util::GetNSStringF(
       IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_MESSAGE,
-      base::SysNSStringToUTF16(selected_identity.userEmail));
+      base::SysNSStringToUTF16(fake_identity_.userEmail));
   expected_button_text = l10n_util::GetNSString(
       IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_OPEN_BUTTON);
   OCMExpect([mock_save_to_photos_mediator_delegate
@@ -344,8 +398,8 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
   id mock_save_to_photos_mediator_delegate =
       OCMProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
-  mediator.delegate =
-      (id<SaveToPhotosMediatorDelegate>)mock_save_to_photos_mediator_delegate;
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
 
   // Start the mediator and run until the image has been fetched and processed
   // by the mediator.
@@ -355,23 +409,36 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
                      webState:web_state_.get()];
   task_environment_.RunUntilQuit();
 
-  // Simulate the second snackbar (with a non-nil completion) being dismissed by
-  // the user tapping the "Open" button.
-  OCMStub([mock_save_to_photos_mediator_delegate
-              showSnackbarWithMessage:[OCMArg any]
-                           buttonText:[OCMArg any]
-                        messageAction:[OCMArg isNotNil]
-                     completionAction:[OCMArg isNotNil]])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained ProceduralBlock messageAction;
-        [invocation getArgument:&messageAction atIndex:4];
-        // Simulate the user tapped the "Open" button.
-        messageAction();
-        __unsafe_unretained void (^completionAction)(BOOL);
-        [invocation getArgument:&completionAction atIndex:5];
-        // Simulate the snackbar was dismissed because of user interaction.
-        completionAction(/* user_triggered= */ YES);
-      });
+  // Expect the second snackbar (with a non-nil completion) is shown and save
+  // the message and completion actions to later simulate the snackbar being
+  // dismissed by the user tapping the "Open" button.
+  __block ProceduralBlock savedMessageAction = nil;
+  __block void (^savedCompletionAction)(BOOL) = nil;
+  OCMExpect([mock_save_to_photos_mediator_delegate
+      showSnackbarWithMessage:[OCMArg any]
+                   buttonText:[OCMArg any]
+                messageAction:[OCMArg checkWithBlock:^(
+                                          ProceduralBlock messageAction) {
+                  savedMessageAction = messageAction;
+                  return messageAction != nil;
+                }]
+             completionAction:[OCMArg checkWithBlock:^(
+                                          void (^completionAction)(BOOL)) {
+               savedCompletionAction = completionAction;
+               return completionAction != nil;
+             }]]);
+
+  // Run until the PhotosService is done uploading, at which point the second
+  // snackbar is presented to the user.
+  SetUpPhotosServiceQuitClosure();
+  [mediator accountPickerDidSelectIdentity:fake_identity_ askEveryTime:YES];
+  [mediator accountPickerWasHidden];
+  task_environment_.RunUntilQuit();
+
+  // Verify that the second snackbar was shown.
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+  ASSERT_TRUE(savedMessageAction);
+  ASSERT_TRUE(savedCompletionAction);
 
   // Expect that the mediator will detect that the app is installed when the
   // user taps "Open".
@@ -379,10 +446,9 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
       .andReturn(YES);
 
   // Expect that the mediator tries to open the Photos app and switch to the
-  // Photos account associated with `fakeIdentity1`.
-  FakeSystemIdentity* selected_identity = [FakeSystemIdentity fakeIdentity1];
+  // Photos account associated with `fake_identity_`.
   NSString* recently_added_url_string = [kGooglePhotosRecentlyAddedURLString
-      stringByAppendingString:selected_identity.gaiaID];
+      stringByAppendingString:fake_identity_.gaiaID];
   NSURL* photos_url = [NSURL URLWithString:recently_added_url_string];
   OCMExpect([mock_application_
                 openURL:photos_url
@@ -395,16 +461,98 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
   // "Open".
   OCMExpect([mock_save_to_photos_mediator_delegate hideSaveToPhotos]);
 
-  // Run until the PhotosService is done uploading, at which point the user taps
-  // "Open" on the second snackbar.
-  SetUpPhotosServiceQuitClosure();
-  [mediator accountPickerDidSelectIdentity:selected_identity askEveryTime:YES];
-  task_environment_.RunUntilQuit();
+  // Simulate the user tapped the "Open" button.
+  savedMessageAction();
+  // Simulate the snackbar was dismissed because of user interaction.
+  savedCompletionAction(/* user_triggered= */ YES);
+
   [mediator disconnect];
 
   // Verify that the mediator detected that the app is installed and tried to
   // open it.
   EXPECT_OCMOCK_VERIFY(mock_application_);
+}
+
+// Tests that the SaveToPhotosMediator tries to show the StoreKit if it detects
+// that the Google Photos app is not installed and the user taps "Open" in the
+// second snackbar.
+TEST_F(SaveToPhotosMediatorTest,
+       SnackbarOpenButtonOpensStoreKitIfAppNotInstalled) {
+  // The feature requires the user being signed-in.
+  SignIn();
+
+  // Create a mediator and set up with mock delegate.
+  SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
+  id mock_save_to_photos_mediator_delegate =
+      OCMProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
+
+  // Start the mediator and run until the image has been fetched and processed
+  // by the mediator.
+  SetUpImageFetchTabHelperQuitClosure();
+  [mediator startWithImageURL:GURL(kFakeImageUrl)
+                     referrer:web::Referrer()
+                     webState:web_state_.get()];
+  task_environment_.RunUntilQuit();
+
+  // Expect the second snackbar (with a non-nil completion) is shown and save
+  // the message and completion actions to later simulate the snackbar being
+  // dismissed by the user tapping the "Open" button.
+  __block ProceduralBlock savedMessageAction = nil;
+  __block void (^savedCompletionAction)(BOOL) = nil;
+  OCMExpect([mock_save_to_photos_mediator_delegate
+      showSnackbarWithMessage:[OCMArg any]
+                   buttonText:[OCMArg any]
+                messageAction:[OCMArg checkWithBlock:^(
+                                          ProceduralBlock messageAction) {
+                  savedMessageAction = messageAction;
+                  return messageAction != nil;
+                }]
+             completionAction:[OCMArg checkWithBlock:^(
+                                          void (^completionAction)(BOOL)) {
+               savedCompletionAction = completionAction;
+               return completionAction != nil;
+             }]]);
+
+  // Run until the PhotosService is done uploading, at which point the second
+  // snackbar is presented to the user.
+  SetUpPhotosServiceQuitClosure();
+  [mediator accountPickerDidSelectIdentity:fake_identity_ askEveryTime:YES];
+  [mediator accountPickerWasHidden];
+  task_environment_.RunUntilQuit();
+
+  // Verify that the second snackbar was shown.
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+  ASSERT_TRUE(savedMessageAction);
+  ASSERT_TRUE(savedCompletionAction);
+
+  // Expect that the mediator will detect that the app is not installed when the
+  // user taps "Open".
+  OCMExpect([mock_application_ canOpenURL:GetGooglePhotosAppURL()])
+      .andReturn(NO);
+
+  // Expect that the mediator tries to show StoreKit with the expected product
+  // identifier.
+  OCMExpect([mock_save_to_photos_mediator_delegate
+      showStoreKitWithProductIdentifier:kGooglePhotosAppProductIdentifier]);
+
+  // Simulate the user tapped the "Open" button.
+  savedMessageAction();
+  // Simulate the snackbar was dismissed because of user interaction.
+  savedCompletionAction(/* user_triggered= */ YES);
+
+  // Verify that the mediator detected that the app is not installed and tried
+  // to open show the app in StoreKit.
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+
+  // Test that the mediator asks to hide Save to Photos when StoreKit wants to
+  // hide.
+  OCMExpect([mock_save_to_photos_mediator_delegate hideSaveToPhotos]);
+  [mediator storeKitWantsToHide];
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+
+  [mediator disconnect];
 }
 
 // Tests that the SaveToPhotosMediator shows an alert with Try Again and Cancel
@@ -417,8 +565,8 @@ TEST_F(SaveToPhotosMediatorTest, ShowsTryAgainOrCancelAlertIfUploadFails) {
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
   id mock_save_to_photos_mediator_delegate =
       OCMProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
-  mediator.delegate =
-      (id<SaveToPhotosMediatorDelegate>)mock_save_to_photos_mediator_delegate;
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
 
   // Start the mediator and run until the image has been fetched and processed
   // by the mediator.
@@ -451,8 +599,8 @@ TEST_F(SaveToPhotosMediatorTest, ShowsTryAgainOrCancelAlertIfUploadFails) {
 
   // Run until the PhotosService fails to upload.
   SetUpPhotosServiceQuitClosure();
-  FakeSystemIdentity* selected_identity = [FakeSystemIdentity fakeIdentity1];
-  [mediator accountPickerDidSelectIdentity:selected_identity askEveryTime:YES];
+  [mediator accountPickerDidSelectIdentity:fake_identity_ askEveryTime:YES];
+  [mediator accountPickerWasHidden];
   task_environment_.RunUntilQuit();
 
   // Verify that the failure alert has been presented.

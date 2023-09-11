@@ -38,6 +38,7 @@
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _configuration = configuration;
+    _askEveryTime = YES;
   }
   return self;
 }

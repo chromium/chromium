@@ -124,10 +124,8 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 
 - (void)accountPickerDidSelectIdentity:(id<SystemIdentity>)identity
                           askEveryTime:(BOOL)askEveryTime {
-  if (!identity) {
-    [self.delegate hideSaveToPhotos];
-    return;
-  }
+  CHECK(identity);
+  [self.delegate hideAccountPicker];
 
   // Memorize the account that was picked if the user does not want to be asked
   // every time.
@@ -137,10 +135,21 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   }
 
   _identity = identity;
+}
+
+- (void)accountPickerDidCancel {
+  [self.delegate hideAccountPicker];
+}
+
+- (void)accountPickerWasHidden {
+  if (!_identity) {
+    [self.delegate hideSaveToPhotos];
+    return;
+  }
   [self tryUploadImage];
 }
 
-- (void)storeKitDone {
+- (void)storeKitWantsToHide {
   [self.delegate hideSaveToPhotos];
 }
 

@@ -58,10 +58,16 @@ class WebState;
 - (void)accountPickerDidSelectIdentity:(id<SystemIdentity>)identity
                           askEveryTime:(BOOL)askEveryTime;
 
+// Called when the user taps "Cancel" in the account picker.
+- (void)accountPickerDidCancel;
+
+// Lets the mediator know that the account picker is done being dismissed.
+- (void)accountPickerWasHidden;
+
 // Lets the mediator know that the StoreKit view has been dismissed by the user.
 // The mediator will prepare to shutdown and ask the delegate to hide Save to
 // Photos.
-- (void)storeKitDone;
+- (void)storeKitWantsToHide;
 
 // Disconnect the mediator from services.
 - (void)disconnect;

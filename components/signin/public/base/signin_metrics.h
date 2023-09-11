@@ -199,6 +199,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_SET_UP_LIST = 51,
   // Access point for the local password migration warning on Android.
   ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID = 52,
+  // Access point for the Save to Photos feature on iOS.
+  ACCESS_POINT_SAVE_TO_PHOTOS_IOS = 53,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml

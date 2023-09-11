@@ -27,7 +27,7 @@
                didSelectIdentity:(id<SystemIdentity>)identity
                     askEveryTime:(BOOL)askEveryTime;
 
-// Called when the user tapped "Cancel" in the confirmation screen.
+// Called when the user taps "Cancel" in the confirmation screen.
 - (void)accountPickerCoordinatorCancel:
     (AccountPickerCoordinator*)accountPickerCoordinator;
 

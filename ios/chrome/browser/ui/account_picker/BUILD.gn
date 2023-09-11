@@ -49,3 +49,24 @@ source_set("account_picker_layout") {
 source_set("account_picker_logger") {
   sources = [ "account_picker_logger.h" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "account_picker_coordinator_unittest.mm" ]
+  deps = [
+    ":account_picker",
+    ":account_picker_configuration",
+    ":account_picker_layout",
+    "//base",
+    "//base/test:test_support",
+    "//components/variations:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/ui/account_picker/account_picker_confirmation",
+    "//ios/chrome/browser/ui/account_picker/account_picker_screen",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock:ocmock",
+  ]
+}

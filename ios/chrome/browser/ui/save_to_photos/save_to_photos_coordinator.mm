@@ -22,6 +22,9 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
+#import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator.h"
 #import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator_delegate.h"
 #import "ios/web/public/browser_state.h"
@@ -30,7 +33,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-@interface SaveToPhotosCoordinator () <SaveToPhotosMediatorDelegate,
+@interface SaveToPhotosCoordinator () <AccountPickerCoordinatorDelegate,
+                                       SaveToPhotosMediatorDelegate,
                                        StoreKitCoordinatorDelegate>
 
 @end
@@ -42,6 +46,7 @@
   SaveToPhotosMediator* _mediator;
   AlertCoordinator* _alertCoordinator;
   StoreKitCoordinator* _storeKitCoordinator;
+  AccountPickerCoordinator* _accountPickerCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -82,43 +87,30 @@
 }
 
 - (void)stop {
+  [_mediator disconnect];
+  _mediator = nil;
   [_alertCoordinator stop];
   _alertCoordinator = nil;
   [_storeKitCoordinator stop];
   _storeKitCoordinator = nil;
-
-  _imageURL = {};
-  _referrer = {};
-  _webState = nullptr;
-  [_mediator disconnect];
-  _mediator = nil;
+  [_accountPickerCoordinator stopAnimated:NO];
+  _accountPickerCoordinator = nil;
 }
 
 #pragma mark - SaveToPhotosMediatorDelegate
 
 - (void)showAccountPickerWithConfiguration:
     (AccountPickerConfiguration*)configuration {
-  // TODO(crbug.com/1469555): Show the account picker instead of using the
-  // primary identity.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
-  CoreAccountInfo primaryAccountInfo =
-      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (primaryAccountInfo.IsEmpty()) {
-    [self hideSaveToPhotos];
-    return;
-  }
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  id<SystemIdentity> primaryAccountSystemIdentity =
-      accountManagerService->GetIdentityWithGaiaID(primaryAccountInfo.gaia);
-  [_mediator accountPickerDidSelectIdentity:primaryAccountSystemIdentity
-                               askEveryTime:YES];
+  _accountPickerCoordinator = [[AccountPickerCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                   configuration:configuration];
+  _accountPickerCoordinator.delegate = self;
+  [_accountPickerCoordinator start];
 }
 
 - (void)hideAccountPicker {
-  // TODO(crbug.com/1469555): Hide the account picker.
+  [_accountPickerCoordinator stopAnimated:YES];
 }
 
 - (void)showTryAgainOrCancelAlertWithTitle:(NSString*)title
@@ -187,7 +179,7 @@
                           completionAction:completionAction];
 }
 
-// Hide Save to Photos UI.
+// Hide Save to Photos UI synchronously.
 - (void)hideSaveToPhotos {
   id<SaveToPhotosCommands> saveToPhotosHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToPhotosCommands);
@@ -197,7 +189,55 @@
 #pragma mark - StoreKitCoordinatorDelegate
 
 - (void)storeKitCoordinatorWantsToStop:(StoreKitCoordinator*)coordinator {
-  [_mediator storeKitDone];
+  [_mediator storeKitWantsToHide];
+}
+
+#pragma mark - AccountPickerCoordinatorDelegate
+
+- (void)accountPickerCoordinator:
+            (AccountPickerCoordinator*)accountPickerCoordinator
+    openAddAccountWithCompletion:(void (^)(id<SystemIdentity>))completion {
+  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  ShowSigninCommand* addAccountCommand = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kAddAccount
+               identity:nil
+            accessPoint:signin_metrics::AccessPoint::
+                            ACCESS_POINT_SAVE_TO_PHOTOS_IOS
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+               callback:^(SigninCoordinatorResult result,
+                          SigninCompletionInfo* completionInfo) {
+                 if (completion) {
+                   completion(completionInfo.identity);
+                 }
+               }];
+  [applicationCommandsHandler
+              showSignin:addAccountCommand
+      baseViewController:accountPickerCoordinator.viewController];
+}
+
+- (void)accountPickerCoordinator:
+            (AccountPickerCoordinator*)accountPickerCoordinator
+               didSelectIdentity:(id<SystemIdentity>)identity
+                    askEveryTime:(BOOL)askEveryTime {
+  [_mediator accountPickerDidSelectIdentity:identity askEveryTime:askEveryTime];
+}
+
+- (void)accountPickerCoordinatorCancel:
+    (AccountPickerCoordinator*)accountPickerCoordinator {
+  [_mediator accountPickerDidCancel];
+}
+
+- (void)accountPickerCoordinatorAllIdentityRemoved:
+    (AccountPickerCoordinator*)accountPickerCoordinator {
+  [self hideSaveToPhotos];
+}
+
+- (void)accountPickerCoordinatorDidStop:
+    (AccountPickerCoordinator*)accountPickerCoordinator {
+  [_mediator accountPickerWasHidden];
+  _accountPickerCoordinator = nil;
 }
 
 @end

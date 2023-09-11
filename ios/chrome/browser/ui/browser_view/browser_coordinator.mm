@@ -612,6 +612,8 @@ enum class ToolbarKind {
 
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
+  [self stopSaveToPhotos];
+
   [self.passKitCoordinator stop];
 
   [self.printCoordinator dismissAnimated:YES];

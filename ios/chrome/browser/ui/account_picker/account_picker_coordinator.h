@@ -30,6 +30,9 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Same as -stop but can be animated.
+- (void)stopAnimated:(BOOL)animated;
+
 // Starts the spinner and disables buttons.
 - (void)startValidationSpinner;
 

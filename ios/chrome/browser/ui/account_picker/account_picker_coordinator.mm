@@ -73,6 +73,26 @@
   return self;
 }
 
+- (void)stopAnimated:(BOOL)animated {
+  __weak __typeof(self) weakSelf = self;
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:^{
+                           [weakSelf.delegate
+                               accountPickerCoordinatorDidStop:weakSelf];
+                         }];
+  _navigationController.delegate = nil;
+  _navigationController.transitioningDelegate = nil;
+  _navigationController = nil;
+
+  [_alertCoordinator stop];
+  _alertCoordinator = nil;
+  [_accountPickerSelectionScreenCoordinator stop];
+  _accountPickerSelectionScreenCoordinator = nil;
+  [_accountPickerConfirmationScreenCoordinator stop];
+  _accountPickerConfirmationScreenCoordinator = nil;
+}
+
 - (void)startValidationSpinner {
   [_accountPickerConfirmationScreenCoordinator startValidationSpinner];
 }
@@ -108,23 +128,7 @@
 }
 
 - (void)stop {
-  __weak __typeof(self) weakSelf = self;
-  [_navigationController.presentingViewController
-      dismissViewControllerAnimated:NO
-                         completion:^{
-                           [weakSelf.delegate
-                               accountPickerCoordinatorDidStop:weakSelf];
-                         }];
-  _navigationController.delegate = nil;
-  _navigationController.transitioningDelegate = nil;
-  _navigationController = nil;
-
-  [_alertCoordinator stop];
-  _alertCoordinator = nil;
-  [_accountPickerSelectionScreenCoordinator stop];
-  _accountPickerSelectionScreenCoordinator = nil;
-  [_accountPickerConfirmationScreenCoordinator stop];
-  _accountPickerConfirmationScreenCoordinator = nil;
+  [self stopAnimated:NO];
 }
 
 #pragma mark - Properties

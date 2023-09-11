@@ -89,7 +89,7 @@
   }
 
   // Here, default identity may be nil.
-  _selectedIdentity = identity;
+  self.selectedIdentity = identity;
 }
 
 // Updates the view controller using the default identity, or hide the default
