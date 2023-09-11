@@ -434,6 +434,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                 Param("silent", BoolToString(is_silent_install))});
   }
 
+  void DMPushEnrollmentToken(const std::string& enrollment_token) override {
+    RunCommand("dm_push_enrollment_token",
+               {Param("enrollment_token", enrollment_token)});
+  }
   void DMDeregisterDevice() override { RunCommand("dm_deregister_device"); }
   void DMCleanup() override { RunCommand("dm_cleanup"); }
 

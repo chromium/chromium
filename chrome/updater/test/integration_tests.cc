@@ -503,6 +503,10 @@ class IntegrationTest : public ::testing::Test {
                                                     is_silent_install);
   }
 
+  void DMPushEnrollmentToken(const std::string& enrollment_token) {
+    test_commands_->DMPushEnrollmentToken(enrollment_token);
+  }
+
   void DMDeregisterDevice() { test_commands_->DMDeregisterDevice(); }
 
   void DMCleanup() { test_commands_->DMCleanup(); }
@@ -1564,6 +1568,7 @@ TEST_F(IntegrationTestLegacyUpdate3Web, Install) {
       ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
                                      STATE_INSTALL_COMPLETE, S_OK));
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 class IntegrationTestDeviceManagement : public IntegrationTest {
  public:
@@ -1586,12 +1591,6 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
     IntegrationTest::TearDown();
   }
 
-  void PushEnrollmentToken(const std::string& enrollment_token) {
-    scoped_refptr<DMStorage> storage = GetDefaultDMStorage();
-    EXPECT_TRUE(storage->StoreEnrollmentToken(enrollment_token));
-    EXPECT_TRUE(storage->DeleteDMToken());
-  }
-
   std::string BuildCommandLineArgs(UpdaterScope scope,
                                    const std::string& app_id,
                                    const base::Version& to_version) {
@@ -1601,6 +1600,7 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
                               to_version.GetString().c_str());
   }
 
+#if BUILDFLAG(IS_WIN)
   void InstallAppWithVersion(const std::string& app_id,
                              const base::Version& version) {
     InstallApp(app_id, version, [&]() {
@@ -1637,6 +1637,7 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
                                 Wow6432(KEY_WRITE))
                   .WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
   }
+#endif  // BUILDFLAG(IS_WIN)
 
   std::unique_ptr<ScopedServer> test_server_;
   static constexpr char kEnrollmentToken[] = "integration-enrollment-token";
@@ -1646,6 +1647,9 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
   static constexpr char kAppId3[] = "test3";
   static constexpr char kAppCRX[] = "Testapp2Setup.crx3";
 };
+
+// Tests the setup and teardown of the fixture.
+TEST_F(IntegrationTestDeviceManagement, Nothing) {}
 
 TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   OmahaSettingsClientProto omaha_settings;
@@ -1662,7 +1666,7 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
       enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
   omaha_settings.mutable_application_settings()->Add(std::move(app));
 
-  PushEnrollmentToken(kEnrollmentToken);
+  DMPushEnrollmentToken(kEnrollmentToken);
 
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
@@ -1671,11 +1675,15 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
+  scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
+  ASSERT_NE(dm_storage, nullptr);
   std::unique_ptr<OmahaSettingsClientProto> omaha_policy =
-      GetDefaultDMStorage()->GetOmahaPolicySettings();
+      dm_storage->GetOmahaPolicySettings();
+  ASSERT_TRUE(omaha_policy != nullptr);
   EXPECT_EQ(omaha_policy->download_preference(), "not-cacheable");
   EXPECT_EQ(omaha_policy->proxy_mode(), "system");
   EXPECT_EQ(omaha_policy->proxy_server(), "test.proxy.server");
+  ASSERT_GT(omaha_policy->application_settings_size(), 0);
   const ApplicationSettings& app_policy =
       omaha_policy->application_settings()[0];
   EXPECT_EQ(app_policy.app_guid(), kAppId1);
@@ -1687,6 +1695,7 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+#if BUILDFLAG(IS_WIN)
 #if !defined(COMPONENT_BUILD)
 
 TEST_F(IntegrationTestDeviceManagement, AppInstall) {
@@ -1699,7 +1708,7 @@ TEST_F(IntegrationTestDeviceManagement, AppInstall) {
   app.set_install(enterprise_management::INSTALL_ENABLED);
   omaha_settings.mutable_application_settings()->Add(std::move(app));
 
-  PushEnrollmentToken(kEnrollmentToken);
+  DMPushEnrollmentToken(kEnrollmentToken);
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
@@ -1746,7 +1755,7 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
   app2.set_install(enterprise_management::INSTALL_ENABLED);
   omaha_settings.mutable_application_settings()->Add(std::move(app2));
 
-  PushEnrollmentToken(kEnrollmentToken);
+  DMPushEnrollmentToken(kEnrollmentToken);
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
@@ -1794,7 +1803,7 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
 
   // Cloud policy sets update default to disabled, app1 to auto-update, and
   // app2 to manual-update.
-  PushEnrollmentToken(kEnrollmentToken);
+  DMPushEnrollmentToken(kEnrollmentToken);
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
   OmahaSettingsClientProto omaha_settings;
@@ -1866,7 +1875,7 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   // Overrides app1 to auto-update, app2 to manual-update with cloud policy.
-  PushEnrollmentToken(kEnrollmentToken);
+  DMPushEnrollmentToken(kEnrollmentToken);
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
   OmahaSettingsClientProto omaha_settings;
@@ -1924,7 +1933,7 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kAppInitialVersion));
 
-  PushEnrollmentToken(kEnrollmentToken);
+  DMPushEnrollmentToken(kEnrollmentToken);
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
   OmahaSettingsClientProto omaha_settings;

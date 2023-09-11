@@ -403,6 +403,8 @@ void AppTestHelper::FirstTaskRun() {
      WithSwitch("silent", WithSwitch("legacy_install",
                                      WithSystemScope(Wrap(
                                          &RunOfflineInstallOsNotSupported))))},
+    {"dm_push_enrollment_token",
+     WithSwitch("enrollment_token", Wrap(DMPushEnrollmentToken))},
     {"dm_deregister_device", WithSystemScope(Wrap(&DMDeregisterDevice))},
     {"dm_cleanup", WithSystemScope(Wrap(&DMCleanup))},
   };

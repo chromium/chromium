@@ -369,7 +369,13 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
 
 base::CommandLine MakeElevated(base::CommandLine command_line);
 
+// Stores a device management enrollment token and deletes any existing
+// stored device management token (for the already-enrolled state).
+// Requires root permissions.
+void DMPushEnrollmentToken(const std::string& enrollment_token);
+
 void DMDeregisterDevice(UpdaterScope scope);
+
 void DMCleanup(UpdaterScope scope);
 
 void ExpectDeviceManagementRegistrationRequest(

@@ -1208,6 +1208,13 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
 }
 #endif  // IS_WIN
 
+void DMPushEnrollmentToken(const std::string& enrollment_token) {
+  scoped_refptr<DMStorage> storage = GetDefaultDMStorage();
+  ASSERT_NE(storage, nullptr);
+  EXPECT_TRUE(storage->StoreEnrollmentToken(enrollment_token));
+  EXPECT_TRUE(storage->DeleteDMToken());
+}
+
 void DMDeregisterDevice(UpdaterScope scope) {
   if (!IsSystemInstall(GetTestScope())) {
     return;

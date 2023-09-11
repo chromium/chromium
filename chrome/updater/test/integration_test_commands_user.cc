@@ -384,6 +384,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
         updater_scope_, is_legacy_install, is_silent_install);
   }
 
+  void DMPushEnrollmentToken(const std::string& enrollment_token) override {
+    FAIL() << __func__ << ": requires system scope.";
+  }
+
   void DMDeregisterDevice() override {
     updater::test::DMDeregisterDevice(updater_scope_);
   }
