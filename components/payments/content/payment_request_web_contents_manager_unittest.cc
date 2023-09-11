@@ -24,6 +24,8 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
         *web_contents_);
   }
 
+  ~PaymentRequestWebContentsManagerTest() override { manager_ = nullptr; }
+
   content::WebContents* web_contents() { return web_contents_; }
 
   PaymentRequest* CreateAndReturnPaymentRequest(SPCTransactionMode mode) {
@@ -45,7 +47,7 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
   }
 
   // The PaymentRequestWebContentsManager under test.
-  raw_ptr<PaymentRequestWebContentsManager, DanglingUntriaged> manager_;
+  raw_ptr<PaymentRequestWebContentsManager> manager_;
 
  private:
   // Necessary supporting members to create the testing environment.
