@@ -37,6 +37,7 @@ namespace blink {
 
 class StyleSheet;
 class StyleSheetCollection;
+class RuleSetDiff;
 
 class DocumentStyleSheetCollector {
   // This class contains references to two on-heap collections, therefore
@@ -52,6 +53,7 @@ class DocumentStyleSheetCollector {
 
   void AppendActiveStyleSheet(const ActiveStyleSheet&);
   void AppendSheetForList(StyleSheet*);
+  void AppendRuleSetDiff(RuleSetDiff*);
 
  private:
   StyleSheetCollection* collection_;

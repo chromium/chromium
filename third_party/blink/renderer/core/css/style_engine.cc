@@ -2486,7 +2486,7 @@ void StyleEngine::ApplyUserRuleSetChanges(
   HeapHashSet<Member<RuleSet>> changed_rule_sets;
 
   ActiveSheetsChange change = CompareActiveStyleSheets(
-      old_style_sheets, new_style_sheets, changed_rule_sets);
+      old_style_sheets, new_style_sheets, /*diffs=*/{}, changed_rule_sets);
 
   if (change == kNoActiveSheetsChanged) {
     return;
@@ -2608,12 +2608,13 @@ void StyleEngine::ApplyUserRuleSetChanges(
 void StyleEngine::ApplyRuleSetChanges(
     TreeScope& tree_scope,
     const ActiveStyleSheetVector& old_style_sheets,
-    const ActiveStyleSheetVector& new_style_sheets) {
+    const ActiveStyleSheetVector& new_style_sheets,
+    const HeapVector<Member<RuleSetDiff>>& diffs) {
   DCHECK(global_rule_set_);
   HeapHashSet<Member<RuleSet>> changed_rule_sets;
 
   ActiveSheetsChange change = CompareActiveStyleSheets(
-      old_style_sheets, new_style_sheets, changed_rule_sets);
+      old_style_sheets, new_style_sheets, diffs, changed_rule_sets);
 
   unsigned changed_rule_flags = GetRuleSetFlags(changed_rule_sets);
 

@@ -20,10 +20,12 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 
 #include <memory>
+#include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/media_query_set_owner.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -178,9 +180,7 @@ void MediaList::setMediaText(const ExecutionContext* execution_context,
 
   Owner()->SetMediaQueries(MediaQuerySet::Create(value, execution_context));
 
-  if (parent_style_sheet_) {
-    parent_style_sheet_->DidMutate(CSSStyleSheet::Mutation::kSheet);
-  }
+  NotifyMutation();
 }
 
 String MediaList::item(unsigned index) const {
@@ -205,9 +205,8 @@ void MediaList::deleteMedium(const ExecutionContext* execution_context,
     return;
   }
   Owner()->SetMediaQueries(new_media_queries);
-  if (parent_style_sheet_) {
-    parent_style_sheet_->DidMutate(CSSStyleSheet::Mutation::kSheet);
-  }
+
+  NotifyMutation();
 }
 
 void MediaList::appendMedium(const ExecutionContext* execution_context,
@@ -221,9 +220,7 @@ void MediaList::appendMedium(const ExecutionContext* execution_context,
   }
   Owner()->SetMediaQueries(new_media_queries);
 
-  if (parent_style_sheet_) {
-    parent_style_sheet_->DidMutate(CSSStyleSheet::Mutation::kSheet);
-  }
+  NotifyMutation();
 }
 
 const MediaQuerySet* MediaList::Queries() const {
@@ -239,6 +236,22 @@ void MediaList::Trace(Visitor* visitor) const {
 MediaQuerySetOwner* MediaList::Owner() const {
   return parent_rule_ ? parent_rule_->GetMediaQuerySetOwner()
                       : parent_style_sheet_.Get();
+}
+
+void MediaList::NotifyMutation() {
+  if (parent_rule_ && parent_rule_->parentStyleSheet()) {
+    StyleSheetContents* parent_contents =
+        parent_rule_->parentStyleSheet()->Contents();
+    if (parent_rule_->GetType() == CSSRule::kStyleRule) {
+      parent_contents->NotifyRuleChanged(
+          static_cast<CSSStyleRule*>(parent_rule_.Get())->GetStyleRule());
+    } else {
+      parent_contents->NotifyDiffUnrepresentable();
+    }
+  }
+  if (parent_style_sheet_) {
+    parent_style_sheet_->DidMutate(CSSStyleSheet::Mutation::kSheet);
+  }
 }
 
 }  // namespace blink

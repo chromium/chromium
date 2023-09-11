@@ -19,7 +19,7 @@ TEST(StyleSheetContentsTest, InsertMediaRule) {
   style_sheet->ParseString("@namespace ns url(test);");
   EXPECT_EQ(1U, style_sheet->RuleCount());
 
-  style_sheet->SetMutable();
+  style_sheet->StartMutation();
   style_sheet->WrapperInsertRule(
       CSSParser::ParseRule(context, style_sheet, CSSNestingType::kNone,
                            /*parent_rule_for_nesting=*/nullptr,
@@ -45,7 +45,7 @@ TEST(StyleSheetContentsTest, InsertFontFaceRule) {
   style_sheet->ParseString("@namespace ns url(test);");
   EXPECT_EQ(1U, style_sheet->RuleCount());
 
-  style_sheet->SetMutable();
+  style_sheet->StartMutation();
   style_sheet->WrapperInsertRule(
       CSSParser::ParseRule(context, style_sheet, CSSNestingType::kNone,
                            /*parent_rule_for_nesting=*/nullptr,

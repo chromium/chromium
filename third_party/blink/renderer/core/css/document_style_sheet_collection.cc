@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_candidate.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
@@ -74,6 +75,11 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
     CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
     collector.AppendActiveStyleSheet(std::make_pair(
         css_sheet, rule_set_scope.RuleSetForSheet(engine, css_sheet)));
+
+    if (css_sheet->Contents()->GetRuleSetDiff()) {
+      collector.AppendRuleSetDiff(css_sheet->Contents()->GetRuleSetDiff());
+      css_sheet->Contents()->ClearRuleSetDiff();
+    }
   }
   if (!GetTreeScope().HasAdoptedStyleSheets()) {
     return;

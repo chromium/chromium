@@ -15,6 +15,7 @@ namespace blink {
 
 class CSSStyleSheet;
 class RuleSet;
+class RuleSetDiff;
 
 using ActiveStyleSheet = std::pair<Member<CSSStyleSheet>, Member<RuleSet>>;
 using ActiveStyleSheetVector = HeapVector<ActiveStyleSheet>;
@@ -28,6 +29,7 @@ enum ActiveSheetsChange {
 CORE_EXPORT ActiveSheetsChange
 CompareActiveStyleSheets(const ActiveStyleSheetVector& old_style_sheets,
                          const ActiveStyleSheetVector& new_style_sheets,
+                         const HeapVector<Member<RuleSetDiff>>& diffs,
                          HeapHashSet<Member<RuleSet>>& changed_rule_sets);
 
 bool AffectedByMediaValueChange(const ActiveStyleSheetVector& active_sheets,

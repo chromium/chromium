@@ -103,6 +103,7 @@ class CORE_EXPORT MediaList final : public ScriptWrappable {
 
  private:
   MediaQuerySetOwner* Owner() const;
+  void NotifyMutation();
 
   Member<CSSStyleSheet> parent_style_sheet_;
   Member<CSSRule> parent_rule_;

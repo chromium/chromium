@@ -17,6 +17,7 @@ namespace blink {
 ActiveSheetsChange CompareActiveStyleSheets(
     const ActiveStyleSheetVector& old_style_sheets,
     const ActiveStyleSheetVector& new_style_sheets,
+    const HeapVector<Member<RuleSetDiff>>& diffs,
     HeapHashSet<Member<RuleSet>>& changed_rule_sets) {
   unsigned new_style_sheet_count = new_style_sheets.size();
   unsigned old_style_sheet_count = old_style_sheets.size();
@@ -33,11 +34,32 @@ ActiveSheetsChange CompareActiveStyleSheets(
       continue;
     }
 
-    if (new_style_sheets[index].second) {
-      changed_rule_sets.insert(new_style_sheets[index].second);
+    // See if we can do better than inserting the entire old and the entire
+    // new ruleset; if we have a RuleSetDiff describing their diff better,
+    // we can use that instead, presumably with fewer rules (there will never
+    // be more, but there are also cases where there could be the same number).
+    // Note that CreateDiffRuleset() can fail, i.e., return nullptr, in which
+    // case we fall back to the non-diff path.)
+    RuleSet* diff_ruleset = nullptr;
+    if (new_style_sheets[index].second && old_style_sheets[index].second) {
+      for (const RuleSetDiff* diff : diffs) {
+        if (diff->Matches(old_style_sheets[index].second,
+                          new_style_sheets[index].second)) {
+          diff_ruleset = diff->CreateDiffRuleset();
+          break;
+        }
+      }
     }
-    if (old_style_sheets[index].second) {
-      changed_rule_sets.insert(old_style_sheets[index].second);
+
+    if (diff_ruleset) {
+      changed_rule_sets.insert(diff_ruleset);
+    } else {
+      if (new_style_sheets[index].second) {
+        changed_rule_sets.insert(new_style_sheets[index].second);
+      }
+      if (old_style_sheets[index].second) {
+        changed_rule_sets.insert(old_style_sheets[index].second);
+      }
     }
   }
 

@@ -41,6 +41,7 @@
 namespace blink {
 
 class StyleSheet;
+class RuleSetDiff;
 
 class CORE_EXPORT StyleSheetCollection
     : public GarbageCollected<StyleSheetCollection>,
@@ -60,11 +61,15 @@ class CORE_EXPORT StyleSheetCollection
   const HeapVector<Member<StyleSheet>>& StyleSheetsForStyleSheetList() const {
     return style_sheets_for_style_sheet_list_;
   }
+  const HeapVector<Member<RuleSetDiff>>& RuleSetDiffs() const {
+    return rule_set_diffs_;
+  }
 
   void Swap(StyleSheetCollection&);
   void SwapSheetsForSheetList(HeapVector<Member<StyleSheet>>&);
   void AppendActiveStyleSheet(const ActiveStyleSheet&);
   void AppendSheetForList(StyleSheet*);
+  void AppendRuleSetDiff(Member<RuleSetDiff>);
   void MarkSheetListDirty() { sheet_list_dirty_ = true; }
 
   virtual void Trace(Visitor*) const;
@@ -77,6 +82,7 @@ class CORE_EXPORT StyleSheetCollection
  protected:
   HeapVector<Member<StyleSheet>> style_sheets_for_style_sheet_list_;
   ActiveStyleSheetVector active_style_sheets_;
+  HeapVector<Member<RuleSetDiff>> rule_set_diffs_;
   bool sheet_list_dirty_ = true;
 };
 

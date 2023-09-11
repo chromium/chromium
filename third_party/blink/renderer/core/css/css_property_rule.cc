@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -63,6 +64,9 @@ StyleRuleProperty* CSSPropertyRule::Property() const {
 bool CSSPropertyRule::SetNameText(const ExecutionContext* execution_context,
                                   const String& name_text) {
   CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
+  if (parentStyleSheet()) {
+    parentStyleSheet()->Contents()->NotifyDiffUnrepresentable();
+  }
 
   return property_rule_->SetNameText(execution_context, name_text);
 }

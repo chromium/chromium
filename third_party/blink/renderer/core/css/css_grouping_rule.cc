@@ -166,7 +166,7 @@ unsigned CSSGroupingRule::insertRule(const ExecutionContext* execution_context,
     return 0;
   } else {
     CSSStyleSheet::RuleMutationScope mutation_scope(this);
-    group_rule_->WrapperInsertRule(index, new_rule);
+    group_rule_->WrapperInsertRule(parentStyleSheet(), index, new_rule);
     child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
     return index;
   }
@@ -187,7 +187,7 @@ void CSSGroupingRule::deleteRule(unsigned index,
 
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
 
-  group_rule_->WrapperRemoveRule(index);
+  group_rule_->WrapperRemoveRule(parentStyleSheet(), index);
 
   if (child_rule_cssom_wrappers_[index]) {
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);

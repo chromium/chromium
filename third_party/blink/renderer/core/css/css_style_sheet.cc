@@ -206,8 +206,8 @@ void CSSStyleSheet::WillMutateRules() {
   // If we are the only client it is safe to mutate.
   if (!contents_->IsUsedFromTextCache() &&
       !contents_->IsReferencedFromResource()) {
+    contents_->StartMutation();
     contents_->ClearRuleSet();
-    contents_->SetMutable();
     return;
   }
   // Only cacheable stylesheets should have multiple clients.
@@ -220,7 +220,7 @@ void CSSStyleSheet::WillMutateRules() {
   contents_ = contents_->Copy();
   contents_->RegisterClient(this);
 
-  contents_->SetMutable();
+  contents_->StartMutation();
 
   // Any existing CSSOM wrappers need to be connected to the copied child rules.
   ReattachChildRuleCSSOMWrappers();

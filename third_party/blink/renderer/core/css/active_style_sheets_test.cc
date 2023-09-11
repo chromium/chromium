@@ -44,7 +44,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_NoChange) {
 
   EXPECT_EQ(
       kNoActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(0u, changed_rule_sets.size());
 
   CSSStyleSheet* sheet1 = CreateSheet();
@@ -62,7 +62,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_NoChange) {
 
   EXPECT_EQ(
       kNoActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(0u, changed_rule_sets.size());
 }
 
@@ -81,7 +81,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_AppendedToEmpty) {
 
   EXPECT_EQ(
       kActiveSheetsAppended,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(2u, changed_rule_sets.size());
 }
 
@@ -102,7 +102,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_AppendedToNonEmpty) {
 
   EXPECT_EQ(
       kActiveSheetsAppended,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(1u, changed_rule_sets.size());
 }
 
@@ -137,7 +137,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_Mutated) {
 
   EXPECT_EQ(
       kActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(2u, changed_rule_sets.size());
   EXPECT_TRUE(changed_rule_sets.Contains(&sheet2->Contents()->GetRuleSet()));
   EXPECT_TRUE(changed_rule_sets.Contains(old_sheets[1].second));
@@ -166,7 +166,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_Inserted) {
 
   EXPECT_EQ(
       kActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(1u, changed_rule_sets.size());
   EXPECT_TRUE(changed_rule_sets.Contains(&sheet2->Contents()->GetRuleSet()));
 }
@@ -194,7 +194,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_Removed) {
 
   EXPECT_EQ(
       kActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(1u, changed_rule_sets.size());
   EXPECT_TRUE(changed_rule_sets.Contains(&sheet2->Contents()->GetRuleSet()));
 }
@@ -217,7 +217,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_RemovedAll) {
 
   EXPECT_EQ(
       kActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(3u, changed_rule_sets.size());
 }
 
@@ -242,7 +242,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_InsertedAndRemoved) {
 
   EXPECT_EQ(
       kActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(2u, changed_rule_sets.size());
   EXPECT_TRUE(changed_rule_sets.Contains(&sheet1->Contents()->GetRuleSet()));
   EXPECT_TRUE(changed_rule_sets.Contains(&sheet3->Contents()->GetRuleSet()));
@@ -265,7 +265,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_AddNullRuleSet) {
 
   EXPECT_EQ(
       kNoActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(0u, changed_rule_sets.size());
 }
 
@@ -286,7 +286,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_RemoveNullRuleSet) {
 
   EXPECT_EQ(
       kNoActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(0u, changed_rule_sets.size());
 }
 
@@ -309,7 +309,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_AddRemoveNullRuleSet) {
 
   EXPECT_EQ(
       kNoActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(0u, changed_rule_sets.size());
 }
 
@@ -334,7 +334,7 @@ TEST_F(ActiveStyleSheetsTest,
 
   EXPECT_EQ(
       kActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(1u, changed_rule_sets.size());
   EXPECT_TRUE(changed_rule_sets.Contains(&sheet3->Contents()->GetRuleSet()));
 }
@@ -366,7 +366,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_ReorderedImportSheets) {
 
   EXPECT_EQ(
       kNoActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(0u, changed_rule_sets.size());
 }
 
@@ -386,7 +386,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_DisableAndAppend) {
 
   EXPECT_EQ(
       kActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(2u, changed_rule_sets.size());
 }
 
@@ -397,7 +397,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_AddRemoveNonMatchingMQ) {
 
   EXPECT_EQ(
       kNoActiveSheetsChanged,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(0u, changed_rule_sets.size());
 
   CSSStyleSheet* sheet1 = CreateSheet();
@@ -410,12 +410,12 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_AddRemoveNonMatchingMQ) {
 
   EXPECT_EQ(
       kActiveSheetsAppended,
-      CompareActiveStyleSheets(old_sheets, new_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(old_sheets, new_sheets, {}, changed_rule_sets));
   EXPECT_EQ(0u, changed_rule_sets.size());
 
   EXPECT_EQ(
       kActiveSheetsChanged,
-      CompareActiveStyleSheets(new_sheets, old_sheets, changed_rule_sets));
+      CompareActiveStyleSheets(new_sheets, old_sheets, {}, changed_rule_sets));
   EXPECT_EQ(0u, changed_rule_sets.size());
 }
 
@@ -429,7 +429,7 @@ TEST_F(ApplyRulesetsTest, AddUniversalRuleToDocument) {
       std::make_pair(sheet, &sheet->Contents()->GetRuleSet()));
 
   GetStyleEngine().ApplyRuleSetChanges(GetDocument(), ActiveStyleSheetVector(),
-                                       new_style_sheets);
+                                       new_style_sheets, {});
 
   EXPECT_EQ(kSubtreeStyleChange,
             GetDocument().documentElement()->GetStyleChangeType());
@@ -451,7 +451,7 @@ TEST_F(ApplyRulesetsTest, AddUniversalRuleToShadowTree) {
       std::make_pair(sheet, &sheet->Contents()->GetRuleSet()));
 
   GetStyleEngine().ApplyRuleSetChanges(shadow_root, ActiveStyleSheetVector(),
-                                       new_style_sheets);
+                                       new_style_sheets, {});
 
   EXPECT_FALSE(GetDocument().NeedsStyleRecalc());
   EXPECT_EQ(kSubtreeStyleChange, host->GetStyleChangeType());
@@ -468,7 +468,7 @@ TEST_F(ApplyRulesetsTest, AddFontFaceRuleToDocument) {
       std::make_pair(sheet, &sheet->Contents()->GetRuleSet()));
 
   GetStyleEngine().ApplyRuleSetChanges(GetDocument(), ActiveStyleSheetVector(),
-                                       new_style_sheets);
+                                       new_style_sheets, {});
 
   EXPECT_EQ(kNoStyleChange,
             GetDocument().documentElement()->GetStyleChangeType());
@@ -491,7 +491,7 @@ TEST_F(ApplyRulesetsTest, AddFontFaceRuleToShadowTree) {
       std::make_pair(sheet, &sheet->Contents()->GetRuleSet()));
 
   GetStyleEngine().ApplyRuleSetChanges(shadow_root, ActiveStyleSheetVector(),
-                                       new_style_sheets);
+                                       new_style_sheets, {});
 
   EXPECT_FALSE(GetDocument().NeedsStyleRecalc());
   EXPECT_FALSE(GetDocument().ChildNeedsStyleRecalc());
@@ -520,7 +520,7 @@ TEST_F(ApplyRulesetsTest, RemoveSheetFromShadowTree) {
   old_style_sheets.push_back(
       std::make_pair(css_sheet, &css_sheet->Contents()->GetRuleSet()));
   GetStyleEngine().ApplyRuleSetChanges(shadow_root, old_style_sheets,
-                                       ActiveStyleSheetVector());
+                                       ActiveStyleSheetVector(), {});
 }
 
 }  // namespace blink

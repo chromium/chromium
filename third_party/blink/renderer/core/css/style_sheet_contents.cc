@@ -283,10 +283,14 @@ static wtf_size_t ReplaceRuleIfExistsInternal(
   return std::numeric_limits<wtf_size_t>::max();
 }
 
-wtf_size_t StyleSheetContents::ReplaceRuleIfExists(
-    const StyleRuleBase* old_rule,
-    StyleRuleBase* new_rule,
-    wtf_size_t position_hint) {
+wtf_size_t StyleSheetContents::ReplaceRuleIfExists(StyleRuleBase* old_rule,
+                                                   StyleRuleBase* new_rule,
+                                                   wtf_size_t position_hint) {
+  if (rule_set_diff_) {
+    rule_set_diff_->AddDiff(old_rule);
+    rule_set_diff_->AddDiff(new_rule);
+  }
+
   if (position_hint < child_rules_.size() &&
       child_rules_[position_hint] == old_rule) {
     child_rules_[position_hint] = new_rule;
@@ -300,6 +304,10 @@ bool StyleSheetContents::WrapperInsertRule(StyleRuleBase* rule,
                                            unsigned index) {
   DCHECK(is_mutable_);
   SECURITY_DCHECK(index <= RuleCount());
+
+  if (rule_set_diff_) {
+    rule_set_diff_->AddDiff(rule);
+  }
 
   // If the sheet starts with empty layer statements without any import or
   // namespace rules, we should be able to insert any rule before and between
@@ -393,12 +401,18 @@ bool StyleSheetContents::WrapperDeleteRule(unsigned index) {
   SECURITY_DCHECK(index < RuleCount());
 
   if (index < pre_import_layer_statement_rules_.size()) {
+    if (rule_set_diff_) {
+      rule_set_diff_->AddDiff(pre_import_layer_statement_rules_[index]);
+    }
     pre_import_layer_statement_rules_.EraseAt(index);
     return true;
   }
   index -= pre_import_layer_statement_rules_.size();
 
   if (index < import_rules_.size()) {
+    if (rule_set_diff_) {
+      rule_set_diff_->AddDiff(import_rules_[index]);
+    }
     import_rules_[index]->ClearParentStyleSheet();
     import_rules_.EraseAt(index);
     return true;
@@ -406,6 +420,9 @@ bool StyleSheetContents::WrapperDeleteRule(unsigned index) {
   index -= import_rules_.size();
 
   if (index < namespace_rules_.size()) {
+    if (rule_set_diff_) {
+      rule_set_diff_->AddDiff(namespace_rules_[index]);
+    }
     if (!child_rules_.empty()) {
       return false;
     }
@@ -414,6 +431,9 @@ bool StyleSheetContents::WrapperDeleteRule(unsigned index) {
   }
   index -= namespace_rules_.size();
 
+  if (rule_set_diff_) {
+    rule_set_diff_->AddDiff(child_rules_[index]);
+  }
   if (child_rules_[index]->IsFontFaceRule()) {
     NotifyRemoveFontFaceRule(To<StyleRuleFontFace>(child_rules_[index].Get()));
   }
@@ -769,9 +789,15 @@ RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium) {
   if (rule_set_ && rule_set_->DidMediaQueryResultsChange(medium)) {
     rule_set_ = nullptr;
   }
+  if (rule_set_diff_) {
+    rule_set_diff_->NewRuleSetCleared();
+  }
   if (!rule_set_) {
     rule_set_ = MakeGarbageCollected<RuleSet>();
     rule_set_->AddRulesFromSheet(this, medium);
+    if (rule_set_diff_) {
+      rule_set_diff_->NewRuleSetCreated(rule_set_);
+    }
   }
   return *rule_set_.Get();
 }
@@ -788,6 +814,13 @@ static void SetNeedsActiveStyleUpdateForClients(
   }
 }
 
+void StyleSheetContents::StartMutation() {
+  is_mutable_ = true;
+  if (rule_set_) {
+    rule_set_diff_ = MakeGarbageCollected<RuleSetDiff>(rule_set_);
+  }
+}
+
 void StyleSheetContents::ClearRuleSet() {
   if (StyleSheetContents* parent_sheet = ParentStyleSheet()) {
     parent_sheet->ClearRuleSet();
@@ -798,6 +831,9 @@ void StyleSheetContents::ClearRuleSet() {
   }
 
   rule_set_.Clear();
+  if (rule_set_diff_) {
+    rule_set_diff_->NewRuleSetCleared();
+  }
   SetNeedsActiveStyleUpdateForClients(loading_clients_);
   SetNeedsActiveStyleUpdateForClients(completed_clients_);
 }
@@ -830,6 +866,7 @@ void StyleSheetContents::Trace(Visitor* visitor) const {
   visitor->Trace(rule_set_);
   visitor->Trace(referenced_from_resource_);
   visitor->Trace(parser_context_);
+  visitor->Trace(rule_set_diff_);
 }
 
 }  // namespace blink

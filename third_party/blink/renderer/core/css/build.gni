@@ -642,6 +642,8 @@ blink_core_sources_css = [
   "rule_feature_set.h",
   "rule_set.cc",
   "rule_set.h",
+  "rule_set_diff.cc",
+  "rule_set_diff.h",
   "selector_filter.cc",
   "selector_filter.h",
   "selector_statistics.cc",

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transitions.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_stack.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -145,9 +146,6 @@ class CORE_EXPORT RuleData {
 
   void Trace(Visitor*) const;
 
-  // Used during merging.
-  void AdjustPosition(int offset) { position_ += offset; }
-
   // This number is picked fairly arbitrary. If lowered, be aware that there
   // might be sites and extensions using style rules with selector lists
   // exceeding the number of simple selectors to fit in this bitfield.
@@ -235,7 +233,9 @@ class RuleMap {
 
  public:
   void Add(const AtomicString& key, const RuleData& rule_data);
-  void Merge(const RuleMap& other, int offset);
+  void AddFilteredRulesFromOtherSet(
+      const RuleMap& other,
+      const HeapHashSet<Member<StyleRule>>& only_include);
   base::span<const RuleData> Find(const AtomicString& key) const {
     DCHECK(buckets.empty() || compacted);
     auto it = buckets.find(key);
@@ -342,7 +342,19 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                     const ContainerQuery* container_query = nullptr,
                     CascadeLayer* cascade_layer = nullptr,
                     const StyleScope* style_scope = nullptr);
-  void Merge(const RuleSet& other, LayerMap& layer_mapping);
+
+  // Adds RuleDatas (and only RuleDatas) from the other set, but only if they
+  // correspond to rules in “only_include”. This is used when creating diff
+  // rulesets for invalidation, and the resulting RuleSets are not usable
+  // for anything else. In particular, cascade layers are not copied
+  // and RuleData offsets are not adjusted (so CascadePriority would be wrong
+  // if merging RuleDatas from different RuleSets). This means that the only
+  // thing you can really do with this RuleSet afterwards is
+  // ElementRuleCollector's CheckIfAnyRuleMatches(); the regular
+  // Collect*Rules() functions are bound to give you trouble.
+  void AddFilteredRulesFromOtherSet(
+      const RuleSet& other,
+      const HeapHashSet<Member<StyleRule>>& only_include);
 
   const RuleFeatureSet& Features() const { return features_; }
 
@@ -575,9 +587,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   CascadeLayer* GetOrAddSubLayer(CascadeLayer*,
                                  const StyleRuleBase::LayerName&);
   void AddRuleToLayerIntervals(const CascadeLayer*, unsigned position);
-  void MergeCascadeLayers(const RuleSet& other,
-                          int offset,
-                          LayerMap& layer_mapping);
 
   // May return nullptr for the implicit outer layer.
   const CascadeLayer* GetLayerForTest(const RuleData&) const;
@@ -659,6 +668,12 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
 #if DCHECK_IS_ON()
   HeapVector<RuleData> all_rules_;
+
+  // If true, we don't DCHECK that these are unsorted, since they
+  // came from merged+filtered rulesets, which only happens when
+  // making diff rulesets for invalidation. Those do not care
+  // about the ordering, since they do not use the CascadeLayerSeeker.
+  bool allow_unsorted_ = false;
 #endif  // DCHECK_IS_ON()
 };
 
