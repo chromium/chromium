@@ -388,8 +388,7 @@ void AutofillField::SetTypeTo(const AutofillType& type) {
 AutofillType AutofillField::ComputedType() const {
   // If autocomplete=tel/tel-* and server confirms it really is a phone field,
   // we always use the server prediction as html types are not very reliable.
-  if (GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
-          FieldTypeGroup::kPhone &&
+  if (GroupTypeOfHtmlFieldType(html_type_) == FieldTypeGroup::kPhone &&
       GroupTypeOfServerFieldType(server_type()) == FieldTypeGroup::kPhone) {
     return AutofillType(server_type());
   }
@@ -424,7 +423,7 @@ AutofillType AutofillField::ComputedType() const {
   if (BelievedHtmlTypes(heuristic_type(), server_type(),
                         IsCreditCardPrediction())
           .contains(html_type())) {
-    return AutofillType(html_type_, html_mode_);
+    return AutofillType(html_type_);
   }
 
   if (server_type() != NO_SERVER_DATA &&

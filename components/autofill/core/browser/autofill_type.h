@@ -23,8 +23,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type);
 
 // Helper method that takes a `HtmlFieldType` and `HtmlFieldMode`, then returns
 // their corresponding `FieldTypeGroup` value.
-FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
-                                        HtmlFieldMode field_mode);
+FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type);
 
 // Helper method that takes a `FieldTypeGroup` and returns a
 // `ServerFieldTypeSet` containing all `ServerFieldType`(s) that matches the
@@ -70,7 +69,7 @@ class AutofillType {
   };
 
   explicit AutofillType(ServerFieldType field_type = NO_SERVER_DATA);
-  AutofillType(HtmlFieldType field_type, HtmlFieldMode mode);
+  explicit AutofillType(HtmlFieldType field_type);
   AutofillType(const AutofillType& autofill_type) = default;
   AutofillType& operator=(const AutofillType& autofill_type) = default;
 
@@ -100,9 +99,8 @@ class AutofillType {
   // The server-native field type, or UNKNOWN_TYPE if unset.
   ServerFieldType server_type_ = UNKNOWN_TYPE;
 
-  // The HTML autocomplete field type and mode hints, if set.
+  // The HTML autocomplete field type, if set.
   HtmlFieldType html_type_ = HtmlFieldType::kUnspecified;
-  HtmlFieldMode html_mode_ = HtmlFieldMode::kNone;
 };
 
 }  // namespace autofill

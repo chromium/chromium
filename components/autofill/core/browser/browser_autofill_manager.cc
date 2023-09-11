@@ -3580,10 +3580,8 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
     if (!canonical_state_name_from_profile)
       continue;
 
-    const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
-                                    HtmlFieldMode::kNone);
     const std::u16string& country_code =
-        profile.GetInfo(kCountryCode, app_locale_);
+        profile.GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale_);
 
     for (auto& field : *form_structure) {
       if (field->state_is_a_matching_type())

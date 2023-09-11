@@ -147,8 +147,7 @@ void LogQualityMetrics(
           // precedence wouldn't change the behavior of the program.
           bool autocomplete_disagree_with_type =
               field.Type().GetStorableType() !=
-              AutofillType(field.html_type(), field.html_mode())
-                  .GetStorableType();
+              AutofillType(field.html_type()).GetStorableType();
           // The feature is only active for street name and house number types.
           bool is_street_name_or_house_number =
               IsStreetNameOrHouseNumberType(field.Type().GetStorableType());

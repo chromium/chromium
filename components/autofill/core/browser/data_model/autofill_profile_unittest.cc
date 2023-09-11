@@ -1413,7 +1413,7 @@ TEST(AutofillProfileTest, FullAddress) {
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
 
-  AutofillType full_address(HtmlFieldType::kFullAddress, HtmlFieldMode::kNone);
+  AutofillType full_address(HtmlFieldType::kFullAddress);
   std::u16string formatted_address(
       u"Marion Mitchell Morrison\n"
       u"Fox\n"

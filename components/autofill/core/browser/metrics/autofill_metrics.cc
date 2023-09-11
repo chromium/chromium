@@ -694,8 +694,7 @@ void LogPredictionQualityMetrics(
 
   const ServerFieldTypeSet& possible_types =
       metric_type == AutofillMetrics::TYPE_AUTOCOMPLETE_BASED
-          ? ServerFieldTypeSet{AutofillType(field.html_type(),
-                                            field.html_mode())
+          ? ServerFieldTypeSet{AutofillType(field.html_type())
                                    .GetStorableType()}
           : field.possible_types();
 

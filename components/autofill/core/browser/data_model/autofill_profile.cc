@@ -945,16 +945,15 @@ std::u16string AutofillProfile::ConstructInferredLabel(
   std::u16string separator =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
 
-  AutofillType region_code_type(HtmlFieldType::kCountryCode,
-                                HtmlFieldMode::kNone);
   const std::u16string& profile_region_code =
-      GetInfo(region_code_type, app_locale);
+      GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale);
   std::string address_region_code = UTF16ToUTF8(profile_region_code);
 
   // A copy of |this| pruned down to contain only data for the address fields in
   // |included_fields|.
   AutofillProfile trimmed_profile(guid());
-  trimmed_profile.SetInfo(region_code_type, profile_region_code, app_locale);
+  trimmed_profile.SetInfo(AutofillType(HtmlFieldType::kCountryCode),
+                          profile_region_code, app_locale);
   trimmed_profile.set_language_code(language_code());
   AutofillCountry country(address_region_code);
 

@@ -152,8 +152,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
   }
 }
 
-FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
-                                        HtmlFieldMode field_mode) {
+FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
   switch (field_type) {
     case HtmlFieldType::kName:
     case HtmlFieldType::kHonorificPrefix:
@@ -268,15 +267,14 @@ ServerFieldType AutofillType::ServerPrediction::server_type() const {
 AutofillType::AutofillType(ServerFieldType field_type)
     : server_type_(ToSafeServerFieldType(field_type, UNKNOWN_TYPE)) {}
 
-AutofillType::AutofillType(HtmlFieldType field_type, HtmlFieldMode mode)
-    : html_type_(field_type), html_mode_(mode) {}
+AutofillType::AutofillType(HtmlFieldType field_type) : html_type_(field_type) {}
 
 FieldTypeGroup AutofillType::group() const {
   FieldTypeGroup result = FieldTypeGroup::kNoGroup;
   if (server_type_ != UNKNOWN_TYPE) {
     result = GroupTypeOfServerFieldType(server_type_);
   } else {
-    result = GroupTypeOfHtmlFieldType(html_type_, html_mode_);
+    result = GroupTypeOfHtmlFieldType(html_type_);
   }
   return result;
 }

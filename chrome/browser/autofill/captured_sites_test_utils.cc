@@ -142,8 +142,8 @@ absl::optional<autofill::ServerFieldType> StringToFieldType(
     }
     for (size_t i = static_cast<size_t>(autofill::HtmlFieldType::kUnspecified);
          i <= static_cast<size_t>(autofill::HtmlFieldType::kMaxValue); ++i) {
-      autofill::AutofillType field_type(static_cast<autofill::HtmlFieldType>(i),
-                                        autofill::HtmlFieldMode::kNone);
+      autofill::AutofillType field_type(
+          static_cast<autofill::HtmlFieldType>(i));
       map[field_type.ToString()] = field_type.GetStorableType();
     }
     return map;
@@ -817,8 +817,7 @@ ProfileDataController::ProfileDataController()
 
   for (size_t i = static_cast<size_t>(autofill::HtmlFieldType::kUnspecified);
        i <= static_cast<size_t>(autofill::HtmlFieldType::kMaxValue); ++i) {
-    autofill::AutofillType field_type(static_cast<autofill::HtmlFieldType>(i),
-                                      autofill::HtmlFieldMode::kNone);
+    autofill::AutofillType field_type(static_cast<autofill::HtmlFieldType>(i));
     string_to_field_type_map_[field_type.ToString()] =
         field_type.GetStorableType();
   }

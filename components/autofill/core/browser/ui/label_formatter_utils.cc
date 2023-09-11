@@ -152,8 +152,7 @@ AutofillProfile MakeTrimmedProfile(const AutofillProfile& profile,
   AutofillProfile trimmed_profile(profile.guid());
   trimmed_profile.set_language_code(profile.language_code());
 
-  const AutofillType country_code_type(HtmlFieldType::kCountryCode,
-                                       HtmlFieldMode::kNone);
+  const AutofillType country_code_type(HtmlFieldType::kCountryCode);
   const std::u16string country_code =
       profile.GetInfo(country_code_type, app_locale);
   trimmed_profile.SetInfo(country_code_type, country_code, app_locale);

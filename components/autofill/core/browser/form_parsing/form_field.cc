@@ -625,8 +625,7 @@ void FormField::ParseUsingAutocompleteAttributes(
     HtmlFieldType html_type = FieldTypeFromAutocompleteAttributeValue(
         base::UTF16ToUTF8(field->parseable_name()));
     // The HTML_MODE is irrelevant when converting to a ServerFieldType.
-    ServerFieldType type =
-        AutofillType(html_type, HtmlFieldMode::kNone).GetStorableType();
+    ServerFieldType type = AutofillType(html_type).GetStorableType();
     if (type != UNKNOWN_TYPE) {
       AddClassification(field, type, kBaseAutocompleteParserScore,
                         field_candidates);

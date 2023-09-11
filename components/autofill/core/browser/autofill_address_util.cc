@@ -194,10 +194,8 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
                                        const std::string& ui_language_code,
                                        bool include_recipient,
                                        bool include_country) {
-  const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
-                                  HtmlFieldMode::kNone);
-  const std::u16string& country_code =
-      profile.GetInfo(kCountryCode, ui_language_code);
+  const std::u16string& country_code = profile.GetInfo(
+      AutofillType(HtmlFieldType::kCountryCode), ui_language_code);
 
   std::string not_used;
   std::vector<AutofillAddressUIComponent> components = GetAddressComponents(

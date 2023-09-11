@@ -39,8 +39,8 @@ std::unique_ptr<AddressData> CreateAddressData(
       base::UTF16ToUTF8(get_info.Run(AutofillType(NAME_FULL)));
   address_data->organization =
       base::UTF16ToUTF8(get_info.Run(AutofillType(COMPANY_NAME)));
-  address_data->region_code = base::UTF16ToUTF8(get_info.Run(
-      AutofillType(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone)));
+  address_data->region_code = base::UTF16ToUTF8(
+      get_info.Run(AutofillType(HtmlFieldType::kCountryCode)));
   address_data->administrative_area =
       base::UTF16ToUTF8(get_info.Run(AutofillType(ADDRESS_HOME_STATE)));
   address_data->locality =

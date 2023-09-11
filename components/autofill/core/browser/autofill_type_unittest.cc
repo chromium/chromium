@@ -88,61 +88,39 @@ TEST(AutofillTypeTest, ServerFieldTypes) {
 
 TEST(AutofillTypeTest, HtmlFieldTypes) {
   // Unknown type.
-  AutofillType unknown(HtmlFieldType::kUnspecified, HtmlFieldMode::kNone);
+  AutofillType unknown(HtmlFieldType::kUnspecified);
   EXPECT_EQ(UNKNOWN_TYPE, unknown.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kNoGroup, unknown.group());
 
   // Type with group but no subgroup.
-  AutofillType first(HtmlFieldType::kGivenName, HtmlFieldMode::kNone);
+  AutofillType first(HtmlFieldType::kGivenName);
   EXPECT_EQ(NAME_FIRST, first.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kName, first.group());
 
   // Type with group and subgroup.
-  AutofillType phone(HtmlFieldType::kTel, HtmlFieldMode::kNone);
+  AutofillType phone(HtmlFieldType::kTel);
   EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER, phone.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kPhone, phone.group());
 
   // Last value, to check any offset errors.
-  AutofillType last(HtmlFieldType::kCreditCardExp4DigitYear,
-                    HtmlFieldMode::kNone);
+  AutofillType last(HtmlFieldType::kCreditCardExp4DigitYear);
   EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR, last.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kCreditCard, last.group());
-
-  // Shipping mode.
-  AutofillType shipping_first(HtmlFieldType::kGivenName,
-                              HtmlFieldMode::kShipping);
-  EXPECT_EQ(NAME_FIRST, shipping_first.GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kName, shipping_first.group());
-
-  // Billing mode.
-  AutofillType billing_first(HtmlFieldType::kGivenName,
-                             HtmlFieldMode::kBilling);
-  EXPECT_EQ(NAME_FIRST, billing_first.GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kName, billing_first.group());
 }
 
 class AutofillTypeTestForHtmlFieldTypes
-    : public ::testing::TestWithParam<
-          std::tuple<std::underlying_type_t<HtmlFieldType>,
-                     std::underlying_type_t<HtmlFieldMode>>> {
+    : public ::testing::TestWithParam<std::underlying_type_t<HtmlFieldType>> {
  public:
   HtmlFieldType html_field_type() const {
-    return static_cast<HtmlFieldType>(std::get<0>(GetParam()));
-  }
-
-  HtmlFieldMode html_field_mode() const {
-    return static_cast<HtmlFieldMode>(std::get<1>(GetParam()));
+    return static_cast<HtmlFieldType>(GetParam());
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillTypeTest,
     AutofillTypeTestForHtmlFieldTypes,
-    testing::Combine(
-        testing::Range(base::to_underlying(HtmlFieldType::kMinValue),
-                       base::to_underlying(HtmlFieldType::kMaxValue)),
-        testing::Range(base::to_underlying(HtmlFieldMode::kMinValue),
-                       base::to_underlying(HtmlFieldMode::kMaxValue))));
+    testing::Range(base::to_underlying(HtmlFieldType::kMinValue),
+                   base::to_underlying(HtmlFieldType::kMaxValue)));
 
 TEST_P(AutofillTypeTestForHtmlFieldTypes, GroupsOfHtmlFieldTypes) {
   // Some HtmlFieldTypes have no ServerFieldType representation.
@@ -152,12 +130,10 @@ TEST_P(AutofillTypeTestForHtmlFieldTypes, GroupsOfHtmlFieldTypes) {
       html_field_type() == HtmlFieldType::kTransactionCurrency) {
     return;
   }
-  AutofillType t(html_field_type(), html_field_mode());
+  AutofillType t(html_field_type());
   SCOPED_TRACE(testing::Message()
                << "html_field_type="
                << FieldTypeToStringPiece(html_field_type()) << " "
-               << "html_field_mode="
-               << HtmlFieldModeToStringPiece(html_field_mode()) << " "
                << "field_type=" << FieldTypeToStringPiece(t.GetStorableType()));
   EXPECT_EQ(t.group(), GroupTypeOfServerFieldType(t.GetStorableType()));
 }
