@@ -28,14 +28,6 @@ struct IconFramePreferenceKey: PreferenceKey {
   }
 }
 
-/// `PreferenceKey` holding the frame of the text in the destination view.
-struct TextFramePreferenceKey: PreferenceKey {
-  static var defaultValue: CGRect = .null
-  static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
-    value = CGRectUnion(value, nextValue())
-  }
-}
-
 /// A view displaying a single destination.
 @available(iOS 15, *)
 struct OverflowMenuDestinationView: View {
@@ -53,12 +45,9 @@ struct OverflowMenuDestinationView: View {
   /// Shape consisting of a path around the icon and text.
   struct IconShape: Shape {
     let iconFrame: CGRect
-    let textFrame: CGRect
 
     func path(in rect: CGRect) -> Path {
-      var path = Path(roundedRect: iconFrame, cornerRadius: Dimensions.cornerRadius)
-      path.addRect(textFrame)
-      return path
+      return Path(roundedRect: iconFrame, cornerRadius: Dimensions.cornerRadius)
     }
   }
 
@@ -126,7 +115,6 @@ struct OverflowMenuDestinationView: View {
   @State private var isPressed = false
 
   @State private var iconFrame: CGRect = .zero
-  @State private var textFrame: CGRect = .zero
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
@@ -135,7 +123,7 @@ struct OverflowMenuDestinationView: View {
       .coordinateSpace(name: Self.viewNamespace)
       .contentShape(
         [.contextMenuPreview, .dragPreview],
-        IconShape(iconFrame: iconFrame, textFrame: textFrame)
+        IconShape(iconFrame: iconFrame)
       )
       .if(editMode?.wrappedValue.isEditing != true) { view in
         view.contextMenu {
@@ -159,9 +147,6 @@ struct OverflowMenuDestinationView: View {
       }
       .onPreferenceChange(IconFramePreferenceKey.self) { newFrame in
         iconFrame = newFrame
-      }
-      .onPreferenceChange(TextFramePreferenceKey.self) { newFrame in
-        textFrame = newFrame
       }
   }
 
@@ -327,12 +312,6 @@ struct OverflowMenuDestinationView: View {
       .padding([.leading, .trailing], textSpacing)
       .multilineTextAlignment(.center)
       .lineLimit(maximumLines)
-      .overlay {
-        GeometryReader { geometry in
-          Color.clear.preference(
-            key: TextFramePreferenceKey.self, value: geometry.frame(in: .named(Self.viewNamespace)))
-        }
-      }
   }
 
   var accessibilityLabel: String {
