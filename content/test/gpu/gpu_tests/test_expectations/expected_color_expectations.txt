@@ -13,7 +13,8 @@
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #             chromeos-board-jacuzzi chromeos-board-octopus
-#         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
+#         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
+#             fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
 #         mobile ]
@@ -87,8 +88,7 @@
 # platform/configuration.
 
 # ExpectedColor_MediaRecorderFromVideoElement fails when protected memory is used.
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] ExpectedColor_MediaRecorderFromVideoElement [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] ExpectedColor_MediaRecorderFromVideoElement [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVideoElement [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #

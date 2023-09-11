@@ -13,7 +13,8 @@
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #             chromeos-board-jacuzzi chromeos-board-octopus
-#         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
+#         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
+#             fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
 #         mobile ]
@@ -305,8 +306,7 @@ crbug.com/1145858 [ fuchsia ] conformance/extensions/ext-disjoint-timer-query.ht
 [ fuchsia ] deqp/data/gles2/shaders/preprocessor.html [ Skip ]
 
 # Causes the render process to hang
-crbug.com/1280692 [ fuchsia fuchsia-board-astro ] conformance/context/context-creation-and-destruction.html [ Skip ]
-crbug.com/1280692 [ fuchsia fuchsia-board-sherlock ] conformance/context/context-creation-and-destruction.html [ Skip ]
+crbug.com/1280692 [ fuchsia web-engine-shell ] conformance/context/context-creation-and-destruction.html [ Skip ]
 
 # Linux Intel
 # Can occasionally kill machines. Appears to be tied to kernel version, so can
