@@ -48,6 +48,8 @@ class TestInterestGroupPrivateAggregationManager
                        base::Time delete_end,
                        StoragePartition::StorageKeyMatcherFunction filter,
                        base::OnceClosure done) override;
+  bool IsDebugModeAllowed(const url::Origin& top_frame_origin,
+                          const url::Origin& reporting_origin) override;
 
   // blink::mojom::PrivateAggregationHost implementation:
   void ContributeToHistogram(

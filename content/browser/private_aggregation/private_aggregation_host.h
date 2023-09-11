@@ -88,6 +88,9 @@ class CONTENT_EXPORT PrivateAggregationHost
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver);
 
+  bool IsDebugModeAllowed(const url::Origin& top_frame_origin,
+                          const url::Origin& reporting_origin);
+
   // blink::mojom::PrivateAggregationHost:
   void ContributeToHistogram(
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>

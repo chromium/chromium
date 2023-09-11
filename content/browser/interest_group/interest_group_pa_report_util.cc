@@ -329,6 +329,9 @@ void SplitContributionsIntoBatchesThenSendToHost(
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>>
       contributions_map;
 
+  bool is_debug_mode_allowed = pa_manager.IsDebugModeAllowed(
+      /*top_frame_origin=*/main_frame_origin, reporting_origin);
+
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        requests) {
     // All for-event contributions have already been converted to histogram
@@ -340,6 +343,13 @@ void SplitContributionsIntoBatchesThenSendToHost(
     // TODO(alexmt): Split by this too when it can be non-default.
     CHECK_EQ(request->aggregation_mode,
              blink::mojom::AggregationServiceMode::kDefault);
+
+    // If debug mode will be ignored by the Private Aggregation layer, we
+    // override the value here to allow the contributions to be batched
+    // together.
+    if (!is_debug_mode_allowed) {
+      request->debug_mode_details = blink::mojom::DebugModeDetails::New();
+    }
 
     contributions_map[std::move(request->debug_mode_details)].push_back(
         std::move(request->contribution->get_histogram_contribution()));

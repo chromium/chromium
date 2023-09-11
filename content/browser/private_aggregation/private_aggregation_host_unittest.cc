@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -32,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/gurl.h"
@@ -53,6 +56,10 @@ class PrivateAggregationHostTest : public testing::Test {
   PrivateAggregationHostTest() = default;
 
   void SetUp() override {
+    // Ensure debug mode is always available by default for tests.
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kPrivateAggregationApi,
+        {{"debug_mode_settings_check_enabled", "false"}});
     host_ = std::make_unique<PrivateAggregationHost>(
         /*on_report_request_received=*/mock_callback_.Get(),
         /*browser_context=*/&test_browser_context_);
@@ -67,6 +74,7 @@ class PrivateAggregationHostTest : public testing::Test {
   std::unique_ptr<PrivateAggregationHost> host_;
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   TestBrowserContext test_browser_context_;
@@ -741,6 +749,109 @@ TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
     EXPECT_TRUE(remote.is_connected());
     remote.reset();
     host_->FlushReceiverSetForTesting();
+  }
+}
+
+TEST_F(PrivateAggregationHostTest,
+       DebugModeFeatureParamsAndSettingsCheckAppliedCorrectly) {
+  struct {
+    base::FieldTrialParams field_trial_params;
+    bool expected_debug_mode_settings_check;
+
+    // No effect if `expected_debug_mode_settings_check` is false.
+    bool approve_debug_mode_settings_check = false;
+    bool call_enable_debug_mode = true;
+    AggregatableReportSharedInfo::DebugMode expected_debug_mode;
+  } kTestCases[] = {
+      {
+          .field_trial_params = {{"debug_mode_enabled_at_all", "false"}},
+          .expected_debug_mode_settings_check = false,
+          .expected_debug_mode =
+              AggregatableReportSharedInfo::DebugMode::kDisabled,
+      },
+      {
+          .field_trial_params = {{"debug_mode_settings_check_enabled", "true"}},
+          .expected_debug_mode_settings_check = true,
+          .approve_debug_mode_settings_check = false,
+          .expected_debug_mode =
+              AggregatableReportSharedInfo::DebugMode::kDisabled,
+      },
+      {
+          .field_trial_params = {{"debug_mode_settings_check_enabled", "true"}},
+          .expected_debug_mode_settings_check = true,
+          .approve_debug_mode_settings_check = true,
+          .expected_debug_mode =
+              AggregatableReportSharedInfo::DebugMode::kEnabled,
+      },
+      {
+          .field_trial_params = {{"debug_mode_settings_check_enabled", "true"}},
+          .expected_debug_mode_settings_check = false,
+          .call_enable_debug_mode = false,
+          .expected_debug_mode =
+              AggregatableReportSharedInfo::DebugMode::kDisabled,
+      }};
+
+  for (auto& test_case : kTestCases) {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kPrivateAggregationApi, test_case.field_trial_params);
+
+    base::HistogramTester histogram;
+    MockPrivateAggregationContentBrowserClient browser_client;
+    ScopedContentBrowserClientSetting setting(&browser_client);
+
+    const url::Origin kExampleOrigin =
+        url::Origin::Create(GURL("https://example.com"));
+    const url::Origin kMainFrameOrigin =
+        url::Origin::Create(GURL("https://main_frame.com"));
+
+    mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+    EXPECT_TRUE(host_->BindNewReceiver(
+        kExampleOrigin, kMainFrameOrigin,
+        PrivateAggregationBudgetKey::Api::kProtectedAudience,
+        /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
+
+    absl::optional<AggregatableReportRequest> validated_request;
+    EXPECT_CALL(
+        mock_callback_,
+        Run(_, Property(&PrivateAggregationBudgetKey::api,
+                        PrivateAggregationBudgetKey::Api::kProtectedAudience)))
+        .WillOnce(MoveArg<0>(&validated_request));
+
+    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+        contributions;
+    contributions.push_back(
+        blink::mojom::AggregatableReportHistogramContribution::New(
+            /*bucket=*/123, /*value=*/456));
+    remote->ContributeToHistogram(std::move(contributions));
+    if (test_case.call_enable_debug_mode) {
+      remote->EnableDebugMode(/*debug_key=*/nullptr);
+    }
+
+    EXPECT_CALL(browser_client, IsPrivateAggregationAllowed(_, kMainFrameOrigin,
+                                                            kExampleOrigin))
+        .WillRepeatedly(testing::Return(true));
+
+    if (test_case.expected_debug_mode_settings_check) {
+      EXPECT_CALL(browser_client, IsPrivateAggregationDebugModeAllowed(
+                                      _, kMainFrameOrigin, kExampleOrigin))
+          .WillOnce(
+              testing::Return(test_case.approve_debug_mode_settings_check));
+    } else {
+      EXPECT_CALL(browser_client, IsPrivateAggregationDebugModeAllowed(
+                                      _, kMainFrameOrigin, kExampleOrigin))
+          .Times(0);
+    }
+
+    remote.reset();
+    host_->FlushReceiverSetForTesting();
+    ASSERT_TRUE(validated_request);
+    EXPECT_EQ(validated_request->shared_info().debug_mode,
+              test_case.expected_debug_mode);
+
+    histogram.ExpectUniqueSample(
+        kPipeResultHistogram,
+        PrivateAggregationHost::PipeResult::kReportSuccess, 1);
   }
 }
 

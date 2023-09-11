@@ -81,6 +81,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   bool IsPrivateAggregationAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const override;
+  bool IsPrivateAggregationDebugModeAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin) const override;
   bool IsCookieDeprecationLabelAllowed() const override;
   bool IsCookieDeprecationLabelAllowedForContext(
       const url::Origin& top_frame_origin,

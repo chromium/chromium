@@ -671,6 +671,20 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
                                            reporting_origin.GetURL());
 }
 
+bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& reporting_origin) const {
+  if (!IsPrivateAggregationAllowed(top_frame_origin, reporting_origin)) {
+    return false;
+  }
+
+  // Third party cookies must also be available for this context. An empty site
+  // for cookies is provided so the context is always treated as a third party.
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
+      net::CookieSettingOverrides());
+}
+
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabled() const {
   PrivacySandboxSettingsImpl::Status status = GetPrivacySandboxAllowedStatus();
   if (!IsAllowed(status)) {

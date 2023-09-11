@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
@@ -133,6 +134,22 @@ bool PrivateAggregationHost::BindNewReceiver(
   CHECK(emplace_result.second);  // The ID should not already be present.
 
   return true;
+}
+
+bool PrivateAggregationHost::IsDebugModeAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& reporting_origin) {
+  if (!blink::features::kPrivateAggregationApiDebugModeEnabledAtAll.Get()) {
+    return false;
+  }
+
+  if (!blink::features::kPrivateAggregationApiDebugModeSettingsCheckEnabled
+           .Get()) {
+    return true;
+  }
+
+  return GetContentClient()->browser()->IsPrivateAggregationDebugModeAllowed(
+      &*browser_context_, top_frame_origin, reporting_origin);
 }
 
 void PrivateAggregationHost::ContributeToHistogram(
@@ -274,6 +291,12 @@ void PrivateAggregationHost::OnReceiverDisconnected() {
     // disconnected.
     RecordPipeResultHistogram(PipeResult::kApiDisabledInSettings);
     return;
+  }
+
+  if (current_context.report_debug_details->is_enabled &&
+      !IsDebugModeAllowed(current_context.top_frame_origin, reporting_origin)) {
+    current_context.report_debug_details =
+        blink::mojom::DebugModeDetails::New();
   }
 
   if (current_context.contributions.empty()) {

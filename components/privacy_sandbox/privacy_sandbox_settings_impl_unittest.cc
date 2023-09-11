@@ -96,6 +96,8 @@ constexpr auto kIsSharedStorageSelectURLAllowed =
     OutputKey::kIsSharedStorageSelectURLAllowed;
 constexpr auto kIsPrivateAggregationAllowed =
     OutputKey::kIsPrivateAggregationAllowed;
+constexpr auto kIsPrivateAggregationDebugModeAllowed =
+    OutputKey::kIsPrivateAggregationDebugModeAllowed;
 constexpr auto kIsCookieDeprecationLabelAllowedForContext =
     OutputKey::kIsCookieDeprecationLabelAllowedForContext;
 
@@ -279,6 +281,9 @@ TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -328,6 +333,9 @@ TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -369,6 +377,9 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
       url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
@@ -416,6 +427,9 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
       url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
@@ -478,6 +492,12 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_TRUE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://unrelated-a.com")),
+      url::Origin::Create(GURL("https://unrelated-b.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
       url::Origin::Create(GURL("https://unrelated-a.com")),
       url::Origin::Create(GURL("https://unrelated-b.com"))));
 
@@ -559,6 +579,9 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_TRUE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
@@ -605,6 +628,9 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -648,6 +674,9 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -687,6 +716,9 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
       url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
@@ -733,6 +765,9 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
       url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
@@ -1315,7 +1350,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceEnabled) {
                kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
-               kIsPrivateAggregationAllowed},
+               kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
@@ -1354,7 +1390,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceDisabled) {
                kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
                kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
-               kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed},
+               kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            false},
           {kIsSharedStorageAllowed, true},
           {MultipleOutputKeys{
@@ -1372,7 +1409,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceDisabled) {
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
-  // Confirm that M1 kAPIs ignore the Cookie Controls mode preference.
+  // Confirm that M1 kAPIs ignore the Cookie Controls mode preference, except
+  // Private Aggregation Debug Mode.
   RunTestCase(
       TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
                                    kM1FledgeEnabledUserPrefValue,
@@ -1399,6 +1437,7 @@ TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
            true},
+          {kIsPrivateAggregationDebugModeAllowed, false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
                kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
@@ -1443,6 +1482,7 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataDefaultBlockExceptionApplies) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed,
                kIsCookieDeprecationLabelAllowedForContext},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedMetric,
@@ -1491,6 +1531,7 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockExceptionApplies) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed,
                kIsCookieDeprecationLabelAllowedForContext},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedMetric,
@@ -1540,7 +1581,8 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowDoesntOverridePref) {
                kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
                kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
-               kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed},
+               kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            false},
           {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{
@@ -1586,6 +1628,7 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowExceptions) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed,
                kIsCookieDeprecationLabelAllowedForContext},
            true},
           {MultipleOutputKeys{
@@ -1630,6 +1673,7 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataBlock) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed,
                kIsCookieDeprecationLabelAllowedForContext},
            true},
           {MultipleOutputKeys{
@@ -1677,6 +1721,7 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed,
                kIsCookieDeprecationLabelAllowedForContext},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedMetric,
@@ -1718,7 +1763,8 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffInIncognito) {
                kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
-               kIsPrivateAggregationAllowed},
+               kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
@@ -1759,6 +1805,7 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffForRestrictedAccounts) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed,
                kIsCookieDeprecationLabelAllowedForContext},
            false},
           {MultipleOutputKeys{
@@ -1840,7 +1887,8 @@ TEST_F(PrivacySandboxSettingsM1Test, NoAppropriateTopicsConsent) {
                kIsFledgeBuyAllowed, kIsAttributionReportingAllowed,
                kIsAttributionReportingEverAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
-               kIsPrivateAggregationAllowed},
+               kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            true},
           {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
            false},
@@ -1928,7 +1976,8 @@ TEST_F(PrivacySandboxSettingsM1RestrictedNotice,
           {MultipleOutputKeys{kIsAttributionReportingAllowed,
                               kIsAttributionReportingEverAllowed,
                               kMaySendAttributionReport,
-                              kIsPrivateAggregationAllowed},
+                              kIsPrivateAggregationAllowed,
+                              kIsPrivateAggregationDebugModeAllowed},
            true},
           {MultipleOutputKeys{kIsAttributionReportingEverAllowedMetric,
                               kMaySendAttributionReportMetric,
@@ -1978,7 +2027,8 @@ TEST_F(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
                kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
-               kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
+               kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
@@ -2023,7 +2073,8 @@ TEST_F(PrivacySandboxAttestationsTest, NoEnrollments) {
                kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
-               kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
+               kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
@@ -2070,7 +2121,8 @@ TEST_F(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
                kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
-               kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
+               kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
@@ -2117,7 +2169,8 @@ TEST_F(PrivacySandboxAttestationsTest, TopicsAttestation) {
                kIsFledgeBuyAllowed, kIsSharedStorageAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
-               kIsPrivateAggregationAllowed},
+               kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            false},
           {kIsTopicsAllowedForContextMetric,
            static_cast<int>(Status::kAllowed)},
@@ -2158,7 +2211,9 @@ TEST_F(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
            url::Origin::Create(GURL(top_frame_url))},
           {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
       TestOutput{
-          {kIsPrivateAggregationAllowed, true},
+          {MultipleOutputKeys{kIsPrivateAggregationAllowed,
+                              kIsPrivateAggregationDebugModeAllowed},
+           true},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
                kMaySendAttributionReport, kIsFledgeJoinAllowed,
@@ -2216,7 +2271,8 @@ TEST_F(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
                               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
                               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                               kIsEventReportingDestinationAttestedForFledge,
-                              kIsPrivateAggregationAllowed},
+                              kIsPrivateAggregationAllowed,
+                              kIsPrivateAggregationDebugModeAllowed},
            false},
           {MultipleOutputKeys{
                kIsSharedStorageAllowedMetric,
@@ -2267,6 +2323,7 @@ TEST_F(PrivacySandboxAttestationsTest, FledgeAttestation) {
                kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
                kMaySendAttributionReport, kIsSharedStorageAllowed,
                kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed,
                kIsEventReportingDestinationAttestedForSharedStorage},
            false},
           {MultipleOutputKeys{
@@ -2318,6 +2375,7 @@ TEST_F(PrivacySandboxAttestationsTest, FledgeAttestationBlockJoiningEtldplus1) {
                kIsFledgeJoinAllowed, kIsTopicsAllowedForContext,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed,
                kIsEventReportingDestinationAttestedForSharedStorage},
            false},
           {MultipleOutputKeys{
@@ -2371,7 +2429,8 @@ TEST_F(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
                kIsSharedStorageAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
-               kIsPrivateAggregationAllowed},
+               kIsPrivateAggregationAllowed,
+               kIsPrivateAggregationDebugModeAllowed},
            false},
           {MultipleOutputKeys{kIsAttributionReportingAllowedMetric,
                               kMaySendAttributionReportMetric},

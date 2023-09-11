@@ -65,6 +65,8 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
                        base::Time delete_end,
                        StoragePartition::StorageKeyMatcherFunction filter,
                        base::OnceClosure done) override;
+  bool IsDebugModeAllowed(const url::Origin& top_frame_origin,
+                          const url::Origin& reporting_origin) override;
 
   // PrivateAggregationDataModel:
   void GetAllDataKeys(

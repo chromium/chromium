@@ -353,6 +353,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) override;
+  bool IsPrivateAggregationDebugModeAllowed(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin) override;
   bool IsCookieDeprecationLabelAllowed(
       content::BrowserContext* browser_context) override;
   bool IsCookieDeprecationLabelAllowedForContext(

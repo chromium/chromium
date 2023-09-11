@@ -1380,6 +1380,23 @@ constexpr base::FeatureParam<bool>
         &kPrivateAggregationApi, "fledge_extensions_enabled",
         /*default_value=*/true};
 
+// Selectively allows the debug mode to be disabled while leaving the rest of
+// the API in place. If disabled, any `enableDebugMode()` calls will essentially
+// have no effect.
+constexpr base::FeatureParam<bool> kPrivateAggregationApiDebugModeEnabledAtAll{
+    &kPrivateAggregationApi, "debug_mode_enabled_at_all",
+    /*default_value=*/true};
+
+// Controls whether third-party cookie eligibility should be queried before
+// allowing debug mode to be used by a context. If enabled, any
+// `enableDebugMode()` calls in a context that does not have third-party cookie
+// eligibility will essentially have no effect. This param has no effect if
+// `kPrivateAggregationApiDebugModeEnabledAtAll` is disabled.
+constexpr base::FeatureParam<bool>
+    kPrivateAggregationApiDebugModeSettingsCheckEnabled{
+        &kPrivateAggregationApi, "debug_mode_settings_check_enabled",
+        /*default_value=*/false};
+
 BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -589,6 +589,13 @@ bool ContentBrowserClient::IsPrivateAggregationAllowed(
   return true;
 }
 
+bool ContentBrowserClient::IsPrivateAggregationDebugModeAllowed(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const url::Origin& reporting_origin) {
+  return true;
+}
+
 bool ContentBrowserClient::IsCookieDeprecationLabelAllowed(
     content::BrowserContext* browser_context) {
   return true;

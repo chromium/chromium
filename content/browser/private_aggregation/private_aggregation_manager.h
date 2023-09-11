@@ -60,6 +60,12 @@ class CONTENT_EXPORT PrivateAggregationManager {
       base::Time delete_end,
       StoragePartition::StorageKeyMatcherFunction filter,
       base::OnceClosure done) = 0;
+
+  // Returns whether debug mode is allowed for a context with the given
+  // parameters. If disallowed, any debug mode details specified over the
+  // PrivateAggregationHost mojo pipe will be ignored.
+  virtual bool IsDebugModeAllowed(const url::Origin& top_frame_origin,
+                                  const url::Origin& reporting_origin) = 0;
 };
 
 }  // namespace content

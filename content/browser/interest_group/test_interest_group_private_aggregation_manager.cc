@@ -62,6 +62,12 @@ void TestInterestGroupPrivateAggregationManager::ClearBudgetData(
   NOTREACHED();
 }
 
+bool TestInterestGroupPrivateAggregationManager::IsDebugModeAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& reporting_origin) {
+  return true;
+}
+
 void TestInterestGroupPrivateAggregationManager::ContributeToHistogram(
     std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
         contribution_ptrs) {

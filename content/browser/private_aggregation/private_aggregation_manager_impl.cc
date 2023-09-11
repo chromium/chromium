@@ -113,6 +113,12 @@ void PrivateAggregationManagerImpl::ClearBudgetData(
                        std::move(done));
 }
 
+bool PrivateAggregationManagerImpl::IsDebugModeAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& reporting_origin) {
+  return host_->IsDebugModeAllowed(top_frame_origin, reporting_origin);
+}
+
 void PrivateAggregationManagerImpl::OnReportRequestReceivedFromHost(
     AggregatableReportRequest report_request,
     PrivateAggregationBudgetKey budget_key) {

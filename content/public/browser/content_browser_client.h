@@ -977,6 +977,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin);
 
+  // Allows the embedder to control if Private Aggregation API debug mode
+  // operations can happen in a given context.
+  virtual bool IsPrivateAggregationDebugModeAllowed(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin);
+
   // Returns whether cookie deprecation label should be allowed for the
   // profile.
   virtual bool IsCookieDeprecationLabelAllowed(

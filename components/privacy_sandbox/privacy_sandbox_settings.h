@@ -213,6 +213,15 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const = 0;
 
+  // Determines whether the Private Aggregation API's debug mode is allowable in
+  // a particular context. Note that if IsPrivateAggregationAllowed() is false,
+  // this will always be false too. `top_frame_origin` is the associated
+  // top-frame origin of the calling context. Applicable to all uses of Private
+  // Aggregation.
+  virtual bool IsPrivateAggregationDebugModeAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin) const = 0;
+
   // Determines whether cookie deprecation label is allowable. This consults the
   // delegate to check whether the sandbox is restricted, as well as the cookie
   // settings to check whether third party cookies is blocked. If true, the more

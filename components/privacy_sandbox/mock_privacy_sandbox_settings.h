@@ -82,6 +82,10 @@ class MockPrivacySandboxSettings
               IsPrivateAggregationAllowed,
               (const url::Origin&, const url::Origin&),
               (override, const));
+  MOCK_METHOD(bool,
+              IsPrivateAggregationDebugModeAllowed,
+              (const url::Origin&, const url::Origin&),
+              (override, const));
   MOCK_METHOD(bool, IsCookieDeprecationLabelAllowed, (), (override, const));
   MOCK_METHOD(bool,
               IsCookieDeprecationLabelAllowedForContext,

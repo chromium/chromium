@@ -130,6 +130,12 @@ class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
                const url::Origin& top_frame_origin,
                const url::Origin& reporting_origin),
               (override));
+  MOCK_METHOD(bool,
+              IsPrivateAggregationDebugModeAllowed,
+              (content::BrowserContext * browser_context,
+               const url::Origin& top_frame_origin,
+               const url::Origin& reporting_origin),
+              (override));
   MOCK_METHOD(void,
               LogWebFeatureForCurrentPage,
               (content::RenderFrameHost*, blink::mojom::WebFeature),
