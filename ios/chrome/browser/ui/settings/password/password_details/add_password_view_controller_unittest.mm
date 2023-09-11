@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -20,15 +21,19 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/password_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+using base::test::ScopedFeatureList;
+using password_manager::features::kIOSPasswordAuthOnEntryV2;
 
 namespace {
 constexpr char kPassword[] = "test";
@@ -46,6 +51,9 @@ constexpr char kPassword[] = "test";
     : NSObject <AddPasswordViewControllerDelegate>
 
 @property(nonatomic, strong) PasswordDetails* password;
+
+// Whether `showExistingCredential` was called.
+@property(nonatomic) BOOL showExistingCredentialCalled;
 
 @end
 
@@ -66,6 +74,7 @@ constexpr char kPassword[] = "test";
 }
 
 - (void)showExistingCredential:(NSString*)username {
+  _showExistingCredentialCalled = YES;
 }
 
 - (void)didCancelAddPasswordDetails {
@@ -88,13 +97,23 @@ constexpr char kPassword[] = "test";
 class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
  protected:
   AddPasswordViewControllerTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kIOSPasswordAuthOnEntryV2},
+        /*disabled_features=*/{});
     delegate_ = [[FakeAddPasswordDelegate alloc] init];
+    mock_reauthentication_module_ = [[MockReauthenticationModule alloc] init];
+    mock_reauthentication_module_.expectedResult =
+        ReauthenticationResult::kSuccess;
+    // Delay mocked result delivery to test behavior only executed after auth is
+    // passed.
+    mock_reauthentication_module_.shouldReturnSynchronously = NO;
   }
 
   ChromeTableViewController* InstantiateController() override {
     AddPasswordViewController* controller =
         [[AddPasswordViewController alloc] init];
     controller.delegate = delegate_;
+    controller.reauthModule = mock_reauthentication_module_;
     return controller;
   }
 
@@ -127,10 +146,9 @@ class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
                 cell.detailText);
   }
 
-  FakeAddPasswordDelegate* delegate() { return delegate_; }
-
- private:
+  ScopedFeatureList feature_list_;
   FakeAddPasswordDelegate* delegate_ = nil;
+  MockReauthenticationModule* mock_reauthentication_module_ = nil;
 };
 
 // Tests that password is shown/hidden.
@@ -214,4 +232,71 @@ TEST_F(AddPasswordViewControllerTest, TestFooterTextWithEmail) {
                                IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
                                u"example@gmail.com")],
       4);
+}
+
+// Tests tapping on the show duplicated credential button calls the delegate
+// without authentication required.
+TEST_F(AddPasswordViewControllerTest,
+       TestShowDuplicatedCredentialWithoutAuthRequired) {
+  SetPassword();
+
+  AddPasswordViewController* passwords_controller =
+      static_cast<AddPasswordViewController*>(controller());
+  [passwords_controller loadModel];
+
+  SetEditCellText(@"http://www.example.com/", 0, 0);
+  SetEditCellText(@"test@egmail.com", 2, 0);
+
+  // Simulate the credential was found to be duplicated.
+  // This adds the show existing credential button to the model
+  [passwords_controller onDuplicateCheckCompletion:YES];
+
+  EXPECT_FALSE(delegate_.showExistingCredentialCalled);
+  // Simulate tap on show existing credential button.
+  [passwords_controller tableView:passwords_controller.tableView
+          didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:3]];
+
+  // The mocked reauth module is setup return its result only on command thus at
+  // this point the result has not been delivered. The delegate should have been
+  // called without auth required.
+  EXPECT_TRUE(delegate_.showExistingCredentialCalled);
+}
+
+// Tests tapping on the show duplicated credential button calls the delegate
+// with authentication required.
+TEST_F(AddPasswordViewControllerTest,
+       TestShowDuplicatedCredentialWithAuthRequired) {
+  // Auth on entry removes the need for auth within add passwords as auth is
+  // required when opening any of the Password Manager entry points.
+  ScopedFeatureList auth_on_entry_disabled_feature_list;
+  auth_on_entry_disabled_feature_list.InitAndDisableFeature(
+      kIOSPasswordAuthOnEntryV2);
+  SetPassword();
+
+  AddPasswordViewController* passwords_controller =
+      static_cast<AddPasswordViewController*>(controller());
+  [passwords_controller loadModel];
+
+  SetEditCellText(@"http://www.example.com/", 0, 0);
+  SetEditCellText(@"test@egmail.com", 2, 0);
+
+  // Simulate the credential was found to be duplicated.
+  // This adds the show existing credential button to the model
+  [passwords_controller onDuplicateCheckCompletion:YES];
+
+  EXPECT_FALSE(delegate_.showExistingCredentialCalled);
+  // Simulate tap on show existing credential button.
+  [passwords_controller tableView:passwords_controller.tableView
+          didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:3]];
+
+  // The mocked reauth module is setup return its result only on command thus at
+  // this point the result has not been delivered. The delegate should not have
+  // been called before auth is passed.
+  EXPECT_FALSE(delegate_.showExistingCredentialCalled);
+
+  // Deliver successful auth result.
+  [mock_reauthentication_module_ returnMockedReathenticationResult];
+
+  // Delegate should have been called now.
+  EXPECT_TRUE(delegate_.showExistingCredentialCalled);
 }

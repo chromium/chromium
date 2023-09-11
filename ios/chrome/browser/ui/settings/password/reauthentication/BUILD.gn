@@ -38,6 +38,7 @@ source_set("reauthentication_ui") {
     ":reauthentication_constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/settings/password:title_view",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]

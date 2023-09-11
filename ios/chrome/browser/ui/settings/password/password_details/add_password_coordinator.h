@@ -8,14 +8,15 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol AddPasswordCoordinatorDelegate;
-@class ReauthenticationModule;
+@protocol ReauthenticationProtocol;
 
 // This coordinator presents add password sheet for the user.
 @interface AddPasswordCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                              reauthModule:(ReauthenticationModule*)reauthModule
+                              reauthModule:
+                                  (id<ReauthenticationProtocol>)reauthModule
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
