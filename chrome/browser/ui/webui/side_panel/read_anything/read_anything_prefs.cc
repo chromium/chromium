@@ -7,6 +7,7 @@
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 
@@ -30,6 +31,27 @@ void RegisterReadAnythingProfilePrefs(
       prefs::kAccessibilityReadAnythingLetterSpacing,
       static_cast<int>(read_anything::mojom::LetterSpacing::kDefaultValue),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  if (features::IsReadAnythingReadAloudEnabled()) {
+    // TODO(crbug.com/1474951): When we release on multiple platforms, add
+    // separate prefs for voices on each platform since they're not always
+    // the same on every platform.
+    registry->RegisterStringPref(
+        prefs::kAccessibilityReadAnythingVoiceName,
+        string_constants::kReadAnythingPlaceholderVoiceName,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterDoublePref(
+        prefs::kAccessibilityReadAnythingSpeechRate,
+        kReadAnythingDefaultSpeechRate,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    // TODO(crbug.com/1474951): Update the default value for these integer
+    // prefs to be an enum value, like the ones above
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityReadAnythingHighlightGranularity, 1,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityReadAnythingHighlightColor, 0,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

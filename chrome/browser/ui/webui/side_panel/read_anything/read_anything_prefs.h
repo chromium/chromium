@@ -36,6 +36,24 @@ inline constexpr char kAccessibilityReadAnythingLineSpacing[] =
 inline constexpr char kAccessibilityReadAnythingLetterSpacing[] =
     "settings.a11y.read_anything.letter_spacing";
 
+// String to represent the user's preferred voice for reading aloud.
+inline constexpr char kAccessibilityReadAnythingVoiceName[] =
+    "settings.a11y.read_anything.voice_name";
+
+// Double to represent the user's preferred speech rate setting.
+inline constexpr char kAccessibilityReadAnythingSpeechRate[] =
+    "settings.a11y.read_anything.speech_rate";
+
+// Int value to represent the user's preferred granularity for highlighting as
+// text is read.
+inline constexpr char kAccessibilityReadAnythingHighlightGranularity[] =
+    "settings.a11y.read_anything.highlight_granularity";
+
+// Int value to represent the user's preferred color for highlighting as text
+// is read.
+inline constexpr char kAccessibilityReadAnythingHighlightColor[] =
+    "settings.a11y.read_anything.highlight_color";
+
 }  // namespace prefs
 
 void RegisterReadAnythingProfilePrefs(

@@ -14,6 +14,7 @@
 namespace string_constants {
 
 extern const char kReadAnythingPlaceholderFontName[];
+extern const char kReadAnythingPlaceholderVoiceName[];
 extern const char kLetterSpacingHistogramName[];
 extern const char kLineSpacingHistogramName[];
 extern const char kColorHistogramName[];
@@ -48,6 +49,10 @@ const int kIconSize = 16;
 const int kFontSizeIconSize = kIconSize + kInternalInsets;
 const int kColorsIconSize = 24;
 const int kSpacingIconSize = 20;
+
+// Audio constants for Read Aloud feature.
+// Speech rate is a multiplicative scale where 1 is the baseline.
+const double kReadAnythingDefaultSpeechRate = 1;
 
 // Font size in em
 const double kReadAnythingDefaultFontScale = 1;
