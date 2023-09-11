@@ -153,8 +153,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   LocalFrame* GetFrame() const { return frame_; }
 
-  mojom::blink::ResourceTimingInfoPtr TakeNavigationTimingInfo();
-
   void DetachFromFrame(bool flush_microtask_queue);
 
   uint64_t MainResourceIdentifier() const;
