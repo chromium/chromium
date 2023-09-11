@@ -32,9 +32,6 @@ class FooListener {
   std::unique_ptr<Foo> foo_;
 };
 
-
-#if defined(NCTEST_MOVE_ONLY_TYPE_PARAMETER)  // [r"fatal error: call to (implicitly-)?deleted( copy)? constructor"]
-
 // Callbacks run with a move-only typed parameter.
 //
 // CallbackList does not support move-only typed parameters. Notify() is
@@ -46,9 +43,7 @@ void WontCompile() {
   RepeatingCallbackList<void(std::unique_ptr<Foo>)> c1;
   CallbackListSubscription sub =
       c1.Add(BindRepeating(&FooListener::GotAScopedFoo, Unretained(&f)));
-  c1.Notify(std::unique_ptr<Foo>(new Foo()));
+  c1.Notify(std::unique_ptr<Foo>(new Foo()));  // expected-error@*:* {{call to implicitly-deleted copy constructor of 'std::unique_ptr<base::Foo>'}}
 }
-
-#endif
 
 }  // namespace base

@@ -4069,6 +4069,10 @@ test("base_unittests") {
       "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
     ]
   }
+
+  if (enable_nocompile_tests_new) {
+    deps += [ ":base_nocompile_tests_new" ]
+  }
 }
 
 # Test that CFG is enabled in Rust code.
@@ -4095,13 +4099,19 @@ action("build_date") {
   ]
 }
 
+if (enable_nocompile_tests_new) {
+  nocompile_source_set("base_nocompile_tests_new") {
+    sources = [ "callback_list_nocompile.nc" ]
+    deps = [ ":base" ]
+  }
+}
+
 if (enable_nocompile_tests) {
   nocompile_test("base_nocompile_tests") {
     sources = [
       "allocator/partition_allocator/partition_alloc_base/thread_annotations_pa_unittest.nc",
       "allocator/partition_allocator/pointers/raw_ptr_unittest.nc",
       "allocator/partition_allocator/pointers/raw_ref_unittest.nc",
-      "callback_list_unittest.nc",
       "containers/buffer_iterator_unittest.nc",
       "containers/checked_iterators_unittest.nc",
       "containers/contains_unittest.nc",
