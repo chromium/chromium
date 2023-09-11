@@ -1092,11 +1092,8 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
 }
 
 feedwire::ChromeSignInStatus::SignInStatus FeedStream::GetSignInStatus() const {
-  if (IsSyncOn()) {
-    return feedwire::ChromeSignInStatus::SYNCED;
-  }
   if (IsSignedIn()) {
-    return feedwire::ChromeSignInStatus::SIGNED_IN_WITHOUT_SYNC;
+    return feedwire::ChromeSignInStatus::SIGNED_IN;
   }
   if (!IsSigninAllowed()) {
     return feedwire::ChromeSignInStatus::SIGNIN_DISALLOWED_BY_CONFIG;

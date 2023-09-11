@@ -4053,7 +4053,6 @@ TEST_F(FeedApiTest, CheckDuplicatedContents) {
 TEST_F(FeedApiTest, GetRequestMetadataForSignedOutUser) {
   TestForYouSurface surface(stream_.get());
   account_info_ = {};
-  is_sync_on_ = false;
 
   RequestMetadata metadata =
       stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
@@ -4062,31 +4061,18 @@ TEST_F(FeedApiTest, GetRequestMetadataForSignedOutUser) {
             feedwire::ChromeSignInStatus::NOT_SIGNED_IN);
 }
 
-TEST_F(FeedApiTest, GetRequestMetadataForSignedInButNotSyncedUser) {
+TEST_F(FeedApiTest, GetRequestMetadataForSignedInUser) {
   TestForYouSurface surface(stream_.get());
-  is_sync_on_ = false;
 
   RequestMetadata metadata =
       stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
 
-  ASSERT_EQ(metadata.sign_in_status,
-            feedwire::ChromeSignInStatus::SIGNED_IN_WITHOUT_SYNC);
-}
-
-TEST_F(FeedApiTest, GetRequestMetadataForSyncedUser) {
-  TestForYouSurface surface(stream_.get());
-  is_sync_on_ = true;
-
-  RequestMetadata metadata =
-      stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
-
-  ASSERT_EQ(metadata.sign_in_status, feedwire::ChromeSignInStatus::SYNCED);
+  ASSERT_EQ(metadata.sign_in_status, feedwire::ChromeSignInStatus::SIGNED_IN);
 }
 
 TEST_F(FeedApiTest, GetRequestMetadataForSigninDisallowedUser) {
   TestForYouSurface surface(stream_.get());
   account_info_ = {};
-  is_sync_on_ = false;
   is_signin_allowed_ = false;
 
   RequestMetadata metadata =
@@ -4098,14 +4084,12 @@ TEST_F(FeedApiTest, GetRequestMetadataForSigninDisallowedUser) {
 
 TEST_F(FeedApiTest, GetRequestMetadataForSigninDisallowedUserWhenSignedIn) {
   TestForYouSurface surface(stream_.get());
-  is_sync_on_ = false;
   is_signin_allowed_ = false;
 
   RequestMetadata metadata =
       stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
 
-  ASSERT_EQ(metadata.sign_in_status,
-            feedwire::ChromeSignInStatus::SIGNED_IN_WITHOUT_SYNC);
+  ASSERT_EQ(metadata.sign_in_status, feedwire::ChromeSignInStatus::SIGNED_IN);
 }
 
 TEST_F(FeedApiTest, GetRequestMetadataWithDefaultSearchEngine) {

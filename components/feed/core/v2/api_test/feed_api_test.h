@@ -507,7 +507,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   void ClearAll() override;
   AccountInfo GetAccountInfo() override;
   bool IsSigninAllowed() override;
-  bool IsSyncOn() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
   void RegisterFollowingFeedFollowCountFieldTrial(size_t follow_count) override;
@@ -568,7 +567,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool is_offline_ = false;
   AccountInfo account_info_ = TestAccountInfo();
   bool is_signin_allowed_ = true;
-  bool is_sync_on_ = false;
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;

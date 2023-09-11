@@ -25,9 +25,10 @@ message ChromeSignInStatus {
   enum SignInStatus {
     SIGNED_IN_STATUS_UNSPECIFIED = 0;
     NOT_SIGNED_IN = 1;
-    SIGNED_IN_WITHOUT_SYNC = 2;
-    SYNCED = 3;
+    DEPRECATED_SIGNED_IN_WITHOUT_SYNC = 2 [deprecated = true];
+    DEPRECATED_SYNCED = 3 [deprecated = true];
     SIGNIN_DISALLOWED_BY_CONFIG = 4;
+    SIGNED_IN = 5;
   }
   optional SignInStatus sign_in_status = 1;
 }
