@@ -11457,34 +11457,6 @@
             ]
         }
     ],
-    "PartialLowEndModeOnMidRangeDevices": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "exculde-low-end-background-cleanup": "false"
-                    },
-                    "enable_features": [
-                        "PartialLowEndModeOnMidRangeDevices"
-                    ]
-                },
-                {
-                    "name": "EnabledWithoutLowEndBackgroundCleanup",
-                    "params": {
-                        "exculde-low-end-background-cleanup": "true"
-                    },
-                    "enable_features": [
-                        "PartialLowEndModeOnMidRangeDevices"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocBackupRefPtr": [
         {
             "platforms": [
