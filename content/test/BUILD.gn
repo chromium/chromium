@@ -1029,7 +1029,10 @@ static_library("browsertest_support") {
   ]
 
   if (is_android) {
-    deps += [ "//content/public/app" ]
+    deps += [
+      "//content/public/app",
+      "//ui/android:android",
+    ]
   } else {
     deps += [ "//content/public/browser" ]
   }

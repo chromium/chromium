@@ -243,6 +243,12 @@ viz::SurfaceId DelegatedFrameHost::GetFallbackSurfaceIdForTesting() const {
   return fallback_surface_id ? *fallback_surface_id : viz::SurfaceId();
 }
 
+viz::SurfaceId DelegatedFrameHost::GetFirstSurfaceIdAfterNavigationForTesting()
+    const {
+  return viz::SurfaceId(frame_sink_id_,
+                        first_local_surface_id_after_navigation_);
+}
+
 void DelegatedFrameHost::EmbedSurface(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Size& new_dip_size,

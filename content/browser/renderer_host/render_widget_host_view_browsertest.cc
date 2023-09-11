@@ -52,6 +52,7 @@
 #include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/render_document_feature.h"
 #include "net/base/filename_util.h"

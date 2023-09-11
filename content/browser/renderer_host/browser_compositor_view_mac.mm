@@ -190,20 +190,20 @@ void BrowserCompositorMac::SetViewVisible(bool visible) {
 }
 
 void BrowserCompositorMac::UpdateState() {
-  // Always use the parent ui::Layer's ui::Compositor if available.
+  // Always disconnect the compositor if we are hidden.
+  if (render_widget_host_is_hidden_) {
+    TransitionToState(HasNoCompositor);
+    return;
+  }
+
+  // Else, use the parent `ui::Layer`'s `ui::Compositor` if available.
   if (parent_ui_layer_) {
     TransitionToState(UseParentLayerCompositor);
     return;
   }
 
   // If the host is visible and a compositor is required then create one.
-  if (!render_widget_host_is_hidden_) {
-    TransitionToState(HasOwnCompositor);
-    return;
-  }
-
-  // Otherwise put the compositor up for recycling.
-  TransitionToState(HasNoCompositor);
+  TransitionToState(HasOwnCompositor);
 }
 
 void BrowserCompositorMac::TransitionToState(State new_state) {
@@ -359,13 +359,19 @@ void BrowserCompositorMac::SetParentUiLayer(ui::Layer* new_parent_ui_layer) {
   if (new_parent_ui_layer)
     DCHECK(new_parent_ui_layer->GetCompositor());
 
+  // `root_layer_` might be disconnected from `parent_ui_layer_` if it is hidden
+  // (i.e., BFCached).
+  DCHECK(root_layer_->parent() == parent_ui_layer_ ||
+         (render_widget_host_is_hidden_ && !root_layer_->parent()));
   // Set |parent_ui_layer_| to the new value, which potentially not match the
   // value of |root_layer_->parent()|. The call to UpdateState will re-parent
   // |root_layer_|.
-  DCHECK_EQ(root_layer_->parent(), parent_ui_layer_);
   parent_ui_layer_ = new_parent_ui_layer;
   UpdateState();
-  DCHECK_EQ(root_layer_->parent(), parent_ui_layer_);
+  // If we remain hidden, `UpdateState()` won't re-parent `root_layer_`.
+  // Re-parenting will happen when we become visible.
+  DCHECK(root_layer_->parent() == parent_ui_layer_ ||
+         (render_widget_host_is_hidden_ && !root_layer_->parent()));
 }
 
 void BrowserCompositorMac::ForceNewSurfaceForTesting() {

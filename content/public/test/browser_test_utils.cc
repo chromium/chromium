@@ -2758,34 +2758,6 @@ void MainThreadFrameObserver::Quit(bool) {
     std::move(quit_closure_).Run();
 }
 
-// TODO(https://crbug.com/1473319): Use
-// `WebFrameWidgetImpl::NotifySwapAndPresentationTime` instead.
-void WaitForCopyableViewInWebContents(WebContents* web_contents) {
-  {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
-    obs.Wait();
-  }
-  // The above `Wait()` blocks until a `CompositorFrame` is submitted from the
-  // renderer to the GPU. However, we want to wait until the Viz process has
-  // received the new `CompositorFrame` so that the previously submitted frame
-  // is available for copy. Waiting for a second frame to be submitted
-  // guarantees this, since the second frame cannot be sent until the first
-  // frame was ACKed by Viz.
-  {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
-    obs.Wait();
-  }
-
-  // `IsSurfaceAvailableForCopy` actually only checks if the browser currently
-  // embeds a surface or not (as opposed to sending a IPC to the GPU). However
-  // if the browser does not embed any surface, we won't be able to issue any
-  // copy requests.
-  ASSERT_TRUE(
-      web_contents->GetRenderWidgetHostView()->IsSurfaceAvailableForCopy());
-}
-
 InputMsgWatcher::InputMsgWatcher(RenderWidgetHost* render_widget_host,
                                  blink::WebInputEvent::Type type)
     : render_widget_host_(render_widget_host),

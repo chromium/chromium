@@ -205,6 +205,8 @@ class CONTENT_EXPORT DelegatedFrameHost
     return GetPreNavigationSurfaceId();
   }
 
+  viz::SurfaceId GetFirstSurfaceIdAfterNavigationForTesting() const;
+
  private:
   friend class DelegatedFrameHostClient;
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraBrowserTest,

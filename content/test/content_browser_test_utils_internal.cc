@@ -46,6 +46,20 @@
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/android/window_android.h"
+#include "ui/android/window_android_compositor.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC)
+#include "content/browser/renderer_host/browser_compositor_view_mac.h"
+#include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
+#endif  // BUILDFLAG(IS_MAC)
+
+#if defined(USE_AURA)
+#include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#endif
+
 namespace content {
 
 bool NavigateFrameToURL(FrameTreeNode* node, const GURL& url) {
@@ -987,6 +1001,63 @@ bool CommitNavigationPauser::WillProcessDidCommitNavigation(
 
   // Ignore the commit message.
   return false;
+}
+
+// TODO(https://crbug.com/1473319): Use
+// `WebFrameWidgetImpl::NotifySwapAndPresentationTime` instead.
+void WaitForCopyableViewInWebContents(WebContents* web_contents) {
+  {
+    MainThreadFrameObserver obs(
+        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    obs.Wait();
+  }
+  // The above `Wait()` blocks until a `CompositorFrame` is submitted from the
+  // renderer to the GPU. However, we want to wait until the Viz process has
+  // received the new `CompositorFrame` so that the previously submitted frame
+  // is available for copy. Waiting for a second frame to be submitted
+  // guarantees this, since the second frame cannot be sent until the first
+  // frame was ACKed by Viz.
+  {
+    MainThreadFrameObserver obs(
+        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    obs.Wait();
+  }
+
+  // `IsSurfaceAvailableForCopy` actually only checks if the browser currently
+  // embeds a surface or not (as opposed to sending a IPC to the GPU). However
+  // if the browser does not embed any surface, we won't be able to issue any
+  // copy requests.
+  ASSERT_TRUE(
+      web_contents->GetRenderWidgetHostView()->IsSurfaceAvailableForCopy());
+}
+
+void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
+  base::RunLoop run_loop;
+  auto callback = base::BindOnce(
+      [](base::RepeatingClosure cb, base::TimeTicks presentation_time) {
+        std::move(cb).Run();
+      },
+      run_loop.QuitClosure());
+#if BUILDFLAG(IS_ANDROID)
+  ui::WindowAndroidCompositor* compositor =
+      web_contents->GetNativeView()->GetWindowAndroid()->GetCompositor();
+  compositor->PostRequestSuccessfulPresentationTimeForNextFrame(
+      std::move(callback));
+#elif BUILDFLAG(IS_MAC)
+  auto* browser_compositor = GetBrowserCompositorMacForTesting(
+      web_contents->GetRenderWidgetHostView());
+  browser_compositor->GetCompositor()
+      ->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
+#elif defined(USE_AURA)
+  auto* compositor = static_cast<RenderWidgetHostViewAura*>(
+                         web_contents->GetRenderWidgetHostView())
+                         ->GetCompositor();
+  compositor->RequestSuccessfulPresentationTimeForNextFrame(
+      std::move(callback));
+#else
+  NOTREACHED();
+#endif
+  run_loop.Run();
 }
 
 }  // namespace content
