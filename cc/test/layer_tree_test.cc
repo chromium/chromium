@@ -731,9 +731,6 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
     init_vulkan = true;
   } else if (renderer_type_ == viz::RendererType::kSkiaGraphite) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
-    // Force the use of Graphite even if disallowed for other reasons e.g. ANGLE
-    // Metal is not enabled on Mac.
-    command_line->AppendSwitch(::switches::kSkiaGraphiteBackend);
     init_dawn = true;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
@@ -751,6 +748,14 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
   if (init_dawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     dawnProcSetProcs(&dawn::native::GetProcs());
+    bool use_gpu = command_line->HasSwitch(::switches::kUseGpuInTests);
+    // Force the use of Graphite even if disallowed for other reasons e.g.
+    // ANGLE Metal is not enabled on Mac. Use dawn-swiftshader backend if
+    // kUseGpuInTests is not set.
+    command_line->AppendSwitchASCII(
+        ::switches::kSkiaGraphiteBackend,
+        use_gpu ? ::switches::kSkiaGraphiteBackendDawn
+                : ::switches::kSkiaGraphiteBackendDawnSwiftshader);
 #endif
   }
 }
