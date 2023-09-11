@@ -119,6 +119,7 @@ ProfileNameResolver::ProfileNameResolver(
   std::u16string fallback_profile_name =
       profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
           extended_account_info);
+  CHECK(!fallback_profile_name.empty());
   extended_account_info_timeout_closure_.Reset(
       base::BindOnce(&ProfileNameResolver::OnProfileNameResolved,
                      weak_ptr_factory_.GetWeakPtr(), fallback_profile_name));
@@ -147,13 +148,15 @@ void ProfileNameResolver::OnExtendedAccountInfoUpdated(
     return;
   }
 
-  OnProfileNameResolved(
-      profiles::GetDefaultNameForNewSignedInProfile(account_info));
+  std::u16string profile_name =
+      profiles::GetDefaultNameForNewSignedInProfile(account_info);
+  CHECK(!profile_name.empty());
+  OnProfileNameResolved(profile_name);
 }
 
 void ProfileNameResolver::OnProfileNameResolved(
     const std::u16string& profile_name) {
-  DCHECK(!profile_name.empty());
+  CHECK(!profile_name.empty());
   DCHECK(resolved_profile_name_.empty());  // Should be resolved only once.
 
   // Cancel timeout and stop listening to further changes.

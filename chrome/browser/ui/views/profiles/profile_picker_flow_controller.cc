@@ -238,7 +238,7 @@ class ProfileCreationSignedInFlowController
                   std::u16string name_for_signed_in_profile) {
     TRACE_EVENT1("browser", "ProfileCreationSignedInFlowController::FinishFlow",
                  "profile_path", profile()->GetPath().AsUTF8Unsafe());
-    DCHECK(!name_for_signed_in_profile.empty());
+    CHECK(!name_for_signed_in_profile.empty());
     DCHECK(callback.value());
     DCHECK(finish_flow_callback_);
 

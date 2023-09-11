@@ -329,24 +329,36 @@ bool SessionHasGaiaAccount() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::u16string GetDefaultNameForNewEnterpriseProfile(
     const std::string& hosted_domain) {
-  if (AccountInfo::IsManaged(hosted_domain))
-    return base::UTF8ToUTF16(hosted_domain);
-  return l10n_util::GetStringUTF16(
+  if (AccountInfo::IsManaged(hosted_domain)) {
+    std::u16string hosted_domain_name = base::UTF8ToUTF16(hosted_domain);
+    CHECK(!hosted_domain_name.empty());
+    return hosted_domain_name;
+  }
+  std::u16string default_name = l10n_util::GetStringUTF16(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
+  CHECK(!default_name.empty());
+  return default_name;
 }
 
 std::u16string GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info) {
   DCHECK(account_info.IsValid());
-  if (!account_info.IsManaged())
-    return base::UTF8ToUTF16(account_info.given_name);
-  return GetDefaultNameForNewEnterpriseProfile(account_info.hosted_domain);
+  if (!account_info.IsManaged()) {
+    std::u16string given_name = base::UTF8ToUTF16(account_info.given_name);
+    CHECK(!given_name.empty());
+    return given_name;
+  }
+  std::u16string default_name =
+      GetDefaultNameForNewEnterpriseProfile(account_info.hosted_domain);
+  CHECK(!default_name.empty());
+  return default_name;
 }
 
 std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
     const CoreAccountInfo& account_info) {
   // As a fallback, use the email of the user as the profile name when extended
   // account info is not available.
+  CHECK(!account_info.email.empty());
   return base::UTF8ToUTF16(account_info.email);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -22,10 +22,9 @@ void FinalizeNewProfileSetup(Profile* profile,
 
 // Helper to obtain a profile name derived from the user's identity.
 //
-// Obtains the identity associated with `account_id` from `identity_manager`
-// and caches the computed name, which can be obtained by calling
-// `resolved_profile_name()`. Calling `RunWithProfileName()` also allows
-// providing a callback that will be executed when the name is resolved.
+// Obtains the identity associated with `account_id` from `identity_manager`.
+// Calling `RunWithProfileName()` allows providing a callback that will be
+// executed when the name is resolved. The name is never empty.
 class ProfileNameResolver : public signin::IdentityManager::Observer {
  public:
   explicit ProfileNameResolver(signin::IdentityManager* identity_manager,
@@ -46,15 +45,12 @@ class ProfileNameResolver : public signin::IdentityManager::Observer {
   static ScopedInfoFetchTimeoutOverride
   CreateScopedInfoFetchTimeoutOverrideForTesting(base::TimeDelta timeout);
 
+  // The profile name is never empty.
   // Note: We are passing the resolved name by copy to protect against the
   // `ProfileNameResolver` being destroyed during the callback, causing the name
   // reference to become invalid.
   using NameResolvedCallback = base::OnceCallback<void(std::u16string)>;
   void RunWithProfileName(NameResolvedCallback callback);
-
-  const std::u16string& resolved_profile_name() const {
-    return resolved_profile_name_;
-  }
 
  private:
   void OnProfileNameResolved(const std::u16string& profile_name);

@@ -128,16 +128,18 @@ bool SessionHasGaiaAccount();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns the default name for a new enterprise profile.
+// Returns the default name for a new enterprise profile. Never returns an empty
+// string.
 std::u16string GetDefaultNameForNewEnterpriseProfile(
     const std::string& hosted_domain = std::string());
 
 // Returns the default name for a new signed-in profile, based on
-// `account_info`.
+// `account_info`. Never returns an empty string.
 std::u16string GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info);
 
-// The same as above but using incomplete account info.
+// The same as above but using incomplete account info. `account_info` must be
+// valid. Never returns an empty string.
 std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
     const CoreAccountInfo& account_info);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
