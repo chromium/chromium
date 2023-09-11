@@ -3998,6 +3998,29 @@
             ]
         }
     ],
+    "ConfigurableV8CodeCacheHotHours": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "cache_72h_20230904",
+                    "params": {
+                        "V8CodeCacheHotHours": "72"
+                    },
+                    "enable_features": [
+                        "ConfigurableV8CodeCacheHotHours"
+                    ]
+                }
+            ]
+        }
+    ],
     "ConsolidatedIPCForProxyCreation": [
         {
             "platforms": [
