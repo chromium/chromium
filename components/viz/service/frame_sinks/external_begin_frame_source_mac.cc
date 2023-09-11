@@ -311,11 +311,17 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
     return;
   }
 
-  CHECK(interval >= nominal_refresh_period_);
-  CHECK(interval == nominal_refresh_period_ ||
-        interval <= kMaxSupportedFrameInterval);
+  // Cap the refresh interval if it's out of the supported range.
+  base::TimeDelta adjusted_interval = interval;
+  if (interval < nominal_refresh_period_) {
+    adjusted_interval = nominal_refresh_period_;
+  } else if (interval > kMaxSupportedFrameInterval &&
+             interval != nominal_refresh_period_) {
+    adjusted_interval = kMaxSupportedFrameInterval;
+  }
+
   vsyncs_to_skip_ = 0;
-  vsync_subsampling_factor_ = interval.IntDiv(nominal_refresh_period_);
+  vsync_subsampling_factor_ = adjusted_interval.IntDiv(nominal_refresh_period_);
 
   TRACE_EVENT1("gpu", "ExternalBeginFrameSourceMac::SetPreferredInterval",
                "vsync_subsampling_factor", vsync_subsampling_factor_);
