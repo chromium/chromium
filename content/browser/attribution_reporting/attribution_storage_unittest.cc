@@ -338,9 +338,7 @@ TEST_F(AttributionStorageTest, EventSourceImpressionsForConversion_Converts) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetEventSourceTriggerData(456).Build()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(456u))));
 }
 
@@ -500,13 +498,13 @@ TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  AttributionReport expected_report =
-      GetExpectedEventLevelReport(SourceBuilder().BuildStored(), conversion);
+  task_environment_.FastForwardBy(kReportDelay - base::Microseconds(1));
 
-  task_environment_.FastForwardBy(kReportDelay);
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
-              ElementsAre(expected_report));
+  task_environment_.FastForwardBy(base::Microseconds(1));
+
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1u));
 }
 
 TEST_F(AttributionStorageTest,
@@ -519,9 +517,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest,
@@ -535,9 +531,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest, ConversionReportDeleted_RemovedFromStorage) {
@@ -545,14 +539,12 @@ TEST_F(AttributionStorageTest, ConversionReportDeleted_RemovedFromStorage) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
   std::vector<AttributionReport> reports =
-      storage()->GetAttributionReports(base::Time::Now());
+      storage()->GetAttributionReports(base::Time::Max());
   EXPECT_THAT(reports, SizeIs(1));
   DeleteReports(reports);
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest,
@@ -597,6 +589,9 @@ TEST_F(AttributionStorageTest,
 // <reporting_origin, destination_origin> pair, all existing impressions for
 // that origin that have converted are marked ineligible for new conversions per
 // the multi-touch model.
+//
+// TODO: The fast-forwards in this test don't seem relevant, but the test fails
+// without them.
 TEST_F(AttributionStorageTest,
        NewImpressionForConvertedImpression_MarkedInactive) {
   storage()->StoreSource(SourceBuilder().SetSourceEventId(0).Build());
@@ -617,14 +612,12 @@ TEST_F(AttributionStorageTest,
   auto conversion = DefaultTrigger();
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
-  AttributionReport expected_report =
-      GetExpectedEventLevelReport(builder.BuildStored(), conversion);
 
   task_environment_.FastForwardBy(kReportDelay);
 
   // Verify it was the new impression that converted.
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
-              ElementsAre(expected_report));
+              ElementsAre(ReportSourceIs(SourceEventIdIs(1000u))));
 }
 
 TEST_F(AttributionStorageTest,
@@ -684,15 +677,11 @@ TEST_F(
   builder.SetSourceEventId(10);
   storage()->StoreSource(builder.Build());
 
-  AttributionReport third_expected_conversion =
-      GetExpectedEventLevelReport(builder.BuildStored(), conversion);
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
-              ElementsAre(third_expected_conversion));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              ElementsAre(ReportSourceIs(SourceEventIdIs(10))));
 }
 
 TEST_F(AttributionStorageTest,
@@ -1134,18 +1123,15 @@ TEST_F(AttributionStorageTest, ClearDataRangeBetweenEvents) {
 
   task_environment_.FastForwardBy(base::Days(1));
 
-  const AttributionReport expected_report =
-      GetExpectedEventLevelReport(builder.BuildStored(), conversion);
-
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
   storage()->ClearData(start + base::Minutes(1), start + base::Minutes(10),
                        GetMatcher(impression.common_info().source_origin()));
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(expected_report));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(1u));
 }
+
 // Test that only a subset of impressions / conversions are deleted with
 // multiple impressions per conversion, if only a subset of impressions match.
 TEST_F(AttributionStorageTest, ClearDataWithMultiTouch) {
@@ -1311,9 +1297,7 @@ TEST_F(AttributionStorageTest,
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(AggregatableAttributionDataIs(
                   AggregatableHistogramContributionsAre(
                       DefaultAggregatableHistogramContributions()))));
@@ -1440,9 +1424,7 @@ TEST_F(AttributionStorageTest,
           .BuildStored(),
       DefaultAggregatableHistogramContributions(), trigger);
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(expected_report));
 }
 
@@ -1474,11 +1456,9 @@ TEST_F(AttributionStorageTest,
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
   auto contributions = DefaultAggregatableHistogramContributions();
   EXPECT_THAT(
-      storage()->GetAttributionReports(base::Time::Now()),
+      storage()->GetAttributionReports(base::Time::Max()),
       ElementsAre(AggregatableAttributionDataIs(
                       AggregatableHistogramContributionsAre(contributions)),
                   AggregatableAttributionDataIs(
@@ -1700,9 +1680,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(ReportSourceIs(SourceEventIdIs(5u))));
 }
 
@@ -1723,9 +1701,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(ReportSourceIs(SourceEventIdIs(5u))));
 }
 
@@ -1929,9 +1905,7 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                     DroppedEventLevelReportIs(
                         Optional(EventLevelDataIs(TriggerDataIs(23u))))));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(AllOf(ReportSourceIs(SourceEventIdIs(5u)),
                                 EventLevelDataIs(TriggerDataIs(21u))),
                           AllOf(ReportSourceIs(SourceEventIdIs(7u)),
@@ -1956,9 +1930,7 @@ TEST_F(AttributionStorageTest, TriggerPriority_Simple) {
             TriggerBuilder().SetPriority(i).SetTriggerData(i).Build()));
   }
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(9u))));
 }
 
@@ -2531,9 +2503,7 @@ TEST_F(AttributionStorageTest, GetAttributionReports_SetsPriority) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetPriority(13).Build()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(EventLevelDataIs(TriggerPriorityIs(13))));
 }
 
@@ -2654,10 +2624,8 @@ TEST_F(AttributionStorageTest, ReportID_RoundTrips) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
   std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionReports(base::Time::Now());
+      storage()->GetAttributionReports(base::Time::Max());
   EXPECT_EQ(1u, actual_reports.size());
   EXPECT_EQ(DefaultExternalReportID(), actual_reports[0].external_report_id());
 }
@@ -2900,8 +2868,7 @@ TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetDebugKey(33).Build()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(22)),
                                 TriggerDebugKeyIs(33))));
 }
@@ -3508,7 +3475,7 @@ TEST_F(AttributionStorageTest,
                 AttributionTrigger::AggregatableResult::kNoMatchingImpressions),
             NewEventLevelReportIs(absl::nullopt),
             NewAggregatableReportIs(absl::nullopt)));
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest,
@@ -3559,10 +3526,8 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
   auto expected_aggregatable_report =
       GetExpectedAggregatableReport(source, std::move(contributions), trigger);
 
-  task_environment_.FastForwardBy(kReportDelay);
-
   EXPECT_THAT(
-      storage()->GetAttributionReports(base::Time::Now()),
+      storage()->GetAttributionReports(base::Time::Max()),
       ElementsAre(expected_event_level_report, expected_aggregatable_report));
 
   EXPECT_EQ(expected_aggregatable_report.report_time(),
@@ -3750,7 +3715,7 @@ TEST_F(AttributionStorageTest, NoEventTriggerData_NotRegisteredReturned) {
                 AttributionTrigger::AggregatableResult::kNoMatchingImpressions),
             NewEventLevelReportIs(absl::nullopt),
             NewAggregatableReportIs(absl::nullopt)));
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest, StoreNullAggregatableReport) {
