@@ -43,6 +43,7 @@
 // TODO(jkardatzke): Remove these once they are in linux/videodev2.h.
 #define V4L2_CID_MPEG_MTK_BASE (0x00990000 | 0x2000)
 #define V4L2_CID_MPEG_MTK_GET_SECURE_HANDLE (V4L2_CID_MPEG_MTK_BASE + 8)
+#define V4L2_CID_MPEG_MTK_SET_SECURE_MODE (V4L2_CID_MPEG_MTK_BASE + 9)
 
 namespace media {
 
@@ -401,6 +402,28 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
     VLOGF(1) << "No V4L2 API found for profile: " << GetProfileName(profile_);
     return V4L2Status::Codes::kNoDriverSupportForFourcc;
   }
+
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  // Set SVP (secure video pipeline) mode.
+  struct v4l2_ext_control ctrl;
+  struct v4l2_ext_controls ctrls;
+  memset(&ctrls, 0, sizeof(ctrls));
+  memset(&ctrl, 0, sizeof(ctrl));
+  ctrl.id = V4L2_CID_MPEG_MTK_SET_SECURE_MODE;
+  ctrl.value = !!cdm_context_ref_ ? 1 : 0;
+
+  ctrls.count = 1;
+  ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;
+  ctrls.controls = &ctrl;
+
+  VLOGF(1) << "Setting secure playback mode to: " << ctrl.value;
+  if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls)) {
+    PLOG(ERROR) << "Failed setting "
+                << (!!cdm_context_ref_ ? "secure" : "nonsecure")
+                << " playback mode";
+    return V4L2Status::Codes::kFailedToSetSecureMode;
+  }
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
   struct v4l2_capability caps;
   const __u32 kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;

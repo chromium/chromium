@@ -21,6 +21,7 @@ enum class V4L2StatusCodes : StatusCodeType {
   kBadFormat = 8,
   kFailedToStartStreamQueue = 9,
   kFailedToDestroyQueueBuffers = 10,
+  kFailedToSetSecureMode = 11,
 };
 
 struct V4L2StatusTraits {
