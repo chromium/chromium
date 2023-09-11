@@ -390,7 +390,9 @@ bool TabGroupHeader::DoesIntersectRect(const views::View* target,
   // The distance from the endge of the view to the tab separator is half of the
   // overlap distance. We should only accept events between the separators.
   gfx::Rect contents_rect = GetLocalBounds();
-  contents_rect.Inset(gfx::Insets::VH(0, tab_style_->GetTabOverlap() / 2));
+  contents_rect.Inset(gfx::Insets::TLBR(GetLayoutConstant(TAB_STRIP_PADDING),
+                                        tab_style_->GetTabOverlap() / 2, 0,
+                                        tab_style_->GetTabOverlap() / 2));
   return contents_rect.Intersects(rect);
 }
 
