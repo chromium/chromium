@@ -94,8 +94,6 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
   PrefService* user_prefs = browser_state->GetPrefs();
   CHECK(user_prefs);
 
-  // TODO (b/279766165): Once have an active Settings Service instance, initialize
-  // this service on ChromeBrowserStateManagerImpl::DoFinalInitForServices().
   return std::make_unique<supervised_user::SupervisedUserService>(
       IdentityManagerFactory::GetForBrowserState(browser_state),
       KidsChromeManagementClientFactory::GetForBrowserState(browser_state),

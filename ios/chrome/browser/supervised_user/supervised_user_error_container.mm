@@ -109,8 +109,6 @@ void SupervisedUserErrorContainer::HandleCommand(
                        interstitial.url()));
   } else if (command == security_interstitials::SecurityInterstitialCommand::
                             CMD_DONT_PROCEED) {
-    // TODO (b/279766168): Use `GoBack` from IOSBlockingPageControllerClient
-    // once implemented.
     interstitial.GoBack();
   }
 }
@@ -160,22 +158,22 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
     if (reload_main_frame) {
       web_state_->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
                                                  /*check_for_repost=*/true);
+    } else {
+      // The present interstitial framework on iOS supports main frames only.
+      // It it is not possible to obtain or refresh a subframe interstitial.
+      NOTREACHED_NORETURN();
     }
   }
 }
 
 void SupervisedUserErrorContainer::OnURLFilterChanged() {
-  // TODO (b/279766168): Skip parent filtering for the same exceptions as in
-  // native.
-  bool skip_manual_parent_filter = false;
-
   supervised_user_service_->GetURLFilter()
       ->GetFilteringBehaviorForURLWithAsyncChecks(
           web_state_->GetLastCommittedURL(),
           base::BindOnce(&SupervisedUserErrorContainer::URLFilterCheckCallback,
                          weak_ptr_factory_.GetWeakPtr(),
                          web_state_->GetLastCommittedURL()),
-          skip_manual_parent_filter);
+          /*skip_manual_parent_filter=*/false);
 
   MaybeUpdatePendingApprovals();
 }

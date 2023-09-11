@@ -28,8 +28,8 @@ bool IOSWebContentHandlerImpl::IsMainFrame() const {
 }
 
 void IOSWebContentHandlerImpl::CleanUpInfoBarOnMainFrame() {
-  // TODO(b/279766168): Check if the use case for native applies
-  // here and implement accordingly. Does nothing for now.
+  // There are no sticky infobars for iOS, infobars are implemented
+  // as self-dismissed messages.
 }
 
 int64_t IOSWebContentHandlerImpl::GetInterstitialNavigationId() const {
