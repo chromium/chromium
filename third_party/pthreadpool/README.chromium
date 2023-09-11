@@ -1,8 +1,8 @@
 Name: pthreadpool
 Short Name: pthreadpool
 URL: https://github.com/Maratyszcza/pthreadpool
-Version: 966fbf7c86390b7f489f7474ecf99c42c91fddac
-Date: 2023/08/31
+Version: 4fe0e1e183925bf8cfa6aae24237e724a96479b8
+Date: 2023/09/11
 License: BSD
 License File: src/LICENSE
 Security Critical: Yes
