@@ -9634,6 +9634,29 @@
             ]
         }
     ],
+    "MaxNumDelayableRequestsPerHostPerClient": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "MaxRequests_6_20230906",
+                    "params": {
+                        "MaxNumDelayableRequestsPerHostPerClient": "6"
+                    },
+                    "enable_features": [
+                        "MaxNumDelayableRequestsPerHostPerClientFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaDeviceIdStoragePartitioning": [
         {
             "platforms": [
