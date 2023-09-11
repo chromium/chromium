@@ -54,7 +54,6 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -1168,9 +1167,6 @@ void FrameLoader::CommitNavigation(
         std::move(navigation_params->policy_container));
   }
 
-  base::flat_map<mojom::blink::RuntimeFeatureState, bool> override_values =
-      navigation_params->modified_runtime_features;
-
   // TODO(dgozman): get rid of provisional document loader and most of the code
   // below. We should probably call DocumentLoader::CommitNavigation directly.
   DocumentLoader* new_document_loader = MakeGarbageCollected<DocumentLoader>(
@@ -1181,14 +1177,6 @@ void FrameLoader::CommitNavigation(
       new_document_loader,
       ScopedOldDocumentInfoForCommitCapturer::CurrentInfo()->history_item,
       commit_reason);
-
-  // Now that the RuntimeFeatureStateOverrideContext has been created, set the
-  // override values.
-  // TODO(crbug.com/1377000): Move this inside CommitNavigation() and put it
-  // alongside the other state initialization.
-  frame_->DomWindow()
-      ->GetRuntimeFeatureStateOverrideContext()
-      ->ApplyOverrideValuesFromParams(override_values);
 
   RestoreScrollPositionAndViewState();
 

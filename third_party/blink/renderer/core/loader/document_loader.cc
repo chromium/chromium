@@ -151,6 +151,7 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
@@ -319,6 +320,8 @@ struct SameSizeAsDocumentLoader
   bool has_storage_access;
   mojom::blink::ParentResourceTimingAccess parent_resource_timing_access;
   const absl::optional<BrowsingContextGroupInfo> browsing_context_group_info;
+  const base::flat_map<mojom::blink::RuntimeFeatureState, bool>
+      modified_runtime_features;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -519,7 +522,9 @@ DocumentLoader::DocumentLoader(
       navigation_delivery_type_(params_->navigation_delivery_type),
       view_transition_state_(std::move(params_->view_transition_state)),
       load_with_storage_access_(params_->load_with_storage_access),
-      browsing_context_group_info_(params_->browsing_context_group_info) {
+      browsing_context_group_info_(params_->browsing_context_group_info),
+      modified_runtime_features_(
+          std::move(params_->modified_runtime_features)) {
   DCHECK(frame_);
   DCHECK(params_);
 
@@ -668,6 +673,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->reduced_accept_language = reduced_accept_language_;
   params->navigation_delivery_type = navigation_delivery_type_;
   params->load_with_storage_access = load_with_storage_access_;
+  params->modified_runtime_features = modified_runtime_features_;
   return params;
 }
 
@@ -2461,6 +2467,10 @@ void DocumentLoader::CommitNavigation() {
 
   LocalDOMWindow* previous_window = frame_->DomWindow();
   InitializeWindow(owner_document);
+
+  frame_->DomWindow()
+      ->GetRuntimeFeatureStateOverrideContext()
+      ->ApplyOverrideValuesFromParams(modified_runtime_features_);
 
   MaybeStartLoadingBodyInBackground(body_loader_.get(), frame_, url_,
                                     response_);
