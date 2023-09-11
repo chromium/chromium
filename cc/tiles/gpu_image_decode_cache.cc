@@ -60,6 +60,7 @@
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
@@ -455,15 +456,15 @@ void DeleteSkImageAndPreventCaching(viz::RasterContextProvider* context,
 sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
                                 sk_sp<SkImage> source_image,
                                 sk_sp<SkColorSpace> target_color_space,
-                                GrMipMapped mip_mapped) {
+                                skgpu::Mipmapped mip_mapped) {
   // Step 1: Upload image and generate mips if necessary. If we will be applying
   // a color-space conversion, don't generate mips yet, instead do it after
   // conversion, in step 3.
   bool add_mips_after_color_conversion =
-      (target_color_space && mip_mapped == GrMipMapped::kYes);
+      (target_color_space && mip_mapped == skgpu::Mipmapped::kYes);
   sk_sp<SkImage> uploaded_image = SkImages::TextureFromImage(
       context->GrContext(), source_image,
-      add_mips_after_color_conversion ? GrMipMapped::kNo : mip_mapped);
+      add_mips_after_color_conversion ? skgpu::Mipmapped::kNo : mip_mapped);
 
   // Step 2: Apply a color-space conversion if necessary.
   if (uploaded_image && target_color_space) {
@@ -480,7 +481,7 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
   if (uploaded_image && add_mips_after_color_conversion) {
     sk_sp<SkImage> pre_mipped_image = uploaded_image;
     uploaded_image = SkImages::TextureFromImage(
-        context->GrContext(), uploaded_image, GrMipMapped::kYes);
+        context->GrContext(), uploaded_image, skgpu::Mipmapped::kYes);
     DCHECK_NE(pre_mipped_image, uploaded_image);
     DeleteSkImageAndPreventCaching(context, std::move(pre_mipped_image));
   }
@@ -2655,8 +2656,8 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
     // this directly as our "uploaded" data.
     sk_sp<SkImage> uploaded_image =
         image_data->decode.image(0, AuxImage::kDefault);
-    GrMipMapped image_needs_mips =
-        image_data->needs_mips ? GrMipMapped::kYes : GrMipMapped::kNo;
+    skgpu::Mipmapped image_needs_mips =
+        image_data->needs_mips ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
 
     if (image_data->info.yuva.has_value()) {
       UploadImageIfNecessary_GpuCpu_YUVA(
@@ -2762,7 +2763,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
     const DrawImage& draw_image,
     ImageData* image_data,
     sk_sp<SkImage> uploaded_image,
-    GrMipMapped image_needs_mips,
+    skgpu::Mipmapped image_needs_mips,
     sk_sp<SkColorSpace> decoded_target_colorspace,
     sk_sp<SkColorSpace> color_space) {
   DCHECK(!use_transfer_cache_);
@@ -2862,7 +2863,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_RGBA(
     const DrawImage& draw_image,
     ImageData* image_data,
     sk_sp<SkImage> uploaded_image,
-    GrMipMapped image_needs_mips,
+    skgpu::Mipmapped image_needs_mips,
     sk_sp<SkColorSpace> color_space) {
   DCHECK(!use_transfer_cache_);
   DCHECK(!image_data->info.yuva.has_value());
@@ -3621,11 +3622,11 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
 
     // Generate a new image from the previous, adding mips.
     sk_sp<SkImage> image_y_with_mips = SkImages::TextureFromImage(
-        context_->GrContext(), previous_y_image, GrMipMapped::kYes);
+        context_->GrContext(), previous_y_image, skgpu::Mipmapped::kYes);
     sk_sp<SkImage> image_u_with_mips = SkImages::TextureFromImage(
-        context_->GrContext(), previous_u_image, GrMipMapped::kYes);
+        context_->GrContext(), previous_u_image, skgpu::Mipmapped::kYes);
     sk_sp<SkImage> image_v_with_mips = SkImages::TextureFromImage(
-        context_->GrContext(), previous_v_image, GrMipMapped::kYes);
+        context_->GrContext(), previous_v_image, skgpu::Mipmapped::kYes);
 
     // Handle lost context.
     if (!image_y_with_mips || !image_u_with_mips || !image_v_with_mips) {
@@ -3710,7 +3711,7 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
 
   // Generate a new image from the previous, adding mips.
   sk_sp<SkImage> image_with_mips = SkImages::TextureFromImage(
-      context_->GrContext(), previous_image, GrMipMapped::kYes);
+      context_->GrContext(), previous_image, skgpu::Mipmapped::kYes);
 
   // Handle lost context.
   if (!image_with_mips) {

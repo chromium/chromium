@@ -831,13 +831,13 @@ class CC_EXPORT GpuImageDecodeCache
       const DrawImage& draw_image,
       ImageData* image_data,
       sk_sp<SkImage> uploaded_image,
-      GrMipMapped image_needs_mips,
+      skgpu::Mipmapped image_needs_mips,
       sk_sp<SkColorSpace> decoded_target_colorspace,
       sk_sp<SkColorSpace> color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UploadImageIfNecessary_GpuCpu_RGBA(const DrawImage& draw_image,
                                           ImageData* image_data,
                                           sk_sp<SkImage> uploaded_image,
-                                          GrMipMapped image_needs_mips,
+                                          skgpu::Mipmapped image_needs_mips,
                                           sk_sp<SkColorSpace> color_space)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 

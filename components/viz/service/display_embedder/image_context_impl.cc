@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
@@ -185,8 +186,8 @@ void ImageContextImpl::CreateFallbackImage(
     auto fallback_texture =
         fallback_context_state_->gr_context()->createBackendTexture(
             size().width(), size().height(), formats[plane_index],
-            GetFallbackColorForPlane(format(), plane_index), GrMipMapped::kNo,
-            GrRenderable::kYes);
+            GetFallbackColorForPlane(format(), plane_index),
+            skgpu::Mipmapped::kNo, GrRenderable::kYes);
 
     if (!fallback_texture.isValid()) {
       DeleteFallbackTextures();

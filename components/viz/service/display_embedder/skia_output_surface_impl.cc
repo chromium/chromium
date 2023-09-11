@@ -50,6 +50,7 @@
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
@@ -599,7 +600,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
       fulfills[i] = new FulfillForPlane(context);
     }
     GrYUVABackendTextureInfo yuva_backend_info(
-        yuva_info, formats, GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
+        yuva_info, formats, skgpu::Mipmapped::kNo, kTopLeft_GrSurfaceOrigin);
     image = SkImages::PromiseTextureFromYUVA(
         gr_context_thread_safe_, yuva_backend_info,
         std::move(image_color_space), FulfillGanesh, CleanUp, fulfills);
@@ -657,9 +658,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
     auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
         gfx::SizeToSkISize(image_context->size()),
-        mipmap ? GrMipMapped::kYes : GrMipMapped::kNo, image_context->origin(),
-        color_type, image_context->alpha_type(), image_context->color_space(),
-        FulfillGanesh, CleanUp, fulfill);
+        mipmap ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo,
+        image_context->origin(), color_type, image_context->alpha_type(),
+        image_context->color_space(), FulfillGanesh, CleanUp, fulfill);
     image_context->SetImage(std::move(image), {backend_format});
   }
 }
@@ -710,8 +711,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
     }
 
-    GrYUVABackendTextureInfo yuva_backend_info(
-        yuva_info, formats.data(), GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
+    GrYUVABackendTextureInfo yuva_backend_info(yuva_info, formats.data(),
+                                               skgpu::Mipmapped::kNo,
+                                               kTopLeft_GrSurfaceOrigin);
     auto image = SkImages::PromiseTextureFromYUVA(
         gr_context_thread_safe_, yuva_backend_info,
         image_context->color_space(), FulfillGanesh, CleanUp, fulfills);

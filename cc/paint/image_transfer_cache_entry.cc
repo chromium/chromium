@@ -404,10 +404,11 @@ sk_sp<SkImage> ReadImage(
     // Upload to the GPU if the image will fit.
     if (fits_on_gpu) {
       if (gr_context) {
-        image = SkImages::TextureFromImage(
-            gr_context, image,
-            mip_mapped_for_upload ? GrMipMapped::kYes : GrMipMapped::kNo,
-            skgpu::Budgeted::kNo);
+        image = SkImages::TextureFromImage(gr_context, image,
+                                           mip_mapped_for_upload
+                                               ? skgpu::Mipmapped::kYes
+                                               : skgpu::Mipmapped::kNo,
+                                           skgpu::Budgeted::kNo);
       } else {
         CHECK(graphite_recorder);
         SkImage::RequiredProperties props{.fMipmapped = mip_mapped_for_upload};
@@ -444,10 +445,11 @@ sk_sp<SkImage> ReadImage(
         return nullptr;
       }
       if (gr_context) {
-        plane = SkImages::TextureFromImage(
-            gr_context, plane,
-            mip_mapped_for_upload ? GrMipMapped::kYes : GrMipMapped::kNo,
-            skgpu::Budgeted::kNo);
+        plane = SkImages::TextureFromImage(gr_context, plane,
+                                           mip_mapped_for_upload
+                                               ? skgpu::Mipmapped::kYes
+                                               : skgpu::Mipmapped::kNo,
+                                           skgpu::Budgeted::kNo);
         // Uploading pixels is a heavy operation that might take long and lead
         // to yields to higher priority scheduler sequences. To ensure upload is
         // done, perform flush for Ganesh in DDL mode (no-op if image is null).
@@ -652,9 +654,9 @@ bool ServiceImageTransferCacheEntry::BuildFromHardwareDecodedImage(
     DCHECK(plane_sizes_.empty());
     base::CheckedNumeric<size_t> safe_total_size(0u);
     for (size_t plane = 0; plane < plane_images.size(); plane++) {
-      plane_images[plane] =
-          SkImages::TextureFromImage(gr_context_, plane_images[plane],
-                                     GrMipMapped::kYes, skgpu::Budgeted::kNo);
+      plane_images[plane] = SkImages::TextureFromImage(
+          gr_context_, plane_images[plane], skgpu::Mipmapped::kYes,
+          skgpu::Budgeted::kNo);
       if (!plane_images[plane]) {
         DLOG(ERROR) << "Could not generate mipmap chain for plane " << plane;
         return false;
@@ -793,7 +795,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     if (needs_mips && image_->isTextureBacked()) {
       if (gr_context) {
         image_ = SkImages::TextureFromImage(
-            gr_context, image_, GrMipMapped::kYes, skgpu::Budgeted::kNo);
+            gr_context, image_, skgpu::Mipmapped::kYes, skgpu::Budgeted::kNo);
       } else {
         CHECK(graphite_recorder);
         SkImage::RequiredProperties props{.fMipmapped = true};
@@ -857,9 +859,9 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
       CHECK(plane_images_.at(plane));
       sk_sp<SkImage> mipped_plane;
       if (gr_context_) {
-        mipped_plane =
-            SkImages::TextureFromImage(gr_context_, plane_images_.at(plane),
-                                       GrMipMapped::kYes, skgpu::Budgeted::kNo);
+        mipped_plane = SkImages::TextureFromImage(
+            gr_context_, plane_images_.at(plane), skgpu::Mipmapped::kYes,
+            skgpu::Budgeted::kNo);
       } else {
         CHECK(graphite_recorder_);
         SkImage::RequiredProperties props{.fMipmapped = true};
@@ -889,7 +891,7 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
     sk_sp<SkImage> mipped_image;
     if (gr_context_) {
       mipped_image = SkImages::TextureFromImage(
-          gr_context_, image_, GrMipMapped::kYes, skgpu::Budgeted::kNo);
+          gr_context_, image_, skgpu::Mipmapped::kYes, skgpu::Budgeted::kNo);
     } else {
       CHECK(graphite_recorder_);
       SkImage::RequiredProperties props{.fMipmapped = true};

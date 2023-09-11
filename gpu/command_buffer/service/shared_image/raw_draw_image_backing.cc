@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -194,7 +195,7 @@ bool RawDrawImageBacking::CreateBackendTextureAndFlushPaintOps(bool flush) {
   GrDirectContext* direct_context = context_state_->gr_context();
   CHECK(direct_context);
   backend_texture_ = direct_context->createBackendTexture(
-      size().width(), size().height(), sk_color, GrMipMapped::kNo,
+      size().width(), size().height(), sk_color, skgpu::Mipmapped::kNo,
       GrRenderable::kYes, GrProtected::kNo, label);
   if (!backend_texture_.isValid()) {
     DLOG(ERROR) << "createBackendTexture() failed with SkColorType:"
