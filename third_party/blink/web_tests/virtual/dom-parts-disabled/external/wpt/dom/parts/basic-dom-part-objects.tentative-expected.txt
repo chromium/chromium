@@ -19,10 +19,5 @@ FAIL Cloning ProcessingInstruction (DocumentFragment) doc.getPartRoot is not a f
 FAIL DOM mutation support (DocumentFragment) doc.getPartRoot is not a function
 FAIL ChildNodePart children manipulation (DocumentFragment) doc.getPartRoot is not a function
 FAIL Corner case ChildNodePart construction and cloning (DocumentFragment) doc.getPartRoot is not a function
-FAIL Basic declarative DOM Parts (Main Document) doc.getPartRoot is not a function
-FAIL Basic declarative DOM Parts (Template) doc.getPartRoot is not a function
-FAIL Basic declarative DOM Parts (Clone) doc.getPartRoot is not a function
-FAIL Basic declarative DOM Parts (PartClone) template.content.getPartRoot is not a function
-FAIL Basic declarative DOM Parts (DeclarativeShadowDOM) doc.getPartRoot is not a function
 Harness: the test ran to completion.
 

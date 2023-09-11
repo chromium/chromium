@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -522,6 +523,11 @@ ContainerNode* HTMLElementStack::RootNode() const {
 void HTMLElementStack::PushCommon(HTMLStackItem* item) {
   DCHECK(root_node_);
 
+  if (item->HasParsePartsAttribute() && body_element_) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    ++parse_parts_count_;
+  }
+
   stack_depth_++;
   item->SetNextItemInStack(top_.Release());
   top_ = item;
@@ -532,6 +538,13 @@ void HTMLElementStack::PopCommon() {
   DCHECK(!TopStackItem()->HasTagName(html_names::kHeadTag) || !head_element_);
   DCHECK(!TopStackItem()->HasTagName(html_names::kBodyTag) || !body_element_);
   Top()->FinishParsingChildren();
+
+  DCHECK(!TopStackItem()->HasParsePartsAttribute() || parse_parts_count_ ||
+         !body_element_);
+  if (parse_parts_count_ && TopStackItem()->HasParsePartsAttribute()) {
+    --parse_parts_count_;
+  }
+
   top_ = top_->ReleaseNextItemInStack();
 
   stack_depth_--;
@@ -546,6 +559,13 @@ void HTMLElementStack::RemoveNonTopCommon(Element* element) {
       // FIXME: Is it OK to call finishParsingChildren()
       // when the children aren't actually finished?
       element->FinishParsingChildren();
+
+      DCHECK(!TopStackItem()->HasParsePartsAttribute() || parse_parts_count_);
+      if (parse_parts_count_ &&
+          item->NextItemInStack()->HasParsePartsAttribute()) {
+        --parse_parts_count_;
+      }
+
       item->SetNextItemInStack(
           item->ReleaseNextItemInStack()->ReleaseNextItemInStack());
       stack_depth_--;

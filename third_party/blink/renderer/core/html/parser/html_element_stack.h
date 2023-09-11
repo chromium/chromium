@@ -29,6 +29,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -116,6 +117,10 @@ class HTMLElementStack {
   bool InTableScope(html_names::HTMLTag tag) const;
   bool InButtonScope(html_names::HTMLTag tag) const;
   bool InSelectScope(html_names::HTMLTag tag) const;
+  bool InParsePartsScope() const {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled() || !parse_parts_count_);
+    return parse_parts_count_;
+  }
 
   bool HasNumberedHeaderElementInScope() const;
 
@@ -139,6 +144,8 @@ class HTMLElementStack {
   void PushRootNodeCommon(HTMLStackItem*);
   void PopCommon();
   void RemoveNonTopCommon(Element*);
+
+  unsigned parse_parts_count_{0};
 
   Member<HTMLStackItem> top_;
 

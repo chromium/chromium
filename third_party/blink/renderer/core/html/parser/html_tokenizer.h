@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 
 namespace blink {
@@ -59,6 +60,8 @@ class CORE_EXPORT HTMLTokenizer {
     kRCDATAState,
     kCharacterReferenceInRCDATAState,
     kRAWTEXTState,
+    kChildNodePartStartState,
+    kChildNodePartEndState,
     kScriptDataState,
     kPLAINTEXTState,
     kTagOpenState,
@@ -180,6 +183,16 @@ class CORE_EXPORT HTMLTokenizer {
   bool ShouldAllowCDATA() const { return should_allow_cdata_; }
   void SetShouldAllowCDATA(bool value) { should_allow_cdata_ = value; }
 
+  bool ShouldAllowDOMParts() const {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled() ||
+           !should_allow_dom_parts_);
+    return should_allow_dom_parts_;
+  }
+  void SetShouldAllowDOMParts(bool value) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    should_allow_dom_parts_ = value;
+  }
+
   ALWAYS_INLINE State GetState() const { return state_; }
   void SetState(State state) { state_ = state; }
 
@@ -290,6 +303,7 @@ class CORE_EXPORT HTMLTokenizer {
   State state_;
   bool force_null_character_replacement_;
   bool should_allow_cdata_;
+  bool should_allow_dom_parts_{false};
   // This value is also stored in `options_`, but it's kept as a member as doing
   // so gives a slight performance boost.
   const bool track_attributes_ranges_;

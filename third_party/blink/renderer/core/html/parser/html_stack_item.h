@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -117,6 +118,12 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
     DCHECK(LocalName());
     return FindAttributeInVector(Attributes(), attribute_name);
+  }
+  bool HasParsePartsAttribute() {
+    if (!LocalName() || !RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
+      return false;
+    }
+    return GetAttributeItem(html_names::kParsepartsAttr);
   }
 
   html_names::HTMLTag GetHTMLTag() const { return token_name_.GetHTMLTag(); }

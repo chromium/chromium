@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/html_element_attribute_name_lookup_trie.h"
 #include "third_party/blink/renderer/core/html_element_lookup_trie.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -192,6 +193,18 @@ class CORE_EXPORT AtomicHTMLToken {
     return doctype_data_->system_identifier_;
   }
 
+  DOMPartTokenType DOMPartType() const {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    DCHECK_EQ(type_, HTMLToken::kDOMPart);
+    return dom_part_data_->type_;
+  }
+
+  WTF::Vector<String> DOMPartMetadata() const {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    DCHECK_EQ(type_, HTMLToken::kDOMPart);
+    return dom_part_data_->metadata_;
+  }
+
   explicit AtomicHTMLToken(HTMLToken& token)
       : type_(token.GetType()), name_(HTMLTokenNameFromToken(token)) {
     switch (type_) {
@@ -200,6 +213,10 @@ class CORE_EXPORT AtomicHTMLToken {
         break;
       case HTMLToken::DOCTYPE:
         doctype_data_ = token.ReleaseDoctypeData();
+        break;
+      case HTMLToken::kDOMPart:
+        DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+        dom_part_data_ = token.ReleaseDOMPartData();
         break;
       case HTMLToken::kEndOfFile:
         break;
@@ -301,6 +318,9 @@ class CORE_EXPORT AtomicHTMLToken {
 
   // For DOCTYPE
   std::unique_ptr<DoctypeData> doctype_data_;
+
+  // For DOM Parts
+  std::unique_ptr<DOMPartData> dom_part_data_;
 
   // For StartTag and EndTag
   bool self_closing_ = false;

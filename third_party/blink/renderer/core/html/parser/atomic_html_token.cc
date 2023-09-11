@@ -28,6 +28,7 @@ const char* ToString(HTMLToken::TokenType type) {
     DEFINE_STRINGIFY(kComment);
     DEFINE_STRINGIFY(kCharacter);
     DEFINE_STRINGIFY(kEndOfFile);
+    DEFINE_STRINGIFY(kDOMPart);
 #undef DEFINE_STRINGIFY
   }
   return "<unknown>";

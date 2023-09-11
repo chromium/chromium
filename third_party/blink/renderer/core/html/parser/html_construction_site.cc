@@ -28,6 +28,7 @@
 
 #include <limits>
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -806,6 +807,8 @@ void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
   Comment& comment_node =
       *Comment::Create(OwnerDocumentForCurrentNode(), comment);
   if (pending_dom_parts_) {
+    // TODO(crbug.com/1453291) This is the OLD STYLE comment-based DOM Parts
+    // syntax, and should be removed.
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     // This strips HTML whitespace from the front and back, and replaces
     // repeated whitespace with a single ' '.
@@ -826,6 +829,25 @@ void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
                                         ParseMetadataString(trimmed_comment));
       }
     }
+  }
+  AttachLater(CurrentNode(), &comment_node);
+}
+
+void HTMLConstructionSite::InsertDOMPart(AtomicHTMLToken* token) {
+  DCHECK_EQ(token->GetType(), HTMLToken::kDOMPart);
+  CHECK(pending_dom_parts_);
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(InParsePartsScope());
+  // Insert an empty comment in place of the part token.
+  Comment& comment_node = *Comment::Create(OwnerDocumentForCurrentNode(), "");
+  switch (token->DOMPartType()) {
+    case DOMPartTokenType::kChildNodePartStart:
+      pending_dom_parts_->AddChildNodePartStart(comment_node,
+                                                token->DOMPartMetadata());
+      break;
+    case DOMPartTokenType::kChildNodePartEnd:
+      pending_dom_parts_->AddChildNodePartEnd(comment_node);
+      break;
   }
   AttachLater(CurrentNode(), &comment_node);
 }
@@ -1408,6 +1430,7 @@ void HTMLConstructionSite::PendingDOMParts::AddNodePart(
   pending_node_part_metadata_ = metadata;
   // Nothing to construct yet - wait for the next Node.
 }
+
 void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
     Node& previous_sibling,
     Vector<String> metadata) {

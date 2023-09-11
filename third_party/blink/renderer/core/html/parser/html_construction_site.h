@@ -147,6 +147,7 @@ class HTMLConstructionSite final {
   void InsertComment(AtomicHTMLToken*);
   void InsertCommentOnDocument(AtomicHTMLToken*);
   void InsertCommentOnHTMLHtmlElement(AtomicHTMLToken*);
+  void InsertDOMPart(AtomicHTMLToken*);
   void InsertHTMLElement(AtomicHTMLToken*);
   void InsertHTMLTemplateElement(AtomicHTMLToken*, DeclarativeShadowRootType);
   void InsertSelfClosingHTMLElementDestroyingToken(AtomicHTMLToken*);
@@ -202,6 +203,7 @@ class HTMLConstructionSite final {
   bool CurrentIsRootNode() {
     return open_elements_.TopNode() == open_elements_.RootNode();
   }
+  bool InParsePartsScope() { return open_elements_.InParsePartsScope(); }
 
   Element* Head() const { return head_->GetElement(); }
   HTMLStackItem* HeadStackItem() const { return head_.Get(); }
