@@ -1047,6 +1047,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // be presented.
 - (NSArray<NSNumber*>*)segmentationMagicStackOrder {
   NSMutableArray<NSNumber*>* magicStackOrder = [NSMutableArray array];
+  // Always add Set Up List at the front.
   if ([self shouldShowSetUpList]) {
     [self addSetUpListToMagicStackOrder:magicStackOrder];
   }
@@ -1123,10 +1124,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 
   NSMutableArray* magicStackOrder = [NSMutableArray array];
-  // Always add Set Up List at the front.
-  if ([self shouldShowSetUpList]) {
-    [self addSetUpListToMagicStackOrder:magicStackOrder];
-  }
   for (const std::string& label : result.ordered_labels) {
     if (label == segmentation_platform::kMostVisitedTiles) {
       [magicStackOrder
