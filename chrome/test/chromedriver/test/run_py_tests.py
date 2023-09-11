@@ -6745,9 +6745,30 @@ class VendorSpecificTest(ChromeDriverBaseTestWithWebServer):
 class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
 
   def setUp(self):
+    global _VENDOR_ID
+    self._vendor_id = _VENDOR_ID
+
     port = self._https_server._server.server_port
     self._url_prefix = (self._https_server.GetUrl("localhost") +
         "/chromedriver/fedcm")
+    self._default_accounts = """
+{
+  "id": "1234",
+  "given_name": "John",
+  "name": "John Doe",
+  "email": "john_doe@idp.example",
+  "picture": "https://idp.example/profile/123",
+  "approved_clients": ["123", "456", "789"]
+}, {
+  "id": "5678",
+  "given_name": "Aisha",
+  "name": "Aisha Ahmad",
+  "email": "aisha@idp.example",
+  "picture": "https://idp.example/profile/567",
+  "approved_clients": []
+}
+    """
+    self._accounts = self._default_accounts
 
     def respondWithWellKnownFile(request):
       return {'Content-Type': 'application/json'}, bytes("""
@@ -6755,8 +6776,22 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
         "provider_urls": ["%s/fedcm.json"]
       }
       """ % self._url_prefix, 'utf-8')
+
+    def respondWithSignedInHeader(request):
+      return {'IdP-Signin-Status': 'action=signin'}, b"Header sent"
+
+    def respondWithAccountList(request):
+      return {'Content-Type': 'application/json'}, bytes("""
+        {"accounts": [
+          %s
+        ]}""" % self._accounts, 'utf-8')
+
     self._https_server.SetCallbackForPath('/.well-known/web-identity',
                                           respondWithWellKnownFile)
+    self._https_server.SetCallbackForPath('/chromedriver/fedcm/mark-signed-in',
+                                          respondWithSignedInHeader)
+    self._https_server.SetCallbackForPath('/chromedriver/fedcm/accounts.json',
+                                          respondWithAccountList)
 
     script_content = bytes("""
       <script>
@@ -6768,7 +6803,8 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
               configURL: '%s/fedcm.json',
               clientId: '123',
             }]
-          }
+          },
+          mediation: 'required'
         });
       }
       async function getResult() {
@@ -6782,10 +6818,11 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
       """ % self._url_prefix, 'utf-8')
     self._https_server.SetDataForPath('/fedcm.html', script_content)
 
+    self.chrome_switches = ['host-resolver-rules=MAP *:443 127.0.0.1:%s' % port,
+            'enable-experimental-web-platform-features']
     self._driver = self.CreateDriver(
         accept_insecure_certs=True,
-        chrome_switches=['host-resolver-rules=MAP *:443 127.0.0.1:%s' % port,
-            'enable-experimental-web-platform-features'])
+        chrome_switches=self.chrome_switches)
 
   def FedCmDialogCondition(self):
     try:
@@ -6828,6 +6865,43 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
     token = self._driver.ExecuteScript('return getResult()')
     self.assertEqual('Error: NetworkError: Error retrieving a token.', token)
+
+  def testConfirmIdpSignin(self):
+    self._driver = self.CreateDriver(
+        accept_insecure_certs=True,
+        chrome_switches=self.chrome_switches +
+            ["--enable-features=FedCmIdpSigninStatusEnabled"])
+
+    self._accounts = ""
+
+    self._driver.Load(self._url_prefix + "/mark-signed-in")
+
+    self._driver.Load(self._https_server.GetUrl() + "/fedcm.html")
+
+    self._driver.SetDelayEnabled(False)
+    self._driver.ResetCooldown()
+
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    self._driver.ExecuteScript("callFedCm()")
+    self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
+
+    accounts = self._driver.GetAccounts()
+    self.assertEqual("ConfirmIdpSignin", self._driver.GetDialogType())
+    self.assertEqual(0, len(accounts))
+
+    self._accounts = self._default_accounts
+
+    self._driver.ConfirmIdpSignin(self._vendor_id)
+
+    self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
+    accounts = self._driver.GetAccounts()
+    self.assertEqual("AccountChooser", self._driver.GetDialogType())
+    self.assertEqual(2, len(accounts))
+
+    self._driver.SelectAccount(0)
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    token = self._driver.ExecuteScript("return getResult()")
+    self.assertEqual("token", token)
 
 # 'Z' in the beginning is to make test executed in the end of suite.
 class ZChromeStartRetryCountTest(unittest.TestCase):

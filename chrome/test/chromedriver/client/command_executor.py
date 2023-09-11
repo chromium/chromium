@@ -227,6 +227,9 @@ class Command(object):
   SELECT_ACCOUNT = (
       _Method.POST,
       '/session/:sessionId/fedcm/selectaccount')
+  CONFIRM_IDP_SIGNIN = (
+      _Method.POST,
+      '/session/:sessionId/:vendorId/fedcm/confirmidpsignin')
   GET_ACCOUNTS = (
       _Method.GET,
       '/session/:sessionId/fedcm/accountlist')

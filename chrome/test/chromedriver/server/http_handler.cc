@@ -938,7 +938,7 @@ HttpHandler::HttpHandler(
                         base::BindRepeating(&ExecuteSetSPCTransactionMode))),
 
       // Extensions for the Federated Credential Management API:
-      // https://github.com/fedidcg/FedCM/blob/main/proposals/webdriver.md
+      // https://fedidcg.github.io/FedCM/#automation
       CommandMapping(kPost, "session/:sessionId/fedcm/canceldialog",
                      WrapToCommand("CancelDialog",
                                    base::BindRepeating(&ExecuteCancelDialog))),
@@ -946,6 +946,13 @@ HttpHandler::HttpHandler(
       CommandMapping(kPost, "session/:sessionId/fedcm/selectaccount",
                      WrapToCommand("SelectAccount",
                                    base::BindRepeating(&ExecuteSelectAccount))),
+
+      // This command is prefixed because standardization is still pending:
+      // https://github.com/fedidcg/FedCM/pull/436/files
+      VendorPrefixedCommandMapping(
+          kPost, "session/:sessionId/%s/fedcm/confirmidpsignin",
+          WrapToCommand("ConfirmIdpSignin",
+                        base::BindRepeating(&ExecuteConfirmIdpSignin))),
 
       CommandMapping(kGet, "session/:sessionId/fedcm/accountlist",
                      WrapToCommand("GetAccounts",
