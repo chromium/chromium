@@ -75,6 +75,7 @@ public class PrivacySettings extends PreferenceFragmentCompat
     private static final String PREF_PRIVACY_GUIDE = "privacy_guide";
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
     private static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
+    private static final String PREF_TRACKING_PROTECTION = "tracking_protection";
 
     private IncognitoLockSettings mIncognitoLockSettings;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
@@ -180,7 +181,12 @@ public class PrivacySettings extends PreferenceFragmentCompat
         syncAndServicesLink.setSummary(buildSyncAndServicesLink());
 
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
-        if (thirdPartyCookies != null) {
+
+        if (showTrackingProtectionUI()) {
+            if (thirdPartyCookies != null) thirdPartyCookies.setVisible(false);
+            Preference trackingProtection = findPreference(PREF_TRACKING_PROTECTION);
+            trackingProtection.setVisible(true);
+        } else if (thirdPartyCookies != null) {
             thirdPartyCookies.getExtras().putString(
                     SingleCategorySettings.EXTRA_CATEGORY, thirdPartyCookies.getKey());
             thirdPartyCookies.getExtras().putString(
@@ -329,6 +335,10 @@ public class PrivacySettings extends PreferenceFragmentCompat
                                             .trim());
         }
         privacyGuide.setTitle(privacyGuidePrefTitle);
+    }
+
+    private boolean showTrackingProtectionUI() {
+        return UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED);
     }
 
     @Override

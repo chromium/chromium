@@ -1638,6 +1638,15 @@ Your Google account may have other forms of browsing history like searches and a
         Depending on your settings, Chrome may also send cookies and your current URL
       </message>
 
+      <!-- Tracking protection -->
+      <!-- TODO(b/295926938): Update the strings once finalized. -->
+      <message name="IDS_TRACKING_PROTECTION_TITLE" desc="" translateable="false">
+        Tracking protection
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_SUMMARY" desc="" translateable="false">
+        Protection from trackers (third-party cookies, IP tracking, invasive scripts, and more)
+      </message>
+
       <!-- Safety check -->
       <message name="IDS_PREFS_SAFETY_CHECK" desc="Title of the Safety check element in settings, allowing the user to check multiple areas of browser safety. [CHAR_LIMIT=32]">
         Safety check

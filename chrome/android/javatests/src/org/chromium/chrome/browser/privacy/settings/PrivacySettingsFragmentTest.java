@@ -145,6 +145,13 @@ public class PrivacySettingsFragmentTest {
                                    .getBoolean(Pref.PRIVACY_GUIDE_VIEWED));
     }
 
+    private void setShowTrackingProtection(boolean show) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                   .setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, show));
+    }
+
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
@@ -283,6 +290,17 @@ public class PrivacySettingsFragmentTest {
             recyclerView.scrollToPosition(PRIVACY_SANDBOX_V4_POS_IDX);
         });
         onView(withText(R.string.ad_privacy_link_row_label)).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testTrackingProtectionWithSandboxV4() throws IOException {
+        setShowTrackingProtection(true);
+        mSettingsActivityTestRule.startSettingsActivity();
+        // Verify that the Tracking Protection row is shown and 3PC is not.
+        onView(withText(R.string.tracking_protection_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.third_party_cookies_link_row_label)).check(doesNotExist());
     }
 
     @Test
