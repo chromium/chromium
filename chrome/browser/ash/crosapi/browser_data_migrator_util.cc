@@ -577,6 +577,9 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
       (*result)[extension_id].push_back(key);
   }
 
+  PLOG_IF(ERROR, !it->status().ok())
+      << "GetExtensionKeys() failed with status: " << it->status().ToString();
+
   return it->status();
 }
 
@@ -618,7 +621,8 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   leveldb::Status status =
       leveldb_env::OpenDB(options, original_path.value(), &original_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path;
+    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -627,7 +631,7 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   status = GetExtensionKeys(original_db.get(), leveldb_type, &original_keys);
   if (!status.ok()) {
     PLOG(ERROR) << "Failure while reading keys from original leveldb: "
-                << original_path;
+                << original_path << ": " << status.ToString();
     return false;
   }
 
@@ -637,7 +641,8 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   options.error_if_exists = true;
   status = leveldb_env::OpenDB(options, target_path.value(), &target_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening new leveldb: " << target_path;
+    PLOG(ERROR) << "Failure while opening new leveldb: " << target_path << ": "
+                << status.ToString();
     return false;
   }
 
@@ -661,7 +666,7 @@ bool MigrateLevelDB(const base::FilePath& original_path,
         status = original_db->Get(leveldb::ReadOptions(), key, &value);
         if (!status.ok()) {
           PLOG(ERROR) << "Failure while reading from original leveldb: "
-                      << original_path;
+                      << original_path << ": " << status.ToString();
           return false;
         }
         write_batch.Put(key, value);
@@ -674,7 +679,8 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   write_options.sync = true;
   status = target_db->Write(write_options, &write_batch);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while writing into new leveldb: " << target_path;
+    PLOG(ERROR) << "Failure while writing into new leveldb: " << target_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -691,7 +697,8 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   leveldb::Status status =
       leveldb_env::OpenDB(options, original_path.value(), &original_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path;
+    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -702,7 +709,8 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   status =
       leveldb_env::OpenDB(options, ash_target_path.value(), &ash_target_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening new leveldb: " << ash_target_path;
+    PLOG(ERROR) << "Failure while opening new leveldb: " << ash_target_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -711,7 +719,8 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   status = leveldb_env::OpenDB(options, lacros_target_path.value(),
                                &lacros_target_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening new leveldb: " << lacros_target_path;
+    PLOG(ERROR) << "Failure while opening new leveldb: " << lacros_target_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -731,7 +740,7 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   }
   if (!it->status().ok()) {
     PLOG(ERROR) << "Failure while reading from original leveldb: "
-                << original_path;
+                << original_path << ": " << status.ToString();
     return false;
   }
 
@@ -740,14 +749,14 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   write_options.sync = true;
   status = ash_target_db->Write(write_options, &ash_write_batch);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while writing into new leveldb: "
-                << ash_target_path;
+    PLOG(ERROR) << "Failure while writing into new leveldb: " << ash_target_path
+                << ": " << status.ToString();
     return false;
   }
   status = lacros_target_db->Write(write_options, &lacros_write_batch);
   if (!status.ok()) {
     PLOG(ERROR) << "Failure while writing into new leveldb: "
-                << lacros_target_path;
+                << lacros_target_path << ": " << status.ToString();
     return false;
   }
 
