@@ -18,6 +18,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "blink_heap_unittests",
         "swarming": {
           "dimensions": {
             "cores": "8",

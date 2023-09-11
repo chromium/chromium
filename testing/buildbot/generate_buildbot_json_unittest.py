@@ -1726,13 +1726,6 @@ GN_ISOLATE_MAP_USING_IMPLICIT_NAME="""\
 """
 
 class UnitTest(TestCase):
-  def test_base_generator(self):
-    # Only needed for complete code coverage.
-    with self.assertRaises(NotImplementedError):
-      generate_buildbot_json.BaseGenerator(None).generate(
-          None, None, None, None)
-    with self.assertRaises(NotImplementedError):
-      generate_buildbot_json.BaseGenerator(None).sort(None)
 
   def test_dimension_sets_causes_error(self):
     fbb = FakeBBGen(self.args, FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
@@ -3036,6 +3029,7 @@ TEST_SUITE_WITH_PARAMS = """\
 TEST_QUERY_BOTS_OUTPUT = {
     "Fake Android M Tester": {
         "gtest_tests": [{
+            "name": "foo_test",
             "test": "foo_test",
         }]
     },
@@ -3050,6 +3044,8 @@ TEST_QUERY_BOTS_OUTPUT = {
             "merge": {
                 "script": "//testing/merge_scripts/standard_gtest_merge.py"
             },
+            "name":
+            "foo_test",
             "swarming": {
                 "dimensions": {
                     "device_os": "LMY41U",
@@ -3072,6 +3068,8 @@ TEST_QUERY_BOTS_OUTPUT = {
             "merge": {
                 "script": "//testing/merge_scripts/standard_gtest_merge.py"
             },
+            "name":
+            "foo_test",
             "swarming": {
                 "dimensions": {
                     "device_os": "KTU84P",
@@ -3097,6 +3095,7 @@ TEST_QUERY_BOTS_OUTPUT = {
 }
 TEST_QUERY_BOTS_TESTS_OUTPUT = {
     "Fake Android M Tester": [{
+        "name": "foo_test",
         "test": "foo_test",
     }],
     "Fake Android L Tester": [{
@@ -3107,6 +3106,8 @@ TEST_QUERY_BOTS_TESTS_OUTPUT = {
         "merge": {
             "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name":
+        "foo_test",
         "swarming": {
             "dimensions": {
                 "device_os": "LMY41U",
@@ -3125,6 +3126,8 @@ TEST_QUERY_BOTS_TESTS_OUTPUT = {
         "merge": {
             "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name":
+        "foo_test",
         "swarming": {
             "dimensions": {
                 "device_os": "KTU84P",
@@ -3158,6 +3161,8 @@ TEST_QUERY_BOT_OUTPUT = {
             "merge": {
                 "script": "//testing/merge_scripts/standard_gtest_merge.py",
             },
+            "name":
+            "foo_test",
             "swarming": {
                 "dimensions": {
                     "device_os": "KTU84P",
@@ -3188,6 +3193,8 @@ TEST_QUERY_BOT_TESTS_OUTPUT = [{
     "merge": {
         "script": "//testing/merge_scripts/standard_gtest_merge.py"
     },
+    "name":
+    "foo_test",
     "swarming": {
         "dimensions": {
             "device_os": "LMY41U",
@@ -3200,6 +3207,7 @@ TEST_QUERY_BOT_TESTS_OUTPUT = [{
 
 TEST_QUERY_TESTS_OUTPUT = {
     "bar_test": {
+        'name': 'bar_test',
         'swarming': {
             'dimensions': {
                 'os': 'Linux'
@@ -3207,6 +3215,7 @@ TEST_QUERY_TESTS_OUTPUT = {
         }
     },
     "foo_test": {
+        'name': 'foo_test',
         'swarming': {
             'dimensions': {
                 'os': 'Linux'
@@ -3225,7 +3234,14 @@ TEST_QUERY_TESTS_PARAMS_OUTPUT = ['bar_test_test']
 
 TEST_QUERY_TESTS_PARAMS_FALSE_OUTPUT = ['bar_test']
 
-TEST_QUERY_TEST_OUTPUT = {'swarming': {'dimensions': {'os': 'Linux'}}}
+TEST_QUERY_TEST_OUTPUT = {
+    'name': 'foo_test',
+    'swarming': {
+        'dimensions': {
+            'os': 'Linux',
+        },
+    },
+}
 
 TEST_QUERY_TEST_BOTS_OUTPUT = [
     "Fake Android K Tester",
