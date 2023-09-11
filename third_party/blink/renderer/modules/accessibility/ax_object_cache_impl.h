@@ -965,13 +965,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   // setting enabled, or where there is no active ancestral aria-modal dialog.
   Element* AncestorAriaModalDialog(Node* node);
 
-  // Ensure the update has not been destroyed (node or axid) and
-  // that the document being processed is the one this update is associated
-  // to.
-  bool IsTreeUpdateRelevant(Document& document, TreeUpdateParams* tree_update);
-
-  void FireTreeUpdatedEventImmediately(Document& document,
+  // Return the AXObject for the update if it is relevant (its backing data has
+  // not been destroyed and it is attached to the expected tree document).
+  AXObject* TreeUpdateObjectIfRelevant(Document& document,
                                        TreeUpdateParams* tree_update);
+
+  void FireTreeUpdatedEventImmediately(TreeUpdateParams* tree_update,
+                                       AXObject* ax_object);
 
   void FireAXEventImmediately(AXObject* obj,
                               ax::mojom::blink::Event event_type,

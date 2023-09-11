@@ -908,7 +908,14 @@ void AXObject::RepairMissingParent() const {
   DCHECK(IsMissingParent());
   DCHECK(!AXObjectCache().HasBeenDisposed());
 
-  SetParent(ComputeParent());
+  AXObject* new_parent = ComputeParent();
+  if (!new_parent) {
+    // If no parent is possible, this is no longer part of the tree.
+    AXObjectCache().RemoveSubtreeWhenSafe(GetNode(), /* remove_root */ true);
+    return;
+  }
+
+  SetParent(new_parent);
 
   SANITIZER_CHECK(!parent_ ||
                   parent_->RoleValue() != ax::mojom::blink::Role::kIframe ||
@@ -3127,8 +3134,9 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       << GetDocument()->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (IsMissingParent())
+  if (IsMissingParent()) {
     RepairMissingParent();
+  }
 
   // Mock objects are created by, owned and dependent on their parents.
   // If the mock object's values change, recompute the parent's as well.

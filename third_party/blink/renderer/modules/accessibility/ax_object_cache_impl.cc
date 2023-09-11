@@ -3119,8 +3119,9 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
   last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 
   for (TreeUpdateParams* tree_update : old_tree_update_callback_queue) {
-    if (IsTreeUpdateRelevant(document, tree_update)) {
-      FireTreeUpdatedEventImmediately(document, tree_update);
+    if (AXObject* ax_object =
+            TreeUpdateObjectIfRelevant(document, tree_update)) {
+      FireTreeUpdatedEventImmediately(tree_update, ax_object);
     }
   }
 }
@@ -3219,62 +3220,68 @@ void AXObjectCacheImpl::ScheduleAXUpdate() const {
   }
 }
 
-bool AXObjectCacheImpl::IsTreeUpdateRelevant(Document& document,
-                                             TreeUpdateParams* tree_update) {
-  if (tree_update->node) {
-    Document& tree_update_document = tree_update->node->GetDocument();
-    return document == tree_update_document && tree_update->node->isConnected();
+AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
+    Document& document,
+    TreeUpdateParams* tree_update) {
+  if (Node* node = tree_update->node) {
+    if (node->GetDocument() != document || !node->isConnected()) {
+      return nullptr;
+    }
+    AXObject* ax_object = GetOrCreate(node);
+    if (!ax_object || ax_object->IsDetached()) {
+      return nullptr;
+    }
+    // Update cached attributes for all changed nodes before serialization,
+    // because updating ignored/included can cause tree structure changes, and
+    // the tree structure needs to be stable before serialization begins.
+    ax_object->UpdateCachedAttributeValuesIfNeeded();
+    return ax_object->IsDetached() ? nullptr : ax_object;
   }
 
   if (!tree_update->axid) {
     // No node and no AXID means that it was a node update, but the
     // WeakMember<Node> is no longer available.
-    return false;
+    return nullptr;
   }
 
-  AXObject* ax_obj = ObjectFromAXID(tree_update->axid);
-  if (!ax_obj) {
-    return false;
+  AXObject* ax_object = ObjectFromAXID(tree_update->axid);
+  if (!ax_object || ax_object->IsDetached()) {
+    return nullptr;
   }
 
-  if (ax_obj->GetNode() && !ax_obj->GetNode()->isConnected()) {
-    return false;
+  if (ax_object->GetNode() && !ax_object->GetNode()->isConnected()) {
+    return nullptr;
   }
 
-  Document* tree_update_document = ax_obj->GetDocument();
-  return document == *tree_update_document;
+  if (document != *ax_object->GetDocument()) {
+    return nullptr;
+  }
+
+  // Update cached attributes for all changed nodes before serialization,
+  // because updating ignored/included can cause tree structure changes, and
+  // the tree structure needs to be stable before serialization begins.
+  ax_object->UpdateCachedAttributeValuesIfNeeded();
+  return ax_object->IsDetached() ? nullptr : ax_object;
 }
 
 void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
-    Document& document,
-    TreeUpdateParams* tree_update) {
+    TreeUpdateParams* tree_update,
+    AXObject* ax_object) {
   CHECK(processing_deferred_events_);
   CHECK(!IsFrozen());
+  CHECK(ax_object);
 
   base::AutoReset<ax::mojom::blink::EventFrom> event_from_resetter(
       &active_event_from_, tree_update->event_from);
   base::AutoReset<ax::mojom::blink::Action> event_from_action_resetter(
       &active_event_from_action_, tree_update->event_from_action);
   ScopedBlinkAXEventIntent defered_event_intents(
-      tree_update->event_intents.AsVector(), &document);
+      tree_update->event_intents.AsVector(), ax_object->GetDocument());
 
   if (tree_update->axid) {
-    DCHECK(!tree_update->node)
+    CHECK(!tree_update->node)
         << "Cannot have both a node and AXID for a tree update.";
-    AXObject* ax_object = ObjectFromAXID(tree_update->axid);
-    if (!ax_object) {
-      return;  // AXObject was destroyed before we got to the event.
-    }
-
     CHECK(!ax_object->GetNode() || ax_object->GetNode()->isConnected());
-
-    // Update cached attributes for all changed nodes before serialization,
-    // because updating ignored/included can cause tree structure changes, and
-    // the tree structure needs to be stable before serialization begins.
-    ax_object->UpdateCachedAttributeValuesIfNeeded();
-    if (ax_object->IsDetached()) {
-      return;
-    }
 
     switch (tree_update->update_reason) {
       case TreeUpdateReason::kChildrenChanged:
@@ -3298,19 +3305,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
 
   // This is a Node Event.
   Node* node = tree_update->node;
-  DCHECK(node);
+  CHECK(node);
   CHECK(node->isConnected());
-
-  AXObject* ax_object = GetOrCreate(tree_update->node);
-  if (!ax_object) {
-    return;
-  }
-  DCHECK(!ax_object->IsDetached());
-
-  ax_object->UpdateCachedAttributeValuesIfNeeded();
-  if (ax_object->IsDetached()) {
-    return;
-  }
 
   switch (tree_update->update_reason) {
     case TreeUpdateReason::kActiveDescendantChanged:
