@@ -158,15 +158,23 @@ class AttributionInteropParser {
     ParseInt(dict, "max_destinations_per_rate_limit_window",
              config.destination_rate_limit.max_total, required);
 
+    int destination_rate_limit_window_in_minutes;
+    if (ParseInt(dict, "destination_rate_limit_window_in_minutes",
+                 destination_rate_limit_window_in_minutes, required)) {
+      config.destination_rate_limit.rate_limit_window =
+          base::Minutes(destination_rate_limit_window_in_minutes);
+    }
+
     ParseDouble(dict, "max_navigation_info_gain",
                 config.event_level_limit.max_navigation_info_gain, required);
     ParseDouble(dict, "max_event_info_gain",
                 config.event_level_limit.max_event_info_gain, required);
 
-    int rate_limit_time_window;
-    if (ParseInt(dict, "rate_limit_time_window", rate_limit_time_window,
-                 required)) {
-      config.rate_limit.time_window = base::Days(rate_limit_time_window);
+    int rate_limit_time_window_in_days;
+    if (ParseInt(dict, "rate_limit_time_window_in_days",
+                 rate_limit_time_window_in_days, required)) {
+      config.rate_limit.time_window =
+          base::Days(rate_limit_time_window_in_days);
     }
 
     ParseInt64(dict, "rate_limit_max_source_registration_reporting_origins",
@@ -179,6 +187,13 @@ class AttributionInteropParser {
     ParseInt(dict, "rate_limit_max_reporting_origins_per_source_reporting_site",
              config.rate_limit.max_reporting_origins_per_source_reporting_site,
              required);
+
+    int rate_limit_origins_per_site_window_in_days;
+    if (ParseInt(dict, "rate_limit_origins_per_site_window_in_days",
+                 rate_limit_origins_per_site_window_in_days, required)) {
+      config.rate_limit.origins_per_site_window =
+          base::Days(rate_limit_origins_per_site_window_in_days);
+    }
 
     ParseInt(dict, "max_event_level_reports_per_destination",
              config.event_level_limit.max_reports_per_destination, required);

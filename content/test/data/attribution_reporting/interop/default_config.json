@@ -20,9 +20,13 @@
   // Formatted as a base-10 string.
   "max_destinations_per_rate_limit_window_reporting_site": "50",
 
+  // Positive integer that controls the rate-limiting window in minutes for
+  // destinations. Formatted as a base-10 string.
+  "destination_rate_limit_window_in_minutes": "1",
+
   // Positive integer that controls the rate-limiting time window in days for
   // attribution. Formatted as a base-10 string.
-  "rate_limit_time_window": "30",
+  "rate_limit_time_window_in_days": "30",
 
   // Positive integer that controls the maximum number of distinct reporting
   // origins that can register sources for a given (source site, destination site)
@@ -43,6 +47,11 @@
   // origins for a (source site, reporting site) that can create attribution
   // sources per origin rate-limit window.
   "rate_limit_max_reporting_origins_per_source_reporting_site": "1",
+
+  // Positive integer that controls the rate-limiting window in days for max
+  // source reporting origins per source reporting site. Formatted as a base-10
+  // string.
+  "rate_limit_origins_per_site_window_in_days": "1",
 
   // Positive integer that controls the valid range of trigger data for triggers
   // that are attributed to a navigation source. Formatted as a base-10 string.
