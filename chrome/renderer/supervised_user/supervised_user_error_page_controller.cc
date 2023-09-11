@@ -17,14 +17,6 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 
-namespace {
-
-bool IsOutermostMainFrame(content::RenderFrame* render_frame) {
-  return render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree();
-}
-
-}  // namespace
-
 gin::WrapperInfo SupervisedUserErrorPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
@@ -89,7 +81,7 @@ void SupervisedUserErrorPageController::RequestUrlAccessLocal() {
 void SupervisedUserErrorPageController::OnRequestUrlAccessRemote(bool success) {
   std::string result = success ? "true" : "false";
   std::string is_outermost_main_frame =
-      IsOutermostMainFrame(render_frame_) ? "true" : "false";
+      render_frame_->GetWebFrame()->IsOutermostMainFrame() ? "true" : "false";
   std::string js =
       base::StringPrintf("setRequestStatus(%s, %s)", result.c_str(),
                          is_outermost_main_frame.c_str());

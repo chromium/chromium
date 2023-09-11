@@ -734,7 +734,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #else
   if (base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid) &&
 #endif  // !BUILDFLAG(IS_ANDROID)
-      render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree()) {
+      render_frame->GetWebFrame()->IsOutermostMainFrame()) {
     new cart::CommerceHintAgent(render_frame);
   }
 
