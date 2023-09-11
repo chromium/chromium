@@ -23,7 +23,11 @@ bool RarReader::Open(base::File rar_file, base::File temp_file) {
   temp_file_ = std::move(temp_file);
 
   command_ = std::make_unique<CommandData>();
-  std::wstring password_flag = L"-p" + base::UTF8ToWide(password_);
+  // Unrar forbids empty passwords, but requires that a password be provided for
+  // encrypted archives. In order to support metadata encryption, we must
+  // provide some password when opening the file.
+  std::wstring password_flag =
+      L"-p" + (password_.empty() ? L"x" : base::UTF8ToWide(password_));
   command_->ParseArg(password_flag.data());
   command_->ParseArg(const_cast<wchar_t*>(L"x"));
   command_->ParseDone();
