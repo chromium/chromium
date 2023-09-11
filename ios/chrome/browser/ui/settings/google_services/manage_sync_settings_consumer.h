@@ -22,7 +22,8 @@
 
 // Deletes sections at `sections` indexes. Does nothing if the model is not
 // loaded yet.
-- (void)deleteSections:(NSIndexSet*)sections;
+- (void)deleteSections:(NSIndexSet*)section
+      withRowAnimation:(BOOL)withRowAnimation;
 
 // Reloads only a specific `item`. Does nothing if the model is not loaded
 // yet.
