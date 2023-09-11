@@ -65,6 +65,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void Layout() override;
 
   // SavedTabGroupModelObserver
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
@@ -88,7 +89,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // Calculates what the visible width would be when a restriction on width is
   // placed on the bar.
-  int CalculatePreferredWidthRestrictedBy(int width_restriction);
+  int CalculatePreferredWidthRestrictedBy(int width_restriction) const;
 
   bool IsOverflowButtonVisible();
 
@@ -145,6 +146,25 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // TODO: Move implementation inside of STGOverflowButton.
   void HideOverflowButton();
   void ShowOverflowButton();
+
+  // Returns the number of currently visible groups. Does not include the
+  // overflow button or button housed in its view.
+  int GetNumberOfVisibleGroups() const;
+
+  // Updates the visibilites of all buttons up to `last_index_visible`. The
+  // overflow button will be displayed based on `should_show_overflow`.
+  void UpdateButtonVisibilities(bool should_show_overflow,
+                                size_t last_visible_button_index);
+
+  // Returns true if we should show the overflow button because there is not
+  // enough space to display all the buttons or if there are more buttons than
+  // the maximum visible.
+  bool ShouldShowOverflowButtonForWidth(int max_width) const;
+
+  // Finds the index of the last button that can be displayed within the given
+  // width. Guaranteed to not exceed `kMaxVisibleButtons`. Does not include the
+  // overflow button.
+  int CalculateLastVisibleButtonIndexForWidth(int max_width) const;
 
   // Updates the drop index in `drag_data_` based on the current drag location.
   void UpdateDropIndex();
