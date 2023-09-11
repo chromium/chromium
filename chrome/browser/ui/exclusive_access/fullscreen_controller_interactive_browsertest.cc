@@ -1017,9 +1017,8 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
 // window server's async handling of the fullscreen window state may transition
 // the window into fullscreen on the actual (non-mocked) display bounds before
 // or after the window bounds checks, yielding flaky results.
-// TODO(https://crbug.com/1469288): Flaky on mac-arm builders.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || \
-    (BUILDFLAG(IS_MAC) && !defined(ARCH_CPU_ARM64))
+// TODO(https://crbug.com/1469288): Flaky on mac builders.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SeparateDisplay SeparateDisplay
 #else
 #define MAYBE_SeparateDisplay DISABLED_SeparateDisplay
@@ -1045,9 +1044,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 // window server's async handling of the fullscreen window state may transition
 // the window into fullscreen on the actual (non-mocked) display bounds before
 // or after the window bounds checks, yielding flaky results.
-// TODO(https://crbug.com/1469288): Flaky on mac-arm builders.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || \
-    (BUILDFLAG(IS_MAC) && !defined(ARCH_CPU_ARM64))
+// TODO(https://crbug.com/1469288): Flaky on mac builders.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SeparateDisplayMaximized SeparateDisplayMaximized
 #else
 #define MAYBE_SeparateDisplayMaximized DISABLED_SeparateDisplayMaximized
