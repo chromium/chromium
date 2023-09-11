@@ -436,15 +436,15 @@ bool ShouldSkipIPAddress(std::string_view skipped) {
 #define IAUTHORITY OPT_NCG(IUSERINFO "@") IHOST OPT_NCG(":" PORT)
 
 #define IRELATIVE_PART                                                    \
-  NCG("//" IAUTHORITY IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_NOSCHEME \
-      "|" IPATH_EMPTY)
+  "//" NCG(IAUTHORITY IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_NOSCHEME \
+                                    "|" IPATH_EMPTY)
 
 #define IRELATIVE_REF IRELATIVE_PART OPT_NCG("?" IQUERY) OPT_NCG("#" IFRAGMENT)
 
 // RFC 3987 requires IPATH_EMPTY here but it is omitted so that statements
 // that end with "Android:" for example are not considered a URL.
 #define IHIER_PART \
-  NCG("//" IAUTHORITY IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_ROOTLESS)
+  "//" NCG(IAUTHORITY IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_ROOTLESS)
 
 #define ABSOLUTE_IRI SCHEME ":" IHIER_PART OPT_NCG("?" IQUERY)
 
