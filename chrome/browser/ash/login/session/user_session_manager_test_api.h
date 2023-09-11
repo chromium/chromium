@@ -28,7 +28,7 @@ class UserSessionManagerTestApi {
   void InjectStubUserContext(const UserContext& user_context);
 
   void InjectAuthenticatorBuilder(
-      std::unique_ptr<StubAuthenticatorBuilder> builder);
+      std::unique_ptr<AuthenticatorBuilder> builder);
 
   // Controls whether browser instance should be launched after sign in
   // (used in tests).

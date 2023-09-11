@@ -61,6 +61,7 @@ component("auth") {
     "auth_status_consumer.h",
     "authenticator.cc",
     "authenticator.h",
+    "authenticator_builder.h",
     "challenge_response/cert_utils.cc",
     "challenge_response/cert_utils.h",
     "challenge_response/key_label_utils.cc",

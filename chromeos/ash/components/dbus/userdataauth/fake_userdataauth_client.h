@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kUpdateAuthFactor,
     kListAuthFactors,
     kStartMigrateToDircrypto,
+    kRemove,
   };
 
   // The method by which a user's home directory can be encrypted.
@@ -312,6 +313,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   FUDAC_OPERATION_TYPES(kListAuthFactors, ListAuthFactorsRequest);
   FUDAC_OPERATION_TYPES(kStartMigrateToDircrypto,
                         StartMigrateToDircryptoRequest);
+  FUDAC_OPERATION_TYPES(kRemove, RemoveRequest);
 
 #undef FUDAC_OPERATION_TYPES
 

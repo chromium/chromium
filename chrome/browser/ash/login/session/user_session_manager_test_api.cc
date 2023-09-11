@@ -20,7 +20,7 @@ void UserSessionManagerTestApi::InjectStubUserContext(
 }
 
 void UserSessionManagerTestApi::InjectAuthenticatorBuilder(
-    std::unique_ptr<StubAuthenticatorBuilder> builder) {
+    std::unique_ptr<AuthenticatorBuilder> builder) {
   session_manager_->InjectAuthenticatorBuilder(std::move(builder));
 }
 

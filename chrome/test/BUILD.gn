@@ -4186,6 +4186,7 @@ if (!is_android) {
         "../browser/ash/login/login_ui_keyboard_browsertest.cc",
         "../browser/ash/login/login_ui_shelf_visibility_browsertest.cc",
         "../browser/ash/login/login_utils_browsertest.cc",
+        "../browser/ash/login/misconfigured_user_browsertest.cc",
         "../browser/ash/login/oobe_browsertest.cc",
         "../browser/ash/login/oobe_interactive_ui_test.cc",
         "../browser/ash/login/oobe_localization_browsertest.cc",

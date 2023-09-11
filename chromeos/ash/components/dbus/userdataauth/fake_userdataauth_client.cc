@@ -679,6 +679,7 @@ void FakeUserDataAuthClient::Unmount(
 void FakeUserDataAuthClient::Remove(
     const ::user_data_auth::RemoveRequest& request,
     RemoveCallback callback) {
+  RememberRequest<Operation::kRemove>(request);
   ::user_data_auth::RemoveReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 

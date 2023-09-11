@@ -58,7 +58,7 @@ namespace ash {
 
 class AuthStatusConsumer;
 class OnboardingUserActivityCounter;
-class StubAuthenticatorBuilder;
+class AuthenticatorBuilder;
 class TokenHandleFetcher;
 class EolNotification;
 class InputEventsBlocker;
@@ -509,7 +509,7 @@ class UserSessionManager
 
   // Test API methods.
   void InjectAuthenticatorBuilder(
-      std::unique_ptr<StubAuthenticatorBuilder> builder);
+      std::unique_ptr<AuthenticatorBuilder> builder);
 
   // Controls whether browser instance should be launched after sign in
   // (used in tests).
@@ -554,7 +554,7 @@ class UserSessionManager
   scoped_refptr<Authenticator> authenticator_;
   StartSessionType start_session_type_ = StartSessionType::kNone;
 
-  std::unique_ptr<StubAuthenticatorBuilder> injected_authenticator_builder_;
+  std::unique_ptr<AuthenticatorBuilder> injected_authenticator_builder_;
 
   // True if the authentication context's cookie jar contains authentication
   // cookies from the authentication extension login flow.
