@@ -14660,6 +14660,36 @@
             ]
         }
     ],
+    "ScreenCaptureKitStreamPickerSonoma": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScreenCaptureKitStreamPickerSonoma"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ScreenCaptureKitStreamPickerVentura": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScreenCaptureKitStreamPickerVentura"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenTimeIntegration": [
         {
             "platforms": [
