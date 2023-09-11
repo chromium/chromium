@@ -317,7 +317,9 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
         // The base image is already a cropped snapshot so it is drawn at the
         // origin of the new image.
-        [baseImage drawAtPoint:CGPointZero];
+        [baseImage drawInRect:(CGRect){.origin = CGPointZero,
+                                       .size = frameInWindow.size}];
+
         // This shifts the origin of the context so that future drawings can be
         // in window coordinates. For example, suppose that the desired snapshot
         // area is at (0, 99) in the window coordinate space. Drawing at (0, 99)
