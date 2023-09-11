@@ -108,6 +108,12 @@
 
 namespace blink {
 
+#if BUILDFLAG(IS_WIN)
+// Defined in v8_initializer_win.cc.
+bool FilterETWSessionByURLCallback(v8::Local<v8::Context> context,
+                                   const std::string& json_payload);
+#endif  // BUILDFLAG(IS_WIN)
+
 static String ExtractMessageForConsole(v8::Isolate* isolate,
                                        v8::Local<v8::Value> data) {
   DOMException* exception = V8DOMException::ToWrappable(isolate, data);
@@ -707,6 +713,10 @@ void InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);
   isolate->SetMetricsRecorder(std::make_shared<V8MetricsRecorder>(isolate));
+
+#if BUILDFLAG(IS_WIN)
+  isolate->SetFilterETWSessionByURLCallback(FilterETWSessionByURLCallback);
+#endif  // BUILDFLAG(IS_WIN)
 
   V8ContextSnapshot::EnsureInterfaceTemplates(isolate);
 

@@ -8,4 +8,8 @@ specific_include_rules = {
   "serialized_script_value_fuzzer.cc": [
     "+testing/libfuzzer/libfuzzer_exports.h",
   ],
+  "v8_initializer_win.cc": [
+    "+base/json/json_reader.h",
+    "+third_party/re2/src/re2",
+  ],
 }

@@ -337,6 +337,10 @@ component("core") {
     public_deps += [ "//ui/gfx" ]
   }
 
+  if (is_win) {
+    public_deps += [ "//third_party/re2" ]
+  }
+
   deps = [
     ":generate_eventhandler_names",
     ":generated_settings_macros",
