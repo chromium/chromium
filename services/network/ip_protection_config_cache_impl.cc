@@ -194,10 +194,15 @@ void IpProtectionConfigCacheImpl::RefreshProxyList() {
 }
 
 void IpProtectionConfigCacheImpl::OnGotProxyList(
-    const std::vector<std::string>& proxy_list) {
+    const absl::optional<std::vector<std::string>>& proxy_list) {
   fetching_proxy_list_ = false;
-  proxy_list_ = proxy_list;
-  have_fetched_proxy_list_ = true;
+
+  // If an error occurred fetching the proxy list, continue using the existing
+  // proxy list, if any.
+  if (proxy_list.has_value()) {
+    proxy_list_ = *proxy_list;
+    have_fetched_proxy_list_ = true;
+  }
 
   // Schedule the next refresh. If this timer was already running, this will
   // reschedule it for the given time.

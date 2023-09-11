@@ -395,6 +395,11 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 NET_EXPORT extern const base::FeatureParam<std::string>
     kIpPrivacyTokenServerGetTokensPath;
 
+// Sets the path component of the IP protection auth token server URL used for
+// getting proxy configuration.
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kIpPrivacyTokenServerGetProxyConfigPath;
+
 // Sets the batch size to fetch new auth tokens for IP protection.
 NET_EXPORT extern const base::FeatureParam<int>
     kIpPrivacyAuthTokenCacheBatchSize;

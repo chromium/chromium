@@ -73,6 +73,9 @@ class IpProtectionConfigProvider
     bsa_ = bsa;
   }
 
+  void SetIpProtectionConfigHttpForTesting(
+      std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http);
+
   // Get a batch of blind-signed auth tokens.
   //
   // It is forbidden for two calls to this method to be outstanding at the same

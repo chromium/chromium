@@ -1987,6 +1987,7 @@ static_library("browser") {
     ":buildflags",
     ":dev_ui_browser_resources_grit",
     ":expired_flags_list",
+    ":get_proxy_config_proto",
     ":k_anonymity_storage_proto",
     ":lcp_critical_path_predictor_proto",
     ":ntp_background_proto",
@@ -7950,6 +7951,10 @@ proto_library("lcp_critical_path_predictor_proto") {
   sources = [
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor.proto",
   ]
+}
+
+proto_library("get_proxy_config_proto") {
+  sources = [ "ip_protection/get_proxy_config.proto" ]
 }
 
 proto_library("permissions_proto") {

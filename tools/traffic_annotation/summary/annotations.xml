@@ -433,4 +433,5 @@ Refer to README.md for content description and update process.
  <item id="iwa_update_discovery_web_bundle" added_in_milestone="117" type="partial" second_id="iwa_bundle_downloader" content_hash_code="044a85c3" os_list="chromeos" semantics_fields="1,2,3,7,8,9" policy_fields="3,4" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.cc" />
  <item id="interest_feedv2_resource_send" added_in_milestone="118" content_hash_code="04189a4f" os_list="linux,windows,android,chromeos" file_path="components/feed/core/v2/resource_fetcher.cc" />
  <item id="almanac_launcher_app" added_in_milestone="118" content_hash_code="0556e032" os_list="chromeos" file_path="chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.cc" />
+ <item id="ip_protection_service_get_proxy_config" added_in_milestone="118" content_hash_code="025110db" os_list="windows,android,linux,chromeos" file_path="chrome/browser/ip_protection/ip_protection_config_http.cc" />
 </annotations>

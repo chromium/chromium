@@ -6398,6 +6398,7 @@ test("unit_tests") {
     "//chrome/browser:active_use_util",
     "//chrome/browser:browser_themes",
     "//chrome/browser:buildflags",
+    "//chrome/browser:get_proxy_config_proto",
     "//chrome/browser:permissions_proto",
     "//chrome/browser:theme_properties",
     "//chrome/browser/3pcd/heuristics:unit_tests",

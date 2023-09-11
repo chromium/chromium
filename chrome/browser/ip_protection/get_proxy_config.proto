@@ -1,0 +1,19 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with corresponding messages in :
+// http://google3/privacy/net/common/proto/get_proxy_config.proto
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package ip_protection;
+
+message GetProxyConfigResponse {
+  // Hostnames for the first proxy hop. Ordered based on preference for use.
+  repeated string first_hop_hostnames = 1;
+  // Hostnames for the second proxy hop. Ordered based on preference for use.
+  repeated string second_hop_hostnames = 2;
+}

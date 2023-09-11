@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 
+#include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_thread.h"
@@ -67,6 +69,42 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
   // The tokens that will be returned from `GetTokens()` , if `status_` is not
   // `OkStatus`.
   std::vector<quiche::BlindSignToken> tokens_;
+};
+
+// Mock for `IpProtectionConfigHttp`. This is used only for testing methods that
+// are called directly from `IpProtectionConfigProvider`, not those called
+// indirectly via BSA.
+class MockIpProtectionConfigHttp : public IpProtectionConfigHttp {
+ public:
+  explicit MockIpProtectionConfigHttp(
+      absl::optional<std::vector<std::string>> proxy_list)
+      : IpProtectionConfigHttp(
+            base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+        proxy_list_(proxy_list) {}
+
+  void DoRequest(quiche::BlindSignHttpRequestType request_type,
+                 const std::string& authorization_header,
+                 const std::string& body,
+                 quiche::BlindSignHttpCallback callback) override {
+    // DoRequest is not supported in this mock.
+    NOTREACHED();
+  }
+
+  void GetProxyConfig(
+      IpProtectionConfigHttp::GetProxyConfigCallback callback) override {
+    if (!proxy_list_.has_value()) {
+      std::move(callback).Run(absl::InternalError("uhoh"));
+      return;
+    }
+    ip_protection::GetProxyConfigResponse response;
+    for (auto& hostname : *proxy_list_) {
+      response.add_first_hop_hostnames(hostname);
+    }
+    std::move(callback).Run(response);
+  }
+
+ private:
+  absl::optional<std::vector<std::string>> proxy_list_;
 };
 
 enum class PrimaryAccountBehavior {
@@ -435,14 +473,31 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyList) {
-  auto bsa = MockBlindSignAuth();
   IpProtectionConfigProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  std::vector<std::string> proxy_list = {"proxy1", "proxy2"};
+  getter.SetIpProtectionConfigHttpForTesting(
+      std::make_unique<MockIpProtectionConfigHttp>(proxy_list));
 
-  base::test::TestFuture<const std::vector<std::string>&> proxy_list_future;
+  base::test::TestFuture<const absl::optional<std::vector<std::string>>&>
+      proxy_list_future;
   getter.GetProxyList(proxy_list_future.GetCallback());
   ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
   EXPECT_THAT(proxy_list_future.Get(),
-              testing::ElementsAre(net::features::kIpPrivacyProxyServer.Get()));
+              testing::Optional(testing::ElementsAre("proxy1", "proxy2")));
+}
+
+TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
+  IpProtectionConfigProvider getter(
+      IdentityManager(),
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  getter.SetIpProtectionConfigHttpForTesting(
+      std::make_unique<MockIpProtectionConfigHttp>(absl::nullopt));
+
+  base::test::TestFuture<const absl::optional<std::vector<std::string>>&>
+      proxy_list_future;
+  getter.GetProxyList(proxy_list_future.GetCallback());
+  ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
+  EXPECT_EQ(proxy_list_future.Get(), absl::nullopt);
 }

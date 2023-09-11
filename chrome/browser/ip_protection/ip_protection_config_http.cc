@@ -9,6 +9,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ip_protection/get_proxy_config.pb.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -16,7 +18,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
-constexpr net::NetworkTrafficAnnotationTag kIpProtectionTrafficAnnotation =
+constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ip_protection_service_get_token",
                                         R"(
     semantics {
@@ -48,6 +50,39 @@ constexpr net::NetworkTrafficAnnotationTag kIpProtectionTrafficAnnotation =
       ""
     )");
 
+constexpr net::NetworkTrafficAnnotationTag kGetProxyConfigTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation(
+        "ip_protection_service_get_proxy_config",
+        R"(
+    semantics {
+      sender: "Chrome IP Protection Service Client"
+      description:
+        "Request to a Google auth server to obtain proxy server hostnames "
+        "for Chrome's IP Protection privacy proxies."
+      trigger:
+        "On startup, periodically, and on failure to connect to a proxy."
+      data:
+        "None"
+      destination: GOOGLE_OWNED_SERVICE
+      internal {
+        contacts {
+          email: "ip-protection-team@google.com"
+        }
+      }
+      user_data {
+        type: NONE
+      }
+      last_reviewed: "2023-08-30"
+    }
+    policy {
+      cookies_allowed: NO
+      policy_exception_justification: "Not implemented."
+    }
+    comments:
+      ""
+    )");
+
+const char kGoogApiKeyHeader[] = "X-Goog-Api-Key";
 }  // namespace
 
 // The maximum size of the IpProtectionRequests - 256 KB (in practice these
@@ -62,7 +97,9 @@ IpProtectionConfigHttp::IpProtectionConfigHttp(
       ip_protection_server_get_initial_data_path_(
           net::features::kIpPrivacyTokenServerGetInitialDataPath.Get()),
       ip_protection_server_get_tokens_path_(
-          net::features::kIpPrivacyTokenServerGetTokensPath.Get()) {
+          net::features::kIpPrivacyTokenServerGetTokensPath.Get()),
+      ip_protection_server_get_proxy_config_path_(
+          net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()) {
   CHECK(url_loader_factory_);
 }
 
@@ -105,18 +142,18 @@ void IpProtectionConfigHttp::DoRequest(
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
-                                       kIpProtectionTrafficAnnotation);
+                                       kGetTokenTrafficAnnotation);
   url_loader->AttachStringForUpload(body);
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&IpProtectionConfigHttp::OnRequestCompleted,
+      base::BindOnce(&IpProtectionConfigHttp::OnDoRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(url_loader),
                      std::move(callback)),
       kIpProtectionRequestMaxBodySize);
 }
 
-void IpProtectionConfigHttp::OnRequestCompleted(
+void IpProtectionConfigHttp::OnDoRequestCompleted(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     quiche::BlindSignHttpCallback callback,
     std::unique_ptr<std::string> response) {
@@ -141,4 +178,57 @@ void IpProtectionConfigHttp::OnRequestCompleted(
                                              std::move(*response));
 
   std::move(callback)(std::move(bsa_response));
+}
+
+void IpProtectionConfigHttp::GetProxyConfig(GetProxyConfigCallback callback) {
+  GURL::Replacements replacements;
+  replacements.SetPathStr(ip_protection_server_get_proxy_config_path_);
+  GURL request_url = ip_protection_server_url_.ReplaceComponents(replacements);
+  if (!request_url.is_valid()) {
+    std::move(callback).Run(
+        absl::InternalError("Invalid IP Protection GetProxyConfig URL"));
+    return;
+  }
+
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = std::move(request_url);
+  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->headers.SetHeader(kGoogApiKeyHeader,
+                                      google_apis::GetAPIKey());
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                                      kProtobufContentType);
+
+  std::unique_ptr<network::SimpleURLLoader> url_loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       kGetProxyConfigTrafficAnnotation);
+  auto* url_loader_ptr = url_loader.get();
+  url_loader_ptr->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&IpProtectionConfigHttp::OnGetProxyConfigCompleted,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     // Include the URLLoader in the callback so that it stays
+                     // alive until the download is complete.
+                     std::move(url_loader), std::move(callback)),
+      kIpProtectionRequestMaxBodySize);
+}
+
+void IpProtectionConfigHttp::OnGetProxyConfigCompleted(
+    std::unique_ptr<network::SimpleURLLoader> url_loader,
+    GetProxyConfigCallback callback,
+    std::unique_ptr<std::string> response) {
+  if (!response) {
+    std::move(callback).Run(
+        absl::InternalError("Failed GetProxyConfig request"));
+    return;
+  }
+
+  ip_protection::GetProxyConfigResponse response_proto;
+  if (!response_proto.ParseFromString(*response)) {
+    std::move(callback).Run(
+        absl::InternalError("Failed to parse GetProxyConfig response"));
+    return;
+  }
+
+  std::move(callback).Run(std::move(response_proto));
 }
