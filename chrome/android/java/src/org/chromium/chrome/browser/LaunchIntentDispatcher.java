@@ -14,6 +14,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.OptIn;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebact
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
@@ -46,7 +49,6 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -57,7 +59,7 @@ import java.util.Set;
  * Dispatches incoming intents to the appropriate activity based on the current configuration and
  * Intent fired.
  */
-public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelegate {
+public class LaunchIntentDispatcher {
     /**
      * Extra indicating launch mode used.
      */
@@ -160,7 +162,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         // Check if a web search Intent is being handled.
         if (url == null && tabId == Tab.INVALID_TAB_ID && !incognito
-                && IntentHandler.handleWebSearchIntent(mIntent, this)) {
+                && processWebSearchIntent(mIntent)) {
             return Action.FINISH_ACTIVITY;
         }
 
@@ -194,8 +196,21 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         return dispatchToTabbedActivity();
     }
 
-    @Override
-    public void processWebSearchIntent(String query) {
+    private boolean processWebSearchIntent(Intent intent) {
+        if (intent == null) return false;
+
+        String query = null;
+        final String action = intent.getAction();
+        if (Intent.ACTION_SEARCH.equals(action)
+                || MediaStore.INTENT_ACTION_MEDIA_SEARCH.equals(action)) {
+            query = IntentUtils.safeGetStringExtra(intent, SearchManager.QUERY);
+        }
+        if (TextUtils.isEmpty(query)) return false;
+
+        // Only the ChromeLauncherActivity can handle search intents. Drop the intent and abort the
+        // launch.
+        if (!(mActivity instanceof ChromeLauncherActivity)) return true;
+
         Intent searchIntent = new Intent(Intent.ACTION_WEB_SEARCH);
         searchIntent.putExtra(SearchManager.QUERY, query);
 
@@ -213,12 +228,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
                 mActivity.startActivity(searchActivityIntent);
             }
         }
-    }
-
-    @Override
-    public void processUrlViewIntent(LoadUrlParams loadUrlParams, int tabOpenType,
-            String externalAppId, int tabIdToBringToFront, Intent intent) {
-        assert false;
+        return true;
     }
 
     /** When started with an intent, maybe pre-resolve the domain. */

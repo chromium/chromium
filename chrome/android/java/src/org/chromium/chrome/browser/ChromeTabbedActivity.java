@@ -1640,11 +1640,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
         }
 
-        @Override
-        public void processWebSearchIntent(String query) {
-            assert false;
-        }
-
         private boolean isFromChrome(Intent intent, String externalAppId) {
             // To determine if the processed intent is from Chrome, check for any of the following:
             // 1.) The authentication token that will be added to trusted intents.

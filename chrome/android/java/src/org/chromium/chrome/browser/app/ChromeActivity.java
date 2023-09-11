@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.SearchManager;
 import android.app.assist.AssistContent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -126,7 +125,6 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFactory;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
-import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
@@ -1826,17 +1824,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     protected IntentHandlerDelegate createIntentHandlerDelegate() {
         return new IntentHandlerDelegate() {
-            @Override
-            public void processWebSearchIntent(String query) {
-                final Intent searchIntent = new Intent(Intent.ACTION_WEB_SEARCH);
-                searchIntent.putExtra(SearchManager.QUERY, query);
-                Callback<Boolean> callback = result -> {
-                    if (result != null && result) startActivity(searchIntent);
-                };
-                LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
-                        ChromeActivity.this, callback);
-            }
-
             @Override
             public void processUrlViewIntent(LoadUrlParams loadUrlParams,
                     @TabOpenType int tabOpenType, String externalAppId, int tabIdToBringToFront,

@@ -8,7 +8,6 @@ import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_P
 
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
-import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Browser;
-import android.provider.MediaStore;
 import android.speech.RecognizerResultsIntent;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -400,8 +398,6 @@ public class IntentHandler {
          */
         void processUrlViewIntent(LoadUrlParams loadUrlParams, @TabOpenType int tabOpenType,
                 String externalAppId, int tabIdToBringToFront, Intent intent);
-
-        void processWebSearchIntent(String query);
     }
 
     /** Sets whether or not test intents are enabled. */
@@ -520,10 +516,7 @@ public class IntentHandler {
         @TabOpenType
         int tabOpenType = getTabOpenType(intent);
         int tabIdToBringToFront = getBringTabToFrontId(intent);
-        if (url == null && tabIdToBringToFront == Tab.INVALID_TAB_ID
-                && tabOpenType != TabOpenType.OPEN_NEW_INCOGNITO_TAB) {
-            return handleWebSearchIntent(intent, delegate);
-        }
+        if (url == null && tabIdToBringToFront == Tab.INVALID_TAB_ID) return false;
 
         var asyncTabParams = AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().get(
                 getTabId(intent));
@@ -724,22 +717,6 @@ public class IntentHandler {
                     .getUrlForVoiceSearchQuery(query)
                     .getSpec();
         }
-    }
-
-    public static boolean handleWebSearchIntent(Intent intent, IntentHandlerDelegate delegate) {
-        if (intent == null) return false;
-
-        String query = null;
-        final String action = intent.getAction();
-        if (Intent.ACTION_SEARCH.equals(action)
-                || MediaStore.INTENT_ACTION_MEDIA_SEARCH.equals(action)) {
-            query = IntentUtils.safeGetStringExtra(intent, SearchManager.QUERY);
-        }
-
-        if (query == null || TextUtils.isEmpty(query)) return false;
-
-        delegate.processWebSearchIntent(query);
-        return true;
     }
 
     private static void handleMhtmlFileOrContentIntent(
