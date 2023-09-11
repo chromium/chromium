@@ -4,6 +4,7 @@
 
 #import "components/policy/policy_constants.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -12,12 +13,15 @@
 #import "ios/chrome/browser/signin/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -55,7 +59,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
             (testSigninRowOpensSheetIfSignedOutAndSomeDeviceAccounts)] ||
       [self isRunningTest:@selector
             (testSigninRowOpensAuthActivityIfSignedOutAndNoDeviceAccounts)] ||
-      [self isRunningTest:@selector(testSigninRowNotDisabledBySyncPolicy)]) {
+      [self isRunningTest:@selector(testSigninRowNotDisabledBySyncPolicy)] ||
+      [self isRunningTest:@selector(testSignInAndDeclineHistorySync)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -275,6 +280,65 @@ using chrome_test_util::SettingsSignInRowMatcher;
                  grey_text(l10n_util::GetNSString(
                      IDS_IOS_SYNC_SETTINGS_DISABLED_POPOVER_TEXT))]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that when signing-in using the settings cell, the user is not signed
+// out if history sync is declined.
+- (void)testSignInAndDeclineHistorySync {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Tap on sign-in cell.
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
+      performAction:grey_tap()];
+
+  // Confirm sign in.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kWebSigninPrimaryButtonAccessibilityIdentifier),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the footer is shown without the user's email.
+  id<GREYMatcher> footerTextMatcher = grey_allOf(
+      grey_text(
+          l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL)),
+      grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> promoScrollViewMatcher = grey_allOf(
+      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:footerTextMatcher]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:promoScrollViewMatcher]
+      assertWithMatcher:grey_notNil()];
+
+  // Decline History Sync.
+  id<GREYMatcher> declineButtonMatcher = grey_allOf(
+      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:declineButtonMatcher]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:promoScrollViewMatcher] performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+
+  // Verify that the history sync is disabled.
+  GREYAssertFalse(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be disabled.");
+  GREYAssertFalse([SigninEarlGreyAppInterface
+                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                  @"Tabs sync should be disabled.");
+  // Verify that the identity is still signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 @end

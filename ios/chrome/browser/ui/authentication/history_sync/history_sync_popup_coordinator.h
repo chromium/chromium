@@ -34,7 +34,8 @@ enum class AccessPoint : int;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                       dedicatedSignInDone:(BOOL)dedicatedSignInDone
+                             showUserEmail:(BOOL)showUserEmail
+                         signOutIfDeclined:(BOOL)signOutIfDeclined
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
