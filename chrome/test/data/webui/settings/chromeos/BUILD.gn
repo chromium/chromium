@@ -53,7 +53,6 @@ build_webui_tests("build") {
     "os_about_page_tests.js",
     "os_page_availability_test.ts",
     "os_settings_main_test.js",
-    "people_page_account_manager_subpage_test.js",
     "personalization_page_with_personalization_hub_test.js",
     "search_engine_test.js",
     "test_about_page_browser_proxy_chromeos.js",
@@ -229,6 +228,7 @@ build_webui_tests("build") {
     "os_languages_page/os_languages_page_v2_test.ts",
     "os_languages_page/smart_inputs_page_test.ts",
 
+    "os_people_page/account_manager_subpage_test.ts",
     "os_people_page/add_user_dialog_test.ts",
     "os_people_page/fingerprint_list_subpage_test.ts",
     "os_people_page/os_people_page_test.ts",
@@ -241,6 +241,7 @@ build_webui_tests("build") {
     "os_people_page/test_account_manager_browser_proxy.ts",
     "os_people_page/test_fingerprint_browser_proxy.ts",
     "os_people_page/test_os_sync_browser_proxy.ts",
+    "os_people_page/test_parental_controls_browser_proxy.ts",
 
     "os_printing_page/cups_print_server_test.ts",
     "os_printing_page/cups_printer_dialog_test.ts",

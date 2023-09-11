@@ -271,7 +271,7 @@ suite('<os-settings-people-page>', () => {
     const profileLabelEl =
         peoplePage.shadowRoot!.querySelector('#profile-label');
     assertTrue(!!profileLabelEl);
-    assertEquals('3 Google Accounts', profileLabelEl.textContent!.trim());
+    assertEquals('4 Google Accounts', profileLabelEl.textContent!.trim());
 
     // Profile row items are actionable.
     assertTrue(profileIconEl.hasAttribute('actionable'));

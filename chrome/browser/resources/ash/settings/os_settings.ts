@@ -112,6 +112,7 @@ export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.j
 export {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 export {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 export {CrPolicyIndicatorElement} from 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+export {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 export {OpenWindowProxy, OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 export {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';

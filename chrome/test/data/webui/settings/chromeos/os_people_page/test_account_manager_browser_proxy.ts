@@ -33,6 +33,7 @@ export class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
         pic: 'data:image/png;base64,primaryAccountPicData',
         email: 'primary@gmail.com',
         isAvailableInArc: true,
+        organization: 'Family Link',
       },
       {
         id: '456',
@@ -40,7 +41,7 @@ export class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
         isDeviceAccount: false,
         isSignedIn: true,
         unmigrated: false,
-        isManaged: false,
+        isManaged: true,
         fullName: 'Secondary Account 1',
         email: 'user1@example.com',
         pic: '',
@@ -55,6 +56,18 @@ export class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
         isManaged: false,
         fullName: 'Secondary Account 2',
         email: 'user2@example.com',
+        pic: '',
+        isAvailableInArc: false,
+      },
+      {
+        id: '1010',
+        accountType: 1,
+        isDeviceAccount: false,
+        isSignedIn: false,
+        unmigrated: true,
+        isManaged: false,
+        fullName: 'Secondary Account 3',
+        email: 'user3@example.com',
         pic: '',
         isAvailableInArc: false,
       },
@@ -79,5 +92,33 @@ export class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
 
   changeArcAvailability(account: Account, isAvailableInArc: boolean): void {
     this.methodCalled('changeArcAvailability', [account, isAvailableInArc]);
+  }
+}
+
+export class TestAccountManagerBrowserProxyForUnmanagedAccounts extends
+    TestAccountManagerBrowserProxy {
+  constructor() {
+    super();
+  }
+
+  override getAccounts(): Promise<Account[]> {
+    this.methodCalled('getAccounts');
+
+    return new Promise((resolve) => {
+      resolve([
+        {
+          id: '123',
+          accountType: 1,
+          isDeviceAccount: true,
+          isSignedIn: true,
+          unmigrated: false,
+          isManaged: false,
+          fullName: 'Device Account',
+          email: 'admin@domain.com',
+          pic: 'data:image/png;base64,abc123',
+          isAvailableInArc: false,
+        },
+      ]);
+    });
   }
 }

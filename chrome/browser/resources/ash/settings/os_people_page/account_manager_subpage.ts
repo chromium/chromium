@@ -41,13 +41,13 @@ import {getTemplate} from './account_manager_subpage.html.js';
 const SettingsAccountManagerSubpageElementBase = RouteObserverMixin(
     WebUiListenerMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-interface SettingsAccountManagerSubpageElement {
+export interface SettingsAccountManagerSubpageElement {
   $: {
     removeConfirmationDialog: CrDialogElement,
   };
 }
 
-class SettingsAccountManagerSubpageElement extends
+export class SettingsAccountManagerSubpageElement extends
     SettingsAccountManagerSubpageElementBase {
   static get is() {
     return 'settings-account-manager-subpage' as const;

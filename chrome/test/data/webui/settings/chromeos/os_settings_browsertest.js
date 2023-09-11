@@ -862,13 +862,13 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'parental_controls_page/parental_controls_page_test.js'
  ],
  [
-   'PeoplePageAccountManagerSubpage',
-   'people_page_account_manager_subpage_test.js',
+   'OsPeoplePageAccountManagerSubpage',
+   'os_people_page/account_manager_subpage_test.js',
    {disabled: ['ash::features::kLacrosOnly']},
  ],
  [
-   'PeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled',
-   'people_page_account_manager_subpage_test.js',
+   'OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled',
+   'os_people_page/account_manager_subpage_test.js',
    {
      enabled: [
        'ash::features::kLacrosOnly',

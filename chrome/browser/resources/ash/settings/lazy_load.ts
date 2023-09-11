@@ -230,6 +230,7 @@ export {OsSettingsClearPersonalizedDataDialogElement} from './os_languages_page/
 export {OsSettingsLanguagesPageV2Element} from './os_languages_page/os_languages_page_v2.js';
 export {OsSettingsSmartInputsPageElement} from './os_languages_page/smart_inputs_page.js';
 export {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
+export {SettingsAccountManagerSubpageElement} from './os_people_page/account_manager_subpage.js';
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';
 export {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
 export {SettingsFingerprintListSubpageElement} from './os_people_page/fingerprint_list_subpage.js';
