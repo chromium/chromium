@@ -546,13 +546,25 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
     if (flow_thread && flow_thread != this)
       flow_thread->FlowThreadDescendantStyleWillChange(this, diff, new_style);
 
-    // The background of the root element or the body element could propagate up
-    // to the canvas. Just dirty the entire canvas when our style changes
-    // substantially.
-    if ((diff.NeedsNormalPaintInvalidation() || diff.NeedsLayout()) &&
-        GetNode() &&
-        (IsDocumentElement() || IsA<HTMLBodyElement>(*GetNode()))) {
-      View()->SetShouldDoFullPaintInvalidation();
+    if (IsDocumentElement() || IsBody()) {
+      // The background of the root element or the body element could propagate
+      // up to the canvas. Just dirty the entire canvas when our style changes
+      // substantially.
+      if (diff.NeedsNormalPaintInvalidation() || diff.NeedsLayout()) {
+        View()->SetShouldDoFullPaintInvalidation();
+      }
+      if (auto* scrollable_area = View()->GetScrollableArea()) {
+        if (old_style->ScrollbarThumbColorResolved() !=
+                new_style.ScrollbarThumbColorResolved() ||
+            old_style->ScrollbarTrackColorResolved() !=
+                new_style.ScrollbarTrackColorResolved()) {
+          // TODO(crbug.com/1481168): For now we duplicate some code in
+          // PaintLayerScrollableArea::UpdateAfterStyleChange() here to
+          // invalidate the LayoutView when the scrollbar styles change on
+          // the document element or the body.
+          scrollable_area->SetScrollControlsNeedFullPaintInvalidation();
+        }
+      }
     }
 
     // When a layout hint happens and an object's position style changes, we
