@@ -1015,7 +1015,7 @@ experimental domain Autofill
       # fields and values defining an address.
       array of AddressField fields
 
-  # Defines how an address can be displayed like in chrome://settings/addresses. 
+  # Defines how an address can be displayed like in chrome://settings/addresses.
   # Address UI is a two dimensional array, each inner array is an "address information line", and when rendered in a UI surface should be displayed as such.
   # The following address UI for instance:
   # [[{name: "GIVE_NAME", value: "Jon"}, {name: "FAMILY_NAME", value: "Doe"}], [{name: "CITY", value: "Munich"}, {name: "ZIP", value: "81456"}]]
@@ -1053,7 +1053,7 @@ experimental domain Autofill
     parameters
       # Information about the fields that were filled
       array of FilledField filledFields
-      # An UI representation of the address used to fill the form. 
+      # An UI representation of the address used to fill the form.
       # Consists of a 2D array where each child represents an address/profile line.
       AddressUI addressUi
 
