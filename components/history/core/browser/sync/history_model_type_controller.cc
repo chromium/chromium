@@ -19,35 +19,20 @@ namespace history {
 namespace {
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>
-GetDelegateFromHistoryService(syncer::ModelType model_type,
-                              HistoryService* history_service,
+GetDelegateFromHistoryService(HistoryService* history_service,
                               bool for_transport_mode) {
   if (!history_service) {
     return nullptr;
   }
 
-  switch (model_type) {
-    case syncer::TYPED_URLS:
-      // TYPED_URLS doesn't support transport mode.
-      if (for_transport_mode) {
-        return nullptr;
-      }
-      return history_service->GetTypedURLSyncControllerDelegate();
-
-    case syncer::HISTORY:
-      // Transport-mode support for HISTORY requires
-      // `kReplaceSyncPromosWithSignInPromos`.
-      if (for_transport_mode &&
-          !base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)) {
-        return nullptr;
-      }
-      // The same delegate is used for transport mode and full-sync mode.
-      return history_service->GetHistorySyncControllerDelegate();
-
-    default:
-      NOTREACHED_NORETURN();
+  // Transport-mode support for HISTORY requires
+  // `kReplaceSyncPromosWithSignInPromos`.
+  if (for_transport_mode && !base::FeatureList::IsEnabled(
+                                syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return nullptr;
   }
+  // The same delegate is used for transport mode and full-sync mode.
+  return history_service->GetHistorySyncControllerDelegate();
 }
 
 syncer::DataTypeController::PreconditionState
@@ -104,37 +89,30 @@ syncer::DataTypeController::PreconditionState GetStricterPreconditionState(
 }  // namespace
 
 HistoryModelTypeController::HistoryModelTypeController(
-    syncer::ModelType model_type,
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     HistoryService* history_service,
     PrefService* pref_service)
     : ModelTypeController(
-          model_type,
+          syncer::HISTORY,
           /*delegate_for_full_sync_mode=*/
-          GetDelegateFromHistoryService(model_type,
-                                        history_service,
+          GetDelegateFromHistoryService(history_service,
                                         /*for_transport_mode=*/false),
           /*delegate_for_transport_mode=*/
-          GetDelegateFromHistoryService(model_type,
-                                        history_service,
+          GetDelegateFromHistoryService(history_service,
                                         /*for_transport_mode=*/true)),
-      helper_(model_type, sync_service, pref_service),
+      helper_(syncer::HISTORY, sync_service, pref_service),
       identity_manager_(identity_manager),
       history_service_(history_service) {
-  CHECK(model_type == syncer::TYPED_URLS || model_type == syncer::HISTORY);
-
-  if (type() == syncer::HISTORY) {
-    sync_observation_.Observe(helper_.sync_service());
-    CoreAccountInfo account = helper_.sync_service()->GetAccountInfo();
-    // If there's already a signed-in account, figure out its "managed" state.
-    if (!account.IsEmpty()) {
-      managed_status_finder_ =
-          std::make_unique<signin::AccountManagedStatusFinder>(
-              identity_manager_, account,
-              base::BindOnce(&HistoryModelTypeController::AccountTypeDetermined,
-                             base::Unretained(this)));
-    }
+  sync_observation_.Observe(helper_.sync_service());
+  CoreAccountInfo account = helper_.sync_service()->GetAccountInfo();
+  // If there's already a signed-in account, figure out its "managed" state.
+  if (!account.IsEmpty()) {
+    managed_status_finder_ =
+        std::make_unique<signin::AccountManagedStatusFinder>(
+            identity_manager_, account,
+            base::BindOnce(&HistoryModelTypeController::AccountTypeDetermined,
+                           base::Unretained(this)));
   }
 }
 
@@ -142,13 +120,6 @@ HistoryModelTypeController::~HistoryModelTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
 HistoryModelTypeController::GetPreconditionState() const {
-  // TODO(crbug.com/1365291): HISTORY has replaced TYPED_URLS; clean up the
-  // remaining code.
-  if (type() == syncer::TYPED_URLS) {
-    return PreconditionState::kMustStopAndClearData;
-  }
-  DCHECK_EQ(type(), syncer::HISTORY);
-
   // syncer::HISTORY doesn't support custom passphrase encryption.
   if (helper_.sync_service()->GetUserSettings()->IsEncryptEverythingEnabled()) {
     return PreconditionState::kMustStopAndClearData;
@@ -164,7 +135,6 @@ HistoryModelTypeController::GetPreconditionState() const {
 
 void HistoryModelTypeController::OnStateChanged(syncer::SyncService* sync) {
   DCHECK(CalledOnValidThread());
-  DCHECK_EQ(type(), syncer::HISTORY);
   DCHECK_EQ(helper_.sync_service(), sync);
 
   // If there wasn't an account previously, or the account has changed, recreate
