@@ -93,7 +93,7 @@ class BASE_EXPORT SequenceManager {
 
     ~PrioritySettings();
 
-    PrioritySettings(PrioritySettings&&);
+    PrioritySettings(PrioritySettings&&) noexcept;
     PrioritySettings& operator=(PrioritySettings&&);
 
     TaskQueue::QueuePriority priority_count() const { return priority_count_; }

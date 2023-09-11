@@ -96,8 +96,8 @@ SequenceManager::PrioritySettings::TaskPriorityToProto(
 
 SequenceManager::PrioritySettings::~PrioritySettings() = default;
 
-SequenceManager::PrioritySettings::PrioritySettings(PrioritySettings&&) =
-    default;
+SequenceManager::PrioritySettings::PrioritySettings(
+    PrioritySettings&&) noexcept = default;
 
 SequenceManager::PrioritySettings& SequenceManager::PrioritySettings::operator=(
     PrioritySettings&&) = default;
