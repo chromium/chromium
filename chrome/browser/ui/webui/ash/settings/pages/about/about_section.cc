@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/about_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/about/about_section.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
@@ -20,10 +20,10 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/about/device_name_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/settings/about_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/device_name_handler.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
@@ -502,8 +502,9 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 void AboutSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<::settings::AboutHandler>(profile()));
-  if (features::IsHostnameSettingEnabled())
+  if (features::IsHostnameSettingEnabled()) {
     web_ui->AddMessageHandler(std::make_unique<DeviceNameHandler>());
+  }
 }
 
 int AboutSection::GetSectionNameMessageId() const {
@@ -551,16 +552,19 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 }
 
 bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {
-  if (!active_user)
+  if (!active_user) {
     return false;
+  }
 
   AccountId account_id = active_user->GetAccountId();
-  if (account_id.GetAccountType() != AccountType::GOOGLE)
+  if (account_id.GetAccountType() != AccountType::GOOGLE) {
     return false;
+  }
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
-  if (!identity_manager)
+  if (!identity_manager) {
     return false;
+  }
 
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(account_id.GetGaiaId());
@@ -578,10 +582,11 @@ bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {
 void AboutSection::UpdateReportIssueSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  if (pref_service_->GetBoolean(prefs::kUserFeedbackAllowed))
+  if (pref_service_->GetBoolean(prefs::kUserFeedbackAllowed)) {
     updater.AddSearchTags(GetAboutReportIssueSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetAboutReportIssueSearchConcepts());
+  }
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
