@@ -6,26 +6,40 @@ package org.chromium.chrome.browser.ui.autofill;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.autofill.AuthenticatorOptionsAdapter.AuthenticatorOptionViewHolder;
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -38,7 +52,10 @@ import java.util.ArrayList;
  * Unit tests for {@link AuthenticatorSelectionDialog}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
 public class AuthenticatorSelectionDialogTest {
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     // The icon set on the AuthenticatorOption is not important and any icon would do.
     private static final AuthenticatorOption OPTION_1 =
             new AuthenticatorOption.Builder()
@@ -78,6 +95,7 @@ public class AuthenticatorSelectionDialogTest {
 
     private FakeModalDialogManager mModalDialogManager;
     private AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
+    private Resources mResources;
     @Mock
     private AuthenticatorSelectionDialog.Listener mAuthenticatorSelectedListener;
 
@@ -85,6 +103,7 @@ public class AuthenticatorSelectionDialogTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
+        mResources = ApplicationProvider.getApplicationContext().getResources();
         mAuthenticatorSelectionDialog =
                 new AuthenticatorSelectionDialog(ApplicationProvider.getApplicationContext(),
                         mAuthenticatorSelectedListener, mModalDialogManager);
@@ -265,6 +284,138 @@ public class AuthenticatorSelectionDialogTest {
         verify(mAuthenticatorSelectedListener, times(1)).onOptionSelected(OPTION_4.getIdentifier());
     }
 
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
+    public void testSingleAuthenticatorOption_defaultTitleView() throws Exception {
+        ArrayList<AuthenticatorOption> options = new ArrayList<>();
+        options.add(OPTION_1);
+
+        mAuthenticatorSelectionDialog.show(options);
+
+        PropertyModel model = mModalDialogManager.getShownDialogModel();
+        assertThat(model).isNotNull();
+
+        forceAuthenticatorOptionsViewLayout(model);
+
+        // Verify that the title set by modal dialog is correct.
+        assertThat(model.get(ModalDialogProperties.TITLE))
+                .isEqualTo(mResources.getString(R.string.autofill_card_unmask_verification_title));
+
+        // Verify that the title icon set by modal dialog is correct.
+        Drawable expectedDrawable =
+                ResourcesCompat.getDrawable(mResources, R.drawable.google_pay_with_divider,
+                        ApplicationProvider.getApplicationContext().getTheme());
+        assertTrue(getBitmap(expectedDrawable)
+                           .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
+
+        // Verify that title and title icon is not set by custom view.
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        assertThat((TextView) customView.findViewById(R.id.title)).isNull();
+        assertThat((ImageView) customView.findViewById(R.id.title_icon)).isNull();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
+    public void testMultipleAuthenticatorOption_defaultTitleView() throws Exception {
+        ArrayList<AuthenticatorOption> options = new ArrayList<>();
+        options.add(OPTION_1);
+        options.add(OPTION_2);
+
+        mAuthenticatorSelectionDialog.show(options);
+
+        PropertyModel model = mModalDialogManager.getShownDialogModel();
+        assertThat(model).isNotNull();
+
+        forceAuthenticatorOptionsViewLayout(model);
+
+        // Verify that the title set by modal dialog is correct.
+        assertThat(model.get(ModalDialogProperties.TITLE))
+                .isEqualTo(mResources.getString(
+                        R.string.autofill_card_auth_selection_dialog_title_multiple_options));
+
+        // Verify that the title icon set by modal dialog is correct.
+        Drawable expectedDrawable =
+                ResourcesCompat.getDrawable(mResources, R.drawable.google_pay_with_divider,
+                        ApplicationProvider.getApplicationContext().getTheme());
+        assertTrue(getBitmap(expectedDrawable)
+                           .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
+
+        // Verify that title and title icon is not set by custom view.
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        assertThat((TextView) customView.findViewById(R.id.title)).isNull();
+        assertThat((ImageView) customView.findViewById(R.id.title_icon)).isNull();
+    }
+
+    @Test
+    @SmallTest
+    public void testSingleAuthenticatorOption_customTitleView() throws Exception {
+        ArrayList<AuthenticatorOption> options = new ArrayList<>();
+        options.add(OPTION_1);
+
+        mAuthenticatorSelectionDialog.show(options);
+
+        PropertyModel model = mModalDialogManager.getShownDialogModel();
+        assertThat(model).isNotNull();
+
+        forceAuthenticatorOptionsViewLayout(model);
+
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        // Verify that the title set by custom view is correct.
+        TextView title = (TextView) customView.findViewById(R.id.title);
+        assertThat(title.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(title.getText())
+                .isEqualTo(mResources.getString(R.string.autofill_card_unmask_verification_title));
+
+        // Verify that the title icon set by custom view is correct.
+        ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
+        Drawable expectedDrawable = ResourcesCompat.getDrawable(mResources, R.drawable.google_pay,
+                ApplicationProvider.getApplicationContext().getTheme());
+        assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
+        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
+
+        // Verify that title and title icon is not set by modal dialog.
+        assertThat(model.get(ModalDialogProperties.TITLE)).isNull();
+        assertThat(model.get(ModalDialogProperties.TITLE_ICON)).isNull();
+    }
+
+    @Test
+    @SmallTest
+    public void testMultipleAuthenticatorOption_customTitleView() throws Exception {
+        ArrayList<AuthenticatorOption> options = new ArrayList<>();
+        options.add(OPTION_1);
+        options.add(OPTION_2);
+
+        mAuthenticatorSelectionDialog.show(options);
+
+        PropertyModel model = mModalDialogManager.getShownDialogModel();
+        assertThat(model).isNotNull();
+
+        forceAuthenticatorOptionsViewLayout(model);
+
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        // Verify that the title set by custom view is correct.
+        TextView title = (TextView) customView.findViewById(R.id.title);
+        assertThat(title.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(title.getText())
+                .isEqualTo(mResources.getString(
+                        R.string.autofill_card_auth_selection_dialog_title_multiple_options));
+
+        // Verify that the title icon set by custom view is correct.
+        ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
+        Drawable expectedDrawable = ResourcesCompat.getDrawable(mResources, R.drawable.google_pay,
+                ApplicationProvider.getApplicationContext().getTheme());
+        assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
+        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
+
+        // Verify that title and title icon is not set by modal dialog.
+        assertThat(model.get(ModalDialogProperties.TITLE)).isNull();
+        assertThat(model.get(ModalDialogProperties.TITLE_ICON)).isNull();
+    }
+
     private PropertyModel createAndShowModelForChangeSelectedOptionTest() {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
@@ -304,5 +455,15 @@ public class AuthenticatorSelectionDialogTest {
                 (RecyclerView) customView.findViewById(R.id.authenticator_options_view);
         authenticatorOptionsView.measure(0, 0);
         authenticatorOptionsView.layout(0, 0, 100, 1000);
+    }
+
+    // Convert a drawable to a Bitmap for comparison.
+    private static Bitmap getBitmap(Drawable drawable) {
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }

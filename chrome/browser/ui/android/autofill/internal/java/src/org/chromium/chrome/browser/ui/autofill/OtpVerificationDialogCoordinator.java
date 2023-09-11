@@ -11,10 +11,15 @@ import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogPrope
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewStub;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -76,8 +81,24 @@ class OtpVerificationDialogCoordinator {
             OtpVerificationDialogView dialogView, Delegate delegate) {
         mContext = context;
         mDialogView = dialogView;
-        mMediator = new OtpVerificationDialogMediator(
-                modalDialogManager, getModalDialogModelBuilder(dialogView), delegate);
+
+        boolean useCustomTitleView = ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK);
+        int titleIconId =
+                useCustomTitleView ? R.drawable.google_pay : R.drawable.google_pay_with_divider;
+        String title = mContext.getResources().getString(
+                R.string.autofill_card_unmask_otp_input_dialog_title);
+
+        if (useCustomTitleView) {
+            ViewStub stub = mDialogView.findViewById(R.id.title_with_icon_stub);
+            stub.setLayoutResource(R.layout.icon_after_title_view);
+            stub.inflate();
+        }
+        PropertyModel.Builder dialogModelBuilder = getModalDialogModelBuilder(mDialogView);
+        updateTitleView(useCustomTitleView, title, titleIconId, dialogModelBuilder);
+
+        mMediator =
+                new OtpVerificationDialogMediator(modalDialogManager, dialogModelBuilder, delegate);
     }
 
     /**
@@ -142,15 +163,6 @@ class OtpVerificationDialogCoordinator {
     private PropertyModel.Builder getModalDialogModelBuilder(View customView) {
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CUSTOM_VIEW, customView)
-                .with(ModalDialogProperties.TITLE,
-                        mContext.getResources().getString(
-                                org.chromium.chrome.browser.ui.autofill.internal.R.string
-                                        .autofill_card_unmask_otp_input_dialog_title))
-                .with(ModalDialogProperties.TITLE_ICON,
-                        ResourcesCompat.getDrawable(mContext.getResources(),
-                                org.chromium.chrome.browser.ui.autofill.internal.R.drawable
-                                        .google_pay_with_divider,
-                                mContext.getTheme()))
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                         mContext.getResources().getString(
                                 org.chromium.chrome.browser.ui.autofill.internal.R.string
@@ -162,5 +174,30 @@ class OtpVerificationDialogCoordinator {
                 .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
                 .with(ModalDialogProperties.BUTTON_STYLES,
                         ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
+    }
+
+    /**
+     * Updates the title and icon view. If AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK
+     * feature is enabled, sets title and icon in the customView otherwise uses
+     * PropertyModel.Builder for title and icon.
+     *
+     * @param useCustomTitleView Indicates true/false to use custom title view.
+     * @param title Title of the prompt dialog.
+     * @param titleIcon Icon near the title.
+     * @param builder The PropertyModel.Builder instance.
+     */
+    private void updateTitleView(boolean useCustomTitleView, String title,
+            @DrawableRes int titleIcon, PropertyModel.Builder builder) {
+        if (useCustomTitleView) {
+            TextView titleView = (TextView) mDialogView.findViewById(R.id.title);
+            titleView.setText(title);
+            ImageView iconView = (ImageView) mDialogView.findViewById(R.id.title_icon);
+            iconView.setImageResource(titleIcon);
+        } else {
+            builder.with(ModalDialogProperties.TITLE, title);
+            builder.with(ModalDialogProperties.TITLE_ICON,
+                    ResourcesCompat.getDrawable(
+                            mContext.getResources(), titleIcon, mContext.getTheme()));
+        }
     }
 }
