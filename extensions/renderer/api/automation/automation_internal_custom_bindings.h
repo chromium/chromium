@@ -36,7 +36,8 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
  public:
   AutomationInternalCustomBindings(
       ScriptContext* context,
-      NativeExtensionBindingsSystem* bindings_system);
+      NativeExtensionBindingsSystem* bindings_system,
+      int worker_thread_id);
 
   AutomationInternalCustomBindings(const AutomationInternalCustomBindings&) =
       delete;
@@ -93,6 +94,8 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   bool should_ignore_context_;
 
   std::unique_ptr<ui::AutomationV8Bindings> automation_v8_bindings_;
+
+  const int worker_thread_id_;
 
   base::WeakPtrFactory<AutomationInternalCustomBindings> weak_ptr_factory_{
       this};

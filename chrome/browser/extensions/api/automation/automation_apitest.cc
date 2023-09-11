@@ -132,6 +132,27 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TestRendererAccessibilityEnabled) {
   ASSERT_TRUE(tab->IsWebContentsOnlyAccessibilityModeForTesting());
 }
 
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, ServiceWorker) {
+  StartEmbeddedTestServer();
+  const GURL url = GetURLForPath(kDomain, "/index.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  content::WebContents* const tab =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  ASSERT_FALSE(tab->IsFullAccessibilityModeForTesting());
+  ASSERT_FALSE(tab->IsWebContentsOnlyAccessibilityModeForTesting());
+
+  base::FilePath extension_path =
+      test_data_dir_.AppendASCII("automation/tests/service_worker");
+  ExtensionTestMessageListener got_tree(kGotTree);
+  LoadExtension(extension_path);
+  ASSERT_TRUE(got_tree.WaitUntilSatisfied());
+
+  ASSERT_FALSE(tab->IsFullAccessibilityModeForTesting());
+  ASSERT_TRUE(tab->IsWebContentsOnlyAccessibilityModeForTesting());
+}
+
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, SanityCheck) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",

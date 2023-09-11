@@ -436,11 +436,8 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
       ScriptContext* context,
       mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote)
       override {
-    // TODO(b:260590502): May need to update this when migrating extensions to
-    // Manifest V3.
-    // Only the main thread may register an automation, so if we reached this
-    // path, this should raise a problem.
-    NOTREACHED_NORETURN();
+    CHECK(context->IsForServiceWorker());
+    dispatcher_->SendBindAutomation(std::move(pending_remote));
   }
 
   void SendOpenMessageChannel(ScriptContext* script_context,

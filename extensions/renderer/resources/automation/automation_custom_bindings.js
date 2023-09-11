@@ -22,10 +22,8 @@ const GetAccessibilityFocusNative =
     nativeAutomationInternal.GetAccessibilityFocus;
 const SetDesktopID = nativeAutomationInternal.SetDesktopID;
 
-/**
- * A namespace to export utility functions to other files in automation.
- */
-window.automationUtil = function() {};
+// A namespace to export utility functions to other files in automation.
+const automationUtil = function() {};
 
 // TODO(aboxhall): Look into using WeakMap
 let idToCallback = {};

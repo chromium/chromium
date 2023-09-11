@@ -43,6 +43,13 @@ ServiceWorkerData* GetServiceWorkerDataChecked() {
   return data;
 }
 
+void BindAutomationOnIO(
+    mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote) {
+  auto* dispatcher = WorkerThreadDispatcher::Get();
+  dispatcher->GetAutomationRegistryOnIO()->BindAutomation(
+      std::move(pending_remote));
+}
+
 // Calls mojom::EventRouter::AddListenerForServiceWorker(). It should be called
 // on the IO thread.
 void AddEventListenerOnIO(const std::string& extension_id,
@@ -282,6 +289,13 @@ void WorkerThreadDispatcher::SendAddEventFilteredListener(
                      std::move(filter), add_lazy_listener));
 }
 
+void WorkerThreadDispatcher::SendBindAutomation(
+    mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BindAutomationOnIO, std::move(pending_remote)));
+}
+
 void WorkerThreadDispatcher::SendRemoveEventListener(
     const std::string& extension_id,
     const GURL& scope,
@@ -383,6 +397,20 @@ mojom::ServiceWorkerHost* WorkerThreadDispatcher::GetServiceWorkerHostOnIO() {
     service_worker_host_.Bind(std::move(pending_service_worker_host));
   }
   return service_worker_host_.get();
+}
+
+mojom::RendererAutomationRegistry*
+WorkerThreadDispatcher::GetAutomationRegistryOnIO() {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  if (!renderer_automation_registry_remote_) {
+    mojo::PendingAssociatedRemote<mojom::RendererAutomationRegistry>
+        pending_renderer_automation_registry_remote;
+    message_filter_->GetRemoteAssociatedInterface(
+        &pending_renderer_automation_registry_remote);
+    renderer_automation_registry_remote_.Bind(
+        std::move(pending_renderer_automation_registry_remote));
+  }
+  return renderer_automation_registry_remote_.get();
 }
 
 void WorkerThreadDispatcher::OnResponseWorker(

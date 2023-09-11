@@ -38,8 +38,8 @@ class AutomationInternalCustomBindingsTest
     bindings_system()->UpdateBindingsForContext(script_context);
 
     auto automation_internal_bindings =
-        std::make_unique<AutomationInternalCustomBindings>(script_context,
-                                                           bindings_system());
+        std::make_unique<AutomationInternalCustomBindings>(
+            script_context, bindings_system(), kMainThreadId);
     automation_internal_bindings_ = automation_internal_bindings.get();
     script_context->module_system()->RegisterNativeHandler(
         "automationInternal", std::move(automation_internal_bindings));
