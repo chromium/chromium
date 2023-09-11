@@ -1028,7 +1028,13 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         '<chrono> is banned. Use base/time instead.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+      [
+          # Not an error in third_party folders:
+          _THIRD_PARTY_EXCEPT_BLINK,
+          # PartitionAlloc's starscan, doesn't depend on base/. It can't use
+          # base::ConditionalVariable::TimedWait(..).
+          "base/allocator/partition_allocator/starscan/pcscan_internal.cc",
+      ]
     ),
     BanRule(
       r'/#include <exception>',
