@@ -74,6 +74,9 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 // The spacing between modules in the Magic Stack.
 const float kMagicStackSpacing = 10.0f;
 
+// The corner radius of the Magic Stack.
+const float kMagicStackCornerRadius = 16.0f;
+
 // The max width of the SetUpList on phone and tablet.
 const CGFloat kSetUpListWidthRegular = 393;
 const CGFloat kSetUpListWidthWide = 418;
@@ -1112,6 +1115,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   _magicStackScrollView.clipsToBounds =
       content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
                                                           self.view.window);
+  _magicStackScrollView.layer.cornerRadius = kMagicStackCornerRadius;
   _magicStackScrollView.delegate = self;
   _magicStackScrollView.decelerationRate = UIScrollViewDecelerationRateFast;
   _magicStackScrollView.accessibilityIdentifier =
