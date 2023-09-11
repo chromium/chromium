@@ -49,22 +49,26 @@ bool NativeTheme::SystemDarkModeSupported() {
 ColorProviderKey NativeTheme::GetColorProviderKey(
     scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
     bool use_custom_frame) const {
-  return ColorProviderKey(
-      (GetDefaultSystemColorScheme() == ColorScheme::kDark)
-          ? ColorProviderKey::ColorMode::kDark
-          : ColorProviderKey::ColorMode::kLight,
-      UserHasContrastPreference() ? ColorProviderKey::ContrastMode::kHigh
-                                  : ColorProviderKey::ContrastMode::kNormal,
-      InForcedColorsMode() ? ColorProviderKey::ForcedColors::kActive
-                           : ColorProviderKey::ForcedColors::kNone,
-      system_theme_,
-      use_custom_frame ? ui::ColorProviderKey::FrameType::kChromium
-                       : ui::ColorProviderKey::FrameType::kNative,
-      ui::ColorProviderKey::FrameStyle::kDefault,
-      should_use_system_accent_color_
-          ? ui::ColorProviderKey::UserColorSource::kAccent
-          : ui::ColorProviderKey::UserColorSource::kBaseline,
-      user_color_, scheme_variant_, std::move(custom_theme));
+  ui::ColorProviderKey key;
+  key.color_mode = (GetDefaultSystemColorScheme() == ColorScheme::kDark)
+                       ? ColorProviderKey::ColorMode::kDark
+                       : ColorProviderKey::ColorMode::kLight;
+  key.contrast_mode = UserHasContrastPreference()
+                          ? ColorProviderKey::ContrastMode::kHigh
+                          : ColorProviderKey::ContrastMode::kNormal;
+  key.forced_colors = InForcedColorsMode()
+                          ? ColorProviderKey::ForcedColors::kActive
+                          : ColorProviderKey::ForcedColors::kNone;
+  key.system_theme = system_theme_;
+  key.frame_type = use_custom_frame ? ColorProviderKey::FrameType::kChromium
+                                    : ColorProviderKey::FrameType::kNative;
+  key.user_color_source = should_use_system_accent_color_
+                              ? ColorProviderKey::UserColorSource::kAccent
+                              : ColorProviderKey::UserColorSource::kBaseline;
+  key.user_color = user_color_;
+  key.scheme_variant = scheme_variant_;
+  key.custom_theme = std::move(custom_theme);
+  return key;
 }
 
 SkColor NativeTheme::GetSystemButtonPressedColor(SkColor base_color) const {

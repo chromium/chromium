@@ -16,45 +16,16 @@ ColorProviderKey::ThemeInitializerSupplier::ThemeInitializerSupplier(
     ThemeType theme_type)
     : theme_type_(theme_type) {}
 
-ColorProviderKey::ColorProviderKey()
-    : ColorProviderKey(ColorMode::kLight,
-                       ContrastMode::kNormal,
-                       ForcedColors::kNone,
-                       SystemTheme::kDefault,
-                       FrameType::kChromium,
-                       FrameStyle::kDefault,
-                       UserColorSource::kAccent,
-                       absl::nullopt,
-                       absl::nullopt,
-                       nullptr) {}
-
-ColorProviderKey::ColorProviderKey(
-    ColorMode color_mode,
-    ContrastMode contrast_mode,
-    ForcedColors forced_colors,
-    SystemTheme system_theme,
-    FrameType frame_type,
-    FrameStyle frame_style,
-    UserColorSource user_color_source,
-    absl::optional<SkColor> user_color,
-    absl::optional<SchemeVariant> scheme_variant,
-    scoped_refptr<ThemeInitializerSupplier> custom_theme)
-    : color_mode(color_mode),
-      contrast_mode(contrast_mode),
-      forced_colors(forced_colors),
-      elevation_mode(ElevationMode::kLow),
-      system_theme(system_theme),
-      frame_type(frame_type),
-      frame_style(frame_style),
-      user_color_source(user_color_source),
-      user_color(user_color),
-      scheme_variant(scheme_variant),
-      custom_theme(std::move(custom_theme)) {}
+ColorProviderKey::ColorProviderKey() = default;
 
 ColorProviderKey::ColorProviderKey(const ColorProviderKey&) = default;
 
 ColorProviderKey& ColorProviderKey::operator=(const ColorProviderKey&) =
     default;
+
+ColorProviderKey::ColorProviderKey(ColorProviderKey&&) = default;
+
+ColorProviderKey& ColorProviderKey::operator=(ColorProviderKey&&) = default;
 
 ColorProviderKey::~ColorProviderKey() = default;
 

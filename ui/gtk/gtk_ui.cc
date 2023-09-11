@@ -713,22 +713,23 @@ void GtkUi::UpdateColors() {
   // to the theme bits associated with the NativeThemeGtk instance to ensure
   // we do not regress existing behavior during the transition.
   const auto color_scheme = native_theme_->GetDefaultSystemColorScheme();
+  ui::ColorProviderKey key;
+  key.color_mode = (color_scheme == ui::NativeTheme::ColorScheme::kDark)
+                       ? ui::ColorProviderKey::ColorMode::kDark
+                       : ui::ColorProviderKey::ColorMode::kLight;
+  key.contrast_mode =
+      (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+          ? ui::ColorProviderKey::ContrastMode::kHigh
+          : ui::ColorProviderKey::ContrastMode::kNormal;
+  key.forced_colors =
+      (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+          ? ui::ColorProviderKey::ForcedColors::kActive
+          : ui::ColorProviderKey::ForcedColors::kNone;
+  // Some theme colors, e.g. COLOR_NTP_LINK, are derived from color provider
+  // colors. We assume that those sources' colors won't change with frame type.
+  key.system_theme = ui::SystemTheme::kGtk;
   const auto* color_provider =
-      ui::ColorProviderManager::Get().GetColorProviderFor(
-          {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
-               ? ui::ColorProviderKey::ColorMode::kDark
-               : ui::ColorProviderKey::ColorMode::kLight,
-           (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
-               ? ui::ColorProviderKey::ContrastMode::kHigh
-               : ui::ColorProviderKey::ContrastMode::kNormal,
-           (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
-               ? ui::ColorProviderKey::ForcedColors::kActive
-               : ui::ColorProviderKey::ForcedColors::kNone,
-           ui::SystemTheme::kGtk,
-           // Some theme colors, e.g. COLOR_NTP_LINK, are derived from color
-           // provider colors. We assume that those sources' colors won't change
-           // with frame type.
-           ui::ColorProviderKey::FrameType::kChromium});
+      ui::ColorProviderManager::Get().GetColorProviderFor(key);
 
   SkColor location_bar_border = GetBorderColor("entry");
   if (SkColorGetA(location_bar_border)) {

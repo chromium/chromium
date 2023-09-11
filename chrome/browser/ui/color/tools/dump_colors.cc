@@ -47,10 +47,10 @@ std::string SkColorToString(SkColor color) {
 
 int main(int argc, const char* argv[]) {
   const auto add_mixers = [](ui::ColorProvider* provider, auto color_mode,
-                             auto contrast_mode, auto forced_colors) {
-    const ui::ColorProviderKey key = {
-        color_mode, contrast_mode, forced_colors, ui::SystemTheme::kDefault,
-        ui::ColorProviderKey::FrameType::kChromium};
+                             auto contrast_mode) {
+    ui::ColorProviderKey key;
+    key.color_mode = color_mode;
+    key.contrast_mode = contrast_mode;
     ui::AddColorMixers(provider, key);
     AddChromeColorMixers(provider, key);
     provider->GenerateColorMap();
@@ -58,19 +58,15 @@ int main(int argc, const char* argv[]) {
   ui::ColorProvider light_provider, dark_provider, light_high_contrast_provider,
       dark_high_contrast_provider;
   add_mixers(&light_provider, ui::ColorProviderKey::ColorMode::kLight,
-             ui::ColorProviderKey::ContrastMode::kNormal,
-             ui::ColorProviderKey::ForcedColors::kNone);
+             ui::ColorProviderKey::ContrastMode::kNormal);
   add_mixers(&dark_provider, ui::ColorProviderKey::ColorMode::kDark,
-             ui::ColorProviderKey::ContrastMode::kNormal,
-             ui::ColorProviderKey::ForcedColors::kNone);
+             ui::ColorProviderKey::ContrastMode::kNormal);
   add_mixers(&light_high_contrast_provider,
              ui::ColorProviderKey::ColorMode::kLight,
-             ui::ColorProviderKey::ContrastMode::kHigh,
-             ui::ColorProviderKey::ForcedColors::kNone);
+             ui::ColorProviderKey::ContrastMode::kHigh);
   add_mixers(&dark_high_contrast_provider,
              ui::ColorProviderKey::ColorMode::kDark,
-             ui::ColorProviderKey::ContrastMode::kHigh,
-             ui::ColorProviderKey::ForcedColors::kNone);
+             ui::ColorProviderKey::ContrastMode::kHigh);
 
   size_t longest_name = 0;
   for (const char* name : enum_names)

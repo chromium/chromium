@@ -111,38 +111,24 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     ThemeType theme_type_;
   };
 
-  ColorProviderKey();  // For test convenience.
-
-  // TODO(tluk): Switch to using named initializers so clients can set only the
-  // necessary parameters on the key.
-  ColorProviderKey(
-      ColorMode color_mode,
-      ContrastMode contrast_mode,
-      ForcedColors forced_colors,
-      SystemTheme system_theme,
-      FrameType frame_type,
-      FrameStyle = FrameStyle::kDefault,
-      UserColorSource user_color_source = UserColorSource::kAccent,
-      absl::optional<SkColor> user_color = absl::nullopt,
-      absl::optional<SchemeVariant> scheme_variant = absl::nullopt,
-      scoped_refptr<ThemeInitializerSupplier> custom_theme = nullptr);
-
+  ColorProviderKey();
   ColorProviderKey(const ColorProviderKey&);
   ColorProviderKey& operator=(const ColorProviderKey&);
-
+  ColorProviderKey(ColorProviderKey&&);
+  ColorProviderKey& operator=(ColorProviderKey&&);
   ~ColorProviderKey();
 
-  ColorMode color_mode;
-  ContrastMode contrast_mode;
-  ForcedColors forced_colors;
-  ElevationMode elevation_mode;
-  SystemTheme system_theme;
-  FrameType frame_type;
-  FrameStyle frame_style;
-  UserColorSource user_color_source;
-  absl::optional<SkColor> user_color;
-  absl::optional<SchemeVariant> scheme_variant;
-  scoped_refptr<ThemeInitializerSupplier> custom_theme;
+  ColorMode color_mode = ColorMode::kLight;
+  ContrastMode contrast_mode = ContrastMode::kNormal;
+  ForcedColors forced_colors = ForcedColors::kNone;
+  ElevationMode elevation_mode = ElevationMode::kLow;
+  SystemTheme system_theme = SystemTheme::kDefault;
+  FrameType frame_type = FrameType::kChromium;
+  FrameStyle frame_style = FrameStyle::kDefault;
+  UserColorSource user_color_source = UserColorSource::kAccent;
+  absl::optional<SkColor> user_color = absl::nullopt;
+  absl::optional<SchemeVariant> scheme_variant = absl::nullopt;
+  scoped_refptr<ThemeInitializerSupplier> custom_theme = nullptr;
   // Only dereferenced when populating the ColorMixer. After that, used to
   // compare addresses during lookup.
   raw_ptr<InitializerSupplier, AcrossTasksDanglingUntriaged> app_controller =
