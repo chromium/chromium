@@ -347,7 +347,7 @@ ResourcesFileSharingMode ClearOrMoveSharedResourceFile(
 // This method runs some work on a background thread prior to launching lacros.
 // The returns struct is used by the main thread as parameters to launch Lacros.
 LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
-    base::FilePath lacros_dir,
+    base::FilePath lacros_binary,
     bool clear_shared_resource_file,
     bool launching_at_login_screen) {
   LaunchParamsFromBackground params;
@@ -415,7 +415,7 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
   // This speeds up the perceived startup time, as they will be loaded anyway
   // in the later stages of Lacros's lifetime.
   if (launching_at_login_screen) {
-    PreloadLacrosFiles(lacros_dir);
+    PreloadLacrosFiles(lacros_binary.DirName());
   }
 
   return params;
@@ -1087,7 +1087,7 @@ void BrowserManager::StartWithLogFile(bool launching_at_login_screen,
     RecordDataVerForPrimaryUser();
   }
 
-  std::string chrome_path = lacros_path_.MaybeAsASCII() + "/chrome";
+  std::string chrome_path = lacros_path_.MaybeAsASCII();
   LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
 
   // If Ash is an unknown channel then this is not a production build and we

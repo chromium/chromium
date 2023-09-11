@@ -112,7 +112,10 @@ class BrowserLoader {
   FRIEND_TEST_ALL_PREFIXES(
       BrowserLoaderTest,
       OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsStateful);
-  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest, OnLoadLacrosSpecifiedBySwitch);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
+                           OnLoadLacrosBinarySpecifiedBySwitch);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
+                           OnLoadLacrosDirectorySpecifiedBySwitch);
 
   // `source` indicates why rootfs/stateful is selected. `source` is only used
   // for logging.
@@ -143,7 +146,7 @@ class BrowserLoader {
                             const base::FilePath& path,
                             LacrosSelection selection,
                             base::Version version,
-                            bool lacros_binary_exists);
+                            const base::FilePath& lacros_binary);
 
   // Loader for rootfs lacros and stateful lacros.
   std::unique_ptr<LacrosSelectionLoader> rootfs_lacros_loader_;

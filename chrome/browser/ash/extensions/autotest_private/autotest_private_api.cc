@@ -2083,7 +2083,12 @@ ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
           .Set("state", api::autotest_private::ToString(
                             ToLacrosState(browser_manager->state_)))
           .Set("isKeepAlive", browser_manager->IsKeepAliveEnabled())
-          .Set("lacrosPath", browser_manager->lacros_path().MaybeAsASCII())
+          // TODO(neis): Rename lacrosPath to avoid confusion, or make it be the
+          // binary path. Either requires changes in tast-tests.
+          .Set("lacrosPath",
+               browser_manager->lacros_path().empty()
+                   ? ""
+                   : browser_manager->lacros_path().DirName().MaybeAsASCII())
           .Set("mode", api::autotest_private::ToString(ToLacrosMode(
                            crosapi::browser_util::GetLacrosMode())))));
 }
