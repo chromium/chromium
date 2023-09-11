@@ -69,12 +69,15 @@ using signin_metrics::PromoAction;
                                            browser:(Browser*)browser
                                           identity:(id<SystemIdentity>)identity
                                        accessPoint:(signin_metrics::AccessPoint)
-                                                       accessPoint {
+                                                       accessPoint
+                                       promoAction:(signin_metrics::PromoAction)
+                                                       promoAction {
   return [[InstantSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
                         identity:identity
-                     accessPoint:accessPoint];
+                     accessPoint:accessPoint
+                     promoAction:promoAction];
 }
 
 + (instancetype)forcedSigninCoordinatorWithBaseViewController:

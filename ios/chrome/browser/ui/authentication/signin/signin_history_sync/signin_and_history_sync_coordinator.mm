@@ -170,7 +170,8 @@ enum class SignInHistorySyncStep {
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                             identity:nil
-                         accessPoint:_accessPoint];
+                         accessPoint:_accessPoint
+                         promoAction:_promoAction];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {

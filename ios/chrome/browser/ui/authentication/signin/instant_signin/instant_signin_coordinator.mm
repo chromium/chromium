@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -31,6 +32,8 @@
   id<SystemIdentity> _identity;
   // Access point where sign-in coordinator was triggered.
   signin_metrics::AccessPoint _accessPoint;
+  // Promo action that triggered the sign-in coordinator.
+  signin_metrics::PromoAction _promoAction;
   // Instant sign-in mediator.
   InstantSigninMediator* _mediator;
   // Coordinator for the user to select an account.
@@ -39,22 +42,21 @@
   SigninCoordinator* _addAccountSigninCoordinator;
   // Overlay to block the current window while the sign-in is in progress.
   ActivityOverlayCoordinator* _activityOverlayCoordinator;
-  // Whether a snackbar displaying the signed-in account and an "Undo" button
-  // should be displayed after successful sign-in.
-  BOOL _showSnackbarAfterSuccessfulSignin;
 }
 
 #pragma mark - Public
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                  identity:(id<SystemIdentity>)identity
-                               accessPoint:
-                                   (signin_metrics::AccessPoint)accessPoint {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                      identity:(id<SystemIdentity>)identity
+                   accessPoint:(signin_metrics::AccessPoint)accessPoint
+                   promoAction:(signin_metrics::PromoAction)promoAction {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _identity = identity;
     _accessPoint = accessPoint;
+    _promoAction = promoAction;
   }
   return self;
 }
@@ -75,20 +77,12 @@
   _mediator = [[InstantSigninMediator alloc] initWithSyncService:syncService
                                                      accessPoint:_accessPoint];
   _mediator.delegate = self;
+
   if (_identity) {
-    // No other dialog will be shown in this flow, so display the snackbar to
-    // ensure the full signed-in account is shown at least once.
-    _showSnackbarAfterSuccessfulSignin = YES;
     // If an identity was selected, sign-in can start now.
     [self startSignInOnlyFlow];
     return;
   }
-
-  // The remaining code paths already contain some UI that fully displays the
-  // signed-in account, so no need for the snackbar. They happen to currently
-  // show it, so guard the change behind flag.
-  _showSnackbarAfterSuccessfulSignin =
-      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
 
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(chromeState);
@@ -216,9 +210,14 @@
 - (void)startSignInOnlyFlow {
   [self showActivityOverlay];
   signin_metrics::RecordSigninUserActionForAccessPoint(_accessPoint);
-  auto postSigninAction = _showSnackbarAfterSuccessfulSignin
-                              ? PostSignInAction::kShowSnackbar
-                              : PostSignInAction::kNone;
+  // If this was triggered by the user tapping the default button in the sign-in
+  // promo, give the user a chance to see the full email, by showing a snackbar.
+  auto postSigninAction =
+      _promoAction == signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT ||
+              !base::FeatureList::IsEnabled(
+                  syncer::kReplaceSyncPromosWithSignInPromos)
+          ? PostSignInAction::kShowSnackbar
+          : PostSignInAction::kNone;
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:_identity

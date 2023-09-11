@@ -16,6 +16,7 @@ source_set("add_account_signin") {
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/strings",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/shared/coordinator/alert",

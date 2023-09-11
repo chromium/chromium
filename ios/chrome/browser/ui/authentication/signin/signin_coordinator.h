@@ -59,7 +59,9 @@ class PrefRegistrySyncable;
                                            browser:(Browser*)browser
                                           identity:(id<SystemIdentity>)identity
                                        accessPoint:(signin_metrics::AccessPoint)
-                                                       accessPoint;
+                                                       accessPoint
+                                       promoAction:(signin_metrics::PromoAction)
+                                                       promoAction;
 
 // Returns a coordinator for forced sign-in workflow.
 // `viewController` presents the sign-in.
