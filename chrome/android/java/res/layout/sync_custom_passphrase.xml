@@ -35,6 +35,6 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
             android:layout_marginTop="25dp"
-            android:text="@string/sync_custom_passphrase" />
+            android:text="@string/new_sync_custom_passphrase" />
     </LinearLayout>
 </ScrollView>
