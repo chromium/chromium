@@ -271,11 +271,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableOsFeedback() {
-    options.enable_os_feedback = true;
-    return *this;
-  }
-
   TestCase& EnableGoogleOneOfferFilesBanner() {
     options.enable_google_one_offer_files_banner = true;
     return *this;
@@ -382,10 +377,6 @@ struct TestCase {
 
     if (options.enable_fsps_in_recents) {
       full_name += "_FSPsInRecents";
-    }
-
-    if (options.enable_os_feedback) {
-      full_name += "_OsFeedback";
     }
 
     if (options.enable_google_one_offer_files_banner) {
@@ -2634,9 +2625,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("newFolderInDownloads"),
         TestCase("showFilesSettingsButton"),
         TestCase("showSendFeedbackAction")
-            .FeatureIds({"screenplay-3bd7bbba-a25a-4386-93cf-933266df22a7"}),
-        TestCase("showSendFeedbackAction")
-            .EnableOsFeedback()
             .FeatureIds({"screenplay-3bd7bbba-a25a-4386-93cf-933266df22a7"}),
         TestCase("enableDisableStorageSettingsLink"),
         TestCase("showAvailableStorageMyFiles")

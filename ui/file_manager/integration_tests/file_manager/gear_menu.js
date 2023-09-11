@@ -450,10 +450,7 @@ testcase.showFilesSettingsButton = async () => {
  * opens the feedback window.
  */
 testcase.showSendFeedbackAction = async () => {
-  const isOsFeedbackEnabled =
-      await sendTestMessage({name: 'isOsFeedbackEnabled'}) === 'true';
-  const feedbackWindowOrigin =
-      isOsFeedbackEnabled ? 'chrome://os-feedback' : 'chrome://feedback';
+  const feedbackWindowOrigin = 'chrome://os-feedback';
 
   // Open Files.App on Downloads.
   const appId = await openNewWindow(RootPath.DOWNLOADS);

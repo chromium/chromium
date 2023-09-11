@@ -188,9 +188,6 @@ class FileManagerBrowserTestBase
     // Whether test should run with the fsps-in-recents flag.
     bool enable_fsps_in_recents = false;
 
-    // Whether tests should enable OS Feedback.
-    bool enable_os_feedback = false;
-
     // Whether tests should enable Google One offer Files banner.
     bool enable_google_one_offer_files_banner = false;
 

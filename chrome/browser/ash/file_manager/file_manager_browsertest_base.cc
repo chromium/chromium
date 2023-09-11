@@ -2350,12 +2350,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kFSPsInRecents);
   }
 
-  if (options.enable_os_feedback) {
-    enabled_features.push_back(ash::features::kOsFeedback);
-  } else {
-    disabled_features.push_back(ash::features::kOsFeedback);
-  }
-
   if (options.enable_google_one_offer_files_banner) {
     enabled_features.push_back(ash::features::kGoogleOneOfferFilesBanner);
   } else {
@@ -3670,11 +3664,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isDriveShortcutsEnabled") {
     *output = options.enable_drive_shortcuts ? "true" : "false";
-    return;
-  }
-
-  if (name == "isOsFeedbackEnabled") {
-    *output = options.enable_os_feedback ? "true" : "false";
     return;
   }
 
