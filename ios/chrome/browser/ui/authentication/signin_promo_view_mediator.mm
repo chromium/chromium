@@ -483,13 +483,24 @@ const char* AlreadySeenSigninViewPreferenceKey(
   }
 }
 
+// See documentation of displayedIdentity property.
+id<SystemIdentity> GetDisplayedIdentity(
+    AuthenticationService* authService,
+    ChromeAccountManagerService* accountManagerService) {
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    return authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  }
+  DCHECK(accountManagerService);
+  return accountManagerService->GetDefaultIdentity();
+}
+
 }  // namespace
 
 @interface SigninPromoViewMediator () <ChromeAccountManagerServiceObserver,
                                        SyncObserverModelBridge>
 
-// Redefined to be readwrite.
-@property(nonatomic, strong, readwrite) id<SystemIdentity> identity;
+// Redefined to be readwrite. See documentation in the header file.
+@property(nonatomic, strong, readwrite) id<SystemIdentity> displayedIdentity;
 
 // YES if the sign-in flow is in progress.
 @property(nonatomic, assign, readwrite) BOOL signinInProgress;
@@ -512,8 +523,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 // The access point for the sign-in promo view.
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 
-// Identity avatar.
-@property(nonatomic, strong) UIImage* identityAvatar;
+// The avatar of `displayedIdentity`.
+@property(nonatomic, strong) UIImage* displayedIdentityAvatar;
 
 // YES if the sign-in promo is currently visible by the user.
 @property(nonatomic, assign, getter=isSigninPromoViewVisible)
@@ -644,9 +655,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
     _syncObserverBridge =
         std::make_unique<SyncObserverBridge>(self, _syncService);
 
-    id<SystemIdentity> defaultIdentity = [self defaultIdentity];
-    if (defaultIdentity) {
-      self.identity = defaultIdentity;
+    id<SystemIdentity> displayedIdentity =
+        GetDisplayedIdentity(self.authService, self.accountManagerService);
+    if (displayedIdentity) {
+      self.displayedIdentity = displayedIdentity;
     }
   }
   return self;
@@ -661,28 +673,29 @@ const char* AlreadySeenSigninViewPreferenceKey(
   BOOL hasCloseButton =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint) != nullptr;
   if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    if (!self.identity) {
+    if (!self.displayedIdentity) {
       // TODO(crbug.com/1227708): The default identity should already be known
       // by the mediator. We should not have no identity. This can be reproduced
       // with EGtests with bots. The identity notification might not have
       // received yet. Let's update the promo identity.
       [self identityListChanged];
     }
-    DCHECK(self.identity) << base::SysNSStringToUTF8([self description]);
+    DCHECK(self.displayedIdentity)
+        << base::SysNSStringToUTF8([self description]);
     return [[SigninPromoViewConfigurator alloc]
         initWithSigninPromoViewMode:SigninPromoViewModeSyncWithPrimaryAccount
-                          userEmail:self.identity.userEmail
-                      userGivenName:self.identity.userGivenName
-                          userImage:self.identityAvatar
+                          userEmail:self.displayedIdentity.userEmail
+                      userGivenName:self.displayedIdentity.userGivenName
+                          userImage:self.displayedIdentityAvatar
                      hasCloseButton:hasCloseButton
                    hasSignInSpinner:self.showSpinner];
   }
-  if (self.identity) {
+  if (self.displayedIdentity) {
     return [[SigninPromoViewConfigurator alloc]
         initWithSigninPromoViewMode:SigninPromoViewModeSigninWithAccount
-                          userEmail:self.identity.userEmail
-                      userGivenName:self.identity.userGivenName
-                          userImage:self.identityAvatar
+                          userEmail:self.displayedIdentity.userEmail
+                      userGivenName:self.displayedIdentity.userGivenName
+                          userImage:self.displayedIdentityAvatar
                      hasCloseButton:hasCloseButton
                    hasSignInSpinner:self.showSpinner];
   }
@@ -784,14 +797,14 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 // Sets the Chrome identity to display in the sign-in promo.
-- (void)setIdentity:(id<SystemIdentity>)identity {
-  _identity = identity;
-  if (!_identity) {
-    self.identityAvatar = nil;
+- (void)setDisplayedIdentity:(id<SystemIdentity>)identity {
+  _displayedIdentity = identity;
+  if (!_displayedIdentity) {
+    self.displayedIdentityAvatar = nil;
   } else {
-    self.identityAvatar =
+    self.displayedIdentityAvatar =
         self.accountManagerService->GetIdentityAvatarWithIdentity(
-            _identity, IdentityAvatarSize::SmallSize);
+            _displayedIdentity, IdentityAvatarSize::SmallSize);
   }
 }
 
@@ -836,18 +849,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 #pragma mark - Private
-
-// Returns the identity for the sync promo. This should be the signed in promo,
-// if the user is signed in. If not signed in, the default identity from
-// AccountManagerService.
-- (id<SystemIdentity>)defaultIdentity {
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    return self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  }
-  DCHECK(self.accountManagerService)
-      << base::SysNSStringToUTF8([self description]);
-  return self.accountManagerService->GetDefaultIdentity();
-}
 
 // Sends the update notification to the consummer if the signin-in is not in
 // progress. This is to avoid to update the sign-in promo view in the
@@ -980,12 +981,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  id<SystemIdentity> currentIdentity = self.identity;
-  id<SystemIdentity> defaultIdentity = [self defaultIdentity];
-  if (![currentIdentity isEqual:defaultIdentity]) {
+  id<SystemIdentity> currentIdentity = self.displayedIdentity;
+  id<SystemIdentity> displayedIdentity =
+      GetDisplayedIdentity(self.authService, self.accountManagerService);
+  if (![currentIdentity isEqual:displayedIdentity]) {
     // Don't update the the sign-in promo if the sign-in is in progress,
     // to avoid flashes of the promo.
-    self.identity = defaultIdentity;
+    self.displayedIdentity = displayedIdentity;
     [self sendConsumerNotificationWithIdentityChanged:YES];
   }
 }
@@ -998,7 +1000,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)signinPromoViewDidTapSigninWithNewAccount:
     (SigninPromoView*)signinPromoView {
-  DCHECK(!self.identity) << base::SysNSStringToUTF8([self description]);
+  DCHECK(!self.displayedIdentity)
+      << base::SysNSStringToUTF8([self description]);
   // The promo on top of the feed is only logged as visible when most of it can
   // be seen, so it can be used without `self.signinPromoViewVisible`.
   DCHECK(self.signinPromoViewVisible ||
@@ -1035,7 +1038,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)signinPromoViewDidTapSigninWithDefaultAccount:
     (SigninPromoView*)signinPromoView {
-  DCHECK(self.identity) << base::SysNSStringToUTF8([self description]);
+  DCHECK(self.displayedIdentity) << base::SysNSStringToUTF8([self description]);
   DCHECK(self.signinPromoViewVisible)
       << base::SysNSStringToUTF8([self description]);
   DCHECK(!self.invalidClosedOrNeverVisible)
@@ -1043,13 +1046,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
   [self sendImpressionsTillSigninButtonsHistogram];
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
-      [self showSigninWithIdentity:self.identity
+      [self showSigninWithIdentity:self.displayedIdentity
                          operation:AuthenticationOperation::kInstantSignin
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
     case SigninPromoAction::kSync:
-      [self showSigninWithIdentity:self.identity
+      [self showSigninWithIdentity:self.displayedIdentity
                          operation:AuthenticationOperation::kSigninAndSync
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
@@ -1065,7 +1068,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)signinPromoViewDidTapSigninWithOtherAccount:
     (SigninPromoView*)signinPromoView {
-  DCHECK(self.identity) << base::SysNSStringToUTF8([self description]);
+  DCHECK(self.displayedIdentity) << base::SysNSStringToUTF8([self description]);
   DCHECK(self.signinPromoViewVisible)
       << base::SysNSStringToUTF8([self description]);
   DCHECK(!self.invalidClosedOrNeverVisible)
@@ -1141,7 +1144,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
           @"<%@: %p, identity: %p, signinPromoViewState: %d, "
           @"signinInProgress: %d, initialSyncInProgress %d, accessPoint: %d, "
           @"signinPromoViewVisible: %d, invalidOrClosed %d>",
-          self.class.description, self, self.identity,
+          self.class.description, self, self.displayedIdentity,
           static_cast<int>(self.signinPromoViewState), self.signinInProgress,
           self.initialSyncInProgress, static_cast<int>(self.accessPoint),
           self.signinPromoViewVisible, self.invalidOrClosed];

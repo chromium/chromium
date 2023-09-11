@@ -70,11 +70,15 @@ enum class SigninPromoAction {
 // Consumer to handle identity update notifications.
 @property(nonatomic, weak) id<SigninPromoViewConsumer> consumer;
 
-// Chrome identity used to configure the view in the following modes:
-//  - SigninPromoViewModeSigninWithAccount
-//  - SigninPromoViewModeSyncWithPrimaryAccount
-// Otherwise contains nil.
-@property(nonatomic, strong, readonly) id<SystemIdentity> identity;
+// The identity whose avatar is shown by the promo and which will be signed-in
+// if the user taps the primary button.
+// When the user is signed-out with no accounts on the device, this is nil
+// (in that case the button opens a dialog to add an account instead).
+// When the user is signed-out and has accounts on the device, this is the
+// default identity.
+// when the user is signed-in and not syncing, this is the signed-in identity
+// (not necessarily the default one).
+@property(nonatomic, strong, readonly) id<SystemIdentity> displayedIdentity;
 
 // Sign-in promo view state.
 @property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
