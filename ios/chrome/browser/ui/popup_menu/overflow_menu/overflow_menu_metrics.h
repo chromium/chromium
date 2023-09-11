@@ -40,6 +40,7 @@ enum class IOSOverflowMenuReorderingReason {
 // Enum for many histograms, corresponding to enums.xml's
 // IOSOverflowMenuDestination.
 // Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(destination)
 enum class IOSOverflowMenuDestination {
   kBookmarks = 0,
   kHistory = 1,
@@ -54,6 +55,7 @@ enum class IOSOverflowMenuDestination {
   kPriceNotifications = 10,
   kMaxValue = kPriceNotifications,
 };
+// LINT.ThenChange(overflow_menu_constants.h:destination)
 
 // Returns the correct destination histogram enum value for the given
 // `destination`.
@@ -63,6 +65,7 @@ IOSOverflowMenuDestination HistogramDestinationFromDestination(
 // Enum for many histograms, corresponding to enums.xml's
 // IOSOverflowMenuAction.
 // Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(actionType)
 enum class IOSOverflowMenuAction {
   kReload = 0,
   kNewTab = 1,
@@ -82,6 +85,7 @@ enum class IOSOverflowMenuAction {
   kEditActions = 15,
   kMaxValue = kEditActions,
 };
+// LINT.ThenChange(overflow_menu_constants.h:actionType)
 
 // Returns the correct action histogram enum value for the given `action_type`.
 IOSOverflowMenuAction HistogramActionFromActionType(

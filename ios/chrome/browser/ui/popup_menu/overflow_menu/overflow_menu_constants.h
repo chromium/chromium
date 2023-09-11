@@ -8,6 +8,7 @@
 #import <string>
 
 namespace overflow_menu {
+// LINT.IfChange(destination)
 enum class Destination {
   Bookmarks = 0,
   History = 1,
@@ -21,10 +22,12 @@ enum class Destination {
   SpotlightDebugger = 9,
   PriceNotifications = 10,
 };
+// LINT.ThenChange(overflow_menu_metrics.h:destination)
 
 // Represents a type of action (i.e. a row). For example, both the Stop and
 // Reload actions have an `actionType` of `Reload` as they would both take
 // that position in the UI.
+// LINT.IfChange(actionType)
 enum class ActionType {
   Reload = 0,
   NewTab,
@@ -43,6 +46,7 @@ enum class ActionType {
   ShareChrome,
   EditActions,
 };
+// LINT.ThenChange(overflow_menu_metrics.h:actionType)
 
 // Ingests `destination` string representation and returns corresponding
 // overflow_menu::Destination enum.
