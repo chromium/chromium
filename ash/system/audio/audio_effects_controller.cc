@@ -122,19 +122,12 @@ void AudioEffectsController::OnActiveUserPrefServiceChanged(
 
   noise_cancellation_supported_ =
       IsEffectSupported(VcEffectId::kNoiseCancellation);
-  const bool live_caption_supported =
-      IsEffectSupported(VcEffectId::kLiveCaption);
-
   if (noise_cancellation_supported_) {
     AddNoiseCancellationEffect();
   }
 
-  if (live_caption_supported) {
+  if (IsEffectSupported(VcEffectId::kLiveCaption)) {
     AddLiveCaptionEffect();
-  }
-
-  if (noise_cancellation_supported_ || live_caption_supported) {
-    effects_manager.RegisterDelegate(this);
   }
 }
 
@@ -195,6 +188,15 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
 
   effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kMicrophone);
   AddEffect(std::move(effect));
+
+  // Register this delegate if needed so that the effect is added to the UI.
+  // Note that other functions might register this delegate already and we need
+  // to avoid registering twice.
+  VideoConferenceTrayEffectsManager& effects_manager =
+      VideoConferenceTrayController::Get()->effects_manager();
+  if (!effects_manager.IsDelegateRegistered(this)) {
+    effects_manager.RegisterDelegate(this);
+  }
 }
 
 void AudioEffectsController::AddLiveCaptionEffect() {
@@ -220,6 +222,15 @@ void AudioEffectsController::AddLiveCaptionEffect() {
 
   effect->AddState(std::move(effect_state));
   AddEffect(std::move(effect));
+
+  // Register this delegate if needed so that the effect is added to the UI.
+  // Note that other functions might register this delegate already and we need
+  // to avoid registering twice.
+  VideoConferenceTrayEffectsManager& effects_manager =
+      VideoConferenceTrayController::Get()->effects_manager();
+  if (!effects_manager.IsDelegateRegistered(this)) {
+    effects_manager.RegisterDelegate(this);
+  }
 }
 
 }  // namespace ash
