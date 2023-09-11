@@ -4015,7 +4015,7 @@
   {
     "name": "enable-zram-writeback",
     "owners": ["bgeffon@google.com", "chromeos-memory@google.com"],
-    "expiry_milestone": 118
+    "expiry_milestone": 140
   },
   {
     "name": "enable-zstd-content-encoding",
