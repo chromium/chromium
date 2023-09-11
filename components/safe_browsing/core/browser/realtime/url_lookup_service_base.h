@@ -216,6 +216,13 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Called to post a task to store the response in |cache_manager|.
   void MayBeCacheRealTimeUrlVerdict(RTLookupResponse response);
 
+  // Maybe logs protego ping times to preferences. The base class provides this
+  // as an empty implementation that subclasses can implement. This method gets
+  // called as a part of `SendRequest()`. If |sent_with_token| is true, updates
+  // the last ping time of the with-token ping time. Otherwise, updates the last
+  // ping time of the without-token ping time.
+  virtual void MaybeLogLastProtegoPingTimeToPrefs(bool sent_with_token) {}
+
   // Get a resource request with URL, load_flags and method set.
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();
 

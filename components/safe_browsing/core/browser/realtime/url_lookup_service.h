@@ -108,6 +108,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool ShouldIncludeCredentials() const override;
   void OnResponseUnauthorized(const std::string& invalid_access_token) override;
   double GetMinAllowedTimestampForReferrerChains() const override;
+  void MaybeLogLastProtegoPingTimeToPrefs(bool sent_with_token) override;
 
   // Called when prefs that affect real time URL lookup are changed.
   void OnPrefChanged();

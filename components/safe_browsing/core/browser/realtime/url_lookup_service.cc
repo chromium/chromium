@@ -235,4 +235,16 @@ double RealTimeUrlLookupService::GetMinAllowedTimestampForReferrerChains()
   return url_lookup_enabled_timestamp_;
 }
 
+void RealTimeUrlLookupService::MaybeLogLastProtegoPingTimeToPrefs(
+    bool sent_with_token) {
+  // `pref_service_` can be null in tests.
+  if (pref_service_ && IsEnhancedProtectionEnabled(*pref_service_)) {
+    pref_service_->SetTime(
+        sent_with_token
+            ? prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime
+            : prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+        base::Time::Now());
+  }
+}
+
 }  // namespace safe_browsing
