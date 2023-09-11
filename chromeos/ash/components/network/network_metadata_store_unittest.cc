@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler_impl.h"
@@ -892,7 +893,7 @@ TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
   base::test::ScopedFeatureList enabled_feature_list;
   enabled_feature_list.InitAndEnableFeature(
       ash::features::kSuppressTextMessages);
-
+  base::HistogramTester histogram_tester;
   // Case: Suppression state should be Allow when user text message
   // suppression state has never been set.
   EXPECT_EQ(
@@ -906,6 +907,16 @@ TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
   EXPECT_EQ(
       UserTextMessageSuppressionState::kSuppress,
       metadata_store()->GetUserTextMessageSuppressionState(kCellularkGuid));
+  histogram_tester.ExpectBucketCount(
+      CellularNetworkMetricsLogger::
+          kUserAllowTextMessagesSuppressionTypeHistogram,
+      CellularNetworkMetricsLogger::UserTextMessageSuppressionState::
+          kTextMessagesSuppress,
+      1u);
+  histogram_tester.ExpectTotalCount(
+      CellularNetworkMetricsLogger::
+          kUserAllowTextMessagesSuppressionTypeHistogram,
+      1u);
 
   // Case: Suppression state should be Allow when the user text message
   // suppression state was set to Allow.
@@ -914,6 +925,16 @@ TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
   EXPECT_EQ(
       UserTextMessageSuppressionState::kAllow,
       metadata_store()->GetUserTextMessageSuppressionState(kCellularkGuid));
+  histogram_tester.ExpectBucketCount(
+      CellularNetworkMetricsLogger::
+          kUserAllowTextMessagesSuppressionTypeHistogram,
+      CellularNetworkMetricsLogger::UserTextMessageSuppressionState::
+          kTextMessagesAllow,
+      1u);
+  histogram_tester.ExpectTotalCount(
+      CellularNetworkMetricsLogger::
+          kUserAllowTextMessagesSuppressionTypeHistogram,
+      2u);
 }
 
 }  // namespace ash

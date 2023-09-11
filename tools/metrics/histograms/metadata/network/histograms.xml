@@ -100,6 +100,27 @@ chromium-metrics-reviews@google.com.
   <variant name="WireGuard" summary="WireGuard"/>
 </variants>
 
+<histogram
+    name="Network.Ash.Cellular.AllowTextMessages.Policy.SuppressionState"
+    enum="PolicyTextMessageSuppressionState" expires_after="2024-06-01">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the policy text message suppression state. This is emitted whenever
+    the text message suppression value is changed via policy.
+  </summary>
+</histogram>
+
+<histogram name="Network.Ash.Cellular.AllowTextMessages.User.SuppressionState"
+    enum="UserTextMessageSuppressionState" expires_after="2024-06-01">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the user text message suppression state. This is emitted whenever
+    the text message suppression value is changed by the user.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.ApnTypes"
     enum="ApnTypes" expires_after="2023-12-31">
   <owner>gordonseto@google.com</owner>

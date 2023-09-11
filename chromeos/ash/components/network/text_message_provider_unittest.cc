@@ -9,10 +9,12 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/network/fake_network_metadata_store.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_sms_handler.h"
@@ -68,6 +70,8 @@ class TextMessageProviderTest : public testing::Test {
                     &mock_managed_network_configuration_handler_);
     provider_->SetNetworkMetadataStore(&fake_network_metadata_store_);
     observation.Observe(provider_.get());
+
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
@@ -102,6 +106,28 @@ class TextMessageProviderTest : public testing::Test {
               test_observer_.GetLastTextMessage().timestamp.value());
   }
 
+  void AssertPolicyBuckets(size_t allow_count,
+                           size_t suppress_count,
+                           size_t unset_count) {
+    histogram_tester_->ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kPolicyAllowTextMessagesSuppressionTypeHistogram,
+        CellularNetworkMetricsLogger::PolicyTextMessageSuppressionState::kUnset,
+        unset_count);
+    histogram_tester_->ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kPolicyAllowTextMessagesSuppressionTypeHistogram,
+        CellularNetworkMetricsLogger::PolicyTextMessageSuppressionState::
+            kTextMessagesAllow,
+        allow_count);
+    histogram_tester_->ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kPolicyAllowTextMessagesSuppressionTypeHistogram,
+        CellularNetworkMetricsLogger::PolicyTextMessageSuppressionState::
+            kTextMessagesSuppress,
+        suppress_count);
+  }
+
   MockManagedNetworkConfigurationHandler*
   mock_managed_network_configuration_handler() {
     return &mock_managed_network_configuration_handler_;
@@ -119,6 +145,7 @@ class TextMessageProviderTest : public testing::Test {
   FakeNetworkMetadataStore fake_network_metadata_store_;
   std::unique_ptr<NetworkSmsHandler> network_sms_handler_;
   std::unique_ptr<TextMessageProvider> provider_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   base::ScopedObservation<TextMessageProvider, TextMessageProvider::Observer>
@@ -146,6 +173,8 @@ TEST_F(TextMessageProviderTest, MessageReceivedPolicyAllowUserSuppressTest) {
   SimulateMessageReceived(kTestGUID2, message_data_2);
   AssertTestObserverValue(
       /*expected_count=*/2, std::move(message_data_2));
+  AssertPolicyBuckets(/*allow_count=*/1u, /*suppress_count=*/0u,
+                      /*unset_count=*/0u);
 }
 
 TEST_F(TextMessageProviderTest, MessageReceivedPolicySuppressUserAllowTest) {
@@ -164,6 +193,8 @@ TEST_F(TextMessageProviderTest, MessageReceivedPolicySuppressUserAllowTest) {
   AssertTestObserverValue(/*expected_count=*/0, absl::nullopt);
   SimulateMessageReceived(kTestGUID2, {kNumber, kText2, kTimestamp});
   AssertTestObserverValue(/*expected_count=*/0, absl::nullopt);
+  AssertPolicyBuckets(/*allow_count=*/0u, /*suppress_count=*/1u,
+                      /*unset_count=*/0u);
 }
 
 TEST_F(TextMessageProviderTest, MessageReceivedPolicyAllowUserAllowTest) {
@@ -180,6 +211,8 @@ TEST_F(TextMessageProviderTest, MessageReceivedPolicyAllowUserAllowTest) {
   SimulateMessageReceived(kTestGUID1, message_data);
   AssertTestObserverValue(
       /*expected_count=*/1, std::move(message_data));
+  AssertPolicyBuckets(/*allow_count=*/1u, /*suppress_count=*/0u,
+                      /*unset_count=*/0u);
 }
 
 TEST_F(TextMessageProviderTest, MessageReceivedPolicySuppressUserSuppressTest) {
@@ -195,6 +228,8 @@ TEST_F(TextMessageProviderTest, MessageReceivedPolicySuppressUserSuppressTest) {
   SimulateMessageReceived(kTestGUID1, {kNumber, kText1, kTimestamp});
   AssertTestObserverValue(
       /*expected_count=*/0, absl::nullopt);
+  AssertPolicyBuckets(/*allow_count=*/0u, /*suppress_count=*/1u,
+                      /*unset_count=*/0u);
 }
 
 TEST_F(TextMessageProviderTest,
@@ -229,6 +264,42 @@ TEST_F(TextMessageProviderTest,
   AssertTestObserverValue(/*expected_count=*/1, absl::nullopt);
   SimulateMessageReceived(kTestGUID2, message_data_2);
   AssertTestObserverValue(/*expected_count=*/2, std::move(message_data_2));
+
+  AssertPolicyBuckets(/*allow_count=*/0u, /*suppress_count=*/0u,
+                      /*unset_count=*/1u);
+}
+
+TEST_F(TextMessageProviderTest, PolicyChangedMetricsTest) {
+  EXPECT_CALL(*mock_managed_network_configuration_handler(),
+              GetAllowTextMessages)
+      .WillOnce(::testing::Return(PolicyTextMessageSuppressionState::kUnset));
+  SimulatePolicyChanged();
+  AssertPolicyBuckets(/*allow_count=*/0u, /*suppress_count=*/0u,
+                      /*unset_count=*/1u);
+
+  EXPECT_CALL(*mock_managed_network_configuration_handler(),
+              GetAllowTextMessages)
+      .WillOnce(::testing::Return(PolicyTextMessageSuppressionState::kAllow));
+  SimulatePolicyChanged();
+  AssertPolicyBuckets(/*allow_count=*/1u, /*suppress_count=*/0u,
+                      /*unset_count=*/1u);
+
+  EXPECT_CALL(*mock_managed_network_configuration_handler(),
+              GetAllowTextMessages)
+      .WillOnce(
+          ::testing::Return(PolicyTextMessageSuppressionState::kSuppress));
+  SimulatePolicyChanged();
+  AssertPolicyBuckets(/*allow_count=*/1u, /*suppress_count=*/1u,
+                      /*unset_count=*/1u);
+
+  // Confirm that a second update with the same value isn't logged
+  EXPECT_CALL(*mock_managed_network_configuration_handler(),
+              GetAllowTextMessages)
+      .WillOnce(
+          ::testing::Return(PolicyTextMessageSuppressionState::kSuppress));
+  SimulatePolicyChanged();
+  AssertPolicyBuckets(/*allow_count=*/1u, /*suppress_count=*/1u,
+                      /*unset_count=*/1u);
 }
 
 }  // namespace ash

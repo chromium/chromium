@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/text_message_provider.h"
 
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_sms_handler.h"
@@ -44,13 +45,23 @@ void TextMessageProvider::MessageReceivedFromNetwork(
 }
 
 void TextMessageProvider::PoliciesChanged(const std::string& userhash) {
+  absl::optional<PolicyTextMessageSuppressionState> old_state =
+      policy_suppression_state_;
+
   policy_suppression_state_ =
       managed_network_configuration_handler_->GetAllowTextMessages();
+
+  // Only log metrics when the suppression state changes.
+  if (!old_state.has_value() || policy_suppression_state_ != old_state) {
+    CellularNetworkMetricsLogger::LogPolicyTextMessageSuppressionType(
+        *policy_suppression_state_);
+  }
 }
 
 bool TextMessageProvider::ShouldAllowTextMessages(const std::string& guid) {
-  if (policy_suppression_state_ != PolicyTextMessageSuppressionState::kUnset) {
-    return policy_suppression_state_ ==
+  if (policy_suppression_state_.has_value() &&
+      *policy_suppression_state_ != PolicyTextMessageSuppressionState::kUnset) {
+    return *policy_suppression_state_ ==
            PolicyTextMessageSuppressionState::kAllow;
   }
   return network_metadata_store_->GetUserTextMessageSuppressionState(guid) ==

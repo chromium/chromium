@@ -54,8 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageProvider
 
   bool ShouldAllowTextMessages(const std::string& guid);
 
-  PolicyTextMessageSuppressionState policy_suppression_state_ =
-      PolicyTextMessageSuppressionState::kUnset;
+  absl::optional<PolicyTextMessageSuppressionState> policy_suppression_state_;
 
   base::ScopedObservation<NetworkSmsHandler, NetworkSmsHandler::Observer>
       network_sms_handler_observer_{this};

@@ -10,6 +10,7 @@
 
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {
@@ -69,6 +70,23 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
     kMaxValue = kViaSmds,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class UserTextMessageSuppressionState {
+    kTextMessagesAllow = 0,
+    kTextMessagesSuppress = 1,
+    kMaxValue = kTextMessagesSuppress,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PolicyTextMessageSuppressionState {
+    kUnset = 0,
+    kTextMessagesAllow = 1,
+    kTextMessagesSuppress = 2,
+    kMaxValue = kTextMessagesSuppress,
+  };
+
   static constexpr char kCreateCustomApnResultHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.Result";
   static constexpr char kCreateCustomApnAuthenticationTypeHistogram[] =
@@ -115,6 +133,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   static constexpr char kESimPolicyInstallMethod[] =
       "Network.Ash.Cellular.ESim.PolicyInstall.Method";
 
+  static constexpr char kUserAllowTextMessagesSuppressionTypeHistogram[] =
+      "Network.Ash.Cellular.AllowTextMessages.User.SuppressionType";
+  static constexpr char kPolicyAllowTextMessagesSuppressionTypeHistogram[] =
+      "Network.Ash.Cellular.AllowTextMessages.Policy.SuppressionType";
+
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,
       NetworkMetadataStore* network_metadata_store,
@@ -144,6 +167,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   static void LogSmdsScanProfileCount(size_t count);
   static void LogESimUserInstallMethod(ESimUserInstallMethod type);
   static void LogESimPolicyInstallMethod(ESimPolicyInstallMethod type);
+
+  static void LogUserTextMessageSuppressionType(
+      ash::UserTextMessageSuppressionState state);
+  static void LogPolicyTextMessageSuppressionType(
+      ash::PolicyTextMessageSuppressionState state);
 
  private:
   // ConnectionInfoMetricsLogger::Observer:

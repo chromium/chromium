@@ -85980,6 +85980,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Load Error"/>
 </enum>
 
+<enum name="PolicyTextMessageSuppressionState">
+  <int value="0" label="Unset"/>
+  <int value="1" label="Allow"/>
+  <int value="2" label="Suppress"/>
+</enum>
+
 <enum name="PolicyValidationStatus">
   <obsolete>
     Removed in M91 since the data is not monitored.
@@ -109502,6 +109508,11 @@ Full version information for the fingerprint enum values:
   <int value="10" label="WiFi Credentials"/>
   <int value="11" label="Reading List"/>
   <int value="12" label="User Events"/>
+</enum>
+
+<enum name="UserTextMessageSuppressionState">
+  <int value="0" label="Allow"/>
+  <int value="1" label="Suppress"/>
 </enum>
 
 <enum name="UserType">

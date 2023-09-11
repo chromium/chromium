@@ -21,6 +21,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -608,6 +609,7 @@ void NetworkMetadataStore::SetUserTextMessageSuppressionState(
 
   SetPref(network_guid, kUserTextMessageSuppressionState,
           base::Value(base::to_underlying(state)));
+  CellularNetworkMetricsLogger::LogUserTextMessageSuppressionType(state);
 }
 
 UserTextMessageSuppressionState

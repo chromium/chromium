@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/network/metrics/connection_results.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
 
@@ -177,6 +178,41 @@ void CellularNetworkMetricsLogger::LogESimUserInstallMethod(
 void CellularNetworkMetricsLogger::LogESimPolicyInstallMethod(
     ESimPolicyInstallMethod method) {
   base::UmaHistogramEnumeration(kESimPolicyInstallMethod, method);
+}
+
+// static
+void CellularNetworkMetricsLogger::LogUserTextMessageSuppressionType(
+    ash::UserTextMessageSuppressionState state) {
+  UserTextMessageSuppressionState histogram_type;
+  switch (state) {
+    case ash::UserTextMessageSuppressionState::kAllow:
+      histogram_type = UserTextMessageSuppressionState::kTextMessagesAllow;
+      break;
+    case ash::UserTextMessageSuppressionState::kSuppress:
+      histogram_type = UserTextMessageSuppressionState::kTextMessagesSuppress;
+      break;
+  }
+  base::UmaHistogramEnumeration(kUserAllowTextMessagesSuppressionTypeHistogram,
+                                histogram_type);
+}
+
+// static
+void CellularNetworkMetricsLogger::LogPolicyTextMessageSuppressionType(
+    ash::PolicyTextMessageSuppressionState state) {
+  PolicyTextMessageSuppressionState histogram_type;
+  switch (state) {
+    case ash::PolicyTextMessageSuppressionState::kAllow:
+      histogram_type = PolicyTextMessageSuppressionState::kTextMessagesAllow;
+      break;
+    case ash::PolicyTextMessageSuppressionState::kSuppress:
+      histogram_type = PolicyTextMessageSuppressionState::kTextMessagesSuppress;
+      break;
+    case ash::PolicyTextMessageSuppressionState::kUnset:
+      histogram_type = PolicyTextMessageSuppressionState::kUnset;
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      kPolicyAllowTextMessagesSuppressionTypeHistogram, histogram_type);
 }
 
 void CellularNetworkMetricsLogger::OnConnectionResult(
