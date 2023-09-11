@@ -98,9 +98,11 @@ PointerEventManager::PointerEventManager(LocalFrame& frame,
 }
 
 void PointerEventManager::Clear() {
-  for (auto& entry : prevent_mouse_event_for_pointer_type_)
+  for (auto& entry : prevent_mouse_event_for_pointer_type_) {
     entry = false;
+  }
   touch_event_manager_->Clear();
+  mouse_event_manager_->Clear();
   non_hovering_pointers_canceled_ = false;
   pointer_event_factory_.Clear();
   touch_ids_for_canceled_pointerdowns_.clear();
@@ -110,6 +112,10 @@ void PointerEventManager::Clear() {
   dispatching_pointer_id_ = 0;
   resize_scrollable_area_.Clear();
   offset_from_resize_corner_ = {};
+  skip_touch_filter_discrete_ = false;
+  skip_touch_filter_all_ = false;
+  discarded_event_.target = kInvalidDOMNodeId;
+  discarded_event_.time = base::TimeTicks();
 }
 
 void PointerEventManager::Trace(Visitor* visitor) const {

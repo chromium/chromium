@@ -264,7 +264,7 @@ class CORE_EXPORT PointerEventManager final
 
   // Set upon scrolling starts when sending a pointercancel, prevents PE
   // dispatches for non-hovering pointers until all of them become inactive.
-  bool non_hovering_pointers_canceled_;
+  bool non_hovering_pointers_canceled_ = false;
 
   Deque<uint32_t> touch_ids_for_canceled_pointerdowns_;
 
@@ -283,7 +283,7 @@ class CORE_EXPORT PointerEventManager final
 
   // The pointerId of the PointerEvent currently being dispatched within this
   // frame or 0 if none.
-  PointerId dispatching_pointer_id_;
+  PointerId dispatching_pointer_id_ = 0;
 
   // These flags are set for the SkipTouchEventFilter experiment. The
   // experiment either skips filtering discrete (touch start/end) events to the

@@ -229,7 +229,7 @@ class CORE_EXPORT MouseEventManager final
 
   Member<Node> mouse_press_node_;
 
-  int click_count_;
+  int click_count_ = 0;
   Member<Element> click_element_;
 
   gfx::Point mouse_down_pos_;
