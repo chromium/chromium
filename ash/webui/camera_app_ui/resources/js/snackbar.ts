@@ -13,7 +13,8 @@ import * as loadTimeData from './models/load_time_data.js';
  * @param label The label of the message to show.
  * @param substitutions The substitutions for the label.
  */
-export function show(label: I18nString, ...substitutions: string[]): void {
+export async function show(
+    label: I18nString, ...substitutions: string[]): Promise<void> {
   // TTS speaks changes of on-screen aria-live elements. Force content changes
   // and clear content once inactive to avoid stale content being read out.
   const message = loadTimeData.getI18nMessage(label, ...substitutions);
@@ -22,5 +23,5 @@ export function show(label: I18nString, ...substitutions: string[]): void {
     element.textContent = '';  // Force reiterate the same message for a11y.
     element.textContent = message;
   }
-  animate.play(element, changeElement);
+  await animate.play(element, changeElement);
 }
