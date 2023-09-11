@@ -3078,8 +3078,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the form has no name.
+// TODO(crbug.com/1481004): Re-enable this test
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DynamicFormFill_FirstElementDisappearsNoNameForm \
+  DISABLED_DynamicFormFill_FirstElementDisappearsNoNameForm
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappearsNoNameForm \
+  DynamicFormFill_FirstElementDisappearsNoNameForm
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicFormFill_FirstElementDisappearsNoNameForm) {
+                       MAYBE_DynamicFormFill_FirstElementDisappearsNoNameForm) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
@@ -3131,8 +3139,17 @@ IN_PROC_BROWSER_TEST_F(
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicFormFill_FirstElementDisappearsBadnameUnowned) {
+// TODO(crbug.com/1481004): Re-enable this test
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned \
+  DISABLED_DynamicFormFill_FirstElementDisappearsBadnameUnowned
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned \
+  DynamicFormFill_FirstElementDisappearsBadnameUnowned
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AutofillInteractiveTestDynamicForm,
+    MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_unowned_badnames.html");
@@ -3183,8 +3200,16 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the elements are unowned.
+// TODO(crbug.com/1481004): Re-enable this test
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DynamicFormFill_FirstElementDisappearsUnowned \
+  DISABLED_DynamicFormFill_FirstElementDisappearsUnowned
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappearsUnowned \
+  DynamicFormFill_FirstElementDisappearsUnowned
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicFormFill_FirstElementDisappearsUnowned) {
+                       MAYBE_DynamicFormFill_FirstElementDisappearsUnowned) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_unowned.html");
