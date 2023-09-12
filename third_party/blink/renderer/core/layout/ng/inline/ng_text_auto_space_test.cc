@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/inline/text_auto_space.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_auto_space.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -17,9 +17,10 @@ namespace {
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 
-class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
-public:
-  explicit TextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
+class NGTextAutoSpaceTest : public RenderingTest,
+                            ScopedCSSTextAutoSpaceForTest {
+ public:
+  explicit NGTextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
 
   LayoutBlockFlow* PreparePageLayoutBlock(String html,
                                           String container_css = String()) {
@@ -43,52 +44,14 @@ public:
         PreparePageLayoutBlock(html, container_css);
     NGInlineNodeData* node_data = container->GetNGInlineNodeData();
     Vector<wtf_size_t> offsets;
-    TextAutoSpace auto_space(*node_data);
+    NGTextAutoSpace auto_space(*node_data);
     auto_space.ApplyIfNeeded(*node_data, &offsets);
     return offsets;
   }
 };
 
-TEST_F(TextAutoSpaceTest, Check8Bit) {
-  for (UChar32 ch = 0; ch <= std::numeric_limits<uint8_t>::max(); ++ch) {
-    EXPECT_NE(TextAutoSpace::GetType(ch), TextAutoSpace::kIdeograph);
-  }
-}
-
-struct TypeData {
-  UChar32 ch;
-  TextAutoSpace::CharType type;
-} g_type_data[] = {
-    {' ', TextAutoSpace::kOther},
-    {'0', TextAutoSpace::kLetterOrNumeral},
-    {'A', TextAutoSpace::kLetterOrNumeral},
-    {u'\u05D0', TextAutoSpace::kLetterOrNumeral},  // Hebrew Letter Alef
-    {u'\u0E50', TextAutoSpace::kLetterOrNumeral},  // Thai Digit Zero
-    {u'\u3041', TextAutoSpace::kIdeograph},        // Hiragana Letter Small A
-    {u'\u30FB', TextAutoSpace::kOther},            // Katakana Middle Dot
-    {u'\uFF21', TextAutoSpace::kOther},  // Fullwidth Latin Capital Letter A
-    {U'\U00017000', TextAutoSpace::kLetterOrNumeral},  // Tangut Ideograph
-    {U'\U00031350', TextAutoSpace::kIdeograph},  // CJK Unified Ideographs H
-};
-
-std::ostream& operator<<(std::ostream& ostream, const TypeData& type_data) {
-  return ostream << "U+" << std::hex << type_data.ch;
-}
-
-class TextAutoSpaceTypeTest : public testing::Test,
-                              public testing::WithParamInterface<TypeData> {};
-
-INSTANTIATE_TEST_SUITE_P(TextAutoSpaceTest,
-                         TextAutoSpaceTypeTest,
-                         testing::ValuesIn(g_type_data));
-
-TEST_P(TextAutoSpaceTypeTest, Char) {
-  const auto& data = GetParam();
-  EXPECT_EQ(TextAutoSpace::GetType(data.ch), data.type);
-}
-
 // Test the optimizations in `ApplyIfNeeded` don't affect results.
-TEST_F(TextAutoSpaceTest, NonHanIdeograph) {
+TEST_F(NGTextAutoSpaceTest, NonHanIdeograph) {
   // For boundary-check, extend the range by 1 to lower and to upper.
   for (UChar ch = TextAutoSpace::kNonHanIdeographMin - 1;
        ch <= TextAutoSpace::kNonHanIdeographMax + 1; ++ch) {
@@ -108,7 +71,7 @@ TEST_F(TextAutoSpaceTest, NonHanIdeograph) {
 }
 
 // End to end test for text-autospace
-TEST_F(TextAutoSpaceTest, InsertSpacing) {
+TEST_F(NGTextAutoSpaceTest, InsertSpacing) {
   LoadAhem();
   String test_string = u"AAAあああa";
   LayoutBlockFlow* container = PreparePageLayoutBlock(test_string);
@@ -161,7 +124,7 @@ struct HtmlData {
      {},
      "writing-mode: vertical-rl"},
 };
-class HtmlTest : public TextAutoSpaceTest,
+class HtmlTest : public NGTextAutoSpaceTest,
                  public testing::WithParamInterface<HtmlData> {};
 INSTANTIATE_TEST_SUITE_P(TextAutoSpaceTest,
                          HtmlTest,

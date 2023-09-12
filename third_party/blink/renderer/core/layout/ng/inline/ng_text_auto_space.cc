@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/inline/text_auto_space.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_auto_space.h"
 
 #include <unicode/uchar.h>
 #include <unicode/uscript.h>
@@ -110,20 +110,9 @@ class SpacingApplier {
   Vector<OffsetWithSpacing, 16> offsets_with_spacing_;
 };
 
-// https://drafts.csswg.org/css-text-4/#inter-script-spacing
-float GetSpacingWidth(const ComputedStyle* style) {
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return style->ComputedFontSize() / 8;
-  }
-  return font_data->GetFontMetrics().IdeographicFullWidth().value_or(
-             style->ComputedFontSize()) /
-         8;
-}
-
 }  // namespace
 
-void TextAutoSpace::Initialize(const NGInlineItemsData& data) {
+void NGTextAutoSpace::Initialize(const NGInlineItemsData& data) {
   const HeapVector<NGInlineItem>& items = data.items;
   if (UNLIKELY(items.empty())) {
     return;
@@ -155,8 +144,8 @@ void TextAutoSpace::Initialize(const NGInlineItemsData& data) {
   }
 }
 
-void TextAutoSpace::Apply(NGInlineItemsData& data,
-                          Vector<wtf_size_t>* offsets_out) {
+void NGTextAutoSpace::Apply(NGInlineItemsData& data,
+                            Vector<wtf_size_t>* offsets_out) {
   const String& text = data.text_content;
   DCHECK(!text.Is8Bit());
   DCHECK_EQ(text.length(), ranges_.back().end);
@@ -247,7 +236,7 @@ void TextAutoSpace::Apply(NGInlineItemsData& data,
 
     if (!offsets_out) {
       DCHECK(item.TextShapeResult());
-      float spacing = GetSpacingWidth(style);
+      float spacing = GetSpacingWidth(style->GetFont());
       applier.SetSpacing(offsets, spacing, &item);
     } else {
       offsets_out->AppendVector(offsets);
@@ -256,67 +245,6 @@ void TextAutoSpace::Apply(NGInlineItemsData& data,
   }
   // Apply the pending spacing for the last item if needed.
   applier.ApplyIfNeeded();
-}
-
-// static
-TextAutoSpace::CharType TextAutoSpace::GetTypeAndNext(const String& text,
-                                                      wtf_size_t& offset) {
-  CHECK(!text.Is8Bit());
-  UChar32 ch;
-  U16_NEXT(text.Characters16(), offset, text.length(), ch);
-  return GetType(ch);
-}
-
-// static
-TextAutoSpace::CharType TextAutoSpace::GetPrevType(const String& text,
-                                                   wtf_size_t offset) {
-  DCHECK_GT(offset, 0u);
-  CHECK(!text.Is8Bit());
-  UChar32 last_ch;
-  U16_PREV(text.Characters16(), 0, offset, last_ch);
-  return GetType(last_ch);
-}
-
-// static
-TextAutoSpace::CharType TextAutoSpace::GetType(UChar32 ch) {
-  // This logic is based on:
-  // https://drafts.csswg.org/css-text-4/#text-spacing-classes
-  const uint32_t gc_mask = U_GET_GC_MASK(ch);
-  static_assert(kNonHanIdeographMin <= 0x30FF && 0x30FF <= kNonHanIdeographMax);
-  if (ch >= kNonHanIdeographMin && ch <= 0x30FF && !(gc_mask & U_GC_P_MASK)) {
-    return kIdeograph;
-  }
-  static_assert(kNonHanIdeographMin <= 0x31C0 && 0x31C0 <= kNonHanIdeographMax);
-  if (ch >= 0x31C0 && ch <= kNonHanIdeographMax) {
-    return kIdeograph;
-  }
-  UErrorCode err = U_ZERO_ERROR;
-  const UScriptCode script = uscript_getScript(ch, &err);
-  DCHECK(U_SUCCESS(err));
-  if (U_SUCCESS(err) && script == USCRIPT_HAN) {
-    return kIdeograph;
-  }
-
-  if (gc_mask & (U_GC_L_MASK | U_GC_M_MASK | U_GC_ND_MASK)) {
-    const UEastAsianWidth eaw = static_cast<UEastAsianWidth>(
-        u_getIntPropertyValue(ch, UCHAR_EAST_ASIAN_WIDTH));
-    if (eaw != UEastAsianWidth::U_EA_FULLWIDTH) {
-      return kLetterOrNumeral;
-    }
-  }
-  return kOther;
-}
-
-std::ostream& operator<<(std::ostream& ostream, TextAutoSpace::CharType type) {
-  switch (type) {
-    case TextAutoSpace::kIdeograph:
-      return ostream << "kIdeograph";
-    case TextAutoSpace::kLetterOrNumeral:
-      return ostream << "kLetterOrNumeral";
-    case TextAutoSpace::kOther:
-      return ostream << "kOther";
-  }
-  return ostream << static_cast<int>(type);
 }
 
 }  // namespace blink
