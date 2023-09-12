@@ -4,16 +4,27 @@
 
 #include "chromeos/ash/components/language_packs/language_packs_util.h"
 
+#include <string>
+
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
+
+namespace ash::language_packs {
 
 using ::dlcservice::DlcState;
 using ::dlcservice::DlcState_State_INSTALLED;
 using ::dlcservice::DlcState_State_INSTALLING;
 using ::dlcservice::DlcState_State_NOT_INSTALLED;
-
-namespace ash::language_packs {
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
 
 TEST(LanguagePacksUtil, ConvertDlcState_EmptyInput) {
   DlcState input;
@@ -160,6 +171,82 @@ TEST(LanguagePacksUtil, ResolveLocaleTts) {
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "fil-ph"), "fil");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "it-it"), "it");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "ja-jp"), "ja");
+}
+
+TEST(LanguagePacksUtil, MapThenFilterStringsNoInput) {
+  EXPECT_THAT(
+      MapThenFilterStrings(
+          {}, base::BindRepeating(
+                  [](const std::string&) -> absl::optional<std::string> {
+                    return "ignored";
+                  })),
+      IsEmpty());
+}
+
+TEST(LanguagePacksUtil, MapThenFilterStringsAllToNullopt) {
+  EXPECT_THAT(MapThenFilterStrings(
+                  {{"en", "de"}},
+                  base::BindRepeating(
+                      [](const std::string&) -> absl::optional<std::string> {
+                        return absl::nullopt;
+                      })),
+              IsEmpty());
+}
+
+TEST(LanguagePacksUtil, MapThenFilterStringsAllToUniqueStrings) {
+  EXPECT_THAT(
+      MapThenFilterStrings(
+          {{"en", "de"}},
+          base::BindRepeating(
+              [](const std::string& input) -> absl::optional<std::string> {
+                return input;
+              })),
+      UnorderedElementsAre("en", "de"));
+}
+
+TEST(LanguagePacksUtil, MapThenFilterStringsRepeatedString) {
+  EXPECT_THAT(
+      MapThenFilterStrings(
+          {{"repeat", "unique", "repeat"}},
+          base::BindRepeating(
+              [](const std::string& input) -> absl::optional<std::string> {
+                return input;
+              })),
+      UnorderedElementsAre("repeat", "unique"));
+}
+
+TEST(LanguagePacksUtil, MapThenFilterStringsSomeNullopt) {
+  EXPECT_THAT(
+      MapThenFilterStrings(
+          {{"pass_1", "fail", "pass_2"}},
+          base::BindRepeating(
+              [](const std::string& input) -> absl::optional<std::string> {
+                return (input == "fail") ? absl::nullopt
+                                         : absl::optional<std::string>(input);
+              })),
+      UnorderedElementsAre("pass_1", "pass_2"));
+}
+
+TEST(LanguagePacksUtil, MapThenFilterStringsDeduplicateOutput) {
+  EXPECT_THAT(
+      MapThenFilterStrings(
+          {{"a", "dedup-1", "dedup-2"}},
+          base::BindRepeating(
+              [](const std::string& input) -> absl::optional<std::string> {
+                return (input.length() < 2) ? input : "dedup";
+              })),
+      UnorderedElementsAre("a", "dedup"));
+}
+
+TEST(LanguagePacksUtil, MapThenFilterStringsDisjointSet) {
+  EXPECT_THAT(
+      MapThenFilterStrings(
+          {{"a", "b", "d"}},
+          base::BindRepeating(
+              [](const std::string& input) -> absl::optional<std::string> {
+                return "something else";
+              })),
+      UnorderedElementsAre("something else"));
 }
 
 }  // namespace ash::language_packs
