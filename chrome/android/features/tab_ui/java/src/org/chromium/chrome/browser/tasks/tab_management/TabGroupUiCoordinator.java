@@ -15,9 +15,9 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -74,7 +74,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final TabContentManager mTabContentManager;
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
-    private OneshotSupplierImpl<TabGridDialogMediator.DialogController>
+    private LazyOneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
     private TabListCoordinator mTabStripCoordinator;
     private TabGroupUiMediator mMediator;
@@ -155,19 +155,12 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             // TODO(crbug.com/972217): find a way to enable interactions between grid tab switcher
             //  and the dialog here.
             if (mScrimCoordinator != null) {
-                mTabGridDialogControllerSupplier =
-                        new OneshotSupplierImpl<>() {
-                            @Override
-                            public TabGridDialogMediator.DialogController get() {
-                                initTabGridDialogCoordinator();
-                                return mTabGridDialogCoordinator.getDialogController();
-                            }
-
-                            @Override
-                            public boolean hasValue() {
-                                return mTabGridDialogCoordinator != null;
-                            }
-                        };
+                mTabGridDialogControllerSupplier = new LazyOneshotSupplier<>() {
+                    @Override
+                    public void doSet() {
+                        initTabGridDialogCoordinator();
+                    }
+                };
             } else {
                 mTabGridDialogControllerSupplier = null;
             }
