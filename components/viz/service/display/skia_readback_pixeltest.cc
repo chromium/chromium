@@ -79,7 +79,8 @@ SharedQuadState* CreateSharedQuadState(AggregatedRenderPass* render_pass,
                        gfx::MaskFilterInfo(), /*clip_rect=*/absl::nullopt,
                        /*are_contents_opaque=*/false, /*opacity=*/1.0f,
                        SkBlendMode::kSrcOver,
-                       /*sorting_context_id=*/0);
+                       /*sorting_context=*/0,
+                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   return shared_state;
 }
 

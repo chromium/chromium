@@ -137,7 +137,8 @@ CompositorFrame FuzzerBrowserProcess::BuildBrowserUICompositorFrame(
                        /*mask_filter_info=*/gfx::MaskFilterInfo(),
                        /*clip_rect=*/absl::nullopt,
                        /*are_contents_opaque=*/false, /*opacity=*/1,
-                       SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+                       SkBlendMode::kSrcOver, /*sorting_context_id=*/0,
+                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
   surface_quad->SetNew(renderer_sqs, gfx::Rect(kRendererFrameSize),
                        gfx::Rect(kRendererFrameSize),
@@ -150,7 +151,7 @@ CompositorFrame FuzzerBrowserProcess::BuildBrowserUICompositorFrame(
       gfx::Transform(), gfx::Rect(kTopBarSize), gfx::Rect(kTopBarSize),
       /*mask_filter_info=*/gfx::MaskFilterInfo(), /*clip_rect=*/absl::nullopt,
       /*are_contents_opaque=*/false, /*opacity=*/1, SkBlendMode::kSrcOver,
-      /*sorting_context_id=*/0);
+      /*sorting_context_id=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   color_quad->SetNew(toolbar_sqs, gfx::Rect(kTopBarSize),
                      gfx::Rect(kTopBarSize), SkColors::kLtGray,

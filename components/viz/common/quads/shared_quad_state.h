@@ -37,8 +37,6 @@ class VIZ_COMMON_EXPORT SharedQuadState {
 
   void SetAll(const SharedQuadState& other);
 
-  // TODO(kylechar): Remove default value for `layer_id` after updating all
-  // callers.
   void SetAll(const gfx::Transform& transform,
               const gfx::Rect& layer_rect,
               const gfx::Rect& visible_layer_rect,
@@ -48,7 +46,8 @@ class VIZ_COMMON_EXPORT SharedQuadState {
               float opacity_f,
               SkBlendMode blend,
               int sorting_context,
-              uint32_t layer_id = 0);
+              uint32_t layer_id,
+              bool fast_rounded_corner);
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
   // Transforms quad rects into the target content space.

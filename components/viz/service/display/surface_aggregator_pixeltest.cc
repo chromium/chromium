@@ -80,8 +80,10 @@ SharedQuadState* CreateAndAppendTestSharedQuadState(
   const SkBlendMode blend_mode = SkBlendMode::kSrcOver;
   auto* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(transform, layer_rect, visible_layer_rect,
-                       mask_filter_info, absl::nullopt, are_contents_opaque,
-                       opacity, blend_mode, 0);
+                       mask_filter_info, /*clip=*/absl::nullopt,
+                       are_contents_opaque, opacity, blend_mode,
+                       /*sorting_context=*/0,
+                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   return shared_state;
 }
 

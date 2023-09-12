@@ -132,8 +132,9 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
         transform, gfx::Rect(0, 0, 640, 480), gfx::Rect(10, 10, 600, 400),
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f),
                             gradient_mask),
-        gfx::Rect(5, 20, 1000, 200), false, 0.5f, SkBlendMode::kDstOver, 101);
-    sqs1->is_fast_rounded_corner = true;
+        gfx::Rect(5, 20, 1000, 200), /*contents_opaque=*/false,
+        /*opacity_f=*/0.5f, SkBlendMode::kDstOver, /*sorting_context=*/101,
+        /*layer_id=*/0u, /*fast_rounded_corner=*/true);
   }
   base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);

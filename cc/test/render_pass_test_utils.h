@@ -74,7 +74,9 @@ inline viz::SolidColorDrawQuad* AddTransparentQuad(RenderPassType* pass,
                                                    float opacity) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                       absl::nullopt, false, opacity, SkBlendMode::kSrcOver, 0);
+                       /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+                       opacity, SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* quad =
       pass->template CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_state, rect, rect, color, false);

@@ -283,7 +283,8 @@ void ViewTreeHostRootViewFrameFactory::AppendQuad(
                      /*clip=*/absl::nullopt, /*contents_opaque=*/false,
                      /*opacity_f=*/1.f,
                      /*blend=*/SkBlendMode::kSrcOver,
-                     /*sorting_context=*/0);
+                     /*sorting_context=*/0,
+                     /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
   gfx::Rect quad_rect = gfx::Rect(buffer_size);
 

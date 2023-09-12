@@ -100,13 +100,14 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
     viz::SharedQuadState* quad_state =
         render_pass->CreateAndAppendSharedQuadState();
     quad_state->SetAll(transform,
-                       /*quad_layer_rect=*/child_bounds,
+                       /*layer_rect=*/child_bounds,
                        /*visible_layer_rect=*/child_bounds,
-                       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-                       /*clip_rect=*/absl::nullopt,
-                       /*are_contents_opaque=*/false, /*opacity=*/1.f,
-                       /*blend_mode=*/SkBlendMode::kSrcOver,
-                       /*sorting_context_id=*/0);
+                       /*filter_info=*/gfx::MaskFilterInfo(),
+                       /*clip=*/absl::nullopt,
+                       /*contents_opaque=*/false, /*opacity_f=*/1.f,
+                       /*blend=*/SkBlendMode::kSrcOver,
+                       /*sorting_context=*/0,
+                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
     viz::SurfaceDrawQuad* embed =
         render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
@@ -131,7 +132,9 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
                      /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
                      /*opacity=*/1.f,
                      /*blend_mode=*/SkBlendMode::kSrcOver,
-                     /*sorting_context_id=*/0);
+                     /*sorting_context=*/0,
+                     /*layer_id=*/0u,
+                     /*fast_rounded_corner=*/false);
 
   viz::SolidColorDrawQuad* color_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();

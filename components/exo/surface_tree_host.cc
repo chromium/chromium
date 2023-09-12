@@ -388,7 +388,8 @@ void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
                      /*filter_info=*/gfx::MaskFilterInfo(),
                      /*clip=*/absl::nullopt,
                      /*contents_opaque=*/true, /*opacity_f=*/1.f,
-                     /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0);
+                     /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                     /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
   viz::SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();

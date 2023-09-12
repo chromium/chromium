@@ -1828,8 +1828,8 @@ bool SharedQuadStateFromDict(const base::Value::Dict& dict,
   sqs->SetAll(t_quad_to_target_transform, t_quad_layer_rect,
               t_visible_quad_layer_rect, t_mask_filter_info, clip_rect_opt,
               are_contents_opaque.value(), static_cast<float>(opacity.value()),
-              t_blend_mode, sorting_context_id.value());
-  sqs->is_fast_rounded_corner = is_fast_rounded_corner.value();
+              t_blend_mode, sorting_context_id.value(), /*layer_id=*/0u,
+              is_fast_rounded_corner.value());
   return true;
 }
 

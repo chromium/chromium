@@ -53,8 +53,10 @@ void DamageFrameAnnotator::AnnotateRootRenderPass(
     SharedQuadState* new_sqs = render_pass->shared_quad_state_list
                                    .AllocateAndConstruct<SharedQuadState>();
     new_sqs->SetAll(annotation.transform, output_rect, output_rect,
-                    gfx::MaskFilterInfo(), output_rect, false, 1.f,
-                    SkBlendMode::kSrcOver, 0);
+                    gfx::MaskFilterInfo(), output_rect,
+                    /*contents_opaque=*/false, /*opacity_f=*/1.f,
+                    SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                    /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
     DebugBorderDrawQuad* new_quad =
         static_cast<DebugBorderDrawQuad*>(*quad_iter);

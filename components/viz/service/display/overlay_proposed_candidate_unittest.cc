@@ -136,7 +136,8 @@ class OverlayProposedCandidateTest
         /*clip=*/absl::nullopt,
         /*are contents opaque=*/true,
         /*opacity_f=*/1.f,
-        /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0);
+        /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+        /*fast_rounded_corner=*/false);
 
     TextureDrawQuad* texture_quad =
         render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();

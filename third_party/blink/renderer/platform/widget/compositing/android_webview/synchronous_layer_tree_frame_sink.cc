@@ -350,9 +350,10 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
         embed_render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
     shared_quad_state->SetAll(
         child_transform, gfx::Rect(child_size), gfx::Rect(child_size),
-        gfx::MaskFilterInfo(), absl::nullopt /* clip_rect */,
-        are_contents_opaque /* are_contents_opaque */, 1.f /* opacity */,
-        SkBlendMode::kSrcOver, 0 /* sorting_context_id */);
+        gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+        /*contents_opaque=*/are_contents_opaque, /*opacity_f=*/1.f,
+        SkBlendMode::kSrcOver, /*sorting_context=*/0,
+        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     surface_quad->SetNew(
         shared_quad_state, gfx::Rect(child_size), gfx::Rect(child_size),
         viz::SurfaceRange(

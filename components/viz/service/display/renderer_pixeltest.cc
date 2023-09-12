@@ -177,7 +177,8 @@ SharedQuadState* CreateTestSharedQuadState(
   shared_state->SetAll(quad_to_target_transform, layer_rect, visible_layer_rect,
                        mask_filter_info, /**clip_rect=*/absl::nullopt,
                        are_contents_opaque, opacity, blend_mode,
-                       sorting_context_id);
+                       sorting_context_id,
+                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   return shared_state;
 }
 
@@ -196,7 +197,8 @@ SharedQuadState* CreateTestSharedQuadStateClipped(
   shared_state->SetAll(quad_to_target_transform, layer_rect, visible_layer_rect,
                        /*mask_filter_info=*/gfx::MaskFilterInfo(), clip_rect,
                        are_contents_opaque, opacity, blend_mode,
-                       sorting_context_id);
+                       sorting_context_id, /*layer_id=*/0u,
+                       /*fast_rounded_corner=*/false);
 
   return shared_state;
 }

@@ -135,7 +135,8 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
         /*clip=*/absl::nullopt,
         /*contents_opaque=*/true,
         /*opacity_f=*/1.f,
-        /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0);
+        /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+        /*fast_rounded_corner=*/false);
 
     for (const auto& tile_rect : tile_rects) {
       SolidColorDrawQuad* solid_quad =
@@ -201,7 +202,8 @@ SolidColorDrawQuad* AddQuad(const gfx::Rect quad_rect,
       /*filter_info=*/gfx::MaskFilterInfo(), clip_rect,
       /*are contents opaque=*/true,
       /*opacity_f=*/1.f,
-      /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0);
+      /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+      /*fast_rounded_corner=*/false);
 
   SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -232,7 +234,8 @@ AggregatedRenderPassDrawQuad* AddRenderPassQuad(
       /*clip=*/clip_rect,
       /*are contents opaque=*/true,
       /*opacity_f=*/1.f,
-      /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0);
+      /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+      /*fast_rounded_corner=*/false);
 
   auto* rpdq =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();

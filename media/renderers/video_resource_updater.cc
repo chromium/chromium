@@ -698,7 +698,8 @@ void VideoResourceUpdater::AppendQuads(
       render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(
       transform, quad_rect, visible_quad_rect, mask_filter_info, clip_rect,
-      contents_opaque, draw_opacity, SkBlendMode::kSrcOver, sorting_context_id);
+      contents_opaque, draw_opacity, SkBlendMode::kSrcOver, sorting_context_id,
+      /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
   bool needs_blending = !contents_opaque;
 

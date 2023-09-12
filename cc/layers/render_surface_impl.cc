@@ -457,11 +457,10 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   if (draw_properties_.is_clipped) {
     clip_rect = draw_properties_.clip_rect;
   }
-  shared_quad_state->SetAll(draw_transform(), content_rect(), content_rect(),
-                            mask_filter_info(), clip_rect, contents_opaque,
-                            draw_properties_.draw_opacity, BlendMode(),
-                            sorting_context_id);
-  shared_quad_state->is_fast_rounded_corner = is_fast_rounded_corner();
+  shared_quad_state->SetAll(
+      draw_transform(), content_rect(), content_rect(), mask_filter_info(),
+      clip_rect, contents_opaque, draw_properties_.draw_opacity, BlendMode(),
+      sorting_context_id, /*layer_id=*/0u, is_fast_rounded_corner());
 
   if (layer_tree_impl_->debug_state().show_debug_borders.test(
           DebugBorderType::RENDERPASS)) {

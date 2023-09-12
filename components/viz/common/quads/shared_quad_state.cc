@@ -52,6 +52,7 @@ void SharedQuadState::SetAll(const SharedQuadState& other) {
   sorting_context_id = other.sorting_context_id;
   layer_id = other.layer_id;
   layer_namespace_id = other.layer_namespace_id;
+  is_fast_rounded_corner = other.is_fast_rounded_corner;
 }
 
 void SharedQuadState::SetAll(const gfx::Transform& transform,
@@ -63,7 +64,8 @@ void SharedQuadState::SetAll(const gfx::Transform& transform,
                              float opacity_f,
                              SkBlendMode blend,
                              int sorting_context,
-                             uint32_t layer) {
+                             uint32_t layer,
+                             bool fast_rounded_corner) {
   quad_to_target_transform = transform;
   quad_layer_rect = layer_rect;
   visible_quad_layer_rect = visible_layer_rect;
@@ -74,6 +76,7 @@ void SharedQuadState::SetAll(const gfx::Transform& transform,
   blend_mode = blend;
   sorting_context_id = sorting_context;
   layer_id = layer;
+  is_fast_rounded_corner = fast_rounded_corner;
 }
 
 void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {

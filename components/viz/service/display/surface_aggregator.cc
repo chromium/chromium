@@ -241,10 +241,8 @@ SharedQuadState* CopyAndScaleSharedQuadState(
       mask_filter_info_ext.mask_filter_info, new_clip_rect,
       source_sqs->are_contents_opaque, source_sqs->opacity,
       source_sqs->blend_mode, source_sqs->sorting_context_id,
-      source_sqs->layer_id);
+      source_sqs->layer_id, mask_filter_info_ext.is_fast_rounded_corner);
   shared_quad_state->layer_namespace_id = client_namespace_id;
-  shared_quad_state->is_fast_rounded_corner =
-      mask_filter_info_ext.is_fast_rounded_corner;
   return shared_quad_state;
 }
 
@@ -1324,7 +1322,8 @@ void SurfaceAggregator::AddRenderPassHelper(
       /*layer_rect=*/current_output_rect,
       /*visible_layer_rect=*/current_output_rect, gfx::MaskFilterInfo(),
       /*clip=*/absl::nullopt, quad_state_contents_opaque, /*opacity_f=*/1.f,
-      quad_state_blend_mode, /*sorting_context=*/0);
+      quad_state_blend_mode, /*sorting_context=*/0, /*layer_id*/ 0u,
+      /*fast_rounded_corner=*/false);
 
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();

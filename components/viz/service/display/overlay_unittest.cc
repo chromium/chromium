@@ -4654,7 +4654,8 @@ void AddQuad(gfx::Rect quad_rect,
       /*clip_rect=*/absl::nullopt,
       /*are contents opaque=*/true,
       /*opacity=*/1.f,
-      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context=*/0,
+      /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
   SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();

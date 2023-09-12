@@ -534,7 +534,9 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
   }
   quad_state->SetAll(transform_to_target, layer_rect, visible_rect,
                      data.mask_filter_info_in_target, clip_opt,
-                     contents_opaque(), opacity, SkBlendMode::kSrcOver, 0);
+                     contents_opaque(), opacity, SkBlendMode::kSrcOver,
+                     /*sorting_context=*/0,
+                     /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   quad_state->is_fast_rounded_corner = true;
   return quad_state;
 }

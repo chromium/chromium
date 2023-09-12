@@ -1497,7 +1497,8 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
     quad_state = render_pass->CreateAndAppendSharedQuadState();
     quad_state->SetAll(quad_to_target_transform, quad_rect, quad_rect, msk,
                        quad_clip_rect, are_contents_opaque, opacity,
-                       SkBlendMode::kSrcOver, 0);
+                       SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   }
   return quad_state;
 }
@@ -1676,7 +1677,9 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
             render_pass->CreateAndAppendSharedQuadState();
         quad_state->SetAll(quad_to_target_transform, quad_rect, quad_rect, msk,
                            quad_clip_rect, are_contents_opaque,
-                           state_.basic_state.alpha, SkBlendMode::kSrcOver, 0);
+                           state_.basic_state.alpha, SkBlendMode::kSrcOver,
+                           /*sorting_context=*/0, /*layer_id=*/0u,
+                           /*fast_rounded_corner=*/false);
         if (!state_.basic_state.crop.IsEmpty()) {
           quad_state->clip_rect = gfx::ToEnclosedRect(output_rect);
         }

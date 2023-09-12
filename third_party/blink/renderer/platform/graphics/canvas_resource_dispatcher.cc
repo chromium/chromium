@@ -264,7 +264,9 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   viz::SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
   sqs->SetAll(gfx::Transform(), bounds, bounds, gfx::MaskFilterInfo(),
-              absl::nullopt, is_opaque, 1.f, SkBlendMode::kSrcOver, 0);
+              /*clip=*/absl::nullopt, is_opaque, /*opacity_f=*/1.f,
+              SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+              /*fast_rounded_corner=*/false);
 
   viz::TransferableResource resource;
   auto frame_resource = std::make_unique<FrameResource>();

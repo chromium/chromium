@@ -429,8 +429,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     shared_quad_state->SetAll(layer_to_target_transform, layer_bounds,
                               visible_layer_rect, mask_filter_info,
                               absl::nullopt, are_contents_opaque, opacity,
-                              blend_mode, 0);
-    shared_quad_state->is_fast_rounded_corner = is_fast_rounded_corner;
+                              blend_mode, /*sorting_context=*/0,
+                              /*layer_id=*/0u, is_fast_rounded_corner);
 
     SurfaceDrawQuad* surface_quad =
         pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
@@ -451,7 +451,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(transform, output_rect, output_rect,
                          gfx::MaskFilterInfo(), absl::nullopt, false, 1,
-                         SkBlendMode::kSrcOver, 0);
+                         SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     auto* quad = pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
     quad->SetAll(shared_state, output_rect, output_rect,
                  /*needs_blending=*/true, render_pass_id, kInvalidResourceId,
@@ -468,7 +469,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(transform, output_rect, output_rect,
                          gfx::MaskFilterInfo(), absl::nullopt, false, 1,
-                         SkBlendMode::kSrcOver, 0);
+                         SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     auto* quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
     quad->SetNew(shared_state, output_rect, output_rect, false,
                  output_rect.size(), gfx::Rect(output_rect.size()),
@@ -487,7 +489,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(transform, output_rect, output_rect,
                          gfx::MaskFilterInfo(), absl::nullopt, false, 1,
-                         SkBlendMode::kSrcOver, 0);
+                         SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     const gfx::PointF kUVTopLeft(0.1f, 0.2f);

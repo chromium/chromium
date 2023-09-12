@@ -388,7 +388,8 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
           /*quad_layer_rect=*/output_rect,
           /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
           /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
-          /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+          /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0,
+          /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
       viz::SurfaceDrawQuad* dom_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
@@ -417,7 +418,8 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         /*quad_layer_rect=*/output_rect,
         /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
         /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
-        /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+        /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0,
+        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
     viz::TextureDrawQuad* xr_content_quad =
         render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
@@ -457,7 +459,8 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
       /*quad_layer_rect=*/output_rect,
       /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
       /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/true,
-      /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+      /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0,
+      /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
   viz::TextureDrawQuad* camera_quad =
       render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();

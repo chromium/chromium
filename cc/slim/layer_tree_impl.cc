@@ -517,7 +517,9 @@ void LayerTreeImpl::GenerateCompositorFrame(
       quad_state->SetAll(gfx::Transform(), gutter_bounding_rect,
                          gutter_bounding_rect, gfx::MaskFilterInfo(),
                          /*clip=*/absl::nullopt, contents_opaque,
-                         /*opacity_f=*/1.0f, SkBlendMode::kSrcOver, 0);
+                         /*opacity_f=*/1.0f, SkBlendMode::kSrcOver,
+                         /*sorting_context=*/0, /*layer_id=*/0u,
+                         /*fast_rounded_corner=*/false);
       for (gfx::Rect unoccluded_rect : unoccluded_region) {
         viz::SolidColorDrawQuad* quad =
             render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
@@ -751,11 +753,12 @@ void LayerTreeImpl::Draw(Layer& layer,
   }
   const bool new_pass_contents_opaque =
       occlusion_in_new_pass.Contains(content_rect);
-  shared_quad_state->SetAll(
-      transform_new_pass_to_parent_target, content_rect, content_rect,
-      data.mask_filter_info_in_target, clip_opt, new_pass_contents_opaque,
-      parent_opacity * layer.opacity(), SkBlendMode::kSrcOver, 0);
-  shared_quad_state->is_fast_rounded_corner = true;
+  shared_quad_state->SetAll(transform_new_pass_to_parent_target, content_rect,
+                            content_rect, data.mask_filter_info_in_target,
+                            clip_opt, new_pass_contents_opaque,
+                            parent_opacity * layer.opacity(),
+                            SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                            /*layer_id=*/0u, /*fast_rounded_corner=*/true);
   auto* quad =
       parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
 
