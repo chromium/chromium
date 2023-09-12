@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_bulk_move_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_export_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
@@ -84,6 +85,7 @@
 
 @interface PasswordSettingsCoordinator () <
     ExportActivityViewControllerDelegate,
+    BulkMoveLocalPasswordsToAccountHandler,
     PasswordExportHandler,
     PasswordSettingsPresentationDelegate,
     PasswordsInOtherAppsCoordinatorDelegate,
@@ -140,14 +142,15 @@
               browserState, ServiceAccessType::EXPLICIT_ACCESS));
 
   self.mediator = [[PasswordSettingsMediator alloc]
-      initWithReauthenticationModule:self.reauthModule
-             savedPasswordsPresenter:_savedPasswordsPresenter.get()
-                       exportHandler:self
-                         prefService:browserState->GetPrefs()
-                     identityManager:IdentityManagerFactory::GetForBrowserState(
-                                         browserState)
-                         syncService:SyncServiceFactory::GetForBrowserState(
-                                         browserState)];
+         initWithReauthenticationModule:self.reauthModule
+                savedPasswordsPresenter:_savedPasswordsPresenter.get()
+      bulkMovePasswordsToAccountHandler:self
+                          exportHandler:self
+                            prefService:browserState->GetPrefs()
+                        identityManager:IdentityManagerFactory::
+                                            GetForBrowserState(browserState)
+                            syncService:SyncServiceFactory::GetForBrowserState(
+                                            browserState)];
 
   self.dispatcher = static_cast<id<ApplicationCommands>>(
       self.browser->GetCommandDispatcher());
@@ -234,7 +237,7 @@
   [exportConfirmation addAction:exportAction];
 
   exportConfirmation.popoverPresentationController.sourceView =
-      [self.passwordSettingsViewController sourceViewForPasswordExportAlerts];
+      [self.passwordSettingsViewController sourceViewForAlerts];
   exportConfirmation.popoverPresentationController.sourceRect =
       [self.passwordSettingsViewController sourceRectForPasswordExportAlerts];
 
@@ -295,6 +298,67 @@
                                        inIncognito:NO]];
 }
 
+#pragma mark - BulkMoveLocalPasswordsToAccountHandler
+
+- (void)showAuthentication {
+  // TODO(crbug.com/1479177): Add auth for bulk move passwords.
+}
+
+- (void)showConfirmationDialogWithAlertTitle:(NSString*)alertTitle
+                            alertDescription:(NSString*)alertDescription {
+  // Create the confirmation alert.
+  UIAlertController* movePasswordsConfirmation = [UIAlertController
+      alertControllerWithTitle:alertTitle
+                       message:alertDescription
+                preferredStyle:UIAlertControllerStyleActionSheet];
+  movePasswordsConfirmation.view.accessibilityIdentifier =
+      kPasswordSettingsBulkMovePasswordsToAccountAlertViewId;
+
+  // Create the cancel action.
+  UIAlertAction* cancelAction = [UIAlertAction
+      actionWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_CANCEL)
+                style:UIAlertActionStyleCancel
+              handler:^(UIAlertAction* action){
+              }];
+  [movePasswordsConfirmation addAction:cancelAction];
+
+  // Create the accept action (i.e. move passwords to account).
+  __weak PasswordSettingsCoordinator* weakSelf = self;
+  UIAlertAction* movePasswordsAction = [UIAlertAction
+      actionWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_BUTTON)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                PasswordSettingsCoordinator* strongSelf = weakSelf;
+                if (!strongSelf) {
+                  return;
+                }
+                [strongSelf.mediator
+                        userDidStartBulkMoveLocalPasswordsToAccountFlow];
+              }];
+
+  [movePasswordsConfirmation addAction:movePasswordsAction];
+
+  movePasswordsConfirmation.popoverPresentationController.sourceView =
+      [self.passwordSettingsViewController sourceViewForAlerts];
+  movePasswordsConfirmation.popoverPresentationController.sourceRect =
+      [self.passwordSettingsViewController
+              sourceRectForBulkMovePasswordsToAccount];
+
+  // Show the alert.
+  [self.passwordSettingsViewController
+      presentViewController:movePasswordsConfirmation
+                   animated:YES
+                 completion:nil];
+}
+
+- (void)showSetPasscodeAlert {
+  // TODO(crbug.com/1479177): Add auth for bulk move passwords.
+}
+
 #pragma mark - PasswordExportHandler
 
 - (void)showActivityViewWithActivityItems:(NSArray*)activityItems
@@ -318,7 +382,7 @@
   [activityViewController setCompletionWithItemsHandler:completionHandler];
 
   UIView* sourceView =
-      [self.passwordSettingsViewController sourceViewForPasswordExportAlerts];
+      [self.passwordSettingsViewController sourceViewForAlerts];
   CGRect sourceRect =
       [self.passwordSettingsViewController sourceRectForPasswordExportAlerts];
 

@@ -51,11 +51,16 @@
 
 - (instancetype)init;
 
+// Returns a rect suitable for anchoring the bulk move passwords to account
+// alert.
+- (CGRect)sourceRectForBulkMovePasswordsToAccount;
+
 // Returns a rect suitable for anchoring alerts in the password export flow.
 - (CGRect)sourceRectForPasswordExportAlerts;
 
-// Returns a view suitable for anchoring alerts in the password export flow.
-- (UIView*)sourceViewForPasswordExportAlerts;
+// Returns a view suitable for anchoring alerts in the password manager
+// settings.
+- (UIView*)sourceViewForAlerts;
 
 @end
 

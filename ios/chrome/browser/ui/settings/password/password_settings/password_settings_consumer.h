@@ -51,6 +51,10 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 // highlights it as a new feature. This doesn't mean the switch itself is shown.
 - (void)setShowAccountStorageNewFeatureIcon:(BOOL)show;
 
+// The count of local passwords passed along with the user eligibility to see
+// the move passwords to account section.
+- (void)setLocalPasswordsCount:(int)count withUserEligibility:(BOOL)eligibility;
+
 // Indicates the signed-in account.
 - (void)setSignedInAccount:(NSString*)account;
 

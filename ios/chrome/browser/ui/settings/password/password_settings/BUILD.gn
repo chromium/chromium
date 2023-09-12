@@ -4,6 +4,7 @@
 
 source_set("password_settings") {
   sources = [
+    "password_bulk_move_handler.h",
     "password_export_handler.h",
     "password_settings_coordinator.h",
     "password_settings_coordinator.mm",
@@ -94,6 +95,7 @@ source_set("unit_tests") {
     ":password_settings",
     "//base/test:test_support",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
