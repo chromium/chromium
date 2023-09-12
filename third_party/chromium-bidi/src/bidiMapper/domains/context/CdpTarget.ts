@@ -15,19 +15,18 @@
  * limitations under the License.
  *
  */
-import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 import type Protocol from 'devtools-protocol';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {Deferred} from '../../../utils/deferred.js';
+import type {Result} from '../../../utils/result.js';
 import type {EventManager} from '../events/EventManager.js';
 import {LogManager} from '../log/LogManager.js';
 import {NetworkManager} from '../network/NetworkManager.js';
-import type {ChannelProxy} from '../script/ChannelProxy.js';
-import type {RealmStorage} from '../script/RealmStorage.js';
-import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
-import type {Result} from '../../../utils/result.js';
+import type {ChannelProxy} from '../script/ChannelProxy.js';
+import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import type {RealmStorage} from '../script/RealmStorage.js';
 
 export class CdpTarget {
   readonly #targetId: Protocol.Target.TargetID;
@@ -182,7 +181,7 @@ export class CdpTarget {
           method: `cdp.${event}`,
           params: {
             event,
-            params: params as ProtocolMapping.Events[typeof event],
+            params,
             session: this.#cdpSessionId,
           },
         },

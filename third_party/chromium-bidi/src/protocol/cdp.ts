@@ -79,7 +79,7 @@ export type EventParameters<
   EventName extends keyof ProtocolMapping.Events = keyof ProtocolMapping.Events,
 > = {
   event: EventName;
-  params: ProtocolMapping.Events[EventName];
+  params: ProtocolMapping.Events[EventName][0];
   session: Protocol.Target.SessionID;
 };
 
