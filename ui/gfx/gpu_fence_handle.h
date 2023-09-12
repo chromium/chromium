@@ -70,7 +70,20 @@ struct GFX_EXPORT GpuFenceHandle {
 #endif
 
  private:
-  ScopedPlatformFence owned_fence_;
+  struct RefCountedScopedFence
+      : public base::RefCountedThreadSafe<RefCountedScopedFence> {
+    explicit RefCountedScopedFence(ScopedPlatformFence scoped_fd);
+
+   private:
+    ~RefCountedScopedFence();
+
+    friend class base::RefCountedThreadSafe<RefCountedScopedFence>;
+    friend struct GpuFenceHandle;
+
+    ScopedPlatformFence scoped_fence_;
+  };
+
+  scoped_refptr<RefCountedScopedFence> smart_fence_;
 };
 
 }  // namespace gfx

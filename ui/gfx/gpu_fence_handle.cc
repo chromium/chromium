@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/gfx/switches.h"
@@ -29,6 +30,12 @@
 #endif
 
 namespace {
+bool IsEnabledUseSmartRefForGPUFenceHandle() {
+  static bool is_enabled =
+      base::FeatureList::IsEnabled(features::kUseSmartRefForGPUFenceHandle);
+  return is_enabled;
+}
+
 gfx::GpuFenceHandle::ScopedPlatformFence PlatformDuplicate(
     const gfx::GpuFenceHandle::ScopedPlatformFence& scoped_fence) {
 #if BUILDFLAG(IS_POSIX)
@@ -65,25 +72,70 @@ namespace gfx {
 
 GpuFenceHandle::GpuFenceHandle() = default;
 
-GpuFenceHandle::GpuFenceHandle(GpuFenceHandle&& other) = default;
+GpuFenceHandle::GpuFenceHandle(GpuFenceHandle&& other)
+    : smart_fence_(std::move(other.smart_fence_)) {}
 
-GpuFenceHandle& GpuFenceHandle::operator=(GpuFenceHandle&& other) = default;
+GpuFenceHandle& GpuFenceHandle::operator=(GpuFenceHandle&& other) {
+  if (this != &other) {
+    smart_fence_ = std::move(other.smart_fence_);
+  }
+  return *this;
+}
+
+void GpuFenceHandle::Reset() {
+  smart_fence_.reset();
+}
 
 GpuFenceHandle::~GpuFenceHandle() = default;
 
-void GpuFenceHandle::Reset() {
-  owned_fence_ = ScopedPlatformFence();
+bool GpuFenceHandle::is_null() const {
+  return !smart_fence_.get();
 }
 
+GpuFenceHandle::RefCountedScopedFence::RefCountedScopedFence(
+    ScopedPlatformFence scoped_fence)
+    : scoped_fence_(std::move(scoped_fence)) {}
+
+GpuFenceHandle::RefCountedScopedFence::~RefCountedScopedFence() = default;
+
+#if BUILDFLAG(IS_POSIX)
+int GpuFenceHandle::Peek() const {
+  return is_null() ? base::ScopedFD().get()
+                   : smart_fence_.get()->scoped_fence_.get();
+}
+#elif BUILDFLAG(IS_WIN)
+HANDLE GpuFenceHandle::Peek() const {
+  return is_null() ? INVALID_HANDLE_VALUE
+                   : smart_fence_.get()->scoped_fence_.Get();
+}
+#endif
+
 void GpuFenceHandle::Adopt(ScopedPlatformFence scoped_fence) {
-  owned_fence_ = std::move(scoped_fence);
+  if (scoped_fence.is_valid()) {
+    smart_fence_ =
+        base::MakeRefCounted<RefCountedScopedFence>(std::move(scoped_fence));
+  } else {
+    Reset();
+  }
 }
 
 GpuFenceHandle::ScopedPlatformFence GpuFenceHandle::Release() {
   if (is_null()) {
     return ScopedPlatformFence();
   }
-  return std::move(owned_fence_);
+
+  GpuFenceHandle::ScopedPlatformFence return_fence;
+
+  if (smart_fence_->HasOneRef()) {
+    // Sole owner of this FD. Non dup optimization below.
+    return_fence = std::move(smart_fence_->scoped_fence_);
+  } else {
+    DCHECK(IsEnabledUseSmartRefForGPUFenceHandle());
+    return_fence = PlatformDuplicate(smart_fence_->scoped_fence_);
+  }
+
+  Reset();
+  return return_fence;
 }
 
 GpuFenceHandle GpuFenceHandle::Clone() const {
@@ -92,28 +144,13 @@ GpuFenceHandle GpuFenceHandle::Clone() const {
   }
 
   gfx::GpuFenceHandle handle;
-  handle.owned_fence_ = PlatformDuplicate(owned_fence_);
+
+  if (IsEnabledUseSmartRefForGPUFenceHandle()) {
+    handle.smart_fence_ = this->smart_fence_;
+  } else {
+    handle.Adopt(PlatformDuplicate(smart_fence_->scoped_fence_));
+  }
   return handle;
 }
-
-bool GpuFenceHandle::is_null() const {
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  return !owned_fence_.is_valid();
-#elif BUILDFLAG(IS_WIN)
-  return !owned_fence_.IsValid();
-#else
-  return true;
-#endif
-}
-
-#if BUILDFLAG(IS_POSIX)
-int GpuFenceHandle::Peek() const {
-  return is_null() ? base::ScopedFD().get() : owned_fence_.get();
-}
-#elif BUILDFLAG(IS_WIN)
-HANDLE GpuFenceHandle::Peek() const {
-  return is_null() ? INVALID_HANDLE_VALUE : owned_fence_.Get();
-}
-#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace gfx
