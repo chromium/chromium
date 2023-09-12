@@ -222,10 +222,6 @@ void AmbientAshTestBase::TearDown() {
 void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       ambient::prefs::kAmbientModeEnabled, enabled);
-
-  if (enabled) {
-    DisableBackupCacheDownloads();
-  }
 }
 
 void AmbientAshTestBase::SetAmbientUiSettings(
@@ -616,10 +612,7 @@ AmbientUiLauncher* AmbientAshTestBase::ambient_ui_launcher() {
 }
 
 AmbientPhotoController* AmbientAshTestBase::photo_controller() {
-  if (ambient_ui_launcher()) {
-    return ambient_ui_launcher()->GetAmbientPhotoController();
-  }
-  return ambient_controller()->ambient_photo_controller();
+  return ambient_ui_launcher()->GetAmbientPhotoController();
 }
 
 AmbientManagedPhotoController* AmbientAshTestBase::managed_photo_controller() {

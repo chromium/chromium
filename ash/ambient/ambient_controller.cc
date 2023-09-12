@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/ambient_animation_ui_launcher.h"
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_managed_slideshow_ui_launcher.h"
 #include "ash/ambient/ambient_slideshow_ui_launcher.h"
@@ -21,7 +22,7 @@
 #include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
-#include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/ambient/model/ambient_topic_queue_animation_delegate.h"
 #include "ash/ambient/model/ambient_topic_queue_slideshow_delegate.h"
@@ -57,6 +58,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -1010,9 +1012,6 @@ void AmbientController::OnEnabledPrefChanged() {
   fingerprint_->AddFingerprintObserver(
       fingerprint_observer_receiver_.BindNewPipeAndPassRemote());
 
-  ambient_animation_progress_tracker_ =
-      std::make_unique<AmbientAnimationProgressTracker>();
-
   // The policy update can happen on the login screen as well so we need to
   // trigger the state change to start the ambient mode if required.
   if (IsAmbientModeManagedScreensaverEnabled()) {
@@ -1022,8 +1021,6 @@ void AmbientController::OnEnabledPrefChanged() {
 
 void AmbientController::ResetAmbientControllerResources() {
   SetUiVisibilityClosed();
-
-  ambient_animation_progress_tracker_.reset();
 
   RemoveAmbientModeSettingsPrefObservers();
 
@@ -1146,49 +1143,24 @@ void AmbientController::DismissUI() {
 }
 
 AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
-  if (ambient_ui_launcher_) {
-    // This can legitimately be null. Some ambient UIs do not use photos at all
-    // and hence, do not have an active |AmbientBackendModel|.
-    // TODO(b/274164306): Move |AmbientBackendModel| references completely out
-    // of |AmbientController|. The business logic should be migrated elsewhere
-    // (likely somewhere within an |AmbientUiLauncher| implementation).
-    return ambient_ui_launcher_->GetAmbientBackendModel();
-  }
-
-  DCHECK(ambient_photo_controller_);
-  return ambient_photo_controller_->ambient_backend_model();
+  // This can legitimately be null. Some ambient UIs do not use photos at all
+  // and hence, do not have an active |AmbientBackendModel|.
+  // TODO(b/274164306): Move |AmbientBackendModel| references completely out
+  // of |AmbientController|. The business logic should be migrated elsewhere
+  // (likely somewhere within an |AmbientUiLauncher| implementation).
+  return ambient_ui_launcher_->GetAmbientBackendModel();
 }
 
 AmbientWeatherModel* AmbientController::GetAmbientWeatherModel() {
   return ambient_weather_controller_->weather_model();
 }
 
-void AmbientController::OnImagesReady() {
-  CreateAndShowWidgets();
-}
-
-void AmbientController::OnImagesFailed() {
-  LOG(ERROR) << "Ambient mode failed to start";
-  SetUiVisibilityClosed();
-}
-
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
   std::unique_ptr<AmbientContainerView> container_view;
-  if (ambient_ui_launcher_) {
-    container_view = std::make_unique<AmbientContainerView>(
-        GetCurrentUiSettings(), ambient_ui_launcher_->CreateView(),
-        session_metrics_recorder_.get());
-  } else {
-    // TODO(b/274164306): Everything should use
-    // |AmbientUiLauncher::CreateView()| when animation theme
-    // is migrated to AmbientUiLauncher.
-    container_view = std::make_unique<AmbientContainerView>(
-        &delegate_, ambient_animation_progress_tracker_.get(),
-        AmbientAnimationStaticResources::Create(GetCurrentUiSettings(),
-                                                /*serializable=*/true),
-        session_metrics_recorder_.get(), frame_rate_controller_.get());
-  }
+  container_view = std::make_unique<AmbientContainerView>(
+      GetCurrentUiSettings(), ambient_ui_launcher_->CreateView(),
+      session_metrics_recorder_.get());
   auto* widget_delegate = new AmbientWidgetDelegate();
   widget_delegate->SetInitiallyFocusedView(container_view.get());
 
@@ -1250,51 +1222,10 @@ void AmbientController::CreateAndShowWidgets() {
   }
 }
 
-// TODO(b/274164306): Remove when animation theme is migrated.
-void AmbientController::StartRefreshingImages() {
-  DCHECK(ambient_photo_controller_);
-  // There is no use case for switching themes "on-the-fly" while ambient mode
-  // is rendering. Thus, it's sufficient to just reinitialize the
-  // model/controller with the appropriate config each time before calling
-  // StartScreenUpdate().
-  DCHECK(!ambient_photo_controller_->IsScreenUpdateActive());
-  AmbientUiSettings current_ui_settings = GetCurrentUiSettings();
-  DVLOG(4) << "Loaded ambient ui settings " << current_ui_settings.ToString();
-
-  AmbientPhotoConfig photo_config;
-  std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate;
-  if (current_ui_settings.theme() ==
-      personalization_app::mojom::AmbientTheme::kSlideshow) {
-    photo_config = CreateAmbientSlideshowPhotoConfig();
-    topic_queue_delegate =
-        std::make_unique<AmbientTopicQueueSlideshowDelegate>();
-  } else {
-    scoped_refptr<cc::SkottieWrapper> animation =
-        AmbientAnimationStaticResources::Create(std::move(current_ui_settings),
-                                                /*serializable=*/false)
-            ->GetSkottieWrapper();
-    photo_config =
-        CreateAmbientAnimationPhotoConfig(animation->GetImageAssetMetadata());
-    topic_queue_delegate = std::make_unique<AmbientTopicQueueAnimationDelegate>(
-        animation->GetImageAssetMetadata());
-  }
-  ambient_photo_controller_->ambient_backend_model()->SetPhotoConfig(
-      std::move(photo_config));
-  ambient_photo_controller_->StartScreenUpdate(std::move(topic_queue_delegate));
-}
-
 void AmbientController::StopScreensaver() {
   CloseAllWidgets(close_widgets_immediately_);
-  frame_rate_controller_.reset();
   session_metrics_recorder_.reset();
-
-  if (ambient_ui_launcher_) {
-    ambient_ui_launcher_->Finalize();
-    return;
-  }
-  weather_refresher_.reset();
-  DCHECK(ambient_photo_controller_);
-  ambient_photo_controller_->StopScreenUpdate();
+  ambient_ui_launcher_->Finalize();
 }
 
 void AmbientController::MaybeStartScreenSaver() {
@@ -1311,22 +1242,12 @@ void AmbientController::MaybeStartScreenSaver() {
 
   session_metrics_recorder_ =
       std::make_unique<AmbientSessionMetricsRecorder>(GetCurrentUiSettings());
-  frame_rate_controller_ =
-      std::make_unique<AmbientAnimationFrameRateController>(
-          Shell::Get()->frame_throttling_controller());
 
   SetUpPreTargetHandler();
 
-  if (ambient_ui_launcher_) {
-    ambient_ui_launcher_->Initialize(
-        base::BindOnce(&AmbientController::OnUiLauncherInitialized,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    StartRefreshingImages();
-    // TODO(b/274164306): Move `weather_refresher_` to `AmbientUiLauncher`
-    // implementation for animation theme.
-    weather_refresher_ = ambient_weather_controller_->CreateScopedRefresher();
-  }
+  ambient_ui_launcher_->Initialize(
+      base::BindOnce(&AmbientController::OnUiLauncherInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 AmbientUiSettings AmbientController::GetCurrentUiSettings() const {
@@ -1366,55 +1287,38 @@ void AmbientController::CreateUiLauncher() {
   if (IsAmbientModeManagedScreensaverEnabled()) {
     ambient_ui_launcher_ = std::make_unique<AmbientManagedSlideshowUiLauncher>(
         &delegate_, screensaver_images_policy_handler_.get());
-  } else if (GetCurrentUiSettings().theme() ==
-             personalization_app::mojom::AmbientTheme::kVideo) {
-    ambient_ui_launcher_ = std::make_unique<AmbientVideoUiLauncher>(
-        GetPrimaryUserPrefService(), &delegate_);
-  } else if (GetCurrentUiSettings().theme() ==
-             personalization_app::mojom::AmbientTheme::kSlideshow) {
-    CHECK(photo_cache_);
-    CHECK(backup_photo_cache_);
-    ambient_ui_launcher_ = std::make_unique<AmbientSlideshowUiLauncher>(
-        *photo_cache_, *backup_photo_cache_, &delegate_);
   } else {
-    // TODO(b/274164306): Remove when animation theme is
-    // migrated to AmbientUiLauncher.
-    CHECK(photo_cache_);
-    CHECK(backup_photo_cache_);
-    ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
-        *photo_cache_, *backup_photo_cache_, delegate_,
-        // The type of photo config specified here is actually irrelevant as
-        // it always gets reset with the correct configuration anyways in
-        // StartRefreshingImages() before ambient mode starts.
-        CreateAmbientSlideshowPhotoConfig());
-    // The new UiLauncher API adds backend model observers in its
-    // implementation and thus the observer is not required when using the new
-    // codepath.
-    // TODO(esum) Get rid the ambient_backend_model_observer_ and
-    // corresponding methods once other photo controllers are migrated to the
-    // new API.
-    ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
+    switch (GetCurrentUiSettings().theme()) {
+      case personalization_app::mojom::AmbientTheme::kSlideshow:
+        CHECK(photo_cache_);
+        CHECK(backup_photo_cache_);
+        ambient_ui_launcher_ = std::make_unique<AmbientSlideshowUiLauncher>(
+            *photo_cache_, *backup_photo_cache_, &delegate_);
+        break;
+      case personalization_app::mojom::AmbientTheme::kFeelTheBreeze:
+      case personalization_app::mojom::AmbientTheme::kFloatOnBy:
+        CHECK(photo_cache_);
+        CHECK(backup_photo_cache_);
+        ambient_ui_launcher_ = std::make_unique<AmbientAnimationUiLauncher>(
+            *photo_cache_, *backup_photo_cache_, GetCurrentUiSettings(),
+            &delegate_);
+        break;
+      case personalization_app::mojom::AmbientTheme::kVideo:
+        ambient_ui_launcher_ = std::make_unique<AmbientVideoUiLauncher>(
+            GetPrimaryUserPrefService(), &delegate_);
+        break;
+    }
   }
 
-  if (ambient_ui_launcher_) {
-    ambient_ui_launcher_->SetObserver(this);
-  }
+  ambient_ui_launcher_->SetObserver(this);
 }
 
 void AmbientController::DestroyUiLauncher() {
   ambient_ui_launcher_.reset();
-  // TODO(b/274164306): Remove when animation theme is migrated
-  // to AmbientUiLauncher.
-  ambient_backend_model_observer_.Reset();
-  ambient_photo_controller_.reset();
 }
 
 bool AmbientController::IsUiLauncherActive() const {
-  return (ambient_ui_launcher_ && ambient_ui_launcher_->IsActive()) ||
-         // TODO(b/274164306): Remove when animation theme is
-         // migrated to AmbientUiLauncher.
-         (ambient_photo_controller_ &&
-          ambient_photo_controller_->IsScreenUpdateActive());
+  return ambient_ui_launcher_ && ambient_ui_launcher_->IsActive();
 }
 
 void AmbientController::OnReadyStateChanged(bool is_ready) {

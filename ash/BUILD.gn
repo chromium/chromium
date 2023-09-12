@@ -166,6 +166,8 @@ component("ash") {
     "accessibility/ui/layer_animation_info.h",
     "ambient/ambient_access_token_controller.cc",
     "ambient/ambient_access_token_controller.h",
+    "ambient/ambient_animation_ui_launcher.cc",
+    "ambient/ambient_animation_ui_launcher.h",
     "ambient/ambient_constants.h",
     "ambient/ambient_controller.cc",
     "ambient/ambient_controller.h",

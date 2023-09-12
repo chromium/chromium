@@ -12,11 +12,7 @@
 
 namespace ash {
 
-class AmbientAnimationFrameRateController;
-class AmbientAnimationProgressTracker;
-class AmbientAnimationStaticResources;
 class AmbientSessionMetricsRecorder;
-class AmbientViewDelegateImpl;
 class AmbientUiSettings;
 
 namespace ambient {
@@ -28,20 +24,6 @@ class AmbientOrientationMetricsRecorder;
 class ASH_EXPORT AmbientContainerView : public views::View {
  public:
   METADATA_HEADER(AmbientContainerView);
-
-  // TODO(b/274164306): Remove when animation theme is
-  // migrated to AmbientUiLauncher. Prefer other overloaded constructor below.
-  //
-  // |animation_static_resources| contains the Lottie animation file to render
-  // along with its accompanying static image assets. If null, that means the
-  // slideshow UI should be rendered instead.
-  AmbientContainerView(
-      AmbientViewDelegateImpl* delegate,
-      AmbientAnimationProgressTracker* progress_tracker,
-      std::unique_ptr<AmbientAnimationStaticResources>
-          animation_static_resources,
-      AmbientSessionMetricsRecorder* session_metrics_recorder,
-      AmbientAnimationFrameRateController* frame_rate_controller);
 
   // |main_rendering_view| should contain the primary content; it becomes a
   // child of |AmbientContainerView|, and |AmbientContainerView| sets up some

@@ -17,7 +17,6 @@
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/model/ambient_backend_model.h"
-#include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
@@ -52,8 +51,6 @@ namespace ash {
 // Delay for dismissing screensaver preview on mouse move.
 constexpr base::TimeDelta kDismissPreviewOnMouseMoveDelay = base::Seconds(3);
 
-class AmbientAnimationFrameRateController;
-class AmbientAnimationProgressTracker;
 class AmbientBackendController;
 class AmbientContainerView;
 class AmbientPhotoController;
@@ -63,7 +60,6 @@ class AmbientUiSettings;
 // Class to handle all ambient mode functionalities.
 class ASH_EXPORT AmbientController
     : public AmbientUiModelObserver,
-      public AmbientBackendModelObserver,
       public ScreenBacklightObserver,
       public SessionObserver,
       public PowerStatus::Observer,
@@ -212,11 +208,7 @@ class ASH_EXPORT AmbientController
   FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest, BindsObserversWhenAmbientOn);
 
   AmbientPhotoController* ambient_photo_controller() {
-    if (ambient_ui_launcher_) {
-      return ambient_ui_launcher_->GetAmbientPhotoController();
-    }
-    // TODO(pzliu): Remove when migration to UI Launcher is complete.
-    return ambient_photo_controller_.get();
+    return ambient_ui_launcher_->GetAmbientPhotoController();
   }
 
   AmbientPhotoCache* get_backup_photo_cache_for_testing() {
@@ -225,10 +217,6 @@ class ASH_EXPORT AmbientController
 
   // Hide or close Ambient mode UI.
   void DismissUI();
-
-  // AmbientBackendModelObserver overrides:
-  void OnImagesReady() override;
-  void OnImagesFailed() override;
 
   // Creates and shows a full-screen widget for each root window to show the
   // ambient UI.
@@ -307,11 +295,7 @@ class ASH_EXPORT AmbientController
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
   std::unique_ptr<AmbientPhotoCache> photo_cache_;
   std::unique_ptr<AmbientPhotoCache> backup_photo_cache_;
-  std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
   std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
-  std::unique_ptr<AmbientAnimationProgressTracker>
-      ambient_animation_progress_tracker_;
-  std::unique_ptr<AmbientAnimationFrameRateController> frame_rate_controller_;
 
   // Monitors the device inactivity and controls the auto-show of ambient.
   base::OneShotTimer inactivity_timer_;
@@ -324,8 +308,6 @@ class ASH_EXPORT AmbientController
 
   base::ScopedObservation<AmbientUiModel, AmbientUiModelObserver>
       ambient_ui_model_observer_{this};
-  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
-      ambient_backend_model_observer_{this};
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       session_observer_{this};
   base::ScopedObservation<PowerStatus, PowerStatus::Observer>
