@@ -2958,6 +2958,8 @@ static_library("browser") {
       "android/usage_stats/usage_stats_database.h",
       "android/warmup_manager.cc",
       "android/web_contents_factory.cc",
+      "android/webapk/webapk_database_factory.cc",
+      "android/webapk/webapk_database_factory.h",
       "android/webapk/webapk_install_coordinator_bridge.cc",
       "android/webapk/webapk_install_coordinator_bridge.h",
       "android/webapk/webapk_install_service.cc",
