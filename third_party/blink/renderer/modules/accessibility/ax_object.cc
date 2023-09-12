@@ -772,6 +772,11 @@ void AXObject::Init(AXObject* parent) {
 }
 
 void AXObject::Detach() {
+#if DCHECK_IS_ON()
+  DCHECK(!is_updating_cached_values_)
+      << "Don't detach in the middle of updating cached values: "
+      << ToString(true, true);
+#endif
   // Prevents LastKnown*() methods from returning the wrong values.
   cached_is_ignored_ = true;
   cached_is_ignored_but_included_in_tree_ = false;
@@ -5784,8 +5789,9 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
     return true;
   }
 
+  // Image map children are entirely dependent on the parent image.
   if (CachedParentObject() &&
-      CachedParentObject()->RoleValue() == ax::mojom::blink::Role::kImage) {
+      IsA<HTMLImageElement>(CachedParentObject()->GetNode())) {
     return true;
   }
 
