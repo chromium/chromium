@@ -156,13 +156,12 @@ struct DumpAccessibilityTreeTestPassToString {
   }
 };
 
-// UIA is excluded due to flakiness. See https://crbug.com/1459215.
 // TODO(https://crbug.com/1470120): We need to create a way to incrementally
 // enable and create UIA tests.
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
 INSTANTIATE_TEST_SUITE_P(

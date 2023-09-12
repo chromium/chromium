@@ -1,5 +1,5 @@
 Document LocalizedControlType='document' AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false' LiveSetting='LiveSetting::Off'
 ++Text LocalizedControlType='marquee' IsControlElement=false AriaProperties='atomic=false;readonly=true;expanded=false;live=off;multiline=false;multiselectable=false;relevant=additions text;required=false' LiveSetting='LiveSetting::Off'
 ++Text LocalizedControlType='marquee' IsControlElement=false AriaProperties='atomic=false;readonly=true;expanded=false;live=polite;multiline=false;multiselectable=false;relevant=additions text;required=false' LiveSetting='LiveSetting::Polite'
-++StatusBar LocalizedControlType='status' IsControlElement=false AriaProperties='atomic=true;readonly=true;expanded=false;live=assertive;multiline=false;multiselectable=false;relevant=additions text;required=false' LiveSetting='LiveSetting::Assertive'
+++StatusBar LocalizedControlType='status' AriaProperties='atomic=true;readonly=true;expanded=false;live=assertive;multiline=false;multiselectable=false;relevant=additions text;required=false' LiveSetting='LiveSetting::Assertive'
 ++Text LocalizedControlType='alert' IsControlElement=false AriaProperties='atomic=true;readonly=true;expanded=false;live=assertive;multiline=false;multiselectable=false;relevant=additions text;required=false' LiveSetting='LiveSetting::Assertive'

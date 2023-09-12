@@ -6,7 +6,7 @@ Document
 ++++Text Name=' '
 ++++Hyperlink Name='Link with image in the middle.'
 ++++++Text Name='Link with ' IsControlElement=false
-++++++Image Name='image'
+++++++Image Name='image. To get missing image descriptions, open the context menu.'
 ++++++Text Name=' in the middle.' IsControlElement=false
 ++++Text Name=' '
 ++++Hyperlink Name='Link with broken in the middle.'

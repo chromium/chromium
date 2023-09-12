@@ -21,7 +21,7 @@ Document
 ++++Text Name='This is an ARIA complementary landmark.'
 ++Group
 ++++Text Name='This is an ARIA contentinfo landmark.'
-++Group
+++Group Name='Named form'
 ++++Text Name='This is an ARIA form landmark.'
 ++Group
 ++++Text Name='This is an ARIA main landmark.'

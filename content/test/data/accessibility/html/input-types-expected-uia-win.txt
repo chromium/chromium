@@ -22,6 +22,7 @@ Document
 ++++++Button Name='Image:'
 ++++++++Image
 ++++++++Text Name='Submit' IsControlElement=false
+++++Text Name=' '
 ++++Text
 ++++++Text Name='Number: '
 ++++++Spinner Name='Number:' RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
