@@ -4465,7 +4465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.AudioChannelLayout" enum="ChannelLayout"
-    expires_after="2023-09-12">
+    expires_after="2024-03-10">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Audio channel layout used while remoting content.</summary>
@@ -4479,14 +4479,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.AudioSamplesPerSecond" enum="AudioSampleRate"
-    expires_after="2023-09-12">
+    expires_after="2024-03-10">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Audio sampling rate while remoting audio content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioSamplesPerSecondUnexpected" units="Hz"
-    expires_after="2023-09-12">
+    expires_after="2024-03-10">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4524,7 +4524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.SessionStartFailedReason"
-    enum="RemotingStartFailReason" expires_after="2023-12-01">
+    enum="RemotingStartFailReason" expires_after="2024-03-10">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the reason that a session failed to start.</summary>
@@ -4574,14 +4574,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.TrackConfiguration"
-    enum="RemotingTrackConfiguration" expires_after="2023-09-12">
+    enum="RemotingTrackConfiguration" expires_after="2024-03-10">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks whether audio or video or both are remoted.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoAspectRatio" units="%"
-    expires_after="2023-09-12">
+    expires_after="2024-03-10">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Aspect ratio of video while remoting content.</summary>
@@ -4597,7 +4597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.VideoCodec" enum="VideoCodec"
-    expires_after="2023-09-12">
+    expires_after="2024-03-10">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video codec used while remoting content.</summary>
@@ -4611,7 +4611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.VideoNaturalWidth" units="pixels"
-    expires_after="2023-09-12">
+    expires_after="2024-03-10">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video width while remoting content.</summary>
