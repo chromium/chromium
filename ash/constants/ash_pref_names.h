@@ -1648,6 +1648,8 @@ inline constexpr char kPointingStickAcceleration[] =
     "settings.pointing_stick.acceleration";
 
 // A syncable time pref that stores the time of last session activation.
+// Starting in M119, rounded down to the nearest day since Windows epoch to
+// reduce syncs.
 inline constexpr char kTimeOfLastSessionActivation[] =
     "ash.session.time_of_last_activation";
 

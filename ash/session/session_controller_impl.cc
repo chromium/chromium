@@ -38,6 +38,26 @@
 using session_manager::SessionState;
 
 namespace ash {
+namespace {
+
+void SetTimeOfLastSessionActivation(PrefService* user_pref_service) {
+  if (!user_pref_service) {
+    return;
+  }
+
+  // NOTE: Round down to the nearest day since Windows epoch to reduce syncs.
+  const base::Time time_of_last_session_activation =
+      base::Time::FromDeltaSinceWindowsEpoch(
+          base::Days(base::Time::Now().ToDeltaSinceWindowsEpoch().InDays()));
+
+  if (user_pref_service->GetTime(prefs::kTimeOfLastSessionActivation) !=
+      time_of_last_session_activation) {
+    user_pref_service->SetTime(prefs::kTimeOfLastSessionActivation,
+                               time_of_last_session_activation);
+  }
+}
+
+}  // namespace
 
 class SessionControllerImpl::ScopedScreenLockBlockerImpl
     : public ScopedScreenLockBlocker {
@@ -424,9 +444,8 @@ void SessionControllerImpl::SetUserSessionOrder(
     // NOTE: This pref is intentionally set *after* notifying observers of
     // active user session changes so observers can use time of last activation
     // during event handling.
-    if (state_ == SessionState::ACTIVE && user_pref_service) {
-      user_pref_service->SetTime(prefs::kTimeOfLastSessionActivation,
-                                 base::Time::Now());
+    if (state_ == SessionState::ACTIVE) {
+      SetTimeOfLastSessionActivation(user_pref_service);
     }
 
     UpdateLoginStatus();
@@ -544,10 +563,8 @@ void SessionControllerImpl::SetSessionState(SessionState state) {
   // NOTE: This pref is intentionally set *after* notifying observers of state
   // changes so observers can use time of last activation during event handling.
   if (state_ == SessionState::ACTIVE) {
-    if (auto* pref_service = GetUserPrefServiceForUser(GetActiveAccountId())) {
-      pref_service->SetTime(prefs::kTimeOfLastSessionActivation,
-                            base::Time::Now());
-    }
+    SetTimeOfLastSessionActivation(
+        GetUserPrefServiceForUser(GetActiveAccountId()));
   }
 
   UpdateLoginStatus();

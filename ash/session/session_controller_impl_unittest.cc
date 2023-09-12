@@ -472,7 +472,12 @@ TEST_F(SessionControllerImplTest, IsUserChild) {
   EXPECT_TRUE(controller()->IsUserChild());
 }
 
-using SessionControllerImplPrefsTest = NoSessionAshTestBase;
+class SessionControllerImplPrefsTest : public NoSessionAshTestBase {
+ public:
+  SessionControllerImplPrefsTest()
+      : NoSessionAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
 
 // Verifies that SessionObserver is notified for PrefService changes.
 TEST_F(SessionControllerImplPrefsTest, Observer) {
@@ -607,15 +612,19 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
     EXPECT_CALL(mock_session_observer, OnSessionStateChanged)
         .WillOnce(testing::Invoke([&](SessionState session_state) {
           EXPECT_EQ(session_state, expected_session_state);
+
+          auto* const time_of_last_session_activation =
+              controller->GetUserPrefServiceForUser(kUser1AccountId)
+                  ->FindPreference(prefs::kTimeOfLastSessionActivation);
+
           // Verify that the expected time of last session activation is stored.
           // Note that it is intentional that even if the session is becoming
           // activated, the stored time of last session activation will not be
           // updated until *after* the session state changed event propagates.
           // This is to allow observers to read the pref during event handling.
-          EXPECT_EQ(*base::ValueToTime(
-                        controller->GetUserPrefServiceForUser(kUser1AccountId)
-                            ->GetValue(prefs::kTimeOfLastSessionActivation)),
-                    expected_time_of_last_session_activation);
+          EXPECT_EQ(
+              *base::ValueToTime(time_of_last_session_activation->GetValue()),
+              expected_time_of_last_session_activation);
         }));
     session->SetSessionState(expected_session_state);
     testing::Mock::VerifyAndClearExpectations(&mock_session_observer);
@@ -628,25 +637,29 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
       run_loop.Run();
     }
 
+    auto* const time_of_last_session_activation =
+        controller->GetUserPrefServiceForUser(kUser1AccountId)
+            ->FindPreference(prefs::kTimeOfLastSessionActivation);
+
     // When the session is activated, it is expected that the time of last
     // session activation be stored to synced user prefs. Note that it is
     // expected that this be done *after* notifying observers of the session
     // state change in case observers read the pref during event handling.
     if (controller->GetSessionState() == SessionState::ACTIVE) {
-      expected_time_of_last_session_activation = *base::ValueToTime(
-          controller->GetUserPrefServiceForUser(kUser1AccountId)
-              ->GetValue(prefs::kTimeOfLastSessionActivation));
-      EXPECT_NEAR((expected_time_of_last_session_activation - base::Time::Now())
-                      .InSecondsF(),
-                  /*expected=*/0.f, /*abs_error=*/5.f);
+      expected_time_of_last_session_activation =
+          *base::ValueToTime(time_of_last_session_activation->GetValue());
+
+      // It is expected that time of last session activation be rounded down to
+      // the nearest day since Windows epoch to reduce syncs.
+      EXPECT_EQ(base::Time::FromDeltaSinceWindowsEpoch(base::Days(
+                    base::Time::Now().ToDeltaSinceWindowsEpoch().InDays())),
+                expected_time_of_last_session_activation);
       continue;
     }
 
     // When the session is not being activated, the stored time of last session
     // activation should remain unchanged.
-    EXPECT_EQ(*base::ValueToTime(
-                  controller->GetUserPrefServiceForUser(kUser1AccountId)
-                      ->GetValue(prefs::kTimeOfLastSessionActivation)),
+    EXPECT_EQ(*base::ValueToTime(time_of_last_session_activation->GetValue()),
               expected_time_of_last_session_activation);
   }
 
@@ -662,15 +675,19 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
   EXPECT_CALL(mock_session_observer, OnActiveUserSessionChanged)
       .WillOnce(testing::Invoke([&](const AccountId& account_id) {
         EXPECT_EQ(account_id, kUser2AccountId);
+
+        auto* const time_of_last_session_activation =
+            controller->GetUserPrefServiceForUser(kUser2AccountId)
+                ->FindPreference(prefs::kTimeOfLastSessionActivation);
+
         // Verify that the expected time of last session activation is stored.
         // Note that it is intentional the stored time of last session
         // activation will not be updated until *after* the session state
         // changed event propagates. This is to allow observers to read the pref
         // during event handling.
-        EXPECT_EQ(*base::ValueToTime(
-                      controller->GetUserPrefServiceForUser(kUser2AccountId)
-                          ->GetValue(prefs::kTimeOfLastSessionActivation)),
-                  expected_time_of_last_session_activation);
+        EXPECT_EQ(
+            *base::ValueToTime(time_of_last_session_activation->GetValue()),
+            expected_time_of_last_session_activation);
       }));
   session->AddUserSession(kUser2Email, user_manager::USER_TYPE_REGULAR);
   session->SwitchActiveUser(kUser2AccountId);
@@ -684,16 +701,22 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
     run_loop.Run();
   }
 
+  auto* const time_of_last_session_activation =
+      controller->GetUserPrefServiceForUser(kUser2AccountId)
+          ->FindPreference(prefs::kTimeOfLastSessionActivation);
+
   // When switching to an active session, it is expected that the time of last
   // session activation be stored to synced user prefs. Note that it is expected
   // that this be done *after* notifying observers of the active user session
   // change in case observers read the pref during event handling.
   expected_time_of_last_session_activation =
-      *base::ValueToTime(controller->GetUserPrefServiceForUser(kUser2AccountId)
-                             ->GetValue(prefs::kTimeOfLastSessionActivation));
-  EXPECT_NEAR((expected_time_of_last_session_activation - base::Time::Now())
-                  .InSecondsF(),
-              /*expected=*/0.f, /*abs_error=*/5.f);
+      *base::ValueToTime(time_of_last_session_activation->GetValue());
+
+  // It is expected that time of last session activation be rounded down to
+  // the nearest day since Windows epoch to reduce syncs.
+  EXPECT_EQ(base::Time::FromDeltaSinceWindowsEpoch(base::Days(
+                base::Time::Now().ToDeltaSinceWindowsEpoch().InDays())),
+            expected_time_of_last_session_activation);
 
   // Clean up.
   controller->RemoveObserver(&mock_session_observer);
