@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

@@ -5,7 +5,7 @@
 	<key>headers</key>
 	<array>
 		<string>ios/search_widget_extension/grit/ios_search_widget_extension_strings.h</string>
-		<string>ios/search_widget_extension/grit/ios_search_widget_extension_chromium_strings.h</string>
+		<string>ios/search_widget_extension/grit/ios_search_widget_extension_branded_strings.h</string>
 	</array>
 	<key>outputs</key>
 	<array>

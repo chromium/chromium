@@ -6,7 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

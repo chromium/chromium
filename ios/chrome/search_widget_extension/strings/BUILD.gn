@@ -8,7 +8,7 @@ import("//tools/grit/grit_rule.gni")
 
 group("strings") {
   public_deps = [
-    ":ios_search_widget_extension_chromium_strings",
+    ":ios_search_widget_extension_branded_strings",
     ":ios_search_widget_extension_strings",
   ]
 }
@@ -22,10 +22,10 @@ grit("ios_search_widget_extension_strings") {
   }
 }
 
-grit("ios_search_widget_extension_chromium_strings") {
+grit("ios_search_widget_extension_branded_strings") {
   source = "ios_search_widget_extension_${branding_path_product}_strings.grd"
   output_dir = "$root_gen_dir/ios/search_widget_extension"
-  outputs = [ "grit/ios_search_widget_extension_chromium_strings.h" ]
+  outputs = [ "grit/ios_search_widget_extension_branded_strings.h" ]
   foreach(locale, all_chrome_locales) {
     outputs += [ "ios_search_widget_extension_${branding_path_product}_strings_$locale.pak" ]
   }

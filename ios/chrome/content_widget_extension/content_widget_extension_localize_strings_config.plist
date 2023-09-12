@@ -4,7 +4,7 @@
 <dict>
 	<key>headers</key>
 	<array>
-		<string>ios/content_widget_extension/grit/ios_content_widget_extension_chromium_strings.h</string>
+		<string>ios/content_widget_extension/grit/ios_content_widget_extension_branded_strings.h</string>
 	</array>
 	<key>outputs</key>
 	<array>

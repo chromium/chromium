@@ -54,7 +54,7 @@ template("ios_chrome_repack_locales") {
       "//components/strings:components_chromium_strings",
       "//components/strings:components_locale_settings",
       "//components/strings:components_strings",
-      "//ios/chrome/app/strings:ios_chromium_strings",
+      "//ios/chrome/app/strings:ios_branded_strings",
       "//ios/chrome/app/strings:ios_strings",
       "//third_party/libaddressinput:strings",
       "//ui/strings:app_locale_settings",

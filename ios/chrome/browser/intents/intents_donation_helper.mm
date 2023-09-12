@@ -22,7 +22,7 @@
 #import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
 #import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
 #import "ios/chrome/common/intents/ViewHistoryIntent.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

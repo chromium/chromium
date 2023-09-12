@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/web/annotations/annotations_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 #import "ios/web/public/web_state.h"

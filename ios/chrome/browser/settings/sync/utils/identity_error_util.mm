@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/settings/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/sync/utils/sync_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

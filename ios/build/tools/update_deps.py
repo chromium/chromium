@@ -64,7 +64,7 @@ GRIT_TARGET_MESSAGE_DETAILS = "Automatically replacing:\n  %s\nby:\n  %s\n"
 CANONICAL_PUBLIC_TARGETS = {
     "//ios/chrome/app/strings:ios_strings_grit":
     "//ios/chrome/app/strings:strings",
-    "//ios/chrome/app/strings:ios_chromium_strings_grit":
+    "//ios/chrome/app/strings:ios_branded_strings_grit":
     "//ios/chrome/app/strings:strings",
     "//components/strings:components_strings_grit":
     "//components/strings:strings",

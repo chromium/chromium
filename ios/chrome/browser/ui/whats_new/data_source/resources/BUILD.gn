@@ -24,7 +24,7 @@ substitute_strings_identifier("convert_whats_new_items_m116") {
   source = "whats_new_entries_m116.plist"
   output = "$target_gen_dir/whats_new_items_m116.plist"
   headers = [
-    "$root_gen_dir/ios/chrome/grit/ios_chromium_strings.h",
+    "$root_gen_dir/ios/chrome/grit/ios_branded_strings.h",
     "$root_gen_dir/ios/chrome/grit/ios_strings.h",
   ]
 
@@ -42,8 +42,8 @@ substitute_strings_identifier("convert_unit_tests_resources") {
   source = "test/data/whats_new_test.plist"
   output = "$target_gen_dir/whats_new/test/data/whats_new_test.plist"
   headers = [
+    "$root_gen_dir/ios/chrome/grit/ios_branded_strings.h",
     "$root_gen_dir/ios/chrome/grit/ios_strings.h",
-    "$root_gen_dir/ios/chrome/grit/ios_chromium_strings.h",
   ]
   deps = [ "//ios/chrome/app/strings" ]
 }

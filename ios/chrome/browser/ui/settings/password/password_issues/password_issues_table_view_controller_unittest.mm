@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_presenter.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"

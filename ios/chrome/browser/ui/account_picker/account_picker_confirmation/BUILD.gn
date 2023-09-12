@@ -19,7 +19,7 @@ source_set("account_picker_confirmation") {
     "//base",
     "//components/signin/public/base",
     "//components/strings:components_strings",
-    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/app/strings:ios_branded_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
