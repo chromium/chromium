@@ -2174,7 +2174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.IconLoadingMethod" enum="IconLoadingMethod"
-    expires_after="2023-10-22">
+    expires_after="2024-10-22">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>Records the app icon loading method when loading app icons.</summary>
@@ -2409,7 +2409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreArcAppsResult" enum="RestoreResult"
-    expires_after="2023-10-24">
+    expires_after="2024-10-24">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sstan@chromium.org</owner>
   <summary>
@@ -2419,7 +2419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreArcAppStates" enum="ArcRestoreState"
-    expires_after="2023-10-24">
+    expires_after="2024-10-24">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sstan@chromium.org</owner>
   <summary>
@@ -2429,7 +2429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreArcWindowCount" units="units"
-    expires_after="2023-12-24">
+    expires_after="2024-12-24">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sstan@chromium.org</owner>
   <summary>
@@ -2440,7 +2440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreBrowserResult" enum="RestoreTabResult"
-    expires_after="2023-10-24">
+    expires_after="2024-10-24">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2572,7 +2572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.SessionRestoreExitResult" enum="SessionRestoreExitResult"
-    expires_after="2023-10-24">
+    expires_after="2024-10-24">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
