@@ -528,6 +528,12 @@ targets.variant(
     ],
 )
 
+# Model validation tests with no args as they are passed in from Google3.
+targets.variant(
+    name = "MODEL_VALIDATION_BASE",
+    identifier = "MODEL_VALIDATION_BASE",
+)
+
 targets.variant(
     name = "MODEL_VALIDATION_TRUNK",
     identifier = "MODEL_VALIDATION_TRUNK",
@@ -548,41 +554,5 @@ targets.variant(
         "chromedriver.exe",
         "--binary",
         "Chrome.exe",
-    ],
-)
-
-targets.variant(
-    name = "MODEL_VALIDATION_STABLE",
-    identifier = "MODEL_VALIDATION_STABLE",
-    args = [
-        "--channel",
-        "stable",
-    ],
-)
-
-targets.variant(
-    name = "MODEL_VALIDATION_BETA",
-    identifier = "MODEL_VALIDATION_BETA",
-    args = [
-        "--channel",
-        "beta",
-    ],
-)
-
-targets.variant(
-    name = "MODEL_VALIDATION_DEV",
-    identifier = "MODEL_VALIDATION_DEV",
-    args = [
-        "--channel",
-        "dev",
-    ],
-)
-
-targets.variant(
-    name = "MODEL_VALIDATION_CANARY",
-    identifier = "MODEL_VALIDATION_CANARY",
-    args = [
-        "--channel",
-        "canary",
     ],
 )

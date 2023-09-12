@@ -229,15 +229,11 @@
     ],
     "isolated_scripts": [
       {
-        "args": [
-          "--channel",
-          "beta"
-        ],
         "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "model_validation_tests MODEL_VALIDATION_BETA",
+        "name": "model_validation_tests MODEL_VALIDATION_BASE",
         "resultdb": {
           "enable": true,
           "result_format": "single"
@@ -250,55 +246,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_BETA"
-      },
-      {
-        "args": [
-          "--channel",
-          "dev"
-        ],
-        "isolate_name": "model_validation_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests MODEL_VALIDATION_DEV",
-        "resultdb": {
-          "enable": true,
-          "result_format": "single"
-        },
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_DEV"
-      },
-      {
-        "args": [
-          "--channel",
-          "stable"
-        ],
-        "isolate_name": "model_validation_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests MODEL_VALIDATION_STABLE",
-        "resultdb": {
-          "enable": true,
-          "result_format": "single"
-        },
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_STABLE"
+        "variant_id": "MODEL_VALIDATION_BASE"
       },
       {
         "args": [
@@ -471,15 +419,11 @@
     ],
     "isolated_scripts": [
       {
-        "args": [
-          "--channel",
-          "beta"
-        ],
         "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "model_validation_tests MODEL_VALIDATION_BETA",
+        "name": "model_validation_tests MODEL_VALIDATION_BASE",
         "resultdb": {
           "enable": true,
           "result_format": "single"
@@ -492,79 +436,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_BETA"
-      },
-      {
-        "args": [
-          "--channel",
-          "canary"
-        ],
-        "isolate_name": "model_validation_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests MODEL_VALIDATION_CANARY",
-        "resultdb": {
-          "enable": true,
-          "result_format": "single"
-        },
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-10-19045",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_CANARY"
-      },
-      {
-        "args": [
-          "--channel",
-          "dev"
-        ],
-        "isolate_name": "model_validation_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests MODEL_VALIDATION_DEV",
-        "resultdb": {
-          "enable": true,
-          "result_format": "single"
-        },
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-10-19045",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_DEV"
-      },
-      {
-        "args": [
-          "--channel",
-          "stable"
-        ],
-        "isolate_name": "model_validation_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests MODEL_VALIDATION_STABLE",
-        "resultdb": {
-          "enable": true,
-          "result_format": "single"
-        },
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-10-19045",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_STABLE"
+        "variant_id": "MODEL_VALIDATION_BASE"
       },
       {
         "isolate_name": "model_validation_tests",
@@ -644,15 +516,11 @@
     ],
     "isolated_scripts": [
       {
-        "args": [
-          "--channel",
-          "beta"
-        ],
         "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "model_validation_tests MODEL_VALIDATION_BETA",
+        "name": "model_validation_tests MODEL_VALIDATION_BASE",
         "resultdb": {
           "enable": true,
           "result_format": "single"
@@ -665,79 +533,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_BETA"
-      },
-      {
-        "args": [
-          "--channel",
-          "canary"
-        ],
-        "isolate_name": "model_validation_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests MODEL_VALIDATION_CANARY",
-        "resultdb": {
-          "enable": true,
-          "result_format": "single"
-        },
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-10-19045",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_CANARY"
-      },
-      {
-        "args": [
-          "--channel",
-          "dev"
-        ],
-        "isolate_name": "model_validation_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests MODEL_VALIDATION_DEV",
-        "resultdb": {
-          "enable": true,
-          "result_format": "single"
-        },
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-10-19045",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_DEV"
-      },
-      {
-        "args": [
-          "--channel",
-          "stable"
-        ],
-        "isolate_name": "model_validation_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests MODEL_VALIDATION_STABLE",
-        "resultdb": {
-          "enable": true,
-          "result_format": "single"
-        },
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-10-19045",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
-        "variant_id": "MODEL_VALIDATION_STABLE"
+        "variant_id": "MODEL_VALIDATION_BASE"
       },
       {
         "isolate_name": "model_validation_tests",
