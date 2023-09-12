@@ -42,10 +42,16 @@ async function work(e) {
     // Given a file handle, get the file object, slice it by 1 (to create a new
     // file object) and return the sliced content.
     if (e.data.action == 2) {
-        const file = await e.data.file.getFile();
-        const copy = file.slice(1);
-        const content = await copy.text();
-        return content;
+        try {
+            console.log(e.data.file);
+            const file = await e.data.file.getFile();
+            const copy = file.slice(1);
+            const content = await copy.text();
+            return content;
+        } catch (err) {
+            console.log(err.name + ": " + err.message);
+            return "Could not read file.";
+        }
     }
 
     // Given a file object, slice it by 1 (to create a new file object) and
@@ -53,6 +59,22 @@ async function work(e) {
     if (e.data.action == 3) {
         try {
             const file = e.data.file;
+            const copy = file.slice(1);
+            const content = await copy.text();
+            return content;
+        } catch (err) {
+            console.log(err.name + ": " + err.message);
+            return "Could not read file.";
+        }
+    }
+
+    // Given a directory handle, use it to open the file "input.txt", slice it
+    // by 1 (to create a new file object) and return the sliced content.
+    if (e.data.action == 4) {
+        try {
+            const directory = e.data.directory;
+            const dirFile = await directory.getFileHandle('input.txt');
+            const file = await dirFile.getFile();
             const copy = file.slice(1);
             const content = await copy.text();
             return content;

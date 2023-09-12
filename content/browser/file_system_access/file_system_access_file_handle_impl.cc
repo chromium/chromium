@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
@@ -110,6 +111,14 @@ base::File::Error CreateCowSwapFile(const storage::FileSystemURL& source_url,
              : base::File::GetLastFileError();
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+CreateFileAccessCallback(const GURL& destination) {
+  if (auto* file_access = file_access::ScopedFileAccessDelegate::Get()) {
+    return file_access->CreateFileAccessCallback(destination);
+  }
+  return base::NullCallback();
+}
 
 }  // namespace
 
@@ -478,11 +487,12 @@ void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&ChromeBlobStorageContext::CreateFileSystemBlob,
-                     base::WrapRefCounted(manager()->blob_context()),
-                     base::WrapRefCounted(file_system_context()),
-                     std::move(blob_receiver), url(), std::move(uuid),
-                     std::move(content_type), info.size, info.last_modified));
+      base::BindOnce(
+          &ChromeBlobStorageContext::CreateFileSystemBlobWithFileAccess,
+          base::WrapRefCounted(manager()->blob_context()),
+          base::WrapRefCounted(file_system_context()), std::move(blob_receiver),
+          url(), std::move(uuid), std::move(content_type), info.size,
+          info.last_modified, CreateFileAccessCallback(context().url)));
 }
 
 void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
