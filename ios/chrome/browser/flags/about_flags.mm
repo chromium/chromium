@@ -1861,6 +1861,14 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
     [testing_policies addEntriesFromDictionary:@{password_manager_key : @NO}];
     [allowed_experimental_policies addObject:password_manager_key];
   }
+
+  if ([defaults boolForKey:@"EnableUserPolicyMerge"]) {
+    NSString* user_policy_merge_key =
+        base::SysUTF8ToNSString(policy::key::kCloudUserPolicyMerge);
+    [testing_policies addEntriesFromDictionary:@{user_policy_merge_key : @YES}];
+    [allowed_experimental_policies addObject:user_policy_merge_key];
+  }
+
   if ([defaults boolForKey:@"AddManagedBookmarks"]) {
     NSString* managed_bookmarks_key =
         base::SysUTF8ToNSString(policy::key::kManagedBookmarks);
