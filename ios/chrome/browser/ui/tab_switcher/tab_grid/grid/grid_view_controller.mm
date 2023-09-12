@@ -701,17 +701,17 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     suggestedActionsCell.suggestedActionsView =
         self.suggestedActionsViewController.view;
   } else {
-    // In some cases this is called with an indexPath.item that's beyond (by 1)
-    // the bounds of self.items -- see crbug.com/1068136. Presumably this is a
-    // race condition where an item has been deleted at the same time as the
-    // collection is doing layout (potentially during rotation?). Fudge by
-    // duplicating the last cell. The assumption is that there will be another,
-    // correct layout shortly after the incorrect one.
-    // Keep array bounds valid.
-    if (itemIndex >= self.items.count) {
-      itemIndex = self.items.count - 1;
+    // In some cases, this is called with an index path that doesn't match the
+    // data source -- see crbug.com/1068136. Presumably this is a race condition
+    // where an item has been deleted at the same time as the collection is
+    // doing layout (potentially during rotation?). Fudge by returning an
+    // unconfigured cell. The assumption is that there will be another – correct
+    // – layout shortly after the incorrect one. Keep `items`' bounds valid.
+    if (self.items.count == 0 || itemIndex >= self.items.count) {
+      return
+          [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier
+                                                    forIndexPath:indexPath];
     }
-
     TabSwitcherItem* item = self.items[itemIndex];
     cell =
         [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier
@@ -955,15 +955,16 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Handle GridCell-s.
   NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
-  // In some cases this is called with an indexPath.item that's beyond (by 1)
-  // the bounds of self.items -- see crbug.com/1068136. Presumably this is a
-  // race condition where an item has been deleted at the same time as the
-  // collection is doing layout (potentially during rotation?). Fudge by
-  // duplicating the last cell. The assumption is that there will be another,
-  // correct layout shortly after the incorrect one.
-  // Keep array bounds valid.
-  if (itemIndex >= self.items.count) {
-    itemIndex = self.items.count - 1;
+  // In some cases, this is called with an index path that doesn't match the
+  // data source -- see crbug.com/1068136. Presumably this is a race condition
+  // where an item has been deleted at the same time as the collection is doing
+  // layout (potentially during rotation?). Fudge by returning an unconfigured
+  // cell. The assumption is that there will be another – correct – layout
+  // shortly after the incorrect one. Keep `items`' bounds valid.
+  if (self.items.count == 0 || itemIndex >= self.items.count) {
+    return [self.collectionView
+        dequeueReusableCellWithReuseIdentifier:kCellIdentifier
+                                  forIndexPath:indexPath];
   }
 
   TabSwitcherItem* item = self.items[itemIndex];
