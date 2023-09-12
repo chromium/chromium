@@ -128,8 +128,8 @@ size_t GetCycleItemsCount(const std::vector<aura::Window*>& windows) {
   for (auto* window : windows) {
     if (SnapGroup* snap_group =
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      size_t increment = visited.insert(snap_group).second ? 0 : 1;
-      count += increment;
+      size_t addend = visited.insert(snap_group).second ? 0 : 1;
+      count += addend;
     } else {
       count++;
     }

@@ -770,7 +770,7 @@ TEST_F(SnapGroupEntryPointArm1Test, OverviewEnterExitBasic) {
   // Verify that full overview session is expected when starting overview from
   // accelerator and that split view divider will not be available.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview(OverviewStartAction::kAccelerator);
+  overview_controller->StartOverview(OverviewStartAction::kTests);
   WaitForOverviewEnterAnimation();
   EXPECT_TRUE(overview_controller->overview_session());
   EXPECT_EQ(GetOverviewGridBounds(), work_area_bounds());
@@ -834,7 +834,7 @@ TEST_F(SnapGroupEntryPointArm1Test, OverviewGroupItemCreationBasic) {
 // the overview group item will only host the other window. If both of the
 // windows get destroyed, the corresponding overview group item will be removed
 // from the overview grid.
-TEST_F(SnapGroupEntryPointArm1Test, WindowDestroyInOverview) {
+TEST_F(SnapGroupEntryPointArm1Test, WindowDestructionInOverview) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   std::unique_ptr<aura::Window> w3(CreateAppWindow());
@@ -863,16 +863,48 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowDestroyInOverview) {
   EXPECT_EQ(overview_grid->window_list().size(), 1u);
 }
 
-// Tests that the overview session will not show on the other side of the
-// screen on one window snapped if the overview is empty.
-// TODO(b/287514790) : Re-enable the test after figuring out a way to
-// differentiate whether to show full or partial overview.
-TEST_F(SnapGroupEntryPointArm1Test, DISABLED_NotShowOverviewIfEmpty) {
-  for (const auto snap_state : {chromeos::WindowStateType::kPrimarySnapped,
-                                chromeos::WindowStateType::kSecondarySnapped}) {
-    std::unique_ptr<aura::Window> w1(CreateTestWindow());
-    SnapOneTestWindow(w1.get(), snap_state);
-    EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+// Tests that the individual items within the same group will be hosted by the
+// same overview group item.
+TEST_F(SnapGroupEntryPointArm1Test, OverviewItemTest) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  OverviewSession* overview_session = overview_controller->overview_session();
+  ASSERT_TRUE(overview_session);
+
+  EXPECT_EQ(overview_session->GetOverviewItemForWindow(w1.get()),
+            overview_session->GetOverviewItemForWindow(w2.get()));
+}
+
+// Tests that the bounds on the overview group item as well as the individual
+// overview item hosted by the group item will be set correctly.
+TEST_F(SnapGroupEntryPointArm1Test, OverviewItemBoundsTest) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+  ASSERT_TRUE(wm::IsActiveWindow(w2.get()));
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  OverviewSession* overview_session = overview_controller->overview_session();
+  ASSERT_TRUE(overview_session);
+
+  // The cumulative sum of the bounds while iterating through the individual
+  // items hosted by the overview item should always be inside the group item
+  // widget target bounds.
+  auto* overview_group_item =
+      overview_session->GetOverviewItemForWindow(w1.get());
+  const gfx::RectF& group_item_bounds =
+      overview_group_item->GetTargetBoundsInScreen();
+  gfx::RectF cumulative_bounds;
+  for (auto* window : overview_group_item->GetWindows()) {
+    auto* overview_item = overview_session->GetOverviewItemForWindow(window);
+    cumulative_bounds.Union(overview_item->GetTargetBoundsInScreen());
+    EXPECT_GT(cumulative_bounds.width(), 0u);
+    EXPECT_TRUE(group_item_bounds.Contains(cumulative_bounds));
   }
 }
 

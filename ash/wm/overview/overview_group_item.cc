@@ -18,6 +18,17 @@
 
 namespace ash {
 
+namespace {
+
+// Insets values for the individual overview items hosted by the overview group
+// item.
+constexpr gfx::InsetsF kLeftItemBoundsInsets =
+    gfx::InsetsF::TLBR(/*top=*/2, /*left=*/2, /*bottom=*/2, /*right=*/1);
+constexpr gfx::InsetsF kRightItemBoundsInsets =
+    gfx::InsetsF::TLBR(/*top=*/2, /*left=*/1, /*bottom=*/2, /*right=*/2);
+
+}  // namespace
+
 OverviewGroupItem::OverviewGroupItem(const Windows& windows,
                                      OverviewSession* overview_session,
                                      OverviewGrid* overview_grid)
@@ -77,7 +88,29 @@ OverviewItem* OverviewGroupItem::GetLeafItemForWindow(aura::Window* window) {
 void OverviewGroupItem::RestoreWindow(bool reset_transform, bool animate) {}
 
 void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
-                                  OverviewAnimationType animation_type) {}
+                                  OverviewAnimationType animation_type) {
+  const int size = overview_items_.size();
+  if (size == 1) {
+    return overview_items_[0]->SetBounds(target_bounds, animation_type);
+  }
+
+  CHECK_EQ(size, 2);
+  item_widget_->SetBounds(gfx::ToRoundedRect(target_bounds));
+  // TODO(michelefan): Set bounds differently based on the screen orientation.
+  // TODO(michelefan): Calculate the actual snap ratio based on the window
+  // bounds and apply it on the individual items hosted by `this`.
+  auto sub_bounds1 = gfx::RectF(
+      target_bounds.origin(),
+      gfx::SizeF(target_bounds.width() / 2.f, target_bounds.height()));
+  sub_bounds1.Inset(kLeftItemBoundsInsets);
+  overview_items_[0]->SetBounds(sub_bounds1, animation_type);
+
+  auto sub_bounds2 = gfx::RectF(
+      gfx::PointF(target_bounds.top_center()),
+      gfx::SizeF(target_bounds.width() / 2.f, target_bounds.height()));
+  sub_bounds2.Inset(kRightItemBoundsInsets);
+  overview_items_[1]->SetBounds(sub_bounds2, animation_type);
+}
 
 gfx::RectF OverviewGroupItem::GetTargetBoundsInScreen() const {
   gfx::RectF target_bounds;
@@ -140,7 +173,11 @@ float OverviewGroupItem::GetOpacity() const {
 
 void OverviewGroupItem::PrepareForOverview() {}
 
-void OverviewGroupItem::OnStartingAnimationComplete() {}
+void OverviewGroupItem::OnStartingAnimationComplete() {
+  for (auto& item : overview_items_) {
+    item->OnStartingAnimationComplete();
+  }
+}
 
 void OverviewGroupItem::HideForSavedDeskLibrary(bool animate) {}
 
