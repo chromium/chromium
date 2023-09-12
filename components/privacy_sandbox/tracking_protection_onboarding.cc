@@ -10,6 +10,19 @@
 
 namespace privacy_sandbox {
 
+namespace {
+
+using ::privacy_sandbox::tracking_protection::
+    TrackingProtectionOnboardingStatus;
+
+TrackingProtectionOnboardingStatus GetInternalOnboardingStatus(
+    PrefService* pref_service) {
+  return static_cast<TrackingProtectionOnboardingStatus>(
+      pref_service->GetInteger(prefs::kTrackingProtectionOnboardingStatus));
+}
+
+}  // namespace
+
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
     PrefService* pref_service)
     : pref_service_(pref_service) {
@@ -26,7 +39,8 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
 TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;
 
 void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
-  if (GetOnboardingStatus() != OnboardingStatus::kOnboarded) {
+  if (GetInternalOnboardingStatus(pref_service_) !=
+      TrackingProtectionOnboardingStatus::kOnboarded) {
     return;
   }
 
@@ -35,19 +49,69 @@ void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
   }
 }
 
+void TrackingProtectionOnboarding::MaybeMarkEligible() {
+  auto status = GetInternalOnboardingStatus(pref_service_);
+  if (status != TrackingProtectionOnboardingStatus::kIneligible) {
+    return;
+  }
+  pref_service_->SetTime(prefs::kTrackingProtectionEligibleSince,
+                         base::Time::Now());
+  pref_service_->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(
+          TrackingProtectionOnboarding::OnboardingStatus::kEligible));
+}
+
+void TrackingProtectionOnboarding::NoticeShown() {
+  auto status = GetInternalOnboardingStatus(pref_service_);
+  if (status != TrackingProtectionOnboardingStatus::kEligible) {
+    return;
+  }
+  pref_service_->SetTime(prefs::kTrackingProtectionOnboardedSince,
+                         base::Time::Now());
+  pref_service_->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(
+          TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
+}
+
+void TrackingProtectionOnboarding::NoticeActionTaken(
+    TrackingProtectionOnboarding::NoticeAction action) {
+  switch (action) {
+    case NoticeAction::kNone:
+      return;
+    case NoticeAction::kGotIt:
+    case NoticeAction::kSettings:
+    case NoticeAction::kLearnMore:
+    case NoticeAction::kClosed:
+      pref_service_->SetBoolean(prefs::kTrackingProtectionOnboardingAcked,
+                                true);
+      return;
+  }
+}
+
+bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {
+  auto onboarding_status = GetInternalOnboardingStatus(pref_service_);
+  switch (onboarding_status) {
+    case TrackingProtectionOnboardingStatus::kIneligible:
+      return false;
+    case TrackingProtectionOnboardingStatus::kEligible:
+      return true;
+    case TrackingProtectionOnboardingStatus::kOnboarded:
+      return !pref_service_->GetBoolean(
+          prefs::kTrackingProtectionOnboardingAcked);
+  }
+}
+
 TrackingProtectionOnboarding::OnboardingStatus
 TrackingProtectionOnboarding::GetOnboardingStatus() const {
-  auto onboarding_status =
-      static_cast<tracking_protection::TrackingProtectionOnboardingStatus>(
-          pref_service_->GetInteger(
-              prefs::kTrackingProtectionOnboardingStatus));
-
+  auto onboarding_status = GetInternalOnboardingStatus(pref_service_);
   switch (onboarding_status) {
-    case tracking_protection::TrackingProtectionOnboardingStatus::kIneligible:
+    case TrackingProtectionOnboardingStatus::kIneligible:
       return OnboardingStatus::kIneligible;
-    case tracking_protection::TrackingProtectionOnboardingStatus::kEligible:
+    case TrackingProtectionOnboardingStatus::kEligible:
       return OnboardingStatus::kEligible;
-    case tracking_protection::TrackingProtectionOnboardingStatus::kOnboarded:
+    case TrackingProtectionOnboardingStatus::kOnboarded:
       return OnboardingStatus::kOnboarded;
   }
 }

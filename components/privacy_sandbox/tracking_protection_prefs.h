@@ -8,6 +8,30 @@
 class PrefRegistrySimple;
 
 namespace prefs {
+// Tracking protection Onboarding Prefs
+
+// Unsynced pref that indicates what status the profile is at with regards to
+// tracking protections (3PCD Onboarding Notice).
+inline constexpr char kTrackingProtectionOnboardingStatus[] =
+    "tracking_protection.tracking_protection_onboarding_status";
+
+// Unsynced pref that indicates when the profile has been marked eligible for
+// tracking protection.
+inline constexpr char kTrackingProtectionEligibleSince[] =
+    "tracking_protection.tracking_protection_eligible_since";
+
+// Unsynced pref that indicates when the profile has been onboarded onto
+// tracking protection.
+inline constexpr char kTrackingProtectionOnboardedSince[] =
+    "tracking_protection.tracking_protection_onboarded_since";
+
+// Unsynced boolean that indicates whether or not the user has acknowledged the
+// onboarding message. This is kept separate from the onboardingStatus
+// intentionally.
+inline constexpr char kTrackingProtectionOnboardingAcked[] =
+    "tracking_protection.tracking_protection_onboarding_acked";
+
+// Tracking Protection Settings Prefs.
 
 // Synced boolean that indicates whether the "block all 3pc" toggle on the
 // tracking protection page is enabled.
@@ -26,11 +50,6 @@ inline constexpr char kTrackingProtection3pcdEnabled[] =
 
 // Whether to send the DNT header.
 inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
-
-// Unsynced boolean that indicates what status the profile is at with regards to
-// tracking protections (3PCD Onboarding Notice).
-inline constexpr char kTrackingProtectionOnboardingStatus[] =
-    "tracking_protection.tracking_protection_onboarding_status";
 
 }  // namespace prefs
 
