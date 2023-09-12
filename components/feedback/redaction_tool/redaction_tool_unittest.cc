@@ -988,6 +988,7 @@ TEST_F(RedactionToolTest, RedactBlockDevices) {
       {"{\"lv_uuid\":\"lKYORl-TWDP-OFLT-yDnB-jlQ7-aQrE-AwA8Oa\", "
        "\"lv_name\":\"[thinpool_tdata]\"",
        "{\"lv_uuid\":\"(UUID: 5)\", \"lv_name\":\"[thinpool_tdata]\""},
+      {"id = \"KJ0bUk-QE15-mNMp-6Z2V-4Efq-N1r4-oPeFyc\"", "id = \"(UUID: 6)\""},
 
       // Removable media paths.
       {"/media/removable/SD Card/", "/media/removable/(Volume Label: 2)/"},
