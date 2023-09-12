@@ -14,6 +14,7 @@
 
 namespace {
 
+// Workaround for https://crbug.com/1369643
 const double kMinHeight = 0.5;
 
 NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
@@ -81,18 +82,21 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 @synthesize originalHostingWindow = _originalHostingWindow;
 @end
 
-// Host of the overlay view.
-@interface ImmersiveModeTitlebarViewController
-    : NSTitlebarAccessoryViewController {
-  NSView* __strong _blank_separator_view;
-}
+// Private API that reflects the "reveal amount" of the toolbar.
+// Ranges from [0, 1] where value 0 indicates the controller has a
+// height of `fullScreenMinHeight`.
+@interface NSTitlebarAccessoryViewController ()
+- (double)revealAmount;
+- (void)setRevealAmount:(double)revealAmount;
 @end
 
 @implementation ImmersiveModeTitlebarViewController
 
-- (instancetype)init {
+- (instancetype)init:(base::WeakPtr<remote_cocoa::ImmersiveModeController>)
+                         immersiveModeController {
   if ((self = [super init])) {
     _blank_separator_view = [[NSView alloc] init];
+    _immersive_mode_controller = immersiveModeController;
   }
   return self;
 }
@@ -118,6 +122,36 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 // returning a blank NSView.
 - (NSView*)separatorView {
   return _blank_separator_view;
+}
+
+- (void)setRevealAmount:(double)revealAmount {
+  [super setRevealAmount:revealAmount];
+  _immersive_mode_controller->OnMenuBarRevealChanged();
+  _immersive_mode_controller->OnToolbarRevealMaybeChanged();
+}
+
+- (void)setVisibility:(remote_cocoa::mojom::ToolbarVisibilityStyle)style {
+  switch (style) {
+    case remote_cocoa::mojom::ToolbarVisibilityStyle::kAlways:
+      self.hidden = NO;
+      self.fullScreenMinHeight = self.view.frame.size.height;
+      break;
+    case remote_cocoa::mojom::ToolbarVisibilityStyle::kAutohide:
+      self.hidden = NO;
+      self.fullScreenMinHeight = kMinHeight;
+      break;
+    case remote_cocoa::mojom::ToolbarVisibilityStyle::kNone:
+      self.hidden = YES;
+      break;
+  }
+  _immersive_mode_controller->OnToolbarRevealMaybeChanged();
+}
+
+- (void)forceVisibilityRefresh {
+  // Toggling the controller visibility will allow the content view to resize
+  // below Top Chrome and fix the positioning issue of the toolbar.
+  self.hidden = !self.hidden;
+  self.hidden = !self.hidden;
 }
 
 @end
@@ -178,7 +212,8 @@ ImmersiveModeController::ImmersiveModeController(
   // Create a new NSTitlebarAccessoryViewController that will host the
   // overlay_view_.
   immersive_mode_titlebar_view_controller_ =
-      [[ImmersiveModeTitlebarViewController alloc] init];
+      [[ImmersiveModeTitlebarViewController alloc]
+          init:weak_ptr_factory_.GetWeakPtr()];
 
   // Create a NSWindow delegate that will be used to map the AppKit created
   // NSWindow to the overlay view widget's NSWindow.
@@ -274,6 +309,8 @@ void ImmersiveModeController::FullscreenTransitionCompleted() {
   // Watch for child windows. When they are added the overlay view will be
   // revealed as appropriate.
   ObserveChildWindows(overlay_window_);
+
+  NotifyBrowserWindowAboutToolbarRevealChanged();
 }
 
 void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
@@ -295,8 +332,8 @@ void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
   if (last_used_style_ == mojom::ToolbarVisibilityStyle::kAlways ||
       (last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide &&
        reveal_lock_count_ > 0)) {
-    immersive_mode_titlebar_view_controller_.fullScreenMinHeight =
-        frame.size.height;
+    [immersive_mode_titlebar_view_controller_
+        setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
   }
 }
 
@@ -312,8 +349,8 @@ void ImmersiveModeController::UpdateToolbarVisibility(
 
   switch (style) {
     case mojom::ToolbarVisibilityStyle::kAlways:
-      immersive_mode_titlebar_view_controller_.fullScreenMinHeight =
-          immersive_mode_titlebar_view_controller_.view.frame.size.height;
+      [immersive_mode_titlebar_view_controller_
+          setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
 
       // Top chrome is removed from the content view when the browser window
       // starts the fullscreen transition, however the request is asynchronous
@@ -335,17 +372,16 @@ void ImmersiveModeController::UpdateToolbarVisibility(
 
       // Toggling the controller will allow the content view to resize below Top
       // Chrome.
-      immersive_mode_titlebar_view_controller_.hidden = YES;
-      immersive_mode_titlebar_view_controller_.hidden = NO;
+      [immersive_mode_titlebar_view_controller_ forceVisibilityRefresh];
       break;
     case mojom::ToolbarVisibilityStyle::kAutohide:
-      immersive_mode_titlebar_view_controller_.hidden = NO;
-      // Workaround for https://crbug.com/1369643
-      immersive_mode_titlebar_view_controller_.fullScreenMinHeight = kMinHeight;
+      [immersive_mode_titlebar_view_controller_
+          setVisibility:mojom::ToolbarVisibilityStyle::kAutohide];
       browser_window_.styleMask |= NSWindowStyleMaskFullSizeContentView;
       break;
     case mojom::ToolbarVisibilityStyle::kNone:
-      immersive_mode_titlebar_view_controller_.hidden = YES;
+      [immersive_mode_titlebar_view_controller_
+          setVisibility:mojom::ToolbarVisibilityStyle::kNone];
       break;
   }
 }
@@ -418,8 +454,8 @@ void ImmersiveModeController::OnChildWindowRemoved(NSWindow* child) {
 
 void ImmersiveModeController::RevealLock() {
   reveal_lock_count_++;
-  immersive_mode_titlebar_view_controller_.fullScreenMinHeight =
-      immersive_mode_titlebar_view_controller_.view.frame.size.height;
+  [immersive_mode_titlebar_view_controller_
+      setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
 }
 
 void ImmersiveModeController::RevealUnlock() {
@@ -427,7 +463,8 @@ void ImmersiveModeController::RevealUnlock() {
   if (--reveal_lock_count_ < 1 &&
       immersive_mode_titlebar_view_controller_.fullScreenMinHeight > 0 &&
       last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide) {
-    immersive_mode_titlebar_view_controller_.fullScreenMinHeight = 0;
+    [immersive_mode_titlebar_view_controller_
+        setVisibility:mojom::ToolbarVisibilityStyle::kAutohide];
   }
 
   // Account for last_used_style_ changing while a reveal lock was active.
@@ -435,6 +472,31 @@ void ImmersiveModeController::RevealUnlock() {
     UpdateToolbarVisibility(last_used_style_);
   }
   DCHECK(reveal_lock_count_ >= 0);
+}
+
+bool ImmersiveModeController::IsToolbarRevealed() {
+  // If `fullScreenMinHeight` is not `kMinHeight`, "Always Show Toolbar in Full
+  // Screen" is enabled. If `revealAmount` > 0, the toolbar is revealed
+  // because of mouse hovering. In both cases, the toolbar is visible.
+  return immersive_mode_titlebar_view_controller_.fullScreenMinHeight >
+             kMinHeight ||
+         immersive_mode_titlebar_view_controller_.revealAmount > 0;
+}
+
+void ImmersiveModeController::OnToolbarRevealMaybeChanged() {
+  bool is_toolbar_revealed = IsToolbarRevealed();
+  if (is_toolbar_revealed_ != is_toolbar_revealed) {
+    is_toolbar_revealed_ = is_toolbar_revealed;
+    NotifyBrowserWindowAboutToolbarRevealChanged();
+  }
+}
+
+void ImmersiveModeController::OnMenuBarRevealChanged() {
+  if (NativeWidgetNSWindowBridge* bridge =
+          NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
+    bridge->OnImmersiveFullscreenMenuBarRevealChanged(
+        immersive_mode_titlebar_view_controller_.revealAmount);
+  }
 }
 
 void ImmersiveModeController::ImmersiveModeViewWillMoveToWindow(
@@ -490,6 +552,13 @@ double ImmersiveModeController::GetOffscreenYOrigin() {
   }
 
   return y;
+}
+
+void ImmersiveModeController::NotifyBrowserWindowAboutToolbarRevealChanged() {
+  if (NativeWidgetNSWindowBridge* bridge =
+          NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
+    bridge->OnImmersiveFullscreenToolbarRevealChanged(IsToolbarRevealed());
+  }
 }
 
 void ImmersiveModeController::LayoutWindowWithAnchorView(NSWindow* window,

@@ -279,8 +279,12 @@ class BrowserView : public BrowserWindow,
   // Accessor for the BrowserView's TabSearchBubbleHost instance.
   TabSearchBubbleHost* GetTabSearchBubbleHost();
 
-  // Returns true if various window components are visible.
+  // Returns true if the top UI are visible on screen.
   bool GetTabStripVisible() const;
+
+  // Returns true if the top UI should be drawn.
+  // On macOS, it is possible that the top UI is drawn but hidden.
+  bool ShouldDrawTabStrip() const;
 
   // Returns true if the profile associated with this Browser window is
   // incognito.

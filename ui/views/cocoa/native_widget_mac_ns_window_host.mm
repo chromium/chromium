@@ -39,6 +39,7 @@
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/native_theme/native_theme_mac.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/cocoa/immersive_mode_reveal_client.h"
 #include "ui/views/cocoa/text_input_host.h"
 #include "ui/views/cocoa/tooltip_manager_mac.h"
 #include "ui/views/controls/label.h"
@@ -97,6 +98,9 @@ class BridgedNativeWidgetHostDummy
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override {}
   void OnWindowParentChanged(uint64_t new_parent_id) override {}
+  void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override {}
+  void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override {
+  }
   void DoDialogButtonAction(ui::DialogButton button) override {}
   void OnFocusWindowToolbar() override {}
   void SetRemoteAccessibilityTokens(
@@ -1263,6 +1267,22 @@ void NativeWidgetMacNSWindowHost::OnWindowParentChanged(
   if (Widget* widget = native_widget_mac_->GetWidget()) {
     widget->OnNativeWidgetParentChanged(
         parent_ ? parent_->native_widget_mac()->GetNativeView() : nullptr);
+  }
+}
+
+void NativeWidgetMacNSWindowHost::OnImmersiveFullscreenToolbarRevealChanged(
+    bool is_revealed) {
+  if (immersive_mode_reveal_client_) {
+    immersive_mode_reveal_client_->OnImmersiveModeToolbarRevealChanged(
+        is_revealed);
+  }
+}
+
+void NativeWidgetMacNSWindowHost::OnImmersiveFullscreenMenuBarRevealChanged(
+    float reveal_amount) {
+  if (immersive_mode_reveal_client_) {
+    immersive_mode_reveal_client_->OnImmersiveModeMenuBarRevealChanged(
+        reveal_amount);
   }
 }
 

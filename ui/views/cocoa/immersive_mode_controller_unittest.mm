@@ -17,6 +17,10 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #import "ui/base/test/cocoa_helper.h"
 
+@interface NSTitlebarAccessoryViewController (Chrome)
+- (void)setRevealAmount:(double)input;
+@end
+
 namespace {
 
 constexpr float kBrowserHeight = 200;
@@ -160,8 +164,8 @@ TEST_F(CocoaImmersiveModeControllerTest, RevealLock) {
       1);
 }
 
-// Test ImmersiveModeController titlebar frame KVO.
-TEST_F(CocoaImmersiveModeControllerTest, TitlebarObserver) {
+// Test KVO on ImmersiveModeController titlebar container view's frame.
+TEST_F(CocoaImmersiveModeControllerTest, TitlebarContainerViewObserver) {
   // Create a fake NSToolbarFullScreenWindow and associated views.
   NSView* titlebar_container_view = [[NSView alloc]
       initWithFrame:NSMakeRect(0, kOverlayViewHeight, kOverlayViewWidth,
@@ -189,17 +193,10 @@ TEST_F(CocoaImmersiveModeControllerTest, TitlebarObserver) {
   overlay_view.frame = NSMakeRect(0, 0, kOverlayViewWidth, kOverlayViewHeight);
 
   // Create a titlebar observer. This is the class under test.
-  ImmersiveModeTitlebarObserver* titlebar_observer =
+  [[maybe_unused]] ImmersiveModeTitlebarObserver* titlebar_observer =
       [[ImmersiveModeTitlebarObserver alloc]
              initWithController:weak_ptr_factory.GetWeakPtr()
           titlebarContainerView:titlebar_container_view];
-
-  // Observer the fake titlebar container view.
-  [titlebar_container_view addObserver:titlebar_observer
-                            forKeyPath:@"frame"
-                               options:NSKeyValueObservingOptionInitial |
-                                       NSKeyValueObservingOptionNew
-                               context:nullptr];
 
   // Make sure that the overlay view moves along the y axis as the titlebar
   // container view moves. This simulates the titlebar reveal when top chrome is
@@ -241,8 +238,52 @@ TEST_F(CocoaImmersiveModeControllerTest, TitlebarObserver) {
     EXPECT_EQ(overlay().frame.origin.y, kOverlayViewHeight);
   }
 
-  [titlebar_container_view removeObserver:titlebar_observer
-                               forKeyPath:@"frame"];
+  [fullscreen_window close];
+  fullscreen_window = nil;
+}
+
+// Test that IsReveal() reflects the toolbar visibility.
+TEST_F(CocoaImmersiveModeControllerTest, IsRevealed) {
+  // Create a fake NSToolbarFullScreenWindow and associated views.
+  NSView* titlebar_container_view = [[NSView alloc]
+      initWithFrame:NSMakeRect(0, kOverlayViewHeight, kOverlayViewWidth,
+                               kOverlayViewHeight)];
+
+  NSWindow* fullscreen_window = [[NSWindow alloc]
+      initWithContentRect:NSMakeRect(0, 0, kOverlayViewWidth, kBrowserHeight)
+                styleMask:NSWindowStyleMaskBorderless
+                  backing:NSBackingStoreBuffered
+                    defer:NO];
+  fullscreen_window.releasedWhenClosed = NO;
+  [fullscreen_window.contentView addSubview:titlebar_container_view];
+  [fullscreen_window orderBack:nil];
+
+  auto immersive_mode_controller =
+      std::make_unique<ImmersiveModeController>(browser(), overlay());
+  base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory(
+      immersive_mode_controller.get());
+
+  NSTitlebarAccessoryViewController* titlebar_view_controller =
+      immersive_mode_controller
+          ->immersive_mode_titlebar_view_controller_for_testing();
+
+  // Grab the content view from the controller and add it to the test
+  // `titlebar_container_view`.
+  BridgedContentView* overlay_view =
+      immersive_mode_controller->overlay_content_view();
+  [titlebar_container_view addSubview:overlay_view];
+  overlay_view.frame = NSMakeRect(0, 0, kOverlayViewWidth, kOverlayViewHeight);
+
+  [titlebar_view_controller setRevealAmount:0];
+  titlebar_view_controller.fullScreenMinHeight = 0;
+  EXPECT_FALSE(immersive_mode_controller->IsToolbarRevealed());
+
+  [titlebar_view_controller setRevealAmount:1];
+  EXPECT_TRUE(immersive_mode_controller->IsToolbarRevealed());
+
+  [titlebar_view_controller setRevealAmount:0];
+  titlebar_view_controller.fullScreenMinHeight = 100;
+  EXPECT_TRUE(immersive_mode_controller->IsToolbarRevealed());
 
   [fullscreen_window close];
   fullscreen_window = nil;

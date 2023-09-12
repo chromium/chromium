@@ -20,7 +20,7 @@ class BrowserViewLayoutDelegate {
  public:
   virtual ~BrowserViewLayoutDelegate() {}
 
-  virtual bool IsTabStripVisible() const = 0;
+  virtual bool ShouldDrawTabStrip() const = 0;
   virtual bool GetBorderlessModeEnabled() const = 0;
   virtual gfx::Rect GetBoundsForTabStripRegionInBrowserView() const = 0;
   virtual gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const = 0;

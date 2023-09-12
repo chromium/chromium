@@ -300,7 +300,7 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
 
   // Determine if the TabStrip exists and is capable of being clicked on. We
   // might be a popup window without a TabStrip.
-  if (delegate_->IsTabStripVisible()) {
+  if (delegate_->ShouldDrawTabStrip()) {
     // See if the mouse pointer is within the bounds of the TabStripRegionView.
     gfx::Point test_point(point);
     if (ConvertedHitTest(parent, tab_strip_region_view_, &test_point)) {
@@ -392,7 +392,7 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   int top = LayoutTitleBarForWebApp(top_inset);
   if (delegate_->ShouldLayoutTabStrip()) {
     top = LayoutTabStripRegion(top);
-    if (delegate_->IsTabStripVisible()) {
+    if (delegate_->ShouldDrawTabStrip()) {
       tab_strip_->SetBackgroundOffset(tab_strip_region_view_->GetMirroredX() +
                                       browser_view_->GetMirroredX());
     }
@@ -540,7 +540,7 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
 
 int BrowserViewLayout::LayoutTabStripRegion(int top) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutTabStripRegion");
-  if (!delegate_->IsTabStripVisible()) {
+  if (!delegate_->ShouldDrawTabStrip()) {
     SetViewVisibility(tab_strip_region_view_, false);
     tab_strip_region_view_->SetBounds(0, 0, 0, 0);
     return top;

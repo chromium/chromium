@@ -579,7 +579,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
 #if BUILDFLAG(IS_MAC)
     case IDC_TOGGLE_FULLSCREEN_TOOLBAR:
-      chrome::ToggleFullscreenToolbar(browser_);
+      chrome::ToggleAlwaysShowToolbarInFullscreen(browser_);
       break;
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {
       chrome::ToggleJavaScriptFromAppleEventsAllowed(browser_);

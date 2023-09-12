@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/cocoa/immersive_mode_reveal_client.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_search.h"
@@ -72,7 +73,8 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
                                    public views::FocusChangeListener,
                                    public views::ViewObserver,
                                    public views::WidgetObserver,
-                                   public views::FocusTraversable {
+                                   public views::FocusTraversable,
+                                   public views::ImmersiveModeRevealClient {
  public:
   class RevealedLock : public ImmersiveRevealedLock {
    public:
@@ -133,6 +135,10 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   views::FocusTraversable* GetFocusTraversableParent() override;
   views::View* GetFocusTraversableParentView() override;
 
+  // views::ImmersiveModeRevealClient:
+  void OnImmersiveModeToolbarRevealChanged(bool is_revealed) override;
+  void OnImmersiveModeMenuBarRevealChanged(float reveal_amount) override;
+
   BrowserView* browser_view() { return browser_view_; }
 
  private:
@@ -182,6 +188,8 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   int overlay_height_ = 0;
   // Whether the find bar is currently visible.
   bool find_bar_visible_ = false;
+  // Whether the toolbar is currently visible.
+  bool is_revealed_ = false;
 
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
 };
@@ -286,6 +294,10 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
         views::NativeWidgetMacNSWindowHost::kMovedContentNSView,
         (__bridge void*)content_view);
 
+    views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+        browser_view_->GetWidget()->GetNativeWindow())
+        ->set_immersive_mode_reveal_client(this);
+
     // Move the appropriate children from the browser widget to the overlay
     // widget. Make sure to call `Show()` on the overlay widget before enabling
     // immersive fullscreen. The call to `Show()` actually performs the
@@ -369,11 +381,17 @@ bool ImmersiveModeControllerMac::IsEnabled() const {
 }
 
 bool ImmersiveModeControllerMac::ShouldHideTopViews() const {
-  return enabled_ && !IsRevealed();
+  // Always return false to ensure the top UI is pre-rendered and ready for
+  // display. We don't have full control over the visibility of the top UI. For
+  // instance, in auto-hide mode, the top UI is revealed when the user hovers
+  // over the screen's upper border. Notifications about this visibility change
+  // arrive only after the UI is already displayed, so it's crucial to have the
+  // top UI fully rendered by then.
+  return false;
 }
 
 bool ImmersiveModeControllerMac::IsRevealed() const {
-  return enabled_;
+  return enabled_ && is_revealed_;
 }
 
 int ImmersiveModeControllerMac::GetTopContainerVerticalOffset(
@@ -524,6 +542,19 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
 
   // All other widgets will stay put.
   return false;
+}
+
+void ImmersiveModeControllerMac::OnImmersiveModeToolbarRevealChanged(
+    bool is_revealed) {
+  is_revealed_ = is_revealed;
+  // TODO(crbug.com/1414521): update tabstrip position so that it occupies full
+  // width when the traffic lights are hidden.
+}
+
+void ImmersiveModeControllerMac::OnImmersiveModeMenuBarRevealChanged(
+    float reveal_amount) {
+  // TODO(crbug.com/1414521): update tabstrip position so that it occupies full
+  // width when the traffic lights are hidden.
 }
 
 views::FocusSearch* ImmersiveModeControllerMac::GetFocusSearch() {

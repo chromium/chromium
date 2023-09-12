@@ -1051,6 +1051,16 @@ NativeWidgetNSWindowBridge::ImmersiveFullscreenLastUsedStyle() {
   return immersive_mode_controller_->last_used_style();
 }
 
+void NativeWidgetNSWindowBridge::OnImmersiveFullscreenToolbarRevealChanged(
+    bool is_revealed) {
+  host_->OnImmersiveFullscreenToolbarRevealChanged(is_revealed);
+}
+
+void NativeWidgetNSWindowBridge::OnImmersiveFullscreenMenuBarRevealChanged(
+    float reveal_amount) {
+  host_->OnImmersiveFullscreenMenuBarRevealChanged(reveal_amount);
+}
+
 void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
   can_go_back_ = can_go_back;
 }

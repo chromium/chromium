@@ -218,7 +218,7 @@ void BrowserNonClientFrameViewMac::LayoutWebAppWindowTitle(
 }
 
 int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
-  if (!browser_view()->GetTabStripVisible()) {
+  if (!browser_view()->ShouldDrawTabStrip()) {
     return 0;
   }
 
@@ -521,8 +521,9 @@ CGFloat BrowserNonClientFrameViewMac::FullscreenBackingBarHeight() const {
   DCHECK(browser_view->IsFullscreen());
 
   CGFloat total_height = 0;
-  if (browser_view->GetTabStripVisible())
+  if (browser_view->ShouldDrawTabStrip()) {
     total_height += browser_view->GetTabStripHeight();
+  }
 
   if (browser_view->IsToolbarVisible())
     total_height += browser_view->toolbar()->bounds().height();

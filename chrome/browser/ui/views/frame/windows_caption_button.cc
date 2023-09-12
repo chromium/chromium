@@ -60,7 +60,7 @@ gfx::Size WindowsCaptionButton::CalculatePreferredSize() const {
   if (!frame_view_->browser_view()->webui_tab_strip() &&
       frame_view_->IsMaximized()) {
     int maximized_height =
-        frame_view_->browser_view()->GetTabStripVisible()
+        frame_view_->browser_view()->ShouldDrawTabStrip()
             ? frame_view_->browser_view()->GetTabStripHeight()
             : frame_view_->TitlebarMaximizedVisualHeight();
     constexpr int kMaximizedBottomMargin = 2;

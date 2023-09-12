@@ -156,7 +156,7 @@ void BrowserFrameMac::GetWindowFrameTitlebarHeight(
     *titlebar_height =
         browser_view_->GetTabStripHeight() +
         browser_view_->frame()->GetFrameView()->GetTopInset(true);
-    if (!browser_view_->GetTabStripVisible()) {
+    if (!browser_view_->ShouldDrawTabStrip()) {
       *titlebar_height +=
           browser_view_->GetWebAppFrameToolbarPreferredSize().height() +
           kWebAppMenuMargin * 2;

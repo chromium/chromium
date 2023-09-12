@@ -15,7 +15,19 @@
 @class ClearTitlebarViewController;
 @class ImmersiveModeMapper;
 @class ImmersiveModeTitlebarObserver;
-@class ImmersiveModeTitlebarViewController;
+
+namespace remote_cocoa {
+class ImmersiveModeController;
+}  // namespace remote_cocoa
+
+// Host of the overlay view.
+@interface ImmersiveModeTitlebarViewController
+    : NSTitlebarAccessoryViewController {
+  NSView* __strong _blank_separator_view;
+  base::WeakPtr<remote_cocoa::ImmersiveModeController>
+      _immersive_mode_controller;
+}
+@end
 
 namespace gfx {
 class Rect;
@@ -53,6 +65,17 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   virtual void RevealUnlock();
   int reveal_lock_count() { return reveal_lock_count_; }
 
+  // Returns true if the toolbar is visible, either because there are
+  // outstanding reveal locks, or the user hovers over the upper border of the
+  // screen.
+  bool IsToolbarRevealed();
+
+  // Called when the reveal status changes.
+  void OnToolbarRevealMaybeChanged();
+
+  // Called when the menu bar reveal status changes.
+  void OnMenuBarRevealChanged();
+
   // Called when the NSTitlebarContainerView frame changes.
   virtual void OnTitlebarFrameDidChange(NSRect frame);
 
@@ -86,6 +109,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Returns true if kImmersiveFullscreenTabs is being used.
   virtual bool IsTabbed();
 
+  ImmersiveModeTitlebarViewController*
+  immersive_mode_titlebar_view_controller_for_testing() {
+    return immersive_mode_titlebar_view_controller_;
+  }
+
  protected:
   // Used by derived classes to manually set last_used_style_. Typically this is
   // used while a RevealLock is active, allowing for a style change after the
@@ -105,9 +133,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Get offscreen y origin. Used for moving overlay windows offscreen.
   double GetOffscreenYOrigin();
 
+  // Notify the browser window that the reveal status changes.
+  void NotifyBrowserWindowAboutToolbarRevealChanged();
+
   bool enabled_ = false;
 
   int reveal_lock_count_ = 0;
+
+  bool is_toolbar_revealed_ = false;
 
   mojom::ToolbarVisibilityStyle last_used_style_ =
       mojom::ToolbarVisibilityStyle::kAutohide;

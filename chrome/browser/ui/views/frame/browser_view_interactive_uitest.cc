@@ -14,15 +14,18 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/profiles/profile.h"
@@ -47,15 +50,17 @@ class BrowserViewTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
 #if BUILDFLAG(IS_MAC)
-    // Set the preference to true so we expect to see the top view in
-    // fullscreen mode.
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(prefs::kShowFullscreenToolbar, true);
-
+    chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), true);
     // Ensure that the browser window is activated. BrowserView::Show calls
     // into BridgedNativeWidgetImpl::SetVisibilityState and makeKeyAndOrderFront
     // there somehow does not change the window's key status on bot.
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+#endif
+  }
+
+  void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_MAC)
+    chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), true);
 #endif
   }
 
@@ -115,7 +120,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
     fullscreen_observer.Wait();
   }
   EXPECT_FALSE(browser_view->IsFullscreen());
-  chrome::ToggleFullscreenToolbar(browser());
+  // Disable 'Always Show Toolbar in Full Screen'.
+  chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
 
   {
     FullscreenNotificationObserver fullscreen_observer(browser());
@@ -125,11 +131,28 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   }
   EXPECT_TRUE(browser_view->IsFullscreen());
   EXPECT_FALSE(browser_view->GetTabStripVisible());
-  // The 'Always Show Bookmarks Bar' should be disabled.
-  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
+  // In non-immersive mode, the bookmark visibility cannot be changed because
+  // the toolbar is invisible. In immersive mode, the bookmark visibility should
+  // be able to change because the toolbar cannot be permanently hidden.
+  EXPECT_EQ(chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR),
+            base::FeatureList::IsEnabled(features::kImmersiveFullscreen));
+
+  if (browser_view->immersive_mode_controller()->IsEnabled()) {
+    // Move mouse to the upper border of the browser window and the toolbar
+    // should become visible.
+    ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
+        browser_view->GetBoundsInScreen().top_center(),
+        browser_view->GetWidget()->GetNativeWindow()));
+    views::test::PropertyWaiter(
+        base::BindRepeating(&BrowserView::GetTabStripVisible,
+                            base::Unretained(browser_view)),
+        true)
+        .Wait();
+    EXPECT_TRUE(browser_view->GetTabStripVisible());
+  }
 
   // Test toggling toolbar while being in fullscreen mode.
-  chrome::ToggleFullscreenToolbar(browser());
+  chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), true);
   EXPECT_TRUE(browser_view->IsFullscreen());
   top_view_in_browser_fullscreen = true;
 #else
@@ -231,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_FullscreenShowBookmarkBar) {
 #if BUILDFLAG(IS_MAC)
   // Disable showing toolbar in fullscreen mode to make its behavior similar to
   // other platforms.
-  chrome::ToggleFullscreenToolbar(browser());
+  chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
 #endif
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
 
@@ -246,19 +269,28 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_FullscreenShowBookmarkBar) {
     fullscreen_observer.Wait();
   }
   EXPECT_TRUE(browser_view->IsFullscreen());
-  if (browser_view->immersive_mode_controller()->IsEnabled())
-    EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
-  else
-    EXPECT_FALSE(browser_view->IsBookmarkBarVisible());
+
+  // Move to the center of the window so that the toolbar becomes hidden in
+  // immersive mode.
+  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
+      browser_view->GetBoundsInScreen().CenterPoint(),
+      browser_view->GetWidget()->GetNativeWindow()));
+  views::test::PropertyWaiter(
+      base::BindRepeating(&BrowserView::IsBookmarkBarVisible,
+                          base::Unretained(browser_view)),
+      false)
+      .Wait();
+  EXPECT_FALSE(browser_view->GetTabStripVisible());
+  EXPECT_FALSE(browser_view->IsBookmarkBarVisible());
 
 #if BUILDFLAG(IS_MAC)
   // Test toggling toolbar state in fullscreen mode would also affect bookmark
   // bar state.
-  chrome::ToggleFullscreenToolbar(browser());
+  chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), true);
   EXPECT_TRUE(browser_view->GetTabStripVisible());
   EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
 
-  chrome::ToggleFullscreenToolbar(browser());
+  chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
   EXPECT_FALSE(browser_view->GetTabStripVisible());
   EXPECT_FALSE(browser_view->IsBookmarkBarVisible());
 #endif

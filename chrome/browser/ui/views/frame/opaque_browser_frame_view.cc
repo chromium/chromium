@@ -254,7 +254,7 @@ void OpaqueBrowserFrameView::LayoutWebAppWindowTitle(
 }
 
 int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
-  return browser_view()->GetTabStripVisible()
+  return browser_view()->ShouldDrawTabStrip()
              ? layout_->GetTabStripInsetsTop(restored)
              : layout_->NonClientTopHeight(restored);
 }
@@ -537,7 +537,7 @@ gfx::Size OpaqueBrowserFrameView::GetTabstripMinimumSize() const {
 
 int OpaqueBrowserFrameView::GetTopAreaHeight() const {
   int top_height = layout_->NonClientTopHeight(false);
-  if (browser_view()->GetTabStripVisible()) {
+  if (browser_view()->ShouldDrawTabStrip()) {
     top_height =
         std::max(top_height,
                  GetBoundsForTabStripRegion(GetTabstripMinimumSize()).bottom() -
@@ -844,7 +844,7 @@ void OpaqueBrowserFrameView::PaintMaximizedFrameBorder(
 }
 
 void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
-  const bool tabstrip_visible = browser_view()->GetTabStripVisible();
+  const bool tabstrip_visible = browser_view()->ShouldDrawTabStrip();
   const gfx::Rect client_bounds =
       layout_->CalculateClientAreaBounds(width(), height());
 

@@ -623,6 +623,7 @@ component("views") {
 
   if (is_mac) {
     public += [
+      "cocoa/immersive_mode_reveal_client.h",
       "cocoa/native_widget_mac_ns_window_host.h",
       "controls/menu/menu_closure_animation_mac.h",
       "controls/menu/menu_cocoa_watcher_mac.h",

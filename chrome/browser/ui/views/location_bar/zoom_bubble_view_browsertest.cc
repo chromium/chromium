@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleImmersiveDisabledBrowserTest,
 #if BUILDFLAG(IS_MAC)
     const ZoomBubbleView* org_zoom_bubble = zoom_bubble;
     // Hide toolbar.
-    chrome::ToggleFullscreenToolbar(browser());
+    chrome::ToggleAlwaysShowToolbarInFullscreen(browser());
 
     zoom_bubble = ZoomBubbleView::GetZoomBubble();
     EXPECT_EQ(org_zoom_bubble, zoom_bubble);
