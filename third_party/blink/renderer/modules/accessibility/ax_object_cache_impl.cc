@@ -4123,12 +4123,8 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
         }
       }
 
-      // The role of an element depends on whether it has an event listener, so
-      // check if the role changed, and if so re-create the object.
-      if (obj->RoleValue() != obj->DetermineAccessibilityRole()) {
-        DeferTreeUpdate(TreeUpdateReason::kRoleMaybeChangedFromEventListener,
-                        &node);
-      }
+      DeferTreeUpdate(TreeUpdateReason::kRoleMaybeChangedFromEventListener,
+                      &node);
     }
   }
 }
@@ -5139,21 +5135,20 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
 }
 
 const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
+  // Accessibility tree must be updated before getting an object.
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-
-  AXObject* obj = GetOrCreate(node);
-  if (!obj)
-    return AXObject::ARIARoleName(ax::mojom::blink::Role::kUnknown);
-  return AXObject::ARIARoleName(obj->RoleValue());
+  ProcessDeferredAccessibilityEvents(GetDocument());
+  AXObject* obj = SafeGet(node);
+  return AXObject::ARIARoleName(obj ? obj->RoleValue()
+                                    : ax::mojom::blink::Role::kUnknown);
 }
 
 String AXObjectCacheImpl::ComputedNameForNode(Node* node) {
+  // Accessibility tree must be updated before getting an object.
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  AXObject* obj = GetOrCreate(node);
-  if (!obj)
-    return "";
-
-  return obj->ComputedName();
+  ProcessDeferredAccessibilityEvents(GetDocument());
+  AXObject* obj = SafeGet(node);
+  return obj ? obj->ComputedName() : "";
 }
 
 void AXObjectCacheImpl::OnTouchAccessibilityHover(const gfx::Point& location) {
