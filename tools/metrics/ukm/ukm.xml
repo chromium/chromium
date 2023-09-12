@@ -8574,6 +8574,19 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Extensions.BackgroundContentsCreated">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded each time a background contents creates its first renderer by
+    navigating its initial WebContents.
+  </summary>
+  <metric name="Seen" enum="Boolean">
+    <summary>
+      Dummy Boolean as UKM does not support events with no metrics.
+    </summary>
+  </metric>
+</event>
+
 <event name="Extensions.CrossOriginFetchFromContentScript3">
   <obsolete>
     Deprecated in Chrome 87 / September 2020 - it was not needed anymore since
