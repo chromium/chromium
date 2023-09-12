@@ -77,7 +77,7 @@ class SchemaRegistryNativeHandler : public ObjectBackedNativeHandler {
  private:
   void GetSchema(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.GetReturnValue().Set(registry_->GetSchema(
-        *v8::String::Utf8Value(args.GetIsolate(), args[0])));
+        args.GetIsolate(), *v8::String::Utf8Value(args.GetIsolate(), args[0])));
   }
 
   void GetObjectType(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -105,9 +105,10 @@ V8SchemaRegistry::V8SchemaRegistry() {
 V8SchemaRegistry::~V8SchemaRegistry() {
 }
 
-std::unique_ptr<NativeHandler> V8SchemaRegistry::AsNativeHandler() {
+std::unique_ptr<NativeHandler> V8SchemaRegistry::AsNativeHandler(
+    v8::Isolate* isolate) {
   std::unique_ptr<ScriptContext> context(
-      new ScriptContext(GetOrCreateContext(v8::Isolate::GetCurrent()),
+      new ScriptContext(GetOrCreateContext(isolate),
                         nullptr,  // no frame
                         nullptr,  // no extension
                         Feature::UNSPECIFIED_CONTEXT,
@@ -118,8 +119,8 @@ std::unique_ptr<NativeHandler> V8SchemaRegistry::AsNativeHandler() {
 }
 
 v8::Local<v8::Array> V8SchemaRegistry::GetSchemas(
+    v8::Isolate* isolate,
     const std::vector<std::string>& apis) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::EscapableHandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = GetOrCreateContext(isolate);
   v8::Context::Scope context_scope(context);
@@ -130,7 +131,7 @@ v8::Local<v8::Array> V8SchemaRegistry::GetSchemas(
   size_t api_index = 0;
   for (auto i = apis.cbegin(); i != apis.cend(); ++i) {
     bool set_result =
-        v8_apis->Set(context, api_index++, GetSchema(*i)).ToChecked();
+        v8_apis->Set(context, api_index++, GetSchema(isolate, *i)).ToChecked();
     // Set() should never return false without throwing an exception (which
     // would be caught by the ToChecked() above).
     DCHECK(set_result);
@@ -138,7 +139,8 @@ v8::Local<v8::Array> V8SchemaRegistry::GetSchemas(
   return handle_scope.Escape(v8_apis);
 }
 
-v8::Local<v8::Object> V8SchemaRegistry::GetSchema(const std::string& api) {
+v8::Local<v8::Object> V8SchemaRegistry::GetSchema(v8::Isolate* isolate,
+                                                  const std::string& api) {
   if (schema_cache_ != nullptr) {
     v8::Local<v8::Object> cached_schema = schema_cache_->Get(api);
     if (!cached_schema.IsEmpty()) {
@@ -148,7 +150,6 @@ v8::Local<v8::Object> V8SchemaRegistry::GetSchema(const std::string& api) {
 
   // Slow path: Need to build schema first.
 
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::EscapableHandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = GetOrCreateContext(isolate);
   v8::Context::Scope context_scope(context);

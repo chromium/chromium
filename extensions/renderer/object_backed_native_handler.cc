@@ -147,7 +147,7 @@ void ObjectBackedNativeHandler::RouteHandlerFunction(
   DCHECK_EQ(init_state_, kInitializingRoutes)
       << "RouteHandlerFunction() can only be called from AddRoutes()!";
 
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(context_->v8_context());
 

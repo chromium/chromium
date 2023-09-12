@@ -16,7 +16,7 @@
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/isolated_world_manager.h"
 #include "extensions/renderer/script_context.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-isolate.h"
@@ -115,9 +115,9 @@ ScriptContext* ScriptContextSet::GetContextByV8Context(
 
 ScriptContext* ScriptContextSet::GetMainWorldContextForFrame(
     content::RenderFrame* render_frame) {
-  v8::HandleScope handle_scope(blink::MainThreadIsolate());
-  return GetContextByV8Context(
-      render_frame->GetWebFrame()->MainWorldScriptContext());
+  blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
+  v8::HandleScope handle_scope(web_frame->GetAgentGroupScheduler()->Isolate());
+  return GetContextByV8Context(web_frame->MainWorldScriptContext());
 }
 
 void ScriptContextSet::ForEach(
