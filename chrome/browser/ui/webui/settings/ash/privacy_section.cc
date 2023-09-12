@@ -541,6 +541,10 @@ bool PrivacySection::LogMetric(mojom::Setting setting,
       base::UmaHistogramBoolean("ChromeOS.Settings.Privacy.VerifiedAccessOnOff",
                                 value.GetBool());
       return true;
+    case mojom::Setting::kRevenEnableHwDataUsage:
+      base::UmaHistogramBoolean("ChromeOS.Settings.RevenEnableHwDataUsage",
+                                value.GetBool());
+      return true;
     default:
       return false;
   }
@@ -548,6 +552,7 @@ bool PrivacySection::LogMetric(mojom::Setting setting,
 
 void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kVerifiedAccess);
+  generator->RegisterTopLevelSetting(mojom::Setting::kRevenEnableHwDataUsage);
   generator->RegisterTopLevelSetting(
       mojom::Setting::kUsageStatsAndCrashReports);
 

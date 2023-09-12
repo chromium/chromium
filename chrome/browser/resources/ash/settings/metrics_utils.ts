@@ -68,6 +68,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kPeripheralDataAccessProtection,
     type: chrome.settingsPrivate.PrefType.BOOLEAN,
   },
+  'cros.reven.enable_hw_data_usage': {
+    setting: Setting.kRevenEnableHwDataUsage,
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+  },
 };
 
 // Converts a given settings pref to a pair of setting ID and setting change

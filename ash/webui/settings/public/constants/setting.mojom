@@ -221,6 +221,7 @@ enum Setting {
   kLockScreenNotification = 1119,
   kSpeakOnMuteDetectionOnOff = 1120,
   kDataRecovery = 1121,
+  kRevenEnableHwDataUsage = 1122,
 
   // Languages and Input section.
   kAddLanguage = 1200,
