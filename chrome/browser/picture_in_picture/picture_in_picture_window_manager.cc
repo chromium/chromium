@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_bounds_cache.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -198,7 +199,6 @@ PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
                                 : absl::nullopt;
 }
 
-// static
 gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
     const display::Display& display,
@@ -209,6 +209,24 @@ gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
   // window sizing.
   gfx::Rect work_area = display.work_area();
   gfx::Rect window_bounds;
+
+  // Typically, we have a window controller at this point, but often during
+  // tests we don't.  Don't worry about the cache if it's missing.
+  if (pip_window_controller_) {
+    auto* const web_contents = pip_window_controller_->GetWebContents();
+    absl::optional<gfx::Size> requested_content_bounds;
+    if (pip_options.width > 0 && pip_options.height > 0) {
+      requested_content_bounds.emplace(pip_options.width, pip_options.height);
+    }
+    auto cached_window_bounds =
+        PictureInPictureBoundsCache::GetBoundsForNewWindow(
+            web_contents, display, requested_content_bounds);
+    if (cached_window_bounds) {
+      // Cache hit!  Just return it as the window bounds.
+      return *cached_window_bounds;
+    }
+  }
+
   if (pip_options.width > 0 && pip_options.height > 0) {
     // Use width and height if we have them both, but ensure it's within the
     // required bounds.
@@ -245,7 +263,6 @@ gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
   return window_bounds;
 }
 
-// static
 gfx::Rect
 PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
@@ -254,13 +271,24 @@ PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
                                                GetMinimumInnerWindowSize());
 }
 
-// static
 gfx::Rect PictureInPictureWindowManager::AdjustPictureInPictureWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
     const display::Display& display,
     const gfx::Size& minimum_window_size) {
   return CalculatePictureInPictureWindowBounds(pip_options, display,
                                                minimum_window_size);
+}
+
+void PictureInPictureWindowManager::UpdateCachedBounds(
+    const gfx::Rect& most_recent_bounds) {
+  // Typically, we have a window controller at this point, but often during
+  // tests we don't.  Don't worry about the cache if it's missing.
+  if (!pip_window_controller_) {
+    return;
+  }
+  auto* const web_contents = pip_window_controller_->GetWebContents();
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents,
+                                                  most_recent_bounds);
 }
 
 // static

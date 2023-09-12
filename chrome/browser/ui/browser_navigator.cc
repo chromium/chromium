@@ -297,8 +297,10 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
             browser_window ? screen->GetDisplayNearestWindow(native_window)
                            : screen->GetDisplayForNewWindows();
 
-        browser_params.initial_bounds = PictureInPictureWindowManager::
-            CalculateInitialPictureInPictureWindowBounds(*pip_options, display);
+        browser_params.initial_bounds =
+            PictureInPictureWindowManager::GetInstance()
+                ->CalculateInitialPictureInPictureWindowBounds(*pip_options,
+                                                               display);
 
         browser_params.omit_from_session_restore = true;
 

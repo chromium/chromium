@@ -251,6 +251,11 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
       new_bounds.size() != latest_child_dialog_forced_bounds_.size()) {
     latest_user_desired_bounds_.set_size(new_bounds.size());
 
+    // Update the bounds for this window as well.  It might be possible to
+    // remove `latest_user_desired_bounds_`, but likely it's not worth it.
+    PictureInPictureWindowManager::GetInstance()->UpdateCachedBounds(
+        new_bounds);
+
     // At this point, we'll no longer resize when the child dialog closes, so
     // reset the state to normal.
     resizing_state_ = ResizingState::kNormal;
@@ -618,9 +623,10 @@ void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
                      : screen->GetDisplayForNewWindows();
 
   const gfx::Rect window_bounds =
-      PictureInPictureWindowManager::AdjustPictureInPictureWindowBounds(
-          pip_options.value(), display,
-          GetMinimumSize() + gfx::Size(insets.width(), insets.height()));
+      PictureInPictureWindowManager::GetInstance()
+          ->AdjustPictureInPictureWindowBounds(
+              pip_options.value(), display,
+              GetMinimumSize() + gfx::Size(insets.width(), insets.height()));
 
   browser_view()->browser()->set_override_bounds(window_bounds);
 }

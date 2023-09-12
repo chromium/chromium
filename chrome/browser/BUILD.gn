@@ -1173,6 +1173,8 @@ static_library("browser") {
     "permissions/quiet_notification_permission_ui_config.h",
     "permissions/quiet_notification_permission_ui_state.cc",
     "permissions/quiet_notification_permission_ui_state.h",
+    "picture_in_picture/picture_in_picture_bounds_cache.cc",
+    "picture_in_picture/picture_in_picture_bounds_cache.h",
     "picture_in_picture/picture_in_picture_window_manager.cc",
     "picture_in_picture/picture_in_picture_window_manager.h",
     "platform_util.h",

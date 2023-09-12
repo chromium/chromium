@@ -107,7 +107,7 @@ class PictureInPictureWindowManager {
   // bounds may be later re-adjusted by the |PictureInPictureBrowserFrameView|
   // to accommodate non-client view elements, while respecting the minimum inner
   // window size.
-  static gfx::Rect CalculateInitialPictureInPictureWindowBounds(
+  gfx::Rect CalculateInitialPictureInPictureWindowBounds(
       const blink::mojom::PictureInPictureWindowOptions& pip_options,
       const display::Display& display);
 
@@ -117,10 +117,15 @@ class PictureInPictureWindowManager {
   // picture window bounds are only adjusted when, the requested window size
   // would cause the minimum inner window size to be smaller than the allowed
   // minimum (|GetMinimumInnerWindowSize|).
-  static gfx::Rect AdjustPictureInPictureWindowBounds(
+  gfx::Rect AdjustPictureInPictureWindowBounds(
       const blink::mojom::PictureInPictureWindowOptions& pip_options,
       const display::Display& display,
       const gfx::Size& minimum_window_size);
+
+  // Update the most recent window bounds for the pip window in the cache.  Call
+  // this when the pip window moves or resizes, though it's okay if not every
+  // update makes it here.
+  void UpdateCachedBounds(const gfx::Rect& most_recent_bounds);
 
   // Used for Document picture-in-picture windows only.
   // Note that this is meant to represent the inner window bounds. When the pip
@@ -150,7 +155,7 @@ class PictureInPictureWindowManager {
 
   // Helper method Used to calculate the outer window bounds for Document
   // picture-in-picture windows only.
-  static gfx::Rect CalculatePictureInPictureWindowBounds(
+  gfx::Rect CalculatePictureInPictureWindowBounds(
       const blink::mojom::PictureInPictureWindowOptions& pip_options,
       const display::Display& display,
       const gfx::Size& minimum_outer_window_size);
