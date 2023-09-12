@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, ShimlessRmaServiceInterface, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -96,6 +96,18 @@ export class FakeShimlessRmaService {
      * @private {boolean}
      */
     this.trackConfiguredNetworksCalled_ = false;
+
+    /**
+     * The approval of last call to completeLast3pDiagnosticsInstallation.
+     * @private {?boolean}
+     */
+    this.lastCompleteLast3pDiagnosticsInstallationApproval_ = null;
+
+    /**
+     * Has show3pDiagnosticsApp been called.
+     * @private {boolean}
+     */
+    this.wasShow3pDiagnosticsAppCalled_ = false;
 
     this.reset();
   }
@@ -348,7 +360,7 @@ export class FakeShimlessRmaService {
   /**
    * @return {!Promise<!{hwid: string}>}
    */
-   getRsuDisableWriteProtectHwid() {
+  getRsuDisableWriteProtectHwid() {
     return this.methods_.resolveMethod('getRsuDisableWriteProtectHwid');
   }
 
@@ -356,8 +368,7 @@ export class FakeShimlessRmaService {
    * @param {string} hwid
    */
   setGetRsuDisableWriteProtectHwidResult(hwid) {
-    this.methods_.setResult(
-        'getRsuDisableWriteProtectHwid', {hwid: hwid});
+    this.methods_.setResult('getRsuDisableWriteProtectHwid', {hwid: hwid});
   }
 
   /**
@@ -790,32 +801,73 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!{provider: !string}>}
+   * @return {!Promise<!{provider: ?string}>}
    */
-  get3pDiagnosticsProvider() {}
+  get3pDiagnosticsProvider() {
+    return this.methods_.resolveMethodWithDelay(
+        'get3pDiagnosticsProvider', this.resolveMethodDelayMs_);
+  }
+
+  /** @param {?string} provider */
+  setGet3pDiagnosticsProviderResult(provider) {
+    this.methods_.setResult('get3pDiagnosticsProvider', {provider});
+  }
 
   /**
-   * @return {!Promise<{appPath: !mojoBase.mojom.FilePath}>}
+   * @return {!Promise<{appPath: mojoBase.mojom.FilePath}>}
    */
-  getInstallable3pDiagnosticsAppPath() {}
+  getInstallable3pDiagnosticsAppPath() {
+    return this.methods_.resolveMethod('getInstallable3pDiagnosticsAppPath');
+  }
+
+  /** @param {mojoBase.mojom.FilePath} appPath */
+  setInstallable3pDiagnosticsAppPath(appPath) {
+    this.methods_.setResult('getInstallable3pDiagnosticsAppPath', {appPath});
+  }
 
   /**
-   * @return {!Promise<{appInfo:
-   *     !ash.shimlessRma.mojom.Shimless3pDiagnosticsAppInfo}>}
+   * @return {!Promise<{appInfo: Shimless3pDiagnosticsAppInfo}>}
    */
-  installLastFound3pDiagnosticsApp() {}
+  installLastFound3pDiagnosticsApp() {
+    return this.methods_.resolveMethod('installLastFound3pDiagnosticsApp');
+  }
+
+  /** @param {Shimless3pDiagnosticsAppInfo} appInfo */
+  setInstallLastFound3pDiagnosticsApp(appInfo) {
+    this.methods_.setResult('installLastFound3pDiagnosticsApp', {appInfo});
+  }
 
   /**
    * @param {boolean} isApproved
    * @return {!Promise}
    */
-  completeLast3pDiagnosticsInstallation(isApproved) {}
+  completeLast3pDiagnosticsInstallation(isApproved) {
+    this.lastCompleteLast3pDiagnosticsInstallationApproval_ = isApproved;
+    return Promise.resolve();
+  }
+
+  /** @return {?boolean} */
+  getLastCompleteLast3pDiagnosticsInstallationApproval() {
+    return this.lastCompleteLast3pDiagnosticsInstallationApproval_;
+  }
 
   /**
-   * @return {!Promise<{result:
-   *     ash.shimlessRma.mojom.Show3pDiagnosticsAppResult}>}
+   * @return {!Promise<{result: !Show3pDiagnosticsAppResult}>}
    */
-  show3pDiagnosticsApp() {}
+  show3pDiagnosticsApp() {
+    this.wasShow3pDiagnosticsAppCalled_ = true;
+    return this.methods_.resolveMethod('show3pDiagnosticsApp');
+  }
+
+  /** @param {!Show3pDiagnosticsAppResult} result */
+  setShow3pDiagnosticsAppResult(result) {
+    this.methods_.setResult('show3pDiagnosticsApp', {result});
+  }
+
+  /** @return {boolean} */
+  wasShow3pDiagnosticsAppCalled() {
+    return this.wasShow3pDiagnosticsAppCalled_;
+  }
 
   /**
    * Implements ShimlessRmaServiceInterface.ObserveError.
@@ -1292,6 +1344,8 @@ export class FakeShimlessRmaService {
     this.components_ = [];
     this.setGetLogResult('');
     this.setSaveLogResult({'path': ''});
+
+    this.lastCompleteLast3pDiagnosticsInstallationApproval_ = null;
   }
 
   /**
@@ -1380,6 +1434,11 @@ export class FakeShimlessRmaService {
     this.methods_.register('criticalErrorReboot');
 
     this.methods_.register('shutDownAfterHardwareError');
+
+    this.methods_.register('get3pDiagnosticsProvider');
+    this.methods_.register('getInstallable3pDiagnosticsAppPath');
+    this.methods_.register('installLastFound3pDiagnosticsApp');
+    this.methods_.register('show3pDiagnosticsApp');
   }
 
   /**
