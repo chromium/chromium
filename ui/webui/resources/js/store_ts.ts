@@ -31,7 +31,7 @@ export class Store<S, A extends Action = Action> {
   private reducer_: Reducer<S, A>;
   protected initialized_: boolean = false;
   private queuedActions_: Array<DeferredAction<A>> = [];
-  private observers_: Array<StoreObserver<S>> = [];
+  private observers_: Set<StoreObserver<S>> = new Set();
   private batchMode_: boolean = false;
 
   constructor(emptyState: S, reducer: Reducer<S, A>) {
@@ -56,16 +56,15 @@ export class Store<S, A extends Action = Action> {
   }
 
   addObserver(observer: StoreObserver<S>) {
-    this.observers_.push(observer);
+    this.observers_.add(observer);
   }
 
   removeObserver(observer: StoreObserver<S>) {
-    const index = this.observers_.indexOf(observer);
-    this.observers_.splice(index, 1);
+    this.observers_.delete(observer);
   }
 
   hasObserver(observer: StoreObserver<S>): boolean {
-    return this.observers_.includes(observer);
+    return this.observers_.has(observer);
   }
 
   /**
