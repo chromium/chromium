@@ -402,6 +402,8 @@ PrefetchContainer::PrefetchContainer(
 }
 
 PrefetchContainer::~PrefetchContainer() {
+  CancelStreamingURLLoaderIfNotServing();
+
   ukm::builders::PrefetchProxy_PrefetchedResource builder(ukm_source_id_);
   builder.SetResourceType(/*mainframe*/ 1);
   builder.SetStatus(static_cast<int>(
@@ -730,17 +732,18 @@ void PrefetchContainer::Reader::SetOnCookieCopyCompleteCallback(
       std::move(callback);
 }
 
-void PrefetchContainer::TakeStreamingURLLoader(
-    std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader) {
-  streaming_loaders_.push_back(std::move(streaming_loader));
+void PrefetchContainer::SetStreamingURLLoader(
+    base::WeakPtr<PrefetchStreamingURLLoader> streaming_loader) {
+  // The previous streaming loader (if any) should be already deleted or to be
+  // deleted soon when the new `streaming_loader` is set here.
+  CHECK(!streaming_loader_ || streaming_loader_->IsDeletionScheduledForCHECK());
+
+  streaming_loader_ = std::move(streaming_loader);
 }
 
-PrefetchStreamingURLLoader* PrefetchContainer::GetLastStreamingURLLoader()
-    const {
-  if (streaming_loaders_.empty()) {
-    return nullptr;
-  }
-  return streaming_loaders_.back().get();
+const base::WeakPtr<PrefetchStreamingURLLoader>&
+PrefetchContainer::GetStreamingURLLoader() const {
+  return streaming_loader_;
 }
 
 const PrefetchResponseReader* PrefetchContainer::GetNonRedirectResponseReader()
@@ -763,13 +766,7 @@ PrefetchContainer::Reader::CreateRequestHandler() {
 
 PrefetchResponseReader::RequestHandler
 PrefetchContainer::CreateRequestHandlerInternal(Reader& reader) {
-  CHECK(!streaming_loaders_.empty());
   DCHECK_EQ(reader.GetPrefetchContainer(), this);
-  auto* raw_streaming_loader = streaming_loaders_[0].get();
-
-  DCHECK(reader.GetCurrentSinglePrefetchToServe()
-             .response_reader_->GetStreamingLoader()
-             .get() == raw_streaming_loader);
 
   // Create a `RequestHandler` from the current `SinglePrefetch` (==
   // `reader`) and its corresponding `PrefetchStreamingURLLoader`.
@@ -779,41 +776,15 @@ PrefetchContainer::CreateRequestHandlerInternal(Reader& reader) {
   // Advance the current `SinglePrefetch` position.
   reader.AdvanceCurrentURLToServe();
 
-  // If `raw_streaming_loader` doesn't correspond to the next `SinglePrefetch`,
-  // then schedule its deletion, because it is no longer used for any upcoming
-  // `SinglePrefetch`.
-  // TODO(crbug.com/1449360): Clean up the lifetime and the deletion mechanism
-  // of streaming loaders here.
-  if (reader.IsEnd() || reader.GetCurrentSinglePrefetchToServe()
-                                .response_reader_->GetStreamingLoader()
-                                .get() != raw_streaming_loader) {
-    std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-        std::move(streaming_loaders_[0]);
-    streaming_loaders_.erase(streaming_loaders_.begin());
-    DCHECK(streaming_loader.get() == raw_streaming_loader);
-
-    raw_streaming_loader->MakeSelfOwned(std::move(streaming_loader));
-    raw_streaming_loader->PostTaskToDeleteSelfIfDisconnected();
-  }
-
   return handler;
 }
 
-bool PrefetchContainer::HasStreamingURLLoadersForTest() const {
-  return !streaming_loaders_.empty();
-}
-
-void PrefetchContainer::ResetAllStreamingURLLoaders() {
-  for (auto& streaming_loader : streaming_loaders_) {
-    // The PrefetchStreamingURLLoader and PrefetchResponseReader can be deleted
-    // in one of its callbacks, so instead of deleting it immediately, it is
-    // made self owned and then deletes itself.
-    DCHECK(streaming_loader);
-    auto* raw_streaming_loader = streaming_loader.get();
-    raw_streaming_loader->MakeSelfOwned(std::move(streaming_loader));
-    raw_streaming_loader->PostTaskToDeleteSelf();
+void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
+  if (!streaming_loader_) {
+    return;
   }
-  streaming_loaders_.clear();
+  streaming_loader_->CancelIfNotServing();
+  streaming_loader_.reset();
 }
 
 void PrefetchContainer::Reader::OnPrefetchProbeResult(
@@ -899,7 +870,7 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
 bool PrefetchContainer::ShouldBlockUntilHeadReceived() const {
   // Can only block until head if the request has been started using a
   // streaming URL loader and head/failure/redirect hasn't been received yet.
-  if (streaming_loaders_.empty() || redirect_chain_.empty() ||
+  if (!streaming_loader_ || redirect_chain_.empty() ||
       !redirect_chain_.back()->response_reader_->IsWaitingForResponse()) {
     return false;
   }
@@ -921,13 +892,6 @@ void PrefetchContainer::ResetBlockUntilHeadTimer() {
 
 bool PrefetchContainer::IsPrefetchServable(
     base::TimeDelta cacheable_duration) const {
-  // Currently `CreateRequestHandler()` requires the corresponding streaming
-  // loader.
-  // TODO(crbug.com/1449360): Remove this requirement.
-  if (streaming_loaders_.empty()) {
-    return false;
-  }
-
   // Whether or not the non-redirect response (either fully or partially
   // received body) is servable.
   return GetNonRedirectResponseReader() &&

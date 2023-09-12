@@ -64,7 +64,7 @@ void PrefetchStreamingURLLoader::Start(
 PrefetchStreamingURLLoader::~PrefetchStreamingURLLoader() = default;
 
 // static
-std::unique_ptr<PrefetchStreamingURLLoader> PrefetchStreamingURLLoader::Create(
+base::WeakPtr<PrefetchStreamingURLLoader> PrefetchStreamingURLLoader::Create(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const network::ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
@@ -87,7 +87,11 @@ std::unique_ptr<PrefetchStreamingURLLoader> PrefetchStreamingURLLoader::Create(
                           network_traffic_annotation,
                           std::move(timeout_duration));
 
-  return streaming_loader;
+  base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
+      streaming_loader->GetWeakPtr();
+  weak_streaming_loader->self_pointer_ = std::move(streaming_loader);
+
+  return weak_streaming_loader;
 }
 
 void PrefetchStreamingURLLoader::SetResponseReader(
@@ -136,33 +140,39 @@ bool PrefetchResponseReader::IsWaitingForResponse() const {
   }
 }
 
+void PrefetchStreamingURLLoader::CancelIfNotServing() {
+  if (used_for_serving_) {
+    return;
+  }
+  DisconnectPrefetchURLLoaderMojo();
+}
+
 void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
   prefetch_url_loader_.reset();
   prefetch_url_loader_client_receiver_.reset();
-  prefetch_url_loader_disconnected_ = true;
+  timeout_timer_.AbandonAndStop();
 
-  PostTaskToDeleteSelf();
-}
-
-void PrefetchStreamingURLLoader::PostTaskToDeleteSelfIfDisconnected() {
-  if (prefetch_url_loader_disconnected_) {
-    PostTaskToDeleteSelf();
-  }
-}
-
-void PrefetchStreamingURLLoader::MakeSelfOwned(
-    std::unique_ptr<PrefetchStreamingURLLoader> self) {
-  self_pointer_ = std::move(self);
-}
-
-void PrefetchStreamingURLLoader::PostTaskToDeleteSelf() {
   if (!self_pointer_) {
     return;
   }
 
-  // To avoid UAF bugs, post a separate task to delete this object.
+  if (on_deletion_scheduled_for_tests_) {
+    std::move(on_deletion_scheduled_for_tests_).Run();
+  }
+
+  // To avoid UAF bugs, post a separate task to delete this object, because this
+  // can be called in one of PrefetchStreamingURLLoader callbacks.
   base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(self_pointer_));
+}
+
+bool PrefetchStreamingURLLoader::IsDeletionScheduledForCHECK() const {
+  return !self_pointer_;
+}
+
+void PrefetchStreamingURLLoader::SetOnDeletionScheduledForTests(
+    base::OnceClosure on_deletion_scheduled_for_tests) {
+  on_deletion_scheduled_for_tests_ = std::move(on_deletion_scheduled_for_tests);
 }
 
 void PrefetchStreamingURLLoader::OnReceiveEarlyHints(
@@ -231,9 +241,9 @@ void PrefetchStreamingURLLoader::HandleRedirect(
       // be followed using a separate PrefetchStreamingURLLoader, and this url
       // loader will stop its request.
       DisconnectPrefetchURLLoaderMojo();
-      timeout_timer_.AbandonAndStop();
       break;
     case PrefetchRedirectStatus::kFail:
+      DisconnectPrefetchURLLoaderMojo();
       if (on_received_head_callback_) {
         std::move(on_received_head_callback_).Run();
       }
@@ -264,7 +274,6 @@ void PrefetchStreamingURLLoader::OnTransferSizeUpdated(
 void PrefetchStreamingURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& completion_status) {
   DisconnectPrefetchURLLoaderMojo();
-  timeout_timer_.AbandonAndStop();
 
   if (response_reader_) {
     response_reader_->OnComplete(completion_status);
@@ -284,6 +293,8 @@ void PrefetchStreamingURLLoader::OnComplete(
 void PrefetchStreamingURLLoader::OnStartServing() {
   // Once the prefetch is served, stop the timeout timer.
   timeout_timer_.AbandonAndStop();
+
+  used_for_serving_ = true;
 }
 
 void PrefetchStreamingURLLoader::SetPriority(net::RequestPriority priority,

@@ -1019,9 +1019,24 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  auto pending_request =
+      MakeManuallyServableStreamingURLLoaderForTest(prefetch_container.get());
+
+  {
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    std::string content = "test body";
+    CHECK_EQ(
+        mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
+        MOJO_RESULT_OK);
+    uint32_t bytes_written = content.size();
+    CHECK_EQ(MOJO_RESULT_OK,
+             producer_handle->WriteData(content.data(), &bytes_written,
+                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+    pending_request.client->OnReceiveResponse(
+        network::mojom::URLResponseHead::New(), std::move(consumer_handle),
+        absl::nullopt);
+  }
 
   // Simulate the cookie copy process starting, but not finishing until after
   // |MaybeCreateLoader| is called.
@@ -1055,7 +1070,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   task_environment()->FastForwardBy(base::Milliseconds(20));
 
   // Simulate the prefetch becoming not servable anymore.
-  prefetch_container->ResetAllStreamingURLLoaders();
+  pending_request.client->OnComplete(
+      network::URLLoaderCompletionStatus(net::ERR_FAILED));
   task_environment()->RunUntilIdle();
 
   reader.OnIsolatedCookieCopyComplete();

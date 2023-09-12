@@ -216,14 +216,9 @@ class CONTENT_EXPORT PrefetchResponseReader final
   base::WeakPtrFactory<PrefetchResponseReader> weak_ptr_factory_{this};
 };
 
-// Lifetime and ownership:
-//
-// Before `PrefetchContainer::CreateRequestHandler()`,
-// `PrefetchStreamingURLLoader` is owned by `PrefetchContainer`. After that, it
-// is self-owned and is deleted when `prefetch_url_loader_` is finished. The
-// PrefetchStreamingURLLoader can be deleted in one of its callbacks, so instead
-// of deleting it immediately, it is made self owned and then deletes itself
-// asynchronously.
+// `PrefetchStreamingURLLoader` is self-owned throughout its lifetime, and
+// deleted asynchronously when `prefetch_url_loader_` is finished or canceled
+// (e.g. on non-followed redirects or `CancelIfNotServing()`).
 class CONTENT_EXPORT PrefetchStreamingURLLoader
     : public network::mojom::URLLoaderClient {
  public:
@@ -245,7 +240,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head)>;
 
-  static std::unique_ptr<PrefetchStreamingURLLoader> Create(
+  static base::WeakPtr<PrefetchStreamingURLLoader> Create(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const network::ResourceRequest& request,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
@@ -286,10 +281,6 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
                       const net::RedirectInfo& redirect_info,
                       network::mojom::URLResponseHeadPtr redirect_head);
 
-  void MakeSelfOwned(std::unique_ptr<PrefetchStreamingURLLoader> self);
-  void PostTaskToDeleteSelf();
-  void PostTaskToDeleteSelfIfDisconnected();
-
   // Called from PrefetchResponseReader.
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
   void PauseReadingBodyFromNet();
@@ -301,12 +292,29 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
 
   void OnStartServing();
 
+  // Cancels the prefetching and schedule deletion, if any of its corresponding
+  // `PrefetchResponseReader` does NOT start serving. This can cancel the
+  // prefetching prematurely and leave `this` and `PrefetchResponseReader`
+  // stalled.
+  // TODO(crbug.com/1449360): Consider cleaning up this behavior (== existing
+  // behavior, previously as `ResetAllStreamingURLLoaders()`).
+  void CancelIfNotServing();
+
+  // Only for CHECK()ing.
+  NOINLINE bool IsDeletionScheduledForCHECK() const;
+
+  void SetOnDeletionScheduledForTests(
+      base::OnceClosure on_deletion_scheduled_for_tests);
+
  private:
   void Start(network::mojom::URLLoaderFactory* url_loader_factory,
              const network::ResourceRequest& request,
              const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
              base::TimeDelta timeout_duration);
 
+  // Disconnect prefetching URLLoader and schedule deletion of `this`.
+  // Currently this itself doesn't mark `this` or corresponding
+  // `PrefetchResponseReader` as failed.
   void DisconnectPrefetchURLLoaderMojo();
 
   // network::mojom::URLLoaderClient
@@ -324,14 +332,13 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void OnComplete(
       const network::URLLoaderCompletionStatus& completion_status) override;
 
-  // Set when this manages its own lifetime.
   std::unique_ptr<PrefetchStreamingURLLoader> self_pointer_;
 
   // The timer that triggers a timeout when a request takes too long.
   base::OneShotTimer timeout_timer_;
 
-  // Once prefetching is complete, then this can be deleted.
-  bool prefetch_url_loader_disconnected_{false};
+  // Set if any of corresponding `PrefetchResponseReader` starts serving.
+  bool used_for_serving_{false};
 
   // The URL loader used to request the prefetch.
   mojo::Remote<network::mojom::URLLoader> prefetch_url_loader_;
@@ -348,6 +355,10 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // either when non-redirect response head is received, or when determined not
   // servable.
   base::OnceClosure on_received_head_callback_;
+
+  // Called when deletion is scheduled. Only for testing corner cases around
+  // deletion.
+  base::OnceClosure on_deletion_scheduled_for_tests_;
 
   base::WeakPtr<PrefetchResponseReader> response_reader_;
 

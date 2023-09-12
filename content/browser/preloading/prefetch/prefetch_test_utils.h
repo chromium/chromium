@@ -45,8 +45,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
     const GURL& original_url,
     const GURL& redirect_url);
 
-std::vector<base::WeakPtr<PrefetchStreamingURLLoader>>
-MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
+void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
     PrefetchContainer* prefetch_container,
     const GURL& original_url,
     const GURL& redirect_url);

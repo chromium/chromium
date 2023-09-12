@@ -880,20 +880,21 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
       /*prefetch_document_manager=*/nullptr);
   prefetch_container->MakeResourceRequest({});
 
-  EXPECT_FALSE(prefetch_container->HasStreamingURLLoadersForTest());
-  EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(), nullptr);
+  EXPECT_EQ(prefetch_container->GetStreamingURLLoader(), nullptr);
 
   EXPECT_FALSE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
   EXPECT_FALSE(prefetch_container->GetHead());
 
-  auto streaming_loaders =
-      MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
-          prefetch_container.get(), kTestUrl1, kTestUrl2);
-  ASSERT_EQ(streaming_loaders.size(), 2U);
-  EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(),
-            streaming_loaders[1].get());
+  MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
+      prefetch_container.get(), kTestUrl1, kTestUrl2);
   EXPECT_TRUE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
   EXPECT_TRUE(prefetch_container->GetHead());
+
+  // As the prefetch is already completed, the streaming loader is deleted
+  // asynchronously.
+  EXPECT_TRUE(prefetch_container->GetStreamingURLLoader());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
 
   PrefetchContainer::Reader reader = prefetch_container->CreateReader();
 
@@ -902,29 +903,15 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   PrefetchResponseReader::RequestHandler first_request_handler =
       reader.CreateRequestHandler();
 
-  EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(),
-            streaming_loaders[1].get());
-
-  EXPECT_TRUE(streaming_loaders[0]);
-  // `PrefetchStreamingURLLoader` is deleted asynchronously, because
-  // `RequestHandler` doesn't keep it alive.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(streaming_loaders[0]);
-
   base::WeakPtr<PrefetchResponseReader> weak_second_response_reader =
       reader.GetCurrentResponseReaderToServeForTesting();
   PrefetchResponseReader::RequestHandler second_request_handler =
       reader.CreateRequestHandler();
 
-  EXPECT_FALSE(prefetch_container->HasStreamingURLLoadersForTest());
-  EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(), nullptr);
-
-  EXPECT_FALSE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  // `CreateRequestHandler()` itself doesn't make the PrefetchContainer
+  // non-servable.
+  EXPECT_TRUE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
   EXPECT_TRUE(prefetch_container->GetHead());
-
-  EXPECT_TRUE(streaming_loaders[1]);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(streaming_loaders[1]);
 
   std::unique_ptr<PrefetchTestURLLoaderClient> first_serving_url_loader_client =
       std::make_unique<PrefetchTestURLLoaderClient>();
@@ -970,7 +957,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   EXPECT_FALSE(weak_second_response_reader);
 }
 
-TEST_F(PrefetchContainerTest, ReleaseAllStreamingURLLoaders) {
+TEST_F(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   const GURL kTestUrl1 = GURL("https://test1.com");
   const GURL kTestUrl2 = GURL("https://test2.com");
 
@@ -986,28 +973,37 @@ TEST_F(PrefetchContainerTest, ReleaseAllStreamingURLLoaders) {
       /*prefetch_document_manager=*/nullptr);
   prefetch_container.MakeResourceRequest({});
 
-  EXPECT_FALSE(prefetch_container.HasStreamingURLLoadersForTest());
-  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
+  auto pending_request =
+      MakeManuallyServableStreamingURLLoaderForTest(&prefetch_container);
 
-  auto streaming_loaders =
-      MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
-          &prefetch_container, kTestUrl1, kTestUrl2);
-  ASSERT_EQ(streaming_loaders.size(), 2U);
-  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(),
-            streaming_loaders[1].get());
-
-  prefetch_container.ResetAllStreamingURLLoaders();
-
-  EXPECT_FALSE(prefetch_container.HasStreamingURLLoadersForTest());
-  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
-
-  EXPECT_TRUE(streaming_loaders[0]);
-  EXPECT_TRUE(streaming_loaders[1]);
-  // The streaming loaders are released from |prefetch_container|, but are made
-  // self owned and scheduled to delete themselves.
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  CHECK_EQ(mojo::CreateDataPipe(1024, producer_handle, consumer_handle),
+           MOJO_RESULT_OK);
+  pending_request.client->OnReceiveResponse(
+      network::mojom::URLResponseHead::New(), std::move(consumer_handle),
+      absl::nullopt);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(streaming_loaders[0]);
-  EXPECT_FALSE(streaming_loaders[1]);
+
+  // Prefetching is ongoing.
+  ASSERT_TRUE(prefetch_container.GetStreamingURLLoader());
+  base::WeakPtr<PrefetchStreamingURLLoader> streaming_loader =
+      prefetch_container.GetStreamingURLLoader();
+  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
+
+  prefetch_container.CancelStreamingURLLoaderIfNotServing();
+
+  // `streaming_loader` is still alive and working.
+  EXPECT_FALSE(prefetch_container.GetStreamingURLLoader());
+  EXPECT_TRUE(streaming_loader);
+  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
+
+  base::RunLoop().RunUntilIdle();
+
+  // `streaming_loader` is deleted asynchronously and its prefetching URL loader
+  // is canceled. This itself doesn't make PrefetchContainer non-servable.
+  EXPECT_FALSE(streaming_loader);
+  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
 }
 
 // To test lifetime and ownership issues, all possible event orderings for
@@ -1108,9 +1104,9 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
 
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       reader.GetCurrentResponseReaderToServeForTesting();
-  ASSERT_TRUE(prefetch_container->GetLastStreamingURLLoader());
+  ASSERT_TRUE(prefetch_container->GetStreamingURLLoader());
   base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
-      prefetch_container->GetLastStreamingURLLoader()->GetWeakPtr();
+      prefetch_container->GetStreamingURLLoader();
 
   PrefetchResponseReader::RequestHandler request_handler;
   std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client;
@@ -1196,9 +1192,9 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
               !done.count(Event::kDisconnectServingClient) ||
                   !done.count(Event::kDestructPrefetchContainer));
 
-    EXPECT_EQ(!!weak_streaming_loader,
-              !done.count(Event::kPrefetchOnComplete) ||
-                  !done.count(Event::kCreateRequestHandler));
+    // `PrefetchStreamingURLLoader` is kept alive until prefetching is
+    // completed.
+    EXPECT_EQ(!!weak_streaming_loader, !done.count(Event::kPrefetchOnComplete));
 
     if (done.count(Event::kRequestHandler)) {
       EXPECT_EQ(serving_url_loader_client->completion_status().has_value(),

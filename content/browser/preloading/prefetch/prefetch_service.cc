@@ -280,7 +280,7 @@ void OnIsolatedCookieCopyComplete(PrefetchContainer::Reader reader) {
 
 void BlockUntilHeadTimeoutHelper(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  if (!prefetch_container || !prefetch_container->GetLastStreamingURLLoader()) {
+  if (!prefetch_container) {
     return;
   }
 
@@ -796,9 +796,8 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
   // the prefetch.
   if (!eligible && !prefetch_container->IsDecoy()) {
     active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
-    prefetch_container->GetLastStreamingURLLoader()->HandleRedirect(
+    prefetch_container->GetStreamingURLLoader()->HandleRedirect(
         PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
-    prefetch_container->ResetAllStreamingURLLoaders();
 
     Prefetch();
 
@@ -824,7 +823,7 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
           ->IsIsolatedNetworkContextRequiredForCurrentPrefetch() !=
       prefetch_container
           ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop()) {
-    prefetch_container->GetLastStreamingURLLoader()->HandleRedirect(
+    prefetch_container->GetStreamingURLLoader()->HandleRedirect(
         PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
         std::move(redirect_head));
     // The new ResponseReader is associated with the new streaming URL loader at
@@ -835,10 +834,10 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
   }
 
   // Otherwise, follow the redirect in the same streaming URL loader.
-  prefetch_container->GetLastStreamingURLLoader()->HandleRedirect(
+  prefetch_container->GetStreamingURLLoader()->HandleRedirect(
       PrefetchRedirectStatus::kFollow, redirect_info, std::move(redirect_head));
   // Associate the new ResponseReader with the current streaming URL loader.
-  prefetch_container->GetLastStreamingURLLoader()->SetResponseReader(
+  prefetch_container->GetStreamingURLLoader()->SetResponseReader(
       prefetch_container->GetResponseReaderForCurrentPrefetch());
 }
 
@@ -1130,7 +1129,7 @@ void PrefetchService::SendPrefetchRequest(
                           base::Unretained(this), prefetch_container),
       base::BindOnce(&PrefetchContainer::OnReceivedHead, prefetch_container),
       prefetch_container->GetResponseReaderForCurrentPrefetch());
-  prefetch_container->TakeStreamingURLLoader(std::move(streaming_loader));
+  prefetch_container->SetStreamingURLLoader(std::move(streaming_loader));
 
   DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";
 }
@@ -1198,9 +1197,8 @@ void PrefetchService::OnPrefetchRedirect(
     active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedInvalidRedirect);
-    prefetch_container->GetLastStreamingURLLoader()->HandleRedirect(
+    prefetch_container->GetStreamingURLLoader()->HandleRedirect(
         PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
-    prefetch_container->ResetAllStreamingURLLoaders();
 
     Prefetch();
     RecordRedirectResult(*failure);
@@ -1300,7 +1298,6 @@ void PrefetchService::OnPrefetchResponseCompleted(
   if (prefetch_container->IsDecoy()) {
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchIsPrivacyDecoy);
-    prefetch_container->ResetAllStreamingURLLoaders();
     Prefetch();
     return;
   }
@@ -1704,7 +1701,7 @@ void PrefetchService::ReturnPrefetchToServe(
         PrefetchStatus::kPrefetchNotUsedCookiesChanged);
     prefetch_container->UpdateServingPageMetrics();
     prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-    prefetch_container->ResetAllStreamingURLLoaders();
+    prefetch_container->CancelStreamingURLLoaderIfNotServing();
     std::move(on_prefetch_to_serve_ready).Run({});
     return;
   }
