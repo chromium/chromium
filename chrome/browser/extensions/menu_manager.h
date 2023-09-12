@@ -21,6 +21,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -379,7 +380,8 @@ class MenuManager : public ProfileObserver,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  // Stores the menu items for the extension in the state storage.
+  // Stores the menu items for the extension in the state storage. The write
+  // will happen asynchronously after some delay.
   void WriteToStorage(const Extension* extension,
                       const MenuItem::ExtensionKey& extension_key);
 
@@ -411,6 +413,8 @@ class MenuManager : public ProfileObserver,
   // Returns true if item is a descendant of an item with id |ancestor_id|.
   bool DescendantOf(MenuItem* item, const MenuItem::Id& ancestor_id);
 
+  void WriteToStorageInternal(const MenuItem::ExtensionKey& extension_key);
+
   // We keep items organized by mapping ExtensionKey to a list of items.
   std::map<MenuItem::ExtensionKey, MenuItem::OwnedList> context_items_;
 
@@ -418,6 +422,9 @@ class MenuManager : public ProfileObserver,
   // all items the menu manager knows about, including all children of top-level
   // items.
   std::map<MenuItem::Id, MenuItem*> items_by_id_;
+
+  // The scheduled tasks to write the menu items to storage.
+  std::map<MenuItem::ExtensionKey, base::OneShotTimer> write_tasks_;
 
   // Listen to extension load, unloaded events.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

@@ -33,6 +33,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/state_store.h"
+#include "extensions/browser/state_store_test_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -914,8 +915,12 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 // persistent background page-based extensions are not written to or
 // read from storage.
 TEST_P(MenuManagerStorageTest, WriteToAndReadFromStorage) {
-  // Observer reads and writes from storage for the MenuManager.
+  // Observe reads and writes from storage for the MenuManager.
   MenuManagerTestObserver observer(&manager_);
+
+  // Observe writes to storage for the StateStore. Only for
+  // non-persistent background pages.
+  StateStoreTestObserver ss_observer(profile_.get());
 
   scoped_refptr<const Extension> extension = CreateTestExtension();
   ASSERT_TRUE(extension);
@@ -943,6 +948,7 @@ TEST_P(MenuManagerStorageTest, WriteToAndReadFromStorage) {
   if (IsPersistent()) {
     EXPECT_FALSE(observer.will_write_for_extension(extension->id()));
   } else {
+    ss_observer.WaitForExtensionAndKey(extension->id(), "context_menus");
     EXPECT_TRUE(observer.will_write_for_extension(extension->id()));
     manager_.RemoveAllContextItems(extension_key);
     EXPECT_FALSE(manager_.GetItemById(item1_id));

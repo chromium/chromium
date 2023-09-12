@@ -63,6 +63,9 @@ const char kTitleKey[] = "title";
 const char kMenuManagerTypeKey[] = "type";
 const char kVisibleKey[] = "visible";
 
+// The time by which to delay writing updated menu items to storage.
+constexpr int kWriteDelayInSeconds = 1;
+
 void SetIdKeyValue(base::Value::Dict& properties,
                    const char* key,
                    const MenuItem::Id& id) {
@@ -830,6 +833,18 @@ void MenuManager::WriteToStorage(const Extension* extension,
   // <webview> menu items are transient and not stored in storage.
   if (extension_key.webview_instance_id)
     return;
+
+  // Schedule a task to write to storage since there could be many calls in a
+  // short span of time. See crbug.com/1476858.
+  write_tasks_[extension_key].Start(
+      FROM_HERE, base::Seconds(kWriteDelayInSeconds),
+      base::BindOnce(&MenuManager::WriteToStorageInternal,
+                     weak_ptr_factory_.GetWeakPtr(), extension_key));
+}
+
+void MenuManager::WriteToStorageInternal(
+    const MenuItem::ExtensionKey& extension_key) {
+  write_tasks_.erase(extension_key);
   const MenuItem::OwnedList* top_items = MenuItems(extension_key);
   MenuItem::List all_items;
   if (top_items) {
@@ -840,10 +855,10 @@ void MenuManager::WriteToStorage(const Extension* extension,
   }
 
   for (TestObserver& observer : observers_)
-    observer.WillWriteToStorage(extension->id());
+    observer.WillWriteToStorage(extension_key.extension_id);
 
   if (store_) {
-    store_->SetExtensionValue(extension->id(), kContextMenusKey,
+    store_->SetExtensionValue(extension_key.extension_id, kContextMenusKey,
                               base::Value(MenuItemsToValue(all_items)));
   }
 }
