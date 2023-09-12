@@ -113,6 +113,8 @@ constexpr char kHistogramRetransmittedPacketsPercentage[] =
     "CastStreaming.Sender.%s.RetransmittedPacketsPercentage";
 constexpr char kHistogramExceededPlayoutDelayPacketsPercentage[] =
     "CastStreaming.Sender.%s.ExceededPlayoutDelayPacketsPercentage";
+constexpr char kHistogramLateFramesPercentage[] =
+    "CastStreaming.Sender.%s.LateFramesPercentage";
 
 constexpr char kLoggerComponent[] = "MirroringService";
 
@@ -324,6 +326,23 @@ void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
     base::UmaHistogramPercentage(
         exceeded_playout_delay_packets_percent_histogram_name,
         exceeded_playout_percent.value());
+  }
+
+  const double num_frames_captured =
+      LookupStat(*mirroring_stats,
+                 media::cast::StatsEventSubscriber::NUM_FRAMES_CAPTURED)
+          .value_or(0.0);
+  if (num_frames_captured) {
+    const double num_frames_late =
+        LookupStat(*mirroring_stats,
+                   media::cast::StatsEventSubscriber::NUM_FRAMES_LATE)
+            .value_or(-1.0);
+    if (num_frames_late >= 0) {
+      const std::string late_frames_percent_histogram_name =
+          base::StringPrintf(kHistogramLateFramesPercentage, streaming_type);
+      base::UmaHistogramPercentage(late_frames_percent_histogram_name,
+                                   num_frames_late * 100 / num_frames_captured);
+    }
   }
 }
 
