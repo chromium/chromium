@@ -28,7 +28,6 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -114,10 +113,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Section: SectionIdentifierAddPasswordButton
   ItemTypeAddPasswordButton,
 };
-
-bool IsPasswordNotesWithBackupEnabled() {
-  return base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup);
-}
 
 // Helper method to determine whether the Password Check cell is tappable or
 // not.
@@ -1924,8 +1919,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
       TableViewItem* item = [model itemAtIndexPath:indexPath];
 
-      if (!IsPasswordNotesWithBackupEnabled() ||
-          password_manager::features::IsAuthOnEntryV2Enabled()) {
+      if (password_manager::features::IsAuthOnEntryV2Enabled()) {
         [self showDetailedViewPageForItem:item];
       } else if ([self.reauthenticationModule canAttemptReauth]) {
         void (^showPasswordDetailsHandler)(ReauthenticationResult) =
