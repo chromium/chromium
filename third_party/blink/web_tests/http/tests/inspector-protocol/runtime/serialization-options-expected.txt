@@ -1054,7 +1054,7 @@ Testing `document.querySelector("body > div").attributes[0]` with {"serializatio
         backendNodeId : <number>
         childNodeCount : 0
         localName : some_attr_name
-        namespaceURI : 
+        namespaceURI : null
         nodeType : 2
         nodeValue : some_attr_value
     }
@@ -1066,7 +1066,7 @@ Testing `document.querySelector("body > div").attributes[0]` with {"serializatio
         backendNodeId : <number>
         childNodeCount : 0
         localName : some_attr_name
-        namespaceURI : 
+        namespaceURI : null
         nodeType : 2
         nodeValue : some_attr_value
     }
@@ -1078,7 +1078,7 @@ Testing `document.querySelector("body > div").attributes[0]` with {"serializatio
         backendNodeId : <number>
         childNodeCount : 0
         localName : some_attr_name
-        namespaceURI : 
+        namespaceURI : null
         nodeType : 2
         nodeValue : some_attr_value
     }
@@ -1090,7 +1090,7 @@ Testing `document.querySelector("body > div").attributes[0]` with {"serializatio
         backendNodeId : <number>
         childNodeCount : 0
         localName : some_attr_name
-        namespaceURI : 
+        namespaceURI : null
         nodeType : 2
         nodeValue : some_attr_value
     }

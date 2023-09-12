@@ -224,8 +224,12 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
         V8String(isolate, attribute->localName()));
 
     serialized_value_keys.push_back(V8String(isolate, kNamespaceURI));
-    serialized_value_values.push_back(
-        V8String(isolate, attribute->namespaceURI()));
+    if (attribute->namespaceURI().IsNull()) {
+      serialized_value_values.push_back(v8::Null(isolate));
+    } else {
+      serialized_value_values.push_back(
+          V8String(isolate, attribute->namespaceURI()));
+    }
   }
 
   if (node->IsElementNode()) {
