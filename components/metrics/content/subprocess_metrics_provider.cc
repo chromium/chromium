@@ -189,7 +189,11 @@ void SubprocessMetricsProvider::BrowserChildProcessLaunchedAndConnected(
   // This call can only be made on the browser's IO thread.
   content::BrowserChildProcessHost* host =
       content::BrowserChildProcessHost::FromID(data.id);
-  CHECK(host);
+  // |host| should not be null, but such cases have been observed in the wild so
+  // gracefully handle this scenario.
+  if (!host) {
+    return;
+  }
 
   std::unique_ptr<base::PersistentMemoryAllocator> allocator =
       host->TakeMetricsAllocator();
