@@ -552,6 +552,14 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
   RefreshStoredLoginScreenMouseSettings();
   RefreshStoredLoginScreenTouchpadSettings();
   RefreshStoredLoginScreenPointingStickSettings();
+
+  if (features::IsPeripheralCustomizationEnabled()) {
+    for (const auto& [id, graphics_tablet] : graphics_tablets_) {
+      InitializeGraphicsTabletSettings(graphics_tablet.get());
+      DispatchGraphicsTabletSettingsChanged(id);
+    }
+    RefreshStoredLoginScreenGraphicsTabletSettings();
+  }
 }
 
 void InputDeviceSettingsControllerImpl::
@@ -674,6 +682,19 @@ void InputDeviceSettingsControllerImpl::
   }
 }
 
+void InputDeviceSettingsControllerImpl::
+    RefreshStoredLoginScreenGraphicsTabletSettings() {
+  if (!local_state_ || !active_account_id_.has_value()) {
+    return;
+  }
+  if (graphics_tablets_.size() == 0) {
+    return;
+  }
+  graphics_tablet_pref_handler_->UpdateLoginScreenGraphicsTabletSettings(
+      local_state_, active_account_id_.value(),
+      *graphics_tablets_.rbegin()->second);
+}
+
 void InputDeviceSettingsControllerImpl::OnLoginScreenFocusedPodChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
@@ -702,6 +723,15 @@ void InputDeviceSettingsControllerImpl::OnLoginScreenFocusedPodChanged(
     touchpad_pref_handler_->InitializeLoginScreenTouchpadSettings(
         local_state_, account_id, touchpad.get());
     DispatchTouchpadSettingsChanged(id);
+  }
+
+  if (features::IsPeripheralCustomizationEnabled()) {
+    for (const auto& [id, graphics_tablet] : graphics_tablets_) {
+      graphics_tablet_pref_handler_
+          ->InitializeLoginScreenGraphicsTabletSettings(
+              local_state_, account_id, graphics_tablet.get());
+      DispatchGraphicsTabletSettingsChanged(id);
+    }
   }
 }
 
@@ -1005,6 +1035,7 @@ void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
       base::BindRepeating(&InputDeviceSettingsControllerImpl::
                               DispatchGraphicsTabletSettingsChanged,
                           base::Unretained(this)));
+  RefreshStoredLoginScreenGraphicsTabletSettings();
 }
 
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
@@ -1253,8 +1284,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     std::vector<DeviceId> graphics_tablet_ids_to_remove) {
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
     auto mojom_graphics_tablet = BuildMojomGraphicsTablet(graphics_tablet);
-    // TODO(wangdanny): Add InitializeGraphicsTabletSettings.
-    mojom_graphics_tablet->settings = mojom::GraphicsTabletSettings::New();
+    InitializeGraphicsTabletSettings(mojom_graphics_tablet.get());
     graphics_tablets_.insert_or_assign(graphics_tablet.id,
                                        std::move(mojom_graphics_tablet));
     DispatchGraphicsTabletConnected(graphics_tablet.id);
@@ -1263,7 +1293,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
   for (const auto id : graphics_tablet_ids_to_remove) {
     DispatchGraphicsTabletDisconnectedAndEraseFromList(id);
   }
-  // TODO(wangdanny): Add RefreshStoredLoginScreenGraphicsTabletSettings.
+  RefreshStoredLoginScreenGraphicsTabletSettings();
 }
 
 void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
@@ -1367,6 +1397,18 @@ void InputDeviceSettingsControllerImpl::InitializePointingStickSettings(
 
   pointing_stick_pref_handler_->InitializeLoginScreenPointingStickSettings(
       local_state_, active_account_id_.value(), pointing_stick);
+}
+
+void InputDeviceSettingsControllerImpl::InitializeGraphicsTabletSettings(
+    mojom::GraphicsTablet* graphics_tablet) {
+  if (active_pref_service_) {
+    graphics_tablet_pref_handler_->InitializeGraphicsTabletSettings(
+        active_pref_service_, graphics_tablet);
+    return;
+  }
+
+  graphics_tablet_pref_handler_->InitializeLoginScreenGraphicsTabletSettings(
+      local_state_, active_account_id_.value(), graphics_tablet);
 }
 
 void InputDeviceSettingsControllerImpl::InitializeTouchpadSettings(

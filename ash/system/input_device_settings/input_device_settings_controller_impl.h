@@ -150,6 +150,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   // Correctly initializes settings depending on whether we have an active
   // user session or not.
+  void InitializeGraphicsTabletSettings(mojom::GraphicsTablet* graphics_tablet);
   void InitializeKeyboardSettings(mojom::Keyboard* keyboard);
   void InitializeMouseSettings(mojom::Mouse* mouse);
   void InitializePointingStickSettings(mojom::PointingStick* pointing_stick);
@@ -162,6 +163,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // - A device is connected/disconnected.
   // - A user makes an update to a device setting.
   // - The active pref service changes.
+  void RefreshStoredLoginScreenGraphicsTabletSettings();
   void RefreshStoredLoginScreenKeyboardSettings();
   void RefreshStoredLoginScreenMouseSettings();
   void RefreshStoredLoginScreenPointingStickSettings();
