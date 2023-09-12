@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<title>Enter/leave events fired to parent after child is added</title>
+<meta name="variant" content="?mouse">
+<meta name="variant" content="?touch">
+<meta name="variant" content="?pen">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="pointerevent_support.js"></script>
+
+<style>
+  div.target {
+      width: 100px;
+      height: 100px;
+  }
+</style>
+<div class="target" id="parent">
+  <div class="target" id="child">child</div>
+</div>
+<div id="done">done</div>
+
+<script>
+  'use strict';
+  const pointer_type = location.search.substring(1);
+
+  const parent = document.getElementById("parent");
+  const child = document.getElementById("child");
+  const done = document.getElementById("done");
+
+  let event_log = [];
+
+  function logEvent(e) {
+    if (e.eventPhase == e.AT_TARGET) {
+      event_log.push(e.type + "@" + e.target.id);
+    }
+  }
+
+  function attachChild(e) {
+    if (e.eventPhase == e.AT_TARGET) {
+      parent.appendChild(child);
+      event_log.push("(child-attached)");
+    }
+  }
+
+  let child_moved = false;
+
+  function moveChild(e) {
+    if (!child_moved) {
+      child_moved = true;
+      parent.appendChild(child);
+      event_log.push("(child-moved)");
+    }
+  }
+
+  function setup() {
+    const logged_events = [
+      "pointerover", "pointerout", "pointerenter", "pointerleave",
+      "pointerdown", "pointerup"
+    ];
+    let targets = document.getElementsByClassName("target");
+    for (let i = 0; i < targets.length; i++) {
+      logged_events.forEach(ename => {
+        targets[i].addEventListener(ename, logEvent);
+      });
+    }
+  }
+
+  function addPromiseTestForNewChild(attaching_event, expected_events) {
+    const test_name = `PointerEvents from ${pointer_type} `+
+        `received before/after child attached at ${attaching_event}`;
+
+    promise_test(async test => {
+      event_log = [];
+
+      // We started with child attached to ease event listener setup above.
+      parent.removeChild(child);
+
+      parent.addEventListener(attaching_event, attachChild);
+      test.add_cleanup(() => {
+        parent.removeEventListener(attaching_event, attachChild);
+      });
+
+      let done_click_promise = getEvent("click", done);
+
+      let actions = new test_driver.Actions()
+          .addPointer("TestPointer", pointer_type)
+          .pointerMove(-30, -30, {origin: parent})
+          .pointerDown()
+          .pointerUp()
+          .pointerMove(30, 30, {origin: parent})
+          .pointerDown()
+          .pointerUp()
+          .pointerMove(0, 0, {origin: done})
+          .pointerDown()
+          .pointerUp();
+
+      await actions.send();
+      await done_click_promise;
+
+      assert_equals(event_log.toString(), expected_events.toString(),
+          "events received");
+    }, test_name);
+  }
+
+  function addPromiseTestForMovedChild(mover_event, expected_events) {
+    const test_name = `PointerEvents from ${pointer_type} `+
+        `received before/after child moved at ${mover_event}`;
+
+    promise_test(async test => {
+      event_log = [];
+      child_moved = false;
+
+      child.addEventListener(mover_event, moveChild);
+      test.add_cleanup(() => {
+        child.removeEventListener(mover_event, moveChild);
+      });
+
+      let done_click_promise = getEvent("click", done);
+
+      let actions = new test_driver.Actions()
+          .addPointer("TestPointer", pointer_type)
+          .pointerMove(-30, -30, {origin: parent})
+          .pointerDown()
+          .pointerUp()
+          .pointerMove(30, 30, {origin: parent})
+          .pointerDown()
+          .pointerUp()
+          .pointerMove(0, 0, {origin: done})
+          .pointerDown()
+          .pointerUp();
+
+      await actions.send();
+      await done_click_promise;
+
+      assert_equals(event_log.toString(), expected_events.toString(),
+          "events received");
+    }, test_name);
+  }
+
+  setup();
+
+  addPromiseTestForNewChild("pointerdown", [
+    "pointerover@parent", "pointerenter@parent",
+    "pointerdown@parent", "(child-attached)",
+    "pointerover@child", "pointerenter@child",
+    "pointerup@child",
+    "pointerdown@child", "pointerup@child",
+    "pointerout@child", "pointerleave@child", "pointerleave@parent"
+  ]);
+
+  addPromiseTestForNewChild("pointerup", [
+    "pointerover@parent", "pointerenter@parent",
+    "pointerdown@parent", "pointerup@parent", "(child-attached)",
+    "pointerover@child", "pointerenter@child",
+    "pointerdown@child", "pointerup@child",
+    "pointerout@child", "pointerleave@child", "pointerleave@parent"
+  ]);
+
+  addPromiseTestForMovedChild("pointerdown", [
+    "pointerover@child", "pointerenter@parent", "pointerenter@child",
+    "pointerdown@child", "(child-moved)",
+    "pointerover@child", "pointerenter@child",
+    "pointerup@child",
+    "pointerdown@child", "pointerup@child",
+    "pointerout@child", "pointerleave@child", "pointerleave@parent"
+  ]);
+
+  addPromiseTestForMovedChild("pointerup", [
+    "pointerover@child", "pointerenter@parent", "pointerenter@child",
+    "pointerdown@child", "pointerup@child", "(child-moved)",
+    "pointerover@child", "pointerenter@child",
+    "pointerdown@child", "pointerup@child",
+    "pointerout@child", "pointerleave@child", "pointerleave@parent"
+  ]);
+</script>
