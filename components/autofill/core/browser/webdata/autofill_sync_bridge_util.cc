@@ -553,11 +553,13 @@ ServerCvc AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
   base::StringToInt64(wallet_credential_specifics.instrument_id(),
                       &instrument_id);
 
-  return ServerCvc(
-      instrument_id, base::UTF8ToUTF16(wallet_credential_specifics.cvc()),
-      base::Time::UnixEpoch() +
+  return ServerCvc{
+      .instrument_id = instrument_id,
+      .cvc = base::UTF8ToUTF16(wallet_credential_specifics.cvc()),
+      .last_updated_timestamp =
+          base::Time::UnixEpoch() +
           base::Milliseconds(wallet_credential_specifics
-                                 .last_updated_time_unix_epoch_millis()));
+                                 .last_updated_time_unix_epoch_millis())};
 }
 
 VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
