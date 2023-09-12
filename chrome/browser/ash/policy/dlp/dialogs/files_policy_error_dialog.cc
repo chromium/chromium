@@ -114,6 +114,7 @@ void FilesPolicyErrorDialog::AddPolicyRow(Policy policy) {
 }
 
 void FilesPolicyErrorDialog::OpenLearnMore() {
+  // TODO(b/291896216): Open page based on policy.
   dlp::OpenLearnMore();
 }
 

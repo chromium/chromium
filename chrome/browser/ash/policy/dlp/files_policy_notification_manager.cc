@@ -531,6 +531,7 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
 
       if (files.size() == 1) {
         // Learn more.
+        // TODO(b/291896216): Open page based on policy.
         dlp::OpenLearnMore();
       } else {
         // Review.
@@ -788,6 +789,7 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
     case NotificationButton::OK:
       if (io_tasks_.at(task_id).blocked_files().size() == 1) {
         // Single file - open help page.
+        // TODO(b/291896216): Open page based on policy.
         dlp::OpenLearnMore();
         // Only delete if we don't need to show the dialog.
         OnErrorItemDismissed(task_id);
@@ -1023,6 +1025,7 @@ void FilesPolicyNotificationManager::OnLearnMoreButtonClicked(
     return;
   }
 
+  // TODO(b/291896216): Open page based on policy.
   dlp::OpenLearnMore();
 
   Dismiss(context_, notification_id);
