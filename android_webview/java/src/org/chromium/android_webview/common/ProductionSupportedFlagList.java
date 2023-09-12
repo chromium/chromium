@@ -205,6 +205,33 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_SERVER_BEHAVIORS,
                     "When enabled, Autofill will request experimental "
                             + "predictions from the Autofill API."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_BETWEEN_STREETS,
+                    "When enabled, Autofill supports between streets fields."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_ADMIN_LEVEL2,
+                    "When enabled, Autofill supports admin-level2 fields."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_ADDRESS_OVERFLOW,
+                    "When enabled, Autofill supports overflow fields."),
+            Flag.baseFeature(
+                    AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_ADDRESS_OVERFLOW_AND_LANDMARK,
+                    "When enabled, Autofill supports overflow and landmark fields."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_LANDMARK,
+                    "When enabled, Autofill supports landmark fields."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_APARTMENT_NUMBERS,
+                    "When enabled, Autofill supports apartment number fields."),
+            Flag.baseFeature(
+                    AutofillFeatures
+                            .AUTOFILL_STREET_NAME_OR_HOUSE_NUMBER_PRECEDENCE_OVER_AUTOCOMPLETE,
+                    "When enabled, Autofill prioritizes local heuristics over some server "
+                            + "classifications."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_ZIP_ONLY_ADDRESS_FORMS,
+                    "When enabled, Autofill supports forms consisting of only zip code fields."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_DEFAULT_TO_CITY_AND_NUMBER,
+                    "When enabled, Autofill heuristics will prioritize filling phone numbers in "
+                            + "local format, not in international format."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_LOCAL_HEURISTICS_OVERRIDES,
+                    "When enabled, When enabled, some local heuristic predictions will take "
+                            + "precedence over the autocomplete attribute and server predictions, "
+                            + "when determining a field's overall type."),
             Flag.baseFeature(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                     "When enabled, merchant bound virtual cards will be offered in the keyboard "
                             + "accessory."),
