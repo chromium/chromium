@@ -28,9 +28,6 @@ UnusedSitePermissionsServiceFactory::UnusedSitePermissionsServiceFactory()
           "UnusedSitePermissionsService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }

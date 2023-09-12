@@ -838,6 +838,32 @@ suite('NotificationPermissionReview', function() {
     return flushTasks();
   }
 
+  test('InvisibleWhenGuestMode', async function() {
+    loadTimeData.overrideValues({
+      isGuest: true,
+      safetyCheckNotificationPermissionsEnabled: true,
+    });
+
+    siteSettingsBrowserProxy.setNotificationPermissionReview([]);
+    await createPage();
+
+    assertFalse(isChildVisible(page, 'review-notification-permissions'));
+
+    // The UI should remain invisible even when there's an event that the
+    // notification permissions may have changed.
+    webUIListenerCallback(
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+        oneElementMockData);
+    await flushTasks();
+
+    assertFalse(isChildVisible(page, 'review-notification-permissions'));
+
+    // Set guest mode back to false.
+    loadTimeData.overrideValues({
+      isGuest: false,
+    });
+  });
+
   test('InvisibleWhenFeatureDisabled', async function() {
     loadTimeData.overrideValues({
       safetyCheckNotificationPermissionsEnabled: false,

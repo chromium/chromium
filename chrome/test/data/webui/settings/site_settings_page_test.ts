@@ -357,6 +357,26 @@ suite('UnusedSitePermissionsReviewDisabled', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
+  test('InvisbleWhenGuestMode', async function() {
+    loadTimeData.overrideValues({
+      safetyCheckUnusedSitePermissionsEnabled: true,
+      isGuest: true,
+    });
+    safetyHubBrowserProxy.setUnusedSitePermissions(
+        unusedSitePermissionMockData);
+    page = document.createElement('settings-site-settings-page');
+    document.body.appendChild(page);
+    await flushTasks();
+
+    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
+
+    // Reset loadTimeData values.
+    loadTimeData.overrideValues({
+      safetyCheckUnusedSitePermissionsEnabled: false,
+      isGuest: false,
+    });
+  });
+
   test('InvisibleWhenFeatureDisabled', async function() {
     safetyHubBrowserProxy.setUnusedSitePermissions([]);
     page = document.createElement('settings-site-settings-page');

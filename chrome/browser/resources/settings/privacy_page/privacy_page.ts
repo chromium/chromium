@@ -291,7 +291,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       enableSafetyHub_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enableSafetyHub');
+          return loadTimeData.getBoolean('enableSafetyHub') &&
+              !loadTimeData.getBoolean('isGuest');
         },
       },
 
@@ -362,14 +363,16 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         'cookieSettingDescriptionChanged',
         (description: string) => this.cookieSettingDescription_ = description);
 
-    this.addWebUiListener(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        (sites: NotificationPermission[]) =>
-            this.onReviewNotificationPermissionListChanged_(sites));
+    if (this.safetyCheckNotificationPermissionsEnabled_ && !this.isGuest_) {
+      this.addWebUiListener(
+          SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+          (sites: NotificationPermission[]) =>
+              this.onReviewNotificationPermissionListChanged_(sites));
 
-    this.safetyHubBrowserProxy_.getNotificationPermissionReview().then(
-        (sites: NotificationPermission[]) =>
-            this.onReviewNotificationPermissionListChanged_(sites));
+      this.safetyHubBrowserProxy_.getNotificationPermissionReview().then(
+          (sites: NotificationPermission[]) =>
+              this.onReviewNotificationPermissionListChanged_(sites));
+    }
   }
 
   override currentRouteChanged() {
@@ -471,12 +474,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private onReviewNotificationPermissionListChanged_(
       permissions: NotificationPermission[]) {
     // The notification permissions review is shown when there are items to
-    // review (provided the feature is enabled). Once visible it remains that
-    // way to show completion info, even if the list is emptied.
+    // review (provided the feature is enabled and should be shown). Once
+    // visible it remains that way to show completion info, even if the list is
+    // emptied.
     if (this.showNotificationPermissionsReview_) {
       return;
     }
-    this.showNotificationPermissionsReview_ =
+    this.showNotificationPermissionsReview_ = !this.isGuest_ &&
         this.safetyCheckNotificationPermissionsEnabled_ &&
         permissions.length > 0;
   }

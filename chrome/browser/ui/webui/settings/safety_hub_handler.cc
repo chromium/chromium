@@ -142,6 +142,7 @@ void SafetyHubHandler::HandleAllowPermissionsAgainForUnusedSite(
 
   UnusedSitePermissionsService* service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  CHECK(service);
 
   url::Origin origin = url::Origin::Create(GURL(origin_str));
 
@@ -158,6 +159,7 @@ void SafetyHubHandler::HandleUndoAllowPermissionsAgainForUnusedSite(
       GetUnusedSitePermissionsFromDict(args[0].GetDict());
   UnusedSitePermissionsService* service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  CHECK(service);
 
   service->UndoRegrantPermissionsForOrigin(permissions, constraints, origin);
 
@@ -168,6 +170,7 @@ void SafetyHubHandler::HandleAcknowledgeRevokedUnusedSitePermissionsList(
     const base::Value::List& args) {
   UnusedSitePermissionsService* service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  CHECK(service);
   service->ClearRevokedPermissionsList();
 
   SendUnusedSitePermissionsReviewList();
@@ -181,6 +184,7 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
   const base::Value::List& unused_site_permissions_list = args[0].GetList();
   UnusedSitePermissionsService* service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  CHECK(service);
 
   for (const auto& unused_site_permissions_js : unused_site_permissions_list) {
     CHECK(unused_site_permissions_js.is_dict());
@@ -263,6 +267,10 @@ void SafetyHubHandler::HandleGetNotificationPermissionReviewList(
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
   DCHECK(service);
 
+  if (!service) {
+    RejectJavascriptCallback(callback_id, base::Value());
+  }
+
   base::Value::List result =
       service->PopulateNotificationPermissionReviewData(profile_);
 
@@ -276,7 +284,7 @@ void SafetyHubHandler::HandleIgnoreOriginsForNotificationPermissionReview(
 
   NotificationPermissionsReviewService* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  DCHECK(service);
+  CHECK(service);
 
   for (const auto& origin : origins) {
     const ContentSettingsPattern primary_pattern =
@@ -348,7 +356,7 @@ void SafetyHubHandler::HandleUndoIgnoreOriginsForNotificationPermissionReview(
   const base::Value::List& origins = args[0].GetList();
   NotificationPermissionsReviewService* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  DCHECK(service);
+  CHECK(service);
 
   for (const auto& origin : origins) {
     const ContentSettingsPattern& primary_pattern =
@@ -477,7 +485,9 @@ void SafetyHubHandler::SendUnusedSitePermissionsReviewList() {
 void SafetyHubHandler::SendNotificationPermissionReviewList() {
   NotificationPermissionsReviewService* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  CHECK(service);
+  if (!service) {
+    return;
+  }
 
   base::Value::List result =
       service->PopulateNotificationPermissionReviewData(profile_);
