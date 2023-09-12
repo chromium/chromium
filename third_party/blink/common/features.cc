@@ -750,6 +750,16 @@ BASE_FEATURE(kExtendScriptResourceLifetime,
 // trials.
 BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the new fenced frame-related features in M119. (These are
+// conditionally dependent on other fenced frame-related feature flags being
+// enabled.)
+// * Extra format for ad size macro substitution:
+//   ${AD_WIDTH} and ${AD_HEIGHT}, on top of the previous
+//   {%AD_WIDTH%} and {%AD_HEIGHT%}.
+BASE_FEATURE(kFencedFramesM119Features,
+             "FencedFramesM119Features",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // File handling icons. https://crbug.com/1218213
 BASE_FEATURE(kFileHandlingIcons,
              "FileHandlingIcons",

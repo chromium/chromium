@@ -685,6 +685,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          blink::features::kFledgeNegativeTargeting,
          blink::features::kBiddingAndScoringDebugReportingAPI,
          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot,
+         blink::features::kFencedFramesM119Features,
          features::kBackForwardCache},
         /*disabled_features=*/
         {blink::features::kFencedFrames});

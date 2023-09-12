@@ -387,6 +387,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExtendScriptResourceLifetime);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFrames);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFramesM119Features);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFileHandlingIcons);
 
 // Switch to temporary turn back on file system url navigation.
