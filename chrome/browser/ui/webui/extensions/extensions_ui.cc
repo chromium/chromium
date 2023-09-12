@@ -355,7 +355,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"viewServiceWorker", IDS_EXTENSIONS_SERVICE_WORKER_BACKGROUND},
     {"safetyCheckKeepExtension", IDS_EXTENSIONS_SC_KEEP_EXT},
     {"safetyCheckRemoveAll", IDS_EXTENSIONS_SC_REMOVE_ALL},
-    {"safetyCheckAllDoneForNow", IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW},
     {"safetyCheckAllExtensions", IDS_EXTENSIONS_SC_ALL_EXTENSIONS},
     {"safetyCheckRemoveButtonA11yLabel",
      IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL},
@@ -439,6 +438,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean(
       "safetyCheckShowReviewPanel",
       base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
+  source->AddBoolean("safetyHubShowReviewPanel",
+                     base::FeatureList::IsEnabled(features::kSafetyHub));
 
   return source;
 }
@@ -481,6 +482,8 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
                                             IDS_EXTENSIONS_SC_TITLE);
   plural_string_handler->AddLocalizedString("safetyCheckDescription",
                                             IDS_EXTENSIONS_SC_DESCRIPTION);
+  plural_string_handler->AddLocalizedString("safetyCheckAllDoneForNow",
+                                            IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 

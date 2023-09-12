@@ -584,7 +584,9 @@
     Remove all
   </message>
   <message name="IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW" desc="The text of the safety check completion state.">
-    All done for now
+    {NUM_EXTENSIONS, plural,
+     =1 {1 extension reviewed}
+     other {{NUM_EXTENSIONS} extensions reviewed}}
   </message>
   <message name="IDS_EXTENSIONS_SC_ALL_EXTENSIONS" desc="The label for extensions cards below the safety check panel.">
     All Extensions

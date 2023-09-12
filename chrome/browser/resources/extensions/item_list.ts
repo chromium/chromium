@@ -67,7 +67,8 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
 
       showSafetyCheckReviewPanel_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('safetyCheckShowReviewPanel'),
+        value: () => loadTimeData.getBoolean('safetyCheckShowReviewPanel') ||
+            loadTimeData.getBoolean('safetyHubShowReviewPanel'),
       },
 
       hasSafetyCheckTriggeringExtension_: {
@@ -133,6 +134,11 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
 
     return i => [i.name, i.id].some(
                s => s.toLowerCase().includes(formattedFilter));
+  }
+  private computeShowSafetyCheckReviewPanel_(): boolean {
+    return (
+        loadTimeData.getBoolean('safetyCheckShowReviewPanel') ||
+        loadTimeData.getBoolean('safetyHubShowReviewPanel'));
   }
 
   private computeHasSafetyCheckTriggeringExtension_(): boolean {

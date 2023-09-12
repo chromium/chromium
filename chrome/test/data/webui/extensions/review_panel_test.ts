@@ -60,11 +60,6 @@ suite('ExtensionsReviewPanel', function() {
     const descriptionArgs = pluralString.getArgs('getPluralString')[1];
     assertEquals('safetyCheckDescription', descriptionArgs.messageName);
     assertEquals(1, descriptionArgs.itemCount);
-
-    // Verify that Remove All button exists.
-    const removeAllButton = element.$.removeAllButton;
-    assertTrue(!!removeAllButton);
-    assertEquals(removeAllButton.innerText, 'Remove all');
   });
 
   test('CollapsibleList', function() {
@@ -122,8 +117,11 @@ suite('ExtensionsReviewPanel', function() {
     element.delegate = new MockUninstallItemDelegate();
     element.shadowRoot!.querySelector('cr-icon-button')?.click();
     await flushTasks();
+    const completionText = pluralString.getArgs('getPluralString')[2];
     assertTrue(!!completionTextContainer);
     assertTrue(isVisible(completionTextContainer));
+    assertEquals(completionText.messageName, 'safetyCheckAllDoneForNow');
+    assertEquals(completionText.itemCount, 1);
   });
 
   test(
@@ -163,8 +161,11 @@ suite('ExtensionsReviewPanel', function() {
         element.shadowRoot!.querySelector<HTMLElement>(
                                '#removeAllButton')!.click();
         await flushTasks();
+        const completionText = pluralString.getArgs('getPluralString')[7];
         assertTrue(!!completionTextContainer);
         assertTrue(isVisible(completionTextContainer));
+        assertEquals(completionText.messageName, 'safetyCheckAllDoneForNow');
+        assertEquals(completionText.itemCount, 3);
       });
 
   test('CompletionStateShouldBeShownAfterKeepingItems', async function() {

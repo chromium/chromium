@@ -19,7 +19,6 @@ suite('ExtensionItemListTest', function() {
 
   // Initialize an extension item before each test.
   setup(function() {
-    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
     setupElement();
   });
 
@@ -30,7 +29,11 @@ suite('ExtensionItemListTest', function() {
 
     const createExt = createExtensionInfo;
     const extensionItems = [
-      createExt({name: 'Alpha', id: 'a'.repeat(32)}),
+      createExt({
+        name: 'Alpha',
+        id: 'a'.repeat(32),
+        safetyCheckText: {panelString: 'This extension contains malware.'},
+      }),
       createExt({name: 'Bravo', id: 'b'.repeat(32)}),
       createExt({name: 'Charlie', id: 'c'.repeat(29) + 'wxy'}),
     ];
@@ -141,6 +144,15 @@ suite('ExtensionItemListTest', function() {
 
     // set up the element again to capture the updated value of
     // safetyCheckShowReviewPanel.
+    setupElement();
+
+    flush();
+    boundTestVisible('extensions-review-panel', true);
+
+    // The extension review panel should  be visible if
+    // safetyHubShowReviewPanel is set to true.
+    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
+    loadTimeData.overrideValues({'safetyHubShowReviewPanel': true});
     setupElement();
 
     flush();
