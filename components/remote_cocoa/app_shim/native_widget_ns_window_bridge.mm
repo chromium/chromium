@@ -399,10 +399,6 @@ void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
       NativeWidgetNSWindowBridge::GetFromId(new_parent_id);
   DCHECK(new_parent);
 
-  // If the parent is another NativeWidgetNSWindowBridge, just add to the
-  // collection of child windows it owns and manages. Otherwise, create an
-  // adapter to anchor the child widget and observe when the parent NSWindow is
-  // closed.
   parent_ = new_parent;
   parent_->child_windows_.push_back(this);
 
