@@ -104,8 +104,8 @@ class MODULES_EXPORT BlinkAXTreeSource
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 
-  // These are updated when calling |Freeze|.
   bool frozen_ = false;
+  // TODO(accessibility) If caching these does not improv perf, remove these.
   Member<AXObject> root_ = nullptr;
   Member<AXObject> focus_ = nullptr;
 

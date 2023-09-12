@@ -1070,6 +1070,7 @@ WebAXObject WebAXObject::FromWebDocumentFocused(
   CheckLayoutClean(document);
 #endif
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
+  cache->UpdateAXForAllDocuments();
   return cache ? WebAXObject(cache->FocusedObject()) : WebAXObject();
 }
 
