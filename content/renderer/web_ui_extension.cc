@@ -18,7 +18,7 @@
 #include "content/renderer/web_ui_extension_data.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -87,7 +87,7 @@ v8::Local<v8::Object> GetOrCreateChildObject(v8::Local<v8::Object> parent,
 //  - chrome.timeTicks.nowInMicroseconds: Returns base::TimeTicks::Now() in
 //      microseconds. Used for performance measuring.
 void WebUIExtension::Install(blink::WebLocalFrame* frame) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = frame->MainWorldScriptContext();
   if (context.IsEmpty())

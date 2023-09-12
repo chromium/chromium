@@ -680,7 +680,8 @@ EventSenderBindings::~EventSenderBindings() = default;
 // static
 void EventSenderBindings::Install(base::WeakPtr<EventSender> sender,
                                   WebFrameTestProxy* frame) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate =
+      frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
       frame->GetWebFrame()->MainWorldScriptContext();
@@ -1575,7 +1576,8 @@ void EventSender::KeyEvent(KeyEventType event_type,
     if (!code) {
       std::u16string code_str16 = base::UTF8ToUTF16(code_str);
       if (code_str16.size() != 1u) {
-        v8::Isolate* isolate = blink::MainThreadIsolate();
+        v8::Isolate* isolate =
+            web_frame_widget_->LocalRoot()->GetAgentGroupScheduler()->Isolate();
         isolate->ThrowException(v8::Exception::TypeError(
             gin::StringToV8(isolate, "Invalid web code.")));
         return;
@@ -1791,7 +1793,8 @@ void EventSender::ClearTouchPoints() {
 }
 
 void EventSender::ThrowTouchPointError() {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate =
+      web_frame_widget_->LocalRoot()->GetAgentGroupScheduler()->Isolate();
   isolate->ThrowException(v8::Exception::TypeError(
       gin::StringToV8(isolate, "Invalid touch point.")));
 }
@@ -1919,7 +1922,8 @@ void EventSender::BeginDragWithItems(
     // Nested dragging not supported, fuzzer code a likely culprit.
     // Cancel the current drag operation and throw an error.
     KeyDown("Escape", 0, DOMKeyLocationStandard);
-    v8::Isolate* isolate = blink::MainThreadIsolate();
+    v8::Isolate* isolate =
+        web_frame_widget_->LocalRoot()->GetAgentGroupScheduler()->Isolate();
     isolate->ThrowException(v8::Exception::Error(gin::StringToV8(
         isolate,
         "Nested beginDragWithFiles/beginDragWithStringData() not supported.")));

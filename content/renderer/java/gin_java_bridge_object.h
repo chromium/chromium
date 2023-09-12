@@ -47,6 +47,7 @@ class GinJavaBridgeObject : public gin::Wrappable<GinJavaBridgeObject>,
       const std::string& object_name,
       GinJavaBridgeDispatcher::ObjectID object_id);
   static GinJavaBridgeObject* InjectAnonymous(
+      blink::WebLocalFrame* frame,
       const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
       GinJavaBridgeDispatcher::ObjectID object_id);
 

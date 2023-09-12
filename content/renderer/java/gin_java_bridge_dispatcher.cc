@@ -113,7 +113,8 @@ std::unique_ptr<base::Value> GinJavaBridgeDispatcher::InvokeJavaMethod(
 GinJavaBridgeObject* GinJavaBridgeDispatcher::GetObject(ObjectID object_id) {
   GinJavaBridgeObject* result = objects_.Lookup(object_id);
   if (!result) {
-    result = GinJavaBridgeObject::InjectAnonymous(AsWeakPtr(), object_id);
+    result = GinJavaBridgeObject::InjectAnonymous(render_frame()->GetWebFrame(),
+                                                  AsWeakPtr(), object_id);
     if (result)
       objects_.AddWithID(result, object_id);
   }

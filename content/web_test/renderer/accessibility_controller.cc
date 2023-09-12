@@ -8,7 +8,7 @@
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -61,7 +61,7 @@ gin::WrapperInfo AccessibilityControllerBindings::kWrapperInfo = {
 void AccessibilityControllerBindings::Install(
     base::WeakPtr<AccessibilityController> controller,
     blink::WebLocalFrame* frame) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = frame->MainWorldScriptContext();
   if (context.IsEmpty())
@@ -203,14 +203,13 @@ void AccessibilityController::PostNotification(
   if (!IsInstalled())
     return;
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::HandleScope handle_scope(isolate);
-
   blink::WebFrame* frame = web_view()->MainFrame();
   if (!frame || frame->IsWebRemoteFrame())
     return;
   blink::WebLocalFrame* local_frame = frame->ToWebLocalFrame();
 
+  v8::Isolate* isolate = local_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = local_frame->MainWorldScriptContext();
   if (context.IsEmpty())
     return;
@@ -249,7 +248,12 @@ void AccessibilityController::LogAccessibilityEvents() {
 
 void AccessibilityController::SetNotificationListener(
     v8::Local<v8::Function> callback) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  blink::WebFrame* frame = web_view()->MainFrame();
+  if (!frame || frame->IsWebRemoteFrame()) {
+    return;
+  }
+  blink::WebLocalFrame* local_frame = frame->ToWebLocalFrame();
+  v8::Isolate* isolate = local_frame->GetAgentGroupScheduler()->Isolate();
   notification_callback_.Reset(isolate, callback);
 }
 

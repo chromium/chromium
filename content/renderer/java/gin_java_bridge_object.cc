@@ -10,7 +10,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/java/gin_java_function_invocation_helper.h"
 #include "gin/function_template.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-function.h"
 
@@ -22,7 +22,7 @@ GinJavaBridgeObject* GinJavaBridgeObject::InjectNamed(
     const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
     const std::string& object_name,
     GinJavaBridgeDispatcher::ObjectID object_id) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = frame->MainWorldScriptContext();
   if (context.IsEmpty())
@@ -48,10 +48,11 @@ GinJavaBridgeObject* GinJavaBridgeObject::InjectNamed(
 
 // static
 GinJavaBridgeObject* GinJavaBridgeObject::InjectAnonymous(
+    blink::WebLocalFrame* frame,
     const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
     GinJavaBridgeDispatcher::ObjectID object_id) {
-  return new GinJavaBridgeObject(blink::MainThreadIsolate(), dispatcher,
-                                 object_id);
+  return new GinJavaBridgeObject(frame->GetAgentGroupScheduler()->Isolate(),
+                                 dispatcher, object_id);
 }
 
 GinJavaBridgeObject::GinJavaBridgeObject(

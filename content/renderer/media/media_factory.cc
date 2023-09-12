@@ -501,8 +501,9 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
       std::move(compositor_worker_task_runner),
       render_thread->compositor_task_runner(),
       std::move(video_frame_compositor_task_runner),
-      base::BindRepeating(&v8::Isolate::AdjustAmountOfExternalAllocatedMemory,
-                          base::Unretained(blink::MainThreadIsolate())),
+      base::BindRepeating(
+          &v8::Isolate::AdjustAmountOfExternalAllocatedMemory,
+          base::Unretained(web_frame->GetAgentGroupScheduler()->Isolate())),
       initial_cdm, request_routing_token_cb_, media_observer,
       enable_instant_source_buffer_gc, embedded_media_experience_enabled,
       std::move(metrics_provider),

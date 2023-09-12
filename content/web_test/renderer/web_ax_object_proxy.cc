@@ -12,6 +12,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "gin/handle.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -485,7 +486,7 @@ void WebAXObjectProxy::NotificationReceived(
   if (context.IsEmpty())
     return;
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
 
   v8::Local<v8::Array> intents_array(
       v8::Array::New(isolate, event_intents.size()));
