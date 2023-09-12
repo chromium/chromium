@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
@@ -60,6 +61,29 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // empty vector -> `StoredSource::AttributionLogic::kNever`
   // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
   using RandomizedResponse = absl::optional<std::vector<FakeReport>>;
+
+  class CONTENT_EXPORT RandomizedResponseData {
+   public:
+    RandomizedResponseData(double rate, RandomizedResponse);
+
+    ~RandomizedResponseData();
+
+    RandomizedResponseData(const RandomizedResponseData&);
+    RandomizedResponseData& operator=(const RandomizedResponseData&);
+
+    RandomizedResponseData(RandomizedResponseData&&);
+    RandomizedResponseData& operator=(RandomizedResponseData&&);
+
+    double rate() const { return rate_; }
+
+    const RandomizedResponse& response() const { return response_; }
+
+   private:
+    double rate_;
+    RandomizedResponse response_;
+  };
+
+  struct ExceedsChannelCapacityLimit {};
 
   struct NullAggregatableReport {
     base::Time fake_source_time;
@@ -162,22 +186,17 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports) const = 0;
 
-  // Returns a randomized response for the given source, consisting of zero or
-  // more fake reports. Returns `absl::nullopt` to indicate that the response
-  // should not be randomized.
-  virtual RandomizedResponse GetRandomizedResponse(
-      attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
-      double randomized_response_rate,
-      base::Time source_time) const = 0;
+  using GetRandomizedResponseResult =
+      base::expected<RandomizedResponseData, ExceedsChannelCapacityLimit>;
 
-  // Computes the capacity of the q-ary symmetric channel.
-  virtual double ComputeChannelCapacity(
+  // Returns a randomized response for the given source, consisting of zero or
+  // more fake reports. Returns an error if the channel capacity exceeds the
+  // limit.
+  virtual GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,
-      double randomized_response_rate) const = 0;
+      base::Time source_time) const = 0;
 
   virtual base::Time GetExpiryTime(
       absl::optional<base::TimeDelta> declared_expiry,

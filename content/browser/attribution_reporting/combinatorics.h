@@ -51,6 +51,19 @@ CONTENT_EXPORT std::vector<int> GetStarIndices(int num_stars,
 CONTENT_EXPORT std::vector<int> GetBarsPrecedingEachStar(
     std::vector<int> star_indices);
 
+// https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response-pick-rate
+CONTENT_EXPORT double GetRandomizedResponseRate(int64_t num_states,
+                                                double epsilon);
+
+// Computes the binary entropy function:
+// https://en.wikipedia.org/wiki/Binary_entropy_function
+CONTENT_EXPORT double BinaryEntropy(double p);
+
+// Computes the channel capacity of a qary-symmetric channel.
+// https://wicg.github.io/attribution-reporting-api/#computing-channel-capacity
+CONTENT_EXPORT double ComputeChannelCapacity(int64_t num_states,
+                                             double randomized_response_rate);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_COMBINATORICS_H_

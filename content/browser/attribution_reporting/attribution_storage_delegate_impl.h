@@ -93,17 +93,11 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports) const override;
-  RandomizedResponse GetRandomizedResponse(
+  GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,
-      double randomized_response_rate,
       base::Time source_time) const override;
-  double ComputeChannelCapacity(
-      attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
-      double randomized_response_rate) const override;
   base::Time GetExpiryTime(absl::optional<base::TimeDelta> declared_expiry,
                            base::Time source_time,
                            attribution_reporting::mojom::SourceType) override;
@@ -118,6 +112,11 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       attribution_reporting::mojom::SourceType source_type,
       base::TimeDelta last_report_window) const override;
 
+  // Exposed for testing.
+  int64_t GetNumStates(attribution_reporting::mojom::SourceType,
+                       const attribution_reporting::EventReportWindows&,
+                       int max_event_level_reports) const;
+
   // Generates fake reports using a random "stars and bars" sequence index of a
   // possible output of the API.
   //
@@ -126,7 +125,8 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,
-      base::Time source_time) const;
+      base::Time source_time,
+      int64_t num_states) const;
 
   // Generates fake reports from the "stars and bars" sequence index of a
   // possible output of the API. This output is determined by the following

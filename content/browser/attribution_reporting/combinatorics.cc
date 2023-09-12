@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <cmath>
 #include <functional>
 
 #include "base/check_op.h"
@@ -149,6 +150,29 @@ std::vector<int> GetBarsPrecedingEachStar(std::vector<int> out) {
     out[i] = star_index - (out.size() - 1 - i);
   }
   return out;
+}
+
+double GetRandomizedResponseRate(int64_t num_states, double epsilon) {
+  DCHECK_GT(num_states, 0);
+  return num_states / (num_states - 1 + std::exp(epsilon));
+}
+
+double BinaryEntropy(double p) {
+  if (p == 0 || p == 1) {
+    return 0;
+  }
+
+  return -p * log2(p) - (1 - p) * log2(1 - p);
+}
+
+double ComputeChannelCapacity(int64_t num_states,
+                              double randomized_response_rate) {
+  DCHECK_GT(num_states, 0);
+  DCHECK_GE(randomized_response_rate, 0);
+  DCHECK_LE(randomized_response_rate, 1);
+
+  double p = randomized_response_rate * (num_states - 1) / num_states;
+  return log2(num_states) - BinaryEntropy(p) - p * log2(num_states - 1);
 }
 
 }  // namespace content

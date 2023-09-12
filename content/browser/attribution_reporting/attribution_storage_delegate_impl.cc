@@ -8,8 +8,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <cmath>
-#include <cstdint>
 #include <cstdlib>
 #include <iterator>
 #include <utility>
@@ -37,6 +35,7 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace content {
 
 namespace {
@@ -76,14 +75,6 @@ GetNullAggregatableReportsForLookback(
     }
   }
   return reports;
-}
-
-double binary_entropy(double p) {
-  if (p == 0 || p == 1) {
-    return 0;
-  }
-
-  return -p * log2(p) - (1 - p) * log2(1 - p);
 }
 
 }  // namespace
@@ -220,36 +211,53 @@ double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
     const EventReportWindows& event_report_windows,
     int max_event_level_reports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return content::GetRandomizedResponseRate(
+      GetNumStates(source_type, event_report_windows, max_event_level_reports),
+      config_.event_level_limit.randomized_response_epsilon);
+}
 
-  const int64_t num_combinations = GetNumberOfStarsAndBarsSequences(
+int64_t AttributionStorageDelegateImpl::GetNumStates(
+    SourceType source_type,
+    const EventReportWindows& event_report_windows,
+    int max_event_level_reports) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/max_event_level_reports,
       /*num_bars=*/TriggerDataCardinality(source_type) *
           event_report_windows.end_times().size());
-
-  double exp_epsilon =
-      std::exp(config_.event_level_limit.randomized_response_epsilon);
-  return num_combinations / (num_combinations - 1 + exp_epsilon);
 }
 
-AttributionStorageDelegate::RandomizedResponse
+AttributionStorageDelegate::GetRandomizedResponseResult
 AttributionStorageDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
     const EventReportWindows& event_report_windows,
     int max_event_level_reports,
-    double randomized_response_rate,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const int64_t num_states =
+      GetNumStates(source_type, event_report_windows, max_event_level_reports);
+
+  const double rate = content::GetRandomizedResponseRate(
+      num_states, config_.event_level_limit.randomized_response_epsilon);
+
+  const double capacity = ComputeChannelCapacity(num_states, rate);
+
+  if (capacity > GetMaxChannelCapacity(source_type)) {
+    return base::unexpected(ExceedsChannelCapacityLimit());
+  }
+
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault: {
-      return GenerateWithRate(randomized_response_rate)
-                 ? absl::make_optional(GetRandomFakeReports(
-                       source_type, event_report_windows,
-                       max_event_level_reports, source_time))
-                 : absl::nullopt;
+      return RandomizedResponseData(
+          rate, GenerateWithRate(rate)
+                    ? absl::make_optional(GetRandomFakeReports(
+                          source_type, event_report_windows,
+                          max_event_level_reports, source_time, num_states))
+                    : absl::nullopt);
     }
     case AttributionNoiseMode::kNone:
-      return absl::nullopt;
+      return RandomizedResponseData(rate, absl::nullopt);
   }
 }
 
@@ -258,17 +266,16 @@ AttributionStorageDelegateImpl::GetRandomFakeReports(
     SourceType source_type,
     const EventReportWindows& event_report_windows,
     int max_event_level_reports,
-    base::Time source_time) const {
+    base::Time source_time,
+    int64_t num_states) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
-  const int64_t num_combinations = GetNumberOfStarsAndBarsSequences(
-      /*num_stars=*/max_event_level_reports,
-      /*num_bars=*/TriggerDataCardinality(source_type) *
-          event_report_windows.end_times().size());
+  DCHECK_EQ(num_states, GetNumStates(source_type, event_report_windows,
+                                     max_event_level_reports));
 
   const int64_t sequence_index =
-      static_cast<int64_t>(base::RandGenerator(num_combinations));
+      static_cast<int64_t>(base::RandGenerator(num_states));
   DCHECK_GE(sequence_index, 0);
   DCHECK_LE(sequence_index, kMaxNumCombinations);
 
@@ -331,23 +338,6 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
   }
   DCHECK_LE(fake_reports.size(), static_cast<size_t>(max_event_level_reports));
   return fake_reports;
-}
-
-double AttributionStorageDelegateImpl::ComputeChannelCapacity(
-    SourceType source_type,
-    const EventReportWindows& event_report_windows,
-    int max_event_level_reports,
-    double randomized_response_rate) const {
-  const int64_t num_states = GetNumberOfStarsAndBarsSequences(
-      /*num_stars=*/max_event_level_reports,
-      /*num_bars=*/TriggerDataCardinality(source_type) *
-          event_report_windows.end_times().size());
-
-  // This computes the channel capacity of a qary-symmetric channel with error
-  // probability p. See more info at
-  // https://wicg.github.io/attribution-reporting-api/#computing-channel-capacity
-  double p = randomized_response_rate * (num_states - 1) / num_states;
-  return log2(num_states) - binary_entropy(p) - p * log2(num_states - 1);
 }
 
 base::Time AttributionStorageDelegateImpl::GetExpiryTime(

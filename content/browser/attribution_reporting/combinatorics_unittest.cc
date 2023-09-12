@@ -4,6 +4,10 @@
 
 #include "content/browser/attribution_reporting/combinatorics.h"
 
+#include <stdint.h>
+
+#include <cmath>
+#include <limits>
 #include <set>
 #include <vector>
 
@@ -163,6 +167,110 @@ TEST(CombinatoricsTest, GetBarsPrecedingEachStar) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(GetBarsPrecedingEachStar(test_case.star_indices),
               test_case.expected);
+  }
+}
+
+// Adapted from
+// https://github.com/WICG/attribution-reporting-api/blob/ab43f8c989cf881ffd7a7f71801b98d649ed164a/flexible-event/privacy.test.ts#L76C1-L82C2
+TEST(CombinatoricsTest, BinaryEntropy) {
+  const struct {
+    double x;
+    double expected;
+  } kTestCases[] = {
+      {.x = 0, .expected = 0},
+      {.x = 0.5, .expected = 1},
+      {.x = 1, .expected = 0},
+      {.x = 0.01, .expected = 0.08079313589591118},
+      {.x = 0.99, .expected = 0.08079313589591124},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.expected, BinaryEntropy(test_case.x));
+  }
+}
+
+// Adapted from
+// https://github.com/WICG/attribution-reporting-api/blob/ab43f8c989cf881ffd7a7f71801b98d649ed164a/flexible-event/privacy.test.ts#L10-L31
+TEST(CombinatoricsTest, GetRandomizedResponseRate) {
+  const struct {
+    int64_t num_states;
+    double epsilon;
+    double expected;
+  } kTestCases[] = {
+      {
+          .num_states = 2,
+          .epsilon = std::log(3),
+          .expected = 0.5,
+      },
+      {
+          .num_states = 3,
+          .epsilon = std::log(3),
+          .expected = 0.6,
+      },
+      {
+          .num_states = 2925,
+          .epsilon = 14,
+          .expected = 0.0024263221679834087,
+      },
+      {
+          .num_states = 3,
+          .epsilon = 14,
+          .expected = 0.000002494582008677539,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.expected, GetRandomizedResponseRate(
+                                      test_case.num_states, test_case.epsilon));
+  }
+}
+
+// Adapted from
+// https://github.com/WICG/attribution-reporting-api/blob/ab43f8c989cf881ffd7a7f71801b98d649ed164a/flexible-event/privacy.test.ts#L38-L69
+TEST(CombinatoricsTest, ComputeChannelCapacity) {
+  const struct {
+    int64_t num_states;
+    double epsilon;
+    double expected;
+  } kTestCases[] = {
+      {
+          .num_states = 2,
+          .epsilon = std::numeric_limits<double>::infinity(),
+          .expected = 1,
+      },
+      {
+          .num_states = 1024,
+          .epsilon = std::numeric_limits<double>::infinity(),
+          .expected = std::log2(1024),
+      },
+      {
+          .num_states = 3,
+          .epsilon = std::numeric_limits<double>::infinity(),
+          .expected = std::log2(3),
+      },
+      {
+          .num_states = 2,
+          .epsilon = std::log(3),
+          .expected = 0.18872187554086717,
+      },
+      {
+          .num_states = 2925,
+          .epsilon = 14,
+          .expected = 11.461727965384876,
+      },
+      {
+          .num_states = 3,
+          .epsilon = 14,
+          .expected = 1.584926511508231,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    double rate =
+        GetRandomizedResponseRate(test_case.num_states, test_case.epsilon);
+
+    EXPECT_EQ(test_case.expected,
+              ComputeChannelCapacity(test_case.num_states, rate));
   }
 }
 

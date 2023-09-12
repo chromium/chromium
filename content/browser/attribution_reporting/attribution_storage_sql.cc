@@ -29,6 +29,8 @@
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
@@ -853,27 +855,20 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   int max_event_level_reports = reg.max_event_level_reports.value_or(
       delegate_->GetDefaultAttributionsPerSource(common_info.source_type()));
 
-  const double randomized_response_rate = delegate_->GetRandomizedResponseRate(
-      common_info.source_type(), event_report_windows, max_event_level_reports);
+  ASSIGN_OR_RETURN(const auto randomized_response_data,
+                   delegate_->GetRandomizedResponse(
+                       common_info.source_type(), event_report_windows,
+                       max_event_level_reports, source_time),
+                   [](auto) {
+                     return StoreSourceResult(
+                         StorableSource::Result::kExceedsMaxChannelCapacity);
+                   });
 
-  double channel_capacity = delegate_->ComputeChannelCapacity(
-      common_info.source_type(), event_report_windows, max_event_level_reports,
-      randomized_response_rate);
-  if (channel_capacity >
-      delegate_->GetMaxChannelCapacity(common_info.source_type())) {
-    return StoreSourceResult(
-        StorableSource::Result::kExceedsMaxChannelCapacity);
-  }
-
-  AttributionStorageDelegate::RandomizedResponse randomized_response =
-      delegate_->GetRandomizedResponse(
-          common_info.source_type(), event_report_windows,
-          max_event_level_reports, randomized_response_rate, source_time);
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;
   bool event_level_active = true;
-  if (randomized_response.has_value()) {
-    num_conversions = randomized_response->size();
+  if (const auto& response = randomized_response_data.response()) {
+    num_conversions = response->size();
     attribution_logic = num_conversions == 0
                             ? StoredSource::AttributionLogic::kNever
                             : StoredSource::AttributionLogic::kFalsely;
@@ -916,9 +911,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(15, SerializeFilterData(reg.filter_data));
-  statement.BindBlob(16, SerializeReadOnlySourceData(event_report_windows,
-                                                     max_event_level_reports,
-                                                     randomized_response_rate));
+  statement.BindBlob(16, SerializeReadOnlySourceData(
+                             event_report_windows, max_event_level_reports,
+                             randomized_response_data.rate()));
 
   if (!statement.Run()) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -946,7 +941,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       aggregatable_report_window_time, max_event_level_reports, reg.priority,
       reg.filter_data, reg.debug_key, reg.aggregation_keys, attribution_logic,
       *active_state, source_id,
-      /*aggregatable_budget_consumed=*/0, randomized_response_rate);
+      /*aggregatable_budget_consumed=*/0, randomized_response_data.rate());
 
   if (!rate_limit_table_.AddRateLimitForSource(&db_, stored_source)) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -955,7 +950,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   absl::optional<base::Time> min_fake_report_time;
 
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
-    for (const auto& fake_report : *randomized_response) {
+    for (const auto& fake_report : *randomized_response_data.response()) {
       DCHECK_EQ(fake_report.trigger_data,
                 delegate_->SanitizeTriggerData(fake_report.trigger_data,
                                                common_info.source_type()));

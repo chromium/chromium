@@ -724,15 +724,9 @@ TEST_F(AttributionStorageTest, GetAttributionReportsMultipleTimes_SameResult) {
 }
 
 TEST_F(AttributionStorageTest, ExceedsChannelCapacity) {
-  delegate()->set_channel_capacity(6.51);
+  delegate()->set_exceeds_channel_capacity_limit(true);
 
   EXPECT_EQ(storage()->StoreSource(SourceBuilder().Build()).status,
-            StorableSource::Result::kSuccess);
-
-  EXPECT_EQ(storage()
-                ->StoreSource(
-                    SourceBuilder().SetSourceType(SourceType::kEvent).Build())
-                .status,
             StorableSource::Result::kExceedsMaxChannelCapacity);
 }
 

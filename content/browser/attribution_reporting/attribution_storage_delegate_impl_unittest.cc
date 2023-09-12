@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <limits>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -72,10 +73,13 @@ void RunRandomFakeReportsTest(const SourceType source_type,
 
   base::flat_map<std::vector<FakeReport>, int> output_counts;
   for (int i = 0; i < num_samples; i++) {
-    std::vector<FakeReport> fake_reports =
-        AttributionStorageDelegateImpl().GetRandomFakeReports(
-            source.common_info().source_type(), source.event_report_windows(),
-            source.max_event_level_reports(), source.source_time());
+    const AttributionStorageDelegateImpl delegate;
+    const int64_t num_states =
+        delegate.GetNumStates(source_type, source.event_report_windows(),
+                              source.max_event_level_reports());
+    std::vector<FakeReport> fake_reports = delegate.GetRandomFakeReports(
+        source.common_info().source_type(), source.event_report_windows(),
+        source.max_event_level_reports(), source.source_time(), num_states);
     output_counts[fake_reports]++;
   }
 
@@ -215,17 +219,70 @@ TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {
 }
 
 TEST(AttributionStorageDelegateImplTest,
-     RandomizedResponse_NoNoiseModeReturnsNull) {
+     RandomizedResponse_NoNoiseModeReturnsRealRateAndNullResponse) {
   for (auto source_type : kSourceTypes) {
     const auto source =
         SourceBuilder().SetSourceType(source_type).BuildStored();
-    EXPECT_EQ(AttributionStorageDelegateImpl(AttributionNoiseMode::kNone)
-                  .GetRandomizedResponse(source.common_info().source_type(),
-                                         source.event_report_windows(),
-                                         source.max_event_level_reports(),
-                                         source.randomized_response_rate(),
-                                         source.source_time()),
-              absl::nullopt);
+
+    auto result = AttributionStorageDelegateImpl(AttributionNoiseMode::kNone)
+                      .GetRandomizedResponse(source.common_info().source_type(),
+                                             source.event_report_windows(),
+                                             source.max_event_level_reports(),
+                                             source.source_time());
+    ASSERT_TRUE(result.has_value());
+    ASSERT_GT(result->rate(), 0);
+    ASSERT_EQ(result->response(), absl::nullopt);
+  }
+}
+
+TEST(AttributionStorageDelegateImplTest,
+     RandomizedResponse_ExceedsLimit_ReturnsError) {
+  const struct {
+    SourceType source_type;
+    double max_navigation_info_gain = std::numeric_limits<double>::infinity();
+    double max_event_info_gain = std::numeric_limits<double>::infinity();
+    bool expected_ok;
+  } kTestCases[] = {
+      {
+          .source_type = SourceType::kNavigation,
+          .max_event_info_gain = 0,
+          .expected_ok = true,
+      },
+      {
+          .source_type = SourceType::kNavigation,
+          .max_navigation_info_gain = 0,
+          .expected_ok = false,
+      },
+      {
+          .source_type = SourceType::kEvent,
+          .max_navigation_info_gain = 0,
+          .expected_ok = true,
+      },
+      {
+          .source_type = SourceType::kEvent,
+          .max_event_info_gain = 0,
+          .expected_ok = false,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    AttributionConfig config;
+    config.event_level_limit.max_navigation_info_gain =
+        test_case.max_navigation_info_gain;
+    config.event_level_limit.max_event_info_gain =
+        test_case.max_event_info_gain;
+
+    auto delegate = AttributionStorageDelegateImpl::CreateForTesting(
+        AttributionNoiseMode::kDefault, AttributionDelayMode::kDefault, config);
+
+    const auto source =
+        SourceBuilder().SetSourceType(test_case.source_type).BuildStored();
+
+    auto result = delegate->GetRandomizedResponse(
+        test_case.source_type, source.event_report_windows(),
+        source.max_event_level_reports(), source.source_time());
+
+    EXPECT_EQ(result.has_value(), test_case.expected_ok);
   }
 }
 
@@ -418,15 +475,18 @@ TEST(AttributionStorageDelegateImplTest,
                     test_case.source_type,
                     /*last_report_window=*/base::Days(30)))
             .BuildStored();
+
+    const AttributionStorageDelegateImpl delegate;
+
     double value =
-        std::round(
-            AttributionStorageDelegateImpl().ComputeChannelCapacity(
-                test_case.source_type, source.event_report_windows(),
-                source.max_event_level_reports(),
-                AttributionStorageDelegateImpl().GetRandomizedResponseRate(
-                    test_case.source_type, source.event_report_windows(),
-                    source.max_event_level_reports())) *
-            100000.0) /
+        std::round(ComputeChannelCapacity(
+                       delegate.GetNumStates(test_case.source_type,
+                                             source.event_report_windows(),
+                                             source.max_event_level_reports()),
+                       delegate.GetRandomizedResponseRate(
+                           test_case.source_type, source.event_report_windows(),
+                           source.max_event_level_reports())) *
+                   100000.0) /
         100000.0;
     EXPECT_EQ(test_case.expected, value);
   }
