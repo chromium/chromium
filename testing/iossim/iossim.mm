@@ -444,16 +444,6 @@ int RunApplication(NSString* app_path,
 }
 
 int main(int argc, char* const argv[]) {
-  // When the last running simulator is from Xcode 7, an Xcode 8 run will yield
-  // a failure to "unload a stale CoreSimulatorService job" message.  Sending a
-  // hidden simctl to do something simple (list devices) helpfully works around
-  // this issue.
-  XCRunTask* workaround_task =
-      [[XCRunTask alloc] initWithArguments:@[ @"simctl", @"list", @"-j" ]];
-  workaround_task.standardOutput = nil;
-  workaround_task.standardError = nil;
-  [workaround_task run];
-
   NSString* app_path = nil;
   NSString* xctest_path = nil;
   NSString* udid = nil;
