@@ -200,14 +200,13 @@ BookmarkBridge::~BookmarkBridge() {
   reading_list_manager_->RemoveObserver(this);
 }
 
-void BookmarkBridge::Destroy(JNIEnv*, const JavaParamRef<jobject>&) {
+void BookmarkBridge::Destroy(JNIEnv*) {
   // This will call the destructor because the user data is a unique pointer.
   bookmark_model_->RemoveUserData(kBookmarkBridgeUserDataKey);
 }
 
 void BookmarkBridge::GetImageUrlForBookmark(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_url,
     const JavaParamRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
@@ -228,7 +227,6 @@ void BookmarkBridge::GetImageUrlForBookmark(
 base::android::ScopedJavaLocalRef<jobject>
 BookmarkBridge::GetBookmarkIdForWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
     jboolean only_editable) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -274,9 +272,7 @@ jboolean BookmarkBridge::IsEditBookmarksEnabled(JNIEnv* env) {
   return IsEditBookmarksEnabled();
 }
 
-void BookmarkBridge::LoadEmptyPartnerBookmarkShimForTesting(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void BookmarkBridge::LoadEmptyPartnerBookmarkShimForTesting(JNIEnv* env) {
   if (partner_bookmarks_shim_->IsLoaded())
     return;
   partner_bookmarks_shim_->SetPartnerBookmarksRoot(
@@ -287,9 +283,7 @@ void BookmarkBridge::LoadEmptyPartnerBookmarkShimForTesting(
 
 // Loads a fake partner bookmarks shim for testing.
 // This is used in BookmarkBridgeTest.java.
-void BookmarkBridge::LoadFakePartnerBookmarkShimForTesting(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void BookmarkBridge::LoadFakePartnerBookmarkShimForTesting(JNIEnv* env) {
   if (partner_bookmarks_shim_->IsLoaded())
     return;
   std::unique_ptr<BookmarkNode> root_partner_node =
@@ -310,7 +304,6 @@ void BookmarkBridge::LoadFakePartnerBookmarkShimForTesting(
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetBookmarkById(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jlong id,
     jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -319,15 +312,13 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetBookmarkById(
   return node ? CreateJavaBookmark(node) : ScopedJavaLocalRef<jobject>();
 }
 
-bool BookmarkBridge::IsDoingExtensiveChanges(JNIEnv* env,
-                                             const JavaParamRef<jobject>& obj) {
+bool BookmarkBridge::IsDoingExtensiveChanges(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return bookmark_model_->IsDoingExtensiveChanges();
 }
 
 void BookmarkBridge::GetTopLevelFolderParentIds(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Java_BookmarkBridge_addToBookmarkIdList(
@@ -337,7 +328,6 @@ void BookmarkBridge::GetTopLevelFolderParentIds(
 
 void BookmarkBridge::GetTopLevelFolderIds(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean get_special,
     jboolean get_normal,
     const JavaParamRef<jobject>& j_result_obj) {
@@ -394,8 +384,7 @@ void BookmarkBridge::GetTopLevelFolderIds(
 }
 
 base::android::ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListFolder(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* root_node = reading_list_manager_->GetRoot();
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
@@ -405,7 +394,6 @@ base::android::ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListFolder(
 
 void BookmarkBridge::GetAllFoldersWithDepths(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_folders_obj,
     const JavaParamRef<jobject>& j_depths_obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -448,9 +436,7 @@ void BookmarkBridge::GetAllFoldersWithDepths(
   }
 }
 
-ScopedJavaLocalRef<jobject> BookmarkBridge::GetRootFolderId(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetRootFolderId(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* root_node = bookmark_model_->root_node();
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
@@ -458,9 +444,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetRootFolderId(
   return folder_id_obj;
 }
 
-ScopedJavaLocalRef<jobject> BookmarkBridge::GetMobileFolderId(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetMobileFolderId(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* mobile_node = bookmark_model_->mobile_node();
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
@@ -468,9 +452,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetMobileFolderId(
   return folder_id_obj;
 }
 
-ScopedJavaLocalRef<jobject> BookmarkBridge::GetOtherFolderId(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetOtherFolderId(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* other_node = bookmark_model_->other_node();
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
@@ -478,9 +460,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetOtherFolderId(
   return folder_id_obj;
 }
 
-ScopedJavaLocalRef<jobject> BookmarkBridge::GetDesktopFolderId(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetDesktopFolderId(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* desktop_node = bookmark_model_->bookmark_bar_node();
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
@@ -488,9 +468,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetDesktopFolderId(
   return folder_id_obj;
 }
 
-ScopedJavaLocalRef<jobject> BookmarkBridge::GetPartnerFolderId(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetPartnerFolderId(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!partner_bookmarks_shim_->IsLoaded()) {
     return nullptr;
@@ -510,7 +488,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetPartnerFolderId(
 base::android::ScopedJavaLocalRef<jstring>
 BookmarkBridge::GetBookmarkGuidByIdForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jlong id,
     jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -520,10 +497,7 @@ BookmarkBridge::GetBookmarkGuidByIdForTesting(
       env, node->uuid().AsLowercaseString());
 }
 
-jint BookmarkBridge::GetChildCount(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj,
-                                   jlong id,
-                                   jint type) {
+jint BookmarkBridge::GetChildCount(JNIEnv* env, jlong id, jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   const BookmarkNode* node = GetNodeByID(id, type);
@@ -531,7 +505,6 @@ jint BookmarkBridge::GetChildCount(JNIEnv* env,
 }
 
 void BookmarkBridge::GetChildIds(JNIEnv* env,
-                                 const JavaParamRef<jobject>& obj,
                                  jlong id,
                                  jint type,
                                  const JavaParamRef<jobject>& j_result_obj) {
@@ -563,7 +536,6 @@ void BookmarkBridge::GetChildIds(JNIEnv* env,
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetChildAt(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jlong id,
     jint type,
     jint index) {
@@ -580,7 +552,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetChildAt(
 
 jint BookmarkBridge::GetTotalBookmarkCount(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jlong id,
     jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -620,7 +591,6 @@ jint BookmarkBridge::GetTotalBookmarkCount(
 }
 
 void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj,
                                       jlong id,
                                       jint type,
                                       const JavaParamRef<jstring>& j_title) {
@@ -642,7 +612,6 @@ void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
 }
 
 void BookmarkBridge::SetBookmarkUrl(JNIEnv* env,
-                                    const JavaParamRef<jobject>& obj,
                                     jlong id,
                                     jint type,
                                     const JavaParamRef<jobject>& url) {
@@ -655,7 +624,6 @@ void BookmarkBridge::SetBookmarkUrl(JNIEnv* env,
 
 void BookmarkBridge::SetPowerBookmarkMeta(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jlong id,
     jint type,
     const JavaParamRef<jbyteArray>& bytes) {
@@ -677,7 +645,6 @@ void BookmarkBridge::SetPowerBookmarkMeta(
 
 ScopedJavaLocalRef<jbyteArray> BookmarkBridge::GetPowerBookmarkMeta(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jlong id,
     jint type) {
   const BookmarkNode* node = GetNodeByID(id, type);
@@ -699,7 +666,6 @@ ScopedJavaLocalRef<jbyteArray> BookmarkBridge::GetPowerBookmarkMeta(
 
 void BookmarkBridge::DeletePowerBookmarkMeta(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jlong id,
     jint type) {
   const BookmarkNode* node = GetNodeByID(id, type);
@@ -710,10 +676,7 @@ void BookmarkBridge::DeletePowerBookmarkMeta(
   power_bookmarks::DeleteNodePowerBookmarkMeta(bookmark_model_, node);
 }
 
-bool BookmarkBridge::DoesBookmarkExist(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj,
-                                       jlong id,
-                                       jint type) {
+bool BookmarkBridge::DoesBookmarkExist(JNIEnv* env, jlong id, jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
@@ -733,7 +696,6 @@ bool BookmarkBridge::DoesBookmarkExist(JNIEnv* env,
 
 void BookmarkBridge::GetBookmarksForFolder(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_folder_id_obj,
     const JavaParamRef<jobject>& j_result_obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -763,10 +725,7 @@ void BookmarkBridge::GetBookmarksForFolder(
   }
 }
 
-jboolean BookmarkBridge::IsFolderVisible(JNIEnv* env,
-                                         const JavaParamRef<jobject>& obj,
-                                         jlong id,
-                                         jint type) {
+jboolean BookmarkBridge::IsFolderVisible(JNIEnv* env, jlong id, jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (type == BookmarkType::BOOKMARK_TYPE_NORMAL) {
     const BookmarkNode* node = bookmarks::GetBookmarkNodeByID(
@@ -780,7 +739,6 @@ jboolean BookmarkBridge::IsFolderVisible(JNIEnv* env,
 }
 
 void BookmarkBridge::SearchBookmarks(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj,
                                      const JavaParamRef<jobject>& j_list,
                                      const JavaParamRef<jstring>& j_query,
                                      const JavaParamRef<jobjectArray>& j_tags,
@@ -827,7 +785,6 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
 
 void BookmarkBridge::GetBookmarksOfType(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& j_list,
     jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -845,7 +802,6 @@ void BookmarkBridge::GetBookmarksOfType(
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::AddFolder(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_parent_id_obj,
     jint index,
     const JavaParamRef<jstring>& j_title) {
@@ -867,7 +823,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddFolder(
 
 void BookmarkBridge::DeleteBookmark(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_bookmark_id_obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
@@ -917,8 +872,7 @@ void BookmarkBridge::DeleteBookmark(
   }
 }
 
-void BookmarkBridge::RemoveAllUserBookmarks(JNIEnv* env,
-                                            const JavaParamRef<jobject>& obj) {
+void BookmarkBridge::RemoveAllUserBookmarks(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   bookmark_model_->RemoveAllUserBookmarks();
@@ -926,7 +880,6 @@ void BookmarkBridge::RemoveAllUserBookmarks(JNIEnv* env,
 
 void BookmarkBridge::MoveBookmark(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_bookmark_id_obj,
     const JavaParamRef<jobject>& j_parent_id_obj,
     jint index) {
@@ -948,7 +901,6 @@ void BookmarkBridge::MoveBookmark(
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_parent_id_obj,
     jint index,
     const JavaParamRef<jstring>& j_title,
@@ -972,7 +924,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_title,
     const JavaParamRef<jobject>& j_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -988,7 +939,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListItem(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
@@ -999,7 +949,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListItem(
 }
 
 void BookmarkBridge::SetReadStatus(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj,
                                    const JavaParamRef<jobject>& j_url,
                                    jboolean j_read) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1009,7 +958,7 @@ void BookmarkBridge::SetReadStatus(JNIEnv* env,
       *url::GURLAndroid::ToNativeGURL(env, j_url), j_read);
 }
 
-void BookmarkBridge::Undo(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void BookmarkBridge::Undo(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   BookmarkUndoService* undo_service =
@@ -1018,8 +967,7 @@ void BookmarkBridge::Undo(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   undo_manager->Undo();
 }
 
-void BookmarkBridge::StartGroupingUndos(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj) {
+void BookmarkBridge::StartGroupingUndos(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   DCHECK(!grouped_bookmark_actions_.get());  // shouldn't have started already
@@ -1027,8 +975,7 @@ void BookmarkBridge::StartGroupingUndos(JNIEnv* env,
       std::make_unique<bookmarks::ScopedGroupBookmarkActions>(bookmark_model_);
 }
 
-void BookmarkBridge::EndGroupingUndos(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void BookmarkBridge::EndGroupingUndos(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   DCHECK(grouped_bookmark_actions_.get());  // should only call after start
@@ -1341,7 +1288,6 @@ void BookmarkBridge::ReadingListChanged() {
 
 void BookmarkBridge::ReorderChildren(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_bookmark_id_obj,
     jlongArray arr) {
   DCHECK(IsLoaded());

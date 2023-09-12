@@ -66,8 +66,8 @@ class BookmarkBridge {
 
     BookmarkBridge(long nativeBookmarkBridge) {
         mNativeBookmarkBridge = nativeBookmarkBridge;
-        mIsDoingExtensiveChanges = BookmarkBridgeJni.get().isDoingExtensiveChanges(
-                mNativeBookmarkBridge, BookmarkBridge.this);
+        mIsDoingExtensiveChanges =
+                BookmarkBridgeJni.get().isDoingExtensiveChanges(mNativeBookmarkBridge);
     }
 
     /**
@@ -76,7 +76,7 @@ class BookmarkBridge {
     void destroy() {
         mIsDestroyed = true;
         if (mNativeBookmarkBridge != 0) {
-            BookmarkBridgeJni.get().destroy(mNativeBookmarkBridge, BookmarkBridge.this);
+            BookmarkBridgeJni.get().destroy(mNativeBookmarkBridge);
             mNativeBookmarkBridge = 0;
             mIsNativeBookmarkModelLoaded = false;
         }
@@ -94,8 +94,7 @@ class BookmarkBridge {
      * @param callback The callback which will receive the image url.
      */
     public void getImageUrlForBookmark(GURL url, Callback<GURL> callback) {
-        BookmarkBridgeJni.get().getImageUrlForBookmark(
-                mNativeBookmarkBridge, BookmarkBridge.this, url, callback);
+        BookmarkBridgeJni.get().getImageUrlForBookmark(mNativeBookmarkBridge, url, callback);
     }
 
     /**
@@ -118,7 +117,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return null;
         if (tab == null || tab.isFrozen() || mNativeBookmarkBridge == 0) return null;
         return BookmarkBridgeJni.get().getBookmarkIdForWebContents(
-                mNativeBookmarkBridge, this, tab.getWebContents(), true);
+                mNativeBookmarkBridge, tab.getWebContents(), true);
     }
 
     /**
@@ -127,7 +126,7 @@ class BookmarkBridge {
      */
     public void loadEmptyPartnerBookmarkShimForTesting() {
         BookmarkBridgeJni.get().loadEmptyPartnerBookmarkShimForTesting(
-                mNativeBookmarkBridge, BookmarkBridge.this);
+                mNativeBookmarkBridge); // IN-TEST
     }
 
     /**
@@ -136,7 +135,7 @@ class BookmarkBridge {
      */
     public void loadFakePartnerBookmarkShimForTesting() {
         BookmarkBridgeJni.get().loadFakePartnerBookmarkShimForTesting(
-                mNativeBookmarkBridge, BookmarkBridge.this);
+                mNativeBookmarkBridge); // IN-TEST
     }
 
     /**
@@ -213,7 +212,7 @@ class BookmarkBridge {
         }
 
         return BookmarkBridgeJni.get().getBookmarkById(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
+                mNativeBookmarkBridge, id.getId(), id.getType());
     }
 
     /**
@@ -224,8 +223,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
         List<BookmarkId> result = new ArrayList<>();
-        BookmarkBridgeJni.get().getTopLevelFolderParentIds(
-                mNativeBookmarkBridge, BookmarkBridge.this, result);
+        BookmarkBridgeJni.get().getTopLevelFolderParentIds(mNativeBookmarkBridge, result);
         return result;
     }
 
@@ -241,7 +239,7 @@ class BookmarkBridge {
         assert mIsNativeBookmarkModelLoaded;
         List<BookmarkId> result = new ArrayList<>();
         BookmarkBridgeJni.get().getTopLevelFolderIds(
-                mNativeBookmarkBridge, BookmarkBridge.this, getSpecial, getNormal, result);
+                mNativeBookmarkBridge, getSpecial, getNormal, result);
         return result;
     }
 
@@ -250,8 +248,7 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getReadingListFolder(
-                mNativeBookmarkBridge, BookmarkBridge.this);
+        return BookmarkBridgeJni.get().getReadingListFolder(mNativeBookmarkBridge);
     }
 
     /**
@@ -271,7 +268,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return;
         assert mIsNativeBookmarkModelLoaded;
         BookmarkBridgeJni.get().getAllFoldersWithDepths(
-                mNativeBookmarkBridge, BookmarkBridge.this, folderList, depthList);
+                mNativeBookmarkBridge, folderList, depthList);
     }
 
     /**
@@ -285,7 +282,7 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         assert mIsNativeBookmarkModelLoaded;
         BookmarkBridgeJni.get().getAllFoldersWithDepths(
-                mNativeBookmarkBridge, BookmarkBridge.this, folderList, depthList);
+                mNativeBookmarkBridge, folderList, depthList);
         if (bookmarksToMove == null || bookmarksToMove.size() == 0) return;
 
         boolean shouldTrim = false;
@@ -324,7 +321,7 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getRootFolderId(mNativeBookmarkBridge, BookmarkBridge.this);
+        return BookmarkBridgeJni.get().getRootFolderId(mNativeBookmarkBridge);
     }
 
     /**
@@ -334,8 +331,7 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getMobileFolderId(
-                mNativeBookmarkBridge, BookmarkBridge.this);
+        return BookmarkBridgeJni.get().getMobileFolderId(mNativeBookmarkBridge);
     }
 
     /**
@@ -345,7 +341,7 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getOtherFolderId(mNativeBookmarkBridge, BookmarkBridge.this);
+        return BookmarkBridgeJni.get().getOtherFolderId(mNativeBookmarkBridge);
     }
 
     /**
@@ -355,8 +351,7 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getDesktopFolderId(
-                mNativeBookmarkBridge, BookmarkBridge.this);
+        return BookmarkBridgeJni.get().getDesktopFolderId(mNativeBookmarkBridge);
     }
 
     /**
@@ -372,7 +367,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
         return BookmarkBridgeJni.get().getBookmarkGuidByIdForTesting(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
+                mNativeBookmarkBridge, id.getId(), id.getType());
     }
 
     /**
@@ -383,7 +378,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return 0;
         assert mIsNativeBookmarkModelLoaded;
         return BookmarkBridgeJni.get().getChildCount(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
+                mNativeBookmarkBridge, id.getId(), id.getType());
     }
 
     /**
@@ -400,7 +395,7 @@ class BookmarkBridge {
         }
         List<BookmarkId> result = new ArrayList<>();
         BookmarkBridgeJni.get().getChildIds(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), result);
+                mNativeBookmarkBridge, id.getId(), id.getType(), result);
         return result;
     }
 
@@ -415,8 +410,8 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getChildAt(mNativeBookmarkBridge, BookmarkBridge.this,
-                folderId.getId(), folderId.getType(), index);
+        return BookmarkBridgeJni.get().getChildAt(
+                mNativeBookmarkBridge, folderId.getId(), folderId.getType(), index);
     }
 
     /**
@@ -429,7 +424,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return 0;
         assert mIsNativeBookmarkModelLoaded;
         return BookmarkBridgeJni.get().getTotalBookmarkCount(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
+                mNativeBookmarkBridge, id.getId(), id.getType());
     }
 
     /**
@@ -456,8 +451,8 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         List<BookmarkId> bookmarkMatches = new ArrayList<>();
         int typeInt = powerBookmarkType == null ? -1 : powerBookmarkType.getNumber();
-        BookmarkBridgeJni.get().searchBookmarks(mNativeBookmarkBridge, BookmarkBridge.this,
-                bookmarkMatches, query, tags, typeInt, maxNumberOfResult);
+        BookmarkBridgeJni.get().searchBookmarks(
+                mNativeBookmarkBridge, bookmarkMatches, query, tags, typeInt, maxNumberOfResult);
         return bookmarkMatches;
     }
 
@@ -471,8 +466,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         List<BookmarkId> bookmarkMatches = new ArrayList<>();
         int typeInt = powerBookmarkType.getNumber();
-        BookmarkBridgeJni.get().getBookmarksOfType(
-                mNativeBookmarkBridge, BookmarkBridge.this, bookmarkMatches, typeInt);
+        BookmarkBridgeJni.get().getBookmarksOfType(mNativeBookmarkBridge, bookmarkMatches, typeInt);
         return bookmarkMatches;
     }
 
@@ -484,7 +478,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return;
         assert mIsNativeBookmarkModelLoaded;
         BookmarkBridgeJni.get().setBookmarkTitle(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), title);
+                mNativeBookmarkBridge, id.getId(), id.getType(), title);
     }
 
     /**
@@ -496,7 +490,7 @@ class BookmarkBridge {
         assert mIsNativeBookmarkModelLoaded;
         assert id.getType() == BookmarkType.NORMAL;
         BookmarkBridgeJni.get().setBookmarkUrl(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), url);
+                mNativeBookmarkBridge, id.getId(), id.getType(), url);
     }
 
     /**
@@ -508,7 +502,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return null;
         if (id == null) return null;
         byte[] protoBytes = BookmarkBridgeJni.get().getPowerBookmarkMeta(
-                mNativeBookmarkBridge, this, id.getId(), id.getType());
+                mNativeBookmarkBridge, id.getId(), id.getType());
 
         if (protoBytes == null) return null;
 
@@ -529,8 +523,8 @@ class BookmarkBridge {
     public void setPowerBookmarkMeta(BookmarkId id, PowerBookmarkMeta meta) {
         if (mNativeBookmarkBridge == 0) return;
         if (meta == null) return;
-        BookmarkBridgeJni.get().setPowerBookmarkMeta(mNativeBookmarkBridge, BookmarkBridge.this,
-                id.getId(), id.getType(), meta.toByteArray());
+        BookmarkBridgeJni.get().setPowerBookmarkMeta(
+                mNativeBookmarkBridge, id.getId(), id.getType(), meta.toByteArray());
     }
 
     /**
@@ -540,7 +534,7 @@ class BookmarkBridge {
     public void deletePowerBookmarkMeta(BookmarkId id) {
         if (mNativeBookmarkBridge == 0) return;
         BookmarkBridgeJni.get().deletePowerBookmarkMeta(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
+                mNativeBookmarkBridge, id.getId(), id.getType());
     }
 
     /**
@@ -564,7 +558,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return false;
         assert mIsNativeBookmarkModelLoaded;
         return BookmarkBridgeJni.get().doesBookmarkExist(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
+                mNativeBookmarkBridge, id.getId(), id.getType());
     }
 
     /**
@@ -579,8 +573,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
         List<BookmarkItem> result = new ArrayList<>();
-        BookmarkBridgeJni.get().getBookmarksForFolder(
-                mNativeBookmarkBridge, BookmarkBridge.this, folderId, result);
+        BookmarkBridgeJni.get().getBookmarksForFolder(mNativeBookmarkBridge, folderId, result);
         return result;
     }
 
@@ -597,7 +590,7 @@ class BookmarkBridge {
             return true;
         }
         return BookmarkBridgeJni.get().isFolderVisible(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
+                mNativeBookmarkBridge, id.getId(), id.getType());
     }
 
     /**
@@ -607,8 +600,7 @@ class BookmarkBridge {
     public void deleteBookmark(BookmarkId bookmarkId) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return;
-        BookmarkBridgeJni.get().deleteBookmark(
-                mNativeBookmarkBridge, BookmarkBridge.this, bookmarkId);
+        BookmarkBridgeJni.get().deleteBookmark(mNativeBookmarkBridge, bookmarkId);
     }
 
     /**
@@ -619,7 +611,7 @@ class BookmarkBridge {
     public void removeAllUserBookmarks() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return;
-        BookmarkBridgeJni.get().removeAllUserBookmarks(mNativeBookmarkBridge, BookmarkBridge.this);
+        BookmarkBridgeJni.get().removeAllUserBookmarks(mNativeBookmarkBridge);
     }
 
     /**
@@ -631,8 +623,7 @@ class BookmarkBridge {
     public void moveBookmark(BookmarkId bookmarkId, BookmarkId newParentId, int index) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return;
-        BookmarkBridgeJni.get().moveBookmark(
-                mNativeBookmarkBridge, BookmarkBridge.this, bookmarkId, newParentId, index);
+        BookmarkBridgeJni.get().moveBookmark(mNativeBookmarkBridge, bookmarkId, newParentId, index);
     }
 
     /**
@@ -653,8 +644,7 @@ class BookmarkBridge {
         assert index >= 0;
         assert title != null;
 
-        return BookmarkBridgeJni.get().addFolder(
-                mNativeBookmarkBridge, BookmarkBridge.this, parent, index, title);
+        return BookmarkBridgeJni.get().addFolder(mNativeBookmarkBridge, parent, index, title);
     }
 
     /**
@@ -681,7 +671,7 @@ class BookmarkBridge {
 
         if (TextUtils.isEmpty(title)) title = url.getSpec();
         return BookmarkBridgeJni.get().addBookmark(
-                mNativeBookmarkBridge, this, parent, index, title, url);
+                mNativeBookmarkBridge, parent, index, title, url);
     }
 
     /** Record the user action for adding a bookmark. */
@@ -695,7 +685,7 @@ class BookmarkBridge {
     public void undo() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return;
-        BookmarkBridgeJni.get().undo(mNativeBookmarkBridge, BookmarkBridge.this);
+        BookmarkBridgeJni.get().undo(mNativeBookmarkBridge);
     }
 
     /**
@@ -705,7 +695,7 @@ class BookmarkBridge {
     public void startGroupingUndos() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return;
-        BookmarkBridgeJni.get().startGroupingUndos(mNativeBookmarkBridge, BookmarkBridge.this);
+        BookmarkBridgeJni.get().startGroupingUndos(mNativeBookmarkBridge);
     }
 
     /**
@@ -715,7 +705,7 @@ class BookmarkBridge {
     public void endGroupingUndos() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return;
-        BookmarkBridgeJni.get().endGroupingUndos(mNativeBookmarkBridge, BookmarkBridge.this);
+        BookmarkBridgeJni.get().endGroupingUndos(mNativeBookmarkBridge);
     }
 
     public boolean isEditBookmarksEnabled() {
@@ -747,8 +737,7 @@ class BookmarkBridge {
     public void reorderBookmarks(BookmarkId parent, long[] newOrder) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return;
-        BookmarkBridgeJni.get().reorderChildren(
-                mNativeBookmarkBridge, BookmarkBridge.this, parent, newOrder);
+        BookmarkBridgeJni.get().reorderChildren(mNativeBookmarkBridge, parent, newOrder);
     }
 
     /**
@@ -766,8 +755,7 @@ class BookmarkBridge {
         assert url != null;
         assert mIsNativeBookmarkModelLoaded;
 
-        return BookmarkBridgeJni.get().addToReadingList(
-                mNativeBookmarkBridge, BookmarkBridge.this, title, url);
+        return BookmarkBridgeJni.get().addToReadingList(mNativeBookmarkBridge, title, url);
     }
 
     /**
@@ -780,8 +768,7 @@ class BookmarkBridge {
         assert url != null;
         assert mIsNativeBookmarkModelLoaded;
 
-        return BookmarkBridgeJni.get().getReadingListItem(
-                mNativeBookmarkBridge, BookmarkBridge.this, url);
+        return BookmarkBridgeJni.get().getReadingListItem(mNativeBookmarkBridge, url);
     }
 
     /**
@@ -791,8 +778,7 @@ class BookmarkBridge {
      */
     public void setReadStatusForReadingList(GURL url, boolean read) {
         if (mNativeBookmarkBridge == 0) return;
-        BookmarkBridgeJni.get().setReadStatus(
-                mNativeBookmarkBridge, BookmarkBridge.this, url, read);
+        BookmarkBridgeJni.get().setReadStatus(mNativeBookmarkBridge, url, read);
     }
 
     /**
@@ -810,8 +796,7 @@ class BookmarkBridge {
         if (mNativeBookmarkBridge == 0) return null;
 
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getPartnerFolderId(
-                mNativeBookmarkBridge, BookmarkBridge.this);
+        return BookmarkBridgeJni.get().getPartnerFolderId(mNativeBookmarkBridge);
     }
 
     /** Returns the total number of unread reading list articles. */
@@ -950,80 +935,60 @@ class BookmarkBridge {
     @NativeMethods
     public interface Natives {
         BookmarkModel getForProfile(Profile profile);
-        void getImageUrlForBookmark(long nativeBookmarkBridge, BookmarkBridge caller, GURL url,
-                Callback<GURL> callback);
-        BookmarkId getBookmarkIdForWebContents(long nativeBookmarkBridge, BookmarkBridge caller,
-                WebContents webContents, boolean onlyEditable);
-        BookmarkItem getBookmarkById(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        void getTopLevelFolderParentIds(
-                long nativeBookmarkBridge, BookmarkBridge caller, List<BookmarkId> bookmarksList);
-        void getTopLevelFolderIds(long nativeBookmarkBridge, BookmarkBridge caller,
-                boolean getSpecial, boolean getNormal, List<BookmarkId> bookmarksList);
-        BookmarkId getReadingListFolder(long nativeBookmarkBridge, BookmarkBridge caller);
-        void getAllFoldersWithDepths(long nativeBookmarkBridge, BookmarkBridge caller,
-                List<BookmarkId> folderList, List<Integer> depthList);
-        BookmarkId getRootFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
-        BookmarkId getMobileFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
-        BookmarkId getOtherFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
-        BookmarkId getDesktopFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
-        BookmarkId getPartnerFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
-        String getBookmarkGuidByIdForTesting(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        int getChildCount(long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        void getChildIds(long nativeBookmarkBridge, BookmarkBridge caller, long id, int type,
+        void getImageUrlForBookmark(long nativeBookmarkBridge, GURL url, Callback<GURL> callback);
+        BookmarkId getBookmarkIdForWebContents(
+                long nativeBookmarkBridge, WebContents webContents, boolean onlyEditable);
+        BookmarkItem getBookmarkById(long nativeBookmarkBridge, long id, int type);
+        void getTopLevelFolderParentIds(long nativeBookmarkBridge, List<BookmarkId> bookmarksList);
+        void getTopLevelFolderIds(long nativeBookmarkBridge, boolean getSpecial, boolean getNormal,
                 List<BookmarkId> bookmarksList);
-        BookmarkId getChildAt(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, int index);
-        int getTotalBookmarkCount(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        void setBookmarkTitle(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, String title);
-        void setBookmarkUrl(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, GURL url);
-        byte[] getPowerBookmarkMeta(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        void setPowerBookmarkMeta(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, byte[] meta);
-        void deletePowerBookmarkMeta(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        boolean doesBookmarkExist(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        void getBookmarksForFolder(long nativeBookmarkBridge, BookmarkBridge caller,
-                BookmarkId folderId, List<BookmarkItem> bookmarksList);
-        boolean isFolderVisible(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
-        BookmarkId addFolder(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
-                int index, String title);
-        void deleteBookmark(
-                long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId bookmarkId);
-        void removeAllUserBookmarks(long nativeBookmarkBridge, BookmarkBridge caller);
-        void moveBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId bookmarkId,
-                BookmarkId newParentId, int index);
-        BookmarkId addBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
-                int index, String title, GURL url);
-        BookmarkId addToReadingList(
-                long nativeBookmarkBridge, BookmarkBridge caller, String title, GURL url);
-        BookmarkItem getReadingListItem(long nativeBookmarkBridge, BookmarkBridge caller, GURL url);
-        void setReadStatus(
-                long nativeBookmarkBridge, BookmarkBridge caller, GURL url, boolean read);
-        void undo(long nativeBookmarkBridge, BookmarkBridge caller);
-        void startGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);
-        void endGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);
-        void loadEmptyPartnerBookmarkShimForTesting(
-                long nativeBookmarkBridge, BookmarkBridge caller);
-        void loadFakePartnerBookmarkShimForTesting(
-                long nativeBookmarkBridge, BookmarkBridge caller);
-        void searchBookmarks(long nativeBookmarkBridge, BookmarkBridge caller,
-                List<BookmarkId> bookmarkMatches, String query, String[] tags,
-                int powerBookmarkType, int maxNumber);
-        void getBookmarksOfType(long nativeBookmarkBridge, BookmarkBridge caller,
-                List<BookmarkId> bookmarkMatches, int powerBookmarkType);
-        boolean isDoingExtensiveChanges(long nativeBookmarkBridge, BookmarkBridge caller);
-        void destroy(long nativeBookmarkBridge, BookmarkBridge caller);
+        BookmarkId getReadingListFolder(long nativeBookmarkBridge);
+        void getAllFoldersWithDepths(
+                long nativeBookmarkBridge, List<BookmarkId> folderList, List<Integer> depthList);
+        BookmarkId getRootFolderId(long nativeBookmarkBridge);
+        BookmarkId getMobileFolderId(long nativeBookmarkBridge);
+        BookmarkId getOtherFolderId(long nativeBookmarkBridge);
+        BookmarkId getDesktopFolderId(long nativeBookmarkBridge);
+        BookmarkId getPartnerFolderId(long nativeBookmarkBridge);
+        String getBookmarkGuidByIdForTesting( // IN-TEST
+                long nativeBookmarkBridge, long id, int type);
+        int getChildCount(long nativeBookmarkBridge, long id, int type);
+        void getChildIds(
+                long nativeBookmarkBridge, long id, int type, List<BookmarkId> bookmarksList);
+        BookmarkId getChildAt(long nativeBookmarkBridge, long id, int type, int index);
+        int getTotalBookmarkCount(long nativeBookmarkBridge, long id, int type);
+        void setBookmarkTitle(long nativeBookmarkBridge, long id, int type, String title);
+        void setBookmarkUrl(long nativeBookmarkBridge, long id, int type, GURL url);
+        byte[] getPowerBookmarkMeta(long nativeBookmarkBridge, long id, int type);
+        void setPowerBookmarkMeta(long nativeBookmarkBridge, long id, int type, byte[] meta);
+        void deletePowerBookmarkMeta(long nativeBookmarkBridge, long id, int type);
+        boolean doesBookmarkExist(long nativeBookmarkBridge, long id, int type);
+        void getBookmarksForFolder(
+                long nativeBookmarkBridge, BookmarkId folderId, List<BookmarkItem> bookmarksList);
+        boolean isFolderVisible(long nativeBookmarkBridge, long id, int type);
+        BookmarkId addFolder(long nativeBookmarkBridge, BookmarkId parent, int index, String title);
+        void deleteBookmark(long nativeBookmarkBridge, BookmarkId bookmarkId);
+        void removeAllUserBookmarks(long nativeBookmarkBridge);
+        void moveBookmark(long nativeBookmarkBridge, BookmarkId bookmarkId, BookmarkId newParentId,
+                int index);
+        BookmarkId addBookmark(
+                long nativeBookmarkBridge, BookmarkId parent, int index, String title, GURL url);
+        BookmarkId addToReadingList(long nativeBookmarkBridge, String title, GURL url);
+        BookmarkItem getReadingListItem(long nativeBookmarkBridge, GURL url);
+        void setReadStatus(long nativeBookmarkBridge, GURL url, boolean read);
+        void undo(long nativeBookmarkBridge);
+        void startGroupingUndos(long nativeBookmarkBridge);
+        void endGroupingUndos(long nativeBookmarkBridge);
+        void loadEmptyPartnerBookmarkShimForTesting(long nativeBookmarkBridge); // IN-TEST
+        void loadFakePartnerBookmarkShimForTesting(long nativeBookmarkBridge); // IN-TEST
+        void searchBookmarks(long nativeBookmarkBridge, List<BookmarkId> bookmarkMatches,
+                String query, String[] tags, int powerBookmarkType, int maxNumber);
+        void getBookmarksOfType(
+                long nativeBookmarkBridge, List<BookmarkId> bookmarkMatches, int powerBookmarkType);
+        boolean isDoingExtensiveChanges(long nativeBookmarkBridge);
+        void destroy(long nativeBookmarkBridge);
         boolean isEditBookmarksEnabled(long nativeBookmarkBridge);
-        void reorderChildren(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
-                long[] orderedNodes);
+        void reorderChildren(long nativeBookmarkBridge, BookmarkId parent, long[] orderedNodes);
         boolean isBookmarked(long nativeBookmarkBridge, GURL url);
         int getUnreadCount(long nativeBookmarkBridge);
     }

@@ -57,168 +57,149 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   BookmarkBridge& operator=(const BookmarkBridge&) = delete;
   ~BookmarkBridge() override;
 
-  void Destroy(JNIEnv*, const base::android::JavaParamRef<jobject>&);
+  void Destroy(JNIEnv*);
 
   void GetImageUrlForBookmark(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_url,
       const base::android::JavaParamRef<jobject>& j_callback);
 
   base::android::ScopedJavaLocalRef<jobject> GetBookmarkIdForWebContents(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& jweb_contents,
       jboolean only_editable);
 
-  bool IsDoingExtensiveChanges(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
+  bool IsDoingExtensiveChanges(JNIEnv* env);
 
   jboolean IsEditBookmarksEnabled(JNIEnv* env);
 
-  void LoadEmptyPartnerBookmarkShimForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void LoadEmptyPartnerBookmarkShimForTesting(JNIEnv* env);
 
   // Loads a fake partner bookmarks shim for testing.
   // This is used in BookmarkBridgeTest.java.
-  void LoadFakePartnerBookmarkShimForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void LoadFakePartnerBookmarkShimForTesting(JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jobject> GetBookmarkById(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jlong id,
-      jint type);
+  base::android::ScopedJavaLocalRef<jobject> GetBookmarkById(JNIEnv* env,
+
+                                                             jlong id,
+                                                             jint type);
 
   void GetTopLevelFolderParentIds(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_result_obj);
 
   void GetTopLevelFolderIds(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       jboolean get_special,
       jboolean get_normal,
       const base::android::JavaParamRef<jobject>& j_result_obj);
 
-  base::android::ScopedJavaLocalRef<jobject> GetReadingListFolder(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetReadingListFolder(JNIEnv* env);
 
   void GetAllFoldersWithDepths(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_folders_obj,
       const base::android::JavaParamRef<jobject>& j_depths_obj);
 
-  base::android::ScopedJavaLocalRef<jobject> GetRootFolderId(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetRootFolderId(JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jobject> GetMobileFolderId(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetMobileFolderId(JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jobject> GetOtherFolderId(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetOtherFolderId(JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jobject> GetDesktopFolderId(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetDesktopFolderId(JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jobject> GetPartnerFolderId(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetPartnerFolderId(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jstring> GetBookmarkGuidByIdForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       jlong id,
       jint type);
 
   void GetChildIds(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
+
                    jlong id,
                    jint type,
                    const base::android::JavaParamRef<jobject>& j_result_obj);
 
   jint GetChildCount(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
+
                      jlong id,
                      jint type);
 
-  base::android::ScopedJavaLocalRef<jobject> GetChildAt(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jlong id,
-      jint type,
-      jint index);
+  base::android::ScopedJavaLocalRef<jobject> GetChildAt(JNIEnv* env,
+
+                                                        jlong id,
+                                                        jint type,
+                                                        jint index);
 
   void ReorderChildren(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_bookmark_id_obj,
       jlongArray arr);
 
   // Get the number of bookmarks in the sub tree of the specified bookmark node.
   // The specified node must be of folder type.
   jint GetTotalBookmarkCount(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
+
                              jlong id,
                              jint type);
 
   void SetBookmarkTitle(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj,
+
                         jlong id,
                         jint type,
                         const base::android::JavaParamRef<jstring>& title);
 
   void SetBookmarkUrl(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
+
                       jlong id,
                       jint type,
                       const base::android::JavaParamRef<jobject>& url);
 
   void SetPowerBookmarkMeta(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       jlong id,
       jint type,
       const base::android::JavaParamRef<jbyteArray>& bytes);
 
   base::android::ScopedJavaLocalRef<jbyteArray> GetPowerBookmarkMeta(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       jlong id,
       jint type);
 
   void DeletePowerBookmarkMeta(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj,
+
                                jlong id,
                                jint type);
 
   bool DoesBookmarkExist(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
+
                          jlong id,
                          jint type);
 
   void GetBookmarksForFolder(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_folder_id_obj,
       const base::android::JavaParamRef<jobject>& j_result_obj);
 
   jboolean IsFolderVisible(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
+
                            jlong id,
                            jint type);
 
   void SearchBookmarks(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj,
+
                        const base::android::JavaParamRef<jobject>& j_list,
                        const base::android::JavaParamRef<jstring>& j_query,
                        const base::android::JavaParamRef<jobjectArray>& j_tags,
@@ -226,35 +207,34 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
                        jint max_results);
 
   void GetBookmarksOfType(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
+
                           const base::android::JavaParamRef<jobject>& j_list,
                           jint type);
 
   base::android::ScopedJavaLocalRef<jobject> AddFolder(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_parent_id_obj,
       jint index,
       const base::android::JavaParamRef<jstring>& j_title);
 
   void DeleteBookmark(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_bookmark_id_obj);
 
-  void RemoveAllUserBookmarks(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj);
+  void RemoveAllUserBookmarks(JNIEnv* env);
 
   void MoveBookmark(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_bookmark_id_obj,
       const base::android::JavaParamRef<jobject>& j_parent_id_obj,
       jint index);
 
   base::android::ScopedJavaLocalRef<jobject> AddBookmark(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_parent_id_obj,
       jint index,
       const base::android::JavaParamRef<jstring>& j_title,
@@ -262,27 +242,25 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   base::android::ScopedJavaLocalRef<jobject> AddToReadingList(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jstring>& j_title,
       const base::android::JavaParamRef<jobject>& j_url);
 
   base::android::ScopedJavaLocalRef<jobject> GetReadingListItem(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& j_url);
 
   void SetReadStatus(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
+
                      const base::android::JavaParamRef<jobject>& j_url,
                      jboolean j_read);
 
-  void Undo(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Undo(JNIEnv* env);
 
-  void StartGroupingUndos(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
+  void StartGroupingUndos(JNIEnv* env);
 
-  void EndGroupingUndos(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
+  void EndGroupingUndos(JNIEnv* env);
 
   bool IsBookmarked(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& gurl);
