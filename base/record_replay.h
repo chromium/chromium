@@ -32,6 +32,7 @@ bool HadMismatch();
 void Print(const char* format, ...);
 void Diagnostic(const char* format, ...);
 void CommandDiagnostic(const char* format, ...);
+void CommandDiagnosticTrace(const char* format, ...);
 void Warning(const char* format, ...);
 void Trace(const char* format, ...);
 void Assert(const char* format, ...);
