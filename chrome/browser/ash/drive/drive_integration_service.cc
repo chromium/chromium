@@ -84,12 +84,9 @@ namespace {
 using base::Seconds;
 using base::SequencedTaskRunner;
 using base::TimeDelta;
-using content::BrowserContext;
 using content::BrowserThread;
 using drivefs::mojom::DriveFs;
 using drivefs::pinning::PinManager;
-using network::NetworkConnectionTracker;
-using network::mojom::ConnectionType;
 using prefs::kDriveFsBulkPinningEnabled;
 using util::ConnectionStatus;
 
