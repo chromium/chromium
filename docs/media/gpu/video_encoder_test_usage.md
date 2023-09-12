@@ -21,7 +21,7 @@ Wildcards can be used to run specific sets of tests:
 * Run all VP8 tests: `tast run $HOST video.EncodeAccel.vp8*`
 
 Check the
-[tast video folder](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/chromiumos/tast/local/bundles/cros/video/)
+[tast video folder](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/video/)
 for a list of all available tests.
 See the
 [Tast quickstart guide](https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/quickstart.md)
