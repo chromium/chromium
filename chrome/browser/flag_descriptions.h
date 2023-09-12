@@ -2461,6 +2461,8 @@ extern const char kQueryTilesEnableQueryEditingName[];
 extern const char kQueryTilesEnableQueryEditingDescription[];
 extern const char kQueryTilesEnableTrendingName[];
 extern const char kQueryTilesEnableTrendingDescription[];
+extern const char kQueryTilesDisableCountryOverrideName[];
+extern const char kQueryTilesDisableCountryOverrideDescription[];
 extern const char kQueryTilesCountryCode[];
 extern const char kQueryTilesCountryCodeDescription[];
 extern const char kQueryTilesCountryCodeUS[];
