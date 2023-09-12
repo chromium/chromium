@@ -8,7 +8,7 @@ namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kFastCheckout, "FastCheckout", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFastCheckout, "FastCheckout", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kForceEnableFastCheckoutCapabilities,
              "ForceEnableFastCheckoutCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
