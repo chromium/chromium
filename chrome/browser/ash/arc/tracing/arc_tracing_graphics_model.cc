@@ -69,7 +69,6 @@ constexpr char kReleaseBufferQuery[] =
 constexpr char kDequeueBufferQuery[] = "android:dequeueBuffer";
 constexpr char kQueueBufferQuery[] = "android:queueBuffer";
 
-constexpr char kBufferInUseQuery[] = "exo:BufferInUse";
 constexpr char kHandleMessageRefreshQuery[] =
     "android:onMessageReceived/android:handleMessageRefresh";
 constexpr char kHandleMessageInvalidateQuery[] =
@@ -463,45 +462,6 @@ BufferToEvents GetChromeEvents(
   // Only exo:Surface::Attach has app id argument.
   ProcessChromeEvents(common_model, attach_surface_query,
                       &per_buffer_chrome_events, buffer_id_to_task_id);
-
-  // Handle BufferInUse async events.
-  const ArcTracingModel::TracingEventPtrs buffer_in_use_events =
-      common_model.Select(kBufferInUseQuery);
-  std::map<std::string, std::string> buffer_in_use_id_to_buffer_id;
-  for (const ArcTracingEvent* event : buffer_in_use_events) {
-    // Only start event has buffer_id association.
-    if (event->GetPhase() != TRACE_EVENT_PHASE_ASYNC_BEGIN)
-      continue;
-    const std::string id = event->GetId();
-    const std::string buffer_id = event->GetArgAsString(
-        kArgumentBufferId, std::string() /* default_value */);
-    if (buffer_id.empty() || id.empty()) {
-      LOG(ERROR) << "Cannot map id to buffer id for event: "
-                 << event->ToString();
-      continue;
-    }
-    if (buffer_in_use_id_to_buffer_id.count(id) &&
-        buffer_in_use_id_to_buffer_id[id] != buffer_id) {
-      LOG(ERROR) << id << " is already mapped to "
-                 << buffer_in_use_id_to_buffer_id[id] << ". Skip mapping to "
-                 << buffer_id;
-      continue;
-    }
-    buffer_in_use_id_to_buffer_id[id] = buffer_id;
-  }
-
-  for (const ArcTracingEvent* event : buffer_in_use_events) {
-    if (event->GetPhase() != TRACE_EVENT_PHASE_ASYNC_STEP_INTO)
-      continue;
-    const std::string id = event->GetId();
-    if (!buffer_in_use_id_to_buffer_id.count(id)) {
-      LOG(ERROR) << "Found non-mapped event: " << event->ToString();
-      continue;
-    }
-    ArcTracingGraphicsModel::BufferEvents& graphics_events =
-        per_buffer_chrome_events[buffer_in_use_id_to_buffer_id[id]];
-    GetEventMapper().Produce(*event, &graphics_events);
-  }
 
   for (auto& buffer : per_buffer_chrome_events)
     SortBufferEventsByTimestamp(&buffer.second);
