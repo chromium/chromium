@@ -319,8 +319,8 @@ void SharedImageStub::OnCreateSharedImage(
 
 void SharedImageStub::OnCreateSharedImageBackedByBuffer(
     mojom::CreateSharedImageBackedByBufferParamsPtr params) {
-  TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
-               params->size.width(), "height", params->size.height());
+  TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageBackedByBuffer",
+               "width", params->size.width(), "height", params->size.height());
   if (!params->mailbox.IsSharedImage()) {
     LOG(ERROR) << kInvalidMailboxOnCreateError;
     OnError();
