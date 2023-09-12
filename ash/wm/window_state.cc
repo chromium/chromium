@@ -1356,8 +1356,11 @@ void WindowState::OnWindowParentChanged(aura::Window* window,
 void WindowState::OnWindowVisibilityChanged(aura::Window* window,
                                             bool visible) {
   // If this window is a PiP and its SnapFraction is null.
+  // Note that, at this point, ARC PiP may not be ready as visibility can be
+  // updated when it transitions from minimized to PiP. In this case, snap
+  // fraction is updated in `ClientControlledShellSurface::OnPostWidgetCommit`.
   if (window == window_ && visible && IsPip() &&
-      !PipPositioner::HasSnapFraction(this)) {
+      !PipPositioner::HasSnapFraction(this) && !IsArcWindow(window)) {
     PipPositioner::SaveSnapFraction(this, window_->GetBoundsInScreen());
   }
   // From here, we are only interested if the parent visibility changes, i.e.
