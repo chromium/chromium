@@ -99,13 +99,6 @@ ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
   return ProxyServer(scheme, HostPortPair(unbracketed_host, fixed_port));
 }
 
-// static
-ProxyServer ProxyServer::ForIpProtection(base::StringPiece host) {
-  ProxyServer server = FromSchemeHostAndPort(SCHEME_HTTPS, host, absl::nullopt);
-  server.is_for_ip_protection_ = true;
-  return server;
-}
-
 std::string ProxyServer::GetHost() const {
   return host_port_pair().HostForURL();
 }

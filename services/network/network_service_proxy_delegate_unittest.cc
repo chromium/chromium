@@ -218,7 +218,8 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsTokenToTunnelRequest) {
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::HttpRequestHeaders headers;
-  auto proxy_server = net::ProxyServer::ForIpProtection("proxy");
+  auto proxy_server = net::ProxyServer::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTPS, "proxy", absl::nullopt);
   delegate->OnBeforeTunnelRequest(proxy_server, &headers);
 
   std::string encoded_token;
@@ -912,16 +913,17 @@ TEST_F(NetworkServiceProxyDelegateTest, OnFallbackObserved) {
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnFallback_IpProtection) {
-  net::ProxyServer proxy = net::ProxyServer::ForIpProtection("proxy.com");
+  auto proxy = net::ProxyServer::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTPS, "proxy.com", absl::nullopt);
   bool force_refresh_called = false;
 
   auto config = mojom::CustomProxyConfig::New();
-  config->rules.ParseFromString("http=foo");
   auto delegate = CreateDelegate(std::move(config));
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { force_refresh_called = true; }));
+  ipp_config_cache->SetProxyList({"proxy.com"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   delegate->OnFallback(proxy, net::ERR_FAILED);
