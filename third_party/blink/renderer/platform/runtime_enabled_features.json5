@@ -638,7 +638,7 @@
     {
       // https://drafts.fxtf.org/css-masking/#typedef-geometry-box
       name: "ClipPathGeometryBox",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CloseWatcher",
