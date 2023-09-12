@@ -45,6 +45,7 @@ static_library("browser_sync") {
     "//components/sync_user_events",
     "//components/version_info",
     "//components/version_info:generate_version_info",
+    "//net",
   ]
 
   if (is_chromeos_ash) {
@@ -62,7 +63,10 @@ static_library("browser_sync") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "active_devices_provider_impl_unittest.cc" ]
+  sources = [
+    "active_devices_provider_impl_unittest.cc",
+    "sync_client_utils_unittest.cc",
+  ]
 
   deps = [
     ":browser_sync",
@@ -74,6 +78,7 @@ source_set("unit_tests") {
     "//components/bookmarks/managed",
     "//components/bookmarks/test",
     "//components/history/core/browser",
+    "//components/password_manager/core/browser:test_support",
     "//components/prefs",
     "//components/sync",
     "//components/sync:test_support",
