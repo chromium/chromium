@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/posix/sysctl.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -22,23 +23,6 @@
 #include "build/build_config.h"
 
 namespace base {
-
-namespace {
-
-// Queries sysctlbyname() for the given key and returns the value from the
-// system or the empty string on failure.
-std::string GetSysctlValue(const char* key_name) {
-  char value[256];
-  size_t len = std::size(value);
-  if (sysctlbyname(key_name, &value, &len, nullptr, 0) == 0) {
-    DCHECK_GE(len, 1u);
-    DCHECK_EQ('\0', value[len - 1]);
-    return std::string(value, len - 1);
-  }
-  return std::string();
-}
-
-}  // namespace
 
 // static
 std::string SysInfo::OperatingSystemName() {
@@ -96,14 +80,9 @@ std::string SysInfo::OperatingSystemArchitecture() {
 
 // static
 std::string SysInfo::GetIOSBuildNumber() {
-  int mib[2] = {CTL_KERN, KERN_OSVERSION};
-  unsigned int namelen = sizeof(mib) / sizeof(mib[0]);
-  size_t buffer_size = 0;
-  sysctl(mib, namelen, nullptr, &buffer_size, nullptr, 0);
-  char build_number[buffer_size];
-  int result = sysctl(mib, namelen, build_number, &buffer_size, nullptr, 0);
-  DCHECK(result == 0);
-  return build_number;
+  absl::optional<std::string> build_number =
+      StringSysctl({CTL_KERN, KERN_OSVERSION});
+  return build_number.value();
 }
 
 // static
@@ -133,7 +112,7 @@ uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
 
 // static
 std::string SysInfo::CPUModelName() {
-  return GetSysctlValue("machdep.cpu.brand_string");
+  return StringSysctlByName("machdep.cpu.brand_string").value_or(std::string{});
 }
 
 // static
@@ -159,7 +138,7 @@ std::string SysInfo::HardwareModelName() {
 #else
   // Note: This uses "hw.machine" instead of "hw.model" like the Mac code,
   // because "hw.model" doesn't always return the right string on some devices.
-  return GetSysctlValue("hw.machine");
+  return StringSysctl({CTL_HW, HW_MACHINE}).value_or(std::string{});
 #endif
 }
 

@@ -969,6 +969,13 @@ component("base") {
     #"system/sys_info_openbsd.cc",
   ]
 
+  if (is_apple || current_os == "freebsd" || current_os == "openbsd") {
+    sources += [
+      "posix/sysctl.cc",
+      "posix/sysctl.h",
+    ]
+  }
+
   if (is_posix) {
     sources += [
       "debug/debugger_posix.cc",
@@ -3720,6 +3727,9 @@ test("base_unittests") {
     sources += [ "debug/allocation_trace_unittest.cc" ]
   }
 
+  if (is_apple || current_os == "freebsd" || current_os == "openbsd") {
+    sources += [ "posix/sysctl_unittest.cc" ]
+  }
   if (is_apple) {
     sources += [
       "apple/backup_util_unittest.mm",

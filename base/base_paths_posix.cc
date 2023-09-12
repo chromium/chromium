@@ -22,6 +22,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/posix/sysctl.h"
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
 
@@ -48,16 +49,12 @@ bool PathProviderPosix(int key, FilePath* result) {
       return true;
 #elif BUILDFLAG(IS_FREEBSD)
       int name[] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
-      char bin_dir[PATH_MAX + 1];
-      size_t length = sizeof(bin_dir);
-      // Upon return, |length| is the number of bytes written to |bin_dir|
-      // including the string terminator.
-      int error = sysctl(name, 4, bin_dir, &length, NULL, 0);
-      if (error < 0 || length <= 1) {
+      absl::optional<std::string> bin_dir = StringSysctl(name, std::size(name));
+      if (!bin_dir.has_value() || bin_dir.value().length() <= 1) {
         NOTREACHED() << "Unable to resolve path.";
         return false;
       }
-      *result = FilePath(FilePath::StringType(bin_dir, length - 1));
+      *result = FilePath(bin_dir.value());
       return true;
 #elif BUILDFLAG(IS_SOLARIS)
       char bin_dir[PATH_MAX + 1];

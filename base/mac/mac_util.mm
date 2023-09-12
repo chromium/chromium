@@ -29,6 +29,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_aedesc.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/posix/sysctl.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -302,20 +303,6 @@ bool RemoveQuarantineAttribute(const FilePath& file_path) {
 
 namespace {
 
-std::string StringSysctlByName(const char* name) {
-  size_t buf_len;
-  int result = sysctlbyname(name, nullptr, &buf_len, nullptr, 0);
-  PCHECK(result == 0);
-  CHECK_GE(buf_len, 1u);
-
-  std::string value(buf_len - 1, '\0');
-  result = sysctlbyname(name, &value[0], &buf_len, nullptr, 0);
-  PCHECK(result == 0);
-  CHECK_EQ(value[buf_len - 1], '\0');
-
-  return value;
-}
-
 int ParseOSProductVersion(const std::string_view& version) {
   int macos_version = 0;
 
@@ -373,8 +360,8 @@ int ParseOSProductVersionForTesting(const std::string_view& version) {
 }
 
 int MacOSVersion() {
-  static int macos_version =
-      ParseOSProductVersion(StringSysctlByName("kern.osproductversion"));
+  static int macos_version = ParseOSProductVersion(
+      StringSysctlByName("kern.osproductversion").value());
 
   return macos_version;
 }

@@ -22,6 +22,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/posix/sysctl.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -40,19 +41,6 @@ bool g_is_cpu_security_mitigation_enabled = false;
 // Whether NumberOfProcessors() was called. Used to detect when the CPU security
 // mitigations state changes after a call to NumberOfProcessors().
 bool g_is_cpu_security_mitigation_enabled_read = false;
-
-// Queries sysctlbyname() for the given key and returns the value from the
-// system or the empty string on failure.
-std::string GetSysctlStringValue(const char* key_name) {
-  char value[256];
-  size_t len = sizeof(value);
-  if (sysctlbyname(key_name, &value, &len, nullptr, 0) != 0)
-    return std::string();
-  DCHECK_GE(len, 1u);
-  DCHECK_LE(len, sizeof(value));
-  DCHECK_EQ('\0', value[len - 1]);
-  return std::string(value, len - 1);
-}
 
 }  // namespace
 
@@ -139,7 +127,7 @@ uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
 
 // static
 std::string SysInfo::CPUModelName() {
-  return GetSysctlStringValue("machdep.cpu.brand_string");
+  return StringSysctlByName("machdep.cpu.brand_string").value_or(std::string{});
 }
 
 // static
@@ -148,11 +136,11 @@ std::string SysInfo::HardwareModelName() {
   // new "hw.product" and "hw.target". See
   // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/sys/sysctl.h#L1168-L1169
   // and
-  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/kern/kern_mib.c#L374-L376
+  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/kern/kern_mib.c#L534-L536
   if (base::mac::MacOSMajorVersion() < 11) {
-    return GetSysctlStringValue("hw.model");
+    return StringSysctl({CTL_HW, HW_MODEL}).value_or(std::string{});
   } else {
-    return GetSysctlStringValue("hw.product");
+    return StringSysctl({CTL_HW, HW_PRODUCT}).value_or(std::string{});
   }
 }
 

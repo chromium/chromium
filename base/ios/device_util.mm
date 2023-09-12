@@ -18,7 +18,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_util.h"
+#include "base/posix/sysctl.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -60,11 +60,7 @@ std::string GetPlatform() {
 #if TARGET_OS_SIMULATOR
   return getenv("SIMULATOR_MODEL_IDENTIFIER");
 #elif TARGET_OS_IPHONE
-  std::string platform;
-  size_t size = 0;
-  sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-  sysctlbyname("hw.machine", base::WriteInto(&platform, size), &size, NULL, 0);
-  return platform;
+  return base::StringSysctl({CTL_HW, HW_MACHINE}).value();
 #endif
 }
 

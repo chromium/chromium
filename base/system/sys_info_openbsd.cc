@@ -11,6 +11,7 @@
 #include <sys/sysctl.h>
 
 #include "base/notreached.h"
+#include "base/posix/sysctl.h"
 
 namespace {
 
@@ -64,14 +65,7 @@ uint64_t SysInfo::MaxSharedMemorySize() {
 
 // static
 std::string SysInfo::CPUModelName() {
-  int mib[] = {CTL_HW, HW_MODEL};
-  char name[256];
-  size_t len = std::size(name);
-  if (sysctl(mib, std::size(mib), name, &len, NULL, 0) < 0) {
-    NOTREACHED();
-    return std::string();
-  }
-  return name;
+  return StringSysctl({CTL_HW, HW_MODEL}).value();
 }
 
 }  // namespace base
