@@ -783,4 +783,12 @@ void DualReadingListModel::UpdateEntryStateCountersOnEntryInsertion(
   }
 }
 
+ReadingListModel* DualReadingListModel::GetLocalOrSyncableModel() {
+  return local_or_syncable_model_.get();
+}
+
+ReadingListModel* DualReadingListModel::GetAccountModel() {
+  return account_model_.get();
+}
+
 }  // namespace reading_list

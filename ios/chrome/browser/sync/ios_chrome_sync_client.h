@@ -24,6 +24,8 @@ class PasswordStoreInterface;
 }
 
 namespace browser_sync {
+class LocalDataQueryHelper;
+class LocalDataMigrationHelper;
 class SyncApiComponentFactoryImpl;
 }
 
@@ -62,6 +64,12 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
   void OnLocalSyncTransportDataCleared() override;
+  void GetLocalDataDescriptions(
+      syncer::ModelTypeSet types,
+      base::OnceCallback<void(
+          std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback)
+      override;
+  void TriggerLocalDataMigration(syncer::ModelTypeSet types) override;
 
  private:
   ChromeBrowserState* const browser_state_;
@@ -80,6 +88,10 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
 
   // The task runner for the `web_data_service_`, if any.
   scoped_refptr<base::SequencedTaskRunner> db_thread_;
+
+  std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
+  std::unique_ptr<browser_sync::LocalDataMigrationHelper>
+      local_data_migration_helper_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_IOS_CHROME_SYNC_CLIENT_H__
