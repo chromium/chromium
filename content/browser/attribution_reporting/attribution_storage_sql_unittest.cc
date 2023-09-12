@@ -1119,6 +1119,7 @@ TEST_P(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramRecorded) {
 
   histograms.ExpectUniqueSample("Conversions.Storage.Sql.InitStatus2",
                                 AttributionStorageSql::InitStatus::kSuccess, 1);
+  EXPECT_GT(histograms.GetTotalSum("Conversions.Storage.Sql.FileSize"), 0);
 }
 
 TEST_P(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {

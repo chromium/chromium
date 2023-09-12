@@ -2384,6 +2384,14 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
 
   db_init_status_ = DbStatus::kOpen;
   RecordInitializationStatus(InitStatus::kSuccess);
+
+  int64_t file_size = 0L;
+  if (!path_to_database_.empty() &&
+      base::GetFileSize(path_to_database_, &file_size)) {
+    int64_t file_size_kb = file_size / 1024;
+    base::UmaHistogramCounts10M("Conversions.Storage.Sql.FileSize",
+                                file_size_kb);
+  }
   return true;
 }
 

@@ -4213,6 +4213,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.Storage.Sql.FileSize" units="KB"
+    expires_after="M121">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When the storage database is initialized upon the API's first use, records
+    the file size of the database in KB. Only recorded if initialization is
+    successful.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.Storage.Sql.InitStatus2"
     enum="ConversionStorageSqlInitStatus" expires_after="M121">
   <owner>johnidel@chromium.org</owner>
