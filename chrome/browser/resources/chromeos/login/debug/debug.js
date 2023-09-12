@@ -663,7 +663,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'gaia-signin',
       kind: ScreenKind.NORMAL,
-      handledSteps: 'online-gaia,allowlist-error',
+      handledSteps: 'online-gaia,allowlist-error,enrollment-nudge',
       states: [
         {
           id: 'online-gaia',
@@ -684,6 +684,12 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             screen.showAllowlistCheckFailedError({
               enterpriseManaged: false,
             });
+          },
+        },
+        {
+          id: 'enrollment-nudge',
+          trigger: (screen) => {
+            screen.showEnrollmentNudge('example.com');
           },
         },
       ],
