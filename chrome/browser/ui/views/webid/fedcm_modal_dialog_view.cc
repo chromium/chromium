@@ -96,3 +96,7 @@ void FedCmModalDialogView::WebContentsDestroyed() {
       "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason",
       FedCmModalDialogView::ClosePopupWindowReason::kPopupWindowDestroyed);
 }
+
+FedCmModalDialogView::Observer* FedCmModalDialogView::GetObserverForTesting() {
+  return observer_;
+}

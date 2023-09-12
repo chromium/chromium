@@ -106,8 +106,9 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
 // Mock version of FedCmModalDialogView for injection during tests.
 class MockFedCmModalDialogView : public FedCmModalDialogView {
  public:
-  explicit MockFedCmModalDialogView(content::WebContents* web_contents)
-      : FedCmModalDialogView(web_contents, /*observer=*/nullptr) {}
+  explicit MockFedCmModalDialogView(content::WebContents* web_contents,
+                                    FedCmModalDialogView::Observer* observer)
+      : FedCmModalDialogView(web_contents, observer) {}
   ~MockFedCmModalDialogView() override = default;
 
   MockFedCmModalDialogView(const MockFedCmModalDialogView&) = delete;
@@ -117,7 +118,13 @@ class MockFedCmModalDialogView : public FedCmModalDialogView {
               ShowPopupWindow,
               (const GURL& url),
               (override));
-  MOCK_METHOD(void, ClosePopupWindow, (), (override));
+
+  void ClosePopupWindow() override {
+    FedCmModalDialogView::Observer* observer = GetObserverForTesting();
+    if (observer) {
+      observer->OnPopupWindowDestroyed();
+    }
+  }
 };
 
 // Test FedCmAccountSelectionView which uses TestBubbleView.
@@ -267,8 +274,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   }
 
   void CreateAndShowPopupWindow(TestFedCmAccountSelectionView& controller) {
-    auto idp_signin_popup_window =
-        std::make_unique<MockFedCmModalDialogView>(test_web_contents_.get());
+    auto idp_signin_popup_window = std::make_unique<MockFedCmModalDialogView>(
+        test_web_contents_.get(), &controller);
     EXPECT_CALL(*idp_signin_popup_window, ShowPopupWindow).Times(1);
     controller.SetIdpSigninPopupWindowForTesting(
         std::move(idp_signin_popup_window));
@@ -966,11 +973,15 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MismatchDialogWithRpContext) {
   }
 }
 
-// Tests that the accounts bubble is not shown if the tab is hidden after the
-// modal dialog is closed but before Show() is invoked, but that it is shown
-// once the tab is visible.
+// Tests the following
+// 1. pop-up window is closed
+// 2. visibility changes to hidden e.g. user navigates to different tab
+// 3. Show() is invoked
+// 4. widget should remain hidden
+// 5. visibility changes to visible e.g. user navigates back to same tab
+// 6. widget should now be visible
 TEST_F(FedCmAccountSelectionViewDesktopTest,
-       AccountsAfterModalNotShownIfHiddenBeforeShow) {
+       BubbleWidgetAfterPopupRemainsHiddenAfterAccountsFetched) {
   // Trigger IdP sign-in status mismatch dialog.
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowMismatchDialog();
@@ -995,6 +1006,49 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_FALSE(widget_->IsVisible());
 
   controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_TRUE(widget_->IsVisible());
+  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
+            bubble_view_->sheet_type_);
+}
+
+// Tests the following
+// 1. pop-up window is closed
+// 2. visibility changes to hidden e.g. user navigates to different tab
+// 3. visibility changes to visible e.g. user navigates back to same tab
+// 4. widget should remain hidden
+// 5. Show() is invoked
+// 6. widget should now be visible
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       BubbleWidgetAfterPopupRemainsHiddenBeforeAccountsFetched) {
+  // Trigger IdP sign-in status mismatch dialog.
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMismatchDialog();
+  // Emulate user clicking on "Continue" button in the mismatch dialog.
+  AccountSelectionBubbleView::Observer* observer =
+      static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
+  observer->OnSigninToIdP();
+  CreateAndShowPopupWindow(*controller);
+
+  // Emulate IdP closing the pop-up window.
+  controller->CloseModalDialog();
+
+  // Switch to a different tab and then switch back to the same tab. The widget
+  // should remain hidden because the mismatch dialog has not been updated into
+  // an accounts dialog yet.
+  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  EXPECT_FALSE(widget_->IsVisible());
+  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_FALSE(widget_->IsVisible());
+
+  // Emulate IdP sending the IdP sign-in status header which updates the
+  // mismatch dialog to an accounts dialog.
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+      {kAccountId, LoginState::kSignUp},
+  });
+  Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+
+  // The widget should now be visible.
   EXPECT_TRUE(widget_->IsVisible());
   EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
             bubble_view_->sheet_type_);
@@ -1067,6 +1121,31 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogMoreDetailsClicked) {
 
   // Emulate user closing the pop-up window.
   controller->OnPopupWindowDestroyed();
+
+  // Widget should be closed.
+  EXPECT_TRUE(widget_->IsClosed());
+}
+
+// Tests that IdentityProvider.close() on a non sign-in to IDP pop-up closes the
+// widget.
+TEST_F(FedCmAccountSelectionViewDesktopTest, MoreDetailsPopupIdpClose) {
+  // Trigger error dialog.
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowErrorDialog();
+  EXPECT_TRUE(widget_->IsVisible());
+
+  // Emulate user clicking on "more details" button in the error dialog.
+  AccountSelectionBubbleView::Observer* observer =
+      static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
+  observer->OnMoreDetailsButtonClicked(GURL(), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Widget should be hidden but not closed.
+  EXPECT_FALSE(widget_->IsVisible());
+  EXPECT_FALSE(widget_->IsClosed());
+
+  // Emulate IdP closing the pop-up window.
+  controller->CloseModalDialog();
 
   // Widget should be closed.
   EXPECT_TRUE(widget_->IsClosed());

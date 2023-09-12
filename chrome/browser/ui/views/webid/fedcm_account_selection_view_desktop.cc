@@ -271,7 +271,8 @@ absl::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
 void FedCmAccountSelectionView::OnVisibilityChanged(
     content::Visibility visibility) {
   is_web_contents_visible_ = visibility == content::Visibility::VISIBLE;
-  if (!bubble_widget_ || popup_window_) {
+  if (!bubble_widget_ || popup_window_ ||
+      is_modal_closed_but_accounts_fetch_pending_) {
     return;
   }
 
@@ -499,16 +500,23 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
 }
 
 void FedCmAccountSelectionView::CloseModalDialog() {
-  should_destroy_bubble_widget_ = false;
   if (popup_window_) {
-    popup_window_->ClosePopupWindow();
-    popup_window_.reset();
+    // If the pop-up window is for IDP sign-in status, we do not destroy the
+    // bubble widget and wait for the accounts fetch before displaying a dialog.
+    // Otherwise if the pop-up window is for AuthZ or error, we destroy the
+    // bubble widget and any incoming accounts fetches would not display any
+    // dialog.
+    // TODO(crbug.com/1479978): Verify if the current behaviour is what we want
+    // for AuthZ/error.
     if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH) {
+      should_destroy_bubble_widget_ = false;
       is_modal_closed_but_accounts_fetch_pending_ = true;
       idp_close_popup_time_ = base::TimeTicks::Now();
       popup_window_state_ =
           PopupWindowResult::kAccountsNotReceivedAndPopupClosedByIdp;
     }
+    popup_window_->ClosePopupWindow();
+    popup_window_.reset();
   }
 
   if (show_accounts_dialog_callback_) {
