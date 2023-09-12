@@ -1167,7 +1167,8 @@ bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
 TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
   if (auto* tab_search_host = frame_->GetFrameView()->GetTabSearchBubbleHost())
     return tab_search_host;
-  auto* tab_search_button = tab_strip_region_view_->tab_search_button();
+  auto* const tab_search_button =
+      tab_strip_region_view_->tab_search_container()->tab_search_button();
   return tab_search_button ? tab_search_button->tab_search_bubble_host()
                            : nullptr;
 }

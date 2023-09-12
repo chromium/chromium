@@ -9,10 +9,12 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "new_tab_button.h"
 #include "tab_search_button.h"
 #include "tab_strip_control_button.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -33,6 +35,9 @@ TabSearchButton::TabSearchButton(TabStrip* tab_strip)
           this,
           tab_strip->controller()->GetProfile())) {
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
+
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
+  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
 
   UpdateForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
   UpdateForegroundFrameInactiveColorId(
