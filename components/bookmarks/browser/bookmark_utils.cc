@@ -604,11 +604,6 @@ const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model,
                   [id](const BookmarkNode* node) { return node->id() == id; });
 }
 
-const BookmarkNode* GetBookmarkNodeByUuid(const BookmarkModel* model,
-                                          const base::Uuid& uuid) {
-  return model->GetNodeByUuid(uuid);
-}
-
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root) {
   return node && node->HasAncestor(root);
 }

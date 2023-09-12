@@ -86,7 +86,7 @@ void HistoryClientImpl::UpdateBookmarkLastUsedTime(
       continue;
     }
     const bookmarks::BookmarkNode* node =
-        bookmarks::GetBookmarkNodeByUuid(bookmark_model, bookmark_node_uuid);
+        bookmark_model->GetNodeByUuid(bookmark_node_uuid);
     if (!node) {
       continue;
     }

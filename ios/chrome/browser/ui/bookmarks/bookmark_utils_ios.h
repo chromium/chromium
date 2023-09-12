@@ -73,10 +73,6 @@ NodeSet FindNodesByNodeReferences(NodeReferenceSet references);
 const bookmarks::BookmarkNode* FindNodeById(bookmarks::BookmarkModel* model,
                                             int64_t id);
 
-// Finds bookmark node passed in `uuid`, in the `model`.
-const bookmarks::BookmarkNode* FindNodeByUuid(bookmarks::BookmarkModel* model,
-                                              const base::Uuid& uuid);
-
 // Finds bookmark node passed in `id`, in the `model`. Returns null if the
 // node is found but not a folder.
 const bookmarks::BookmarkNode* FindFolderById(bookmarks::BookmarkModel* model,

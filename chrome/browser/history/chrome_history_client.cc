@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
 #include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/model_loader.h"
 #include "components/history/core/browser/history_service.h"
 
@@ -69,7 +68,7 @@ void ChromeHistoryClient::UpdateBookmarkLastUsedTime(
   if (!bookmark_model_)
     return;
   const bookmarks::BookmarkNode* node =
-      bookmarks::GetBookmarkNodeByUuid(bookmark_model_, bookmark_node_uuid);
+      bookmark_model_->GetNodeByUuid(bookmark_node_uuid);
   // This call is async so the BookmarkNode could have already been deleted.
   if (!node)
     return;

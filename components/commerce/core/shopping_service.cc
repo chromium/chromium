@@ -20,7 +20,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/bookmark_update_manager.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/discounts_storage.h"
@@ -541,7 +540,7 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
   std::unordered_map<std::string, base::Uuid> url_to_uuid_map;
   for (const base::Uuid& uuid : bookmark_uuids) {
     const bookmarks::BookmarkNode* bookmark =
-        bookmarks::GetBookmarkNodeByUuid(bookmark_model_, uuid);
+        bookmark_model_->GetNodeByUuid(uuid);
 
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
         power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_, bookmark);

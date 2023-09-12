@@ -9,7 +9,6 @@
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/pref_names.h"
@@ -537,8 +536,7 @@ TEST_F(ShoppingServiceTest, TestGetUpdatedProductInfoForBookmarks) {
       [](bookmarks::BookmarkModel* model, int* call_count,
          base::RunLoop* run_loop, const base::Uuid& uuid, const GURL& url,
          absl::optional<ProductInfo> info) {
-        const bookmarks::BookmarkNode* node =
-            bookmarks::GetBookmarkNodeByUuid(model, uuid);
+        const bookmarks::BookmarkNode* node = model->GetNodeByUuid(uuid);
         EXPECT_EQ(url.spec(), node->url().spec());
 
         (*call_count)--;

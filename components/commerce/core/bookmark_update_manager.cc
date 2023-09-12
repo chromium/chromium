@@ -152,7 +152,7 @@ void BookmarkUpdateManager::HandleOnDemandResponse(
     return;
 
   const bookmarks::BookmarkNode* node =
-      bookmarks::GetBookmarkNodeByUuid(bookmark_model_, bookmark_uuid);
+      bookmark_model_->GetNodeByUuid(bookmark_uuid);
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_, node);
 

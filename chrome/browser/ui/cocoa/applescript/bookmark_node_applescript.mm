@@ -17,7 +17,6 @@
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 
 using bookmarks::BookmarkModel;
@@ -75,7 +74,7 @@ using bookmarks::BookmarkNode;
 }
 
 - (const bookmarks::BookmarkNode*)bookmarkNode {
-  return bookmarks::GetBookmarkNodeByUuid(self.bookmarkModel, _bookmarkGUID);
+  return self.bookmarkModel->GetNodeByUuid(_bookmarkGUID);
 }
 
 - (NSString*)title {

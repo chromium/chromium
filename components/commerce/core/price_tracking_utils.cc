@@ -15,7 +15,6 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -465,7 +464,7 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
   const base::Uuid collection_uuid =
       base::Uuid::ParseLowercase(bookmarks::kShoppingCollectionUuid);
   const bookmarks::BookmarkNode* collection_node =
-      bookmarks::GetBookmarkNodeByUuid(model, collection_uuid);
+      model->GetNodeByUuid(collection_uuid);
 
   CHECK(!collection_node || collection_node->is_folder());
 
@@ -478,6 +477,7 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
         model->other_node(), model->other_node()->children().size(),
         l10n_util::GetStringUTF16(IDS_SHOPPING_COLLECTION_FOLDER_NAME), nullptr,
         absl::nullopt, collection_uuid);
+    CHECK_EQ(model->GetNodeByUuid(collection_uuid), collection_node);
   }
 
   return collection_node;
