@@ -97,8 +97,8 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   manager->AddHandlers(web_ui);
   manager->AddLoadTimeData(html_source);
 
-  // TODO(khorimoto): Move to DeviceSection::AddHandler() once |html_source|
-  // parameter is removed.
+  // TODO(b/300151715): Move to StorageSection::AddHandler() once/if
+  // |html_source| parameter is removed.
   web_ui->AddMessageHandler(
       std::make_unique<StorageHandler>(profile, html_source));
 

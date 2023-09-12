@@ -118,7 +118,10 @@ void StorageSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           IsExternalStorageEnabled(profile()));
 }
 
-void StorageSection::AddHandlers(content::WebUI* web_ui) {}
+void StorageSection::AddHandlers(content::WebUI* web_ui) {
+  // TODO(b/300151715) Currently StorageHandler is registered in
+  // os_settings_ui.cc and should be registered here if possible.
+}
 
 int StorageSection::GetSectionNameMessageId() const {
   return IDS_SETTINGS_STORAGE_TITLE;
