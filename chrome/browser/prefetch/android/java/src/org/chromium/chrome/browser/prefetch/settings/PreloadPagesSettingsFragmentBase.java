@@ -9,20 +9,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.preference.PreferenceFragmentCompat;
-
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /**
  * The base fragment class for Preload Pages settings fragments.
  */
-public abstract class PreloadPagesSettingsFragmentBase
-        extends PreferenceFragmentCompat implements FragmentHelpAndFeedbackLauncher {
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
-
+public abstract class PreloadPagesSettingsFragmentBase extends ChromeBaseSettingsFragment {
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         SettingsUtils.addPreferencesFromResource(this, getPreferenceResource());
@@ -31,11 +25,6 @@ public abstract class PreloadPagesSettingsFragmentBase
         onCreatePreferencesInternal(bundle, s);
 
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 
     @Override
@@ -52,7 +41,7 @@ public abstract class PreloadPagesSettingsFragmentBase
         if (item.getItemId() != R.id.menu_id_targeted_help) {
             return false;
         }
-        mHelpAndFeedbackLauncher.show(
+        getHelpAndFeedbackLauncher().show(
                 getActivity(), getString(R.string.help_context_privacy), null);
         return true;
     }

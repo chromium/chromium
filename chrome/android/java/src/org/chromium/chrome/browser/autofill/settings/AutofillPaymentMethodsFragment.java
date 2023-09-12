@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import androidx.annotation.Nullable;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -34,10 +33,9 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthRequester;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
@@ -52,9 +50,8 @@ import org.chromium.components.payments.AndroidPaymentAppFactory;
  * Autofill credit cards fragment, which allows the user to edit credit cards and control
  * payment apps.
  */
-public class AutofillPaymentMethodsFragment
-        extends PreferenceFragmentCompat implements PersonalDataManager.PersonalDataManagerObserver,
-                                                    FragmentHelpAndFeedbackLauncher {
+public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
+        implements PersonalDataManager.PersonalDataManagerObserver {
     // The Fido pref is used as a key on the settings toggle. This key helps in the retrieval of the
     // Fido toggle during tests.
     static final String PREF_FIDO = "fido";
@@ -69,8 +66,6 @@ public class AutofillPaymentMethodsFragment
             "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage.OptIn";
     static final String MANDATORY_REAUTH_OPT_OUT_HISTOGRAM =
             "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage.OptOut";
-
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Nullable
     private ReauthenticatorBridge mReauthenticatorBridge;
@@ -98,7 +93,7 @@ public class AutofillPaymentMethodsFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            mHelpAndFeedbackLauncher.show(
+            getHelpAndFeedbackLauncher().show(
                     getActivity(), getActivity().getString(R.string.help_context_autofill), null);
             return true;
         }
@@ -127,7 +122,8 @@ public class AutofillPaymentMethodsFragment
             PersonalDataManager.setAutofillCreditCardEnabled((boolean) newValue);
             return true;
         });
-        autofillSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate() {
+        autofillSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
+                getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 return PersonalDataManager.isAutofillCreditCardManaged();
@@ -463,10 +459,5 @@ public class AutofillPaymentMethodsFragment
     public void onDestroyView() {
         PersonalDataManager.getInstance().unregisterDataObserver(this);
         super.onDestroyView();
-    }
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 }

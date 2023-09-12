@@ -13,20 +13,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /**
  * The base fragment class for Safe Browsing settings fragments.
  */
-public abstract class SafeBrowsingSettingsFragmentBase
-        extends PreferenceFragmentCompat implements FragmentHelpAndFeedbackLauncher {
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSettingsFragment {
     private SafeBrowsingSettingsFragmentHelper.CustomTabIntentHelper mCustomTabHelper;
 
     @Override
@@ -37,11 +33,6 @@ public abstract class SafeBrowsingSettingsFragmentBase
         onCreatePreferencesInternal(bundle, s);
 
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 
     /**
@@ -82,7 +73,7 @@ public abstract class SafeBrowsingSettingsFragmentBase
         if (item.getItemId() != R.id.menu_id_targeted_help) {
             return false;
         }
-        mHelpAndFeedbackLauncher.show(
+        getHelpAndFeedbackLauncher().show(
                 getActivity(), getString(R.string.help_context_safe_browsing), null);
         return true;
     }

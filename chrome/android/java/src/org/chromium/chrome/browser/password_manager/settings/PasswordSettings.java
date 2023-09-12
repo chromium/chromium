@@ -25,24 +25,20 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
@@ -67,10 +63,9 @@ import java.util.Locale;
  * The "Passwords" screen in Settings, which allows the user to enable or disable password saving,
  * to view saved passwords (just the username and URL), and to delete saved passwords.
  */
-public class PasswordSettings extends PreferenceFragmentCompat
+public class PasswordSettings extends ChromeBaseSettingsFragment
         implements PasswordListObserver, Preference.OnPreferenceClickListener,
-                   SyncService.SyncStateChangedListener, FragmentHelpAndFeedbackLauncher,
-                   ProfileDependentSetting {
+                   SyncService.SyncStateChangedListener {
     @IntDef({TrustedVaultBannerState.NOT_SHOWN, TrustedVaultBannerState.OFFER_OPT_IN,
             TrustedVaultBannerState.OPTED_IN})
     @Retention(RetentionPolicy.SOURCE)
@@ -131,8 +126,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
 
     private @Nullable PasswordCheck mPasswordCheck;
     private @ManagePasswordsReferrer int mManagePasswordsReferrer;
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
-    private Profile mProfile;
     private BottomSheetController mBottomSheetController;
 
     /**
@@ -171,8 +164,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
         PasswordManagerHandlerProvider.getInstance().addObserver(this);
 
-        if (SyncServiceFactory.getForProfile(mProfile) != null) {
-            SyncServiceFactory.getForProfile(mProfile).addSyncStateChangedListener(this);
+        if (SyncServiceFactory.getForProfile(getProfile()) != null) {
+            SyncServiceFactory.getForProfile(getProfile()).addSyncStateChangedListener(this);
         }
 
         setHasOptionsMenu(true); // Password Export might be optional but Search is always present.
@@ -250,7 +243,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
             return true;
         }
         if (id == R.id.menu_id_targeted_help) {
-            mHelpAndFeedbackLauncher.show(
+            getHelpAndFeedbackLauncher().show(
                     getActivity(), getString(R.string.help_context_passwords), null);
             return true;
         }
@@ -501,8 +494,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
     public void onDestroy() {
         super.onDestroy();
 
-        if (SyncServiceFactory.getForProfile(mProfile) != null) {
-            SyncServiceFactory.getForProfile(mProfile).removeSyncStateChangedListener(this);
+        if (SyncServiceFactory.getForProfile(getProfile()) != null) {
+            SyncServiceFactory.getForProfile(getProfile()).removeSyncStateChangedListener(this);
         }
         // The component should only be destroyed when the activity has been closed by the user
         // (e.g. by pressing on the back button) and not when the activity is temporarily destroyed
@@ -557,7 +550,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
             return true;
         });
         savePasswordsSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
-                mProfile) {
+                getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 return getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
@@ -590,7 +583,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
             return true;
         });
         autoSignInSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
-                mProfile) {
+                getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 return getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN);
@@ -630,7 +623,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
     }
 
     private void displayManageAccountLink() {
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService == null || !syncService.isEngineInitialized()) {
             return;
         }
@@ -665,7 +658,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
     }
 
     private PrefService getPrefService() {
-        return UserPrefs.get(mProfile);
+        return UserPrefs.get(getProfile());
     }
 
     @Override
@@ -678,7 +671,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
     }
 
     private void computeTrustedVaultBannerState() {
-        final SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        final SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService == null) {
             mTrustedVaultBannerState = TrustedVaultBannerState.NOT_SHOWN;
             return;
@@ -700,8 +693,9 @@ public class PasswordSettings extends PreferenceFragmentCompat
     }
 
     private boolean openTrustedVaultOptInDialog(Preference unused) {
-        assert SyncServiceFactory.getForProfile(mProfile) != null;
-        CoreAccountInfo accountInfo = SyncServiceFactory.getForProfile(mProfile).getAccountInfo();
+        assert SyncServiceFactory.getForProfile(getProfile()) != null;
+        CoreAccountInfo accountInfo =
+                SyncServiceFactory.getForProfile(getProfile()).getAccountInfo();
         assert accountInfo != null;
         SyncSettingsUtils.openTrustedVaultOptInDialog(
                 this, accountInfo, REQUEST_CODE_TRUSTED_VAULT_OPT_IN);
@@ -716,16 +710,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
         getActivity().startActivity(intent);
         // Return true to notify the click was handled.
         return true;
-    }
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
-    }
-
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
     }
 
     public void setBottomSheetController(BottomSheetController bottomSheetController) {

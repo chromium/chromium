@@ -116,7 +116,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return new ChromeManagedPreferenceDelegate() {
+        return new ChromeManagedPreferenceDelegate(getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 String key = preference.getKey();

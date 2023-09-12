@@ -15,7 +15,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -33,7 +32,6 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -62,9 +60,9 @@ import java.util.Map;
 /**
  * The main settings screen, shown when the user first opens Settings.
  */
-public class MainSettings extends PreferenceFragmentCompat
+public class MainSettings extends ChromeBaseSettingsFragment
         implements TemplateUrlService.LoadListener, SyncService.SyncStateChangedListener,
-                   SigninManager.SignInStateObserver, ProfileDependentSetting {
+                   SigninManager.SignInStateObserver {
     public static final String PREF_SYNC_PROMO = "sync_promo";
     public static final String PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION =
             "account_and_google_services_section";
@@ -89,7 +87,6 @@ public class MainSettings extends PreferenceFragmentCompat
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
     private ChromeBasePreference mManageSync;
     private @Nullable PasswordCheck mPasswordCheck;
-    private Profile mProfile;
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public MainSettings() {
@@ -129,11 +126,11 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void onStart() {
         super.onStart();
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
         if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
             signinManager.addSignInStateObserver(this);
         }
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
         }
@@ -142,11 +139,11 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void onStop() {
         super.onStop();
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
         if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
             signinManager.removeSignInStateObserver(this);
         }
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
@@ -156,11 +153,6 @@ public class MainSettings extends PreferenceFragmentCompat
     public void onResume() {
         super.onResume();
         updatePreferences();
-    }
-
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
     }
 
     private void createPreferences() {
@@ -199,7 +191,8 @@ public class MainSettings extends PreferenceFragmentCompat
             getPreferenceScreen().removePreference(findPreference(PREF_NOTIFICATIONS));
         }
 
-        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(getProfile());
         if (!templateUrlService.isLoaded()) {
             templateUrlService.registerLoadListener(this);
             templateUrlService.load();
@@ -231,8 +224,10 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private void updatePreferences() {
-        if (IdentityServicesProvider.get().getSigninManager(mProfile).isSigninSupported(
-                    /*requireUpdatedPlayServices=*/false)) {
+        if (IdentityServicesProvider.get()
+                        .getSigninManager(getProfile())
+                        .isSigninSupported(
+                                /*requireUpdatedPlayServices=*/false)) {
             addPreferenceIfAbsent(PREF_SIGN_IN);
         } else {
             removePreferenceIfPresent(PREF_SIGN_IN);
@@ -273,22 +268,23 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private void updateManageSyncPreference() {
-        String primaryAccountName = CoreAccountInfo.getEmailFrom(
-                IdentityServicesProvider.get().getIdentityManager(mProfile).getPrimaryAccountInfo(
-                        ConsentLevel.SIGNIN));
+        String primaryAccountName =
+                CoreAccountInfo.getEmailFrom(IdentityServicesProvider.get()
+                                                     .getIdentityManager(getProfile())
+                                                     .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         boolean showManageSync = primaryAccountName != null;
         mManageSync.setVisible(showManageSync);
         if (!showManageSync) return;
 
-        boolean isSyncConsentAvailable =
-                IdentityServicesProvider.get().getIdentityManager(mProfile).getPrimaryAccountInfo(
-                        ConsentLevel.SYNC)
+        boolean isSyncConsentAvailable = IdentityServicesProvider.get()
+                                                 .getIdentityManager(getProfile())
+                                                 .getPrimaryAccountInfo(ConsentLevel.SYNC)
                 != null;
         mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity()));
         mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity()));
         mManageSync.setOnPreferenceClickListener(pref -> {
             Context context = getContext();
-            if (SyncServiceFactory.getForProfile(mProfile).isSyncDisabledByEnterprisePolicy()) {
+            if (SyncServiceFactory.getForProfile(getProfile()).isSyncDisabledByEnterprisePolicy()) {
                 SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
             } else if (isSyncConsentAvailable) {
                 SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
@@ -302,7 +298,8 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private void updateSearchEnginePreference() {
-        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(getProfile());
         if (!templateUrlService.isLoaded()) {
             ChromeBasePreference searchEnginePref =
                     (ChromeBasePreference) findPreference(PREF_SEARCH_ENGINE);
@@ -370,7 +367,7 @@ public class MainSettings extends PreferenceFragmentCompat
     // TemplateUrlService.LoadListener implementation.
     @Override
     public void onTemplateUrlServiceLoaded() {
-        TemplateUrlServiceFactory.getForProfile(mProfile).unregisterLoadListener(this);
+        TemplateUrlServiceFactory.getForProfile(getProfile()).unregisterLoadListener(this);
         updateSearchEnginePreference();
     }
 
@@ -385,16 +382,16 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private ManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return new ChromeManagedPreferenceDelegate(mProfile) {
+        return new ChromeManagedPreferenceDelegate(getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
-                    return TemplateUrlServiceFactory.getForProfile(mProfile)
+                    return TemplateUrlServiceFactory.getForProfile(getProfile())
                             .isDefaultSearchManaged();
                 }
                 if (PREF_PASSWORDS.equals(preference.getKey())) {
-                    return UserPrefs.get(mProfile).isManagedPreference(
-                            Pref.CREDENTIALS_ENABLE_SERVICE);
+                    return UserPrefs.get(getProfile())
+                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
                 }
                 return false;
             }
@@ -402,7 +399,7 @@ public class MainSettings extends PreferenceFragmentCompat
             @Override
             public boolean isPreferenceClickDisabled(Preference preference) {
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
-                    return TemplateUrlServiceFactory.getForProfile(mProfile)
+                    return TemplateUrlServiceFactory.getForProfile(getProfile())
                             .isDefaultSearchManaged();
                 }
                 if (PREF_PASSWORDS.equals(preference.getKey())) {

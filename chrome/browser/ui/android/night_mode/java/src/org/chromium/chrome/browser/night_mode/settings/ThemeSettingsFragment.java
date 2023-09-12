@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics;
@@ -19,8 +18,7 @@ import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.UiUtils;
@@ -29,13 +27,12 @@ import org.chromium.ui.UiUtils;
  * Fragment to manage the theme user settings.
  */
 public class ThemeSettingsFragment
-        extends PreferenceFragmentCompat implements CustomDividerFragment, ProfileDependentSetting {
+        extends ChromeBaseSettingsFragment implements CustomDividerFragment {
     static final String PREF_UI_THEME_PREF = "ui_theme_pref";
 
     public static final String KEY_THEME_SETTINGS_ENTRY = "theme_settings_entry";
 
     private boolean mWebContentsDarkModeEnabled;
-    private Profile mProfile;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
@@ -46,7 +43,7 @@ public class ThemeSettingsFragment
         RadioButtonGroupThemePreference radioButtonGroupThemePreference =
                 (RadioButtonGroupThemePreference) findPreference(PREF_UI_THEME_PREF);
         mWebContentsDarkModeEnabled =
-                WebContentsDarkModeController.isGlobalUserSettingsEnabled(mProfile);
+                WebContentsDarkModeController.isGlobalUserSettingsEnabled(getProfile());
         radioButtonGroupThemePreference.initialize(
                 NightModeUtils.getThemeSetting(), mWebContentsDarkModeEnabled);
 
@@ -58,7 +55,7 @@ public class ThemeSettingsFragment
                     mWebContentsDarkModeEnabled =
                             radioButtonGroupThemePreference.isDarkenWebsitesEnabled();
                     WebContentsDarkModeController.setGlobalUserSettings(
-                            mProfile, mWebContentsDarkModeEnabled);
+                            getProfile(), mWebContentsDarkModeEnabled);
                 }
             }
             int theme = (int) newValue;
@@ -78,7 +75,7 @@ public class ThemeSettingsFragment
 
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
-            WebContentsDarkModeMessageController.notifyEventSettingsOpened(mProfile);
+            WebContentsDarkModeMessageController.notifyEventSettingsOpened(getProfile());
         }
     }
 
@@ -98,10 +95,5 @@ public class ThemeSettingsFragment
     @Override
     public boolean hasDivider() {
         return false;
-    }
-
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
     }
 }

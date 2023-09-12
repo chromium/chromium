@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -32,14 +31,10 @@ import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Del
 ;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
@@ -53,9 +48,8 @@ import org.chromium.components.sync.UserSelectableType;
 /**
  * Autofill profiles fragment, which allows the user to edit autofill profiles.
  */
-public class AutofillProfilesFragment extends PreferenceFragmentCompat
-        implements PersonalDataManager.PersonalDataManagerObserver, FragmentHelpAndFeedbackLauncher,
-                   ProfileDependentSetting {
+public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
+        implements PersonalDataManager.PersonalDataManagerObserver {
     private static Delegate sAddressEditorDelegate = new Delegate() {
         // User has either created a new address, or edited an existing address.
         // We should save changes in any case.
@@ -93,9 +87,6 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     static final String PREF_NEW_PROFILE = "new_profile";
     private @Nullable AddressEditorCoordinator mAddressEditor;
 
-    private Profile mProfile;
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
-
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getActivity().setTitle(R.string.autofill_addresses_settings_title);
@@ -127,7 +118,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            mHelpAndFeedbackLauncher.show(
+            getHelpAndFeedbackLauncher().show(
                     getActivity(), getActivity().getString(R.string.help_context_autofill), null);
             return true;
         }
@@ -157,7 +148,8 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             PersonalDataManager.setAutofillProfileEnabled((boolean) newValue);
             return true;
         });
-        autofillSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(mProfile) {
+        autofillSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
+                getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 return PersonalDataManager.isAutofillProfileManaged();
@@ -243,14 +235,13 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
                 getAutofillAddress((AutofillProfileEditorPreference) preference);
         if (autofillAddress == null) {
             mAddressEditor = new AddressEditorCoordinator(getActivity(),
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile), sAddressEditorDelegate,
-                    mProfile,
+                    getHelpAndFeedbackLauncher(), sAddressEditorDelegate, getProfile(),
                     /*saveToDisk=*/true);
             mAddressEditor.showEditorDialog();
         } else {
             mAddressEditor = new AddressEditorCoordinator(getActivity(),
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile), sAddressEditorDelegate,
-                    mProfile, autofillAddress, UPDATE_EXISTING_ADDRESS_PROFILE,
+                    getHelpAndFeedbackLauncher(), sAddressEditorDelegate, getProfile(),
+                    autofillAddress, UPDATE_EXISTING_ADDRESS_PROFILE,
                     /*saveToDisk=*/true);
             mAddressEditor.setAllowDelete(true);
             mAddressEditor.showEditorDialog();
@@ -271,8 +262,9 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     }
 
     private boolean shouldShowLocalProfileIcon(AutofillProfile profile) {
-        if (!IdentityServicesProvider.get().getIdentityManager(mProfile).hasPrimaryAccount(
-                    ConsentLevel.SIGNIN)) {
+        if (!IdentityServicesProvider.get()
+                        .getIdentityManager(getProfile())
+                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return false;
         }
         if (profile.getSource() == Source.ACCOUNT) {
@@ -283,7 +275,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
                         ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
             return false;
         }
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         return syncService == null || !syncService.isSyncFeatureEnabled()
                 || !syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
     }
@@ -294,15 +286,5 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
 
     EditorDialogView getEditorDialogForTest() {
         return mAddressEditor.getEditorDialogForTesting();
-    }
-
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
-    }
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 }
