@@ -406,8 +406,10 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 }
 
 - (void)setWebContentsVisibility:(remote_cocoa::mojom::Visibility)visibility {
-  if (_host && !content::GetContentClient()->browser()->IsShuttingDown())
+  if (_host && !(content::GetContentClient()->browser() &&
+                 content::GetContentClient()->browser()->IsShuttingDown())) {
     _host->OnWindowVisibilityChanged(visibility);
+  }
 }
 
 - (void)performDelayedSetWebContentsOccluded {

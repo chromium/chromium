@@ -371,8 +371,10 @@ bool IsBrowserProcess() {
 - (void)performOcclusionStateUpdates {
   _occlusionStateUpdatesAreScheduled = NO;
 
-  if (content::GetContentClient()->browser()->IsShuttingDown())
+  if (content::GetContentClient()->browser() &&
+      content::GetContentClient()->browser()->IsShuttingDown()) {
     return;
+  }
 
   DCHECK(!_updatingOcclusionStates);
 
