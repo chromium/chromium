@@ -22,6 +22,7 @@ source_set("v4l2") {
     "legacy/v4l2_video_decode_accelerator.h",
     "stateless/device.cc",
     "stateless/device.h",
+    "stateless/stateless_decode_surface_handler.h",
     "stateless/stateless_device.cc",
     "stateless/stateless_device.h",
     "stateless/utils.cc",

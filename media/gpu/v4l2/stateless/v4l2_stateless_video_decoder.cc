@@ -147,20 +147,6 @@ scoped_refptr<V4L2DecodeSurface> V4L2StatelessVideoDecoder::CreateSurface() {
   return nullptr;
 }
 
-bool V4L2StatelessVideoDecoder::SubmitSlice(V4L2DecodeSurface* dec_surface,
-                                            const uint8_t* data,
-                                            size_t size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  NOTIMPLEMENTED();
-  return false;
-}
-
-void V4L2StatelessVideoDecoder::DecodeSurface(
-    scoped_refptr<V4L2DecodeSurface> dec_surface) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  NOTIMPLEMENTED();
-}
-
 void V4L2StatelessVideoDecoder::SurfaceReady(
     scoped_refptr<V4L2DecodeSurface> dec_surface,
     int32_t bitstream_id,
