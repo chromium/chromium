@@ -213,6 +213,7 @@ class ASH_EXPORT UnifiedSystemTray
   void UpdateAfterLoginStatusChange() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
   views::Widget* GetBubbleWidget() const override;
+  TrayBubbleView* GetBubbleView() override;
   const char* GetClassName() const override;
   absl::optional<AcceleratorAction> GetAcceleratorAction() const override;
   void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,

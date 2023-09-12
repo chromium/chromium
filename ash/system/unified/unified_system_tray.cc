@@ -502,6 +502,10 @@ views::Widget* UnifiedSystemTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
+TrayBubbleView* UnifiedSystemTray::GetBubbleView() {
+  return bubble_ ? bubble_->GetBubbleView() : nullptr;
+}
+
 const char* UnifiedSystemTray::GetClassName() const {
   return "UnifiedSystemTray";
 }
