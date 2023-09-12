@@ -289,6 +289,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.ANGLE.D3DShaderBlobSizeKB" units="KB"
+    expires_after="2024-02-20">
+  <owner>geofflang@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>The size of compiled D3D shader bytecode.</summary>
+</histogram>
+
+<histogram name="GPU.ANGLE.D3DShaderCompilationTimeUs" units="microseconds"
+    expires_after="2024-02-20">
+  <owner>geofflang@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    The time it takes for fxc to compile HLSL to D3D bytecode. Recorded for all
+    clients regardless of support for high resolution timers.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ANGLE.MetalShader.CacheHitCount" units="count"
     expires_after="2024-02-20">
   <owner>sky@chromium.org</owner>
@@ -307,6 +324,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     An integer that is logged shortly after the gpu process starts up. The value
     is the number of shaders that were needed and were not in the shader cache.
+  </summary>
+</histogram>
+
+<histogram name="GPU.ANGLE.MetalShaderCompilationTimeUs" units="microseconds"
+    expires_after="2024-02-20">
+  <owner>geofflang@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    The time it takes for the Metal driver to compile a shader with the
+    newLibraryFromSource function. Recorded for all clients regardless of
+    support for high resolution timers.
   </summary>
 </histogram>
 
