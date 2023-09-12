@@ -61,7 +61,8 @@ export class AutoScrollHandler {
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
    * @param {?CursorUnit} unit The unit to navigate by.
    * @param {?TtsSpeechProperties} speechProps The optional speech properties
-   *     given to |navigateToRange| to provide feedback of the current command.
+   *     given to |navigateToRange| to provide feedback from the current
+   *     command.
    * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
    *     the current navigation root.
    * @param {Function} retryCommandFunc The callback used to retry the command

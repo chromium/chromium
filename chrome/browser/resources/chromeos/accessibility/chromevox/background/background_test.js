@@ -811,7 +811,6 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ToggleButton', async function() {
     <div aria-pressed role="button">close</div>
   `;
   const root = await this.runWithLoadedTree(site);
-  const b = ChromeVoxState.instance;
   const move = doCmd('nextObject');
   mockFeedback.call(move)
       .expectSpeech('boldface')
@@ -2249,15 +2248,11 @@ AX_TEST_F(
       const grapefruits = root.find({attributes: {name: 'Grapefruits'}});
 
       mockFeedback
-          .call(() => {
-            ChromeVoxRange.set(CursorRange.fromNode(blueberries));
-          })
+          .call(() => ChromeVoxRange.set(CursorRange.fromNode(blueberries)))
           .call(doCmd('nextObject'))
           .expectSpeech(
               '◦ Raspberries', 'List item', 'List end', 'nested level 2')
-          .call(() => {
-            ChromeVoxRange.set(CursorRange.fromNode(grapefruits));
-          })
+          .call(() => ChromeVoxRange.set(CursorRange.fromNode(grapefruits)))
           .call(doCmd('nextObject'))
           .expectSpeech(
               '■ Mandarins', 'List item', 'List end', 'nested level 3')

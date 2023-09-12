@@ -71,7 +71,10 @@ export class ChromeVoxRange {
     return ChromeVoxRange.instance.previous_;
   }
 
-  /** @return {?CursorRange} */
+  /**
+   * Return the current range, but focus recovery is not applied to it.
+   * @return {?CursorRange}
+   */
   static getCurrentRangeWithoutRecovery() {
     return ChromeVoxRange.instance.current_;
   }
@@ -138,8 +141,9 @@ export class ChromeVoxRange {
   /**
    * @param {?CursorRange} range The new range.
    * @param {boolean=} opt_fromEditing
+   * @private
    */
-  static notifyObservers_(range, opt_fromEditing = undefined) {
+  notifyObservers_(range, opt_fromEditing = undefined) {
     for (const observer of ChromeVoxRange.observers_) {
       observer.onCurrentRangeChanged(range, opt_fromEditing);
     }
@@ -164,8 +168,7 @@ export class ChromeVoxRange {
     this.previous_ = this.current_;
     this.current_ = newRange;
 
-    ChromeVoxState.ready().then(
-        ChromeVoxRange.notifyObservers_(newRange, opt_fromEditing));
+    this.notifyObservers_(newRange, opt_fromEditing);
 
     if (!this.current_) {
       FocusBounds.set([]);

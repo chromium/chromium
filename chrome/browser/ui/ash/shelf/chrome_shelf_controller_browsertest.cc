@@ -2816,11 +2816,11 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
           await new Promise(resolve => {
               new (class {
                   constructor() {
-                    ChromeVoxState.addObserver(this);
+                    ChromeVoxRange.addObserver(this);
                   }
                   onCurrentRangeChanged(newRange) {
                     if (newRange) {
-                        ChromeVoxState.removeObserver(this);
+                        ChromeVoxRange.removeObserver(this);
                         resolve();
                     }
                   }
