@@ -38,6 +38,8 @@ namespace blink {
 
 ImageFrame::ImageFrame() = default;
 
+ImageFrame::~ImageFrame() = default;
+
 ImageFrame::ImageFrame(const ImageFrame& other) : has_alpha_(false) {
   operator=(other);
 }

@@ -171,7 +171,7 @@ scoped_refptr<SegmentReader> CreateGainmapSegmentReader(
 
 // Stream object for use with libavifinfo.
 struct AvifInfoSegmentReaderStream {
-  const SegmentReader* reader = nullptr;
+  scoped_refptr<const SegmentReader> reader;
   size_t num_read_bytes = 0;
   uint8_t buffer[AVIFINFO_MAX_NUM_READ_BYTES];
 };
@@ -248,10 +248,10 @@ bool AVIFImageDecoder::ImageIsHighBitDepth() {
   return bit_depth_ > 8;
 }
 
-void AVIFImageDecoder::OnSetData(SegmentReader* data) {
+void AVIFImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   have_parsed_current_data_ = false;
   const bool all_data_received = IsAllDataReceived();
-  avif_io_data_.reader = data_.get();
+  avif_io_data_.reader = data_;
   avif_io_data_.all_data_received = all_data_received;
   avif_io_.sizeHint = all_data_received ? data_->size() : kMaxAvifFileSize;
 
@@ -367,7 +367,7 @@ void AVIFImageDecoder::DecodeToYUV() {
     }
     return;
   }
-  const auto* image = decoded_image_;
+  const avifImage* image = decoded_image_;
 
   DCHECK(!image->alphaPlane);
   static_assert(cc::YUVIndex::kY == static_cast<cc::YUVIndex>(AVIF_CHAN_Y), "");
@@ -614,7 +614,7 @@ void AVIFImageDecoder::Decode(wtf_size_t index) {
     SetFailed();
     return;
   }
-  const auto* image = decoded_image_;
+  const avifImage* image = decoded_image_;
 
   // ImageDecoder::SizeCalculationMayOverflow(), called by UpdateDemuxer()
   // before being here, made sure the image height fits in an int.
@@ -1238,7 +1238,7 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
   // We already know that the file is an AVIF file so there is no need to
   // call AvifInfoIdentify(). Get the features directly.
   AvifInfoSegmentReaderStream stream;
-  stream.reader = data_.get();
+  stream.reader = data_;
 
   // Extract gainmap image.
   AvifInfoFeatures features;
@@ -1295,9 +1295,10 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
 }
 
 AVIFImageDecoder::AvifIOData::AvifIOData() = default;
-AVIFImageDecoder::AvifIOData::AvifIOData(const SegmentReader* reader,
-                                         bool all_data_received)
-    : reader(reader), all_data_received(all_data_received) {}
+AVIFImageDecoder::AvifIOData::AvifIOData(
+    scoped_refptr<const SegmentReader> reader,
+    bool all_data_received)
+    : reader(std::move(reader)), all_data_received(all_data_received) {}
 AVIFImageDecoder::AvifIOData::~AvifIOData() = default;
 
 }  // namespace blink

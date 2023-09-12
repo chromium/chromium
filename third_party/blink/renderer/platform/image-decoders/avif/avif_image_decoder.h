@@ -36,7 +36,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   bool ImageIsHighBitDepth() override;
-  void OnSetData(SegmentReader* data) override;
+  void OnSetData(scoped_refptr<SegmentReader> data) override;
   bool GetGainmapInfoAndData(
       SkGainmapInfo& out_gainmap_info,
       scoped_refptr<SegmentReader>& out_gainmap_data) const override;
@@ -76,10 +76,11 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
   struct AvifIOData {
     AvifIOData();
-    AvifIOData(const SegmentReader* reader, bool all_data_received);
+    AvifIOData(scoped_refptr<const SegmentReader> reader,
+               bool all_data_received);
     ~AvifIOData();
 
-    const SegmentReader* reader = nullptr;
+    scoped_refptr<const SegmentReader> reader;
     std::vector<uint8_t> buffer ALLOW_DISCOURAGED_TYPE("Required by libavif");
     bool all_data_received = false;
   };
@@ -163,7 +164,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // Set by a successful DecodeImage() call to either decoder_->image or
   // cropped_image_.get() depending on whether the image has a 'clap' (clean
   // aperture) property.
-  const avifImage* decoded_image_ = nullptr;
+  raw_ptr<const avifImage, DanglingUntriaged> decoded_image_ = nullptr;
   std::unique_ptr<avifDecoder, decltype(&avifDecoderDestroy)> decoder_{
       nullptr, avifDecoderDestroy};
   avifIO avif_io_ = {};

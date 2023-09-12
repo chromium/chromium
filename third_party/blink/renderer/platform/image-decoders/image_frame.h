@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -83,6 +84,7 @@ class PLATFORM_EXPORT ImageFrame final {
   typedef WebVector<char> ICCProfile;
 
   ImageFrame();
+  ~ImageFrame();
 
   // The assignment operator reads has_alpha_ (inside SetStatus()) before it
   // sets it (in SetHasAlpha()).  This doesn't cause any problems, since the
@@ -316,7 +318,7 @@ class PLATFORM_EXPORT ImageFrame final {
   SkAlphaType ComputeAlphaType() const;
 
   SkBitmap bitmap_;
-  SkBitmap::Allocator* allocator_ = nullptr;
+  raw_ptr<SkBitmap::Allocator> allocator_ = nullptr;
   bool has_alpha_ = true;
   PixelFormat pixel_format_ = kN32;
   // This will always just be the entire buffer except for GIF or WebP

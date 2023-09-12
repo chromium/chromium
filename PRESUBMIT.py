@@ -6734,7 +6734,7 @@ def _IsRendererOnlyCppFile(input_api, affected_file):
         return False
 
     # Any code under a "renderer" subdirectory is assumed to be Renderer-only.
-    if "/renderer/" in path:
+    if "/renderer/" in path and not "/image-decoders/" in path:
         return True
 
     # Blink's public/web API is only used/included by Renderer-only code.  Note

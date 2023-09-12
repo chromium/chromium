@@ -30,6 +30,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -127,12 +128,13 @@ class PLATFORM_EXPORT ColorProfileTransform final {
                         const skcms_ICCProfile* dst_profile);
   ColorProfileTransform(const ColorProfileTransform&) = delete;
   ColorProfileTransform& operator=(const ColorProfileTransform&) = delete;
+  ~ColorProfileTransform();
 
   const skcms_ICCProfile* SrcProfile() const;
   const skcms_ICCProfile* DstProfile() const;
 
  private:
-  const skcms_ICCProfile* src_profile_;
+  raw_ptr<const skcms_ICCProfile> src_profile_;
   skcms_ICCProfile dst_profile_;
 };
 
@@ -256,7 +258,7 @@ class PLATFORM_EXPORT ImageDecoder {
     }
     data_ = std::move(data);
     is_all_data_received_ = all_data_received;
-    OnSetData(data_.get());
+    OnSetData(data_);
   }
 
   void SetData(scoped_refptr<SharedBuffer> data, bool all_data_received) {
@@ -264,7 +266,7 @@ class PLATFORM_EXPORT ImageDecoder {
             all_data_received);
   }
 
-  virtual void OnSetData(SegmentReader* data) {}
+  virtual void OnSetData(scoped_refptr<SegmentReader> data) {}
 
   bool IsSizeAvailable();
 

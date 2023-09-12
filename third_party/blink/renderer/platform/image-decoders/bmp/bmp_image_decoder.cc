@@ -34,9 +34,9 @@ const AtomicString& BMPImageDecoder::MimeType() const {
   return bmp_mime_type;
 }
 
-void BMPImageDecoder::OnSetData(SegmentReader* data) {
+void BMPImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   if (reader_) {
-    reader_->SetData(data);
+    reader_->SetData(std::move(data));
   }
 }
 
@@ -81,7 +81,7 @@ bool BMPImageDecoder::DecodeHelper(bool only_size) {
   if (!reader_) {
     reader_ = std::make_unique<BMPImageReader>(this, decoded_offset_,
                                                img_data_offset, false);
-    reader_->SetData(data_.get());
+    reader_->SetData(data_);
   }
 
   if (!frame_buffer_cache_.empty()) {

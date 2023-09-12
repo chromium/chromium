@@ -74,7 +74,7 @@ const AtomicString& GIFImageDecoder::MimeType() const {
   return gif_mime_type;
 }
 
-void GIFImageDecoder::OnSetData(SegmentReader* data) {
+void GIFImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   if (!data) {
     if (segment_stream_) {
       segment_stream_->SetReader(nullptr);
@@ -82,15 +82,16 @@ void GIFImageDecoder::OnSetData(SegmentReader* data) {
     return;
   }
 
-  std::unique_ptr<SegmentStream> segment_stream;
-  if (!segment_stream_) {
-    segment_stream = std::make_unique<SegmentStream>();
-    segment_stream_ = segment_stream.get();
-  }
+  if (segment_stream_) {
+    DCHECK(codec_);
+    segment_stream_->SetReader(std::move(data));
+  } else {
+    DCHECK(!codec_);
 
-  segment_stream_->SetReader(data);
+    auto segment_stream = std::make_unique<SegmentStream>();
+    SegmentStream* segment_stream_ptr = segment_stream.get();
+    segment_stream->SetReader(std::move(data));
 
-  if (!codec_) {
     SkCodec::Result codec_creation_result;
     codec_ =
         SkGifDecoder::Decode(std::move(segment_stream), &codec_creation_result);
@@ -100,25 +101,22 @@ void GIFImageDecoder::OnSetData(SegmentReader* data) {
 
     switch (codec_creation_result) {
       case SkCodec::kSuccess: {
-        // SkCodec::MakeFromStream will read enough of the image to get the
-        // image size.
+        // SkGifDecoder::Decode will read enough of the image to get the image
+        // size.
         SkImageInfo image_info = codec_->getInfo();
         SetSize(static_cast<unsigned>(image_info.width()),
                 static_cast<unsigned>(image_info.height()));
+
+        segment_stream_ = segment_stream_ptr;
         return;
       }
+
       case SkCodec::kIncompleteInput:
         if (IsAllDataReceived()) {
           SetFailed();
-          return;
         }
-
-        // |segment_stream_|'s ownership is passed into MakeFromStream.
-        // It is deleted if MakeFromStream fails.
-        // If MakeFromStream fails, we set |segment_stream_| to null so
-        // we aren't pointing to reclaimed memory.
-        segment_stream_ = nullptr;
         return;
+
       default:
         SetFailed();
         return;

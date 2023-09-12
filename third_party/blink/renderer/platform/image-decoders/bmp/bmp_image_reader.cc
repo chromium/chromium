@@ -60,9 +60,9 @@ BMPImageReader::BMPImageReader(ImageDecoder* parent,
 
 BMPImageReader::~BMPImageReader() = default;
 
-void BMPImageReader::SetData(SegmentReader* data) {
+void BMPImageReader::SetData(scoped_refptr<SegmentReader> data) {
   data_ = data;
-  fast_reader_.SetData(data);
+  fast_reader_.SetData(std::move(data));
   if (alternate_decoder_) {
     alternate_decoder_->SetData(data_.get(), parent_->IsAllDataReceived());
   }

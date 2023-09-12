@@ -35,7 +35,7 @@ const AtomicString& ICOImageDecoder::MimeType() const {
   return ico_mime_type;
 }
 
-void ICOImageDecoder::OnSetData(SegmentReader* data) {
+void ICOImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   fast_reader_.SetData(data);
 
   for (BMPReaders::iterator i(bmp_readers_.begin()); i != bmp_readers_.end();
@@ -200,7 +200,7 @@ bool ICOImageDecoder::DecodeAtIndex(wtf_size_t index) {
     if (!bmp_readers_[index]) {
       bmp_readers_[index] = std::make_unique<BMPImageReader>(
           this, dir_entry.image_offset_, 0, true);
-      bmp_readers_[index]->SetData(data_.get());
+      bmp_readers_[index]->SetData(data_);
     }
     // Update the pointer to the buffer as it could change after
     // frame_buffer_cache_.resize().

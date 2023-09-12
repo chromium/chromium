@@ -25,7 +25,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   // ImageDecoder:
   String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
-  void OnSetData(SegmentReader* data) override;
+  void OnSetData(scoped_refptr<SegmentReader> data) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;
   int RepetitionCount() const override;
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;
@@ -68,7 +68,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
     return false;
   }
 
-  WebPIDecoder* decoder_;
+  raw_ptr<WebPIDecoder, DanglingUntriaged> decoder_;
   WebPDecBuffer decoder_buffer_;
   int format_flags_;
   bool frame_background_has_alpha_;
@@ -95,7 +95,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   void ApplyPostProcessing(wtf_size_t frame_index);
   void ClearFrameBuffer(wtf_size_t frame_index) override;
 
-  WebPDemuxer* demux_;
+  raw_ptr<WebPDemuxer, DanglingUntriaged> demux_;
   WebPDemuxState demux_state_;
   bool have_parsed_current_data_;
   int repetition_count_;

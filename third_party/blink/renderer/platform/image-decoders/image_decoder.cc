@@ -1046,6 +1046,8 @@ ColorProfileTransform* ImageDecoder::ColorTransform() {
   return embedded_to_sk_image_transform_.get();
 }
 
+ColorProfileTransform::~ColorProfileTransform() = default;
+
 sk_sp<SkColorSpace> ImageDecoder::ColorSpaceForSkImages() {
   UpdateSkImageColorSpaceAndTransform();
   return sk_image_color_space_;

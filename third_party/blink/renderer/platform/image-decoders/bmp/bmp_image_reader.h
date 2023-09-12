@@ -43,7 +43,7 @@ class PLATFORM_EXPORT BMPImageReader final {
   ~BMPImageReader();
 
   void SetBuffer(ImageFrame* buffer) { buffer_ = buffer; }
-  void SetData(SegmentReader* data);
+  void SetData(scoped_refptr<SegmentReader> data);
 
   // Does the actual decoding.  If |only_size| is true, decoding only
   // progresses as far as necessary to get the image size.  Returns
@@ -289,10 +289,10 @@ class PLATFORM_EXPORT BMPImageReader final {
   void ColorCorrectCurrentRow();
 
   // The decoder that owns us.
-  ImageDecoder* parent_;
+  raw_ptr<ImageDecoder> parent_;
 
   // The destination for the pixel data.
-  ImageFrame* buffer_ = nullptr;
+  raw_ptr<ImageFrame> buffer_ = nullptr;
 
   // The file to decode.
   scoped_refptr<SegmentReader> data_;

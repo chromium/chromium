@@ -25,7 +25,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   // ImageDecoder:
   String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
-  void OnSetData(SegmentReader*) override;
+  void OnSetData(scoped_refptr<SegmentReader>) override;
   gfx::Size Size() const override;
   gfx::Size FrameSizeAtIndex(wtf_size_t) const override;
   bool SetSize(unsigned width, unsigned height) override;
