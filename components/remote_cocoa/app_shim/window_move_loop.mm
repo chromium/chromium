@@ -9,7 +9,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "components/crash/core/common/crash_key.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
@@ -52,13 +51,6 @@ CocoaWindowMoveLoop::CocoaWindowMoveLoop(NativeWidgetNSWindowBridge* owner,
       weak_factory_(this) {}
 
 CocoaWindowMoveLoop::~CocoaWindowMoveLoop() {
-  // Record the address and stack to help catch https://crbug.com/876493.
-  static crash_reporter::CrashKeyString<19> address_key("move_loop_address");
-  address_key.Set(base::StringPrintf("%p", this));
-
-  static crash_reporter::CrashKeyString<1024> stack_key("move_loop_stack");
-  crash_reporter::SetCrashKeyStringToStackTrace(&stack_key,
-                                                base::debug::StackTrace());
   // Handle the pathological case, where |this| is destroyed while running.
   if (exit_reason_ref_) {
     *exit_reason_ref_ = WINDOW_DESTROYED;
