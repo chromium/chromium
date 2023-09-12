@@ -29,8 +29,8 @@ namespace {
 NSString* const kTestSupervisedIncognitoMessage =
     @"Your account is managed by your parent.";
 
-// Label used to find the 'Learn More' link.
-NSString* const kTestLearnMoreLabel = @"Learn More";
+// Label used to find the 'Learn more' link.
+NSString* const kTestLearnMoreLabel = @"Learn more";
 
 }  // namespace
 
@@ -131,7 +131,7 @@ NSString* const kTestLearnMoreLabel = @"Learn More";
                                           kTestSupervisedIncognitoMessage)]
       assertWithMatcher:grey_notNil()];
 
-  // Check that the "Learn More" link works.
+  // Check that the "Learn more" link works.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityLabel(kTestLearnMoreLabel),
