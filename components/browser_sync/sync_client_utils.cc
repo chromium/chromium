@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync_bookmarks/local_bookmark_model_merger.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -32,9 +33,9 @@ std::string GetDomainFromUrl(const GURL& url) {
       url.host(), net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
-template <typename T, typename F>
+template <typename ContainerT, typename F>
 syncer::LocalDataDescription CreateLocalDataDescription(syncer::ModelType type,
-                                                        std::vector<T>&& items,
+                                                        ContainerT&& items,
                                                         F&& url_extractor) {
   syncer::LocalDataDescription desc;
   desc.type = type;
@@ -68,19 +69,16 @@ class LocalDataQueryHelper::LocalDataQueryRequest
       : helper_(helper),
         types_(types),
         barrier_callback_(base::BarrierClosure(
-            // Only PASSWORDS and BOOKMARKS are handled now. So do not count the
-            // other types for barrier closure.
-            // TODO(crbug.com/1451508): Change to just `types.Size()` once
-            // implementation for all of PASSWORDS, BOOKMARKS and READING_LIST
-            // are done.
-            base::Intersection(
-                types,
-                syncer::ModelTypeSet({syncer::PASSWORDS, syncer::BOOKMARKS}))
-                .Size(),
+            types.Size(),
             base::BindOnce(&LocalDataQueryHelper::OnRequestComplete,
                            base::Unretained(helper_),
                            base::Unretained(this),
-                           std::move(callback)))) {}
+                           std::move(callback)))) {
+    CHECK(syncer::ModelTypeSet(
+              {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST})
+              .HasAll(types_))
+        << "Only PASSWORDS, BOOKMARKS and READING_LIST are supported.";
+  }
 
   ~LocalDataQueryRequest() override = default;
 
@@ -93,18 +91,19 @@ class LocalDataQueryHelper::LocalDataQueryRequest
     }
     if (types_.Has(syncer::BOOKMARKS)) {
       CHECK(helper_->local_bookmark_model_);
-
-      std::vector<bookmarks::UrlAndTitle> local_bookmarks;
-      // Only the actual bookmarks are of interest here and not the folders.
-      helper_->local_bookmark_model_->GetBookmarks(&local_bookmarks);
-      result_.emplace(
-          syncer::BOOKMARKS,
-          CreateLocalDataDescription(
-              syncer::BOOKMARKS, std::move(local_bookmarks),
-              [](const bookmarks::UrlAndTitle& item) { return item.url; }));
-
-      // Trigger the barrier closure.
-      barrier_callback_.Run();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &LocalDataQueryHelper::LocalDataQueryRequest::FetchLocalBookmarks,
+              weak_ptr_factory_.GetWeakPtr()));
+    }
+    if (types_.Has(syncer::READING_LIST)) {
+      CHECK(helper_->local_reading_list_model_);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&LocalDataQueryHelper::LocalDataQueryRequest::
+                             FetchLocalReadingList,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
 
@@ -123,13 +122,33 @@ class LocalDataQueryHelper::LocalDataQueryRequest
     barrier_callback_.Run();
   }
 
+  void FetchLocalBookmarks() {
+    std::vector<bookmarks::UrlAndTitle> local_bookmarks;
+    // Only the actual bookmarks are of interest here and not the folders.
+    helper_->local_bookmark_model_->GetBookmarks(&local_bookmarks);
+    result_.emplace(
+        syncer::BOOKMARKS,
+        CreateLocalDataDescription(
+            syncer::BOOKMARKS, std::move(local_bookmarks),
+            [](const bookmarks::UrlAndTitle& item) { return item.url; }));
+    // Trigger the barrier closure.
+    barrier_callback_.Run();
+  }
+
+  void FetchLocalReadingList() {
+    base::flat_set<GURL> keys = helper_->local_reading_list_model_->GetKeys();
+
+    result_.emplace(
+        syncer::READING_LIST,
+        CreateLocalDataDescription(syncer::READING_LIST, std::move(keys),
+                                   [](const GURL& url) { return url; }));
+    // Trigger the barrier closure.
+    barrier_callback_.Run();
+  }
+
   const std::map<syncer::ModelType, syncer::LocalDataDescription>& result()
       const {
-    CHECK(result_.size() ==
-          base::Intersection(types_, syncer::ModelTypeSet({syncer::PASSWORDS,
-                                                           syncer::BOOKMARKS}))
-              .Size())
-        << "Request is still on-going.";
+    CHECK(result_.size() == types_.Size()) << "Request is still on-going.";
     return result_;
   }
 
@@ -147,9 +166,11 @@ class LocalDataQueryHelper::LocalDataQueryRequest
 
 LocalDataQueryHelper::LocalDataQueryHelper(
     password_manager::PasswordStoreInterface* profile_password_store,
-    bookmarks::BookmarkModel* local_bookmark_model)
+    bookmarks::BookmarkModel* local_bookmark_model,
+    ReadingListModel* local_reading_list_model)
     : profile_password_store_(profile_password_store),
-      local_bookmark_model_(local_bookmark_model) {}
+      local_bookmark_model_(local_bookmark_model),
+      local_reading_list_model_(local_reading_list_model) {}
 
 LocalDataQueryHelper::~LocalDataQueryHelper() = default;
 
@@ -208,6 +229,10 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
           .Merge();
       // Remove all bookmarks from the local model.
       helper_->local_bookmark_model_->RemoveAllUserBookmarks();
+    }
+    if (types_.Has(syncer::READING_LIST)) {
+      CHECK(helper_->dual_reading_list_model_);
+      helper_->dual_reading_list_model_->MarkAllForUploadToSyncServerIfNeeded();
     }
   }
 
@@ -287,11 +312,13 @@ LocalDataMigrationHelper::LocalDataMigrationHelper(
     password_manager::PasswordStoreInterface* profile_password_store,
     password_manager::PasswordStoreInterface* account_password_store,
     bookmarks::BookmarkModel* local_bookmark_model,
-    bookmarks::BookmarkModel* account_bookmark_model)
+    bookmarks::BookmarkModel* account_bookmark_model,
+    reading_list::DualReadingListModel* dual_reading_list_model)
     : profile_password_store_(profile_password_store),
       account_password_store_(account_password_store),
       local_bookmark_model_(local_bookmark_model),
-      account_bookmark_model_(account_bookmark_model) {}
+      account_bookmark_model_(account_bookmark_model),
+      dual_reading_list_model_(dual_reading_list_model) {}
 
 LocalDataMigrationHelper::~LocalDataMigrationHelper() = default;
 

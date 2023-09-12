@@ -5,15 +5,21 @@
 #include "components/browser_sync/sync_client_utils.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/reading_list/core/dual_reading_list_model.h"
+#include "components/reading_list/core/fake_reading_list_model_storage.h"
+#include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,12 +42,23 @@ password_manager::PasswordForm CreateTestPassword(
 
 class LocalDataQueryHelperTest : public testing::Test {
  public:
-  LocalDataQueryHelperTest()
-      : local_data_query_helper_(
-            /*profile_password_store=*/local_password_store_.get(),
-            /*local_bookmark_model=*/local_bookmark_model_.get()) {
+  LocalDataQueryHelperTest() {
     local_password_store_->Init(/*prefs=*/nullptr,
                                 /*affiliated_match_helper=*/nullptr);
+
+    // TODO(crbug.com/1451508): Simplify by wrapping into a helper.
+    auto storage_layer_ptr = std::make_unique<FakeReadingListModelStorage>();
+    auto& storage_layer = *storage_layer_ptr;
+    local_reading_list_model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage_layer_ptr), syncer::StorageType::kUnspecified,
+        syncer::WipeModelUponSyncDisabledBehavior::kNever, &clock_);
+    storage_layer.TriggerLoadCompletion();
+
+    local_data_query_helper_ =
+        std::make_unique<browser_sync::LocalDataQueryHelper>(
+            /*profile_password_store=*/local_password_store_.get(),
+            /*local_bookmark_model=*/local_bookmark_model_.get(),
+            /*local_reading_list_model=*/local_reading_list_model_.get());
   }
   ~LocalDataQueryHelperTest() override {
     local_password_store_->ShutdownOnUIThread();
@@ -50,11 +67,14 @@ class LocalDataQueryHelperTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::SimpleTestClock clock_;
+
   scoped_refptr<password_manager::TestPasswordStore> local_password_store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
   std::unique_ptr<bookmarks::BookmarkModel> local_bookmark_model_ =
       bookmarks::TestBookmarkClient::CreateModel();
-  browser_sync::LocalDataQueryHelper local_data_query_helper_;
+  std::unique_ptr<ReadingListModelImpl> local_reading_list_model_;
+  std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
 };
 
 TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalPasswordsViaCallback) {
@@ -76,8 +96,8 @@ TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalPasswordsViaCallback) {
 
   EXPECT_CALL(callback, Run(expected));
 
-  local_data_query_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
-                               callback.Get());
+  local_data_query_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
+                                callback.Get());
   RunAllPendingTasks();
 }
 
@@ -106,8 +126,8 @@ TEST_F(LocalDataQueryHelperTest, ShouldReturnCountOfDistinctDomains) {
 
   EXPECT_CALL(callback, Run(expected));
 
-  local_data_query_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
-                               callback.Get());
+  local_data_query_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
+                                callback.Get());
   RunAllPendingTasks();
 }
 
@@ -134,13 +154,13 @@ TEST_F(LocalDataQueryHelperTest, ShouldHandleMultipleRequests) {
 
   // Request #1.
   EXPECT_CALL(callback1, Run(expected));
-  local_data_query_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
-                               callback1.Get());
+  local_data_query_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
+                                callback1.Get());
 
   // Request #2.
   EXPECT_CALL(callback2, Run(expected));
-  local_data_query_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
-                               callback2.Get());
+  local_data_query_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
+                                callback2.Get());
 
   RunAllPendingTasks();
 }
@@ -185,8 +205,10 @@ TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalBookmarksViaCallback) {
 
   EXPECT_CALL(callback, Run(expected));
 
-  local_data_query_helper_.Run(syncer::ModelTypeSet({syncer::BOOKMARKS}),
-                               callback.Get());
+  local_data_query_helper_->Run(syncer::ModelTypeSet({syncer::BOOKMARKS}),
+                                callback.Get());
+
+  RunAllPendingTasks();
 }
 
 TEST_F(LocalDataQueryHelperTest,
@@ -212,7 +234,7 @@ TEST_F(LocalDataQueryHelperTest,
 
   EXPECT_CALL(callback, Run(expected));
 
-  local_data_query_helper_.Run(
+  local_data_query_helper_->Run(
       syncer::ModelTypeSet({syncer::PASSWORDS, syncer::BOOKMARKS}),
       callback.Get());
   RunAllPendingTasks();
@@ -248,26 +270,88 @@ TEST_F(LocalDataQueryHelperTest,
   };
   EXPECT_CALL(callback2, Run(expected2));
 
-  local_data_query_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
-                               callback1.Get());
-  local_data_query_helper_.Run(syncer::ModelTypeSet({syncer::BOOKMARKS}),
-                               callback2.Get());
+  local_data_query_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}),
+                                callback1.Get());
+  local_data_query_helper_->Run(syncer::ModelTypeSet({syncer::BOOKMARKS}),
+                                callback2.Get());
 
+  RunAllPendingTasks();
+}
+
+TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalReadingListViaCallback) {
+  // Add test data to local model.
+  local_reading_list_model_->AddOrReplaceEntry(
+      GURL("https://www.amazon.de"), "url1",
+      reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  local_reading_list_model_->AddOrReplaceEntry(
+      GURL("https://www.facebook.com"), "url2",
+      reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  local_reading_list_model_->AddOrReplaceEntry(
+      GURL("https://www.amazon.de/faq"), "url3",
+      reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_TRUE(local_reading_list_model_->loaded());
+
+  base::MockOnceCallback<void(
+      std::map<syncer::ModelType, syncer::LocalDataDescription>)>
+      callback;
+
+  std::map<syncer::ModelType, syncer::LocalDataDescription> expected = {
+      {syncer::READING_LIST,
+       syncer::LocalDataDescription(syncer::READING_LIST, 3,
+                                    {"amazon.de", "facebook.com"}, 2)}};
+
+  EXPECT_CALL(callback, Run(expected));
+
+  local_data_query_helper_->Run(syncer::ModelTypeSet({syncer::READING_LIST}),
+                                callback.Get());
   RunAllPendingTasks();
 }
 
 class LocalDataMigrationHelperTest : public testing::Test {
  public:
-  LocalDataMigrationHelperTest()
-      : local_data_migration_helper_(
-            /*profile_password_store=*/local_password_store_.get(),
-            /*account_password_store=*/account_password_store_.get(),
-            /*local_bookmark_model=*/local_bookmark_model_.get(),
-            /*account_bookmark_model=*/account_bookmark_model_.get()) {
+  LocalDataMigrationHelperTest() {
     local_password_store_->Init(/*prefs=*/nullptr,
                                 /*affiliated_match_helper=*/nullptr);
     account_password_store_->Init(/*prefs=*/nullptr,
                                   /*affiliated_match_helper=*/nullptr);
+
+    // TODO(crbug.com/1451508): Simplify by wrapping into a helper.
+    auto local_reading_list_storage =
+        std::make_unique<FakeReadingListModelStorage>();
+    auto* local_reading_list_storage_ptr = local_reading_list_storage.get();
+    auto local_reading_list_model = std::make_unique<ReadingListModelImpl>(
+        std::move(local_reading_list_storage),
+        syncer::StorageType::kUnspecified,
+        syncer::WipeModelUponSyncDisabledBehavior::kNever, &clock_);
+    local_reading_list_model_ = local_reading_list_model.get();
+
+    auto account_reading_list_storage =
+        std::make_unique<FakeReadingListModelStorage>();
+    auto* account_reading_list_storage_ptr = account_reading_list_storage.get();
+    auto account_reading_list_model = ReadingListModelImpl::BuildNewForTest(
+        std::move(account_reading_list_storage), syncer::StorageType::kAccount,
+        syncer::WipeModelUponSyncDisabledBehavior::kAlways, &clock_,
+        processor_.CreateForwardingProcessor());
+    account_reading_list_model_ = account_reading_list_model.get();
+
+    dual_reading_list_model_ =
+        std::make_unique<reading_list::DualReadingListModel>(
+            std::move(local_reading_list_model),
+            std::move(account_reading_list_model));
+    local_reading_list_storage_ptr->TriggerLoadCompletion();
+    account_reading_list_storage_ptr->TriggerLoadCompletion();
+
+    local_data_migration_helper_ =
+        std::make_unique<browser_sync::LocalDataMigrationHelper>(
+            /*profile_password_store=*/local_password_store_.get(),
+            /*account_password_store=*/account_password_store_.get(),
+            /*local_bookmark_model=*/local_bookmark_model_.get(),
+            /*account_bookmark_model=*/account_bookmark_model_.get(),
+            /*dual_reading_list_model=*/dual_reading_list_model_.get());
   }
   ~LocalDataMigrationHelperTest() override {
     local_password_store_->ShutdownOnUIThread();
@@ -277,16 +361,26 @@ class LocalDataMigrationHelperTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::SimpleTestClock clock_;
+
   scoped_refptr<password_manager::TestPasswordStore> local_password_store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
   scoped_refptr<password_manager::TestPasswordStore> account_password_store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>(
           password_manager::IsAccountStore{true});
+
   std::unique_ptr<bookmarks::BookmarkModel> local_bookmark_model_ =
       bookmarks::TestBookmarkClient::CreateModel();
   std::unique_ptr<bookmarks::BookmarkModel> account_bookmark_model_ =
       bookmarks::TestBookmarkClient::CreateModel();
-  browser_sync::LocalDataMigrationHelper local_data_migration_helper_;
+
+  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  std::unique_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
+  raw_ptr<ReadingListModel> local_reading_list_model_;
+  raw_ptr<ReadingListModel> account_reading_list_model_;
+
+  std::unique_ptr<browser_sync::LocalDataMigrationHelper>
+      local_data_migration_helper_;
 };
 
 TEST_F(LocalDataMigrationHelperTest, ShouldMovePasswordsToAccountStore) {
@@ -303,7 +397,7 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMovePasswordsToAccountStore) {
       password_manager::TestPasswordStore::PasswordMap(
           {{form1.signon_realm, {form1}}, {form2.signon_realm, {form2}}}));
 
-  local_data_migration_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   RunAllPendingTasks();
 
@@ -340,7 +434,7 @@ TEST_F(LocalDataMigrationHelperTest, ShouldNotUploadSamePassword) {
             password_manager::TestPasswordStore::PasswordMap(
                 {{account_form.signon_realm, {account_form}}}));
 
-  local_data_migration_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   RunAllPendingTasks();
 
@@ -381,7 +475,7 @@ TEST_F(LocalDataMigrationHelperTest,
             password_manager::TestPasswordStore::PasswordMap(
                 {{account_form.signon_realm, {account_form}}}));
 
-  local_data_migration_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   RunAllPendingTasks();
 
@@ -424,7 +518,7 @@ TEST_F(LocalDataMigrationHelperTest,
             password_manager::TestPasswordStore::PasswordMap(
                 {{account_form.signon_realm, {account_form}}}));
 
-  local_data_migration_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   RunAllPendingTasks();
 
@@ -452,7 +546,7 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMoveBookmarksToAccountStore) {
       account_bookmark_model_->bookmark_bar_node(), /*index=*/0,
       base::UTF8ToUTF16(std::string("url2")), GURL("https://www.google.com"));
 
-  local_data_migration_helper_.Run(syncer::ModelTypeSet({syncer::BOOKMARKS}));
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::BOOKMARKS}));
 
   // -------- The expected merge outcome --------
   // bookmark_bar
@@ -480,10 +574,10 @@ TEST_F(LocalDataMigrationHelperTest,
   ASSERT_FALSE(account_bookmark_model_->HasBookmarks());
 
   // Request #1.
-  local_data_migration_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   // Request #2.
-  local_data_migration_helper_.Run(syncer::ModelTypeSet({syncer::BOOKMARKS}));
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::BOOKMARKS}));
 
   RunAllPendingTasks();
 
@@ -519,10 +613,10 @@ TEST_F(LocalDataMigrationHelperTest, ShouldHandleMultipleRequestsForPasswords) {
   RunAllPendingTasks();
 
   // Request #1.
-  local_data_migration_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   // Request #2.
-  local_data_migration_helper_.Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   RunAllPendingTasks();
 
@@ -537,6 +631,30 @@ TEST_F(LocalDataMigrationHelperTest, ShouldHandleMultipleRequestsForPasswords) {
 
   // Local password store is empty.
   EXPECT_TRUE(local_password_store_->IsEmpty());
+}
+
+TEST_F(LocalDataMigrationHelperTest, ShouldMoveReadingListToAccountStore) {
+  // Add test data.
+  local_reading_list_model_->AddOrReplaceEntry(
+      GURL("https://www.amazon.de"), "url1",
+      reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  account_reading_list_model_->AddOrReplaceEntry(
+      GURL("https://www.facebook.com"), "url2",
+      reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  // To allow moving local reading list to account model.
+  ON_CALL(processor_, IsTrackingMetadata)
+      .WillByDefault(::testing::Return(true));
+
+  local_data_migration_helper_->Run(
+      syncer::ModelTypeSet({syncer::READING_LIST}));
+
+  RunAllPendingTasks();
+
+  EXPECT_EQ(2u, account_reading_list_model_->size());
+  EXPECT_EQ(0u, local_reading_list_model_->size());
 }
 
 }  // namespace

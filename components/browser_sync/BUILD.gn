@@ -81,6 +81,7 @@ source_set("unit_tests") {
     "//components/history/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/prefs",
+    "//components/reading_list/core:test_support",
     "//components/sync",
     "//components/sync:test_support",
     "//components/sync_bookmarks",
