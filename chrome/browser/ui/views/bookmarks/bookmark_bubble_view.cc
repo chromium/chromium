@@ -168,9 +168,9 @@ base::OnceCallback<void()> CreatePriceTrackingEmailCallback(
       profile, bookmark, std::move(show_dialog_callback));
 }
 
-bool ShouldShowShoppingCollectionIPH(Profile* profile,
-                                     bookmarks::BookmarkModel* model,
-                                     const bookmarks::BookmarkNode* node) {
+bool ShouldShowShoppingCollectionFootnote(Profile* profile,
+                                          bookmarks::BookmarkModel* model,
+                                          const bookmarks::BookmarkNode* node) {
   // Skip if not in the experiment.
   if (!base::FeatureList::IsEnabled(commerce::kShoppingCollection)) {
     return false;
@@ -194,6 +194,10 @@ bool ShouldShowShoppingCollectionIPH(Profile* profile,
                       feature_engagement::kIPHShoppingCollectionFeature)) {
     return false;
   }
+
+  // Immediately dismiss the explainer so that it doesn't prevent the IPH
+  // for other features from showing.
+  tracker->Dismissed(feature_engagement::kIPHShoppingCollectionFeature);
 
   return true;
 }
@@ -532,25 +536,10 @@ void BookmarkBubbleView::ShowBubble(
   if (highlighted_button)
     bubble->SetHighlightedButton(highlighted_button);
 
-  if (ShouldShowShoppingCollectionIPH(profile, bookmark_model, bookmark_node)) {
+  if (ShouldShowShoppingCollectionFootnote(profile, bookmark_model,
+                                           bookmark_node)) {
     bubble->SetFootnoteView(
         std::make_unique<commerce::ShoppingCollectionIphView>());
-
-    auto* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserContext(profile);
-
-    // If the IPH was shown, wrap the close callback with one that dismisses the
-    // IPH.
-    post_save_callback = base::BindOnce(
-        [](base::OnceCallback<void()> callback,
-           feature_engagement::Tracker* tracker) {
-          if (tracker) {
-            tracker->Dismissed(
-                feature_engagement::kIPHShoppingCollectionFeature);
-          }
-          std::move(callback).Run();
-        },
-        std::move(post_save_callback), tracker);
   } else if (SyncPromoUI::ShouldShowSyncPromo(profile)) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(pbos): Consider adding model support for footnotes so that this does

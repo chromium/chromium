@@ -178,17 +178,13 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
 
   commerce::AddProductInfoToExistingBookmark(model, node, u"Product", 12345L);
 
-  RunTestSequence(PressButton(kBookmarkStarViewElementId),
-                  WaitForShow(commerce::kShoppingCollectionIPHViewId),
-
-                  FlushEvents());
-
   EXPECT_CALL(*GetMockTracker(browser()->profile()),
               Dismissed(testing::Ref(
                   feature_engagement::kIPHShoppingCollectionFeature)));
 
-  // Close the dialog, the IPH should be properly dismissed.
-  RunTestSequence(PressButton(kBookmarkBubbleOkButtonId),
+  RunTestSequence(PressButton(kBookmarkStarViewElementId),
+                  WaitForShow(commerce::kShoppingCollectionIPHViewId),
+                  PressButton(kBookmarkBubbleOkButtonId),
                   WaitForHide(commerce::kShoppingCollectionIPHViewId),
 
                   FlushEvents());
