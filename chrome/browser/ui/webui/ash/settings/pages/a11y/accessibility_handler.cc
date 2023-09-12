@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/accessibility_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
 
 #include <set>
 
@@ -53,8 +53,9 @@ AccessibilityHandler::AccessibilityHandler(Profile* profile)
     : profile_(profile) {}
 
 AccessibilityHandler::~AccessibilityHandler() {
-  if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning())
+  if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning()) {
     a11y_nav_buttons_toggle_metrics_reporter_timer_.FireNow();
+  }
 }
 
 void AccessibilityHandler::RegisterMessages() {
@@ -125,8 +126,9 @@ void AccessibilityHandler::HandleSetStartupSoundEnabled(
     const base::Value::List& args) {
   DCHECK_EQ(1U, args.size());
   bool enabled = false;
-  if (args[0].is_bool())
+  if (args[0].is_bool()) {
     enabled = args[0].GetBool();
+  }
   AccessibilityManager::Get()->SetStartupSoundEnabled(enabled);
 }
 
@@ -134,8 +136,9 @@ void AccessibilityHandler::HandleRecordSelectedShowShelfNavigationButtonsValue(
     const base::Value::List& args) {
   DCHECK_EQ(1U, args.size());
   bool enabled = false;
-  if (args[0].is_bool())
+  if (args[0].is_bool()) {
     enabled = args[0].GetBool();
+  }
 
   a11y_nav_buttons_toggle_metrics_reporter_timer_.Start(
       FROM_HERE, base::Seconds(10),
@@ -156,8 +159,9 @@ void AccessibilityHandler::OnJavascriptAllowed() {
 }
 
 void AccessibilityHandler::OnJavascriptDisallowed() {
-  if (features::IsDictationOfflineAvailable())
+  if (features::IsDictationOfflineAvailable()) {
     soda_observation_.Reset();
+  }
 }
 
 void AccessibilityHandler::HandleShowChromeVoxTutorial(
@@ -184,8 +188,9 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
           extension_id, extensions::ExtensionRegistry::ENABLED);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   // If Lacros is the only browser, we need to open the options page in an Ash
   // app window instead of a regular Ash browser window so that the user can't
@@ -207,8 +212,9 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
 }
 
 void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
-  if (!features::IsDictationOfflineAvailable())
+  if (!features::IsDictationOfflineAvailable()) {
     return;
+  }
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   if (!soda_installer->IsSodaInstalled(GetDictationLocale())) {
@@ -220,8 +226,9 @@ void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
 
 // SodaInstaller::Observer:
 void AccessibilityHandler::OnSodaInstalled(speech::LanguageCode language_code) {
-  if (language_code != GetDictationLocale())
+  if (language_code != GetDictationLocale()) {
     return;
+  }
 
   // Only show the success message if both the SODA binary and the language pack
   // matching the Dictation locale have been downloaded.

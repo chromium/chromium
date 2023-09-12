@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/accessibility_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/memory/raw_ptr.h"

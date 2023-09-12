@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/accessibility_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
 
 #include <memory>
 #include <set>
@@ -115,12 +115,14 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
     for (const std::unique_ptr<content::TestWebUI::CallData>& data :
          base::Reversed(web_ui_.call_data())) {
       std::string listener;
-      if (data->arg1()->is_string())
+      if (data->arg1()->is_string()) {
         listener = data->arg1()->GetString();
+      }
       if (data->function_name() == "cr.webUIListenerCallback" &&
           listener == expected_listener) {
-        if (!data->arg2()->is_list())
+        if (!data->arg2()->is_list()) {
           return false;
+        }
         argument = &data->arg2()->GetList();
         return true;
       }

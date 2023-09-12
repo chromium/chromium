@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/accessibility_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_section.h"
 
 #include <memory>
 #include <set>
@@ -21,13 +21,13 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/pdf_ocr_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/select_to_speak_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/switch_access_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/tts_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/accessibility_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/pdf_ocr_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/select_to_speak_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/switch_access_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/tts_handler.h"
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/font_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
@@ -482,8 +482,9 @@ AccessibilitySection::AccessibilitySection(
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetA11ySearchConcepts());
 
-  if (AreTabletNavigationButtonsAllowed())
+  if (AreTabletNavigationButtonsAllowed()) {
     updater.AddSearchTags(GetA11yTabletNavigationButtonSearchConcepts());
+  }
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
@@ -504,8 +505,9 @@ AccessibilitySection::AccessibilitySection(
   // ExtensionService can be null for tests.
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
-  if (!extension_service)
+  if (!extension_service) {
     return;
+  }
   content::TtsController::GetInstance()->AddVoicesChangedDelegate(this);
   extension_registry_ = extensions::ExtensionRegistry::Get(profile);
   extension_registry_->AddObserver(this);
@@ -516,8 +518,9 @@ AccessibilitySection::AccessibilitySection(
 
 AccessibilitySection::~AccessibilitySection() {
   content::TtsController::GetInstance()->RemoveVoicesChangedDelegate(this);
-  if (extension_registry_)
+  if (extension_registry_) {
     extension_registry_->RemoveObserver(this);
+  }
 }
 
 void AccessibilitySection::AddLoadTimeData(

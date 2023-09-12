@@ -1,0 +1,16 @@
+include_rules = [
+# DO NOT ADD `include_rules`, only add `specific_include_rules` instead.
+]
+
+specific_include_rules = {
+  'accessibility_section\.(cc|h)' : [
+    '+ash/color_enhancement/color_enhancement_controller.h',
+    '+content/public/browser/tts_controller.h',
+  ],
+  'select_to_speak_handler\.cc': [
+    '+content/public/browser/tts_controller.h',
+  ],
+  'tts_handler\.(cc|h)': [
+    '+content/public/browser/tts_controller.h',
+  ],
+}

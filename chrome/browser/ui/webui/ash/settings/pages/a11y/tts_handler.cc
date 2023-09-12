@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/tts_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/tts_handler.h"
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
@@ -155,10 +155,12 @@ void TtsHandler::RegisterMessages() {
 
 int TtsHandler::GetVoiceLangMatchScore(const content::VoiceData* voice,
                                        const std::string& app_locale) {
-  if (voice->lang.empty() || app_locale.empty())
+  if (voice->lang.empty() || app_locale.empty()) {
     return 0;
-  if (voice->lang == app_locale)
+  }
+  if (voice->lang == app_locale) {
     return 2;
+  }
   return l10n_util::GetLanguage(voice->lang) ==
                  l10n_util::GetLanguage(app_locale)
              ? 1

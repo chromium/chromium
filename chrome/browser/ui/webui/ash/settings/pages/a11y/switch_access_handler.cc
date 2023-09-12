@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/switch_access_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/switch_access_handler.h"
 
 #include <memory>
 
@@ -80,8 +80,9 @@ SwitchAccessHandler::~SwitchAccessHandler() {
     web_ui()->GetWebContents()->GetNativeView()->RemovePreTargetHandler(this);
   }
 
-  if (AccessibilityController::Get())
+  if (AccessibilityController::Get()) {
     AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(false);
+  }
 }
 
 void SwitchAccessHandler::RegisterMessages() {
@@ -142,8 +143,9 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
   event->StopPropagation();
   event->SetHandled();
 
-  if (event->type() == ui::ET_KEY_RELEASED)
+  if (event->type() == ui::ET_KEY_RELEASED) {
     return;
+  }
 
   base::Value::Dict response;
   response.Set("keyCode", static_cast<int>(event->key_code()));
