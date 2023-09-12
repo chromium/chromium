@@ -137,21 +137,24 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
           PowerBookmarkServiceFactory::GetForBrowserState(browser_state_),
           supervised_user_settings_service);
 
+  reading_list::DualReadingListModel* dual_reading_list_model =
+      ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
+          browser_state_);
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(
           profile_password_store_.get(),
           ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
               browser_state_),
-          ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
-              browser_state_));
+          dual_reading_list_model
+              ? dual_reading_list_model->GetLocalOrSyncableModel()
+              : nullptr);
   local_data_migration_helper_ =
       std::make_unique<browser_sync::LocalDataMigrationHelper>(
           profile_password_store_.get(), account_password_store_.get(),
           ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
               browser_state_),
           ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_),
-          ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
-              browser_state_));
+          dual_reading_list_model);
 }
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}
