@@ -85,6 +85,8 @@ constexpr auto kRepeatedShowTimerInterval = base::Milliseconds(100);
 constexpr auto kHandleDeviceUsedWhileDisabledWaitTime = base::Milliseconds(200);
 
 // The max amount of times the "Speak-on-mute opt-in" nudge can show.
+// As speak-on-mute prefs sync across devices, we need to double check with Sync
+// team if this constant grows significantly (e.g. to 50).
 constexpr int kSpeakOnMuteOptInNudgeMaxShownCount = 3;
 
 // The max amount of times the "Speak-on-mute" nudge can show in a
