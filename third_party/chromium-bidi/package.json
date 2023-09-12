@@ -220,6 +220,7 @@
     "terser": "5.19.2",
     "tslib": "2.6.1",
     "typescript": "5.1.6",
+    "urlpattern-polyfill": "9.0.0",
     "websocket": "1.0.34",
     "wireit": "0.10.0",
     "ws": "8.13.0",

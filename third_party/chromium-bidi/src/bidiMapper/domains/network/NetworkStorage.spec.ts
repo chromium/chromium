@@ -515,4 +515,46 @@ describe('NetworkStorage', () => {
       expect(NetworkStorage.isSpecialScheme('sftp')).to.be.false;
     });
   });
+
+  describe('matchUrlPattern', () => {
+    it('string type', () => {
+      expect(
+        NetworkStorage.matchUrlPattern(
+          {
+            type: 'string',
+            pattern: 'https://example.com',
+          } satisfies Network.UrlPattern,
+          'https://example.com'
+        )
+      ).to.be.true;
+    });
+
+    describe('pattern type', () => {
+      it('positive match', () => {
+        expect(
+          NetworkStorage.matchUrlPattern(
+            {
+              type: 'pattern',
+              protocol: 'https',
+              hostname: 'example.com',
+            } satisfies Network.UrlPattern,
+            'https://example.com/aa'
+          )
+        ).to.be.true;
+      });
+
+      it('negative match', () => {
+        expect(
+          NetworkStorage.matchUrlPattern(
+            {
+              type: 'pattern',
+              protocol: 'https',
+              hostname: 'example.com',
+            } satisfies Network.UrlPattern,
+            'https://example.org/aa'
+          )
+        ).to.be.false;
+      });
+    });
+  });
 });
