@@ -4080,7 +4080,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4108,7 +4108,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4135,7 +4135,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4163,7 +4163,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4191,7 +4191,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4217,7 +4217,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4248,7 +4248,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4280,7 +4280,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4304,7 +4304,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4337,7 +4337,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4370,7 +4370,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4407,7 +4407,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4447,7 +4447,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4481,7 +4481,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4514,7 +4514,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4553,7 +4553,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4595,7 +4595,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -4628,7 +4628,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4654,7 +4654,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4679,7 +4679,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4705,7 +4705,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4731,7 +4731,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4755,7 +4755,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4784,7 +4784,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4814,7 +4814,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4836,7 +4836,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -4867,7 +4867,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4898,7 +4898,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -4933,7 +4933,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -4971,7 +4971,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -5003,7 +5003,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -5034,7 +5034,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -5071,7 +5071,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -5111,7 +5111,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -5124,357 +5124,22 @@
     ]
   },
   "Dawn Mac x64 Experimental Release (AMD)": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--enable-implicit-device-sync",
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "ci_only": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_implicit_device_sync_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--enable-toggles=skip_validation",
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_skip_validation_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--enable-backend-validation",
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_validation_layers_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--use-wire",
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_wire_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--use-cmd-decoder=passthrough",
-          "--use-gl=angle",
-          "--use-gpu-in-tests"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gl_tests_passthrough",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "gl_tests",
-        "test_id_prefix": "ninja://gpu:gl_tests/"
-      },
-      {
-        "args": [
-          "--use-gpu-in-tests",
-          "--git-revision=${got_revision}"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gl_unittests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gl_unittests",
-        "test_id_prefix": "ninja://ui/gl:gl_unittests/"
-      }
-    ],
     "isolated_scripts": [
       {
         "args": [
-          "--override-steps=1",
-          "--gtest-benchmark-name=dawn_perf_tests",
-          "-v"
-        ],
-        "isolate_name": "dawn_perf_tests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "dawn_perf_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_perf_tests/"
-      },
-      {
-        "isolate_name": "telemetry_gpu_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_gpu_unittests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_unittests/"
-      },
-      {
-        "args": [
-          "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "--flag-specific=webgpu-with-backend-validation",
-          "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
+          "noop_sleep",
           "--show-stdout",
           "--browser=release",
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
+        "name": "noop_sleep_tests",
         "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
@@ -5489,536 +5154,29 @@
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "--flag-specific=webgpu-swiftshader",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_swiftshader_blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "--flag-specific=webgpu-swiftshader-with-backend-validation",
-          "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "1002:67ef",
-            "hidpi": "1",
-            "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
     ]
   },
   "Dawn Mac x64 Experimental Release (Intel)": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--enable-implicit-device-sync",
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "ci_only": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_implicit_device_sync_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--enable-toggles=skip_validation",
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_skip_validation_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--enable-backend-validation",
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_validation_layers_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--use-wire",
-          "--use-gpu-in-tests",
-          "--exclusive-device-type-preference=discrete,integrated",
-          "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dawn_end2end_wire_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dawn_end2end_tests",
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
-      },
-      {
-        "args": [
-          "--use-cmd-decoder=passthrough",
-          "--use-gl=angle",
-          "--use-gpu-in-tests"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gl_tests_passthrough",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "gl_tests",
-        "test_id_prefix": "ninja://gpu:gl_tests/"
-      },
-      {
-        "args": [
-          "--use-gpu-in-tests",
-          "--git-revision=${got_revision}"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gl_unittests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gl_unittests",
-        "test_id_prefix": "ninja://ui/gl:gl_unittests/"
-      }
-    ],
     "isolated_scripts": [
       {
         "args": [
-          "--override-steps=1",
-          "--gtest-benchmark-name=dawn_perf_tests",
-          "-v"
-        ],
-        "isolate_name": "dawn_perf_tests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "dawn_perf_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_perf_tests/"
-      },
-      {
-        "isolate_name": "telemetry_gpu_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_gpu_unittests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_unittests/"
-      },
-      {
-        "args": [
-          "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "--flag-specific=webgpu-with-backend-validation",
-          "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
+          "noop_sleep",
           "--show-stdout",
           "--browser=release",
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
+        "name": "noop_sleep_tests",
         "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
@@ -6031,191 +5189,7 @@
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "--flag-specific=webgpu-swiftshader",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_swiftshader_blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "--flag-specific=webgpu-swiftshader-with-backend-validation",
-          "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "display_attached": "1",
-            "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
-          },
-          "expiration": 21600,
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
@@ -6242,7 +5216,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6270,7 +5244,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6297,7 +5271,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6325,7 +5299,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6353,7 +5327,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6379,7 +5353,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6410,7 +5384,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6442,7 +5416,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6466,7 +5440,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6499,7 +5473,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6532,7 +5506,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6569,7 +5543,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6609,7 +5583,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6643,7 +5617,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6676,7 +5650,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6715,7 +5689,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6757,7 +5731,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1|Mac-13.5",
+            "os": "Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6790,7 +5764,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -6816,7 +5790,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -6841,7 +5815,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -6867,7 +5841,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -6893,7 +5867,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -6917,7 +5891,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -6946,7 +5920,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -6976,7 +5950,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -6998,7 +5972,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -7029,7 +6003,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -7060,7 +6034,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -7095,7 +6069,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -7133,7 +6107,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -7165,7 +6139,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -7196,7 +6170,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -7233,7 +6207,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -7273,7 +6247,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1|Mac-13.5"
+            "os": "Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
