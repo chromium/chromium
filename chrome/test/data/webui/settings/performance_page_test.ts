@@ -531,7 +531,7 @@ suite('TabDiscardExceptionList', function() {
         .querySelectorAll<TabDiscardExceptionCurrentSitesEntryElement>(
             'tab-discard-exception-current-sites-entry:not([hidden])')
         .forEach(currentSitesEntryElement => {
-          currentSitesEntryElement.click();
+          currentSitesEntryElement.$.checkbox.click();
         });
     assertFalse(addDialog.$.actionButton.disabled);
     addDialog.$.actionButton.click();

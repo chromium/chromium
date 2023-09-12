@@ -24,6 +24,8 @@ export interface TabDiscardExceptionCurrentSitesListElement {
   };
 }
 
+type Site = string;
+
 type Constructor<T> = new (...args: any[]) => T;
 const TabDiscardExceptionCurrentSitesListElementBase =
     ListPropertyUpdateMixin(CrScrollableMixin(PrefsMixin(PolymerElement))) as
@@ -44,11 +46,15 @@ export class TabDiscardExceptionCurrentSitesListElement extends
     return {
       currentSites_: {type: Array, value: []},
 
-      selectedSites_: {type: Array, value: []},
+      selectedSites_: {
+        type: Array,
+        value() {
+          return new Set();
+        },
+      },
 
       submitDisabled: {
         type: Boolean,
-        computed: 'computeSubmitDisabled_(selectedSites_.length)',
         notify: true,
       },
 
@@ -71,8 +77,8 @@ export class TabDiscardExceptionCurrentSitesListElement extends
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
-  private currentSites_: string[];
-  private selectedSites_: string[];
+  private currentSites_: Site[];
+  private selectedSites_: Set<Site>;
   private submitDisabled: boolean;
   private updateIntervalMS_: number;
   visible: boolean;
@@ -109,12 +115,12 @@ export class TabDiscardExceptionCurrentSitesListElement extends
   }
 
   private startUpdatingCurrentSites_() {
-    if (this.updateIntervalID_ === undefined) {
-      this.updateCurrentSites_().then(() => {
+    this.updateCurrentSites_().then(() => {
+      if (this.updateIntervalID_ === undefined) {
         this.updateIntervalID_ = setInterval(
             this.updateCurrentSites_.bind(this), this.updateIntervalMS_);
-      });
-    }
+      }
+    });
   }
 
   private stopUpdatingCurrentSites_() {
@@ -126,6 +132,8 @@ export class TabDiscardExceptionCurrentSitesListElement extends
 
   setUpdateIntervalForTesting(updateIntervalMS: number) {
     this.updateIntervalMS_ = updateIntervalMS;
+    this.stopUpdatingCurrentSites_();
+    this.startUpdatingCurrentSites_();
   }
 
   getIsUpdatingForTesting() {
@@ -133,23 +141,39 @@ export class TabDiscardExceptionCurrentSitesListElement extends
   }
 
   private async updateCurrentSites_() {
-    const currentSites = await this.browserProxy_.getCurrentOpenSites();
     const existingSites =
         new Set(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value);
-    this.updateList(
-        'currentSites_', x => x,
-        currentSites.filter(rule => !existingSites.has(rule)));
+    const currentSites = (await this.browserProxy_.getCurrentOpenSites())
+                             .filter(rule => !existingSites.has(rule));
+
+    // Remove sites from selected set that are no longer in the list.
+    this.selectedSites_ =
+        new Set(currentSites.filter(this.isSelectedSite_.bind(this)));
+    this.computeSubmitDisabled_();
+
+    this.updateList('currentSites_', x => x, currentSites);
     if (this.currentSites_.length) {
       this.updateScrollableContents();
     }
   }
 
   private computeSubmitDisabled_() {
-    return !this.selectedSites_.length;
+    this.submitDisabled = !this.selectedSites_.size;
   }
 
-  private onToggleSelection_(e: {model: {index: number}}) {
-    this.$.list.toggleSelectionForIndex(e.model.index);
+  // Called to recalculate checked status of entries when the site changes due
+  // to list updates.
+  private isSelectedSite_(site: Site) {
+    return this.selectedSites_.has(site);
+  }
+
+  private onToggleSelection_(e: {model: {item: Site}, detail: boolean}) {
+    if (e.detail) {
+      this.selectedSites_.add(e.model.item);
+    } else {
+      this.selectedSites_.delete(e.model.item);
+    }
+    this.computeSubmitDisabled_();
   }
 
   submit() {

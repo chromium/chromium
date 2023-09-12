@@ -11,13 +11,12 @@
 </style>
 <div id="container" scrollable>
   <iron-list id="list" scroll-target="container" role="listbox"
-      items="[[currentSites_]]" selected-items="{{selectedSites_}}"
-      selection-enabled multi-selection aria-multiselectable="true"
+      items="[[currentSites_]]" aria-multiselectable="true"
       hidden$="[[!currentSites_.length]]">
     <template>
       <tab-discard-exception-current-sites-entry item="[[item]]" role="option"
           aria-description="$i18n{tabDiscardingExceptionsActiveSiteAriaDescription}"
-          aria-selected="[[selected]]" tab-index="[[tabIndex]]"
+          checked="[[isSelectedSite_(item)]]" tab-index="[[tabIndex]]"
           on-change="onToggleSelection_">
       </tab-discard-exception-current-sites-entry>
     </template>

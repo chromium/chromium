@@ -29,11 +29,21 @@ export class TabDiscardExceptionCurrentSitesEntryElement extends
 
   static get properties() {
     return {
+      checked: {
+        type: Boolean,
+        observer: 'onCheckedChanged_',
+      },
+
       item: String,
     };
   }
 
+  private checked: boolean;
   private item: string;
+
+  private onCheckedChanged_() {
+    this.setAttribute('aria-selected', String(this.$.checkbox.checked));
+  }
 
   override connectedCallback() {
     super.connectedCallback();
