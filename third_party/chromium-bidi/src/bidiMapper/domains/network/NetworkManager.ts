@@ -47,8 +47,12 @@ export class NetworkManager {
     this.#networkStorage.deleteRequest(requestId);
   }
 
-  #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
-    return this.#networkStorage.getRequest(requestId);
+  #getOrCreateNetworkRequest(id: Network.Request): NetworkRequest {
+    const request = this.#networkStorage.getRequest(id);
+    if (request) {
+      return request;
+    }
+    return this.#networkStorage.createRequest(id);
   }
 
   static create(
@@ -71,9 +75,22 @@ export class NetworkManager {
     cdpTarget.cdpClient.on(
       'Network.requestWillBeSent',
       (params: Protocol.Network.RequestWillBeSentEvent) => {
-        networkManager
-          .#getOrCreateNetworkRequest(params.requestId)
-          .onRequestWillBeSentEvent(params);
+        const request = networkManager.#networkStorage.getRequest(
+          params.requestId
+        );
+        if (request && request.isRedirecting()) {
+          request.handleRedirect();
+          networkManager.#forgetNetworkRequest(params.requestId);
+          networkManager.#networkStorage
+            .createRequest(params.requestId, request.redirectCount + 1)
+            .onRequestWillBeSentEvent(params);
+        } else if (request) {
+          request.onRequestWillBeSentEvent(params);
+        } else {
+          networkManager.#networkStorage
+            .createRequest(params.requestId)
+            .onRequestWillBeSentEvent(params);
+        }
       }
     );
 
@@ -100,7 +117,7 @@ export class NetworkManager {
       (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
         networkManager
           .#getOrCreateNetworkRequest(params.requestId)
-          .onResponseReceivedEventExtraInfo(params);
+          .onResponseReceivedExtraInfoEvent(params);
       }
     );
 
@@ -119,14 +136,6 @@ export class NetworkManager {
         networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onLoadingFailedEvent(params);
-        networkManager.#forgetNetworkRequest(params.requestId);
-      }
-    );
-
-    cdpTarget.cdpClient.on(
-      'Network.loadingFinished',
-      (params: Protocol.Network.RequestServedFromCacheEvent) => {
-        networkManager.#forgetNetworkRequest(params.requestId);
       }
     );
 

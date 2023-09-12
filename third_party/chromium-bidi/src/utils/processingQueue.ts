@@ -35,7 +35,7 @@ export class ProcessingQueue<T> {
 
   add(entry: Promise<Result<T>>, name: string) {
     this.#queue.push([entry, name]);
-    // No need in waiting. Just initialise processor if needed.
+    // No need in waiting. Just initialize processor if needed.
     void this.#processIfNeeded();
   }
 
@@ -59,7 +59,8 @@ export class ProcessingQueue<T> {
               this.#logger?.(
                 LogType.debugError,
                 'Event threw before sending:',
-                entry.error
+                entry.error.message,
+                entry.error.stack
               );
               return;
             }
@@ -69,7 +70,7 @@ export class ProcessingQueue<T> {
             this.#logger?.(
               LogType.debugError,
               'Event was not processed:',
-              error
+              error?.message
             );
           });
       }

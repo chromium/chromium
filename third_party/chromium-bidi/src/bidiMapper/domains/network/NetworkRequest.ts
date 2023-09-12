@@ -30,6 +30,7 @@ import {
   ChromiumBidi,
 } from '../../../protocol/protocol.js';
 import type {Result} from '../../../utils/result.js';
+import {assert} from '../../../utils/assert.js';
 
 /** Abstracts one individual network request. */
 export class NetworkRequest {
@@ -45,135 +46,115 @@ export class NetworkRequest {
   readonly requestId: Network.Request;
 
   #servedFromCache = false;
-  #redirectCount = 0;
+  #redirectCount: number;
 
   #eventManager: EventManager;
 
-  #requestWillBeSentEvent?: Protocol.Network.RequestWillBeSentEvent;
-  #requestWillBeSentExtraInfoEvent?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
-  #responseReceivedEvent?: Protocol.Network.ResponseReceivedEvent;
-  #responseReceivedExtraInfoEvent?: Protocol.Network.ResponseReceivedExtraInfoEvent;
+  #request: {
+    info?: Protocol.Network.RequestWillBeSentEvent;
+    extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
+  } = {};
+
+  #response: {
+    info?: Protocol.Network.ResponseReceivedEvent;
+    extraInfo?: Protocol.Network.ResponseReceivedExtraInfoEvent;
+  } = {};
 
   #beforeRequestSentDeferred = new Deferred<Result<void>>();
-  #responseReceivedDeferred = new Deferred<Result<void>>();
+  #responseCompletedDeferred = new Deferred<Result<void>>();
 
-  constructor(requestId: Network.Request, eventManager: EventManager) {
+  constructor(
+    requestId: Network.Request,
+    eventManager: EventManager,
+    redirectCount = 0
+  ) {
     this.requestId = requestId;
     this.#eventManager = eventManager;
+    this.#redirectCount = redirectCount;
   }
 
-  /** Returns the URL associated with this request. */
   get url(): string | undefined {
-    if (this.#requestWillBeSentEvent) {
-      return this.#requestWillBeSentEvent.request.url;
-    }
-    if (this.#responseReceivedEvent) {
-      return this.#responseReceivedEvent.response.url;
-    }
-
-    return undefined;
+    return this.#response.info?.response.url ?? this.#request.info?.request.url;
   }
 
-  onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
-    if (this.#requestWillBeSentEvent !== undefined) {
-      // TODO: Handle redirect event, requestId is same for the redirect chain
-      return;
-    }
-    this.#requestWillBeSentEvent = event;
+  get redirectCount() {
+    return this.#redirectCount;
+  }
 
-    if (this.#requestWillBeSentExtraInfoEvent !== undefined) {
+  isRedirecting(): boolean {
+    return Boolean(this.#request.info);
+  }
+
+  handleRedirect(): void {
+    this.#emitEventsIfReady(true);
+    this.#responseCompletedDeferred.resolve({
+      kind: 'error',
+      error: new Error('Redirects produce no response'),
+    });
+  }
+
+  #emitEventsIfReady(wasRedirected = false) {
+    const requestExtraInfoCompleted =
+      // Flush redirects
+      wasRedirected ||
+      Boolean(this.#request.extraInfo) ||
+      // Requests from cache don't have extra info
+      this.#servedFromCache ||
+      // Sometimes there is no extra info and the response
+      // is the only place we can find out
+      Boolean(this.#response.info && !this.#response.info.hasExtraInfo);
+
+    if (this.#request.info && requestExtraInfoCompleted) {
       this.#beforeRequestSentDeferred.resolve({
         kind: 'success',
         value: undefined,
       });
     }
 
-    this.#sendBeforeRequestEvent();
+    const responseExtraInfoCompleted =
+      Boolean(this.#response.extraInfo) ||
+      // Response from cache don't have extra info
+      this.#servedFromCache ||
+      // Don't expect extra info if the flag is false
+      Boolean(this.#response.info && !this.#response.info.hasExtraInfo);
+
+    if (this.#response.info && responseExtraInfoCompleted) {
+      this.#responseCompletedDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
+    }
+  }
+
+  onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
+    this.#request.info = event;
+    this.#queueBeforeRequestSentEvent();
+    this.#emitEventsIfReady();
   }
 
   onRequestWillBeSentExtraInfoEvent(
     event: Protocol.Network.RequestWillBeSentExtraInfoEvent
   ) {
-    if (this.#requestWillBeSentExtraInfoEvent !== undefined) {
-      // TODO: Handle redirect event, requestId is same for the redirect chain
-      return;
-    }
-    this.#requestWillBeSentExtraInfoEvent = event;
-
-    if (this.#requestWillBeSentEvent !== undefined) {
-      this.#beforeRequestSentDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
-    }
+    this.#request.extraInfo = event;
+    this.#emitEventsIfReady();
   }
 
-  onResponseReceivedEventExtraInfo(
+  onResponseReceivedExtraInfoEvent(
     event: Protocol.Network.ResponseReceivedExtraInfoEvent
   ) {
-    if (this.#responseReceivedExtraInfoEvent !== undefined) {
-      // TODO: Handle redirect event, requestId is same for the redirect chain
-      return;
-    }
-    this.#responseReceivedExtraInfoEvent = event;
-
-    if (this.#responseReceivedEvent !== undefined) {
-      this.#responseReceivedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
-    }
+    this.#response.extraInfo = event;
+    this.#emitEventsIfReady();
   }
 
-  onResponseReceivedEvent(
-    responseReceivedEvent: Protocol.Network.ResponseReceivedEvent
-  ) {
-    if (this.#responseReceivedEvent !== undefined) {
-      // TODO: Handle redirect event, requestId is same for the redirect chain
-      return;
-    }
-    this.#responseReceivedEvent = responseReceivedEvent;
-
-    if (
-      !responseReceivedEvent.hasExtraInfo &&
-      !this.#beforeRequestSentDeferred.isFinished
-    ) {
-      this.#beforeRequestSentDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
-    }
-
-    if (
-      !responseReceivedEvent.hasExtraInfo ||
-      this.#responseReceivedExtraInfoEvent !== undefined ||
-      this.#servedFromCache
-    ) {
-      this.#responseReceivedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
-    }
-
-    this.#sendResponseReceivedEvent();
+  onResponseReceivedEvent(event: Protocol.Network.ResponseReceivedEvent) {
+    this.#response.info = event;
+    this.#queueResponseCompletedEvent();
+    this.#emitEventsIfReady();
   }
 
   onServedFromCache() {
-    if (this.#requestWillBeSentEvent !== undefined) {
-      this.#beforeRequestSentDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
-    }
-
-    if (this.#responseReceivedEvent !== undefined) {
-      this.#responseReceivedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
-    }
-
     this.#servedFromCache = true;
+    this.#emitEventsIfReady();
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
@@ -181,9 +162,9 @@ export class NetworkRequest {
       kind: 'success',
       value: undefined,
     });
-    this.#responseReceivedDeferred.resolve({
+    this.#responseCompletedDeferred.resolve({
       kind: 'error',
-      error: new Error('Loading Failed'),
+      error: new Error('Network event loading failed'),
     });
 
     this.#eventManager.registerEvent(
@@ -195,7 +176,7 @@ export class NetworkRequest {
           errorText: event.errorText,
         },
       },
-      this.#requestWillBeSentEvent?.frameId ?? null
+      this.#context
     );
   }
 
@@ -204,117 +185,102 @@ export class NetworkRequest {
       kind: 'error' as const,
       error: new Error('Network processor detached'),
     };
-    this.#responseReceivedDeferred.resolve(result);
     this.#beforeRequestSentDeferred.resolve(result);
+    this.#responseCompletedDeferred.resolve(result);
+  }
+
+  get #context() {
+    return this.#request.info?.frameId ?? null;
   }
 
   #getBaseEventParams(): Network.BaseParameters {
     return {
       // TODO: implement.
       isBlocked: false,
-      context: this.#requestWillBeSentEvent?.frameId ?? null,
+      context: this.#context,
       navigation: this.#getNavigationId(),
       // TODO: implement.
       redirectCount: this.#redirectCount,
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.
-      timestamp: Math.round(
-        (this.#requestWillBeSentEvent?.wallTime ?? 0) * 1000
-      ),
+      timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
     };
   }
 
   #getNavigationId(): BrowsingContext.Navigation | null {
     if (
-      !this.#requestWillBeSentEvent ||
-      !this.#requestWillBeSentEvent.loaderId ||
+      !this.#request.info ||
+      !this.#request.info.loaderId ||
       // When we navigate all CDP network events have `loaderId`
       // CDP's `loaderId` and `requestId` match when
       // that request triggered the loading
-      this.#requestWillBeSentEvent.loaderId !==
-        this.#requestWillBeSentEvent.requestId
+      this.#request.info.loaderId !== this.#request.info.requestId
     ) {
       return null;
     }
-    return this.#requestWillBeSentEvent.loaderId;
+    return this.#request.info.loaderId;
   }
 
   #getRequestData(): Network.RequestData {
-    const cookies = this.#requestWillBeSentExtraInfoEvent
-      ? NetworkRequest.#getCookies(
-          this.#requestWillBeSentExtraInfoEvent.associatedCookies
-        )
+    const cookies = this.#request.extraInfo
+      ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
       : [];
 
     return {
-      request:
-        this.#requestWillBeSentEvent?.requestId ?? NetworkRequest.#unknown,
-      url: this.url ?? NetworkRequest.#unknown,
-      method:
-        this.#requestWillBeSentEvent?.request.method ?? NetworkRequest.#unknown,
-      headers: NetworkRequest.#getHeaders(
-        this.#requestWillBeSentEvent?.request.headers
-      ),
+      request: this.#request.info?.requestId ?? NetworkRequest.#unknown,
+      url: this.#request.info?.request.url ?? NetworkRequest.#unknown,
+      method: this.#request.info?.request.method ?? NetworkRequest.#unknown,
+      headers: NetworkRequest.#getHeaders(this.#request.info?.request.headers),
       cookies,
       // TODO: implement.
       headersSize: -1,
       // TODO: implement.
       bodySize: 0,
-      timings: {
-        // TODO: implement.
-        timeOrigin: 0,
-        // TODO: implement.
-        requestTime: 0,
-        // TODO: implement.
-        redirectStart: 0,
-        // TODO: implement.
-        redirectEnd: 0,
-        // TODO: implement.
-        fetchStart: 0,
-        // TODO: implement.
-        dnsStart: 0,
-        // TODO: implement.
-        dnsEnd: 0,
-        // TODO: implement.
-        connectStart: 0,
-        // TODO: implement.
-        connectEnd: 0,
-        // TODO: implement.
-        tlsStart: 0,
-        // TODO: implement.
-        requestStart: 0,
-        // TODO: implement.
-        responseStart: 0,
-        // TODO: implement.
-        responseEnd: 0,
-      },
+      timings: this.#getTimings(),
+    };
+  }
+  // TODO: implement.
+  #getTimings(): Network.FetchTimingInfo {
+    return {
+      timeOrigin: 0,
+      requestTime: 0,
+      redirectStart: 0,
+      redirectEnd: 0,
+      fetchStart: 0,
+      dnsStart: 0,
+      dnsEnd: 0,
+      connectStart: 0,
+      connectEnd: 0,
+      tlsStart: 0,
+      requestStart: 0,
+      responseStart: 0,
+      responseEnd: 0,
     };
   }
 
-  #sendBeforeRequestEvent() {
-    if (!this.#isIgnoredEvent()) {
-      this.#eventManager.registerPromiseEvent(
-        this.#beforeRequestSentDeferred.then((result) => {
-          if (result.kind === 'success') {
-            return {
-              kind: 'success',
-              value: Object.assign(this.#getBeforeRequestEvent(), {
-                type: 'event' as const,
-              }),
-            };
-          }
-          return result;
-        }),
-        this.#requestWillBeSentEvent?.frameId ?? null,
-        ChromiumBidi.Network.EventNames.BeforeRequestSent
-      );
+  #queueBeforeRequestSentEvent() {
+    if (this.#isIgnoredEvent()) {
+      return;
     }
+    this.#eventManager.registerPromiseEvent(
+      this.#beforeRequestSentDeferred.then((result) => {
+        if (result.kind === 'success') {
+          return {
+            kind: 'success',
+            value: Object.assign(this.#getBeforeRequestEvent(), {
+              type: 'event' as const,
+            }),
+          };
+        }
+        return result;
+      }),
+      this.#context,
+      ChromiumBidi.Network.EventNames.BeforeRequestSent
+    );
   }
 
   #getBeforeRequestEvent(): Network.BeforeRequestSent {
-    if (this.#requestWillBeSentEvent === undefined) {
-      throw new Error('RequestWillBeSentEvent is not set');
-    }
+    assert(this.#request.info, 'RequestWillBeSentEvent is not set');
 
     return {
       method: ChromiumBidi.Network.EventNames.BeforeRequestSent,
@@ -322,50 +288,47 @@ export class NetworkRequest {
         ...this.#getBaseEventParams(),
         initiator: {
           type: NetworkRequest.#getInitiatorType(
-            this.#requestWillBeSentEvent.initiator.type
+            this.#request.info.initiator.type
           ),
         },
       },
     };
   }
 
-  #sendResponseReceivedEvent() {
-    if (!this.#isIgnoredEvent()) {
-      this.#eventManager.registerPromiseEvent(
-        this.#responseReceivedDeferred.then((result) => {
-          if (result.kind === 'success') {
-            return {
-              kind: 'success',
-              value: Object.assign(this.#getResponseReceivedEvent(), {
-                type: 'event' as const,
-              }),
-            };
-          }
-          return result;
-        }),
-        this.#responseReceivedEvent?.frameId ?? null,
-        ChromiumBidi.Network.EventNames.ResponseCompleted
-      );
+  #queueResponseCompletedEvent() {
+    if (this.#isIgnoredEvent()) {
+      return;
     }
+    this.#eventManager.registerPromiseEvent(
+      this.#responseCompletedDeferred.then((result) => {
+        if (result.kind === 'success') {
+          return {
+            kind: 'success',
+            value: Object.assign(this.#getResponseReceivedEvent(), {
+              type: 'event' as const,
+            }),
+          };
+        }
+        return result;
+      }),
+      this.#context,
+      ChromiumBidi.Network.EventNames.ResponseCompleted
+    );
   }
 
   #getResponseReceivedEvent(): Network.ResponseCompleted {
-    if (this.#requestWillBeSentEvent === undefined) {
-      throw new Error('RequestWillBeSentEvent is not set');
-    }
-    if (this.#responseReceivedEvent === undefined) {
-      throw new Error('ResponseReceivedEvent is not set');
-    }
+    assert(this.#request.info, 'RequestWillBeSentEvent is not set');
+    assert(this.#response.info, 'ResponseReceivedEvent is not set');
 
     // Chromium sends wrong extraInfo events for responses served from cache.
     // See https://github.com/puppeteer/puppeteer/issues/9965 and
     // https://crbug.com/1340398.
-    if (this.#responseReceivedEvent.response.fromDiskCache) {
-      this.#responseReceivedExtraInfoEvent = undefined;
+    if (this.#response.info.response.fromDiskCache) {
+      this.#response.extraInfo = undefined;
     }
 
     const headers = NetworkRequest.#getHeaders(
-      this.#responseReceivedEvent.response.headers
+      this.#response.info.response.headers
     );
 
     return {
@@ -373,19 +336,19 @@ export class NetworkRequest {
       params: {
         ...this.#getBaseEventParams(),
         response: {
-          url: this.url ?? NetworkRequest.#unknown,
-          protocol: this.#responseReceivedEvent.response.protocol ?? '',
+          url: this.#response.info.response.url ?? NetworkRequest.#unknown,
+          protocol: this.#response.info.response.protocol ?? '',
           status:
-            this.#responseReceivedExtraInfoEvent?.statusCode ??
-            this.#responseReceivedEvent.response.status,
-          statusText: this.#responseReceivedEvent.response.statusText,
+            this.#response.extraInfo?.statusCode ??
+            this.#response.info.response.status,
+          statusText: this.#response.info.response.statusText,
           fromCache:
-            this.#responseReceivedEvent.response.fromDiskCache ||
-            this.#responseReceivedEvent.response.fromPrefetchCache ||
+            this.#response.info.response.fromDiskCache ||
+            this.#response.info.response.fromPrefetchCache ||
             this.#servedFromCache,
           headers,
-          mimeType: this.#responseReceivedEvent.response.mimeType,
-          bytesReceived: this.#responseReceivedEvent.response.encodedDataLength,
+          mimeType: this.#response.info.response.mimeType,
+          bytesReceived: this.#response.info.response.encodedDataLength,
           headersSize: this.#computeResponseHeadersSize(headers),
           // TODO: consider removing from spec.
           bodySize: 0,
@@ -407,10 +370,7 @@ export class NetworkRequest {
   }
 
   #isIgnoredEvent(): boolean {
-    return (
-      this.#requestWillBeSentEvent?.request.url.endsWith('/favicon.ico') ??
-      false
-    );
+    return this.#request.info?.request.url.endsWith('/favicon.ico') ?? false;
   }
 
   static #getHeaders(headers?: Protocol.Network.Headers): Network.Header[] {

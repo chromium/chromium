@@ -35,7 +35,10 @@ describe('NetworkStorage', () => {
   });
 
   it('disposeRequestMap', () => {
-    const dispose = sinon.stub(networkStorage.getRequest('_test_'), 'dispose');
+    const dispose = sinon.stub(
+      networkStorage.createRequest('_test_'),
+      'dispose'
+    );
 
     networkStorage.disposeRequestMap();
 

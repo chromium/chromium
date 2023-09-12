@@ -18,18 +18,18 @@ import type Protocol from 'devtools-protocol';
 
 import {uuidv4} from '../../../utils/uuid.js';
 import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
-import {DefaultMap} from '../../../utils/DefaultMap.js';
 import type {EventManager} from '../events/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
+  #eventManager: EventManager;
   /**
    * Map of request ID to NetworkRequest objects. Needed as long as information
    * about requests comes from different events.
    */
-  readonly #requestMap: DefaultMap<Network.Request, NetworkRequest>;
+  readonly #requestMap = new Map<Network.Request, NetworkRequest>();
 
   /** A map to define the properties of active network intercepts. */
   readonly #interceptMap = new Map<
@@ -51,9 +51,7 @@ export class NetworkStorage {
   >();
 
   constructor(eventManager: EventManager) {
-    this.#requestMap = new DefaultMap(
-      (requestId) => new NetworkRequest(requestId, eventManager)
-    );
+    this.#eventManager = eventManager;
   }
 
   disposeRequestMap() {
@@ -132,9 +130,16 @@ export class NetworkStorage {
     return this.#requestMap.get(id);
   }
 
+  createRequest(id: Network.Request, redirectCount?: number) {
+    const request = new NetworkRequest(id, this.#eventManager, redirectCount);
+    this.#requestMap.set(id, request);
+    return request;
+  }
+
   deleteRequest(id: Network.Request) {
-    if (this.#requestMap.has(id)) {
-      this.#requestMap.get(id).dispose();
+    const request = this.#requestMap.get(id);
+    if (request) {
+      request.dispose();
       this.#requestMap.delete(id);
     }
   }

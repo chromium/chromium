@@ -84,7 +84,7 @@ describe('ProcessingQueue', () => {
       .getCalls()
       .filter((c) => c.args[0] === LogType.debugError)
       .map((c) => c.args[2]);
-    expect(loggerErrorValues).to.deep.equal([error]);
+    expect(loggerErrorValues).to.deep.equal([error.message]);
   });
 
   it('rejects should not stop processing with rejects from queue', async () => {
@@ -113,7 +113,7 @@ describe('ProcessingQueue', () => {
       .getCalls()
       .filter((c) => c.args[0] === LogType.debugError)
       .map((c) => c.args[2]);
-    expect(loggerErrorValues).to.deep.equal([error]);
+    expect(loggerErrorValues).to.deep.equal([error.message]);
   });
 
   it('rejects should not stop processing for queue events with result errors', async () => {
@@ -145,7 +145,7 @@ describe('ProcessingQueue', () => {
       .getCalls()
       .filter((c) => c.args[0] === LogType.debugError)
       .map((c) => c.args[2]);
-    expect(loggerErrorValues).to.deep.equal([error]);
+    expect(loggerErrorValues).to.deep.equal([error.message]);
   });
 
   it('processing starts over when new values are added', async () => {
