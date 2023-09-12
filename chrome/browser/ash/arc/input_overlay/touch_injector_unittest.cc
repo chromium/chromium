@@ -258,6 +258,10 @@ class TouchInjectorTest : public views::ViewsTestBase {
     action->PrepareToBindPositionForTesting(std::move(position));
   }
 
+  bool GetHasPendingTouchEvents() {
+    return injector_->has_pending_touch_events_;
+  }
+
   aura::TestScreen* test_screen() {
     return aura::test::AuraTestHelper::GetInstance()->GetTestScreen();
   }
@@ -533,7 +537,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   injector_->RegisterEventRewriter();
 
   // Press and release key A, it should receive touch event, not key event.
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(actionA->touch_id());
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
@@ -562,16 +566,16 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   injector_->RegisterEventRewriter();
 
   // Press and release key C, it should receive key event, not touch event.
-  event_generator_->PressKey(ui::VKEY_C, ui::EF_NONE, 1);
+  event_generator_->PressKey(ui::VKEY_C, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.touch_events().empty());
   EXPECT_EQ(1, (int)event_capturer_.key_events().size());
-  event_generator_->ReleaseKey(ui::VKEY_C, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_C, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.touch_events().empty());
   EXPECT_EQ(2, (int)event_capturer_.key_events().size());
   event_capturer_.Clear();
 
   // Test multi-key tap: Press B -> Press A -> Release A -> Release B.
-  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, 1);
+  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
@@ -581,7 +585,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
 
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1);
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
@@ -591,7 +595,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_POINTF_NEAR(expectA2, event->root_location_f(), kTolerance);
   EXPECT_EQ(1, event->pointer_details().id);
 
-  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(3, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
@@ -609,7 +613,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   event_capturer_.Clear();
 
   // Test multi-key tap: Press B -> Press A -> Release B -> Release A.
-  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, 1);
+  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
@@ -617,7 +621,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
 
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1);
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
@@ -625,7 +629,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_POINTF_NEAR(expectA1, event->root_location_f(), kTolerance);
   EXPECT_EQ(1, event->pointer_details().id);
 
-  event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(3, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
@@ -633,7 +637,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
 
-  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
@@ -643,35 +647,36 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   event_capturer_.Clear();
 
   // Test repeat key and it should receive only one touch event.
-  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, 1);
-  event_generator_->PressKey(ui::VKEY_B, ui::EF_IS_REPEAT, 1);
+  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
+  event_generator_->PressKey(ui::VKEY_B, ui::EF_IS_REPEAT,
+                             /*source_device_id=*/1);
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
-  event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   event_capturer_.Clear();
 
-  // Test cancel key.
-  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, 1);
+  // Test release touch event when unregistering the window.
+  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(actionB->touch_id());
   injector_->UnRegisterEventRewriter();
   EXPECT_FALSE(actionB->touch_id());
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events().back().get();
-  EXPECT_EQ(ui::EventType::ET_TOUCH_CANCELLED, event->type());
+  EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
   event_capturer_.Clear();
   // Register the event-rewriter and press key again.
   injector_->RegisterEventRewriter();
-  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, 1);
+  event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(actionB->touch_id());
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
-  event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   event_capturer_.Clear();
 }
 
@@ -683,6 +688,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapMouse) {
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
+  EXPECT_FALSE(GetHasPendingTouchEvents());
 
   auto* primary_action = injector_->actions()[0].get();
   auto* primary_binding = primary_action->current_input();
@@ -700,12 +706,14 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapMouse) {
   event_generator_->MoveMouseTo(gfx::Point(300, 200));
   EXPECT_EQ(2u, event_capturer_.mouse_events().size());
   EXPECT_EQ(0u, event_capturer_.touch_events().size());
+  EXPECT_FALSE(GetHasPendingTouchEvents());
   event_capturer_.Clear();
 
   // Lock mouse and check primary and secondary click.
   event_generator_->PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE,
-                                       1 /* keyboard id */);
+                                       /*source_device_id=*/1);
   event_generator_->PressLeftButton();
+  EXPECT_TRUE(GetHasPendingTouchEvents());
   EXPECT_TRUE(event_capturer_.mouse_events().empty());
   EXPECT_EQ(1u, event_capturer_.touch_events().size());
   auto* event = event_capturer_.touch_events()[0].get();
@@ -746,11 +754,13 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(1u, injector_->actions().size());
   auto* action = injector_->actions()[0].get();
   injector_->RegisterEventRewriter();
+  EXPECT_FALSE(GetHasPendingTouchEvents());
 
   // Press key A and generate touch down and move left event.
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_EQ(0, *(action->touch_id()));
   EXPECT_TRUE(event_capturer_.key_events().empty());
+  EXPECT_TRUE(GetHasPendingTouchEvents());
   // Wait for touch move event.
   task_environment()->FastForwardBy(kSendTouchMoveDelay);
   EXPECT_EQ(2u, event_capturer_.touch_events().size());
@@ -771,7 +781,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(0, event->pointer_details().id);
 
   // Press key W (move left + up) and generate touch move (up and left) event.
-  event_generator_->PressKey(ui::VKEY_W, ui::EF_NONE, 1);
+  event_generator_->PressKey(ui::VKEY_W, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_EQ(3u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
@@ -780,7 +790,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_POINTF_NEAR(expectW, event->root_location_f(), kTolerance);
 
   // Release key A and generate touch move up event (Key W is still pressed).
-  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_EQ(4u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
@@ -789,7 +799,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_POINTF_NEAR(expectW, event->root_location_f(), kTolerance);
 
   // Press key D and generate touch move (up and right) event.
-  event_generator_->PressKey(ui::VKEY_D, ui::EF_NONE, 1);
+  event_generator_->PressKey(ui::VKEY_D, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_EQ(5u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[4].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
@@ -799,7 +809,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
 
   // Release key W and generate touch move (right) event (Key D is still
   // pressed).
-  event_generator_->ReleaseKey(ui::VKEY_W, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_W, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_EQ(6u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[5].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
@@ -808,7 +818,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_POINTF_NEAR(expectD, event->root_location_f(), kTolerance);
 
   // Release key D and generate touch release event.
-  event_generator_->ReleaseKey(ui::VKEY_D, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_D, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_EQ(7u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[6].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
@@ -816,7 +826,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
   event_capturer_.Clear();
 
   // Press A again, it should repeat the same as previous result.
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_EQ(0, *(action->touch_id()));
   EXPECT_TRUE(event_capturer_.key_events().empty());
   task_environment()->FastForwardBy(kSendTouchMoveDelay);
@@ -830,7 +840,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   EXPECT_POINTF_NEAR(expectA, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
-  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   event_capturer_.Clear();
 }
 
@@ -842,6 +852,8 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveMouse) {
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
+  EXPECT_FALSE(GetHasPendingTouchEvents());
+
   auto* hover_action = static_cast<ActionMove*>(injector_->actions()[0].get());
   auto* hover_binding = hover_action->current_input();
   EXPECT_EQ(hover_binding->mouse_action(), MouseAction::HOVER_MOVE);
@@ -861,6 +873,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveMouse) {
   // When the mouse is unlocked and test target action mouse hover move. Mouse
   // events are received as mouse events.
   event_generator_->SendMouseEnter();
+  EXPECT_FALSE(GetHasPendingTouchEvents());
   EXPECT_FALSE(hover_action->touch_id());
   EXPECT_EQ(1u, event_capturer_.mouse_events().size());
   event_generator_->MoveMouseTo(gfx::Point(250, 150));
@@ -870,11 +883,12 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveMouse) {
   // Lock mouse.
   EXPECT_FALSE(injector_->is_mouse_locked());
   event_generator_->PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE,
-                                       1 /* keyboard id */);
+                                       /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_TRUE(injector_->is_mouse_locked());
   // Mouse hover events are transformed to touch events.
   event_generator_->MoveMouseTo(gfx::Point(300, 200), 1);
+  EXPECT_TRUE(GetHasPendingTouchEvents());
   EXPECT_TRUE(hover_action->touch_id() && *(hover_action->touch_id()) == 0);
   EXPECT_TRUE(event_capturer_.mouse_events().empty());
   EXPECT_EQ(1u, event_capturer_.touch_events().size());
@@ -903,7 +917,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveMouse) {
   // Unlock the mouse and the mouse events received
   // as mouse events.
   event_generator_->PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE,
-                                       1 /* keyboard id */);
+                                       /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(3u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
@@ -920,6 +934,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value->GetDict());
   injector_->RegisterEventRewriter();
+  EXPECT_FALSE(GetHasPendingTouchEvents());
 
   // Verify initial states.
   EXPECT_TRUE(event_capturer_.key_events().empty());
@@ -933,7 +948,8 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
   // have the same id of 0. Then release the ids.
 
   // First, press key A with id 0.
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 0 /* keyboard id */);
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
+  EXPECT_TRUE(GetHasPendingTouchEvents());
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   auto* keyEvent = event_capturer_.touch_events()[0].get();
@@ -953,7 +969,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
   EXPECT_EQ(1, touchEvent->pointer_details().id);
 
   // Send release event for A key. Verify the touch id is still in our map.
-  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 0);
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
   EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
 
   // Send release event for touch event. Verify touch id is removed from map.
@@ -976,7 +992,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
   EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
 
   // Second, press key A with same id as the physical touch event.
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 0 /* keyboard id */);
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
 
@@ -991,7 +1007,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
   EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
 
   // Send release event for A key. Verify our map is still empty.
-  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 0);
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
   EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
 
   event_capturer_.Clear();
@@ -1013,13 +1029,52 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
   EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
 
   event_capturer_.Clear();
+}
 
-  // Case 4: Verify the logic in DispatchTouchCancelEvent is correct by
-  // creating a touch and key press, then unregistering the event rewriter.
-  // This should result in touch cancel events occurring for the events.
+TEST_P(VersionTouchInjectorTest, TestCleanupTouchEvents) {
+  // Setup.
+  auto json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->ParseActions(json_value->GetDict());
+  injector_->RegisterEventRewriter();
+  EXPECT_FALSE(GetHasPendingTouchEvents());
 
-  // First, press key A.
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 0 /* keyboard id */);
+  // Verify initial states.
+  EXPECT_TRUE(event_capturer_.key_events().empty());
+  EXPECT_TRUE(event_capturer_.touch_events().empty());
+  EXPECT_EQ(0, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  // Case 1: Verify the logic about CleanupTouchEvents and
+  // DispatchTouchReleaseEvent by creating a touch by a key press, and then the
+  // mouse event interrupting. This should result in touch release events
+  // occurring for the events.
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
+  EXPECT_TRUE(event_capturer_.key_events().empty());
+  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+  EXPECT_TRUE(GetHasPendingTouchEvents());
+
+  event_generator_->PressTouchId(0, gfx::Point(360, 420));
+  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
+
+  event_generator_->SendMouseEnter();
+  EXPECT_FALSE(GetHasPendingTouchEvents());
+
+  // Verify the existing events have generated release events.
+  EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
+  auto* touchEvent = event_capturer_.touch_events()[2].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, touchEvent->type());
+  touchEvent = event_capturer_.touch_events()[3].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, touchEvent->type());
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  event_capturer_.Clear();
+
+  // Case 2: Verify the logic by creating a touch by a key press,
+  // then unregistering the event rewriter.
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
@@ -1029,16 +1084,20 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
 
-  // Verify DispatchTouchCancelEvent logic through UnRegisterEventRewriter.
+  // Verify DispatchTouchReleaseEvent logic through UnRegisterEventRewriter.
+  EXPECT_TRUE(GetHasPendingTouchEvents());
   injector_->UnRegisterEventRewriter();
+  EXPECT_FALSE(GetHasPendingTouchEvents());
 
-  // Verify the existing events have generated a canceled event.
+  // Verify the existing events have generated release events.
   EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
   touchEvent = event_capturer_.touch_events()[2].get();
-  EXPECT_EQ(ui::EventType::ET_TOUCH_CANCELLED, touchEvent->type());
+  EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, touchEvent->type());
   touchEvent = event_capturer_.touch_events()[3].get();
-  EXPECT_EQ(ui::EventType::ET_TOUCH_CANCELLED, touchEvent->type());
+  EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, touchEvent->type());
   EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  event_capturer_.Clear();
 }
 
 TEST_P(VersionTouchInjectorTest, TestProtoConversion) {

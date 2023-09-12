@@ -298,7 +298,7 @@ void TouchInjector::UpdateFlags() {
 
 void TouchInjector::NotifyTextInputState(bool active) {
   if (text_input_active_ != active && active) {
-    DispatchTouchCancelEvent();
+    DispatchTouchReleaseEvent();
   }
   text_input_active_ = active;
 }
@@ -315,7 +315,7 @@ void TouchInjector::UnRegisterEventRewriter() {
   if (!observation_.IsObserving()) {
     return;
   }
-  DispatchTouchCancelEvent();
+  DispatchTouchReleaseEvent();
   observation_.Reset();
   // Need reset pending input bind if it is unregistered in edit mode.
   for (auto& action : actions_)
@@ -469,43 +469,14 @@ void TouchInjector::UpdateForOverlayBoundsChanged(
 }
 
 void TouchInjector::CleanupTouchEvents() {
+  if (!has_pending_touch_events_ && !is_mouse_locked_) {
+    return;
+  }
+
   if (is_mouse_locked_) {
     FlipMouseLockFlag();
   }
   DispatchTouchReleaseEvent();
-}
-
-void TouchInjector::DispatchTouchCancelEvent() {
-  for (auto& action : actions_) {
-    auto cancel = action->GetTouchCanceledEvent();
-    if (!cancel) {
-      continue;
-    }
-    if (SendEventFinally(continuation_, &*cancel).dispatcher_destroyed) {
-      VLOG(0) << "Undispatched event due to destroyed dispatcher for canceling "
-                 "touch event.";
-    }
-  }
-
-  // Cancel active touch-to-touch events.
-  for (auto& touch_info : rewritten_touch_infos_) {
-    auto touch_point_info = touch_info.second;
-    auto managed_touch_id = touch_point_info.rewritten_touch_id;
-    auto root_location = touch_point_info.touch_root_location;
-
-    auto touch_to_release = std::make_unique<ui::TouchEvent>(ui::TouchEvent(
-        ui::EventType::ET_TOUCH_CANCELLED, root_location, root_location,
-        ui::EventTimeForNow(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, managed_touch_id)));
-    if (SendEventFinally(continuation_, &*touch_to_release)
-            .dispatcher_destroyed) {
-      VLOG(0) << "Undispatched event due to destroyed dispatcher for canceling "
-                 "stored touch event.";
-    }
-    TouchIdManager::GetInstance()->ReleaseTouchID(
-        touch_info.second.rewritten_touch_id);
-  }
-  rewritten_touch_infos_.clear();
 }
 
 void TouchInjector::DispatchTouchReleaseEventOnMouseUnLock() {
@@ -525,6 +496,10 @@ void TouchInjector::DispatchTouchReleaseEventOnMouseUnLock() {
 }
 
 void TouchInjector::DispatchTouchReleaseEvent() {
+  if (!has_pending_touch_events_) {
+    return;
+  }
+
   for (auto& action : actions_) {
     auto release = action->GetTouchReleasedEvent();
     if (!release) {
@@ -555,6 +530,7 @@ void TouchInjector::DispatchTouchReleaseEvent() {
         touch_info.second.rewritten_touch_id);
   }
   rewritten_touch_infos_.clear();
+  has_pending_touch_events_ = false;
 }
 
 void TouchInjector::SendExtraEvent(
@@ -718,6 +694,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
         RewriteOriginalTouch(touch_event);
 
     if (new_touch_event) {
+      has_pending_touch_events_ = true;
       return SendEventFinally(continuation, new_touch_event.get());
     }
 
@@ -745,6 +722,9 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     if (!rewritten) {
       continue;
     }
+
+    has_pending_touch_events_ = true;
+
     if (keep_original_event) {
       SendExtraEvent(continuation, event);
     }
@@ -776,6 +756,14 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   // Discard other mouse events if the mouse is locked.
   if (is_mouse_locked_ && event.IsMouseEvent()) {
     return DiscardEvent(continuation);
+  }
+
+  // When the mouse is unlocked and the mouse event interrupts here, release
+  // active actions first and then send the mouse event. Otherwise, Android
+  // generates touch cancel event automatically, which puts some games into a
+  // weird state.
+  if (event.IsMouseEvent()) {
+    CleanupTouchEvents();
   }
 
   return SendEvent(continuation, &event);
