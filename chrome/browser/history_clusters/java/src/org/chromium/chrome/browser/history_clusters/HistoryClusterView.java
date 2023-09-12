@@ -86,6 +86,18 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
                 SemanticColorUtils.getDefaultIconColorSecondary(getContext()));
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        Drawable iconViewBackground = getIconView().getBackground();
+        int level = iconViewBackground.getLevel();
+        // Work around a race condition that puts the icon view background gets into a bad state.
+        // Changing the level and changing it back guarantees a call to
+        // initializeDrawableForDisplay(), which resets it into a good state.
+        iconViewBackground.setLevel(level + 1);
+        iconViewBackground.setLevel(level);
+    }
+
     void setTitle(CharSequence text) {
         mTitleView.setText(text);
     }
