@@ -55,19 +55,13 @@ if (toolchain_has_rust) {
   # library that needs to be added here in a newer stdlib.
   stdlib_files = [
     "std",  # List first because it makes depfiles more debuggable (see below)
-    "addr2line",
-    "adler",
     "alloc",
     "cfg_if",
     "compiler_builtins",
     "core",
     "getopts",
-    "gimli",
     "hashbrown",
     "libc",
-    "memchr",
-    "miniz_oxide",
-    "object",
     "panic_abort",
     "panic_unwind",
     "rustc_demangle",
@@ -76,6 +70,18 @@ if (toolchain_has_rust) {
     "unicode_width",
     "unwind",
   ]
+
+  if (!is_win) {
+    # These are no longer present in the Windows toolchain.
+    stdlib_files += [
+      "addr2line",
+      "adler",
+      "gimli",
+      "memchr",
+      "miniz_oxide",
+      "object",
+    ]
+  }
 
   if (toolchain_for_rust_host_build_tools) {
     # When building proc macros, include the proc_macro crate in what should be
