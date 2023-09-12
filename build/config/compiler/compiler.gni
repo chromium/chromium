@@ -324,15 +324,18 @@ if (symbol_level == -1) {
 use_debug_fission = use_debug_fission && symbol_level == 2
 
 # Non-component debug builds with symbol_level = 2 are an undesirable (very slow
-# build times) and unsupported (some test binaries will fail with > 4 GB PDBs)
-# combination. This is only checked when current_toolchain == default_toolchain
-# because the is_component_build flag is set to false in various components of
-# the build (like nacl) and we don't want to assert on those.
+# build times, almost two-minute link times) combination. This is only checked
+# when current_toolchain == default_toolchain because the is_component_build
+# flag is set to false in various components of the build (like nacl) and we
+# don't want to assert on those.
 # iOS does not support component builds so add an exception for this platform.
+# Windows supports huge PDBs so this combination is allowed for those who don't
+# mind long build times.
 if (forbid_non_component_debug_builds) {
   assert(
       symbol_level != 2 || current_toolchain != default_toolchain ||
-          is_component_build || !is_debug || is_ios || use_debug_fission,
+          is_component_build || !is_debug || is_ios || use_debug_fission ||
+          host_os == "win",
       "Can't do non-component debug builds at symbol_level=2 without use_debug_fission=true")
 }
 

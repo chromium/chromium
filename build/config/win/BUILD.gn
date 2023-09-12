@@ -176,7 +176,13 @@ config("compiler") {
   # block maps.
   # This flag requires lld-link.exe or link.exe from VS 2022 or later to create
   # the PDBs, and tools from circa 22H2 or later to consume the PDBs.
-  ldflags += [ "/pdbpagesize:8192" ]
+  # Debug component builds can generate PDBs that exceed 8 GiB, so use an
+  # even larger page size, allowing up to 16 GiB PDBs.
+  if (is_debug && !is_component_build) {
+    ldflags += [ "/pdbpagesize:16384" ]
+  } else {
+    ldflags += [ "/pdbpagesize:8192" ]
+  }
 
   if (!is_debug && !is_component_build) {
     # Enable standard linker optimizations like GC (/OPT:REF) and ICF in static
