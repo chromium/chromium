@@ -49,6 +49,11 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   void BindEditorInstance(
       mojo::PendingReceiver<mojom::EditorInstance> pending_receiver);
 
+  // Binds a new panel manager request from a client.
+  void BindEditorPanelManager(
+      mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
+          pending_receiver);
+
   // Handles a trigger event received from the system. This event could come
   // from a number of system locations.
   void HandleTrigger();

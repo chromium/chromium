@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/smart_reader/smart_reader_manager_ash.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
@@ -214,6 +215,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DriveIntegrationService> receiver) override;
   void BindEchoPrivate(
       mojo::PendingReceiver<mojom::EchoPrivate> receiver) override;
+  void BindEditorPanelManager(
+      mojo::PendingReceiver<mojom::EditorPanelManager> receiver) override;
   void BindEmbeddedAccessibilityHelperClientFactory(
       mojo::PendingReceiver<
           ::crosapi::mojom::EmbeddedAccessibilityHelperClientFactory> receiver)

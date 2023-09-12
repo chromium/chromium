@@ -38,12 +38,17 @@ source_set("editor_menu") {
     ":views",
     "//base",
     "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/crosapi/mojom",
     "//ui/gfx",
     "//ui/views",
   ]
 
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
   }
 }
 

@@ -37,6 +37,7 @@ import "chromeos/crosapi/mojom/download_controller.mojom";
 import "chromeos/crosapi/mojom/download_status_updater.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
+import "chromeos/crosapi/mojom/editor_panel.mojom";
 import "chromeos/crosapi/mojom/emoji_picker.mojom";
 import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/extension_keeplist.mojom";
@@ -145,8 +146,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 117
-// Next method id: 120
+// Next version: 119
+// Next method id: 121
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -327,6 +328,11 @@ interface Crosapi {
   // confirm the device is a ChromeOS device.
   [MinVersion=71] BindEchoPrivate@74(
       pending_receiver<EchoPrivate> receiver);
+
+  // EditorPanelManager is a service to allow lacros to open the system editor
+  // panel.
+  [MinVersion=118] BindEditorPanelManager@120(
+      pending_receiver<EditorPanelManager> receiver);
 
   // Binds the accessibility helper client factory interface which allows Lacros
   // to send information to Ash needed for accessibility features.

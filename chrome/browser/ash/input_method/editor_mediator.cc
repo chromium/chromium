@@ -12,8 +12,7 @@
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 
-namespace ash {
-namespace input_method {
+namespace ash::input_method {
 namespace {
 
 EditorMediator* g_instance_ = nullptr;
@@ -52,6 +51,12 @@ bool EditorMediator::HasInstance() {
 void EditorMediator::BindEditorInstance(
     mojo::PendingReceiver<mojom::EditorInstance> pending_receiver) {
   editor_instance_impl_.BindReceiver(std::move(pending_receiver));
+}
+
+void EditorMediator::BindEditorPanelManager(
+    mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
+        pending_receiver) {
+  panel_manager_.BindReceiver(std::move(pending_receiver));
 }
 
 void EditorMediator::HandleTrigger() {
@@ -134,5 +139,4 @@ void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {
   editor_switch_ = nullptr;
 }
 
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method

@@ -77,6 +77,7 @@
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
+#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom.h"
 #include "chromeos/crosapi/mojom/extension_info_private.mojom.h"
@@ -294,7 +295,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 116,
+static_assert(crosapi::mojom::Crosapi::Version_ == 118,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -339,6 +340,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::DownloadStatusUpdater>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DriveIntegrationService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::EchoPrivate>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::EditorPanelManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::EmojiPicker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ExtensionInfoPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Feedback>(),

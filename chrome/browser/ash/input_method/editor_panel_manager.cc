@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 
 namespace ash::input_method {
 
@@ -25,9 +26,17 @@ EditorPanelManager::EditorPanelManager(Delegate* delegate)
 
 EditorPanelManager::~EditorPanelManager() = default;
 
+void EditorPanelManager::BindReceiver(
+    mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
+        pending_receiver) {
+  receivers_.Add(this, std::move(pending_receiver));
+}
+
 void EditorPanelManager::GetEditorPanelContext(
     GetEditorPanelContextCallback callback) {
-  std::move(callback).Run(EditorPanelContext());
+  auto context = crosapi::mojom::EditorPanelContext::New();
+  context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kPromoCard;
+  std::move(callback).Run(std::move(context));
 }
 
 void EditorPanelManager::OnPromoCardDismissed() {
@@ -43,11 +52,11 @@ void EditorPanelManager::StartEditingFlow() {
 }
 
 void EditorPanelManager::StartEditingFlowWithPreset(
-    std::string_view text_query_id) {
+    const std::string& text_query_id) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void EditorPanelManager::StartEditingFlowWithFreeform(std::string_view text) {
+void EditorPanelManager::StartEditingFlowWithFreeform(const std::string& text) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
