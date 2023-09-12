@@ -58,9 +58,12 @@ class HTMLDetailsElement final : public HTMLElement {
   // attribute, excluding |this|, in tree order.  If there is no such group
   // (e.g., because there is no name attribute), returns an empty list.
   HeapVector<Member<HTMLDetailsElement>> OtherElementsInNameGroup();
+  void MaybeCloseForExclusivity();
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
+  void AttributeChanged(const AttributeModificationParams&) override;
+  InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   bool IsInteractiveContent() const override;
 
