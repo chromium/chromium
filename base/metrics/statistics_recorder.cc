@@ -4,10 +4,9 @@
 
 #include "base/metrics/statistics_recorder.h"
 
-#include <memory>
-
 #include "base/at_exit.h"
 #include "base/barrier_closure.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/leak_annotations.h"
 #include "base/json/string_escape.h"
@@ -18,6 +17,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/record_histogram_checker.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -25,6 +25,16 @@
 
 namespace base {
 namespace {
+
+// Whether a 50/50 trial for using a R/W lock should be run.
+constexpr bool kRunRwLockTrial = false;
+
+bool EnableBenchmarking() {
+  // TODO(asvitkine): If this code ends up not being temporary, refactor it to
+  // not duplicate the constant name. (Right now it's at a different layer.)
+  return CommandLine::InitializedForCurrentProcess() &&
+         CommandLine::ForCurrentProcess()->HasSwitch("enable-benchmarking");
+}
 
 bool HistogramNameLesser(const base::HistogramBase* a,
                          const base::HistogramBase* b) {
@@ -290,6 +300,23 @@ StatisticsRecorder::GetLastSnapshotTransactionId() {
 void StatisticsRecorder::InitLogOnShutdown() {
   const SrAutoWriterLock auto_lock(GetLock());
   InitLogOnShutdownWhileLocked();
+}
+
+// static
+StringPiece StatisticsRecorder::GetLockTrialGroup() {
+  if (kRunRwLockTrial && !EnableBenchmarking()) {
+    return lock_.Get().use_shared_mutex() ? "Enabled" : "Disabled";
+  }
+  return StringPiece();
+}
+
+// static
+bool StatisticsRecorder::SrLock::ShouldUseSharedMutex() {
+  // Force deterministic results for benchmarks.
+  if (kRunRwLockTrial && !EnableBenchmarking()) {
+    return RandInt(0, 1) == 1;
+  }
+  return false;
 }
 
 // static

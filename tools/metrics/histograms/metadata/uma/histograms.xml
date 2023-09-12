@@ -824,6 +824,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.StatisticsRecorder.LockWaitTime" units="ms"
+    expires_after="2024-03-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the sum of the accumulating wait times for acquiring the lock in
+    StatisticsRecorder. This is logged with every UMA log and reset to 0 at that
+    time.
+  </summary>
+</histogram>
+
 <histogram name="UMA.StructuredMetrics.EventFileSize" units="KB"
     expires_after="2024-02-01">
   <owner>tby@chromium.org</owner>

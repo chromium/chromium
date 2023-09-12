@@ -18,7 +18,7 @@ class UserActivationStateTest : public testing::Test {
   }
 
   static base::TimeTicks Now() {
-    now_ticks_ += base::Milliseconds(1);
+    now_ticks_ += base::Microseconds(1);
     return now_ticks_;
   }
 
