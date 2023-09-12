@@ -254,6 +254,32 @@ std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
   return std::u16string();
 }
 
+std::u16string GetManagedUiMenuItemTooltip(Profile* profile) {
+  CHECK(ShouldDisplayManagedUi(profile));
+  absl::optional<std::string> account_manager =
+      GetAccountManagerIdentity(profile);
+  absl::optional<std::string> device_manager = GetDeviceManagerIdentity();
+  switch (GetManagementStringType(profile)) {
+    case BROWSER_PROFILE_DIFFERENT_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(
+          IDS_BROWSER_AND_PROFILE_DIFFERENT_MANAGED_BY_TOOLTIP,
+          base::UTF8ToUTF16(*device_manager),
+          base::UTF8ToUTF16(*account_manager));
+    case BROWSER_MANAGED_PROFILE_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(
+          IDS_BROWSER_MANAGED_AND_PROFILE_MANAGED_BY_TOOLTIP,
+          base::UTF8ToUTF16(*account_manager));
+    case BROWSER_MANAGED:
+    case BROWSER_MANAGED_BY:
+    case BROWSER_PROFILE_SAME_MANAGED_BY:
+    case PROFILE_MANAGED_BY:
+    case SUPERVISED:
+    case NOT_MANAGED:
+      return std::u16string();
+  }
+  return std::u16string();
+}
+
 std::string GetManagedUiWebUIIcon(Profile* profile) {
   if (enterprise_util::IsBrowserManaged(profile)) {
     return "cr:domain";

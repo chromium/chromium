@@ -1696,6 +1696,10 @@ void AppMenuModel::Build() {
                           chrome::GetManagedUiIcon(browser_->profile()),
                           ui::kColorMenuIcon, kDefaultIconSize));
     }
+
+    SetAccessibleNameAt(
+        GetIndexOfCommandId(IDC_SHOW_MANAGEMENT_PAGE).value(),
+        chrome::GetManagedUiMenuItemTooltip(browser_->profile()));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

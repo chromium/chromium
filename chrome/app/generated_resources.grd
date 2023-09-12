@@ -11300,6 +11300,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_MANAGED_BY_PARENT_WITH_HYPERLINK" desc="Message to supervised end users, with a link for more info.">
           Your <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>browser is managed<ph name="END_LINK">&lt;/a&gt;</ph> by your parent
         </message>
+        <message name="IDS_BROWSER_MANAGED_AND_PROFILE_MANAGED_BY_TOOLTIP" desc="Text displayed in a tooltip to inform that the browser is managed by BROWSER_DOMAIN and the profile by PROFILE_DOMAIN.">
+          Browser managed by an organization, profile managed by <ph name="PROFILE_DOMAIN">$1<ex>bar.com</ex></ph>
+        </message>
+        <message name="IDS_BROWSER_AND_PROFILE_DIFFERENT_MANAGED_BY_TOOLTIP" desc="Text displayed in a tooltip to inform that the browser is managed by BROWSER_DOMAIN and the profile by PROFILE_DOMAIN.">
+         Browser managed by <ph name="BROWSER_DOMAIN">$1<ex>foo.com</ex></ph>, profile managed by <ph name="PROFILE_DOMAIN">$2<ex>bar.com</ex></ph>
+        </message>
       </if>
 
       <!-- Cookies Window -->

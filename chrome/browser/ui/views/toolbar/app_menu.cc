@@ -1398,7 +1398,10 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
             std::make_unique<RecentTabsMenuModelDelegate>(
                 this, model->GetSubmenuModelAt(i), item);
         break;
-
+      case IDC_SHOW_MANAGEMENT_PAGE:
+        parent->SetTooltip(model->GetAccessibleNameAt(i),
+                           IDC_SHOW_MANAGEMENT_PAGE);
+        break;
       default: {
         if (features::IsChromeRefresh2023() &&
             IsOtherProfileCommand(model->GetCommandIdAt(i))) {

@@ -58,6 +58,11 @@ const gfx::VectorIcon& GetManagedUiIcon(Profile* profile);
 // Must only be called if ShouldDisplayManagedUi(profile) is true.
 std::u16string GetManagedUiMenuItemLabel(Profile* profile);
 
+// The tooltip for the App Menu item for Managed UI.
+//
+// Must only be called if ShouldDisplayManagedUi(profile) is true.
+std::u16string GetManagedUiMenuItemTooltip(Profile* profile);
+
 // An icon name/label recognized by <iron-icon> for the WebUI footnote for
 // Managed UI indicating that the browser is managed.
 //
