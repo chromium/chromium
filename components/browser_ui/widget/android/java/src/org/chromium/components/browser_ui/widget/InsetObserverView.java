@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +32,9 @@ import java.util.List;
  */
 public class InsetObserverView extends View {
     private final Rect mWindowInsets;
+    private int mKeyboardInset;
     protected final ObserverList<WindowInsetObserver> mObservers;
-    private final BottomInsetObservableSupplier mBottomInsetSupplier;
+    private final KeyboardInsetObservableSupplier mKeyboardInsetSupplier;
     private final WindowInsetsAnimationCompat.Callback mWindowInsetsAnimationProxyCallback;
     private final List<WindowInsetsAnimationListener> mWindowInsetsAnimationListeners =
             new ArrayList<>();
@@ -50,10 +52,12 @@ public class InsetObserverView extends View {
          * @param right The right inset (but it feels so wrong).
          * @param bottom The bottom inset.
          */
-        void onInsetChanged(int left, int top, int right, int bottom);
+        default void onInsetChanged(int left, int top, int right, int bottom) {}
+
+        default void onKeyboardInsetChanged(int inset) {}
 
         /** Called when a new Display Cutout safe area is applied. */
-        void onSafeAreaChanged(Rect area);
+        default void onSafeAreaChanged(Rect area) {}
     }
 
     /**
@@ -87,15 +91,12 @@ public class InsetObserverView extends View {
         void onEnd(@NonNull WindowInsetsAnimationCompat animation);
     }
 
-    private class BottomInsetObservableSupplier
+    private class KeyboardInsetObservableSupplier
             extends ObservableSupplierImpl<Integer> implements WindowInsetObserver {
         @Override
-        public void onInsetChanged(int left, int top, int right, int bottom) {
-            this.set(bottom);
+        public void onKeyboardInsetChanged(int inset) {
+            this.set(inset);
         }
-
-        @Override
-        public void onSafeAreaChanged(Rect area) {}
     }
 
     /**
@@ -119,9 +120,10 @@ public class InsetObserverView extends View {
         super(context);
         setVisibility(INVISIBLE);
         mWindowInsets = new Rect();
+        mKeyboardInset = 0;
         mObservers = new ObserverList<>();
-        mBottomInsetSupplier = new BottomInsetObservableSupplier();
-        addObserver(mBottomInsetSupplier);
+        mKeyboardInsetSupplier = new KeyboardInsetObservableSupplier();
+        addObserver(mKeyboardInsetSupplier);
         mWindowInsetsAnimationProxyCallback = new WindowInsetsAnimationCompat.Callback(
                 WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP) {
             @Override
@@ -166,11 +168,11 @@ public class InsetObserverView extends View {
 
     /**
      * Returns a supplier that observes this {@link InsetObserverView} and
-     * provides changes to the bottom inset using the {@link
+     * provides changes to the keyboard inset using the {@link
      * ObservableSupplier} interface.
      */
-    public ObservableSupplier<Integer> getSupplierForBottomInset() {
-        return mBottomInsetSupplier;
+    public ObservableSupplier<Integer> getSupplierForKeyboardInset() {
+        return mKeyboardInsetSupplier;
     }
 
     /**
@@ -246,6 +248,7 @@ public class InsetObserverView extends View {
     @Override
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
         insets = forwardToInsetConsumers(insets);
+        updateKeyboardInset();
         onInsetChanged(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
                 insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
         return insets;
@@ -269,6 +272,21 @@ public class InsetObserverView extends View {
 
         for (WindowInsetObserver observer : mObservers) {
             observer.onInsetChanged(left, top, right, bottom);
+        }
+    }
+
+    private void updateKeyboardInset() {
+        int keyboardInset =
+                KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(getRootView());
+
+        if (mKeyboardInset == keyboardInset) {
+            return;
+        }
+
+        mKeyboardInset = keyboardInset;
+
+        for (WindowInsetObserver mObserver : mObservers) {
+            mObserver.onKeyboardInsetChanged(mKeyboardInset);
         }
     }
 

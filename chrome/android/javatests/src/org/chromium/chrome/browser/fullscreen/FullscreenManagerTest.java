@@ -82,8 +82,13 @@ public class FullscreenManagerTest {
                     + "</body>"
                     + "</html>");
 
-    private static final String LONG_HTML_TEST_PAGE =
-            UrlUtils.encodeHtmlDataUri("<html><body style='height:100000px;'></body></html>");
+    private static final String LONG_HTML_TEST_PAGE = UrlUtils.encodeHtmlDataUri("<html>"
+            + "<head>"
+            + "  <meta name=\"viewport\" content=\"width=device-width\">"
+            + "</head>"
+            + "<body style='height:100000px;'>"
+            + "</body>"
+            + "</html>");
     private static final String LONG_FULLSCREEN_API_HTML_TEST_PAGE = UrlUtils.encodeHtmlDataUri(
             "<html>"
             + "<head>"
@@ -701,5 +706,30 @@ public class FullscreenManagerTest {
         @LayoutType
         int layout = inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
         LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, layout, false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Fullscreen"})
+    public void testFullscreenPageHeight() throws Throwable {
+        launchOnFullscreenMode(LONG_HTML_TEST_PAGE);
+        Assert.assertTrue(getPersistentFullscreenMode());
+
+        float pixelDensity = InstrumentationRegistry.getInstrumentation()
+                                     .getContext()
+                                     .getResources()
+                                     .getDisplayMetrics()
+                                     .density;
+        View tabView = mActivityTestRule.getActivity().getActivityTab().getContentView();
+        Assert.assertEquals(tabView.getHeight() / pixelDensity, getPageHeight(), 1);
+    }
+
+    private WebContents getWebContents() {
+        return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+    }
+
+    private int getPageHeight() throws Throwable {
+        return Integer.parseInt(JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                getWebContents(), "window.innerHeight"));
     }
 }

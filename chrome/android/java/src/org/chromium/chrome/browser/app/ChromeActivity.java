@@ -2055,7 +2055,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ApplicationViewportInsetSupplier insetSupplier =
                 getWindowAndroid().getApplicationBottomInsetSupplier();
         insetSupplier.setKeyboardInsetSupplier(
-                mInsetObserverViewSupplier.get().getSupplierForBottomInset());
+                mInsetObserverViewSupplier.get().getSupplierForKeyboardInset());
         insetSupplier.setKeyboardAccessoryInsetSupplier(
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
         compositorViewHolder.setApplicationViewportInsetSupplier(insetSupplier);

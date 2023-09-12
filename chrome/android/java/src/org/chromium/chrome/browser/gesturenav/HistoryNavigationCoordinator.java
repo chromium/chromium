@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.gesturenav;
 
 import android.graphics.Insets;
-import android.graphics.Rect;
 import android.os.Build;
 import android.view.ViewGroup;
 
@@ -213,9 +212,6 @@ public class HistoryNavigationCoordinator
                 model, mNavigationLayout, mBackActionDelegate, mNavigationLayout::willNavigate);
         mInitCallback.onResult(mNavigationHandler);
     }
-
-    @Override
-    public void onSafeAreaChanged(Rect area) {}
 
     @Override
     public void onResumeWithNative() {

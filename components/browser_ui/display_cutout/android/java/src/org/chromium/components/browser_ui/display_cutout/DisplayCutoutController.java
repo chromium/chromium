@@ -172,9 +172,6 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
         webContents.setDisplayCutoutSafeArea(area);
     }
 
-    @Override
-    public void onInsetChanged(int left, int top, int right, int bottom) {}
-
     /**
      * Adjusts a WindowInset inset to a CSS pixel value.
      * @param inset The inset as an integer.
