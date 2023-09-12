@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
   }
   bool use_dwm_frame_color() const { return use_dwm_frame_color_; }
 
+  void SetAccentColorForTesting(absl::optional<SkColor> accent_color);
+  void SetUseDwmFrameColorForTesting(bool use_dwm_frame_color);
+
  private:
   void OnDwmKeyUpdated();
 

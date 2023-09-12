@@ -544,7 +544,11 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   // frame_type.
   key.frame_type = UseCustomFrame() ? ui::ColorProviderKey::FrameType::kChromium
                                     : ui::ColorProviderKey::FrameType::kNative;
-
+#if BUILDFLAG(IS_WIN)
+  if (theme_service && theme_service->UsingDeviceTheme() && UseCustomFrame()) {
+    key.frame_style = ui::ColorProviderKey::FrameStyle::kSystem;
+  }
+#endif
 
   return key;
 }

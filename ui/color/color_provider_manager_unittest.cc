@@ -37,6 +37,7 @@ ColorProvider* GetLightNormalColorProvider() {
       {ColorProviderKey::ColorMode::kLight,
        ColorProviderKey::ContrastMode::kNormal, ui::SystemTheme::kDefault,
        ColorProviderKey::FrameType::kChromium,
+       ColorProviderKey::FrameStyle::kDefault,
        ColorProviderKey::UserColorSource::kAccent, /*user_color=*/absl::nullopt,
        /*scheme_variant=*/absl::nullopt, nullptr});
 }

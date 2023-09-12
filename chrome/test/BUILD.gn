@@ -2905,6 +2905,7 @@ if (!is_android) {
         "../browser/profiles/profile_shortcut_manager_browsertest_win.cc",
         "../browser/safe_browsing/chrome_cleaner/reporter_runner_browsertest_win.cc",
         "../browser/spellchecker/spell_check_host_chrome_impl_win_browsertest.cc",
+        "../browser/ui/color/win/native_chrome_color_mixer_win_browsertest.cc",
         "../browser/ui/startup/credential_provider_signin_dialog_win_browsertest.cc",
         "../browser/ui/startup/startup_browser_creator_corrupt_profiles_browsertest_win.cc",
         "../browser/ui/startup/startup_browser_creator_triggered_reset_browsertest_win.cc",
@@ -2935,6 +2936,7 @@ if (!is_android) {
         "//sandbox/win:sandbox",
         "//services/test/echo/public/mojom",
         "//third_party/wtl",
+        "//ui/color:accent_color_observer",
         "//ui/resources",
       ]
 

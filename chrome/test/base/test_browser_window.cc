@@ -108,6 +108,7 @@ const ui::ColorProvider* TestBrowserWindow::GetColorProvider() const {
       {ui::ColorProviderKey::ColorMode::kLight,
        ui::ColorProviderKey::ContrastMode::kNormal, ui::SystemTheme::kDefault,
        ui::ColorProviderKey::FrameType::kChromium,
+       ui::ColorProviderKey::FrameStyle::kDefault,
        ui::ColorProviderKey::UserColorSource::kAccent});
 }
 

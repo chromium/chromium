@@ -13,6 +13,7 @@
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/grit/theme_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -99,30 +100,42 @@ void FrameColorHelper::AddNativeChromeColors(
       SkColorSetRGB(0xE8, 0xE8, 0xE8);
   constexpr SkColor kSystemMicaDarkFrameColor = SkColorSetRGB(0x20, 0x20, 0x20);
 
+  // Dwm colors should always be applied if present for pervasive accent colors
+  // pre-refresh. With refresh enabled we should only attempt to paint
+  // system-style frames if configured to do so in the key.
+  const bool use_native_colors =
+      !features::IsChromeRefresh2023() ||
+      (key.frame_type == ui::ColorProviderKey::FrameType::kChromium &&
+       key.frame_style == ui::ColorProviderKey::FrameStyle::kSystem);
+
   absl::optional<ui::ColorTransform> active_frame_transform;
   if (auto color = get_theme_color(TP::COLOR_FRAME_ACTIVE)) {
     active_frame_transform = {color.value()};
-  } else if (dwm_frame_color_) {
-    active_frame_transform = {dwm_frame_color_.value()};
-  } else if (ShouldDefaultThemeUseMicaTitlebar()) {
-    active_frame_transform = {key.color_mode == ColorMode::kDark
-                                  ? kSystemMicaDarkFrameColor
-                                  : kSystemMicaLightFrameColor};
+  } else if (use_native_colors) {
+    if (dwm_frame_color_) {
+      active_frame_transform = {dwm_frame_color_.value()};
+    } else if (ShouldDefaultThemeUseMicaTitlebar()) {
+      active_frame_transform = {key.color_mode == ColorMode::kDark
+                                    ? kSystemMicaDarkFrameColor
+                                    : kSystemMicaLightFrameColor};
+    }
   }
 
   absl::optional<ui::ColorTransform> inactive_frame_transform;
   if (auto color = get_theme_color(TP::COLOR_FRAME_INACTIVE)) {
     inactive_frame_transform = {color.value()};
-  } else if (dwm_inactive_frame_color_) {
-    inactive_frame_transform = {dwm_inactive_frame_color_.value()};
-  } else if (dwm_frame_color_) {
-    inactive_frame_transform =
-        ui::HSLShift({dwm_frame_color_.value()},
-                     GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
-  } else if (ShouldDefaultThemeUseMicaTitlebar()) {
-    inactive_frame_transform = {key.color_mode == ColorMode::kDark
-                                    ? kSystemMicaDarkFrameColor
-                                    : kSystemMicaLightFrameColor};
+  } else if (use_native_colors) {
+    if (dwm_inactive_frame_color_) {
+      inactive_frame_transform = {dwm_inactive_frame_color_.value()};
+    } else if (dwm_frame_color_) {
+      inactive_frame_transform =
+          ui::HSLShift({dwm_frame_color_.value()},
+                       GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
+    } else if (ShouldDefaultThemeUseMicaTitlebar()) {
+      inactive_frame_transform = {key.color_mode == ColorMode::kDark
+                                      ? kSystemMicaDarkFrameColor
+                                      : kSystemMicaLightFrameColor};
+    }
   }
 
   // If setting custom window frame colors ensure we also update the
