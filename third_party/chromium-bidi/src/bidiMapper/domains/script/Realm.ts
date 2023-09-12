@@ -170,6 +170,10 @@ export class Realm {
       ) {
         bidiValue.shadowRoot = this.#deepSerializedToBiDi(bidiValue.shadowRoot);
       }
+      // `namespaceURI` can be is either `null` or non-empty string.
+      if (bidiValue.namespaceURI === '') {
+        bidiValue.namespaceURI = null;
+      }
     }
 
     // Recursively update the nested values.
