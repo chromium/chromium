@@ -25,6 +25,22 @@ namespace {
 // |kCurrentDataVersion| in prepopulated_engines.json. See comments in
 // GetDataVersion() below!
 
+// Search engine tier per country.
+// SearchEngineTier will be equal to kTopEngines for the top 5 engines,
+// kTyingEngines for tying 5th and 6th engines and kRemainingEngines for the
+// remaining engines.
+enum class SearchEngineTier {
+  kTopEngines = 1,
+  kTyingEngines,
+  kRemainingEngines,
+};
+
+// `PrepopulateEngine` and tier per country.
+struct EngineAndTier {
+  SearchEngineTier tier;
+  const raw_ptr<PrepopulatedEngine const> search_engine;
+};
+
 // Put the engines within each country in order with most interesting/important
 // first.  The default will be the first engine.
 
