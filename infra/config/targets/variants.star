@@ -131,6 +131,14 @@ targets.variant(
 )
 
 targets.variant(
+    name = "MAC_RETINA_NVIDIA_GPU_STABLE",
+    identifier = "10de:0fe9",
+    mixins = [
+        "mac_retina_nvidia_gpu_stable",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPAD_AIR_2_15_5",
     identifier = "iPad Air 2 15.5",
     args = [
