@@ -258,6 +258,7 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
       local_state_(
           startup_data->chrome_feature_list_creator()->TakePrefService()),
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()) {
+  CHECK(!g_browser_process);
   g_browser_process = this;
 
   // Initialize the SessionIdGenerator instance, providing a PrefService to

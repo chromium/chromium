@@ -2022,11 +2022,6 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
   ash::CrosSettings::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // The below call to browser_shutdown::ShutdownPostThreadsStop() deletes
-  // |browser_process_|. We release it so that we don't keep holding onto an
-  // invalid reference.
-  std::ignore = browser_process_.release();
-
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   if (result_code_ == chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH) {
     // Process a pending User Data downgrade before restarting.
@@ -2038,6 +2033,9 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
     restart_mode = browser_shutdown::RestartMode::kRestartThisSession;
   }
 #endif  // BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
+
+  // From this point, the BrowserProcess class is no longer alive.
+  browser_process_.reset();
 
   browser_shutdown::ShutdownPostThreadsStop(restart_mode);
 
