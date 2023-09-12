@@ -853,15 +853,14 @@ TEST_F(CompositorFrameReporterTest, PartialUpdateDependentQueues) {
       pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
 
   // Enqueue another new dependent reporter. This should pop `deps[2]` from the
-  // front of the owned dependents queue and destroy it. Since another reporter
-  // is in front of the non-owned dependents queue it won't be popped out of
-  // that queue. The queues will look like this:
+  // front of the owned dependents queue and destroy it. It should be removed
+  // from the non-owned dependents queue as well.
   //   Partial Update Dependents:       [2, 3, 4, ..., n+1]
-  //   Owned Partial Update Dependents: [2, nullptr, 3, 4, ..., n+1]
+  //   Owned Partial Update Dependents: [2, 3, 4, ..., n+1]
   new_dep = CreatePipelineReporter();
   new_dep->SetPartialUpdateDecider(pipeline_reporter_.get());
   pipeline_reporter_->AdoptReporter(std::move(new_dep));
-  DCHECK_EQ(kMaxOwnedPartialUpdateDependents + 1,
+  DCHECK_EQ(kMaxOwnedPartialUpdateDependents,
             pipeline_reporter_->partial_update_dependents_size_for_testing());
   DCHECK_EQ(
       kMaxOwnedPartialUpdateDependents,

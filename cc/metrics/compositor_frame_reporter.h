@@ -6,6 +6,7 @@
 #define CC_METRICS_COMPOSITOR_FRAME_REPORTER_H_
 
 #include <bitset>
+#include <deque>
 #include <memory>
 #include <queue>
 #include <string>
@@ -568,7 +569,7 @@ class CC_EXPORT CompositorFrameReporter {
   // In such cases, |partial_update_dependents_| for A contains all the frames
   // that depend on A for deciding whether they had partial updates or not, and
   // |partial_update_decider_| is set to A for all these reporters.
-  std::queue<base::WeakPtr<CompositorFrameReporter>> partial_update_dependents_;
+  std::deque<base::WeakPtr<CompositorFrameReporter>> partial_update_dependents_;
   base::WeakPtr<CompositorFrameReporter> partial_update_decider_;
 
   // From the above example, it may be necessary for A to keep all the
