@@ -1,9 +1,19 @@
 noparent = True
 
-
 include_rules = [
   "+base",
+  "+ash/shell.h",
+  "+ash/login/ui",
+  "+ash/public/cpp",
+  "+ash/style",
+  "+ash/ime",
+  "+ash/resources/vector_icons",
+  "+ash/strings",
+  "+chromeos/constants",
   "+ui/views",
+  "+ui/base",
+  "+ui/gfx",
+  "+ui/color",
   "+chromeos/ash/components/osauth/public",
 
   # Abseil is allowed by default, but some features are banned. See

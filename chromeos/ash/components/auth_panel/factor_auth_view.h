@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_FACTOR_AUTH_VIEW_H_
 #define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_FACTOR_AUTH_VIEW_H_
 
+#include "chromeos/ash/components/auth_panel/auth_factor_store.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "ui/views/view.h"
@@ -15,7 +16,7 @@ namespace ash {
 // login, lock screen, or in-session.
 class FactorAuthView : public views::View {
  public:
-  ~FactorAuthView() override;
+  ~FactorAuthView() override = default;
 
   // Called from `AuthPanel` when the state of an auth factor changes, this
   // would normally, but not always, imply visual changes that would be
@@ -31,6 +32,8 @@ class FactorAuthView : public views::View {
   // a particular auth factor, this would imply visual changes such as
   // checkmarks, color changes, etc.
   virtual void OnAuthSuccess() = 0;
+
+  virtual void OnStateChanged(const AuthFactorStore::State& state) = 0;
 
   // Returns the respective `AshAuthFactor` handled by this view.
   virtual AshAuthFactor GetFactor() = 0;

@@ -37,6 +37,7 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   void SetSelectedTextColorId(ui::ColorId color_id);
   void SetSelectionBackgroundColorId(ui::ColorId color_id);
   void SetBackgroundColorId(ui::ColorId color_id);
+  void SetPlaceholderTextColorId(ui::ColorId color_id);
 
   // Activates or deactivates the textfield. The textfield can only be edited if
   // it is active.
@@ -90,6 +91,7 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   absl::optional<ui::ColorId> selected_text_color_id_;
   absl::optional<ui::ColorId> selection_background_color_id_;
   absl::optional<ui::ColorId> background_color_id_;
+  absl::optional<ui::ColorId> placeholder_text_color_id_;
 
   // Enabled state changed callback.
   base::CallbackListSubscription enabled_changed_subscription_;

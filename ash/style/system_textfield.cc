@@ -118,6 +118,11 @@ void SystemTextfield::SetBackgroundColorId(ui::ColorId color_id) {
   UpdateColorId(background_color_id_, color_id, /*is_background_color=*/true);
 }
 
+void SystemTextfield::SetPlaceholderTextColorId(ui::ColorId color_id) {
+  UpdateColorId(placeholder_text_color_id_, color_id,
+                /*is_background_color=*/false);
+}
+
 void SystemTextfield::SetActive(bool active) {
   if (IsActive() == active) {
     return;

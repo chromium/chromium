@@ -6,11 +6,14 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-component("auth_panel") {
-  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_AUTH_PANEL" ]
+source_set("auth_panel") {
   deps = [
+    "//ash/resources/vector_icons",
+    "//ash/strings",
+    "//ash/style",
     "//base",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/constants:constants",
     "//ui/views",
   ]
   sources = [
@@ -23,5 +26,12 @@ component("auth_panel") {
     "factor_auth_view.h",
     "factor_auth_view_factory.cc",
     "factor_auth_view_factory.h",
+    "views/auth_panel_views_utils.cc",
+    "views/auth_panel_views_utils.h",
+    "views/login_textfield.cc",
+    "views/login_textfield.h",
+    "views/password_auth_view.cc",
+    "views/password_auth_view.h",
+    "views/view_size_constants.h",
   ]
 }

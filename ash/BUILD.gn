@@ -2809,6 +2809,7 @@ component("ash") {
     "//cc/paint:paint",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/auth_panel",
     "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/components/dbus/biod",
     "//chromeos/ash/components/dbus/fwupd",
@@ -3000,6 +3001,7 @@ component("ash") {
     "//ash/quick_pair/repository",
     "//ash/quick_pair/ui",
     "//ash/quick_pair/scanning",
+    "//chromeos/ash/components/auth_panel",
   ]
 
   if (enable_cros_ambient_mode_backend) {

@@ -23,7 +23,7 @@ namespace ash {
 // A round button with arrow icon in the middle.
 // This will be used by LoginPublicAccountUserView and expanded public account
 // view.
-class ArrowButtonView : public LoginButton {
+class ASH_EXPORT ArrowButtonView : public LoginButton {
  public:
   METADATA_HEADER(ArrowButtonView);
 
