@@ -216,15 +216,17 @@ struct Stylus {
 // Contains all information needed to display, apply, and update graphics
 // tablet settings.
 struct GraphicsTablet {
-  // Key used to lookup device settings in prefs in the format
-  // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
-  // Example: 5022:18d1.
-  string device_key;
+  // User visible name for the graphics tablet seen within the Settings SWA.
+  string name;
   // Unique identifier for the graphics tablet which is assigned by ozone when
   // it is connected and is reassigned when disconnected and reconnected to the
   // system. These ids can be rarely reused for multiple devices if the original
   // device holding the id had been disconnected.
   uint32 id;
+  // Key used to lookup device settings in prefs in the format
+  // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
+  // Example: 5022:18d1.
+  string device_key;
   GraphicsTabletSettings settings;
 };
 

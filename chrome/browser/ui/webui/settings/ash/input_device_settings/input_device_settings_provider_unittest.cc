@@ -88,6 +88,19 @@ const ::ash::mojom::Mouse kMouse2 =
                         /*id=*/8,
                         /*device_key=*/"fake-device-key8",
                         ::ash::mojom::MouseSettings::New());
+const ::ash::mojom::GraphicsTablet kGraphicsTablet1 =
+    ::ash::mojom::GraphicsTablet(
+        /*name=*/"Wacom Intuos S",
+        /*id=*/9,
+        /*device_key=*/"fake-device-key9",
+        ::ash::mojom::GraphicsTabletSettings::New());
+const ::ash::mojom::GraphicsTablet kGraphicsTablet2 =
+    ::ash::mojom::GraphicsTablet(
+        /*name=*/"Huion H1060P",
+        /*id=*/10,
+        /*device_key=*/"fake-device-key10",
+        ::ash::mojom::GraphicsTabletSettings::New());
+
 template <bool sorted = false, typename T>
 void ExpectListsEqual(const std::vector<T>& expected_list,
                       const std::vector<T>& actual_list) {
@@ -208,6 +221,29 @@ class FakeMouseSettingsObserver : public mojom::MouseSettingsObserver {
   int num_times_mouse_policies_updated_ = 0;
 };
 
+class FakeGraphicsTabletSettingsObserver
+    : public mojom::GraphicsTabletSettingsObserver {
+ public:
+  void OnGraphicsTabletListUpdated(
+      std::vector<::ash::mojom::GraphicsTabletPtr> graphics_tablets) override {
+    graphics_tablets_ = std::move(graphics_tablets);
+    ++num_times_graphics_tablet_list_updated_;
+  }
+
+  const std::vector<::ash::mojom::GraphicsTabletPtr>& graphics_tablets() {
+    return graphics_tablets_;
+  }
+
+  int num_times_graphics_tablet_list_updated() {
+    return num_times_graphics_tablet_list_updated_;
+  }
+  mojo::Receiver<mojom::GraphicsTabletSettingsObserver> receiver{this};
+
+ private:
+  std::vector<::ash::mojom::GraphicsTabletPtr> graphics_tablets_;
+  int num_times_graphics_tablet_list_updated_ = 0;
+};
+
 class FakeInputDeviceSettingsController
     : public MockInputDeviceSettingsController {
  public:
@@ -228,21 +264,6 @@ class FakeInputDeviceSettingsController
   std::vector<::ash::mojom::GraphicsTabletPtr> GetConnectedGraphicsTablets()
       override {
     return mojo::Clone(graphics_tablets_);
-  }
-  const ::ash::mojom::KeyboardSettings* GetKeyboardSettings(
-      DeviceId id) override {
-    return nullptr;
-  }
-  const ::ash::mojom::TouchpadSettings* GetTouchpadSettings(
-      DeviceId id) override {
-    return nullptr;
-  }
-  const ::ash::mojom::MouseSettings* GetMouseSettings(DeviceId id) override {
-    return nullptr;
-  }
-  const ::ash::mojom::PointingStickSettings* GetPointingStickSettings(
-      DeviceId id) override {
-    return nullptr;
   }
   const ::ash::mojom::KeyboardPolicies& GetKeyboardPolicies() override {
     return *keyboard_policies_;
@@ -274,11 +295,10 @@ class FakeInputDeviceSettingsController
       ::ash::mojom::PointingStickSettingsPtr settings) override {
     ++num_times_set_pointing_stick_settings_called_;
   }
-  // TODO(wangdanny): Implement SetGraphicsTabletSettings.
   void SetGraphicsTabletSettings(
       DeviceId id,
       ::ash::mojom::GraphicsTabletSettingsPtr settings) override {
-    NOTIMPLEMENTED();
+    ++num_times_set_graphics_tablet_settings_called_;
   }
 
   void StartObservingButtons(DeviceId id) override {
@@ -357,6 +377,22 @@ class FakeInputDeviceSettingsController
     pointing_sticks_.erase(iter);
     observer_->OnPointingStickDisconnected(*temp_pointing_stick);
   }
+  void AddGraphicsTablet(::ash::mojom::GraphicsTabletPtr graphics_tablet) {
+    graphics_tablets_.push_back(std::move(graphics_tablet));
+    observer_->OnGraphicsTabletConnected(*graphics_tablets_.back());
+  }
+  void RemoveGraphicsTablet(uint32_t device_id) {
+    auto iter = base::ranges::find_if(graphics_tablets_,
+                                      [device_id](const auto& graphics_tablet) {
+                                        return graphics_tablet->id == device_id;
+                                      });
+    if (iter == graphics_tablets_.end()) {
+      return;
+    }
+    auto temp_pointing_stick = std::move(*iter);
+    graphics_tablets_.erase(iter);
+    observer_->OnGraphicsTabletDisconnected(*temp_pointing_stick);
+  }
   int num_times_restore_default_keyboard_remappings_called() {
     return num_times_restore_default_keyboard_remappings_called_;
   }
@@ -371,6 +407,9 @@ class FakeInputDeviceSettingsController
   }
   int num_times_set_touchpad_settings_called() {
     return num_times_set_touchpad_settings_called_;
+  }
+  int num_times_set_graphics_tablet_settings_called() {
+    return num_times_set_graphics_tablet_settings_called_;
   }
   bool observed_currently() { return observed_currently_; }
 
@@ -391,6 +430,7 @@ class FakeInputDeviceSettingsController
   int num_times_set_pointing_stick_settings_called_ = 0;
   int num_times_set_mouse_settings_called_ = 0;
   int num_times_set_touchpad_settings_called_ = 0;
+  int num_times_set_graphics_tablet_settings_called_ = 0;
   bool observed_currently_ = false;
 };
 
@@ -506,6 +546,22 @@ TEST_F(InputDeviceSettingsProviderTest, TestSetTouchpadSettings) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, controller_->num_times_set_touchpad_settings_called());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestSetGraphicsTabletSettings) {
+  controller_->AddGraphicsTablet(kGraphicsTablet1.Clone());
+  provider_->SetGraphicsTabletSettings(kGraphicsTablet1.id,
+                                       kGraphicsTablet1.settings->Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, controller_->num_times_set_graphics_tablet_settings_called());
+
+  controller_->AddGraphicsTablet(kGraphicsTablet2.Clone());
+  provider_->SetGraphicsTabletSettings(kGraphicsTablet2.id,
+                                       kGraphicsTablet2.settings->Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, controller_->num_times_set_graphics_tablet_settings_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {
@@ -748,6 +804,34 @@ TEST_F(InputDeviceSettingsProviderTest, TestPointingStickSettingsObeserver) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_called());
   ExpectListsEqual(expected_pointing_sticks, fake_observer.pointing_sticks());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestGraphicsTabletSettingsObeserver) {
+  std::vector<::ash::mojom::GraphicsTabletPtr> expected_graphics_tablets;
+  expected_graphics_tablets.push_back(kGraphicsTablet1.Clone());
+  controller_->AddGraphicsTablet(kGraphicsTablet1.Clone());
+
+  FakeGraphicsTabletSettingsObserver fake_observer;
+  provider_->ObserveGraphicsTabletSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, fake_observer.num_times_graphics_tablet_list_updated());
+  ExpectListsEqual(expected_graphics_tablets, fake_observer.graphics_tablets());
+
+  expected_graphics_tablets.push_back(kGraphicsTablet2.Clone());
+  controller_->AddGraphicsTablet(kGraphicsTablet2.Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_graphics_tablet_list_updated());
+  ExpectListsEqual(expected_graphics_tablets, fake_observer.graphics_tablets());
+
+  expected_graphics_tablets.pop_back();
+  controller_->RemoveGraphicsTablet(kGraphicsTablet2.id);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(3, fake_observer.num_times_graphics_tablet_list_updated());
+  ExpectListsEqual(expected_graphics_tablets, fake_observer.graphics_tablets());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, ObservationMatchesWidget) {

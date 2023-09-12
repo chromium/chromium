@@ -133,6 +133,7 @@ mojom::PointingStickPtr BuildMojomPointingStick(
 mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
     const ui::InputDevice& graphics_tablet) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
+  mojom_graphics_tablet->name = graphics_tablet.name;
   mojom_graphics_tablet->id = graphics_tablet.id;
   mojom_graphics_tablet->device_key =
       Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom-forward.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash::settings {
@@ -61,24 +62,33 @@ struct CustomDeviceKeyComparator {
 };
 
 template <typename T>
+bool CompareDevices(const T& device1, const T& device2) {
+  // Guarantees that external devices appear first in the
+  // list.
+  if (device1->is_external != device2->is_external) {
+    return device1->is_external;
+  }
+
+  // Otherwise sort by most recently connected device (aka
+  // id in descending order).
+  return device1->id > device2->id;
+}
+
+template <>
+bool CompareDevices(const ::ash::mojom::GraphicsTabletPtr& device1,
+                    const ::ash::mojom::GraphicsTabletPtr& device2) {
+  // Sort by most recently connected device (aka id in descending order).
+  return device1->id > device2->id;
+}
+
+template <typename T>
 std::vector<T> SanitizeAndSortDeviceList(std::vector<T> devices) {
   // Remove devices with duplicate `device_key`.
   base::flat_set<T, CustomDeviceKeyComparator<T>> devices_no_duplicates_set(
       std::move(devices));
   std::vector<T> devices_no_duplicates =
       std::move(devices_no_duplicates_set).extract();
-  base::ranges::sort(devices_no_duplicates,
-                     [](const auto& device1, const auto& device2) {
-                       // Guarantees that external devices appear first in the
-                       // list.
-                       if (device1->is_external != device2->is_external) {
-                         return device1->is_external;
-                       }
-
-                       // Otherwise sort by most recently connected device (aka
-                       // id in descending order).
-                       return device1->id > device2->id;
-                     });
+  base::ranges::sort(devices_no_duplicates, CompareDevices<T>);
   return devices_no_duplicates;
 }
 
@@ -237,6 +247,15 @@ void InputDeviceSettingsProvider::SetTouchpadSettings(
       device_id, std::move(settings));
 }
 
+void InputDeviceSettingsProvider::SetGraphicsTabletSettings(
+    uint32_t device_id,
+    ::ash::mojom::GraphicsTabletSettingsPtr settings) {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
+  DCHECK(InputDeviceSettingsController::Get());
+  InputDeviceSettingsController::Get()->SetGraphicsTabletSettings(
+      device_id, std::move(settings));
+}
+
 void InputDeviceSettingsProvider::ObserveKeyboardSettings(
     mojo::PendingRemote<mojom::KeyboardSettingsObserver> observer) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
@@ -279,6 +298,18 @@ void InputDeviceSettingsProvider::ObserveMouseSettings(
       InputDeviceSettingsController::Get()->GetConnectedMice()));
   mouse_settings_observer->OnMousePoliciesUpdated(
       InputDeviceSettingsController::Get()->GetMousePolicies().Clone());
+}
+
+void InputDeviceSettingsProvider::ObserveGraphicsTabletSettings(
+    mojo::PendingRemote<mojom::GraphicsTabletSettingsObserver> observer) {
+  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
+  DCHECK(InputDeviceSettingsController::Get());
+  const auto id = graphics_tablet_settings_observers_.Add(std::move(observer));
+  auto* graphics_tablet_settings_observer =
+      graphics_tablet_settings_observers_.Get(id);
+  graphics_tablet_settings_observer->OnGraphicsTabletListUpdated(
+      SanitizeAndSortDeviceList(
+          InputDeviceSettingsController::Get()->GetConnectedGraphicsTablets()));
 }
 
 void InputDeviceSettingsProvider::OnKeyboardConnected(
@@ -348,6 +379,21 @@ void InputDeviceSettingsProvider::OnMouseSettingsUpdated(
   NotifyMiceUpdated();
 }
 
+void InputDeviceSettingsProvider::OnGraphicsTabletConnected(
+    const ::ash::mojom::GraphicsTablet& graphics_tablet) {
+  NotifyGraphicsTabletUpdated();
+}
+
+void InputDeviceSettingsProvider::OnGraphicsTabletDisconnected(
+    const ::ash::mojom::GraphicsTablet& graphics_tablet) {
+  NotifyGraphicsTabletUpdated();
+}
+
+void InputDeviceSettingsProvider::OnGraphicsTabletSettingsUpdated(
+    const ::ash::mojom::GraphicsTablet& graphics_tablet) {
+  NotifyGraphicsTabletUpdated();
+}
+
 void InputDeviceSettingsProvider::OnMousePoliciesUpdated(
     const ::ash::mojom::MousePolicies& mouse) {
   for (const auto& observer : mouse_settings_observers_) {
@@ -389,6 +435,16 @@ void InputDeviceSettingsProvider::NotifyMiceUpdated() {
       InputDeviceSettingsController::Get()->GetConnectedMice());
   for (const auto& observer : mouse_settings_observers_) {
     observer->OnMouseListUpdated(mojo::Clone(mice));
+  }
+}
+
+void InputDeviceSettingsProvider::NotifyGraphicsTabletUpdated() {
+  CHECK(features::IsPeripheralCustomizationEnabled());
+  DCHECK(InputDeviceSettingsController::Get());
+  auto graphics_tablets = SanitizeAndSortDeviceList(
+      InputDeviceSettingsController::Get()->GetConnectedGraphicsTablets());
+  for (const auto& observer : graphics_tablet_settings_observers_) {
+    observer->OnGraphicsTabletListUpdated(mojo::Clone(graphics_tablets));
   }
 }
 

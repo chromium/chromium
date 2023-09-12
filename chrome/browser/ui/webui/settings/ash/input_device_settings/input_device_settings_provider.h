@@ -46,6 +46,9 @@ class InputDeviceSettingsProvider
       override;
   void ObserveMouseSettings(
       mojo::PendingRemote<mojom::MouseSettingsObserver> observer) override;
+  void ObserveGraphicsTabletSettings(
+      mojo::PendingRemote<mojom::GraphicsTabletSettingsObserver> observer)
+      override;
   void RestoreDefaultKeyboardRemappings(uint32_t device_id) override;
   void SetKeyboardSettings(uint32_t device_id,
                            ::ash::mojom::KeyboardSettingsPtr settings) override;
@@ -56,6 +59,9 @@ class InputDeviceSettingsProvider
                         ::ash::mojom::MouseSettingsPtr settings) override;
   void SetTouchpadSettings(uint32_t device_id,
                            ::ash::mojom::TouchpadSettingsPtr settings) override;
+  void SetGraphicsTabletSettings(
+      uint32_t device_id,
+      ::ash::mojom::GraphicsTabletSettingsPtr settings) override;
 
   // InputDeviceSettingsController::Observer:
   void OnKeyboardConnected(const ::ash::mojom::Keyboard& keyboard) override;
@@ -79,6 +85,13 @@ class InputDeviceSettingsProvider
   void OnMouseSettingsUpdated(const ::ash::mojom::Mouse& mouse) override;
   void OnMousePoliciesUpdated(
       const ::ash::mojom::MousePolicies& mouse_policies) override;
+  void OnGraphicsTabletConnected(
+      const ::ash::mojom::GraphicsTablet& graphics_tablet) override;
+  void OnGraphicsTabletDisconnected(
+      const ::ash::mojom::GraphicsTablet& graphics_tablet) override;
+  void OnGraphicsTabletSettingsUpdated(
+      const ::ash::mojom::GraphicsTablet& graphics_tablet) override;
+
   void StartObserving(uint32_t device_id) override;
   void StopObserving() override;
   void GetActionsForMouseButtonCustomization(
@@ -98,6 +111,7 @@ class InputDeviceSettingsProvider
   void NotifyTouchpadsUpdated();
   void NotifyPointingSticksUpdated();
   void NotifyMiceUpdated();
+  void NotifyGraphicsTabletUpdated();
 
   void HandleObserving();
 
@@ -114,6 +128,8 @@ class InputDeviceSettingsProvider
   mojo::RemoteSet<mojom::PointingStickSettingsObserver>
       pointing_stick_settings_observers_;
   mojo::RemoteSet<mojom::MouseSettingsObserver> mouse_settings_observers_;
+  mojo::RemoteSet<mojom::GraphicsTabletSettingsObserver>
+      graphics_tablet_settings_observers_;
 
   raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 

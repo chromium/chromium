@@ -47,6 +47,13 @@ interface MouseSettingsObserver {
   OnMousePoliciesUpdated(ash.mojom.MousePolicies policies);
 };
 
+// Interface for observing graphics tablet settings changes in OSSettings SWA.
+interface GraphicsTabletSettingsObserver {
+  // Notifies GraphicsTabletSettingsObserver when the list of connected
+  // graphics tablets and their settings are updated.
+  OnGraphicsTabletListUpdated(array<ash.mojom.GraphicsTablet> graphics_tablets);
+};
+
 // Interface for fetching and configuring input device settings in OSSettings.
 interface InputDeviceSettingsProvider {
   // Registers an observer which will be notified every time
@@ -70,6 +77,13 @@ interface InputDeviceSettingsProvider {
   // The observer which is registered is immediately informed
   // of the current state via its ObserveMouseSettings function.
   ObserveMouseSettings(pending_remote<MouseSettingsObserver> observer);
+  // Registers an observer which will be notified every time
+  // a graphics tablet connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its ObserveGraphicsTabletSettings function.
+  ObserveGraphicsTabletSettings(
+      pending_remote<GraphicsTabletSettingsObserver> observer);
+
   // Restore the keyboard remappings to default base on its id.
   RestoreDefaultKeyboardRemappings(uint32 device_id);
   // Sets the keyboard settings based on its id.
@@ -81,6 +95,9 @@ interface InputDeviceSettingsProvider {
   SetMouseSettings(uint32 device_id, ash.mojom.MouseSettings settings);
   // Sets the touchpad settings based on its id.
   SetTouchpadSettings(uint32 device_id, ash.mojom.TouchpadSettings settings);
+  // Sets the graphics tablet settings bsaed on its id.
+  SetGraphicsTabletSettings(
+      uint32 device_id, ash.mojom.GraphicsTabletSettings settings);
 
   // Starts observing customizable button presses for the device with the given
   // `device_id`.

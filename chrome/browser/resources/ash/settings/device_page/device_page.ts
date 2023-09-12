@@ -38,7 +38,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {isExternalStorageEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {KeyboardPolicies, MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
-import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
+import {GraphicsTabletSettingsObserverReceiver, KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
@@ -212,6 +212,8 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private touchpadSettingsObserverReceiver: TouchpadSettingsObserverReceiver;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface;
   private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
+  private graphicsTabletSettingsObserverReceiver:
+      GraphicsTabletSettingsObserverReceiver;
   private section_: Section;
 
   constructor() {
@@ -227,14 +229,14 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       this.observeKeyboardSettings();
       this.observeTouchpadSettings();
       this.observeMouseSettings();
+      if (this.isPeripheralCustomizationEnabled) {
+        // The flag `isPeripheralCustomizationEnabled` should only be enabled
+        // when `isDeviceSettingsSplitEnabled_` is enabled. Will not call
+        // `getInputDeviceSettingsProvider` here again.
+        this.observeGraphicsTabletSettings();
+      }
     }
 
-    if (this.isPeripheralCustomizationEnabled) {
-      // The flag `isPeripheralCustomizationEnabled` should only be enabled
-      // when `isDeviceSettingsSplitEnabled_` is enabled. Will not call
-      // `getInputDeviceSettingsProvider` here again.
-      this.observeGraphicsTabletSettings();
-    }
   }
 
   override connectedCallback() {
@@ -379,7 +381,15 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     if (this.inputDeviceSettingsProvider instanceof
         FakeInputDeviceSettingsProvider) {
       this.inputDeviceSettingsProvider.observeGraphicsTabletSettings(this);
+      return;
     }
+
+    this.graphicsTabletSettingsObserverReceiver =
+        new GraphicsTabletSettingsObserverReceiver(this);
+
+    this.inputDeviceSettingsProvider.observeGraphicsTabletSettings(
+        this.graphicsTabletSettingsObserverReceiver.$
+            .bindNewPipeAndPassRemote());
   }
 
   onGraphicsTabletListUpdated(graphicsTablets: GraphicsTablet[]): void {
