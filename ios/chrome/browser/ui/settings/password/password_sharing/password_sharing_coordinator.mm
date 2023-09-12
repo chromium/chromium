@@ -6,7 +6,9 @@
 
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_sender_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -36,6 +38,9 @@ using password_manager::FetchFamilyMembersRequestStatus;
                                           PasswordSharingMediatorDelegate> {
   // The credentials for the password group from which the sharing originated.
   std::vector<password_manager::CredentialUIEntry> _credentials;
+
+  // Service providing a view on user's saved passwords.
+  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
 }
 
 // The navigation controller displaying the view controller.
@@ -70,10 +75,13 @@ using password_manager::FetchFamilyMembersRequestStatus;
                        browser:(Browser*)browser
                    credentials:
                        (const std::vector<password_manager::CredentialUIEntry>&)
-                           credentials {
+                           credentials
+       savedPasswordsPresenter:
+           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _credentials = credentials;
+    _savedPasswordsPresenter = savedPasswordsPresenter;
   }
   return self;
 }
@@ -102,10 +110,13 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.mediator = [[PasswordSharingMediator alloc]
-            initWithDelegate:self
-      SharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()
-             identityManager:IdentityManagerFactory::GetForBrowserState(
-                                 browserState)];
+             initWithDelegate:self
+       sharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()
+              identityManager:IdentityManagerFactory::GetForBrowserState(
+                                  browserState)
+      savedPasswordsPresenter:_savedPasswordsPresenter
+        passwordSenderService:IOSChromePasswordSenderServiceFactory::
+                                  GetForBrowserState(browserState)];
 }
 
 - (void)stop {
@@ -130,6 +141,22 @@ using password_manager::FetchFamilyMembersRequestStatus;
     [self stopFamilyPickerCoordinator];
   }
 
+  [self.delegate passwordSharingCoordinatorDidRemove:self];
+}
+
+- (void)familyPickerCoordinatorWasDismissed:
+            (FamilyPickerCoordinator*)coordinator
+                     withSelectedRecipients:
+                         (NSArray<RecipientInfoForIOSDisplay*>*)recipients {
+  if (self.familyPickerCoordinator == coordinator) {
+    [self stopFamilyPickerCoordinator];
+  }
+
+  // TODO(crbug.com/1463882): Implement status view that should be displayed
+  // before passwords start being sent.
+  // TODO(crbug.com/1463882): Handle sending selected credentials for the case
+  // with more than 1 password group.
+  [self.mediator sendPasswords:_credentials toRecipients:recipients];
   [self.delegate passwordSharingCoordinatorDidRemove:self];
 }
 

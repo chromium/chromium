@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
+#import "components/password_manager/core/browser/sharing/recipient_info.h"
 
 @implementation RecipientInfoForIOSDisplay
 
@@ -16,6 +16,8 @@
     _fullName = base::SysUTF8ToNSString(recipient.user_name);
     _email = base::SysUTF8ToNSString(recipient.email);
     _isEligible = !recipient.public_key.key.empty();
+    _userID = base::SysUTF8ToNSString(recipient.user_id);
+    _publicKey = recipient.public_key;
   }
   return self;
 }

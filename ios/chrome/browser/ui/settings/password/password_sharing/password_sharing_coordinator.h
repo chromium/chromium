@@ -10,6 +10,7 @@
 
 namespace password_manager {
 struct CredentialUIEntry;
+class SavedPasswordsPresenter;
 }  // namespace password_manager
 
 @protocol PasswordSharingCoordinatorDelegate;
@@ -25,7 +26,10 @@ struct CredentialUIEntry;
                        browser:(Browser*)browser
                    credentials:
                        (const std::vector<password_manager::CredentialUIEntry>&)
-                           credentials NS_DESIGNATED_INITIALIZER;
+                           credentials
+       savedPasswordsPresenter:
+           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

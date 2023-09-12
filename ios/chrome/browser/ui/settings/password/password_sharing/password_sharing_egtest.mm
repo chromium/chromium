@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -103,6 +104,8 @@ void SignInAndEnableSync() {
   } else {
     config.features_enabled.push_back(
         password_manager::features::kSendPasswords);
+    config.features_enabled.push_back(
+        password_manager::features::kPasswordManagerEnableSenderService);
   }
 
   return config;
@@ -224,6 +227,38 @@ void SignInAndEnableSync() {
                      IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_ERROR_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+      performAction:grey_tap()];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsTableViewId)]
+      assertWithMatcher:grey_notNil()];
+}
+
+- (void)testPasswordSharingSuccess {
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  // Make sure share button is disabled before selecting recipient.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerShareButtonId)]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user1@gmail.com")]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerShareButtonId)]
+      assertWithMatcher:grey_enabled()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerShareButtonId)]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.

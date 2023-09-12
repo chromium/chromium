@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 namespace password_manager {
+struct PublicKey;
 struct RecipientInfo;
 }  // namespace password_manager
 
@@ -23,6 +24,12 @@ struct RecipientInfo;
 
 // Whether the recipient is eligible to receive a shared password.
 @property(nonatomic, assign) BOOL isEligible;
+
+// Recipient's identifier (obfuscated Gaia ID).
+@property(nonatomic, readonly) NSString* userID;
+
+// Public key of the user including its version.
+@property(nonatomic, readonly) password_manager::PublicKey publicKey;
 
 - (instancetype)initWithRecipientInfo:
     (const password_manager::RecipientInfo&)recipient NS_DESIGNATED_INITIALIZER;

@@ -355,7 +355,8 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   self.passwordSharingCoordinator = [[PasswordSharingCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                     credentials:self.mediator.credentials];
+                     credentials:self.mediator.credentials
+         savedPasswordsPresenter:self.mediator.savedPasswordsPresenter];
   self.passwordSharingCoordinator.delegate = self;
   [self.passwordSharingCoordinator start];
 }

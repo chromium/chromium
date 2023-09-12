@@ -309,6 +309,10 @@ bool ShouldDisplayCredentialAsMuted(
   _manager->MuteCredential(*it);
 }
 
+- (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter {
+  return _manager->GetSavedPasswordsPresenter();
+}
+
 #pragma mark - PasswordDetailsTableViewControllerDelegate
 
 - (void)passwordDetailsViewController:

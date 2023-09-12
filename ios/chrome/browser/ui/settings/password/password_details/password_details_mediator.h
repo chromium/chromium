@@ -14,6 +14,7 @@
 
 namespace password_manager {
 struct CredentialUIEntry;
+class SavedPasswordsPresenter;
 }  // namespace password_manager
 
 namespace syncer {
@@ -69,6 +70,9 @@ class IOSChromePasswordCheckManager;
 
 // Dismisses the compromised credential warning.
 - (void)didConfirmWarningDismissalForPassword:(PasswordDetails*)password;
+
+// Getter for SavedPasswordsPresenter owned by the password check manager.
+- (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter;
 
 @end
 

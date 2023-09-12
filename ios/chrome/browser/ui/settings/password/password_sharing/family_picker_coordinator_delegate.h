@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_FAMILY_PICKER_COORDINATOR_DELEGATE_H_
 
 @class FamilyPickerCoordinator;
+@class RecipientInfoForIOSDisplay;
 
 // Delegate for FamilyPickerCoordinator.
 @protocol FamilyPickerCoordinatorDelegate
@@ -13,6 +14,12 @@
 // Called when the user cancels or dismisses the family recipient selection.
 - (void)familyPickerCoordinatorWasDismissed:
     (FamilyPickerCoordinator*)coordinator;
+
+// Called when the user confirms the selection by clicking the share button.
+- (void)familyPickerCoordinatorWasDismissed:
+            (FamilyPickerCoordinator*)coordinator
+                     withSelectedRecipients:
+                         (NSArray<RecipientInfoForIOSDisplay*>*)recipients;
 
 @end
 

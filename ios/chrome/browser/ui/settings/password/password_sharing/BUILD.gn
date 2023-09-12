@@ -32,6 +32,7 @@ source_set("password_sharing") {
     "//components/version_info:channel",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/passwords:sharing_factory",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -97,6 +98,7 @@ source_set("eg2_tests") {
   sources = [ "password_sharing_egtest.mm" ]
   deps = [
     ":password_sharing_constants",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/signin:fake_system_identity",

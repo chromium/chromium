@@ -4,7 +4,9 @@
 
 #include "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 
+#include "base/base64.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace password_manager {
 
@@ -16,7 +18,22 @@ FakeRecipientsFetcher::~FakeRecipientsFetcher() = default;
 
 void FakeRecipientsFetcher::FetchFamilyMembers(
     FetchFamilyMembersCallback callback) {
-  std::move(callback).Run({}, status_);
+  std::vector<RecipientInfo> recipients;
+  // Add test family members when the status is successful.
+  if (status_ == FetchFamilyMembersRequestStatus::kSuccess) {
+    for (int i = 0; i < 5; i++) {
+      RecipientInfo recipient;
+      const std::string num_str = base::NumberToString(i);
+      recipient.user_id = num_str;
+      recipient.user_name = "user" + num_str;
+      recipient.email = "user" + num_str + "@gmail.com";
+      base::Base64Encode("123456789" + num_str, &recipient.public_key.key);
+      recipient.public_key.key_version = 0;
+      recipients.push_back(recipient);
+    }
+  }
+
+  std::move(callback).Run(recipients, status_);
 }
 
 }  // namespace password_manager

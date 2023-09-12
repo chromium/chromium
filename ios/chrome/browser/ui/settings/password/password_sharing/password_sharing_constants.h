@@ -10,6 +10,9 @@
 // The accessibility identifier of the family picker cancel button.
 extern NSString* const kFamilyPickerCancelButtonId;
 
+// The accessibility identifier of the family picker share button.
+extern NSString* const kFamilyPickerShareButtonId;
+
 // The accessibility identifier of the password picker cancel button.
 extern NSString* const kPasswordPickerCancelButtonId;
 

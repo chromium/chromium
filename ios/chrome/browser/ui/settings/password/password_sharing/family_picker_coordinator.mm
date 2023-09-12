@@ -83,4 +83,10 @@
   [self.delegate familyPickerCoordinatorWasDismissed:self];
 }
 
+- (void)familyPickerClosed:(FamilyPickerViewController*)controller
+    withSelectedRecipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients {
+  [self.delegate familyPickerCoordinatorWasDismissed:self
+                              withSelectedRecipients:recipients];
+}
+
 @end

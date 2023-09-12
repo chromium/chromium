@@ -6,6 +6,8 @@
 
 NSString* const kFamilyPickerCancelButtonId = @"FamilyPickerCancelButtonId";
 
+NSString* const kFamilyPickerShareButtonId = @"FamilyPickerShareButtonId";
+
 NSString* const kPasswordPickerCancelButtonId = @"PasswordPickerCancelButtonId";
 
 const char kFamilyGroupSiteURL[] = "https://families.google.com/families/";
