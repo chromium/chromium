@@ -7,6 +7,7 @@ import {AuthFactor, AuthFactorConfig, FactorObserverReceiver} from 'chrome://res
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_settings.html.js';
+import {SettingsSetLocalPasswordDialogElement} from './set_local_password_dialog.js';
 
 enum PasswordType {
   LOCAL = 'local',
@@ -146,6 +147,16 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     // updatePasswordState_ being called, which then sets
     // `selectedPasswordType_`.
     this.selectedPasswordType_ = this.passwordType_();
+  }
+
+  private setLocalPasswordDialog(): SettingsSetLocalPasswordDialogElement {
+    const el = this.shadowRoot!.getElementById('setLocalPasswordDialog');
+    assert(el instanceof SettingsSetLocalPasswordDialogElement);
+    return el;
+  }
+
+  private openSetLocalPasswordDialog_() {
+    this.setLocalPasswordDialog().showModal();
   }
 }
 

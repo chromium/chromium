@@ -5432,6 +5432,14 @@ Press an assigned switch or key to remove assignment.
     Confirm your PIN
   </message>
 
+  <!-- Set local password dialog -->
+  <message name="IDS_OS_SETTINGS_PEOPLE_SET_LOCAL_PASSWORD_DIALOG_TITLE" desc="Title of the dialog that lets the user change their local password.">
+    Set device password
+  </message>
+  <message name="IDS_OS_SETTINGS_PEOPLE_SET_LOCAL_PASSWORD_DIALOG_INTERNAL_ERROR" desc="Error message when setting a local password doesn't work for undetermined reasons.">
+    Internal error
+  </message>
+
   <!-- Setup fingerprint dialog (OS settings) -->
   <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_TITLE" desc="Title of the add fingerprint dialog popup.">
     Set up your fingerprint

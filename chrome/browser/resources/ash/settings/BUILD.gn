@@ -269,6 +269,7 @@ build_webui("build") {
     "os_people_page/pin_autosubmit_dialog.ts",
     "os_people_page/setup_fingerprint_dialog.ts",
     "os_people_page/setup_pin_dialog.ts",
+    "os_people_page/set_local_password_dialog.ts",
     "os_people_page/user_list.ts",
     "os_printing_page/cups_add_print_server_dialog.ts",
     "os_printing_page/cups_add_printer_dialog.ts",
