@@ -680,16 +680,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 #endif
 }
 
-// TODO(crbug.com/1454755): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
-  DISABLED_KeyboardDiagnosticEventOpensDiagnosticApp
-#else
-#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
-  KeyboardDiagnosticEventOpensDiagnosticApp
-#endif
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp) {
+                       KeyboardDiagnosticEventOpensDiagnosticApp) {
   OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
