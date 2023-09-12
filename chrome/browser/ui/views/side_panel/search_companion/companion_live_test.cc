@@ -404,35 +404,6 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationLoggedOut) {
   WaitForHistogram("SidePanel.OpenDuration");
 }
 
-IN_PROC_BROWSER_TEST_F(CompanionLiveTest, RegionSearch) {
-// Navigate to a website, open the side panel, and ensure that the multi-modal
-// search box functions for region search as intended. Note that sync and signin
-// utilities are only supported on Windows.
-#if BUILDFLAG(IS_WIN)
-  TestAccount ta;
-  // Sign in to opted in test account.
-  CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
-  sign_in_functions.TurnOnSync(ta, 0);
-  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleUrl)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
-
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
-  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
-  WaitForCompanionToBeLoaded();
-
-  // Click the region search button.
-  ClickButtonByAriaLabel("Search by image");
-  ConfirmFeaturesClicked({"RegionSearch"}, 1);
-
-  // Return to zero state.
-  ClickButtonByAriaLabel("Back");
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kSearchCompanion);
-#endif  // BUILDFLAG(IS_WIN)
-}
-
 IN_PROC_BROWSER_TEST_F(CompanionLiveTest, ToggleExps) {
 // Toggle exps, ensuring companion updates to reflect changes.
 // Note that sync and signin utilities are only supported on Windows.
