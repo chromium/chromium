@@ -71,8 +71,13 @@ ChromeTailoredSecurityService::ChromeTailoredSecurityService(Profile* profile)
   AddObserver(this);
   if (base::FeatureList::IsEnabled(
           safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    retry_timer_.Start(FROM_HERE, kRetryAttemptStartupDelay, this,
-                       &ChromeTailoredSecurityService::MaybeRetryForSyncUsers);
+    if (HistorySyncEnabledForUser() &&
+        !SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
+            prefs())) {
+      retry_timer_.Start(
+          FROM_HERE, kRetryAttemptStartupDelay, this,
+          &ChromeTailoredSecurityService::MaybeRetryForSyncUsers);
+    }
   }
 }
 

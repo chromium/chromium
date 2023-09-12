@@ -85,6 +85,7 @@ class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
   // overridden to make the method public for testing.
   void MaybeNotifySyncUser(bool is_enabled,
                            base::Time previous_update) override {
+    called_maybe_notify_sync_user_ = true;
     ChromeTailoredSecurityService::MaybeNotifySyncUser(is_enabled,
                                                        previous_update);
   }
@@ -98,6 +99,11 @@ class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
     return tailored_security_service_value_;
   }
 
+  bool MaybeNotifySyncUserWasCalled() { return called_maybe_notify_sync_user_; }
+  void ResetMaybeNotifySyncUserWasCalled() {
+    called_maybe_notify_sync_user_ = false;
+  }
+
   // Overridden to skip calling the remote server. It supplies the value that
   // was most recently set through `SetTailoredSecurityServiceValue`.
   void TailoredSecurityTimestampUpdateCallback() override {
@@ -109,6 +115,7 @@ class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
   int times_display_desktop_dialog_called_ = 0;
   // Represents the value that we want the remote service to provide.
   bool tailored_security_service_value_ = true;
+  bool called_maybe_notify_sync_user_ = false;
 };
 }  // namespace
 
@@ -127,24 +134,49 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         safe_browsing::kTailoredSecurityRetryForSyncUsers);
-    SetUpPrerequisites();
+    SetUpPrerequisites(/* history_sync_enabled= */ true,
+                       /* policy_controlled_sb_enabled= */ false);
   }
 
   // Sets up the member variables for testing. Classes that extend this class
   // will need to call `SetUpPrerequisites()` from their `SetUp()` method.
-  void SetUpPrerequisites() {
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("primary_account",
-                                                     GetTestingFactories());
+  void SetUpPrerequisites(bool history_sync_enabled,
+                          bool policy_controlled_sb_enabled) {
+    if (profile_manager_needs_setup_) {
+      ASSERT_TRUE(profile_manager_.SetUp());
+    }
+    profile_manager_needs_setup_ = false;
+    profiles_created_count_++;
+    profile_ = profile_manager_.CreateTestingProfile(
+        "primary_account" + base::NumberToString(profiles_created_count_),
+        GetTestingFactories());
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     GetIdentityTestEnv()->SetTestURLLoaderFactory(&test_url_loader_factory_);
-    // TODO(crbug.com/1466447): `ConsentLevel::kSync` is deprecated and
-    // should be removed. See `ConsentLevel::kSync` documentation for
-    // details.
+    // TODO(crbug.com/1466447): `ConsentLevel::kSync` is deprecated and should
+    // be removed. See `ConsentLevel::kSync` documentation for details.
     GetIdentityTestEnv()->MakePrimaryAccountAvailable(
         "test@foo.com", signin::ConsentLevel::kSync);
     prefs_ = profile_->GetTestingPrefService();
+    if (history_sync_enabled) {
+      sync_service()->GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false,
+          /*types=*/{syncer::UserSelectableType::kHistory});
+    } else {
+      sync_service()->GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false,
+          /*types=*/{});
+    }
+
+    if (policy_controlled_sb_enabled) {
+      prefs()->SetManagedPref(prefs::kSafeBrowsingEnabled,
+                              std::make_unique<base::Value>(true));
+      prefs()->SetManagedPref(prefs::kSafeBrowsingEnhanced,
+                              std::make_unique<base::Value>(false));
+    } else {
+      prefs()->RemoveManagedPref(prefs::kSafeBrowsingEnabled);
+      prefs()->RemoveManagedPref(prefs::kSafeBrowsingEnhanced);
+    }
 
     browser_window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
@@ -186,14 +218,10 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     chrome_tailored_security_service_.reset();
 
     if (profile_) {
-      content::StoragePartitionConfig default_storage_partition_config =
-          content::StoragePartitionConfig::CreateDefault(profile());
-      auto* partition = profile_->GetStoragePartition(
-          default_storage_partition_config, /*can_create=*/false);
+      auto* partition = profile_->GetDefaultStoragePartition();
       if (partition) {
         partition->WaitForDeletionTasksForTesting();
       }
-      DestroyProfile();
     }
   }
 
@@ -237,12 +265,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
-  void DestroyProfile() {
-    identity_test_env_adaptor_.reset();
-    profile_ = nullptr;
-    profile_manager_.DeleteTestingProfile("primary_account");
-  }
-
   void SetAccountTailoredSecurityTimestamp(base::Time time) {
     // Changing prefs::kAccountTailoredSecurityUpdateTimestamp triggers the
     // preference observer, so here we prevent the preference observer method
@@ -280,6 +302,8 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeTailoredSecurityService>
       chrome_tailored_security_service_;
+  bool profile_manager_needs_setup_ = true;
+  int profiles_created_count_ = 0;
 };
 
 class ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest
@@ -296,7 +320,8 @@ class ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest
   void SetUp() override {
     scoped_feature_list_.InitAndDisableFeature(
         safe_browsing::kTailoredSecurityRetryForSyncUsers);
-    SetUpPrerequisites();
+    SetUpPrerequisites(/* history_sync_enabled= */ false,
+                       /* policy_controlled_sb_enabled= */ false);
   }
 };
 
@@ -514,7 +539,11 @@ TEST_F(ChromeTailoredSecurityServiceTest,
             TailoredSecurityRetryState::NO_RETRY_NEEDED);
 }
 
-TEST_F(ChromeTailoredSecurityServiceTest, RunsRetryLogicAfterStartupDelay) {
+TEST_F(ChromeTailoredSecurityServiceTest,
+       HistorySyncAndSbNotControlledByPolicyRunsRetryLogicAfterStartupDelay) {
+  SetUpPrerequisites(/* history_sync_enabled= */ true,
+                     /* policy_controlled_sb_enabled= */ false);
+
   const GURL google_url("https://www.google.com");
   AddTab(google_url);
   // Setup the state so that a dialog will be displayed because that is what we
@@ -542,6 +571,51 @@ TEST_F(ChromeTailoredSecurityServiceTest, RunsRetryLogicAfterStartupDelay) {
   // logic ran because we don't have a direct way of checking this.
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 1);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest, HistorySyncNotSetDoesNotRetry) {
+  SetUpPrerequisites(/* history_sync_enabled= */ false,
+                     /* policy_controlled_sb_enabled= */ false);
+
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  // Setup the state so that a dialog will be displayed because that is what we
+  // will use to check if the startup task ran at the correct time.
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::RETRY_NEEDED);
+  prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                   base::Time::Now());
+
+  tailored_security_service()->ResetMaybeNotifySyncUserWasCalled();
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+  EXPECT_FALSE(tailored_security_service()->MaybeNotifySyncUserWasCalled());
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest, SbControlledByPolicyDoesNotRetry) {
+  SetUpPrerequisites(/* history_sync_enabled= */ true,
+                     /* policy_controlled_sb_enabled= */ true);
+
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  // Setup the state so that a dialog will be displayed because that is what we
+  // will use to check if the startup task ran at the correct time.
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::RETRY_NEEDED);
+  prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                   base::Time::Now());
+
+  tailored_security_service()->ResetMaybeNotifySyncUserWasCalled();
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+  EXPECT_FALSE(tailored_security_service()->MaybeNotifySyncUserWasCalled());
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
