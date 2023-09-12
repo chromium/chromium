@@ -350,31 +350,27 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_F(HandwritingTest, FilterHandwritingDlcsDefault) {
-  const base::flat_set<std::string> output =
-      FilterHandwritingDlcsWithContent(dlcservice::DlcsWithContent());
-
-  EXPECT_TRUE(output.empty());
+  EXPECT_THAT(FilterHandwritingDlcsWithContent(dlcservice::DlcsWithContent()),
+              IsEmpty());
 }
 
 TEST_F(HandwritingTest, FilterHandwritingDlcsNotHandwriting) {
-  const auto dlcs_with_content =
+  const dlcservice::DlcsWithContent dlcs_without_handwriting =
       CreateDlcsWithContent({"tts-en-us", "grammar-it"});
-  const base::flat_set<std::string> output =
-      FilterHandwritingDlcsWithContent(dlcs_with_content);
 
-  EXPECT_TRUE(output.empty());
+  EXPECT_THAT(FilterHandwritingDlcsWithContent(dlcs_without_handwriting),
+              IsEmpty());
 }
 
 TEST_F(HandwritingTest, FilterHandwritingDlcsVariousEntries) {
   // "handwriting-cy" refer to Welsh language, which is not a language that is
   // supported in Handwriting.
-  const auto dlcs_with_content =
+  const dlcservice::DlcsWithContent dlcs_with_some_handwriting =
       CreateDlcsWithContent({"handwriting-fr", "tts-en-us", "handwriting-it",
                              "grammar-it", "handwriting-cy"});
-  const base::flat_set<std::string> output =
-      FilterHandwritingDlcsWithContent(dlcs_with_content);
 
-  EXPECT_THAT(output, UnorderedElementsAre("handwriting-fr", "handwriting-it"));
+  EXPECT_THAT(FilterHandwritingDlcsWithContent(dlcs_with_some_handwriting),
+              UnorderedElementsAre("handwriting-fr", "handwriting-it"));
 }
 
 }  // namespace
