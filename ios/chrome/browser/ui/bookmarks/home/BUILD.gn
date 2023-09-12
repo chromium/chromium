@@ -60,7 +60,7 @@ source_set("home") {
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/sharing/activity_services",
     "//ios/chrome/browser/url_loading",
-    "//ios/chrome/browser/window_activities",
+    "//ios/chrome/browser/window_activities/model",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",

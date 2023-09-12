@@ -50,7 +50,7 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"

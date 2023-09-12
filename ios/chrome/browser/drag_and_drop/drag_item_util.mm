@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 
 #import "base/check_op.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"

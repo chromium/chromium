@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_target.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 
 @class AppState;
 @class SceneController;

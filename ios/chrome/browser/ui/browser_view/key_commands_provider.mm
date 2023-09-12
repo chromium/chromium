@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"

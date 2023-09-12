@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_WINDOW_ACTIVITY_HELPERS_H_
-#define IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_WINDOW_ACTIVITY_HELPERS_H_
+#ifndef IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_MODEL_WINDOW_ACTIVITY_HELPERS_H_
+#define IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_MODEL_WINDOW_ACTIVITY_HELPERS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -91,4 +91,4 @@ NSString* GetTabIDFromActivity(NSUserActivity* activity);
 // flag set.
 BOOL GetIncognitoFromTabMoveActivity(NSUserActivity* activity);
 
-#endif  // IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_WINDOW_ACTIVITY_HELPERS_H_
+#endif  // IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_MODEL_WINDOW_ACTIVITY_HELPERS_H_

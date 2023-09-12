@@ -64,7 +64,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/referrer.h"

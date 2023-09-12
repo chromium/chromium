@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 
 class Browser;
 class GURL;

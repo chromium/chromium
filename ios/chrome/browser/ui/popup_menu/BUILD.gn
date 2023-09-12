@@ -119,7 +119,7 @@ source_set("popup_menu") {
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web/font_size",
-    "//ios/chrome/browser/window_activities",
+    "//ios/chrome/browser/window_activities/model",
     "//ios/chrome/common/ui/colors",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser/lens:lens_api",

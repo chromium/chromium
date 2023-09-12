@@ -76,7 +76,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"

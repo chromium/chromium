@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 
 class GURL;
 @class URLInfo;

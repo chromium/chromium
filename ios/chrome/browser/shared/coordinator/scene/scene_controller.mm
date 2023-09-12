@@ -158,7 +158,7 @@
 #import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/window_activities/move_tab_activity_type_buildflags.h"
+#import "ios/chrome/browser/window_activities/model/move_tab_activity_type_buildflags.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/mac/url_conversions.h"
 
@@ -108,8 +108,9 @@ BOOL ActivityIsTabMove(NSUserActivity* activity) {
 }
 
 UrlLoadParams LoadParamsFromActivity(NSUserActivity* activity) {
-  if (!ActivityIsURLLoad(activity))
+  if (!ActivityIsURLLoad(activity)) {
     return UrlLoadParams();
+  }
 
   BOOL incognito =
       [activity.activityType isEqualToString:kLoadIncognitoURLActivityType];
@@ -139,13 +140,15 @@ WindowActivityOrigin OriginOfActivity(NSUserActivity* activity) {
 }
 
 NSString* GetTabIDFromActivity(NSUserActivity* activity) {
-  if (!ActivityIsTabMove(activity))
+  if (!ActivityIsTabMove(activity)) {
     return nil;
+  }
   return activity.userInfo[kTabIdentifierKey];
 }
 
 BOOL GetIncognitoFromTabMoveActivity(NSUserActivity* activity) {
-  if (!ActivityIsTabMove(activity))
+  if (!ActivityIsTabMove(activity)) {
     return NO;
+  }
   return [activity.userInfo[kTabIncognitoKey] boolValue];
 }

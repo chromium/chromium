@@ -96,7 +96,7 @@ source_set("history_ui") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/url_loading",
-    "//ios/chrome/browser/window_activities",
+    "//ios/chrome/browser/window_activities/model",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
