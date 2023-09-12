@@ -176,5 +176,96 @@ TEST_F(ShimlessRmaService3pDiagTest, Show3pDiagnosticsAppInstalled) {
   EXPECT_EQ(last_shown_app_name_, fake_prepare_result.name);
 }
 
+TEST_F(ShimlessRmaService3pDiagTest, NoInstallable3pDiagApp) {
+  base::test::TestFuture<const absl::optional<base::FilePath>&> future;
+  shimless_rma_provider_->GetInstallable3pDiagnosticsAppPath(
+      future.GetCallback());
+  EXPECT_EQ(future.Get(), absl::nullopt);
+}
+
+TEST_F(ShimlessRmaService3pDiagTest, FoundInstallable3pDiagAppAndInstallIt) {
+  ash::FakeRmadClient::Get()->external_diag_app_path() =
+      base::FilePath{"/fake/external/diag/app"};
+  auto fake_prepare_result = MakeFakePrepareDiagnosticsAppProfileResult();
+  fake_shimless_rma_delegate_->set_prepare_diagnostics_app_result(
+      base::ok(fake_prepare_result));
+
+  {
+    base::test::TestFuture<const absl::optional<base::FilePath>&> future;
+    shimless_rma_provider_->GetInstallable3pDiagnosticsAppPath(
+        future.GetCallback());
+    EXPECT_EQ(future.Get(), base::FilePath{"/fake/external/diag/app.swbn"});
+  }
+  {
+    base::test::TestFuture<mojom::Shimless3pDiagnosticsAppInfoPtr> future;
+    shimless_rma_provider_->InstallLastFound3pDiagnosticsApp(
+        future.GetCallback());
+    EXPECT_TRUE(future.Get());
+    EXPECT_EQ(future.Get()->name, fake_prepare_result.name);
+    EXPECT_EQ(future.Get()->permission_message,
+              fake_prepare_result.permission_message);
+    EXPECT_EQ(fake_shimless_rma_delegate_->last_load_crx_path(),
+              base::FilePath{"/fake/external/diag/app.crx"});
+    EXPECT_EQ(fake_shimless_rma_delegate_->last_load_swbn_path(),
+              base::FilePath{"/fake/external/diag/app.swbn"});
+  }
+  {
+    base::test::TestFuture<void> future;
+    shimless_rma_provider_->CompleteLast3pDiagnosticsInstallation(
+        /*is_approve=*/true, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(ash::FakeRmadClient::Get()->installed_diag_app_path(),
+              base::FilePath{"/fake/external/diag/app"});
+  }
+  // Try to show the app. It should have already been loaded so
+  // `PrepareDiagnosticsAppBrowserContext` should not be called.
+  fake_shimless_rma_delegate_->set_prepare_diagnostics_app_result(
+      base::unexpected(""));
+  {
+    base::test::TestFuture<mojom::Show3pDiagnosticsAppResult> future;
+    shimless_rma_provider_->Show3pDiagnosticsApp(future.GetCallback());
+    EXPECT_EQ(future.Get(), mojom::Show3pDiagnosticsAppResult::kOk);
+  }
+  EXPECT_EQ(last_shown_url_,
+            "isolated-app://" + fake_prepare_result.iwa_id.id());
+  EXPECT_EQ(last_shown_app_name_, fake_prepare_result.name);
+}
+
+TEST_F(ShimlessRmaService3pDiagTest,
+       FoundInstallable3pDiagAppAndInstallItButNotApprove) {
+  ash::FakeRmadClient::Get()->external_diag_app_path() =
+      base::FilePath{"/fake/external/diag/app"};
+  auto fake_prepare_result = MakeFakePrepareDiagnosticsAppProfileResult();
+  fake_shimless_rma_delegate_->set_prepare_diagnostics_app_result(
+      base::ok(fake_prepare_result));
+
+  {
+    base::test::TestFuture<const absl::optional<base::FilePath>&> future;
+    shimless_rma_provider_->GetInstallable3pDiagnosticsAppPath(
+        future.GetCallback());
+    EXPECT_EQ(future.Get(), base::FilePath{"/fake/external/diag/app.swbn"});
+  }
+  {
+    base::test::TestFuture<mojom::Shimless3pDiagnosticsAppInfoPtr> future;
+    shimless_rma_provider_->InstallLastFound3pDiagnosticsApp(
+        future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
+  {
+    base::test::TestFuture<void> future;
+    shimless_rma_provider_->CompleteLast3pDiagnosticsInstallation(
+        /*is_approve=*/false, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(ash::FakeRmadClient::Get()->installed_diag_app_path(),
+              base::FilePath{});
+  }
+  {
+    base::test::TestFuture<mojom::Show3pDiagnosticsAppResult> future;
+    shimless_rma_provider_->Show3pDiagnosticsApp(future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              mojom::Show3pDiagnosticsAppResult::kAppNotInstalled);
+  }
+}
+
 }  // namespace
 }  // namespace ash::shimless_rma

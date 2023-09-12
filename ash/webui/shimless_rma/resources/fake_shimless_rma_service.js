@@ -795,6 +795,23 @@ export class FakeShimlessRmaService {
   get3pDiagnosticsProvider() {}
 
   /**
+   * @return {!Promise<{appPath: !mojoBase.mojom.FilePath}>}
+   */
+  getInstallable3pDiagnosticsAppPath() {}
+
+  /**
+   * @return {!Promise<{appInfo:
+   *     !ash.shimlessRma.mojom.Shimless3pDiagnosticsAppInfo}>}
+   */
+  installLastFound3pDiagnosticsApp() {}
+
+  /**
+   * @param {boolean} isApproved
+   * @return {!Promise}
+   */
+  completeLast3pDiagnosticsInstallation(isApproved) {}
+
+  /**
    * @return {!Promise<{result:
    *     ash.shimlessRma.mojom.Show3pDiagnosticsAppResult}>}
    */

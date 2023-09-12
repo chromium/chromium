@@ -1510,6 +1510,101 @@ void ShimlessRmaService::OnGetSystemInfoFor3pDiag(
   std::move(callback).Run(absl::nullopt);
 }
 
+void ShimlessRmaService::GetInstallable3pDiagnosticsAppPath(
+    GetInstallable3pDiagnosticsAppPathCallback callback) {
+  RmadClient::Get()->ExtractExternalDiagnosticsApp(
+      base::BindOnce(&ShimlessRmaService::OnExtractExternalDiagnosticsApp,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ShimlessRmaService::OnExtractExternalDiagnosticsApp(
+    GetInstallable3pDiagnosticsAppPathCallback callback,
+    absl::optional<rmad::ExtractExternalDiagnosticsAppReply> response) {
+  if (!response || response->error() != rmad::RmadErrorCode::RMAD_ERROR_OK) {
+    LOG_IF(ERROR, !response)
+        << "Failed to call rmad::ExtractExternalDiagnosticsApp";
+    LOG_IF(ERROR,
+           response &&
+               response->error() !=
+                   rmad::RmadErrorCode::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND)
+        << "Unexpected result from rmad::ExtractExternalDiagnosticsApp: "
+        << response->error();
+    extracted_3p_diag_swbn_path_ = base::FilePath{};
+    extracted_3p_diag_crx_path_ = base::FilePath{};
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  extracted_3p_diag_swbn_path_ =
+      base::FilePath{response->diagnostics_app_swbn_path()};
+  extracted_3p_diag_crx_path_ =
+      base::FilePath{response->diagnostics_app_crx_path()};
+  std::move(callback).Run(
+      base::FilePath{response->diagnostics_app_swbn_path()});
+}
+
+void ShimlessRmaService::InstallLastFound3pDiagnosticsApp(
+    InstallLastFound3pDiagnosticsAppCallback callback) {
+  if (extracted_3p_diag_swbn_path_.empty() ||
+      extracted_3p_diag_swbn_path_.empty()) {
+    LOG(ERROR) << "Should call GetInstallable3pDiagnosticsAppPath first";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  shimless_rma_delegate_->PrepareDiagnosticsAppBrowserContext(
+      extracted_3p_diag_crx_path_, extracted_3p_diag_swbn_path_,
+      base::BindOnce(&ShimlessRmaService::On3pDiagnosticsAppLoadForInstallation,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ShimlessRmaService::On3pDiagnosticsAppLoadForInstallation(
+    InstallLastFound3pDiagnosticsAppCallback callback,
+    base::expected<
+        ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult,
+        std::string> result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Failed to load 3p diag app: " << result.error();
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  shimless_app_browser_context_ = result.value().context;
+  shimless_3p_diag_iwa_id_ = result.value().iwa_id;
+  shimless_3p_diag_app_name_ = result.value().name;
+
+  auto app_info = ash::shimless_rma::mojom::Shimless3pDiagnosticsAppInfo::New();
+  app_info->name = result.value().name;
+  app_info->permission_message = result.value().permission_message;
+  std::move(callback).Run(std::move(app_info));
+}
+
+void ShimlessRmaService::CompleteLast3pDiagnosticsInstallation(
+    bool is_approved,
+    CompleteLast3pDiagnosticsInstallationCallback callback) {
+  if (!is_approved) {
+    // Clean the cached app so it will be reloaded next time calling
+    // `Show3pDiagnosticsApp`.
+    shimless_app_browser_context_ = nullptr;
+    shimless_3p_diag_iwa_id_ = absl::nullopt;
+    shimless_3p_diag_app_name_ = "";
+    std::move(callback).Run();
+    return;
+  }
+
+  RmadClient::Get()->InstallExtractedDiagnosticsApp(base::BindOnce(
+      [](CompleteLast3pDiagnosticsInstallationCallback callback,
+         absl::optional<rmad::InstallExtractedDiagnosticsAppReply> response) {
+        LOG_IF(ERROR, !response)
+            << "Failed to call rmad::InstallExtractedDiagnosticsApp";
+        LOG_IF(ERROR, response->error() != rmad::RmadErrorCode::RMAD_ERROR_OK)
+            << "rmad::InstallExtractedDiagnosticsApp returned "
+            << response->error();
+        std::move(callback).Run();
+      },
+      std::move(callback)));
+}
+
 void ShimlessRmaService::Show3pDiagnosticsApp(
     Show3pDiagnosticsAppCallback callback) {
   if (!shimless_app_browser_context_) {

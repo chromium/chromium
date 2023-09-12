@@ -132,6 +132,13 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void ShutDownAfterHardwareError() override;
   void Get3pDiagnosticsProvider(
       Get3pDiagnosticsProviderCallback callback) override;
+  void GetInstallable3pDiagnosticsAppPath(
+      GetInstallable3pDiagnosticsAppPathCallback callback) override;
+  void InstallLastFound3pDiagnosticsApp(
+      InstallLastFound3pDiagnosticsAppCallback callback) override;
+  void CompleteLast3pDiagnosticsInstallation(
+      bool is_approved,
+      CompleteLast3pDiagnosticsInstallationCallback callback) override;
   void Show3pDiagnosticsApp(Show3pDiagnosticsAppCallback callback) override;
   void ObserveError(
       ::mojo::PendingRemote<mojom::ErrorObserver> observer) override;
@@ -277,6 +284,11 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       Get3pDiagnosticsProviderCallback callback,
       ash::cros_healthd::mojom::TelemetryInfoPtr telemetry_info);
 
+  // Handles the response from rmad when the 3p diag app is extracted.
+  void OnExtractExternalDiagnosticsApp(
+      GetInstallable3pDiagnosticsAppPathCallback callback,
+      absl::optional<rmad::ExtractExternalDiagnosticsAppReply> response);
+
   // Handles the response from rmad for getting the installed 3p diag app.
   void GetInstalledDiagnosticsApp(
       Show3pDiagnosticsAppCallback callback,
@@ -285,6 +297,14 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // Handles the response when the 3p diag app is loaded for show.
   void On3pDiagnosticsAppLoadForShow(
       Show3pDiagnosticsAppCallback callback,
+      base::expected<
+          ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult,
+          std::string> result);
+
+  // Handles the response when a new 3p diag app is loaded for a pending
+  // installation.
+  void On3pDiagnosticsAppLoadForInstallation(
+      InstallLastFound3pDiagnosticsAppCallback callback,
       base::expected<
           ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult,
           std::string> result);
@@ -359,6 +379,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // request fails.
   bool critical_error_occurred_ = false;
 
+  // Paths of the last extracted 3p diag app files.
+  base::FilePath extracted_3p_diag_swbn_path_;
+  base::FilePath extracted_3p_diag_crx_path_;
   // The browser context for showing the 3p diagnostics app.
   raw_ptr<content::BrowserContext> shimless_app_browser_context_ = nullptr;
   // The 3p diagnostics app info.
