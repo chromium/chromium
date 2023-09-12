@@ -68,6 +68,8 @@ source_set("wayland") {
     "wl_shm.h",
     "wl_subcompositor.cc",
     "wl_subcompositor.h",
+    "wp_fractional_scale.cc",
+    "wp_fractional_scale.h",
     "wp_presentation.cc",
     "wp_presentation.h",
     "wp_single_pixel_buffer.cc",
@@ -165,6 +167,7 @@ source_set("wayland") {
     "//third_party/wayland-protocols:content_type_protocol",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
     "//third_party/wayland-protocols:extended_drag",
+    "//third_party/wayland-protocols:fractional_scale_protocol",
     "//third_party/wayland-protocols:gaming_input_protocol",
     "//third_party/wayland-protocols:idle_inhibit_protocol",
     "//third_party/wayland-protocols:input_timestamps_protocol",
@@ -369,6 +372,7 @@ source_set("client_support") {
     "//third_party/wayland-protocols:content_type_protocol",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
     "//third_party/wayland-protocols:extended_drag",
+    "//third_party/wayland-protocols:fractional_scale_protocol",
     "//third_party/wayland-protocols:fullscreen_shell_protocol",
     "//third_party/wayland-protocols:gaming_input_protocol",
     "//third_party/wayland-protocols:idle_inhibit_protocol",
@@ -590,6 +594,19 @@ executable("wayland_info_client") {
     "//base",
     "//third_party/wayland:wayland_client",
     "//ui/gfx/geometry",
+  ]
+}
+
+executable("wayland_fractional_scale_client") {
+  sources = [ "clients/fractional_scale.cc" ]
+
+  deps = [
+    ":client_support",
+    "//base",
+    "//skia",
+    "//third_party/wayland:wayland_client",
+    "//third_party/wayland-protocols:fractional_scale_protocol",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 }
 

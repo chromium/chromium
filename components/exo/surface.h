@@ -398,6 +398,8 @@ class Surface final : public ui::PropertyHandler {
   // Set occlusion tracking region for surface.
   void SetOcclusionTracking(bool tracking);
 
+  void OnScaleFactorChanged(float old_scale_factor, float new_scale_factor);
+
   // Triggers sending an occlusion update to observers.
   void OnWindowOcclusionChanged(
       aura::Window::OcclusionState old_occlusion_state,

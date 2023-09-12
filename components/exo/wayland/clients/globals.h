@@ -74,6 +74,7 @@ struct Globals {
   Object<surface_augmenter> surface_augmenter;
   Object<wp_single_pixel_buffer_manager_v1> wp_single_pixel_buffer_manager_v1;
   Object<wp_viewporter> wp_viewporter;
+  Object<wp_fractional_scale_manager_v1> wp_fractional_scale_manager_v1;
 
   base::flat_map<std::string, uint32_t> requested_versions;
 };

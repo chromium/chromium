@@ -23,6 +23,10 @@ class SurfaceObserver {
   // chance to remove themselves.
   virtual void OnSurfaceDestroying(Surface* surface) = 0;
 
+  virtual void OnScaleFactorChanged(Surface* surface,
+                                    float old_scale_factor,
+                                    float new_scale_factor) {}
+
   // Called when the occlusion of the aura window corresponding to |surface|
   // changes.
   virtual void OnWindowOcclusionChanged(Surface* surface) {}

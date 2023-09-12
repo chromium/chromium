@@ -226,7 +226,10 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   void OnCaptureLost() override {}
   void OnPaint(const ui::PaintContext& context) override {}
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override {}
+                                  float new_device_scale_factor) override {
+    surface_->OnScaleFactorChanged(old_device_scale_factor,
+                                   new_device_scale_factor);
+  }
   void OnWindowDestroying(aura::Window* window) override {}
   void OnWindowDestroyed(aura::Window* window) override { delete this; }
   void OnWindowTargetVisibilityChanged(bool visible) override {}
@@ -1833,6 +1836,13 @@ void Surface::UpdateContentSize() {
 void Surface::SetFrameLocked(bool lock) {
   for (SurfaceObserver& observer : observers_)
     observer.OnFrameLockingChanged(this, lock);
+}
+
+void Surface::OnScaleFactorChanged(float old_scale_factor,
+                                   float new_scale_factor) {
+  for (SurfaceObserver& observer : observers_) {
+    observer.OnScaleFactorChanged(this, old_scale_factor, new_scale_factor);
+  }
 }
 
 void Surface::OnWindowOcclusionChanged(

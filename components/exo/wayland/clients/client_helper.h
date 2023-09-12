@@ -11,6 +11,7 @@
 #include <content-type-v1-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
+#include <fractional-scale-v1-client-protocol.h>
 #include <fullscreen-shell-unstable-v1-client-protocol.h>
 #include <gaming-input-unstable-v2-client-protocol.h>
 #include <idle-inhibit-unstable-v1-client-protocol.h>
@@ -108,6 +109,7 @@ DEFAULT_DELETER_FDECL(zcr_vsync_timing_v1)
 DEFAULT_DELETER_FDECL(wl_data_device_manager)
 DEFAULT_DELETER_FDECL(wp_content_type_manager_v1)
 DEFAULT_DELETER_FDECL(wp_content_type_v1)
+DEFAULT_DELETER_FDECL(wp_fractional_scale_manager_v1)
 DEFAULT_DELETER_FDECL(wp_viewporter)
 DEFAULT_DELETER_FDECL(xdg_wm_base)
 DEFAULT_DELETER_FDECL(zwp_text_input_manager_v1)

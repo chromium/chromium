@@ -77,6 +77,8 @@ struct Globals {
   std::unique_ptr<zcr_vsync_feedback_v1> zcr_vsync_feedback_v1;
   std::unique_ptr<wl_data_device_manager> wl_data_device_manager;
   std::unique_ptr<wp_content_type_manager_v1> wp_content_type_manager_v1;
+  std::unique_ptr<wp_fractional_scale_manager_v1>
+      wp_fractional_scale_manager_v1;
   std::unique_ptr<wp_viewporter> wp_viewporter;
   std::unique_ptr<xdg_wm_base> xdg_wm_base;
   std::unique_ptr<zwp_text_input_manager_v1> zwp_text_input_manager_v1;
@@ -173,6 +175,8 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(wl_data_device_manager, wl_data_device_manager),
           REGISTRY_CALLBACK(wp_content_type_manager_v1,
                             wp_content_type_manager_v1),
+          REGISTRY_CALLBACK(wp_fractional_scale_manager_v1,
+                            wp_fractional_scale_manager_v1),
           REGISTRY_CALLBACK(wp_single_pixel_buffer_manager_v1,
                             wp_single_pixel_buffer_manager_v1),
           REGISTRY_CALLBACK(wp_viewporter, wp_viewporter),

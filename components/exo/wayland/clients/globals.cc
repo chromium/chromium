@@ -72,6 +72,7 @@ void RegistryHandler(void* data,
   BIND(surface_augmenter, surface_augmenter)
   BIND(wp_single_pixel_buffer_manager_v1, wp_single_pixel_buffer_manager_v1)
   BIND(wp_viewporter, wp_viewporter)
+  BIND(wp_fractional_scale_manager_v1, wp_fractional_scale_manager_v1)
 
 #undef BIND
 #undef BIND_VECTOR

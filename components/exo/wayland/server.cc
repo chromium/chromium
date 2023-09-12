@@ -10,6 +10,7 @@
 #include <content-type-v1-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
 #include <extended-drag-unstable-v1-server-protocol.h>
+#include <fractional-scale-v1-server-protocol.h>
 #include <gaming-input-unstable-v2-server-protocol.h>
 #include <grp.h>
 #include <idle-inhibit-unstable-v1-server-protocol.h>
@@ -75,6 +76,7 @@
 #include "components/exo/wayland/wl_shell.h"
 #include "components/exo/wayland/wl_shm.h"
 #include "components/exo/wayland/wl_subcompositor.h"
+#include "components/exo/wayland/wp_fractional_scale.h"
 #include "components/exo/wayland/wp_presentation.h"
 #include "components/exo/wayland/wp_single_pixel_buffer.h"
 #include "components/exo/wayland/wp_viewporter.h"
@@ -319,6 +321,9 @@ void Server::Initialize() {
       kSinglePixelBufferVersion, display_, bind_single_pixel_buffer);
   wl_global_create(wl_display_.get(), &overlay_prioritizer_interface, 1,
                    display_, bind_overlay_prioritizer);
+  wl_global_create(wl_display_.get(), &wp_fractional_scale_manager_v1_interface,
+                   kFractionalScaleVersion, display_,
+                   bind_fractional_scale_manager);
   wl_global_create(wl_display_.get(), &wp_viewporter_interface, 1, display_,
                    bind_viewporter);
   wl_global_create(wl_display_.get(), &wp_presentation_interface, 1, display_,
