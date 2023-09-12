@@ -332,6 +332,7 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] 
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-octopus passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
+crbug.com/1481267 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_NV_shader_noperspective_interpolation [ Skip ]
 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
