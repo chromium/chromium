@@ -65,6 +65,8 @@ public class ImprovedBookmarkRowViewBinder {
             row.setEndImageRes(model.get(ImprovedBookmarkRowProperties.END_IMAGE_RES));
         } else if (key == ImprovedBookmarkRowProperties.FOLDER_COORDINATOR) {
             row.setFolderCoordinator(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
+        } else if (key == ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION) {
+            row.setContentDescription(model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
         }
     }
 }

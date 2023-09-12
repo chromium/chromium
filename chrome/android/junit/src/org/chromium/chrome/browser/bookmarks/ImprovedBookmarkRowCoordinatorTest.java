@@ -142,6 +142,10 @@ public class ImprovedBookmarkRowCoordinatorTest {
         PropertyModel model = mCoordinator.createBasePropertyModel(mFolderId);
 
         assertEquals("User folder", model.get(ImprovedBookmarkRowProperties.TITLE));
+        assertNull(model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(String.format("%s %s", model.get(ImprovedBookmarkRowProperties.TITLE),
+                             "No bookmarks"),
+                model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
         assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertFalse(model.get(ImprovedBookmarkRowProperties.SELECTED));
         assertFalse(model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
@@ -163,6 +167,8 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertEquals("User folder (0)", model.get(ImprovedBookmarkRowProperties.TITLE));
         assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
+        assertEquals("User folder No bookmarks",
+                model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
     }
 
     @Test
@@ -176,6 +182,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
                 "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
         assertEquals(mDrawable, model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
+        assertNull(model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
     }
 
     @Test

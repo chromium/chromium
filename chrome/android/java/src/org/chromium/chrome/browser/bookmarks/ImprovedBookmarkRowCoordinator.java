@@ -61,11 +61,15 @@ public class ImprovedBookmarkRowCoordinator {
             propertyModel.set(ImprovedBookmarkRowProperties.TITLE, bookmarkItem.getTitle());
         }
 
-        // Description
-        propertyModel.set(
-                ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, !bookmarkItem.isFolder());
-        // Only bookmarks have descriptions.
-        if (!bookmarkItem.isFolder()) {
+        // Description and content description.
+        boolean isFolder = bookmarkItem.isFolder();
+        propertyModel.set(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, !isFolder);
+        if (isFolder) {
+            propertyModel.set(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION,
+                    String.format("%s %s", bookmarkItem.getTitle(),
+                            BookmarkUtils.getFolderDescriptionText(
+                                    bookmarkId, mBookmarkModel, mContext.getResources())));
+        } else {
             propertyModel.set(
                     ImprovedBookmarkRowProperties.DESCRIPTION, bookmarkItem.getUrlForDisplay());
         }
