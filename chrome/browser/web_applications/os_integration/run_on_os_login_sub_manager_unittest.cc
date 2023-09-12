@@ -511,6 +511,78 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, UnregisterRunOnOsLogin) {
   }
 }
 
+TEST_P(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  const AppId& app_id = InstallWebApp();
+  const std::string& app_name = registrar().GetAppShortName(app_id);
+
+  base::test::TestFuture<void> future;
+  provider().scheduler().SetRunOnOsLoginMode(
+      app_id, RunOnOsLoginMode::kWindowed, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  if (IsRunOnOsLoginExecuteEnabled()) {
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+        profile(), app_id, app_name));
+  }
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+  if (IsRunOnOsLoginExecuteEnabled()) {
+    ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+        profile(), app_id, app_name));
+  }
+}
+
+TEST_P(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  const AppId& app_id = InstallWebApp();
+  const std::string& app_name = registrar().GetAppShortName(app_id);
+
+  base::test::TestFuture<void> future;
+  provider().scheduler().SetRunOnOsLoginMode(
+      app_id, RunOnOsLoginMode::kWindowed, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  if (IsRunOnOsLoginExecuteEnabled()) {
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+        profile(), app_id, app_name));
+  }
+
+  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
+      scoped_supress = absl::nullopt;
+  scoped_supress.emplace();
+  test::UninstallAllWebApps(profile());
+  // Run on OS Login should still be registered with the OS.
+  if (IsRunOnOsLoginExecuteEnabled()) {
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+        profile(), app_id, app_name));
+  }
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+  if (IsRunOnOsLoginExecuteEnabled()) {
+    ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+        profile(), app_id, app_name));
+  }
+  scoped_supress.reset();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     RunOnOsLoginSubManagerExecuteTest,

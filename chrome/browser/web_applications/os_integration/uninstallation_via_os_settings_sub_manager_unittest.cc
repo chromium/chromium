@@ -224,10 +224,11 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest,
         << "Error parsing os integration: " << install_result.error();
     EXPECT_TRUE(install_result.value());
 
-    // Verify that uninstallation unregistration is bypassed but the app is
+    // Verify that OS integration is bypassed but the app is
     // uninstalled, leading to left over OS states.
-    auto bypass_uninstallation_unregistration = base::AutoReset<bool>(
-        &g_skip_execute_os_settings_sub_manager_for_testing, true);
+    absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
+        scoped_supress = absl::nullopt;
+    scoped_supress.emplace();
     test::UninstallAllWebApps(profile());
     base::expected<bool, std::string> output_result =
         test_override().IsUninstallRegisteredWithOs(app_id, "Test App",
@@ -240,10 +241,7 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest,
     // set to true.
     SynchronizeOsOptions options;
     options.force_unregister_on_app_missing = true;
-    base::test::TestFuture<void> synchronization_complete;
-    provider().scheduler().SynchronizeOsIntegration(
-        app_id, synchronization_complete.GetCallback(), options);
-    EXPECT_TRUE(synchronization_complete.Wait());
+    test::SynchronizeOsIntegration(profile(), app_id, options);
 
     // OS Uninstallation entries should no longer exist in the registry.
     base::expected<bool, std::string> final_result =
@@ -252,6 +250,7 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest,
     ASSERT_TRUE(final_result.has_value())
         << "Error parsing os integration: " << final_result.error();
     EXPECT_FALSE(final_result.value());
+    scoped_supress.reset();
 #endif
   }
 }

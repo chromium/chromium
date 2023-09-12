@@ -146,10 +146,13 @@ void ProtocolHandlingSubManager::Execute(
       base::IgnoreArgs<Result>(std::move(register_and_complete)));
 }
 
-// TODO(b/279068663): Implement if needed.
 void ProtocolHandlingSubManager::ForceUnregister(const AppId& app_id,
                                                  base::OnceClosure callback) {
-  std::move(callback).Run();
+  UnregisterProtocolHandlersWithOs(
+      app_id, profile_path_,
+      base::BindOnce(&RecordProtocolHandlingResult,
+                     "WebApp.ProtocolHandlers.Unregistration.Result")
+          .Then(std::move(callback)));
 }
 
 }  // namespace web_app

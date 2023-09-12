@@ -125,11 +125,20 @@ void ShortcutMenuHandlingSubManager::Execute(
           std::move(execute_complete)));
 }
 
-// TODO(b/279068663): Implement if needed.
 void ShortcutMenuHandlingSubManager::ForceUnregister(
     const AppId& app_id,
     base::OnceClosure callback) {
-  std::move(callback).Run();
+  if (!ShouldRegisterShortcutsMenuWithOs()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  web_app::UnregisterShortcutsMenuWithOs(
+      app_id, profile_path_, base::BindOnce([](Result result) {
+                               base::UmaHistogramBoolean(
+                                   "WebApp.ShortcutsMenuUnregistered.Result",
+                                   (result == Result::kOk));
+                             }).Then(std::move(callback)));
 }
 
 void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(

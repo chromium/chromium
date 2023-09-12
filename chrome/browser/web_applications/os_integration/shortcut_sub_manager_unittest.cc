@@ -302,14 +302,6 @@ class ShortcutSubManagerExecuteTest
     return result.Get<AppId>();
   }
 
-  void SynchronizeWithOptions(const AppId& app_id,
-                              SynchronizeOsOptions options) {
-    base::test::TestFuture<void> sync_future;
-    provider().scheduler().SynchronizeOsIntegration(
-        app_id, sync_future.GetCallback(), options);
-    EXPECT_TRUE(sync_future.Wait());
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -413,7 +405,7 @@ TEST_P(ShortcutSubManagerExecuteTest,
 
   // Call synchronize with empty options to set up the current_states, but
   // without any shortcut locations defined.
-  SynchronizeWithOptions(app_id, SynchronizeOsOptions());
+  test::SynchronizeOsIntegration(profile(), app_id, SynchronizeOsOptions());
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -504,6 +496,94 @@ TEST_P(ShortcutSubManagerExecuteTest, UninstallAppRemovesShortcuts) {
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));
   }
+}
+
+TEST_P(ShortcutSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  icon_map[icon_size::k16] = CreateSolidColorIcon(icon_size::k16, SK_ColorBLUE);
+  icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const AppId& app_id = InstallWebAppWithShortcuts(std::move(icon_map));
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+
+  if (HasShortcutsOsIntegration()) {
+    if (!AreOsIntegrationSubManagersEnabled()) {
+      ASSERT_FALSE(os_integration_state.has_shortcut());
+    }
+
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+        profile(), app_id, app_name));
+  }
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+  if (HasShortcutsOsIntegration()) {
+    ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+        profile(), app_id, app_name));
+  }
+}
+
+TEST_P(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  icon_map[icon_size::k16] = CreateSolidColorIcon(icon_size::k16, SK_ColorBLUE);
+  icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const AppId& app_id = InstallWebAppWithShortcuts(std::move(icon_map));
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+
+  if (HasShortcutsOsIntegration()) {
+    if (!AreOsIntegrationSubManagersEnabled()) {
+      ASSERT_FALSE(os_integration_state.has_shortcut());
+    }
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+        profile(), app_id, app_name));
+  }
+
+  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
+      scoped_supress = absl::nullopt;
+  scoped_supress.emplace();
+  test::UninstallAllWebApps(profile());
+  // Shortcuts should still be there.
+  if (HasShortcutsOsIntegration()) {
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+        profile(), app_id, app_name));
+  }
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+  // Shortcuts should now be removed.
+  if (HasShortcutsOsIntegration()) {
+    ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+        profile(), app_id, app_name));
+  }
+  scoped_supress.reset();
 }
 
 INSTANTIATE_TEST_SUITE_P(

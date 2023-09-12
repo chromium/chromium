@@ -224,10 +224,23 @@ void ShortcutSubManager::Execute(
   std::move(callback_for_no_update).Run();
 }
 
-// TODO(b/279068663): Implement if needed.
 void ShortcutSubManager::ForceUnregister(const AppId& app_id,
                                          base::OnceClosure callback) {
-  std::move(callback).Run();
+  base::FilePath shortcut_data_dir = GetOsIntegrationResourcesDirectoryForApp(
+      profile_->GetPath(), app_id,
+      provider_->registrar_unsafe().GetAppStartUrl(app_id));
+
+  auto current_shortcut_info = std::make_unique<ShortcutInfo>();
+  current_shortcut_info->app_id = app_id;
+  current_shortcut_info->profile_path = profile_->GetPath();
+  current_shortcut_info->title =
+      base::UTF8ToUTF16(provider_->registrar_unsafe().GetAppShortName(app_id));
+
+  internals::ScheduleDeletePlatformShortcuts(
+      shortcut_data_dir, std::move(current_shortcut_info),
+      base::BindOnce(&ShortcutSubManager::OnShortcutsDeleted,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(callback)));
 }
 
 void ShortcutSubManager::CreateShortcut(

@@ -502,6 +502,111 @@ TEST_P(ProtocolHandlingExecuteTest, MultipleSynchronizeEmptyData) {
   }
 }
 
+TEST_P(ProtocolHandlingExecuteTest, ForceUnregisterAppInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  apps::ProtocolHandlerInfo protocol_handler;
+  const std::string handler_url =
+      std::string(kWebAppUrl.spec()) + "/testing=%s";
+  protocol_handler.url = GURL(handler_url);
+  protocol_handler.protocol = "web+test";
+  const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+
+#if BUILDFLAG(IS_MAC)
+  EXPECT_THAT(GetAppShimRegisteredProtocolHandlers(app_id),
+              testing::ElementsAre(protocol_handler.protocol));
+#endif
+  if (AreProtocolsRegisteredWithOs()) {
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
+        testing::ElementsAre(
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
+  }
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+#if BUILDFLAG(IS_MAC)
+  ASSERT_THAT(GetAppShimRegisteredProtocolHandlers(app_id), testing::IsEmpty());
+#endif
+  if (AreProtocolsRegisteredWithOs()) {
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
+        testing::ElementsAre(
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
+            std::make_tuple(app_id, std::vector<std::string>())));
+  }
+}
+
+TEST_P(ProtocolHandlingExecuteTest, ForceUnregisterAppNotInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  apps::ProtocolHandlerInfo protocol_handler;
+  const std::string handler_url =
+      std::string(kWebAppUrl.spec()) + "/testing=%s";
+  protocol_handler.url = GURL(handler_url);
+  protocol_handler.protocol = "web+test";
+  const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+
+#if BUILDFLAG(IS_MAC)
+  EXPECT_THAT(GetAppShimRegisteredProtocolHandlers(app_id),
+              testing::ElementsAre(protocol_handler.protocol));
+#endif
+  if (AreProtocolsRegisteredWithOs()) {
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
+        testing::ElementsAre(
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
+  }
+
+  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
+      scoped_supress = absl::nullopt;
+  scoped_supress.emplace();
+  test::UninstallAllWebApps(profile());
+  // Protocol Handlers should still be registered with the OS, even though the
+  // app has been uninstalled.
+#if BUILDFLAG(IS_MAC)
+  EXPECT_THAT(GetAppShimRegisteredProtocolHandlers(app_id),
+              testing::ElementsAre(protocol_handler.protocol));
+#endif
+  if (AreProtocolsRegisteredWithOs()) {
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
+        testing::ElementsAre(
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
+  }
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+#if BUILDFLAG(IS_MAC)
+  ASSERT_THAT(GetAppShimRegisteredProtocolHandlers(app_id), testing::IsEmpty());
+#endif
+  if (AreProtocolsRegisteredWithOs()) {
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
+        testing::ElementsAre(
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
+            std::make_tuple(app_id, std::vector<std::string>())));
+  }
+  scoped_supress.reset();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProtocolHandlingExecuteTest,

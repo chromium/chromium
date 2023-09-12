@@ -11,6 +11,7 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -92,6 +93,11 @@ void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
                                      const GURL& url,
                                      const ExternalInstallSource& source,
                                      bool is_placeholder);
+
+void SynchronizeOsIntegration(
+    Profile* profile,
+    const AppId& app_id,
+    absl::optional<SynchronizeOsOptions> options = absl::nullopt);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class ScopedSkipMainProfileCheck {

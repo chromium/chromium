@@ -14,12 +14,8 @@
 namespace web_app {
 
 struct SynchronizeOsOptions {
-  // This allows the OS Integration sub managers to remove all OS registrations
-  // if the app is not in the database, bypassing the entire Configuration and
-  // Execution steps. Currently only works for the
-  // UninstallationViaOsSettingsSubManager on Windows, but will be extended to
-  // other sub managers if needed.
-  // TODO(b/279068663): Implement handling for other sub managers if needed,
+  // This allows the OS Integration sub managers to remove all OS registrations,
+  // bypassing the entire configuration and execution steps.
   bool force_unregister_on_app_missing = false;
   // Adds a shortcut to the desktop IFF this call to synchronize creates
   // shortcuts fresh for the given app (it's not an update).
