@@ -80,6 +80,13 @@ export class ThemeHueSliderDialogElement extends
   private minHue_: number;
   selectedHue: number;
   private knobHue_: number;
+  private boundPointerdown_: (e: PointerEvent) => void;
+
+  constructor() {
+    super();
+
+    this.boundPointerdown_ = this.onDocumentPointerdown_.bind(this);
+  }
 
   private onSelectedHueChanged_() {
     this.knobHue_ = this.selectedHue;
@@ -104,10 +111,21 @@ export class ThemeHueSliderDialogElement extends
     } else {
       this.$.dialog.style.top = `${anchor.offsetTop + anchor.offsetHeight}px`;
     }
+
+    document.addEventListener('pointerdown', this.boundPointerdown_);
   }
 
   hide() {
     this.$.dialog.close();
+    document.removeEventListener('pointerdown', this.boundPointerdown_);
+  }
+
+  private onDocumentPointerdown_(e: PointerEvent) {
+    if (e.composedPath().includes(this.$.dialog)) {
+      return;
+    }
+
+    this.hide();
   }
 
   private updateSelectedHueValue_() {
