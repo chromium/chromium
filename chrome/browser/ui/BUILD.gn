@@ -1434,6 +1434,7 @@ static_library("ui") {
       "tabs/saved_tab_groups/saved_tab_group_utils.h",
       "tabs/saved_tab_groups/saved_tab_group_web_contents_listener.cc",
       "tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h",
+      "tabs/supports_handles.h",
       "tabs/tab.h",
       "tabs/tab_change_type.h",
       "tabs/tab_group.cc",
