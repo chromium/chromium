@@ -21,23 +21,26 @@ class WebView;
 class SearchEngineChoiceDialogView : public views::View {
  public:
   METADATA_HEADER(SearchEngineChoiceDialogView);
-  SearchEngineChoiceDialogView(Browser* browser,
-                               absl::optional<gfx::Size> boundary_dimensions);
+  SearchEngineChoiceDialogView(
+      Browser* browser,
+      absl::optional<gfx::Size> boundary_dimensions_for_test,
+      absl::optional<double> zoom_factor_for_test);
   ~SearchEngineChoiceDialogView() override;
 
   // Initialize SearchEngineChoiceDialogView's web_view_ element.
   void Initialize();
 
  private:
-  // Show the dialog widget. `content_height` sets setting the dialog's height.
-  void ShowNativeView(int content_height);
+  // Show the dialog widget.
+  void ShowNativeView();
 
   // Close the dialog widget.
   void CloseView();
 
   raw_ptr<views::WebView> web_view_ = nullptr;
   const raw_ptr<Browser> browser_;
-  const absl::optional<gfx::Size> boundary_dimensions_;
+  const absl::optional<gfx::Size> boundary_dimensions_for_test_;
+  const absl::optional<double> zoom_factor_for_test_;
   base::WeakPtrFactory<SearchEngineChoiceDialogView> weak_ptr_factory_{this};
 };
 

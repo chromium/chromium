@@ -14,7 +14,7 @@ class SearchEngineChoiceHandler
  public:
   explicit SearchEngineChoiceHandler(
       mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver,
-      base::OnceCallback<void(int)> display_dialog_callback,
+      base::OnceCallback<void()> display_dialog_callback,
       base::OnceCallback<void(int)> handle_choice_selected_callback);
 
   SearchEngineChoiceHandler(const SearchEngineChoiceHandler&) = delete;
@@ -24,12 +24,12 @@ class SearchEngineChoiceHandler
   ~SearchEngineChoiceHandler() override;
 
   // search_engine_choice::mojom::PageHandler:
-  void DisplayDialog(uint32_t content_height) override;
+  void DisplayDialog() override;
   void HandleSearchEngineChoiceSelected(int32_t prepopulate_id) override;
 
  private:
   mojo::Receiver<search_engine_choice::mojom::PageHandler> receiver_;
-  base::OnceCallback<void(int)> display_dialog_callback_;
+  base::OnceCallback<void()> display_dialog_callback_;
   base::OnceCallback<void(int)> handle_choice_selected_callback_;
 };
 

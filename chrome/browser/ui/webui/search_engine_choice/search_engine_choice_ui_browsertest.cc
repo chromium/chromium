@@ -24,8 +24,13 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 #if !BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
@@ -34,6 +39,9 @@
 
 // Tests for the chrome://search-engine-choice WebUI page.
 namespace {
+// This is the maximum dialog height for pixel tests on Windows.
+constexpr int kMaximumHeight = 620;
+
 // Class that mocks `SearchEngineChoiceService`.
 class MockSearchEngineChoiceService : public SearchEngineChoiceService {
  public:
@@ -45,9 +53,7 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
       std::vector<std::unique_ptr<TemplateURLData>> choices;
       auto choice = TemplateURLData();
 
-      // TODO(b/280753754): Update this to 12 search engines when the UI is
-      // ready to handle more than 5.
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 12; i++) {
         const std::u16string kShortName = u"Test" + base::NumberToString16(i);
         choice.SetShortName(kShortName);
         choices.push_back(std::make_unique<TemplateURLData>(choice));
@@ -73,7 +79,7 @@ struct TestParam {
   std::string test_suffix;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
-  bool use_first_small_size_variant = false;
+  gfx::Size dialog_dimensions = gfx::Size(988, 900);
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -85,11 +91,17 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 
 // Permutations of supported parameters.
 const TestParam kTestParams[] = {
+#if BUILDFLAG(IS_WIN)
     {.test_suffix = "Default"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "RightToLeft", .use_right_to_left_language = true},
-    {.test_suffix = "FirstSmallSizeVariant",
-     .use_first_small_size_variant = true},
+    {.test_suffix = "MediumSize", .dialog_dimensions = gfx::Size(800, 700)},
+    {.test_suffix = "NarrowSize", .dialog_dimensions = gfx::Size(300, 900)},
+#endif
+    // We enable the test on platforms other than Windows with the smallest
+    // height due to a small maximum window height set by the operating system.
+    // The test will crash if we exceed that height.
+    {.test_suffix = "ShortSize", .dialog_dimensions = gfx::Size(988, 376)},
 };
 }  // namespace
 
@@ -133,16 +145,25 @@ class SearchEngineChoiceUIPixelTest
     views::NamedWidgetShownWaiter widget_waiter(
         views::test::AnyWidgetTestPasskey{}, "SearchEngineChoiceDialogView");
 
-    // Make the default size smaller so that the dialog can fit in the test
-    // window.
-    int dialog_width = 930;
-    int dialog_height = 580;
+    double zoom_factor = 1;
+    double requested_width = GetParam().dialog_dimensions.width();
+    double requested_height = GetParam().dialog_dimensions.height();
+    double dialog_width = requested_width;
+    double dialog_height = requested_height;
 
-    if (GetParam().use_first_small_size_variant) {
-      dialog_width = 900;
+    // Override the default zoom factor for the Search Engine Choice dialog.
+    // We can't modify the dialog's height because of the very small max-height
+    // set by the pixel test window. Instead we change the content zoom factor
+    // to simulate having multiple height variants. We then calculate the width
+    // to be passed based on that zoom factor;
+    if (requested_height > kMaximumHeight) {
+      zoom_factor = kMaximumHeight / requested_height;
+      dialog_width = requested_width * zoom_factor;
+      dialog_height = kMaximumHeight;
     }
-    ShowSearchEngineChoiceDialog(*browser(),
-                                 gfx::Size(dialog_width, dialog_height));
+
+    ShowSearchEngineChoiceDialog(
+        *browser(), gfx::Size(dialog_width, dialog_height), zoom_factor);
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }

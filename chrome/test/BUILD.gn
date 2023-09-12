@@ -3200,8 +3200,11 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_ui_browsertest.cc",
         "../browser/ui/views/profiles/profile_type_choice_ui_browsertest.cc",
         "../browser/ui/views/profiles/sync_confirmation_ui_browsertest.cc",
-        "../browser/ui/webui/search_engine_choice/search_engine_choice_ui_browsertest.cc",
       ]
+    }
+
+    if (is_win || is_linux) {
+      sources += [ "../browser/ui/webui/search_engine_choice/search_engine_choice_ui_browsertest.cc" ]
     }
 
     if (enable_nacl) {

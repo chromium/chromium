@@ -34,7 +34,7 @@ class SearchEngineChoiceUI
   // Initializes the callbacks that need to be passed to the handler.
   // `display_dialog_callback` is how we display the search engine choice
   // dialog. It will be called when the page's static content is rendered.
-  void Initialize(base::OnceCallback<void(int)> display_dialog_callback);
+  void Initialize(base::OnceCallback<void()> display_dialog_callback);
 
  private:
   // search_engine_choice::mojom::PageHandlerFactory:
@@ -50,7 +50,7 @@ class SearchEngineChoiceUI
   mojo::Receiver<search_engine_choice::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 
-  base::OnceCallback<void(int)> display_dialog_callback_;
+  base::OnceCallback<void()> display_dialog_callback_;
   const raw_ref<Profile> profile_;
   base::WeakPtrFactory<SearchEngineChoiceUI> weak_ptr_factory_{this};
 

@@ -13,10 +13,10 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Displays the Search Engine Choice dialog using the height of its content.
+  // Displays the Search Engine Choice dialog.
   // Triggered by the `displayDialog()` call in
   // `chrome/browser/resources/search_engine_choice/app.ts`
-  DisplayDialog(uint32 content_height);
+  DisplayDialog();
 
   // Changes the search engine based on the user's choice.
   // Triggered by the `handleSearchEngineChoiceSelected()` call in

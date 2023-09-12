@@ -1,6 +1,9 @@
 <style include="cr-icons tangible-sync-style-shared">
   :host {
     --iron-icon-fill-color: var(--google-blue-700);
+    --iron-icon-height: 24px;
+    --scrollbar-height: 116px;
+    --submit-button-margins: 40px;
     color: var(--cr-primary-text-color);
   }
 
@@ -12,9 +15,14 @@
     content: url(images/right_illustration.svg);
   }
 
+  .tangible-sync-style-left-banner,
+  .tangible-sync-style-right-banner {
+    position: fixed;
+  }
+
   #submitButton {
     height: unset;
-    margin: 40px;
+    margin: var(--submit-button-margins);
     /* The max-width is needed to stop the button from overlapping with
      the choice list in case of large text.  */
     max-width: 115px;
@@ -25,8 +33,9 @@
     align-items: center;
     display: flex;
     flex-direction: column;
+    height: 100vh;
     margin: auto;
-    max-width: 522px;
+    max-width: 500px;
     text-align: center;
   }
 
@@ -40,21 +49,28 @@
   }
 
   .omnibox {
-    --omnibox-height: 48px;
+    --omnibox-vertical-padding: 12px;
+    --omnibox-height: calc(var(--iron-icon-height) +
+        2 * var(--omnibox-vertical-padding));
     align-items: center;
     border: 1px dashed var(--google-grey-300);
     border-radius: calc(var(--omnibox-height) / 2);
     display: flex;
     flex-direction: row;
-    height: var(--omnibox-height);
-    width: 300px;
+    gap: 12px;
+    padding: var(--omnibox-vertical-padding) 16px;
+    width: 230px;
   }
 
   cr-radio-group {
     display: flex;
     flex-direction: column;
     gap: 1px;
-    width: 500px;
+    overflow: auto;
+    /* We add horizontal padding to put the scollbar on the right and keep
+    the content centered. */
+    padding: 0 8px 50px;
+    width: 100%;
   }
 
   .choice {
@@ -98,12 +114,12 @@
 
   .product-logo {
     height: 48px;
-    margin-top: 132px;
+    margin-top: 80px;
     width: 48px;
   }
 
   iron-icon {
-    margin: 0 12px 0 15px;
+    --iron-icon-fill-color: var(--google-blue-700);
   }
 
   .hint-placeholder {
@@ -154,6 +170,21 @@
     width: 100vw;
   }
 
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  /* Track */
+  .custom-scrollbar::-webkit-scrollbar-track {
+    border-radius: calc(var(--scrollbar-height) /2);
+  }
+
+  /* Handle */
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--google-grey-100);
+    border-radius: calc(var(--scrollbar-height) /2);
+  }
+
   @media (prefers-color-scheme: dark) {
     :host {
       --iron-icon-fill-color: var(--google-blue-300);
@@ -185,38 +216,84 @@
     }
   }
 
-  /* We need to override the values from tangible-sync-style. The dialog
-   initially sizes itself to height=300 and width=1077 then resizes its
-   height based on the content height.
-   The media query is being called at the first resize (1077 x 300), changing
-   the content size and then making the dialog size itself based on that
-   content. We will handle this case when we implement the small size dialog
-   UI. */
+  /* We need to override the values from tangible-sync-style. */
   @media screen and ((max-width: 780px) or (max-height: 600px)) {
-  .tangible-sync-style .title {
-    font-size: 2.25rem;
-    line-height: 44px;
+    .tangible-sync-style .title {
+      font-size: 2.25rem;
+      line-height: 44px;
+    }
+
+    .tangible-sync-style .subtitle {
+      font-size: 1.25rem;
+      line-height: 30px;
+    }
   }
 
-  .tangible-sync-style .subtitle {
-    font-size: 1.25rem;
-    line-height: 30px;
-  }
-}
+  @media screen and (max-width: 920px) {
+    :host {
+      --submit-button-margins: 28px;
+    }
 
-@media screen and (max-width: 920px) {
-  .button-container {
-    background-color: var(--button-container-background-color);
-    border-top: var(--cr-separator-line);
-    pointer-events: unset;
+    .button-container {
+      background-color: var(--button-container-background-color);
+      border-top: var(--cr-separator-line);
+      pointer-events: unset;
+    }
+
+    #submitButton {
+      max-width: unset;
+      pointer-events: unset;
+    }
+
+    .tangible-sync-style-left-banner,
+    .tangible-sync-style-right-banner {
+      display: none;
+    }
+
+    cr-radio-group {
+      --button-container-height: calc(var(--cr-button-height) + 2 *
+          var(--submit-button-margins));
+      padding-bottom: var(--button-container-height);
+    }
   }
 
-  #submitButton {
-    margin: 28px;
-    max-width: unset;
-    pointer-events: unset;
+  @media screen and (max-width: 640px) {
+    .tangible-sync-style .title {
+      font-size: 2rem;
+    }
+
+    .content-container {
+      margin: 0 40px;
+    }
   }
-}
+
+  @media screen and (max-height: 767px) {
+    .omnibox {
+      display: none;
+    }
+
+    .product-logo {
+      margin-top: 40px;
+    }
+
+    .tangible-sync-style .subtitle {
+      font-size: 1.0625rem;
+    }
+
+    cr-radio-group {
+      overflow: unset;
+    }
+  }
+
+  @media screen and (max-height: 640px) {
+    .product-logo {
+      display: none;
+    }
+
+    .tangible-sync-style .title {
+      margin-top: 24px;
+    }
+  }
 </style>
 
 <img class="tangible-sync-style-left-banner" alt="">
@@ -235,7 +312,7 @@
       $i18n{subtitleInfoLink}
     </a>
   </p>
-  <cr-radio-group class="choice-list" selected="{{selectedChoice_}}">
+  <cr-radio-group class="custom-scrollbar" selected="{{selectedChoice_}}">
     <template is="dom-repeat" items="[[choiceList_]]">
       <cr-radio-button class="label-first" name="[[item.prepopulate_id]]">
         <div class="choice">

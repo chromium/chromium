@@ -73,11 +73,7 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
     super.connectedCallback();
 
     afterNextRender(this, () => {
-      // Prefer using `document.body.offsetHeight` instead of
-      // `document.body.scrollHeight` as it returns the correct height of the
-      // page even when the page zoom in Chrome is different than 100%.
-      SearchEngineChoiceBrowserProxy.getInstance().handler.displayDialog(
-          document.body.offsetHeight);
+      SearchEngineChoiceBrowserProxy.getInstance().handler.displayDialog();
     });
   }
 

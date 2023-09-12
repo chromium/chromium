@@ -116,7 +116,7 @@ void SearchEngineChoiceUI::BindInterface(
 }
 
 void SearchEngineChoiceUI::Initialize(
-    base::OnceCallback<void(int)> display_dialog_callback) {
+    base::OnceCallback<void()> display_dialog_callback) {
   CHECK(display_dialog_callback);
   display_dialog_callback_ = std::move(display_dialog_callback);
 }
