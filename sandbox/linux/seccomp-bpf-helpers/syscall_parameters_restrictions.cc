@@ -174,7 +174,17 @@ ResultExpr RestrictPrctl() {
               , PR_SET_PTRACER, PR_SET_TIMERSLACK
               , PR_GET_NO_NEW_PRIVS
 #if defined(ARCH_CPU_ARM64)
-              , PR_PAC_RESET_KEYS, PR_GET_TAGGED_ADDR_CTRL
+                ,
+                PR_PAC_RESET_KEYS
+                // PR_GET_TAGGED_ADDR_CTRL is used by debuggerd to report
+                // whether memory tagging is active.
+                ,
+                PR_GET_TAGGED_ADDR_CTRL
+                // PR_PAC_GET_ENABLED_KEYS is used by debuggerd to report
+                // whether pointer authentication is enabled and which keys (A
+                // or B) are active.
+                ,
+                PR_PAC_GET_ENABLED_KEYS
 #endif
 
 // Enable PR_SET_TIMERSLACK_PID, an Android custom prctl which is used in:
