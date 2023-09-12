@@ -1812,7 +1812,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Linux.ConnectToService.Bonded.FailureReason"
     enum="BluetoothDeviceConnectToServiceFailureReason"
-    expires_after="2023-10-22">
+    expires_after="2024-06-01">
   <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1824,7 +1824,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Linux.ConnectToService.FailureReason"
     enum="BluetoothDeviceConnectToServiceFailureReason"
-    expires_after="2023-10-22">
+    expires_after="2024-06-01">
   <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1835,7 +1835,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Linux.ConnectToServiceInsecurelyResult"
     enum="BluetoothAdapterConnectToServiceInsecurelyResult"
-    expires_after="2024-01-14">
+    expires_after="2024-06-01">
   <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
