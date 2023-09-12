@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_ACTION_CONTEXT_H_
-#define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_ACTION_CONTEXT_H_
+#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_ACTION_CONTEXT_H_
+#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_ACTION_CONTEXT_H_
 
 #include "build/chromeos_buildflags.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/component.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace data_controls {
@@ -26,4 +26,4 @@ struct ActionContext {
 
 }  // namespace data_controls
 
-#endif  // CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_ACTION_CONTEXT_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_ACTION_CONTEXT_H_

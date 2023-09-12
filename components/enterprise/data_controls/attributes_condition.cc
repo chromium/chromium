@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/data_controls/attributes_condition.h"
+#include "components/enterprise/data_controls/attributes_condition.h"
 
 #include "base/containers/contains.h"
 #include "components/url_matcher/url_util.h"

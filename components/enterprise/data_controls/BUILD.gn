@@ -11,3 +11,42 @@ source_set("features") {
   public = [ "features.h" ]
   public_deps = [ "//base" ]
 }
+
+source_set("data_controls") {
+  sources = [
+    "action_context.h",
+    "attributes_condition.cc",
+    "attributes_condition.h",
+    "condition.h",
+    "data_controls_policy_handler.cc",
+    "data_controls_policy_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/policy/core/browser",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/url_matcher",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "component.cc",
+      "component.h",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "attributes_condition_unittest.cc" ]
+
+  deps = [
+    ":data_controls",
+    "//base",
+    "//testing/gtest",
+  ]
+}

@@ -13,11 +13,11 @@
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
-#include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/enterprise/data_controls/component.h"
 #include "components/file_access/scoped_file_access_copy.h"
 #include "storage/browser/file_system/file_system_url.h"
 

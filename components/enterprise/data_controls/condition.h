@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CONDITION_H_
-#define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CONDITION_H_
+#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONDITION_H_
+#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONDITION_H_
 
-#include "chrome/browser/enterprise/data_controls/action_context.h"
+#include "components/enterprise/data_controls/action_context.h"
 
 namespace data_controls {
 
@@ -17,4 +17,4 @@ class Condition {
 
 }  // namespace data_controls
 
-#endif  // CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CONDITION_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONDITION_H_

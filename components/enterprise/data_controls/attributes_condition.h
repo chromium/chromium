@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_ATTRIBUTES_CONDITION_H_
-#define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_ATTRIBUTES_CONDITION_H_
+#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_ATTRIBUTES_CONDITION_H_
+#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_ATTRIBUTES_CONDITION_H_
 
 #include <memory>
 
 #include "base/values.h"
-#include "chrome/browser/enterprise/data_controls/condition.h"
+#include "components/enterprise/data_controls/condition.h"
 #include "components/url_matcher/url_matcher.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include <set>
 
-#include "chrome/browser/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/component.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace data_controls {
@@ -53,4 +53,4 @@ class AttributesCondition : public Condition {
 
 }  // namespace data_controls
 
-#endif  // CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_ATTRIBUTES_CONDITION_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_ATTRIBUTES_CONDITION_H_

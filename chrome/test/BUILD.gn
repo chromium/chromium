@@ -8752,10 +8752,11 @@ test("unit_tests") {
     ]
 
     if (enterprise_data_controls) {
-      sources += [ "../browser/enterprise/data_controls/data_controls_policy_handler_unittest.cc" ]
+      sources += [ "../../components/enterprise/data_controls/data_controls_policy_handler_unittest.cc" ]
       deps += [
         "//chrome/browser/enterprise/data_controls",
         "//chrome/browser/enterprise/data_controls:test_support",
+        "//components/enterprise/data_controls",
       ]
     }
 

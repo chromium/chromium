@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_FILE_DESTINATION_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_FILE_DESTINATION_H_
 
-#include "chrome/browser/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/component.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
