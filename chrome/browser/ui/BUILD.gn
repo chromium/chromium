@@ -3345,6 +3345,8 @@ static_library("ui") {
       "webui/settings/ash/personalization_section.h",
       "webui/settings/ash/plugin_vm_handler.cc",
       "webui/settings/ash/plugin_vm_handler.h",
+      "webui/settings/ash/power_section.cc",
+      "webui/settings/ash/power_section.h",
       "webui/settings/ash/pref_names.cc",
       "webui/settings/ash/pref_names.h",
       "webui/settings/ash/printing_section.cc",

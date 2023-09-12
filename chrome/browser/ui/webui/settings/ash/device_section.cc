@@ -10,8 +10,6 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
-#include "ash/system/power/adaptive_charging_controller.h"
-#include "ash/system/power/battery_saver_controller.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,7 +21,6 @@
 #include "chrome/browser/ui/webui/settings/ash/device_display_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_keyboard_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_pointer_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/device_power_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_stylus_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -59,7 +56,6 @@ using ::chromeos::settings::mojom::kPerDeviceMouseSubpagePath;
 using ::chromeos::settings::mojom::kPerDevicePointingStickSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath;
 using ::chromeos::settings::mojom::kPointersSubpagePath;
-using ::chromeos::settings::mojom::kPowerSubpagePath;
 using ::chromeos::settings::mojom::kStylusSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
@@ -70,12 +66,6 @@ namespace {
 
 const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_POWER,
-       mojom::kPowerSubpagePath,
-       mojom::SearchResultIcon::kPower,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kPower}},
       {IDS_OS_SETTINGS_TAG_DISPLAY_SIZE,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -112,22 +102,6 @@ const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
        mojom::SearchResultDefaultRank::kHigh,
        mojom::SearchResultType::kSection,
        {.section = mojom::Section::kDevice}},
-      {IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_CHARGING,
-       mojom::kPowerSubpagePath,
-       mojom::SearchResultIcon::kPower,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kPowerIdleBehaviorWhileCharging},
-       {IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_CHARGING_ALT1,
-        SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_ON_BATTERY,
-       mojom::kPowerSubpagePath,
-       mojom::SearchResultIcon::kPower,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kPowerIdleBehaviorWhileOnBattery},
-       {IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_ON_BATTERY_ALT1,
-        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS,
        mojom::kAudioSubpagePath,
        mojom::SearchResultIcon::kAudio,
@@ -682,61 +656,6 @@ const std::vector<SearchConcept>& GetDisplayNightLightOnSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetPowerWithBatterySearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_POWER_SOURCE,
-       mojom::kPowerSubpagePath,
-       mojom::SearchResultIcon::kPower,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kPowerSource},
-       {IDS_OS_SETTINGS_TAG_POWER_SOURCE_ALT1,
-        IDS_OS_SETTINGS_TAG_POWER_SOURCE_ALT2, SearchConcept::kAltTagEnd}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetPowerWithLaptopLidSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED,
-       mojom::kPowerSubpagePath,
-       mojom::SearchResultIcon::kPower,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kSleepWhenLaptopLidClosed},
-       {IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED_ALT1,
-        IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED_ALT2,
-        SearchConcept::kAltTagEnd}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetPowerWithAdaptiveChargingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_POWER_ADAPTIVE_CHARGING,
-       mojom::kPowerSubpagePath,
-       mojom::SearchResultIcon::kPower,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAdaptiveCharging},
-       {}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetPowerWithBatterySaverModeSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_POWER_BATTERY_SAVER,
-       mojom::kPowerSubpagePath,
-       mojom::SearchResultIcon::kPower,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kBatterySaver},
-       {}},
-  });
-  return *tags;
-}
-
 bool IsUnifiedDesktopAvailable() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableUnifiedDesktop);
@@ -1028,56 +947,6 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
                           ash::features::AreSystemSoundsEnabled());
 }
 
-void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  webui::LocalizedString kPowerStrings[] = {
-      {"calculatingPower", IDS_SETTINGS_POWER_SOURCE_CALCULATING},
-      {"powerAdaptiveChargingLabel",
-       IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LABEL},
-      {"powerAdaptiveChargingSubtext",
-       IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_SUBTEXT},
-      {"powerIdleDisplayOff", IDS_SETTINGS_POWER_IDLE_DISPLAY_OFF},
-      {"powerIdleDisplayOffSleep", IDS_SETTINGS_POWER_IDLE_DISPLAY_OFF_SLEEP},
-      {"powerIdleDisplayOn", IDS_SETTINGS_POWER_IDLE_DISPLAY_ON},
-      {"powerIdleDisplayShutDown", IDS_SETTINGS_POWER_IDLE_SHUT_DOWN},
-      {"powerIdleDisplayStopSession", IDS_SETTINGS_POWER_IDLE_STOP_SESSION},
-      {"powerIdleLabel", IDS_SETTINGS_POWER_IDLE_LABEL},
-      {"powerIdleWhileChargingAriaLabel",
-       IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_ARIA_LABEL},
-      {"powerInactiveWhilePluggedInLabel",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_POWER_INACTIVE_WHILE_PLUGGED_IN_LABEL
-           : IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_LABEL},
-      {"powerIdleWhileOnBatteryAriaLabel",
-       IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_ARIA_LABEL},
-      {"powerInactiveWhileOnBatteryLabel",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_POWER_INACTIVE_WHILE_ON_BATTERY_LABEL
-           : IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_LABEL},
-      {"powerLidShutDownLabel", IDS_SETTINGS_POWER_LID_CLOSED_SHUT_DOWN_LABEL},
-      {"powerLidSignOutLabel", IDS_SETTINGS_POWER_LID_CLOSED_SIGN_OUT_LABEL},
-      {"powerLidSleepLabel", IDS_SETTINGS_POWER_LID_CLOSED_SLEEP_LABEL},
-      {"powerSourceAcAdapter", IDS_SETTINGS_POWER_SOURCE_AC_ADAPTER},
-      {"powerSourceBattery", IDS_SETTINGS_POWER_SOURCE_BATTERY},
-      {"powerSourceLabel", IDS_SETTINGS_POWER_SOURCE_LABEL},
-      {"powerSourceLowPowerCharger",
-       IDS_SETTINGS_POWER_SOURCE_LOW_POWER_CHARGER},
-      {"powerTitle", IDS_SETTINGS_POWER_TITLE},
-      {"powerBatterySaverLabel", IDS_SETTINGS_POWER_BATTERY_SAVER_LABEL},
-      {"powerBatterySaverSubtext", IDS_SETTINGS_POWER_BATTERY_SAVER_SUBTEXT},
-  };
-  html_source->AddLocalizedStrings(kPowerStrings);
-
-  html_source->AddString(
-      "powerAdaptiveChargingLearnMoreUrl",
-      u"https://support.google.com/chromebook/?p=settings_adaptive_charging");
-
-  // TODO(b:278957245): create and link to real "learn more" webpage.
-  html_source->AddString("powerBatterySaverLearnMoreUrl", "about://blank");
-}
-
 // Mirrors enum of the same name in enums.xml.
 enum class TouchpadSensitivity {
   kNONE = 0,
@@ -1095,7 +964,7 @@ DeviceSection::DeviceSection(Profile* profile,
                              SearchTagRegistry* search_tag_registry,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      pref_service_(pref_service),
+      power_subsection_(profile, search_tag_registry, pref_service),
       storage_subsection_(profile, search_tag_registry) {
   CHECK(profile);
   CHECK(search_tag_registry);
@@ -1114,38 +983,6 @@ DeviceSection::DeviceSection(Profile* profile,
   // and the low battery sound will be shown up.
   if (ash::features::AreSystemSoundsEnabled()) {
     updater.AddSearchTags(GetAudioPowerSoundsSearchConcepts());
-  }
-
-  chromeos::PowerManagerClient* power_manager_client =
-      chromeos::PowerManagerClient::Get();
-  if (power_manager_client) {
-    power_manager_client->AddObserver(this);
-
-    const absl::optional<power_manager::PowerSupplyProperties>& last_status =
-        power_manager_client->GetLastStatus();
-    if (last_status) {
-      PowerChanged(*last_status);
-    }
-
-    // Determine whether to show laptop lid power settings.
-    power_manager_client->GetSwitchStates(base::BindOnce(
-        &DeviceSection::OnGotSwitchStates, weak_ptr_factory_.GetWeakPtr()));
-
-    // Surface adaptive charging setting in search if the feature is enabled.
-    if (ash::features::IsAdaptiveChargingEnabled() &&
-        Shell::Get()
-            ->adaptive_charging_controller()
-            ->IsAdaptiveChargingSupported()) {
-      updater.AddSearchTags(GetPowerWithAdaptiveChargingSearchConcepts());
-    }
-
-    const auto* battery_saver_controller =
-        Shell::Get()->battery_saver_controller();
-    if (battery_saver_controller != nullptr &&
-        battery_saver_controller->IsBatterySaverSupported() &&
-        ash::features::IsBatterySaverAvailable()) {
-      updater.AddSearchTags(GetPowerWithBatterySaverModeSearchConcepts());
-    }
   }
 
   // Keyboard/mouse search tags are added/removed dynamically.
@@ -1180,12 +1017,6 @@ DeviceSection::DeviceSection(Profile* profile,
 DeviceSection::~DeviceSection() {
   pointer_device_observer_.RemoveObserver(this);
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
-
-  chromeos::PowerManagerClient* power_manager_client =
-      chromeos::PowerManagerClient::Get();
-  if (power_manager_client) {
-    power_manager_client->RemoveObserver(this);
-  }
 
   NightLightController* night_light_controller =
       NightLightController::GetInstance();
@@ -1231,15 +1062,9 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDeviceStylusStrings(html_source);
   AddDeviceDisplayStrings(html_source);
   AddDeviceAudioStrings(html_source);
-  AddDevicePowerStrings(html_source);
-
-  html_source->AddBoolean("isAdaptiveChargingEnabled",
-                          ash::features::IsAdaptiveChargingEnabled() &&
-                              Shell::Get()
-                                  ->adaptive_charging_controller()
-                                  ->IsAdaptiveChargingSupported());
 
   if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    power_subsection_.AddLoadTimeData(html_source);
     storage_subsection_.AddLoadTimeData(html_source);
   }
 }
@@ -1248,10 +1073,10 @@ void DeviceSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<DisplayHandler>());
   web_ui->AddMessageHandler(std::make_unique<KeyboardHandler>());
   web_ui->AddMessageHandler(std::make_unique<PointerHandler>());
-  web_ui->AddMessageHandler(std::make_unique<PowerHandler>(pref_service_));
   web_ui->AddMessageHandler(std::make_unique<StylusHandler>());
 
   if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    power_subsection_.AddHandlers(web_ui);
     storage_subsection_.AddHandlers(web_ui);
   }
 }
@@ -1459,10 +1284,14 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(mojom::Subpage::kDisplay, kDisplaySettings,
                             generator);
 
-  // Storage.
   if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    // Power.
+    power_subsection_.RegisterHierarchy(generator);
+
+    // Storage.
     storage_subsection_.RegisterHierarchy(generator);
   }
+
   // Audio.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_AUDIO_TITLE, mojom::Subpage::kAudio,
@@ -1472,21 +1301,6 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::Subpage::kAudio);
   generator->RegisterNestedSetting(mojom::Setting::kLowBatterySound,
                                    mojom::Subpage::kAudio);
-
-  // Power.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_POWER_TITLE, mojom::Subpage::kPower,
-      mojom::SearchResultIcon::kPower, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kPowerSubpagePath);
-  static constexpr mojom::Setting kPowerSettings[] = {
-      mojom::Setting::kPowerIdleBehaviorWhileCharging,
-      mojom::Setting::kPowerIdleBehaviorWhileOnBattery,
-      mojom::Setting::kPowerSource,
-      mojom::Setting::kSleepWhenLaptopLidClosed,
-      mojom::Setting::kAdaptiveCharging,
-      mojom::Setting::kBatterySaver,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kPower, kPowerSettings, generator);
 }
 
 void DeviceSection::TouchpadExists(bool exists) {
@@ -1589,16 +1403,6 @@ void DeviceSection::OnDisplayConfigChanged() {
                      base::Unretained(this)));
 }
 
-void DeviceSection::PowerChanged(
-    const power_manager::PowerSupplyProperties& properties) {
-  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-
-  if (properties.battery_state() !=
-      power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT) {
-    updater.AddSearchTags(GetPowerWithBatterySearchConcepts());
-  }
-}
-
 void DeviceSection::OnGetDisplayUnitInfoList(
     std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list) {
   cros_display_config_->GetDisplayLayoutInfo(base::BindOnce(
@@ -1692,16 +1496,6 @@ void DeviceSection::OnGetDisplayLayoutInfo(
     updater.AddSearchTags(GetDisplayNightLightOnSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetDisplayNightLightOnSearchConcepts());
-  }
-}
-
-void DeviceSection::OnGotSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
-  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-
-  if (result && result->lid_state !=
-                    chromeos::PowerManagerClient::LidState::NOT_PRESENT) {
-    updater.AddSearchTags(GetPowerWithLaptopLidSearchConcepts());
   }
 }
 
