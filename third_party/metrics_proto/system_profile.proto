@@ -54,8 +54,7 @@ message SystemProfileProto {
   optional string log_written_by_app_version = 40;
 
   // The brand code or distribution tag assigned to a partner, if available.
-  // Brand codes are only available on Windows.  Not every Windows install
-  // though will have a brand code.
+  // Windows, Mac, iOS, and CrOS clients may have a brand code.
   optional string brand_code = 12;
 
   // The possible channels for an installation, from least to most stable.
