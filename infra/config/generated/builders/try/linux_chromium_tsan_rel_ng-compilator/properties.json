@@ -69,10 +69,7 @@
           "builder": "Linux TSan Tests",
           "project": "chromium"
         }
-      ],
-      "rts_config": {
-        "condition": "QUICK_RUN_ONLY"
-      }
+      ]
     }
   },
   "$build/flakiness": {

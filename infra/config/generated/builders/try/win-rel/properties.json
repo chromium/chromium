@@ -150,10 +150,7 @@
           "builder": "Win10 x64 Release (NVIDIA)",
           "project": "chromium"
         }
-      ],
-      "rts_config": {
-        "condition": "QUICK_RUN_ONLY"
-      }
+      ]
     }
   },
   "$build/code_coverage": {

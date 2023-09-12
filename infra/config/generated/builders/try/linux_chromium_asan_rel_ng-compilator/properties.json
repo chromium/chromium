@@ -71,10 +71,7 @@
           "builder": "Linux ASan LSan Tests (1)",
           "project": "chromium"
         }
-      ],
-      "rts_config": {
-        "condition": "QUICK_RUN_ONLY"
-      }
+      ]
     }
   },
   "$build/flakiness": {
