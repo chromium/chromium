@@ -371,20 +371,6 @@ void Canvas2DLayerBridge::ResetResourceProvider() {
     resource_host_->ReplaceResourceProvider(nullptr);
 }
 
-bool Canvas2DLayerBridge::ShouldAccelerate() const {
-  bool use_gpu = resource_host_ && resource_host_->preferred_2d_raster_mode() ==
-                                       RasterModeHint::kPreferGPU;
-
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
-      SharedGpuContext::ContextProviderWrapper();
-  if (use_gpu &&
-      (!context_provider_wrapper ||
-       context_provider_wrapper->ContextProvider()->IsContextLost())) {
-    use_gpu = false;
-  }
-  return use_gpu;
-}
-
 bool Canvas2DLayerBridge::IsAccelerated() const {
   if (resource_host_ && resource_host_->preferred_2d_raster_mode() ==
                             RasterModeHint::kPreferCPU) {
@@ -397,7 +383,7 @@ bool Canvas2DLayerBridge::IsAccelerated() const {
 
   // Whether or not to accelerate is not yet resolved, the canvas cannot be
   // accelerated if the gpu context is lost.
-  return ShouldAccelerate();
+  return resource_host_ && resource_host_->ShouldTryToUseGpuRaster();
 }
 
 bool Canvas2DLayerBridge::IsComposited() const {
@@ -532,7 +518,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::ResourceProvider() const {
 }
 
 CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
-  DCHECK(resource_host_);
+  CHECK(resource_host_);
   CanvasResourceProvider* resource_provider = ResourceProvider();
 
   if (context_lost_) {
@@ -558,7 +544,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   // ResourceProvider before the final attempt, in which a new
   // Canvas2DLayerBridge is created along with its resource provider.
 
-  bool want_acceleration = ShouldAccelerate();
+  bool want_acceleration = resource_host_->ShouldTryToUseGpuRaster();
   RasterModeHint adjusted_hint = want_acceleration ? RasterModeHint::kPreferGPU
                                                    : RasterModeHint::kPreferCPU;
 

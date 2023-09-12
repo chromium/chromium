@@ -56,6 +56,8 @@ class PLATFORM_EXPORT CanvasResourceHost {
   RasterModeHint preferred_2d_raster_mode() const {
     return preferred_2d_raster_mode_;
   }
+
+  bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
 
  private:
