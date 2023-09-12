@@ -266,11 +266,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AdbSideloadingEnablingScreen"
-    enum="AdbSideloadingPromptEvent" expires_after="2022-05-01">
+    enum="AdbSideloadingPromptEvent" expires_after="2024-03-01">
   <owner>vraheja@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     Record user's choice or error during ADB sideloading opt-in UI after reboot.
+
+    This histogram was expired between 2022-05-01 and 2023-09-07. Data might be
+    missing or incomplete for this period.
   </summary>
 </histogram>
 
