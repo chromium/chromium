@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -536,6 +537,8 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
     LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |CAPTURE_queue_|.";
   }
 
+  encoding_timestamps_.clear();
+
   if (flush_cb_) {
     std::move(flush_cb_).Run(DecoderStatus::Codes::kAborted);
   }
@@ -845,6 +848,16 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
        success && dequeued_buffer;
        std::tie(success, dequeued_buffer) = CAPTURE_queue_->DequeueBuffer()) {
     PrintOutQueueStatesForVLOG(FROM_HERE);
+
+    const int64_t flat_timespec =
+        TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()).InMilliseconds();
+    if (base::Contains(encoding_timestamps_, flat_timespec)) {
+      UMA_HISTOGRAM_TIMES(
+          "Media.PlatformVideoDecoding.Decode",
+          base::TimeTicks::Now() - encoding_timestamps_[flat_timespec]);
+      encoding_timestamps_.erase(flat_timespec);
+    }
+
     // A buffer marked "last" indicates the end of a flush. Note that, according
     // to spec, this buffer may or may not have zero |bytesused|.
     // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#drain
@@ -1037,6 +1050,9 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
     v4l2_buffer->SetPlaneBytesUsed(0, media_buffer->data_size());
     VLOGF(4) << "Enqueuing " << media_buffer->data_size() << " bytes.";
     v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
+
+    const int64_t flat_timespec = media_buffer->timestamp().InMilliseconds();
+    encoding_timestamps_[flat_timespec] = base::TimeTicks::Now();
 
     if (!std::move(*v4l2_buffer).QueueMMap()) {
       LOG(ERROR) << "Error while queuing input |media_buffer|!";

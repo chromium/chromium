@@ -7,6 +7,7 @@
 
 #include <linux/videodev2.h>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -142,6 +143,9 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // Used only on V4L2_MEMORY_MMAP queues (e.g. Hana MT8173) to grab the visible
   // rectangle upon |CAPTURE_queue_| configuration in InitializeCAPTUREQueue().
   gfx::Rect visible_rect_;
+
+  // Map of enqueuing timecodes to system timestamp, for histogramming purposes.
+  base::flat_map<int64_t, base::TimeTicks> encoding_timestamps_;
 
   // Holds pairs of encoded chunk (DecoderBuffer) and associated DecodeCB for
   // decoding via TryAndEnqueueOUTPUTQueueBuffers().
