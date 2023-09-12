@@ -125,8 +125,10 @@ class PasswordMigrationWarningMediator
      */
     void onSheetClosed(
             @BottomSheetController.StateChangeReason int reason, boolean setFragmentWasCalled) {
-        recordEmptySheetTrigger(mReferrer);
-        resetTimestamp();
+        if (!setFragmentWasCalled) {
+            recordEmptySheetTrigger(mReferrer);
+            resetTimestamp();
+        }
         recordSheetStateAtClosing(reason, setFragmentWasCalled);
     }
 
