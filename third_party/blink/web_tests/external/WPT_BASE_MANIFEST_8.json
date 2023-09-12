@@ -280690,16 +280690,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "32cdbe85b665d256e4a16906a6a1e559a28cdcfb",
-     []
-    ],
-    "mtime.json": [
-     "9fb117a8dfda296477b70f94fef712e93b4ca287",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -380462,7 +380452,7 @@
          []
         ],
         "rc-helper.js": [
-         "cb73f52e15b0c27e7f7dacb9415d158e14291af0",
+         "4458912013fb362386f6dd999123559c9d059f62",
          []
         ],
         "service-worker.js": [
@@ -723433,12 +723423,10 @@
         ]
        ],
        "default_values.py": [
-        "abd4a5a64c510ee90ef9f52660581a097873e96c",
+        "678d7a8e881ccc0b00c24539165bb38d2521bd40",
         [
          null,
-         {
-          "timeout": "long"
-         }
+         {}
         ]
        ],
        "invalid_capabilities.py": [
@@ -723455,6 +723443,13 @@
          {
           "timeout": "long"
          }
+        ]
+       ],
+       "no_capabilities.py": [
+        "31ee90555a73a4bd084da29e409d26edb85f8041",
+        [
+         null,
+         {}
         ]
        ],
        "page_load_strategy.py": [
