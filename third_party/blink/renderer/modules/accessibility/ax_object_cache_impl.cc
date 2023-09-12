@@ -2793,49 +2793,52 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
 
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
-  base::AutoReset<bool> processing(&processing_deferred_events_, true);
+  {
+    base::AutoReset<bool> processing(&processing_deferred_events_, true);
 
-  // Ensure root exists.
-  GetOrCreate(document_);
+    // Ensure root exists.
+    GetOrCreate(document_);
 
-  // Update (create or remove) validation child of root, if it is needed, so
-  // that the tree can be frozen in the correct state.
-  ValidationMessageObjectIfInvalid(/* notify children changed */ true);
+    // Update (create or remove) validation child of root, if it is needed, so
+    // that the tree can be frozen in the correct state.
+    ValidationMessageObjectIfInvalid(/* notify children changed */ true);
 
-  // Changes to ids or aria-owns may have resulted in queued up relation
-  // cache work; do that now.
-  EnsureRelationCache();
-  relation_cache_->ProcessUpdatesWithCleanLayout();
+    // Changes to ids or aria-owns may have resulted in queued up relation
+    // cache work; do that now.
+    EnsureRelationCache();
+    relation_cache_->ProcessUpdatesWithCleanLayout();
 
-  // If MarkDocumentDirty() was called, do it now, so that the entire tree is
-  // invalidated before updating it.
-  if (mark_all_dirty_) {
-    MarkDocumentDirtyWithCleanLayout();
-  }
-
-  if (IsDirty()) {
-    if (GetPopupDocumentIfShowing()) {
-      ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
+    // If MarkDocumentDirty() was called, do it now, so that the entire tree is
+    // invalidated before updating it.
+    if (mark_all_dirty_) {
+      MarkDocumentDirtyWithCleanLayout();
     }
-    ProcessDeferredAccessibilityEventsImpl(document);
-  }
+
+    if (IsDirty()) {
+      if (GetPopupDocumentIfShowing()) {
+        ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
+      }
+      ProcessDeferredAccessibilityEventsImpl(document);
+    }
 
 #if BUILDFLAG(IS_ANDROID)
-  // On Android, the inline textboxes of focused editable subtrees are always
-  // loaded, but only if inline text boxes are enabled.
-  if (ax_mode_.has_mode(ui::AXMode::kInlineTextBoxes)) {
-    AXObject* focus = FocusedObject();
-    if (focus && focus->IsEditableRoot()) {
-      focus->LoadInlineTextBoxes();
+    // On Android, the inline textboxes of focused editable subtrees are always
+    // loaded, but only if inline text boxes are enabled.
+    if (ax_mode_.has_mode(ui::AXMode::kInlineTextBoxes)) {
+      AXObject* focus = FocusedObject();
+      if (focus && focus->IsEditableRoot()) {
+        focus->LoadInlineTextBoxes();
+      }
     }
-  }
 #endif
 
-  // Build out tree, such that each node has computed its children.
-  if (RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
-    UpdateTreeIfNeeded();
+    // Build out tree, such that each node has computed its children.
+    if (RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
+      UpdateTreeIfNeeded();
+    }
   }
 
+  // ***** Serialize *****
   // Check whether there are dirty objects ready to be serialized.
   // TODO(accessibility) It's a bit confusing that this can be true when the
   // IsDirty() is false, but this is the case for objects marked dirty from
@@ -2845,6 +2848,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
       client->AXReadyCallback();
   }
 
+  // ***** Update Inspector Views *****
   // Accessibility is now clean for both documents: AXObjects can be safely
   // traversed and AXObject's properties can be safely fetched.
   // TODO(accessibility) Now that both documents are always processed at the
