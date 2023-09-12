@@ -30,10 +30,15 @@
   const done = document.getElementById("done");
 
   let event_log = [];
+  let logged_event_prefix = "";
+  let received_compat_mouse_events = false;
 
   function logEvent(e) {
-    if (e.eventPhase == e.AT_TARGET) {
+    if (e.type.startsWith(logged_event_prefix) && e.eventPhase == e.AT_TARGET) {
       event_log.push(e.type + "@" + e.target.id);
+    }
+    if (e.type.startsWith("mouse")) {
+      received_compat_mouse_events = true;
     }
   }
 
@@ -43,24 +48,24 @@
   }
 
   function setup() {
-    const logged_events = [
-      "pointerover", "pointerout", "pointerenter", "pointerleave",
-      "pointerdown", "pointerup"
-    ];
+    const logged_event_suffixes =
+        ["over", "out", "enter", "leave", "down", "up"];
     let targets = document.getElementsByClassName("target");
     for (let i = 0; i < targets.length; i++) {
-      logged_events.forEach(ename => {
-        targets[i].addEventListener(ename, logEvent);
+      logged_event_suffixes.forEach(suffix => {
+        targets[i].addEventListener("pointer" + suffix, logEvent);
+        targets[i].addEventListener("mouse" + suffix, logEvent);
       });
     }
   }
 
-  function addPromiseTest(remover_event, expected_events) {
-    const test_name = `PointerEvents from ${pointer_type} `+
-        `received before/after child removal at ${remover_event}`;
+  function addPromiseTest(remover_event, tested_event_prefix, expected_events) {
+    const test_name = `${tested_event_prefix} events from ${pointer_type} `+
+          `received before/after child removal at ${remover_event}`;
 
     promise_test(async test => {
       event_log = [];
+      logged_event_prefix = tested_event_prefix;
 
       child.addEventListener(remover_event, removeChild);
       test.add_cleanup(() => {
@@ -87,22 +92,42 @@
       await actions.send();
       await done_click_promise;
 
+      if (tested_event_prefix == "mouse" && !received_compat_mouse_events) {
+        expected_events = [];
+      }
+
       assert_equals(event_log.toString(), expected_events.toString(),
           "events received");
     }, test_name);
   }
 
   setup();
-  addPromiseTest("pointerdown", [
+
+  // Tests for dispatched pointer events.
+  addPromiseTest("pointerdown", "pointer", [
     "pointerover@child", "pointerenter@parent", "pointerenter@child",
     "pointerdown@child", "(child-removed)", "pointerup@parent",
     "pointerdown@parent", "pointerup@parent",
     "pointerout@parent", "pointerleave@parent"
   ]);
-  addPromiseTest("pointerup", [
+  addPromiseTest("pointerup", "pointer", [
     "pointerover@child", "pointerenter@parent", "pointerenter@child",
     "pointerdown@child", "pointerup@child", "(child-removed)",
     "pointerdown@parent", "pointerup@parent",
     "pointerout@parent", "pointerleave@parent"
+  ]);
+
+  // Same tests for dispatched compatibility mouse events.
+  addPromiseTest("pointerdown", "mouse", [
+    "mouseover@child", "mouseenter@parent", "mouseenter@child",
+    "(child-removed)", "mouseup@parent",
+    "mousedown@parent", "mouseup@parent",
+    "mouseout@parent", "mouseleave@parent"
+  ]);
+  addPromiseTest("pointerup", "mouse", [
+    "mouseover@child", "mouseenter@parent", "mouseenter@child",
+    "mousedown@child", "(child-removed)",
+    "mousedown@parent", "mouseup@parent",
+    "mouseout@parent", "mouseleave@parent"
   ]);
 </script>
