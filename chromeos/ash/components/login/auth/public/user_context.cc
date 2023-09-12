@@ -88,7 +88,8 @@ void UserContext::CryptohomeContext::SetIsForcingDircrypto(
 
 void UserContext::CryptohomeContext::SetAuthSessionId(
     const std::string& authsession_id) {
-  DCHECK(authsession_id_.empty());
+  LOG_IF(WARNING, !authsession_id_.empty())
+      << "Overwriting existing auth session ID";
   authsession_id_ = authsession_id;
 }
 

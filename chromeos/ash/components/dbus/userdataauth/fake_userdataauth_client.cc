@@ -625,6 +625,12 @@ void FakeUserDataAuthClient::TestApi::SendLegacyFPAuthSignal(
   }
 }
 
+void FakeUserDataAuthClient::TestApi::SetNextOperationError(
+    Operation operation,
+    ::user_data_auth::CryptohomeErrorCode error) {
+  FakeUserDataAuthClient::Get()->SetNextOperationError(operation, error);
+}
+
 FakeUserDataAuthClient::FakeUserDataAuthClient() = default;
 
 FakeUserDataAuthClient::~FakeUserDataAuthClient() {

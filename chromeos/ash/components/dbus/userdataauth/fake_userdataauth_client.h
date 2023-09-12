@@ -148,6 +148,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     void SendLegacyFPAuthSignal(user_data_auth::FingerprintScanResult result);
 
+    // Sets the CryptohomeError value to return during next operation.
+    void SetNextOperationError(Operation operation,
+                               ::user_data_auth::CryptohomeErrorCode error);
+
    private:
     FakeUserDataAuthClient::UserCryptohomeState& GetUserState(
         const cryptohome::AccountIdentifier& account_id);

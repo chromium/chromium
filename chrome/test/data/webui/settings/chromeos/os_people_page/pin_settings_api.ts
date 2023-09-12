@@ -124,6 +124,29 @@ export class PinSettingsApi implements PinSettingsApiInterface {
     await assertAsync(() => this.setupPinDialog() === null);
   }
 
+  public async setPinButInternalError(pin: string): Promise<void> {
+    const pinDialog = await this.openPinSetupDialog();
+
+    // Enter pin values.
+    await pinDialog.enterPin(pin);
+    await pinDialog.submit();
+    await pinDialog.enterPin(pin);
+    await pinDialog.submit();
+
+    await assertAsync(() => pinDialog.hasError());
+    // Because this is an internal error, which might be resolvedhby trying
+    // again, we allow the user to submit again.
+    await assertAsync(() => pinDialog.canSubmit());
+    await assertAsync(() => this.setupPinDialog() !== null);
+
+    // Close the dialog.
+    await pinDialog.cancel();
+    await assertAsync(() => this.setupPinDialog() === null);
+
+    // PIN should still be unconfigured.
+    await assertForDuration(() => !this.hasPin());
+  }
+
   public async setPinButTooShort(shortPin: string, okPin: string):
       Promise<void> {
     const pinDialog = await this.openPinSetupDialog();

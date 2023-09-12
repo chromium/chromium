@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/screen_manager.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -75,7 +76,20 @@ class PinSetupScreenTest : public OobeBaseTest {
     // screen (consuming auth session) in unbranded build
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
+
     login_manager_mixin_.LoginAsNewRegularUser();
+
+    // Add an authenticated session to the user context used during OOBE. In
+    // production, this is set by earlier screens which are skipped in this
+    // test.
+    UserContext* context = LoginDisplayHost::default_host()
+                               ->GetWizardContext()
+                               ->extra_factors_auth_session.get();
+    CHECK(context);
+    cryptohome_.MarkUserAsExisting(context->GetAccountId());
+    std::string auth_session =
+        cryptohome_.AddSession(context->GetAccountId(), /*authenticated=*/true);
+    context->SetAuthSessionId(std::move(auth_session));
   }
 
   PinSetupScreen* GetScreen() {
@@ -140,6 +154,7 @@ class PinSetupScreenTest : public OobeBaseTest {
   bool screen_exited_ = false;
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  CryptohomeMixin cryptohome_{&mixin_host_};
 
  private:
   void HandleScreenExit(PinSetupScreen::Result result) {

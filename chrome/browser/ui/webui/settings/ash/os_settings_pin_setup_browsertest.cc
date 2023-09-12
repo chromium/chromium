@@ -166,6 +166,16 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(PinType::kPrefs,
                                          PinType::kCryptohome));
 
+// The test fixture for tests that are supposed to be run with the cryptohome
+// backend only. We need a separate but essentially identical class here so
+// that we can use INSTANTIATE_TEST_SUITE_P with a different set of
+// test::Values.
+class OSSettingsPinSetupCryptohomeOnlyTest : public OSSettingsPinSetupTest {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OSSettingsPinSetupCryptohomeOnlyTest,
+                         testing::Values(PinType::kCryptohome));
+
 // Tests that adding a PIN works.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AddPin) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
@@ -250,6 +260,24 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, SetPinButFailConfirmation) {
   EXPECT_EQ(false, IsPinConfigured());
 
   pin_settings.SetPinButFailConfirmation(kFirstPin, kIncorrectPin);
+
+  pin_settings.AssertHasPin(false);
+  EXPECT_EQ(false, IsPinConfigured());
+}
+
+// Tests that an error message is displayed when setting PIN fails.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupCryptohomeOnlyTest,
+                       AddPinButInternalError) {
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+
+  pin_settings.AssertHasPin(false);
+  EXPECT_EQ(false, IsPinConfigured());
+
+  cryptohome_.SetNextOperationError(
+      FakeUserDataAuthClient::Operation::kAddAuthFactor,
+      ::user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED);
+  pin_settings.SetPinButInternalError(kFirstPin);
 
   pin_settings.AssertHasPin(false);
   EXPECT_EQ(false, IsPinConfigured());

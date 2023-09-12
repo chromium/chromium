@@ -375,8 +375,13 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       case ConfigureResult.kFatalError:
         console.error('Failed to update pin');
         this.showProblem_(MessageType.INTERNAL_ERROR, ProblemType.ERROR);
+        // Enable submission again: We don't know why this failed, and perhaps
+        // submitting again resolves the issue.
         this.enableSubmit = true;
-        break;
+        // Do not reset state, close the dialog or generate a set-pin-done
+        // event -- this would lead the user to think that setting PIN was
+        // successful when it has actually failed.
+        return;
     }
 
     this.resetState();
