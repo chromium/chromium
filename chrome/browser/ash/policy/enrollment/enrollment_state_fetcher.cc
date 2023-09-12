@@ -866,52 +866,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
  private:
-  void ReportTotalDuration(base::TimeDelta fetch_duration,
-                           AutoEnrollmentState state) {
-    std::string uma_suffix;
-    switch (state) {
-      case AutoEnrollmentState::kIdle:
-      case AutoEnrollmentState::kPending:
-        NOTREACHED();
-        break;
-      case AutoEnrollmentState::kConnectionError:
-        uma_suffix = kUMASuffixConnectionError;
-        break;
-      case AutoEnrollmentState::kDisabled:
-        uma_suffix = kUMASuffixDisabled;
-        break;
-      case AutoEnrollmentState::kEnrollment:
-        uma_suffix = kUMASuffixEnrollment;
-        break;
-      case AutoEnrollmentState::kNoEnrollment:
-        uma_suffix = kUMASuffixNoEnrollment;
-        break;
-      case AutoEnrollmentState::kServerError:
-        uma_suffix = kUMASuffixServerError;
-        break;
-    }
-
-    base::UmaHistogramMediumTimes(kUMAStateDeterminationTotalDuration,
-                                  fetch_duration);
-    base::UmaHistogramMediumTimes(
-        base::StrCat({kUMAStateDeterminationTotalDurationByState, uma_suffix}),
-        fetch_duration);
-  }
-
-  void ReportStepDurationAndResetTimer(base::StringPiece uma_step_suffix) {
-    base::UmaHistogramTimes(
-        base::StrCat({kUMAStateDeterminationStepDuration, uma_step_suffix}),
-        base::TimeTicks::Now() - step_started_);
-    step_started_ = base::TimeTicks::Now();
-  }
-
-  void ReportResult(AutoEnrollmentState state) {
-    DCHECK(state != AutoEnrollmentState::kIdle);
-    DCHECK(state != AutoEnrollmentState::kPending);
-    ReportTotalDuration(base::TimeTicks::Now() - fetch_started_, state);
-    std::move(report_result_).Run(state);
-  }
-
   void OnSystemClockSynced(bool synchronized) {
     ReportStepDurationAndResetTimer(kUMASuffixSystemClockSync);
     base::UmaHistogramBoolean(kUMAStateDeterminationSystemClockSynchronized,
@@ -1009,6 +963,53 @@ class EnrollmentStateFetcherImpl::Sequence {
     }
     state_.StoreResponse(local_state_, result->dict);
     return ReportResult(result->state);
+  }
+
+  // Helpers
+  void ReportTotalDuration(base::TimeDelta fetch_duration,
+                           AutoEnrollmentState state) {
+    std::string uma_suffix;
+    switch (state) {
+      case AutoEnrollmentState::kIdle:
+      case AutoEnrollmentState::kPending:
+        NOTREACHED();
+        break;
+      case AutoEnrollmentState::kConnectionError:
+        uma_suffix = kUMASuffixConnectionError;
+        break;
+      case AutoEnrollmentState::kDisabled:
+        uma_suffix = kUMASuffixDisabled;
+        break;
+      case AutoEnrollmentState::kEnrollment:
+        uma_suffix = kUMASuffixEnrollment;
+        break;
+      case AutoEnrollmentState::kNoEnrollment:
+        uma_suffix = kUMASuffixNoEnrollment;
+        break;
+      case AutoEnrollmentState::kServerError:
+        uma_suffix = kUMASuffixServerError;
+        break;
+    }
+
+    base::UmaHistogramMediumTimes(kUMAStateDeterminationTotalDuration,
+                                  fetch_duration);
+    base::UmaHistogramMediumTimes(
+        base::StrCat({kUMAStateDeterminationTotalDurationByState, uma_suffix}),
+        fetch_duration);
+  }
+
+  void ReportStepDurationAndResetTimer(base::StringPiece uma_step_suffix) {
+    base::UmaHistogramTimes(
+        base::StrCat({kUMAStateDeterminationStepDuration, uma_step_suffix}),
+        base::TimeTicks::Now() - step_started_);
+    step_started_ = base::TimeTicks::Now();
+  }
+
+  void ReportResult(AutoEnrollmentState state) {
+    DCHECK(state != AutoEnrollmentState::kIdle);
+    DCHECK(state != AutoEnrollmentState::kPending);
+    ReportTotalDuration(base::TimeTicks::Now() - fetch_started_, state);
+    std::move(report_result_).Run(state);
   }
 
   // Used to report an error or the determined enrollment state. In production
