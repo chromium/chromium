@@ -21,7 +21,6 @@ export interface MenuItem {
   text: string;
 }
 
-
 export interface ModuleHeaderElementV2 {
   $: {
     actionMenu: CrActionMenuElement,
