@@ -71,10 +71,10 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
 
   // Returns the corresponding `SnapGroup` if the given `window` belongs to a
   // snap group or nullptr otherwise.
-  SnapGroup* GetSnapGroupForGivenWindow(aura::Window* window);
+  SnapGroup* GetSnapGroupForGivenWindow(const aura::Window* window);
 
   // Used to decide whether showing overview on window snapped is allowed in
-  // clamshell with `kSnapGroup` arm1 enabled.
+  // clamshell.
   bool CanEnterOverview() const;
 
   void AddObserver(Observer* observer);

@@ -39,14 +39,15 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
 OverviewGroupItem::~OverviewGroupItem() = default;
 
 aura::Window* OverviewGroupItem::GetWindow() {
-  CHECK_GE(overview_items_.size(), 1u);
+  // TODO(michelefan): `GetWindow()` will be replaced by `GetWindows()` in a
+  // follow-up cl.
   CHECK_LE(overview_items_.size(), 2u);
-  return overview_items_[0]->GetWindow();
+  return overview_items_.empty() ? nullptr : overview_items_[0]->GetWindow();
 }
 
 std::vector<aura::Window*> OverviewGroupItem::GetWindows() {
   std::vector<aura::Window*> windows;
-  for (auto& item : overview_items_) {
+  for (const auto& item : overview_items_) {
     windows.push_back(item->GetWindow());
   }
 
@@ -54,7 +55,7 @@ std::vector<aura::Window*> OverviewGroupItem::GetWindows() {
 }
 
 bool OverviewGroupItem::Contains(const aura::Window* target) const {
-  for (auto& item : overview_items_) {
+  for (const auto& item : overview_items_) {
     if (item->Contains(target)) {
       return true;
     }
@@ -64,7 +65,7 @@ bool OverviewGroupItem::Contains(const aura::Window* target) const {
 }
 
 OverviewItem* OverviewGroupItem::GetLeafItemForWindow(aura::Window* window) {
-  for (auto& item : overview_items_) {
+  for (const auto& item : overview_items_) {
     if (item->GetWindow() == window) {
       return item.get();
     }
@@ -205,10 +206,18 @@ gfx::Point OverviewGroupItem::GetMagnifierFocusPointInScreen() const {
 void OverviewGroupItem::OnOverviewItemWindowDestroying(
     OverviewItem* overview_item,
     bool reposition) {
-  base::EraseIf(overview_items_, base::MatchesUniquePtr(overview_item));
+  // We use 2-step removal to ensure that the `overview_item` gets removed from
+  // the vector before been destroyed so that all the overview items in
+  // `overview_items_` are valid.
+  auto iter = base::ranges::find_if(overview_items_,
+                                    base::MatchesUniquePtr(overview_item));
+  auto to_be_removed = std::move(*iter);
+  overview_items_.erase(iter);
+  to_be_removed.reset();
 
-  // TODO(b/297960394): Remove `this` from the `overview_grid_` when
-  // `overview_items_` becomes empty.
+  if (overview_items_.empty()) {
+    overview_grid_->RemoveItem(this, /*item_destroying=*/true, reposition);
+  }
 }
 
 void OverviewGroupItem::CreateItemWidget() {

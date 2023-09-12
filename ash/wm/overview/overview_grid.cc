@@ -445,10 +445,11 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
       window->layer()->GetAnimator()->StopAnimating();
     }
 
-    window_list_.push_back(
-        OverviewItemBase::Create(window, overview_session_, this));
-
-    UpdateNumSavedDeskUnsupportedWindows(window, /*increment*/ true);
+    std::unique_ptr<OverviewItemBase> overview_item_base =
+        OverviewItemBase::Create(window, overview_session_, this);
+    UpdateNumSavedDeskUnsupportedWindows(overview_item_base->GetWindows(),
+                                         /*increment=*/true);
+    window_list_.push_back(std::move(overview_item_base));
   }
 }
 
@@ -683,9 +684,11 @@ void OverviewGrid::PositionWindows(
 OverviewItemBase* OverviewGrid::GetOverviewItemContaining(
     const aura::Window* window) const {
   for (const auto& window_item : window_list_) {
-    if (window_item && window_item->Contains(window))
+    if (window_item && window_item->Contains(window)) {
       return window_item.get();
+    }
   }
+
   return nullptr;
 }
 
@@ -697,14 +700,15 @@ void OverviewGrid::AddItem(
     size_t index,
     bool use_spawn_animation,
     bool restack) {
-  DCHECK(!GetOverviewItemContaining(window));
-  DCHECK_LE(index, window_list_.size());
+  CHECK(!GetOverviewItemContaining(window));
+  CHECK_LE(index, window_list_.size());
 
-  UpdateNumSavedDeskUnsupportedWindows(window, /*increment*/ true);
-
-  window_list_.insert(
-      window_list_.begin() + index,
-      OverviewItemBase::Create(window, overview_session_, this));
+  std::unique_ptr<OverviewItemBase> overview_item_base =
+      OverviewItemBase::Create(window, overview_session_, this);
+  UpdateNumSavedDeskUnsupportedWindows(overview_item_base->GetWindows(),
+                                       /*increment=*/true);
+  window_list_.insert(window_list_.begin() + index,
+                      std::move(overview_item_base));
 
   if (overview_session_)
     overview_session_->UpdateFrameThrottling();
@@ -767,8 +771,8 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
                                  &std::unique_ptr<OverviewItemBase>::get);
   DCHECK(iter != window_list_.rend());
 
-  UpdateNumSavedDeskUnsupportedWindows(overview_item->GetWindow(),
-                                       /*increment*/ false);
+  UpdateNumSavedDeskUnsupportedWindows(overview_item->GetWindows(),
+                                       /*increment=*/false);
 
   // This can also be called when shutting down |this|, at which the item will
   // be cleaning up and its associated view may be nullptr. |overview_item|
@@ -2652,8 +2656,9 @@ void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {
   save_desk_button_container_widget_->Hide();
 }
 
-void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
-                                                        bool increment) {
+void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
+    const std::vector<aura::Window*>& windows,
+    bool increment) {
   if (!saved_desk_util::IsSavedDesksEnabled())
     return;
 
@@ -2661,14 +2666,16 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
 
   // Track the number of unsupported and incognito windows. The saved desk
   // buttons are disabled if there are no supported or non-incognito windows.
-  if (IsUnsupportedWindow(window)) {
-    num_unsupported_windows_ += addend;
-  } else if (IsIncognitoWindow(window)) {
-    num_incognito_windows_ += addend;
+  for (auto* window : windows) {
+    if (IsUnsupportedWindow(window)) {
+      num_unsupported_windows_ += addend;
+    } else if (IsIncognitoWindow(window)) {
+      num_incognito_windows_ += addend;
+    }
   }
 
-  DCHECK_GE(num_unsupported_windows_, 0);
-  DCHECK_GE(num_incognito_windows_, 0);
+  CHECK_GE(num_unsupported_windows_, 0);
+  CHECK_GE(num_incognito_windows_, 0);
 }
 
 int OverviewGrid::GetDesksBarHeight() const {

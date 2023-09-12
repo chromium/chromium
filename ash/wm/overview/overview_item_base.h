@@ -69,6 +69,7 @@ class OverviewItemBase {
   void set_should_animate_when_entering(bool should_animate) {
     should_animate_when_entering_ = should_animate;
   }
+
   bool should_animate_when_entering() const {
     return should_animate_when_entering_;
   }

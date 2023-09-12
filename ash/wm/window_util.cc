@@ -25,6 +25,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -336,18 +337,31 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
   auto* split_view_controller =
       SplitViewController::Get(window->GetRootWindow());
 
-  auto* snap_group_controller = SnapGroupController::Get();
-
   // A window should be excluded from being shown in overview when we are
   // selecting another window to complete a window layout, which can happen when
   // in tablet split view mode or during snap group creation session in
-  // clamshell mode with `IsArm1AutomaticallyLockEnabled()` returns true.
-  const bool should_exclude_in_clamshell =
-      snap_group_controller &&
-      snap_group_controller->IsArm1AutomaticallyLockEnabled() &&
-      split_view_controller->in_snap_group_creation_session();
+  // clamshell mode with `IsArm1AutomaticallyLockEnabled()` returns true or if
+  // the window is not the mru window in snap group i.e. the specific
+  // representation for the snap group has been created.
+  auto should_exclude_in_clamshell = [&]() -> bool {
+    auto* snap_group_controller = SnapGroupController::Get();
+    if (snap_group_controller) {
+      if (snap_group_controller->IsArm1AutomaticallyLockEnabled() &&
+          split_view_controller->in_snap_group_creation_session()) {
+        return true;
+      }
+
+      if (SnapGroup* snap_group =
+              snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+        return window != snap_group->GetTopMostWindowInGroup();
+      }
+    }
+
+    return false;
+  };
+
   if ((split_view_controller->InTabletSplitViewMode() ||
-       should_exclude_in_clamshell) &&
+       should_exclude_in_clamshell()) &&
       window == split_view_controller->GetDefaultSnappedWindow()) {
     return true;
   }

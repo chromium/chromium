@@ -811,6 +811,58 @@ TEST_F(SnapGroupEntryPointArm1Test, PartialOverview) {
   }
 }
 
+// Tests that the group item will be created properly and that the snap group
+// will be represented as one group item in overview.
+TEST_F(SnapGroupEntryPointArm1Test, OverviewGroupItemCreationBasic) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  WaitForOverviewEnterAnimation();
+  ASSERT_TRUE(overview_controller->overview_session());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+}
+
+// Tests that if one of the windows in a snap group gets destroyed in overview,
+// the overview group item will only host the other window. If both of the
+// windows get destroyed, the corresponding overview group item will be removed
+// from the overview grid.
+TEST_F(SnapGroupEntryPointArm1Test, WindowDestroyInOverview) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  WaitForOverviewEnterAnimation();
+  ASSERT_TRUE(overview_controller->overview_session());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  ASSERT_EQ(overview_grid->window_list().size(), 2u);
+
+  // On one window in snap group destroying, the group item will host the other
+  // window.
+  w2.reset();
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+
+  // On the only remaining window in snap group destroying, the group item will
+  // be removed from the overview grid.
+  w1.reset();
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(overview_grid->window_list().size(), 1u);
+}
+
 // Tests that the overview session will not show on the other side of the
 // screen on one window snapped if the overview is empty.
 // TODO(b/287514790) : Re-enable the test after figuring out a way to
