@@ -96,15 +96,7 @@ void DeviceFactoryImpl::GetDeviceInfos(GetDeviceInfosCallback callback) {
 }
 
 void DeviceFactoryImpl::CreateDevice(const std::string& device_id,
-                                     CreateDeviceCallback callback) {
-  CreateDeviceInternal(device_id, /*device_receiver=*/absl::nullopt,
-                       std::move(callback));
-}
-
-void DeviceFactoryImpl::CreateDeviceInternal(
-    const std::string& device_id,
-    absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
-    absl::optional<CreateDeviceCallback> create_callback) {
+                                     CreateDeviceCallback create_callback) {
   auto active_device_iter = active_devices_by_id_.find(device_id);
   if (active_device_iter != active_devices_by_id_.end()) {
     // The requested device is already in use, this only happens when lacros and
@@ -113,13 +105,13 @@ void DeviceFactoryImpl::CreateDeviceInternal(
     DeviceInfo info{
         nullptr,
         media::VideoCaptureError::kVideoCaptureDeviceFactorySecondCreateDenied};
-    std::move(*create_callback).Run(std::move(info));
+    std::move(create_callback).Run(std::move(info));
     return;
   }
 
   auto create_and_add_new_device_cb = base::BindOnce(
       &DeviceFactoryImpl::CreateAndAddNewDevice, weak_factory_.GetWeakPtr(),
-      device_id, std::move(device_receiver), std::move(create_callback));
+      device_id, std::move(create_callback));
 
   if (has_called_get_device_infos_) {
     std::move(create_and_add_new_device_cb).Run();
@@ -166,16 +158,12 @@ void DeviceFactoryImpl::RegisterVirtualDevicesChangedObserver(
 
 void DeviceFactoryImpl::CreateAndAddNewDevice(
     const std::string& device_id,
-    absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
-    absl::optional<CreateDeviceCallback> create_callback) {
-  DCHECK(create_callback);
-
+    CreateDeviceCallback create_callback) {
   media::VideoCaptureErrorOrDevice device_status =
       capture_system_->CreateDevice(device_id);
   if (!device_status.ok()) {
-    DCHECK(create_callback);
     DeviceInfo info{nullptr, device_status.error()};
-    std::move(*create_callback).Run(std::move(info));
+    std::move(create_callback).Run(std::move(info));
     return;
   }
 
@@ -197,7 +185,7 @@ void DeviceFactoryImpl::CreateAndAddNewDevice(
 #endif                   // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_WIN)
 
   DeviceInfo info{device_entry.get(), media::VideoCaptureError::kNone};
-  std::move(*create_callback).Run(std::move(info));
+  std::move(create_callback).Run(std::move(info));
 
   active_devices_by_id_[device_id] = std::move(device_entry);
 }

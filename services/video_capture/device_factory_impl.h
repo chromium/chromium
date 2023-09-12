@@ -73,14 +73,8 @@ class DeviceFactoryImpl : public DeviceFactory {
 #endif
 
  private:
-  void CreateDeviceInternal(
-      const std::string& device_id,
-      absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
-      absl::optional<CreateDeviceCallback> create_callback);
-  void CreateAndAddNewDevice(
-      const std::string& device_id,
-      absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
-      absl::optional<CreateDeviceCallback> create_callback);
+  void CreateAndAddNewDevice(const std::string& device_id,
+                             CreateDeviceCallback create_callback);
 
   void OnClientConnectionErrorOrClose(const std::string& device_id);
 
