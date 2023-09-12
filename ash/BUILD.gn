@@ -70,8 +70,6 @@ component("ash") {
     "accelerometer/accel_gyro_samples_observer.cc",
     "accelerometer/accel_gyro_samples_observer.h",
     "accelerometer/accelerometer_constants.h",
-    "accelerometer/accelerometer_file_reader.cc",
-    "accelerometer/accelerometer_file_reader.h",
     "accelerometer/accelerometer_provider_mojo.cc",
     "accelerometer/accelerometer_provider_mojo.h",
     "accelerometer/accelerometer_reader.cc",
