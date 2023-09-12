@@ -218,7 +218,7 @@ source_set("tests") {
         [ "public/cpp/geolocation/geolocation_system_permissions_unittest.cc" ]
   }
 
-  if (is_chromeos && use_iioservice) {
+  if (is_chromeos) {
     sources += [
       "generic_sensor/platform_sensor_chromeos_unittest.cc",
       "generic_sensor/platform_sensor_provider_chromeos_unittest.cc",
@@ -227,7 +227,7 @@ source_set("tests") {
       "//chromeos/components/sensors:sensors",
       "//chromeos/components/sensors:test_support",
     ]
-  } else if ((is_linux || is_chromeos) && use_udev) {
+  } else if (is_linux && use_udev) {
     sources +=
         [ "generic_sensor/platform_sensor_and_provider_unittest_linux.cc" ]
   }

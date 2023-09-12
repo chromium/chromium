@@ -92,7 +92,7 @@ source_set("generic_sensor") {
     deps += [ "//chromeos/components/sensors:buildflags" ]
   }
 
-  if (is_chromeos && use_iioservice) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/components/sensors",
       "//chromeos/components/sensors/mojom",
@@ -106,7 +106,7 @@ source_set("generic_sensor") {
       "platform_sensor_provider_linux_base.cc",
       "platform_sensor_provider_linux_base.h",
     ]
-  } else if ((is_linux || is_chromeos) && use_udev) {
+  } else if (is_linux && use_udev) {
     deps += [
       "//device/base",
       "//device/udev_linux",
