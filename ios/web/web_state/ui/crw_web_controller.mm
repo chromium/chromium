@@ -251,7 +251,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     web::JavaScriptFindInPageManagerImpl::CreateForWebState(_webStateImpl);
     web::TextFragmentsManagerImpl::CreateForWebState(_webStateImpl);
 
-    if (web::WebPageAnnotationsEnabled() && !browserState->IsOffTheRecord()) {
+    if (!browserState->IsOffTheRecord()) {
       web::AnnotationsTextManager::CreateForWebState(_webStateImpl);
     }
 
@@ -1070,12 +1070,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 // Hides annotations highlights triggered by context menu.
 - (void)hideAnnotationsHighlight {
-  if (web::WebPageAnnotationsEnabled()) {
-    web::AnnotationsTextManager* manager =
-        web::AnnotationsTextManager::FromWebState(_webStateImpl);
-    if (manager) {
-      manager->RemoveHighlight();
-    }
+  web::AnnotationsTextManager* manager =
+      web::AnnotationsTextManager::FromWebState(_webStateImpl);
+  if (manager) {
+    manager->RemoveHighlight();
   }
 }
 

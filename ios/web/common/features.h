@@ -51,9 +51,6 @@ BASE_DECLARE_FEATURE(kSynthesizedRestoreSession);
 // should be used instead of directly checking this feature.
 BASE_DECLARE_FEATURE(kUseLoadSimulatedRequestForOfflinePage);
 
-// Feature flag to enable Emails detection.
-BASE_DECLARE_FEATURE(kEnableEmails);
-
 // Feature flag to enable Phone Numbers detection.
 BASE_DECLARE_FEATURE(kEnablePhoneNumbers);
 

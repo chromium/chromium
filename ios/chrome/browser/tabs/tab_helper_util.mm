@@ -165,9 +165,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
   }
 
-  if (web::WebPageAnnotationsEnabled()) {
-    AnnotationsTabHelper::CreateForWebState(web_state);
-  }
+  AnnotationsTabHelper::CreateForWebState(web_state);
 
   SafeBrowsingClient* client =
       SafeBrowsingClientFactory::GetForBrowserState(browser_state);

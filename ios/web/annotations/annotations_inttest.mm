@@ -112,7 +112,6 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
  protected:
   void SetUp() override {
     WebTestWithWebState::SetUp();
-    feature_.InitAndEnableFeature(features::kEnableEmails);
 
     AnnotationsTextManager::CreateForWebState(web_state());
     auto* manager = AnnotationsTextManager::FromWebState(web_state());

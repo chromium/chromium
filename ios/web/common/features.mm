@@ -50,10 +50,6 @@ BASE_FEATURE(kUseLoadSimulatedRequestForOfflinePage,
              "UseLoadSimulatedRequestForErrorPageNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableEmails,
-             "EnableEmailsExperience",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnablePhoneNumbers,
              "EnablePhoneNumbersExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);

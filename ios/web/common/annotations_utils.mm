@@ -170,11 +170,4 @@ NSTextCheckingResult* MakeNSTextCheckingResultEmail(NSString* email,
   return [NSTextCheckingResult linkCheckingResultWithRange:range URL:email_url];
 }
 
-bool WebPageAnnotationsEnabled() {
-  return base::FeatureList::IsEnabled(web::features::kEnableEmails) ||
-         base::FeatureList::IsEnabled(web::features::kEnablePhoneNumbers) ||
-         base::FeatureList::IsEnabled(web::features::kOneTapForMaps) ||
-         base::FeatureList::IsEnabled(web::features::kEnableMeasurements);
-}
-
 }  // namespace web

@@ -4992,11 +4992,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "intents-on-email",
-    "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "intents-on-measurements",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 121

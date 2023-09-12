@@ -1354,9 +1354,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestServerCardInsteadOfLocalCard)},
-    {"intents-on-email", flag_descriptions::kEmailName,
-     flag_descriptions::kEmailDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kEnableEmails)},
     {"ios-password-checkup", flag_descriptions::kIOSPasswordCheckupName,
      flag_descriptions::kIOSPasswordCheckupDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordCheckup)},

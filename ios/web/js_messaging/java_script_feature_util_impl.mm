@@ -85,16 +85,13 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       NavigationJavaScriptFeature::GetInstance(),
       SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
       TextFragmentsJavaScriptFeature::GetInstance(),
-      WebUIMessagingJavaScriptFeature::GetInstance()};
+      WebUIMessagingJavaScriptFeature::GetInstance(),
+      AnnotationsJavaScriptFeature::GetInstance()};
 
   auto frames_manager_features = WebFramesManagerJavaScriptFeature::
       AllContentWorldFeaturesFromBrowserState(browser_state);
   features.insert(features.end(), frames_manager_features.begin(),
                   frames_manager_features.end());
-
-  if (web::WebPageAnnotationsEnabled()) {
-    features.push_back(AnnotationsJavaScriptFeature::GetInstance());
-  }
 
   return features;
 }
