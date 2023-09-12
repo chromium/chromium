@@ -910,10 +910,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
       // The Regular Tabs grid has a button to inform about the hidden inactive
       // tabs.
       CHECK(IsInactiveTabsAvailable());
-      if (self.inactiveTabsCount == 0 &&
-          !self.inactiveTabsHeaderHideAnimationInProgress) {
-        base::debug::DumpWithoutCrashing();
-      }
       registration = self.inactiveTabsButtonHeaderRegistration;
       break;
     case TabGridModeSelection:
