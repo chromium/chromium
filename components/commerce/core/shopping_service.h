@@ -25,6 +25,7 @@
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
+#include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -117,6 +118,7 @@ class ScheduledMetricsManager;
 
 class BookmarkUpdateManager;
 class DiscountsStorage;
+class ParcelManager;
 class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
 class SubscriptionsManager;
@@ -227,7 +229,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
           subscription_proto_db,
       power_bookmarks::PowerBookmarkService* power_bookmark_service,
       SessionProtoStorage<discounts_db::DiscountsContentProto>*
-          discounts_proto_db);
+          discounts_proto_db,
+      SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
+          parcel_tracking_proto_db);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;
@@ -605,6 +609,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   // The object handling discounts storage.
   std::unique_ptr<DiscountsStorage> discounts_storage_;
+
+  // Object for tracking parcel status.
+  std::unique_ptr<ParcelManager> parcel_manager_;
 
   // A consent throttle that will hold callbacks until the specific consent is
   // obtained.

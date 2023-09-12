@@ -9,6 +9,7 @@
 
 #import "base/no_destructor.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
+#import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/leveldb_proto/public/shared_proto_database_client_list.h"
@@ -19,6 +20,7 @@
 
 namespace session_proto_db::internal {
 const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
+const char kParcelTrackingDBFolder[] = "parcel_tracking_db";
 
 template <typename T>
 std::unique_ptr<KeyedService> BuildSessionProtoDB(web::BrowserState* state) {
@@ -32,6 +34,13 @@ std::unique_ptr<KeyedService> BuildSessionProtoDB(web::BrowserState* state) {
         state->GetStatePath().AppendASCII(kCommerceSubscriptionDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE,
         web::GetUIThreadTaskRunner({}));
+  } else if (std::is_base_of<parcel_tracking_db::ParcelTrackingContent,
+                             T>::value) {
+    return std::make_unique<SessionProtoDB<T>>(
+        state->GetProtoDatabaseProvider(),
+        state->GetStatePath().AppendASCII(kParcelTrackingDBFolder),
+        leveldb_proto::ProtoDbType::COMMERCE_PARCEL_TRACKING_DATABASE,
+        web::GetUIThreadTaskRunner({}));
   } else {
     // Must add in leveldb_proto::ProtoDbType and database directory folder
     // new protos.
@@ -42,10 +51,6 @@ std::unique_ptr<KeyedService> BuildSessionProtoDB(web::BrowserState* state) {
   }
 }
 }  // namespace session_proto_db::internal
-
-SessionProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>*
-GetCommerceSubscriptionSessionProtoDBFactory();
 
 template <typename T>
 class SessionProtoDBFactory : public BrowserStateKeyedServiceFactory {

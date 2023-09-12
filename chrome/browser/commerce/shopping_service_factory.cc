@@ -16,6 +16,7 @@
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
+#include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -64,6 +65,8 @@ ShoppingServiceFactory::ShoppingServiceFactory()
   DependsOn(SessionProtoDBFactory<
             commerce_subscription_db::CommerceSubscriptionContentProto>::
                 GetInstance());
+  DependsOn(SessionProtoDBFactory<
+            parcel_tracking_db::ParcelTrackingContent>::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(SessionProtoDBFactory<
             discounts_db::DiscountsContentProto>::GetInstance());
@@ -90,11 +93,13 @@ ShoppingServiceFactory::BuildServiceInstanceForBrowserContext(
       PowerBookmarkServiceFactory::GetForBrowserContext(context),
 #if !BUILDFLAG(IS_ANDROID)
       SessionProtoDBFactory<discounts_db::DiscountsContentProto>::GetInstance()
-          ->GetForProfile(context)
+          ->GetForProfile(context),
 #else
-      nullptr
+      nullptr,
 #endif
-  );
+      SessionProtoDBFactory<
+          parcel_tracking_db::ParcelTrackingContent>::GetInstance()
+          ->GetForProfile(context));
 }
 
 bool ShoppingServiceFactory::ServiceIsCreatedWithBrowserContext() const {

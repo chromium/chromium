@@ -6,6 +6,7 @@
 
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
+#import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
@@ -55,6 +56,8 @@ ShoppingServiceFactory::ShoppingServiceFactory()
   DependsOn(SessionProtoDBFactory<
             commerce_subscription_db::CommerceSubscriptionContentProto>::
                 GetInstance());
+  DependsOn(SessionProtoDBFactory<
+            parcel_tracking_db::ParcelTrackingContent>::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
@@ -75,7 +78,10 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
           ->GetForBrowserState(chrome_state),
-      PowerBookmarkServiceFactory::GetForBrowserState(chrome_state), nullptr);
+      PowerBookmarkServiceFactory::GetForBrowserState(chrome_state), nullptr,
+      SessionProtoDBFactory<
+          parcel_tracking_db::ParcelTrackingContent>::GetInstance()
+          ->GetForBrowserState(chrome_state));
 }
 
 bool ShoppingServiceFactory::ServiceIsNULLWhileTesting() const {

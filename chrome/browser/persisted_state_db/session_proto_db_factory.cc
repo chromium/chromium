@@ -40,6 +40,21 @@ SessionProtoDBFactory<
   return GetCommerceSubscriptionSessionProtoDBFactory();
 }
 
+SessionProtoDBFactory<parcel_tracking_db::ParcelTrackingContent>*
+GetParcelTrackingSessionProtoDBFactory() {
+  static base::NoDestructor<
+      SessionProtoDBFactory<parcel_tracking_db::ParcelTrackingContent>>
+      instance;
+  return instance.get();
+}
+
+template <>
+SessionProtoDBFactory<parcel_tracking_db::ParcelTrackingContent>*
+SessionProtoDBFactory<
+    parcel_tracking_db::ParcelTrackingContent>::GetInstance() {
+  return GetParcelTrackingSessionProtoDBFactory();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 SessionProtoDBFactory<cart_db::ChromeCartContentProto>*
 GetChromeCartSessionProtoDBFactory() {

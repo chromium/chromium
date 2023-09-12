@@ -39,6 +39,7 @@ static_library("shopping_service") {
     "//base",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/commerce/core:shopping_service",
     "//components/keyed_service/ios",
     "//components/leveldb_proto",
@@ -63,6 +64,7 @@ static_library("session_proto_db") {
 
   deps = [
     "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/keyed_service/ios:ios",
     "//components/leveldb_proto:leveldb_proto",
     "//components/session_proto_db:session_proto_db",

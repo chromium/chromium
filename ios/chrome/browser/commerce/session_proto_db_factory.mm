@@ -6,9 +6,11 @@
 
 #import "base/no_destructor.h"
 
+template <>
 SessionProtoDBFactory<
     commerce_subscription_db::CommerceSubscriptionContentProto>*
-GetCommerceSubscriptionSessionProtoDBFactory() {
+SessionProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>::GetInstance() {
   static base::NoDestructor<SessionProtoDBFactory<
       commerce_subscription_db::CommerceSubscriptionContentProto>>
       instance;
@@ -16,9 +18,11 @@ GetCommerceSubscriptionSessionProtoDBFactory() {
 }
 
 template <>
+SessionProtoDBFactory<parcel_tracking_db::ParcelTrackingContent>*
 SessionProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>*
-SessionProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>::GetInstance() {
-  return GetCommerceSubscriptionSessionProtoDBFactory();
+    parcel_tracking_db::ParcelTrackingContent>::GetInstance() {
+  static base::NoDestructor<
+      SessionProtoDBFactory<parcel_tracking_db::ParcelTrackingContent>>
+      instance;
+  return instance.get();
 }

@@ -25,6 +25,7 @@
 #include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
+#include "components/commerce/core/parcel_manager.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
@@ -119,7 +120,9 @@ ShoppingService::ShoppingService(
         subscription_proto_db,
     power_bookmarks::PowerBookmarkService* power_bookmark_service,
     SessionProtoStorage<discounts_db::DiscountsContentProto>*
-        discounts_proto_db)
+        discounts_proto_db,
+    SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
+        parcel_tracking_proto_db)
     : country_on_startup_(country_on_startup),
       locale_on_startup_(locale_on_startup),
       opt_guide_(opt_guide),
@@ -168,11 +171,18 @@ ShoppingService::ShoppingService(
         pref_service, identity_manager, sync_service, url_loader_factory));
   }
 
-  if (IsProductInfoApiEnabled() && identity_manager && account_checker_ &&
-      subscription_proto_db) {
-    subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
-        identity_manager, url_loader_factory, subscription_proto_db,
-        account_checker_.get());
+  if (identity_manager && account_checker_) {
+    if (IsProductInfoApiEnabled() && subscription_proto_db) {
+      subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
+          identity_manager, url_loader_factory, subscription_proto_db,
+          account_checker_.get());
+    }
+
+    if (parcel_tracking_proto_db) {
+      parcel_manager_ = std::make_unique<ParcelManager>(
+          identity_manager, url_loader_factory, parcel_tracking_proto_db,
+          account_checker_.get());
+    }
   }
 
   if (bookmark_model_) {
