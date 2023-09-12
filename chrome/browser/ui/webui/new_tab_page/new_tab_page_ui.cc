@@ -501,6 +501,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT_TOAST},
       {"modulesJourneysShowAll", IDS_NTP_MODULES_SHOW_ALL},
       {"modulesJourneysInfo", IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO},
+      {"modulesHistoryWithDiscountInfo",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_WITH_DISCOUNT_INFO},
       {"modulesThisTypeOfCardText",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_NAME},
       {"modulesJourneyDisable", IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT},
