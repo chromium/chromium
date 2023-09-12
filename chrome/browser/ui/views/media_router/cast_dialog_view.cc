@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/controls/md_text_button_with_down_arrow.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_access_code_cast_button.h"
@@ -66,13 +65,7 @@ CastDialogView::CastDialogView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  sources_button_ =
-      SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(
-          base::BindRepeating(&CastDialogView::ShowSourcesMenu,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON)));
-  sources_button_->SetEnabled(false);
+  InitializeSourcesButton();
   MaybeShowAccessCodeCastButton();
   ShowNoSinksView();
 }
@@ -289,6 +282,17 @@ void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
 
   MaybeSizeToContents();
   Layout();
+}
+
+void CastDialogView::InitializeSourcesButton() {
+  sources_button_ =
+      SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(
+          base::BindRepeating(&CastDialogView::ShowSourcesMenu,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON)));
+  sources_button_->SetEnabled(false);
+  sources_button_->SetStyle(ui::ButtonStyle::kTonal);
 }
 
 void CastDialogView::ShowSourcesMenu() {
