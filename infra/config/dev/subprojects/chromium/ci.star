@@ -230,6 +230,7 @@ ci_builder(
         ),
     ),
     os = os.WINDOWS_10,
+    ssd = 0,
 )
 
 ci_builder(
