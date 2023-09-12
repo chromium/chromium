@@ -248,9 +248,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       SharedImageFormat si_format,
       int plane_index,
       uint32_t gl_texture_target,
-      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
+      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+      const gfx::ColorSpace& yuv_color_space);
   void MakePromiseSkImageSinglePlane(ImageContextImpl* image_context,
-                                     bool mipmapped);
+                                     bool mipmapped,
+                                     const gfx::ColorSpace& yuv_color_space);
   void MakePromiseSkImageMultiPlane(ImageContextImpl* image_context,
                                     const gfx::ColorSpace& yuv_color_space);
   void ContextLost();

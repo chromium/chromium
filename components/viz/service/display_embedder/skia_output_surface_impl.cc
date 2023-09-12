@@ -536,7 +536,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
 
   auto format = image_context->format();
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
-    MakePromiseSkImageSinglePlane(image_context_impl, /*mipmapped=*/false);
+    MakePromiseSkImageSinglePlane(image_context_impl, /*mipmapped=*/false,
+                                  yuv_color_space);
   } else {
     MakePromiseSkImageMultiPlane(image_context_impl, yuv_color_space);
   }
@@ -590,10 +591,13 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
     for (size_t i = 0; i < contexts.size(); ++i) {
       auto* context = static_cast<ImageContextImpl*>(contexts[i]);
+      // NOTE: `yuv_color_space` is used only with external sampling and hence
+      // is not relevant in this per-plane sampling flow.
       formats[i] =
           GetGrBackendFormatForTexture(context->format(), /*plane_index=*/0,
                                        context->mailbox_holder().texture_target,
-                                       /*ycbcr_info=*/absl::nullopt);
+                                       /*ycbcr_info=*/absl::nullopt,
+                                       /*yuv_color_space=*/gfx::ColorSpace());
       // NOTE: We don't have promises for individual planes, but still need
       // format for fallback.
       context->SetImage(nullptr, {formats[i]});
@@ -620,7 +624,8 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
 
 void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
     ImageContextImpl* image_context,
-    bool mipmap) {
+    bool mipmap,
+    const gfx::ColorSpace& yuv_color_space) {
   CHECK(!image_context->has_image());
   auto format = image_context->format();
   CHECK(format.is_single_plane() || format.PrefersExternalSampler());
@@ -651,10 +656,12 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
     image_context->SetImage(std::move(image), {texture_info});
   } else {
     CHECK(gr_context_thread_safe_);
+    // NOTE: To compute the format, it is necessary to pass the ColorSpace that
+    // came originally from the TransferableResource.
     GrBackendFormat backend_format = GetGrBackendFormatForTexture(
         format, /*plane_index=*/0,
         image_context->mailbox_holder().texture_target,
-        image_context->ycbcr_info());
+        image_context->ycbcr_info(), yuv_color_space);
     auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
         gfx::SizeToSkISize(image_context->size()),
@@ -705,9 +712,11 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          ++plane_index) {
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
+      // NOTE: To compute the format, it is necessary to pass the ColorSpace
+      // that came originally from the TransferableResource.
       formats.push_back(GetGrBackendFormatForTexture(
           format, plane_index, image_context->mailbox_holder().texture_target,
-          image_context->ycbcr_info()));
+          image_context->ycbcr_info(), yuv_color_space));
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
     }
 
@@ -991,7 +1000,10 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
         /*is_for_render_pass=*/true);
   }
   if (!image_context->has_image()) {
-    MakePromiseSkImageSinglePlane(image_context.get(), mipmap);
+    // NOTE: The ColorSpace parameter is relevant only for external sampling,
+    // whereas RenderPasses always work with true single-planar formats.
+    MakePromiseSkImageSinglePlane(image_context.get(), mipmap,
+                                  gfx::ColorSpace());
     if (!image_context->has_image()) {
       return nullptr;
     }
@@ -1474,19 +1486,38 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     SharedImageFormat si_format,
     int plane_index,
     uint32_t gl_texture_target,
-    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
+    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const gfx::ColorSpace& yuv_color_space) {
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == gpu::GrContextType::kVulkan) {
-    if (!ycbcr_info) {
+    auto valid_ycbcr_info = ycbcr_info;
+    bool external_sampling = si_format.IsLegacyMultiplanar();
+    if (external_sampling && !valid_ycbcr_info) {
+      // VulkanYCbCrInfo is required to compute the VkFormat when using external
+      // sampling, so construct it here.
+      VkSamplerYcbcrModelConversion ycbcr_conversion =
+          (yuv_color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)
+              ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
+              : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
+
+      valid_ycbcr_info.emplace(
+          static_cast<uint32_t>(gpu::ToVkFormatSinglePlanar(si_format)),
+          /*external_format=*/0, ycbcr_conversion,
+          VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
+          VK_CHROMA_LOCATION_COSITED_EVEN,
+          /*format_features=*/0);
+    } else if (!valid_ycbcr_info) {
+      // For per-plane sampling, can just return the VkFormat for the plane if
+      // VulkanYcbCrInfo isn't present.
       return GrBackendFormats::MakeVk(gpu::ToVkFormat(si_format, plane_index));
     }
 
     // Assume optimal tiling.
-    GrVkYcbcrConversionInfo gr_ycbcr_info =
-        CreateGrVkYcbcrConversionInfo(dependency_->GetVulkanContextProvider()
-                                          ->GetDeviceQueue()
-                                          ->GetVulkanPhysicalDevice(),
-                                      VK_IMAGE_TILING_OPTIMAL, ycbcr_info);
+    GrVkYcbcrConversionInfo gr_ycbcr_info = CreateGrVkYcbcrConversionInfo(
+        dependency_->GetVulkanContextProvider()
+            ->GetDeviceQueue()
+            ->GetVulkanPhysicalDevice(),
+        VK_IMAGE_TILING_OPTIMAL, valid_ycbcr_info);
 #if BUILDFLAG(IS_LINUX)
     // Textures that were allocated _on linux_ with ycbcr info came from
     // VaapiVideoDecoder, which exports using DRM format modifiers.
