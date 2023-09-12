@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+<if expr="enable_search_engine_choice">
+  <if expr="use_titlecase">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE" desc="This string is the heading of a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) We want users to read this screen and understand that they can use any search engine with Chrome.">
+      Choose Your Search Engine
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE" desc="This string is the heading of a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) We want users to read this screen and understand that they can use any search engine with Chrome.">
+      Choose your search engine
+    </message>
+  </if>
+</if>
+</grit-part>

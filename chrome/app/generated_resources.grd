@@ -15993,10 +15993,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- Search Engine Choice strings -->
     <if expr="enable_search_engine_choice">
-      <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE" desc="The title for the Search Engine Choice page."
-        translateable="false">
-        Lorem ipsum dolor sit amet
-      </message>
       <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE" desc="The subtitle for the Search Engine Choice page."
         translateable="false">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
