@@ -258,6 +258,12 @@ class BrowsingDataModel {
       const net::SchemefulSite& top_level_site,
       base::OnceClosure completed);
 
+  // Removes data for `data_owner` which is not partitioned, or is the 1P
+  // partition. This supports more granular data deletion needed by UI surfaces.
+  // Virtual to allow an in-memory only fake to be created.
+  virtual void RemoveUnpartitionedBrowsingData(const DataOwner& data_owner,
+                                               base::OnceClosure completed);
+
   // Returns whether the provided `storage_type` is blocked when third party
   // cookies are blocked.
   bool IsBlockedByThirdPartyCookieBlocking(StorageType storage_type) const;

@@ -1079,7 +1079,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
-                       PartitionedLocalStorageRemoved) {
+                       LocalStorageRemovedBasedOnPartition) {
   // Build BDM from disk.
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BuildBrowsingDataModel();
@@ -1194,6 +1194,26 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
          test_entry_storage_size[0].Get(),
          /*cookie_count=*/0}},
        {kTestHost,
+        storage_key_c,
+        {{BrowsingDataModel::StorageType::kLocalStorage},
+         test_entry_storage_size[2].Get(),
+         /*cookie_count=*/0}}});
+
+  // Remove {a on a}
+  {
+    base::RunLoop run_loop;
+    browsing_data_model->RemoveUnpartitionedBrowsingData(
+        kTestHost, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Rebuild from disk.
+  browsing_data_model = BuildBrowsingDataModel();
+
+  // Validate entries {{a on c}}.
+  ValidateBrowsingDataEntries(
+      browsing_data_model.get(),
+      {{kTestHost,
         storage_key_c,
         {{BrowsingDataModel::StorageType::kLocalStorage},
          test_entry_storage_size[2].Get(),
