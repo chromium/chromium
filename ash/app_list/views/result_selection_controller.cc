@@ -175,7 +175,7 @@ ResultSelectionController::GetNextResultLocationForLocation(
           ChangeContainer(next_location, location.container_index - 1);
 
           if (next_location->container_index >= location.container_index)
-            return MoveResult::kSelectionCycleRejected;
+            return MoveResult::kSelectionCycleBeforeFirstResult;
 
         } else {
           --next_location->result_index;
@@ -186,7 +186,7 @@ ResultSelectionController::GetNextResultLocationForLocation(
           ChangeContainer(next_location, location.container_index + 1);
 
           if (next_location->container_index <= location.container_index)
-            return MoveResult::kSelectionCycleRejected;
+            return MoveResult::kSelectionCycleAfterLastResult;
         } else {
           ++next_location->result_index;
         }
@@ -199,7 +199,7 @@ ResultSelectionController::GetNextResultLocationForLocation(
         ChangeContainer(next_location, location.container_index - 1);
 
         if (next_location->container_index >= location.container_index)
-          return MoveResult::kSelectionCycleRejected;
+          return MoveResult::kSelectionCycleBeforeFirstResult;
       } else {
         // Traversing 'up' moves up one result.
         --next_location->result_index;
@@ -210,7 +210,7 @@ ResultSelectionController::GetNextResultLocationForLocation(
         // Traversing 'down' from the bottom of a container changes containers.
         ChangeContainer(next_location, location.container_index + 1);
         if (next_location->container_index <= location.container_index)
-          return MoveResult::kSelectionCycleRejected;
+          return MoveResult::kSelectionCycleAfterLastResult;
       } else {
         // Traversing 'down' moves down one result.
         ++next_location->result_index;

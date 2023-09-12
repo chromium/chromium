@@ -69,7 +69,8 @@ class ASH_EXPORT ResultSelectionController {
     kNone,
 
     // The selection has not changed because the selection would cycle.
-    kSelectionCycleRejected,
+    kSelectionCycleBeforeFirstResult,
+    kSelectionCycleAfterLastResult,
 
     // The currently selected result has changed.
     //

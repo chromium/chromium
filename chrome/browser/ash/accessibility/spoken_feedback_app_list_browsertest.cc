@@ -837,9 +837,17 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, LauncherSearch) {
     }
   }
 
-  // Cycle focus to the close button.
+  // Cycle focus to the filter button.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Toggle search result categories");
+
+  // Move focus to the close button.
   sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
   sm_.ExpectSpeech("Clear searchbox text");
+
+  // Move focus back to the filter button.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });
+  sm_.ExpectSpeech("Toggle search result categories");
 
   // Go back to the last result.
   sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });

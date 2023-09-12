@@ -402,7 +402,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
         &SearchBoxView::ShowFilterMenu, weak_ptr_factory_.GetWeakPtr()));
     filter_button->SetFlipCanvasOnPaintForRTLUI(false);
     // TODO(crbug.com/1352636): Replace this with the l10n string.
-    std::u16string filter_button_label(u"Filter search categories");
+    std::u16string filter_button_label(u"Toggle search result categories");
     filter_button->SetAccessibleName(filter_button_label);
     filter_button->SetTooltipText(filter_button_label);
   }
@@ -790,22 +790,80 @@ void SearchBoxView::UpdateSearchBoxFocusPaint() {
 }
 
 void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
-  // Handle keyboard navigation keys when close button is focused - move the
-  // focus to the search box text field, and ensure result selection gets
-  // updated according to the navigation key. The latter is the reason
-  // navigation is handled here instead of the focus manager - intended result
-  // selection depends on the key event that triggered the focus change.
-  if (close_button()->HasFocus() && evt->type() == ui::ET_KEY_PRESSED &&
-      (IsUnhandledArrowKeyEvent(*evt) || evt->key_code() == ui::VKEY_TAB)) {
-    search_box()->RequestFocus();
+  // Only handle the key event that triggers the focus or result selection
+  // traversal here. Propagate the event to `delegate_` otherwise.
+  if (evt->type() != ui::ET_KEY_PRESSED ||
+      !(IsUnhandledArrowKeyEvent(*evt) || evt->key_code() == ui::VKEY_TAB)) {
+    delegate_->OnSearchBoxKeyEvent(evt);
+    return;
+  }
 
+  // A function that will move the focus back to search box and find a search
+  // result to select.
+  auto move_focus_to_result_selection = [&]() {
+    search_box()->RequestFocus();
     if (delegate_->CanSelectSearchResults() &&
         result_selection_controller_->MoveSelection(*evt) ==
             ResultSelectionController::MoveResult::kResultChanged) {
       UpdateSearchBoxForSelectedResult(
           result_selection_controller_->selected_result()->result());
     }
+  };
 
+  // Handle keyboard navigation keys when the close button or the filter button
+  // is focused. If the focus on the button is going to move to the search box
+  // text field, ensure result selection gets updated according to the
+  // navigation key. The result selection is the reason navigation is handled
+  // here instead of the focus manager - intended result selection depends on
+  // the key event that triggered the focus change.
+  if (close_button()->HasFocus()) {
+    switch (evt->key_code()) {
+      case ui::VKEY_TAB:
+        if (evt->IsShiftDown() && filter_button()) {
+          filter_button()->RequestFocus();
+        } else {
+          move_focus_to_result_selection();
+        }
+        break;
+      case ui::VKEY_UP:
+      case ui::VKEY_LEFT:
+        if (filter_button()) {
+          filter_button()->RequestFocus();
+        } else {
+          move_focus_to_result_selection();
+        }
+        break;
+      case ui::VKEY_DOWN:
+      case ui::VKEY_RIGHT:
+        move_focus_to_result_selection();
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
+    evt->SetHandled();
+    return;
+  }
+
+  if (filter_button() && filter_button()->HasFocus()) {
+    switch (evt->key_code()) {
+      case ui::VKEY_TAB:
+        if (evt->IsShiftDown()) {
+          move_focus_to_result_selection();
+        } else {
+          close_button()->RequestFocus();
+        }
+        break;
+      case ui::VKEY_DOWN:
+      case ui::VKEY_RIGHT:
+        close_button()->RequestFocus();
+        break;
+      case ui::VKEY_UP:
+      case ui::VKEY_LEFT:
+        move_focus_to_result_selection();
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
     evt->SetHandled();
     return;
   }
@@ -1382,17 +1440,35 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
       // return early, as what follows is actions for updating based on
       // change.
       break;
-    case ResultSelectionController::MoveResult::kSelectionCycleRejected:
-      // If move was about to cycle, clear the selection and move the focus to
-      // the next element in the SearchBoxView - close_button() (only
-      // close_button() and search_box() are expected to be in the focus cycle
-      // while the search box is active).
+    case ResultSelectionController::MoveResult::
+        kSelectionCycleBeforeFirstResult:
+      // TODO(crbug.com/1352636): Handle the case where the search notifier
+      // exists.
+      // If the result selection was about to cycle, clear the selection and
+      // move the focus to the next element in the SearchBoxView -
+      // close_button().
       if (HasAutocompleteText())
         ClearAutocompleteText();
       result_selection_controller_->ClearSelection();
 
       DCHECK(close_button()->GetVisible());
       close_button()->RequestFocus();
+      SetA11yActiveDescendant(absl::nullopt);
+      break;
+    case ResultSelectionController::MoveResult::kSelectionCycleAfterLastResult:
+      // If move was about to cycle, clear the selection and move the focus to
+      // the next element in the SearchBoxView - close_button() or
+      // filter_button().
+      if (HasAutocompleteText()) {
+        ClearAutocompleteText();
+      }
+      result_selection_controller_->ClearSelection();
+
+      if (filter_button()) {
+        filter_button()->RequestFocus();
+      } else {
+        close_button()->RequestFocus();
+      }
       SetA11yActiveDescendant(absl::nullopt);
       break;
     case ResultSelectionController::MoveResult::kResultChanged:

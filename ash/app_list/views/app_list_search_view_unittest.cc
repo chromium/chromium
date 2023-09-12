@@ -714,6 +714,76 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
       TestAppListClient::SearchCallback());
 }
 
+// Tests that key traversal correctly cycles between the list of results and
+// search box buttons.
+TEST_P(SearchResultImageViewTest, ResultSelectionCycle) {
+  auto* test_helper = GetAppListTestHelper();
+  test_helper->ShowAppList();
+  EXPECT_FALSE(GetSearchView()->CanSelectSearchResults());
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+  SearchModel::SearchResults* results = test_helper->GetSearchResults();
+
+  // Create categorized app results.
+  AppListModelProvider::Get()->search_model()->DeleteAllResults();
+  test_helper->GetOrderedResultCategories()->push_back(
+      AppListSearchResultCategory::kApps);
+  SetUpSearchResults(results, 1, kDefaultSearchItems, 100, false,
+                     SearchResult::Category::kApps);
+
+  std::vector<SearchResultContainerView*> result_containers =
+      GetSearchView()->result_container_views_for_test();
+  for (auto* container : result_containers) {
+    EXPECT_TRUE(container->RunScheduledUpdateForTest());
+  }
+
+  // When the search starts, the first result view is selected.
+  EXPECT_TRUE(GetSearchView()->CanSelectSearchResults());
+  ResultSelectionController* controller =
+      GetSearchView()->result_selection_controller_for_test();
+  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
+
+  // Traverse the first results container.
+  for (int i = 0; i < kDefaultSearchItems - 1; ++i) {
+    PressAndReleaseKey(ui::VKEY_DOWN);
+    ASSERT_TRUE(controller->selected_result()) << i;
+  }
+
+  // Pressing down while the last result is selected moves focus to the filter
+  // button.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(controller->selected_result());
+  EXPECT_TRUE(GetSearchBoxView()->filter_button()->HasFocus());
+
+  // The next focus from the filter button is the close button.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_TRUE(GetSearchBoxView()->close_button()->HasFocus());
+
+  // Move focus to the search box, and verify result selection is properly set.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_TRUE(GetSearchBoxView()->search_box()->HasFocus());
+  ASSERT_TRUE(controller->selected_result());
+  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
+
+  // Up key should cycle focus from the first search result to the close button.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_FALSE(controller->selected_result());
+  EXPECT_TRUE(GetSearchBoxView()->close_button()->HasFocus());
+
+  // Pressing up key again moves to the previous button of the close button,
+  // which is the filter button.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(GetSearchBoxView()->filter_button()->HasFocus());
+
+  // Up key will cycle the focus back to the last search result.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(GetSearchBoxView()->search_box()->HasFocus());
+  ASSERT_TRUE(controller->selected_result());
+  EXPECT_EQ(controller->selected_location_details()->result_index,
+            kDefaultSearchItems - 1);
+}
+
 TEST_P(SearchViewClamshellAndTabletTest, AnimateSearchResultView) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
