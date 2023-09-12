@@ -452,12 +452,18 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
     LOG(ERROR) << "Failed to create ImageProcessor output config";
     return false;
   }
-
-  image_processor_ = ImageProcessorFactory::Create(
-      *input_config, *output_config, ImageProcessor::OutputMode::IMPORT,
-      kImageProcBufferCount, encoder_task_runner_,
+  ImageProcessorFactory::PickFormatCB pick_format_cb =
+      base::BindRepeating([](const std::vector<Fourcc>& fourcc_config,
+                             absl::optional<Fourcc> fourcc) {
+        return absl::make_optional<Fourcc>(fourcc_config[0]);
+      });
+  image_processor_ = ImageProcessorFactory::CreateWithInputCandidates(
+      {}, gfx::Rect(input_config->size), output_config->size,
+      kImageProcBufferCount, encoder_task_runner_, pick_format_cb,
       base::BindRepeating(&V4L2VideoEncodeAccelerator::ImageProcessorError,
-                          weak_this_));
+                          weak_this_),
+      *input_config, *output_config);
+
   if (!image_processor_) {
     LOG(ERROR) << "Failed initializing image processor";
     return false;

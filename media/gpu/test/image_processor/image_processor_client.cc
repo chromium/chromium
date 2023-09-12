@@ -121,11 +121,19 @@ void ImageProcessorClient::CreateImageProcessorTask(
   DCHECK_CALLED_ON_VALID_THREAD(image_processor_client_thread_checker_);
   // base::Unretained(this) for ErrorCB is safe here because the callback is
   // executed on |image_processor_client_thread_| which is owned by this class.
-  image_processor_ = ImageProcessorFactory::Create(
-      input_config, output_config, ImageProcessor::OutputMode::IMPORT,
-      num_buffers, image_processor_client_thread_.task_runner(),
+  ImageProcessorFactory::PickFormatCB pick_format_cb =
+      base::BindRepeating([](const std::vector<Fourcc>& fourcc_config,
+                             absl::optional<Fourcc> fourcc) {
+        return absl::make_optional<Fourcc>(fourcc_config[0]);
+      });
+
+  image_processor_ = ImageProcessorFactory::CreateWithInputCandidates(
+      {}, gfx::Rect(input_config.size), output_config.size, num_buffers,
+      image_processor_client_thread_.task_runner(), pick_format_cb,
       base::BindRepeating(&ImageProcessorClient::NotifyError,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      input_config, output_config);
+
   done->Signal();
 }
 

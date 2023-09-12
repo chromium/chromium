@@ -200,6 +200,8 @@ VideoPixelFormat Fourcc::ToVideoPixelFormat() const {
     // bitdepth and internal layout as P010.
     case Q10C:
       return PIXEL_FORMAT_P016LE;
+    case UNDEFINED:
+      break;
   }
   NOTREACHED() << "Unmapped Fourcc: " << ToString();
   return PIXEL_FORMAT_UNKNOWN;
@@ -268,6 +270,7 @@ absl::optional<uint32_t> Fourcc::ToVAFourCC() const {
     case MT2T:
     case Q08C:
     case Q10C:
+    case UNDEFINED:
       // VAAPI does not know about these formats, so signal this by returning
       // nullopt.
       DVLOGF(3) << "Fourcc not convertible to VaFourCC: " << ToString();
@@ -305,6 +308,7 @@ absl::optional<Fourcc> Fourcc::ToSinglePlanar() const {
     case MT21:
     case Q08C:
     case Q10C:
+    case UNDEFINED:
       return absl::nullopt;
   }
 }
@@ -326,6 +330,7 @@ bool Fourcc::IsMultiPlanar() const {
     case AR24:
     case Q08C:
     case Q10C:
+    case UNDEFINED:
       return false;
     case YM12:
     case YM21:

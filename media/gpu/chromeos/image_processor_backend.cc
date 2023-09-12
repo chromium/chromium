@@ -34,6 +34,8 @@ std::string VectorToString(const std::vector<T>& vec) {
 
 }  // namespace
 
+ImageProcessorBackend::PortConfig::PortConfig() = default;
+
 ImageProcessorBackend::PortConfig::PortConfig(const PortConfig&) = default;
 
 ImageProcessorBackend::PortConfig::PortConfig(

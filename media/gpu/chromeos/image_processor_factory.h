@@ -28,24 +28,14 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
       const std::vector<Fourcc>& /* candidates */,
       absl::optional<Fourcc> /* preferred_fourcc */)>;
 
-  // Factory method to create ImageProcessor.
-  // Given input and output PortConfig, it tries to find out the most suitable
-  // ImageProcessor to be used for the current platform.
-  //
-  // Returns:
-  //   Most suitable ImageProcessor instance. nullptr if no ImageProcessor
-  //   is available for given parameters on current platform.
-  static std::unique_ptr<ImageProcessor> Create(
-      const ImageProcessor::PortConfig& input_config,
-      const ImageProcessor::PortConfig& output_config,
-      ImageProcessor::OutputMode output_mode,
-      size_t num_buffers,
-      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
-      ImageProcessor::ErrorCB error_cb);
-
   // Factory method to create an ImageProcessor.
-  // Unlike Create(), the caller passes a list of supported inputs,
-  // |input_candidates|. It also passes the |input_visible_rect| and the desired
+  // The caller will either pass in a list of supported inputs,
+  // |input_candidates| or a pair of PortConfig objects,
+  // |input_config| and |output_config|. If the caller passes
+  // in the pair of PortConfig objects, the function will try
+  // to find the most suitable ImageProcessor to be used for the current
+  // platform. Conversely, if the caller passes a list of supported input,
+  // they will also need to pass the |input_visible_rect| and the desired
   // |output_size|. |out_format_picker| allows us to negotiate the output
   // format: we'll call it with a list of supported formats and (possibly) a
   // preferred one and the callback picks one. With the rest of the parameters
@@ -58,7 +48,11 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
       size_t num_buffers,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       PickFormatCB out_format_picker,
-      ImageProcessor::ErrorCB error_cb);
+      ImageProcessor::ErrorCB error_cb,
+      const ImageProcessor::PortConfig& input_config =
+          ImageProcessor::PortConfig(),
+      const ImageProcessor::PortConfig& output_config =
+          ImageProcessor::PortConfig());
 
 #if BUILDFLAG(USE_V4L2_CODEC)
   static std::unique_ptr<ImageProcessor>

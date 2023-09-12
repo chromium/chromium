@@ -43,7 +43,7 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
 
   // Encapsulates ImageProcessor input / output configurations.
   struct MEDIA_GPU_EXPORT PortConfig {
-    PortConfig() = delete;
+    PortConfig();
     PortConfig(const PortConfig&);
     PortConfig(
         Fourcc fourcc,

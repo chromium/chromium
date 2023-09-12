@@ -107,7 +107,11 @@ class MEDIA_GPU_EXPORT Fourcc {
     Q08C = ComposeFourcc('Q', '0', '8', 'C'),
     // Maps to V4L2_PIX_FMT_QC10C.
     Q10C = ComposeFourcc('Q', '1', '0', 'C'),
+
+    UNDEFINED = ComposeFourcc(0, 0, 0, 0),
   };
+
+  constexpr Fourcc() = default;
 
   explicit constexpr Fourcc(Fourcc::Value fourcc) : value_(fourcc) {}
 
@@ -163,7 +167,7 @@ class MEDIA_GPU_EXPORT Fourcc {
   std::string ToString() const;
 
  private:
-  Value value_;
+  Value value_ = Fourcc::Value::UNDEFINED;
 };
 
 MEDIA_GPU_EXPORT bool operator!=(const Fourcc& lhs, const Fourcc& rhs);
