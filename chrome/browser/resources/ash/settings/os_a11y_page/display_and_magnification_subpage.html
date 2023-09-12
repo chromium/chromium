@@ -39,6 +39,7 @@
     border: 1px solid var(--cros-separator-color);
     border-radius: 8px;
     gap: 16px;
+    margin-bottom: 16px;
     margin-inline-end: 20px;
     padding: 16px 0;
     text-align: center;
@@ -109,7 +110,6 @@
 <template is="dom-if" if="[[experimentalColorEnhancementSettingsEnabled_]]">
   <settings-toggle-button
     id="enableColorFiltering"
-    class="hr"
     icon="os-settings:color-correction"
     pref="{{prefs.settings.a11y.color_filtering.enabled}}"
     label="$i18n{colorFilteringLabel}"
@@ -174,6 +174,7 @@
       </div>
     </div>
   </template>
+  <div class="hr"></div>
 </template>
 <settings-toggle-button
     icon="os-settings:contrast"
