@@ -4,6 +4,7 @@
 
 #include "components/signin/public/base/signin_switches.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace switches {
 
@@ -29,6 +30,16 @@ BASE_FEATURE(kEnableBoundSessionCredentials,
 bool IsBoundSessionCredentialsEnabled() {
   return base::FeatureList::IsEnabled(switches::kEnableBoundSessionCredentials);
 }
+
+const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>::Option
+    enable_bound_session_credentials_dice_support[] = {
+        {EnableBoundSessionCredentialsDiceSupport::kDisabled, "disabled"},
+        {EnableBoundSessionCredentialsDiceSupport::kEnabled, "enabled"}};
+const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>
+    kEnableBoundSessionCredentialsDiceSupport{
+        &kEnableBoundSessionCredentials, "dice-support",
+        EnableBoundSessionCredentialsDiceSupport::kDisabled,
+        &enable_bound_session_credentials_dice_support};
 #endif
 
 // Enables fetching account capabilities and populating AccountInfo with the

@@ -73,8 +73,8 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
       account_consistency_method ==
           signin::AccountConsistencyMethod::kDisabled ||
       (account_consistency_method == signin::AccountConsistencyMethod::kDice &&
-       base::FeatureList::IsEnabled(
-           kEnableBoundSessionCredentialsOnDiceProfiles));
+       switches::kEnableBoundSessionCredentialsDiceSupport.Get() ==
+           switches::EnableBoundSessionCredentialsDiceSupport::kEnabled);
 
   if (!should_create_service) {
     return nullptr;

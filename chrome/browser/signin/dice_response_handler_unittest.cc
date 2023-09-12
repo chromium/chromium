@@ -159,10 +159,9 @@ class DiceResponseHandlerTest : public testing::Test,
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
             identity_test_env_.identity_manager()) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    feature_list_.InitWithFeatures(
-        {switches::kEnableBoundSessionCredentials,
-         kEnableBoundSessionCredentialsOnDiceProfiles},
-        {});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kEnableBoundSessionCredentials,
+        {{"dice-support", "enabled"}});
 #endif
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     AboutSigninInternals::RegisterPrefs(pref_service_.registry());

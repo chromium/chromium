@@ -2154,6 +2154,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "enable-bound-session-credentials",
+    "owners": [ "alexilin", "msalama", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "enable-browser-lockdown-mode",
     "owners": [ "joemerramos", "ajuma", "bling-flags@google.com" ],
     "expiry_milestone": 130

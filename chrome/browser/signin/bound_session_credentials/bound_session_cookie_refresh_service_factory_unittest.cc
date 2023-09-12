@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -31,6 +32,7 @@
 
 namespace {
 using base::test::FeatureRef;
+using base::test::FeatureRefAndParams;
 using base::test::ScopedFeatureList;
 using sync_preferences::TestingPrefServiceSyncable;
 using ::testing::TestWithParam;
@@ -48,33 +50,36 @@ bool DoesServiceExistForProfile(Profile* profile) {
 
 struct BoundSessionCookieRefreshServiceFactoryTestParams {
   std::string test_name;
-  std::vector<FeatureRef> enabled_features;
+  std::vector<FeatureRefAndParams> enabled_features;
   std::vector<FeatureRef> disabled_features;
+  absl::optional<switches::EnableBoundSessionCredentialsDiceSupport>
+      expected_support;  // absl::nullopt means no support at all.
   ~BoundSessionCookieRefreshServiceFactoryTestParams() = default;
 };
 
 const BoundSessionCookieRefreshServiceFactoryTestParams kTestCases[] = {
-    {"OnlyBoundSessionCredentialsEnabled",
-     {switches::kEnableBoundSessionCredentials},
-     {kEnableBoundSessionCredentialsOnDiceProfiles}},
-    {"OnlyEnableBoundSessionCredentialsOnDiceProfilesEnabled",
-     {kEnableBoundSessionCredentialsOnDiceProfiles},
-     {switches::kEnableBoundSessionCredentials}},
-    {"AllEnabled",
-     {switches::kEnableBoundSessionCredentials,
-      kEnableBoundSessionCredentialsOnDiceProfiles},
-     {}},
-    {"AllDisabled",
+    {"EnabledWithDefaultDiceSupport",
+     {{switches::kEnableBoundSessionCredentials, {}}},
      {},
-     {switches::kEnableBoundSessionCredentials,
-      kEnableBoundSessionCredentialsOnDiceProfiles}}};
+     switches::EnableBoundSessionCredentialsDiceSupport::kDisabled},
+    {"EnabledForNonDiceProfiles",
+     {{switches::kEnableBoundSessionCredentials,
+       {{"dice-support", "disabled"}}}},
+     {},
+     switches::EnableBoundSessionCredentialsDiceSupport::kDisabled},
+    {"EnabledForAllProfiles",
+     {{switches::kEnableBoundSessionCredentials,
+       {{"dice-support", "enabled"}}}},
+     {},
+     switches::EnableBoundSessionCredentialsDiceSupport::kEnabled},
+    {"Disabled", {}, {switches::kEnableBoundSessionCredentials}}};
 
 class BoundSessionCookieRefreshServiceFactoryTest
     : public TestWithParam<BoundSessionCookieRefreshServiceFactoryTestParams> {
  public:
   BoundSessionCookieRefreshServiceFactoryTest() {
-    feature_list.InitWithFeatures(GetParam().enabled_features,
-                                  GetParam().disabled_features);
+    feature_list.InitWithFeaturesAndParameters(GetParam().enabled_features,
+                                               GetParam().disabled_features);
   }
 
   void CreateProfile(bool otr_profile = false) {
@@ -94,15 +99,12 @@ class BoundSessionCookieRefreshServiceFactoryTest
   }
 
   bool ShouldServiceExistDiceEnabled() {
-    return base::Contains(GetParam().enabled_features,
-                          switches::kEnableBoundSessionCredentials) &&
-           base::Contains(GetParam().enabled_features,
-                          kEnableBoundSessionCredentialsOnDiceProfiles);
+    return GetParam().expected_support ==
+           switches::EnableBoundSessionCredentialsDiceSupport::kEnabled;
   }
 
   bool ShouldServiceExistAccountConsistencyDisabled() {
-    return base::Contains(GetParam().enabled_features,
-                          switches::kEnableBoundSessionCredentials);
+    return GetParam().expected_support.has_value();
   }
 
   TestingProfile* original_profile() { return original_profile_.get(); }
@@ -154,9 +156,8 @@ TEST(BoundSessionCookieRefreshServiceFactoryTestNullUnexportableKeyService,
      NullUnexportableKeyService) {
   content::BrowserTaskEnvironment task_environment;
   ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({switches::kEnableBoundSessionCredentials,
-                                 kEnableBoundSessionCredentialsOnDiceProfiles},
-                                {});
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableBoundSessionCredentials, {{"dice-support", "enabled"}});
 
   BrowserContextKeyedServiceFactory::TestingFactory
       unexportable_key_service_factory = base::BindRepeating(

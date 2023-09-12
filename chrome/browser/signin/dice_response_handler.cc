@@ -87,8 +87,8 @@ enum DiceTokenFetchResult {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 bool IsBoundSessionCredentialsEnabledForDice() {
   return switches::IsBoundSessionCredentialsEnabled() &&
-         base::FeatureList::IsEnabled(
-             kEnableBoundSessionCredentialsOnDiceProfiles);
+         switches::kEnableBoundSessionCredentialsDiceSupport.Get() ==
+             switches::EnableBoundSessionCredentialsDiceSupport::kEnabled;
 }
 
 std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(

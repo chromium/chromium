@@ -65994,6 +65994,7 @@ from previous Chrome versions.
   <int value="651471603" label="MediaFoundationD3D11VideoCapture:enabled"/>
   <int value="651562604" label="RawClipboard:enabled"/>
   <int value="651844675" label="EasyUnlockPromotions:enabled"/>
+  <int value="652149678" label="EnableBoundSessionCredentials:disabled"/>
   <int value="652561231" label="CustomContextMenu:enabled"/>
   <int value="653308913" label="ServiceWorkerSubresourceFilter:enabled"/>
   <int value="653795860" label="HelpAppReleaseNotes:disabled"/>
@@ -66567,6 +66568,7 @@ from previous Chrome versions.
   <int value="935655516" label="password-import-export:disabled"/>
   <int value="936341613" label="OfflinePagesCT:disabled"/>
   <int value="936919953" label="bypass-app-banner-engagement-checks"/>
+  <int value="937305086" label="EnableBoundSessionCredentials:enabled"/>
   <int value="937557884" label="PostQuantumKyber:disabled"/>
   <int value="938191241" label="VrShell:enabled"/>
   <int value="939050961" label="OnTheFlyMhtmlHashComputation:disabled"/>
