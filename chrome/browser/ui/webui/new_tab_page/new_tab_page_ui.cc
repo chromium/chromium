@@ -62,6 +62,7 @@
 #include "chrome/grit/new_tab_page_resources_map.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
@@ -92,6 +93,8 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_allowlist.h"
+#include "url/origin.h"
 #include "url/url_util.h"
 
 #if !defined(OFFICIAL_BUILD)
@@ -674,6 +677,14 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       std::make_unique<ThemeSource>(profile_, /*serve_untrusted=*/true));
 
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
+  // Give OGB 3P Cookie Permissions.
+  WebUIAllowlist::GetOrCreate(profile_)->RegisterAutoGrantedThirdPartyCookies(
+      url::Origin::Create(GURL(chrome::kChromeUIUntrustedNewTabPageUrl)),
+      {
+          ContentSettingsPattern::FromURL(GURL("https://ogs.google.com")),
+          ContentSettingsPattern::FromURL(GURL("https://corp.google.com")),
+      });
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
