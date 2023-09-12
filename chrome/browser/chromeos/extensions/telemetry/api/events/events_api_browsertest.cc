@@ -680,6 +680,96 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 #endif
 }
 
+// TODO(crbug.com/1454755): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
+  DISABLED_KeyboardDiagnosticEventOpensDiagnosticApp
+#else
+#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
+  KeyboardDiagnosticEventOpensDiagnosticApp
+#endif
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp) {
+  OpenAppUiAndMakeItSecure();
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto keyboard_info = crosapi::TelemetryKeyboardInfo::New();
+        keyboard_info->id = crosapi::UInt32Value::New(1);
+        keyboard_info->connection_type =
+            crosapi::TelemetryKeyboardConnectionType::kBluetooth;
+        keyboard_info->name = "TestName";
+        keyboard_info->physical_layout =
+            crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS;
+        keyboard_info->mechanical_layout =
+            crosapi::TelemetryKeyboardMechanicalLayout::kAnsi;
+        keyboard_info->region_code = "de";
+        keyboard_info->number_pad_present =
+            crosapi::TelemetryKeyboardNumberPadPresence::kPresent;
+
+        auto info = crosapi::TelemetryKeyboardDiagnosticEventInfo::New();
+        info->keyboard_info = std::move(keyboard_info);
+        info->tested_keys = {1, 2, 3};
+        info->tested_top_row_keys = {4, 5, 6};
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic,
+            crosapi::TelemetryEventInfo::NewKeyboardDiagnosticEventInfo(
+                std::move(info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onKeyboardDiagnosticEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            "keyboardInfo": {
+              "connectionType":"bluetooth",
+              "id":1,
+              "mechanicalLayout":"ansi",
+              "name":"TestName",
+              "numberPadPresent":"present",
+              "physicalLayout":"chrome_os",
+              "regionCode":"de",
+              "topRowKeys":[]
+            },
+            "testedKeys":[1,2,3],
+            "testedTopRowKeys":[4,5,6]
+            }
+          );
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("keyboard_diagnostic");
+      }
+    ]);
+  )");
+
+// If this is executed in Lacros we can stop the test here. If the above
+// call succeeded, a request for opening the diagnostics application was
+// sent to Ash. Since we only test Lacros, we stop the test here instead
+// of checking if Ash opened the UI correctly.
+// If we run in Ash however, we can check that the UI was correctly open.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool is_diagnostic_app_open = false;
+  for (auto* target_browser : *BrowserList::GetInstance()) {
+    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
+    for (int i = 0; i < target_tab_strip->count(); ++i) {
+      content::WebContents* target_contents =
+          target_tab_strip->GetWebContentsAt(i);
+
+      if (target_contents->GetLastCommittedURL() ==
+          GURL(kKeyboardDiagnosticsUrl)) {
+        is_diagnostic_app_open = true;
+      }
+    }
+  }
+
+  EXPECT_TRUE(is_diagnostic_app_open);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnSdCardEvent_Success) {
   OpenAppUiAndMakeItSecure();
@@ -1129,108 +1219,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
       }
     ]);
   )");
-}
-
-class PendingApprovalTelemetryExtensionEventsApiBrowserTest
-    : public TelemetryExtensionEventsApiBrowserTest {
- public:
-  PendingApprovalTelemetryExtensionEventsApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// TODO(crbug.com/1454755): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
-  DISABLED_KeyboardDiagnosticEventOpensDiagnosticApp
-#else
-#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
-  KeyboardDiagnosticEventOpensDiagnosticApp
-#endif
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp) {
-  OpenAppUiAndMakeItSecure();
-
-  GetFakeService()->SetOnSubscriptionChange(
-      base::BindLambdaForTesting([this]() {
-        auto keyboard_info = crosapi::TelemetryKeyboardInfo::New();
-        keyboard_info->id = crosapi::UInt32Value::New(1);
-        keyboard_info->connection_type =
-            crosapi::TelemetryKeyboardConnectionType::kBluetooth;
-        keyboard_info->name = "TestName";
-        keyboard_info->physical_layout =
-            crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS;
-        keyboard_info->mechanical_layout =
-            crosapi::TelemetryKeyboardMechanicalLayout::kAnsi;
-        keyboard_info->region_code = "de";
-        keyboard_info->number_pad_present =
-            crosapi::TelemetryKeyboardNumberPadPresence::kPresent;
-
-        auto info = crosapi::TelemetryKeyboardDiagnosticEventInfo::New();
-        info->keyboard_info = std::move(keyboard_info);
-        info->tested_keys = {1, 2, 3};
-        info->tested_top_row_keys = {4, 5, 6};
-
-        GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic,
-            crosapi::TelemetryEventInfo::NewKeyboardDiagnosticEventInfo(
-                std::move(info)));
-      }));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function startCapturingEvents() {
-        chrome.os.events.onKeyboardDiagnosticEvent.addListener((event) => {
-          chrome.test.assertEq(event, {
-            "keyboardInfo": {
-              "connectionType":"bluetooth",
-              "id":1,
-              "mechanicalLayout":"ansi",
-              "name":"TestName",
-              "numberPadPresent":"present",
-              "physicalLayout":"chrome_os",
-              "regionCode":"de",
-              "topRowKeys":[]
-            },
-            "testedKeys":[1,2,3],
-            "testedTopRowKeys":[4,5,6]
-            }
-          );
-
-          chrome.test.succeed();
-        });
-
-        await chrome.os.events.startCapturingEvents("keyboard_diagnostic");
-      }
-    ]);
-  )");
-
-// If this is executed in Lacros we can stop the test here. If the above
-// call succeeded, a request for opening the diagnostics application was
-// sent to Ash. Since we only test Lacros, we stop the test here instead
-// of checking if Ash opened the UI correctly.
-// If we run in Ash however, we can check that the UI was correctly open.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool is_diagnostic_app_open = false;
-  for (auto* target_browser : *BrowserList::GetInstance()) {
-    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
-    for (int i = 0; i < target_tab_strip->count(); ++i) {
-      content::WebContents* target_contents =
-          target_tab_strip->GetWebContentsAt(i);
-
-      if (target_contents->GetLastCommittedURL() ==
-          GURL(kKeyboardDiagnosticsUrl)) {
-        is_diagnostic_app_open = true;
-      }
-    }
-  }
-
-  EXPECT_TRUE(is_diagnostic_app_open);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace chromeos
