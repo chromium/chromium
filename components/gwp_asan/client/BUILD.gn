@@ -16,6 +16,8 @@ component("client") {
     "lightweight_detector.cc",
     "lightweight_detector.h",
     "sampling_state.h",
+    "thread_local_random_bit_generator.h",
+    "thread_local_state.h",
   ]
 
   if (is_win) {

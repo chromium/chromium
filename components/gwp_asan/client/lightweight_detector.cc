@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <random>
 
-#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "components/gwp_asan/client/thread_local_random_bit_generator.h"
 #include "components/gwp_asan/common/allocation_info.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
 
@@ -22,6 +22,8 @@ LightweightDetector::LightweightDetector(LightweightDetectorMode mode,
                                          size_t num_metadata) {
   CHECK_NE(mode, LightweightDetectorMode::kOff);
   CHECK_LE(num_metadata, LightweightDetectorState::kMaxMetadata);
+
+  ThreadLocalRandomBitGenerator::InitIfNeeded();
 
   state_.mode = mode;
   state_.num_metadata = num_metadata;
@@ -55,7 +57,7 @@ void LightweightDetector::RecordLightweightDeallocation(void* ptr,
     // Perform random eviction while ensuring `metadata_id` keeps increasing.
     std::uniform_int_distribution<LightweightDetectorState::MetadataId>
         distribution(1, state_.num_metadata);
-    base::NonAllocatingRandomBitGenerator generator;
+    ThreadLocalRandomBitGenerator generator;
     metadata_offset = distribution(generator);
   }
 
