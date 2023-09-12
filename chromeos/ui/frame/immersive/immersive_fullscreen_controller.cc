@@ -16,6 +16,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -554,16 +555,20 @@ bool ImmersiveFullscreenController::UpdateRevealedLocksForSwipe(
 
 base::TimeDelta ImmersiveFullscreenController::GetAnimationDuration(
     Animate animate) const {
+  base::TimeDelta duration;
   switch (animate) {
     case ANIMATE_NO:
-      return base::TimeDelta();
+      // Use default which is `base::TimeDelta()`.
+      break;
     case ANIMATE_SLOW:
-      return base::Milliseconds(400);
+      duration = base::Milliseconds(400);
+      break;
     case ANIMATE_FAST:
-      return base::Milliseconds(200);
+      duration = base::Milliseconds(200);
+      break;
   }
-  NOTREACHED();
-  return base::TimeDelta();
+
+  return ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration;
 }
 
 void ImmersiveFullscreenController::MaybeStartReveal(Animate animate) {

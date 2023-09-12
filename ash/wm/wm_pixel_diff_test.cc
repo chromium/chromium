@@ -4,20 +4,26 @@
 
 #include <memory>
 
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
+#include "ash/wm/window_state.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/aura/window.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -76,6 +82,43 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overview_and_desks_bar_basic",
       /*revision_number=*/9, desk_widget, overview_widget1, overview_widget2,
+      overview_widget3));
+}
+
+TEST_F(WmPixelDiffTest, OverviewTabletSnap) {
+  UpdateDisplay("1600x1000");
+
+  ShellTestApi().SetTabletModeEnabledForTest(true);
+
+  auto window1 = CreateAppWindow(gfx::Rect(300, 300));
+  auto window2 = CreateAppWindow(gfx::Rect(300, 300));
+  auto window3 = CreateAppWindow(gfx::Rect(300, 300));
+
+  DecorateWindow(window1.get(), u"Window1", SK_ColorDKGRAY);
+  DecorateWindow(window2.get(), u"Window2", SK_ColorBLUE);
+  DecorateWindow(window3.get(), u"Window3", SK_ColorRED);
+
+  // Minimize `window3` so it tests a different code path than `window2`.
+  // Activate and snap `window` and verify we have entered overview with one
+  // snapped window.
+  WindowState::Get(window3.get())->Minimize();
+  WindowSnapWMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  WindowState::Get(window1.get())->Activate();
+  WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
+  ASSERT_TRUE(SplitViewController::Get(Shell::GetPrimaryRootWindow())
+                  ->InSplitViewMode());
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  auto* const snapped_window_widget =
+      views::Widget::GetWidgetForNativeWindow(window1.get());
+  auto* const overview_widget2 =
+      GetOverviewItemForWindow(window2.get())->item_widget();
+  auto* const overview_widget3 =
+      GetOverviewItemForWindow(window3.get())->item_widget();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "overview_tablet_snap",
+      /*revision_number=*/1, snapped_window_widget, overview_widget2,
       overview_widget3));
 }
 

@@ -41,6 +41,7 @@
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -413,18 +414,30 @@ TEST_F(NonClientFrameViewAshTest, MinimizedWindowsInTabletMode) {
 TEST_F(NonClientFrameViewAshTest, HeaderVisibilityInFullscreen) {
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
   std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+
+  auto* controller = ImmersiveFullscreenController::Get(widget.get());
+  ImmersiveFullscreenControllerTestApi test_api(controller);
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
   chromeos::HeaderView* header_view = non_client_frame_view->GetHeaderView();
   EXPECT_FALSE(header_view->in_immersive_mode());
   EXPECT_TRUE(header_view->GetVisible());
+
   widget->SetFullscreen(true);
   widget->LayoutRootViewIfNecessary();
   EXPECT_TRUE(header_view->in_immersive_mode());
   EXPECT_TRUE(header_view->GetVisible());
+  test_api.EndAnimation();
+  EXPECT_FALSE(header_view->GetVisible());
+
   widget->SetFullscreen(false);
   widget->LayoutRootViewIfNecessary();
   EXPECT_FALSE(header_view->in_immersive_mode());
+  EXPECT_TRUE(header_view->GetVisible());
+  test_api.EndAnimation();
   EXPECT_TRUE(header_view->GetVisible());
 
   // Turn immersive off, and make sure that header view is invisible

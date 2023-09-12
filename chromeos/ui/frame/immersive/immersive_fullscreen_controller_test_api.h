@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
 
   bool IsTopEdgeHoverTimerRunning() const;
 
+  void EndAnimation();
+
  private:
   raw_ptr<ImmersiveFullscreenController, DanglingUntriaged>
       immersive_fullscreen_controller_;
