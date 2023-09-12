@@ -81,5 +81,18 @@ TEST_F(
   EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kUnset);
 }
 
+TEST_F(EditorConsentStoreTest,
+       DecliningThePromoCardWillSwitchOffFeatureToggle) {
+  TestingProfile profile_;
+  EditorConsentStore store(profile_.GetPrefs());
+
+  // Switch on the orca toggle in the setting page.
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  // Simulate a user action to explicitly decline the promo card.
+  store.ProcessPromoCardAction(PromoCardAction::kDeclined);
+
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(prefs::kOrcaEnabled));
+}
+
 }  // namespace
 }  // namespace ash::input_method

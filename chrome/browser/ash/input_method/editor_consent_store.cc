@@ -69,6 +69,13 @@ void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {
   }
 }
 
+void EditorConsentStore::ProcessPromoCardAction(
+    PromoCardAction promo_card_action) {
+  if (promo_card_action == PromoCardAction::kDeclined) {
+    OverrideUserPref(/*new_pref_value=*/false);
+  }
+}
+
 void EditorConsentStore::OnUserPrefChanged() {
   ConsentStatus current_consent_status = GetConsentStatus();
   // If the user has previously (implicitly) declined the consent status and

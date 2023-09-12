@@ -106,7 +106,7 @@ void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
 
 void EditorMenuControllerImpl::OnPromoCardDismissButtonPressed() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  GetEditorPanelManager().OnConsentDeclined();
+  GetEditorPanelManager().OnPromoCardDeclined();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

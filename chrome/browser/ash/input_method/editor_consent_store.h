@@ -27,6 +27,8 @@ class EditorConsentStore {
   // Updates the consent status based on user consent action.
   void ProcessConsentAction(ConsentAction consent_action);
 
+  void ProcessPromoCardAction(PromoCardAction promo_card_action);
+
  private:
   void SetConsentStatus(ConsentStatus consent_status);
 

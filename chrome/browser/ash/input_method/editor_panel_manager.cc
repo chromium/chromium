@@ -20,7 +20,8 @@ EditorPanelContext::EditorPanelContext() = default;
 
 EditorPanelContext::~EditorPanelContext() = default;
 
-EditorPanelManager::EditorPanelManager() = default;
+EditorPanelManager::EditorPanelManager(Delegate* delegate)
+    : delegate_(delegate) {}
 
 EditorPanelManager::~EditorPanelManager() = default;
 
@@ -29,16 +30,16 @@ void EditorPanelManager::GetEditorPanelContext(
   std::move(callback).Run(EditorPanelContext());
 }
 
-void EditorPanelManager::OnConsentScreenDismissed() {
-  NOTIMPLEMENTED_LOG_ONCE();
+void EditorPanelManager::OnPromoCardDismissed() {
+  delegate_->OnPromoCardActionReceived(PromoCardAction::kDismissed);
 }
 
-void EditorPanelManager::OnConsentDeclined() {
-  NOTIMPLEMENTED_LOG_ONCE();
+void EditorPanelManager::OnPromoCardDeclined() {
+  delegate_->OnPromoCardActionReceived(PromoCardAction::kDeclined);
 }
 
 void EditorPanelManager::StartEditingFlow() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  delegate_->OnPromoCardActionReceived(PromoCardAction::kAccepted);
 }
 
 void EditorPanelManager::StartEditingFlowWithPreset(

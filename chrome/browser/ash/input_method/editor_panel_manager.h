@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
 
 namespace ash::input_method {
 
@@ -65,7 +66,14 @@ class EditorPanelManager {
   using GetEditorPanelContextCallback =
       base::OnceCallback<void(const EditorPanelContext&)>;
 
-  EditorPanelManager();
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void OnPromoCardActionReceived(
+        PromoCardAction promo_card_action) = 0;
+  };
+
+  explicit EditorPanelManager(Delegate* delegate);
   EditorPanelManager(const EditorPanelManager&) = delete;
   EditorPanelManager& operator=(const EditorPanelManager&) = delete;
   ~EditorPanelManager();
@@ -74,13 +82,13 @@ class EditorPanelManager {
   // panel.
   void GetEditorPanelContext(GetEditorPanelContextCallback callback);
 
-  // Should be called when a consent screen is dismissed (e.g. the user clicked
-  // out of a consent window).
-  void OnConsentScreenDismissed();
+  // Should be called when a promo card is implicitly dismissed (e.g. the
+  // user clicked out the promo card).
+  void OnPromoCardDismissed();
 
-  // Should be called when the user explicitly rejects the editor feature (e.g.
-  // by clicking "No/Disagree" from a consent window).
-  void OnConsentDeclined();
+  // Should be called when the promo card is explicitly dismissed via clicking
+  // the button.
+  void OnPromoCardDeclined();
 
   // Starts the editing flow, showing the consent form if needed.
   void StartEditingFlow();
@@ -90,6 +98,9 @@ class EditorPanelManager {
 
   // Starts the write/rewrite flow with a freeform query.
   void StartEditingFlowWithFreeform(std::string_view text);
+
+ private:
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash::input_method

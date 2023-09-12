@@ -23,6 +23,7 @@ EditorMediator* g_instance_ = nullptr;
 EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
     : profile_(profile),
       editor_instance_impl_(this),
+      panel_manager_(this),
       editor_switch_(std::make_unique<EditorSwitch>(profile, country_code)),
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs())) {
@@ -87,6 +88,11 @@ void EditorMediator::OnTabletControllerDestroyed() {
 
 void EditorMediator::OnConsentActionReceived(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
+}
+
+void EditorMediator::OnPromoCardActionReceived(
+    PromoCardAction promo_card_action) {
+  consent_store_->ProcessPromoCardAction(promo_card_action);
 }
 
 void EditorMediator::CommitEditorResult(std::string_view text) {
