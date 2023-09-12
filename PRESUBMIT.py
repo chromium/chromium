@@ -1662,6 +1662,17 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
+      pattern = r'/raw_ptr<[^;}]*\w{};',
+      explanation = (
+        'Do not use {} for raw_ptr initialization, use = nullptr instead.',
+      ),
+      treat_as_error = True,
+      excluded_paths = (
+        '^base/',
+        '^tools/',
+      ),
+    ),
+    BanRule(
       pattern = r'/#include "base/allocator/.*/raw_'
                 r'(ptr|ptr_cast|ptr_exclusion|ref).h"',
       explanation = (
