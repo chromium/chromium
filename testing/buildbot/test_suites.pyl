@@ -8106,6 +8106,12 @@
           'MAC_RETINA_AMD_GPU_STABLE',
         ],
       },
+      'gpu_metal_passthrough_graphite_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
       'gpu_webcodecs_telemetry_test': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
