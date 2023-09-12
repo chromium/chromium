@@ -40,6 +40,39 @@ aura::Window* GetPrimaryRoot() {
   return ash::Shell::Get()->GetPrimaryRootWindow();
 }
 
+// Placeholder EDID for internal and virtual displays.
+// The data isn't complete but sufficient for SurfaceFlinger not to complain.
+// https://en.wikipedia.org/wiki/Extended_Display_Identification_Data
+// TODO(b/299391925) We should derive this from the display info.
+// clang-format off
+constexpr uint8_t kFablicatedFallbackEDIDData[] = {
+    // [0-7] Fixed header pattern
+    0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00,
+    // [8-9] Manufacturer ID ("GGL"), [10-11] Manufacturer product code (0), [12-15] Serial (0)
+    0x1c, 0xec, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    // [16-17] Manufacture year (2023), [18-19] EDID version (1.4), [20-47] Not used in Android
+    0xFF, 0x21, 0x01, 0x04, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    // [48-53] Not used for SF, [54-55] Descriptor Header
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    // [56-58] Descriptor Header (Display name type), [59-63] display name value ("ArcFa")
+    0x00, 0xfc, 0x00, 0x45, 0x78, 0x6F, 0x46, 0x61,
+    // [64-70] display name value ("keEdid\n")
+    0x6b, 0x65, 0x45, 0x64, 0x69, 0x64, 0x0a, 0x00,
+    // [71-126] Non-mandatory fields (asciiText, serialNumber, extensions, etc)
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    // [127] checksum
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xe6,
+};
+// clang-format on
+
 }  // namespace
 
 WMHelper::LifetimeManager::LifetimeManager() = default;
@@ -190,6 +223,17 @@ const std::vector<uint8_t>& WMHelper::GetDisplayIdentificationData(
 
   for (display::DisplaySnapshot* display : displays) {
     if (display->display_id() == display_id) {
+      // This condition is true on virtual displays on VMs.
+      if (display->type() == display::DISPLAY_CONNECTION_TYPE_UNKNOWN ||
+          display->edid().empty()) {
+        // b/288216766
+        // TODO(b/299391925) instead of using kPlaceholderIdentificationData we
+        // should derive it from the display info of this DisplaySnapshot..
+        static const std::vector<uint8_t> kFablicatedFallbackEDID(
+            kFablicatedFallbackEDIDData,
+            kFablicatedFallbackEDIDData + sizeof(kFablicatedFallbackEDIDData));
+        return kFablicatedFallbackEDID;
+      }
       return display->edid();
     }
   }
