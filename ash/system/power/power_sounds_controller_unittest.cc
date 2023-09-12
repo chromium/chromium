@@ -136,11 +136,58 @@ class PowerSoundsControllerTest : public AshTestBase {
       plugged_in_levels_samples_;
   base::flat_map</*battery_level=*/int, /*sample_count=*/int>
       unplugged_levels_samples_;
+  base::test::ScopedFeatureList scoped_feature_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_;
   bool is_ac_charger_connected_;
 };
+
+class PowerSoundsControllerWithBatterySaverTest
+    : public PowerSoundsControllerTest,
+      public testing::WithParamInterface<
+          features::BatterySaverNotificationBehavior> {
+  void SetUp() override {
+    scoped_feature_.InitWithFeatures(
+        {features::kSystemSounds, features::kBatterySaver}, {});
+    AshTestBase::SetUp();
+    SetInitialPowerStatus();
+  }
+
+  void TearDown() override { PowerSoundsControllerTest::TearDown(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PowerSoundsControllerWithBatterySaverTest,
+    testing::Values(features::BatterySaverNotificationBehavior::kBSMAutoEnable,
+                    features::BatterySaverNotificationBehavior::kBSMOptIn));
+
+TEST_P(PowerSoundsControllerWithBatterySaverTest,
+       PlayLowBatterySoundForBatterySaver) {
+  // Don't play warning sound if the battery level is no less than the low power
+  // threshold for battery saver.
+  const int battery_saver_threshold =
+      features::kBatterySaverActivationChargePercent.Get();
+  GetSystemSoundsDelegate()->reset();
+  SetPowerStatus(battery_saver_threshold + 1, kDisconnectedPower);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+
+  // When the battery drops below the low power threshold at the first time, the
+  // device should play the sound for warning.
+  SetPowerStatus(battery_saver_threshold, kDisconnectedPower);
+  EXPECT_TRUE(VerifySounds({Sound::kNoChargeLowBattery}));
+  GetSystemSoundsDelegate()->reset();
+
+  // When the battery level keeps dropping but no less than the critical power
+  // threshold, the device shouldn't play sound for warning.
+  SetPowerStatus(battery_saver_threshold - 1, kDisconnectedPower);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+
+  // The device will play the sound if its battery level keeps dropping to the
+  // critical power threshold.
+  SetPowerStatus(kCriticalPercentage, kDisconnectedPower);
+  EXPECT_TRUE(VerifySounds({Sound::kNoChargeLowBattery}));
+}
 
 // Tests if sounds are played correctedly when the device is plugged at three
 // different battery ranges with a AC charger.

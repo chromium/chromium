@@ -4,6 +4,7 @@
 
 #include "ash/system/power/power_sounds_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
@@ -44,6 +45,12 @@ constexpr base::TimeDelta kLowPowerWarningMinutes = base::Minutes(15);
 Sound GetSoundKeyForBatteryLevel(int level) {
   if (level >= kNormalPercentageForCharging)
     return Sound::kChargeHighBattery;
+
+  if (features::IsBatterySaverAvailable()) {
+    return level >= features::kBatterySaverActivationChargePercent.Get() + 1
+               ? Sound::kChargeMediumBattery
+               : Sound::kChargeLowBattery;
+  }
 
   return level >= kMidPercentageForCharging ? Sound::kChargeMediumBattery
                                             : Sound::kChargeLowBattery;
@@ -202,8 +209,13 @@ PowerSoundsController::CalculateBatteryState(
     bool is_calculating_battery_time,
     ExternalPower external_power,
     absl::optional<base::TimeDelta> remaining_time) const {
-  if (is_calculating_battery_time || is_ac_charger_connected_) {
+  if ((is_calculating_battery_time && !features::IsBatterySaverAvailable()) ||
+      is_ac_charger_connected_) {
     return BatteryState::kNone;
+  }
+
+  if (features::IsBatterySaverAvailable()) {
+    return GetBatteryStateFromBatteryLevel();
   }
 
   // The battery state calculation should follow the same logic used by the
@@ -224,7 +236,12 @@ PowerSoundsController::GetBatteryStateFromBatteryLevel() const {
     return BatteryState::kCriticalPower;
   }
 
-  if (battery_level_ <= kLowPowerWarningPercentage) {
+  const int low_power_warning_percentage =
+      features::IsBatterySaverAvailable()
+          ? features::kBatterySaverActivationChargePercent.Get()
+          : kLowPowerWarningPercentage;
+
+  if (battery_level_ <= low_power_warning_percentage) {
     return BatteryState::kLowPower;
   }
 
