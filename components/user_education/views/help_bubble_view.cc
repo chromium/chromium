@@ -466,6 +466,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
                                       kDefaultButtonIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
                                       kFirstNonDefaultButtonIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kCloseButtonIdForTesting);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kBodyTextIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kTitleTextIdForTesting);
@@ -646,6 +647,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
                           delegate, alt_text,
                           base::BindRepeating(&DialogDelegate::CancelDialog,
                                               base::Unretained(this))));
+  close_button_->SetProperty(views::kElementIdentifierKey,
+                             kCloseButtonIdForTesting);
 
   // Add other buttons.
   if (!params.buttons.empty()) {

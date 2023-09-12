@@ -61,6 +61,10 @@ class CookieControlsIconView : public PageActionIconView,
   bool ShouldBeVisible() const;
   void OnIPHClosed();
 
+  // Attempts to show IPH for the cookie controls icon.
+  // Returns whether IPH was successfully shown.
+  bool MaybeShowIPH();
+
   // Set confidence_changed = true to animate if the confidence level changed
   // even if the icon is already visible.
   void UpdateVisibilityAndAnimate(bool confidence_changed = false);

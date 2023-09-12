@@ -244,11 +244,11 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
 }
 
 // Need a separate fixture to override the enabled feature list.
-class CookieControlsInteractiveUiWithIphTest
+class CookieControlsInteractiveUiWithCookieControlsIphTest
     : public CookieControlsInteractiveUiTest {
  public:
-  CookieControlsInteractiveUiWithIphTest() = default;
-  ~CookieControlsInteractiveUiWithIphTest() override = default;
+  CookieControlsInteractiveUiWithCookieControlsIphTest() = default;
+  ~CookieControlsInteractiveUiWithCookieControlsIphTest() override = default;
 
  protected:
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
@@ -257,7 +257,7 @@ class CookieControlsInteractiveUiWithIphTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
                        NavigateHighConfidenceDismissIph) {
   BlockCookiesAndSetHighConfidenceForSite();
   RunTestSequenceInContext(
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
       EnsureNotPresent(CookieControlsBubbleView::kCookieControlsBubble));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
                        NavigateHighConfidenceOpenCookieControlsViaIph) {
   BlockCookiesAndSetHighConfidenceForSite();
   RunTestSequenceInContext(
@@ -298,9 +298,57 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
                        NavigateHighConfidenceOpenCookieControlsViaIcon) {
   BlockCookiesAndSetHighConfidenceForSite();
+  RunTestSequenceInContext(
+      context(), ObserveState(kFeatureEngagementInitializedState, browser()),
+      WaitForState(kFeatureEngagementInitializedState, true),
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      // Check that IPH shows, then open cookie controls bubble via icon.
+      InAnyContext(WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
+      PressButton(kCookieControlsIconElementId),
+      // Cookie controls bubble should show and IPH should close.
+      InAnyContext(
+          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
+      EnsureNotPresent(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+class CookieControlsInteractiveUiWith3pcdUserBypassIphTest
+    : public CookieControlsInteractiveUiTest {
+ public:
+  CookieControlsInteractiveUiWith3pcdUserBypassIphTest() = default;
+  ~CookieControlsInteractiveUiWith3pcdUserBypassIphTest() override = default;
+
+ protected:
+  std::vector<base::test::FeatureRef> EnabledFeatures() override {
+    return {content_settings::features::kUserBypassUI,
+            feature_engagement::kIPH3pcdUserBypassFeature,
+            content_settings::features::kTrackingProtection3pcd};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWith3pcdUserBypassIphTest,
+                       ShowAndHide3pcdUbIph) {
+  BlockThirdPartyCookies();
+  RunTestSequenceInContext(
+      context(), ObserveState(kFeatureEngagementInitializedState, browser()),
+      WaitForState(kFeatureEngagementInitializedState, true),
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      InAnyContext(WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
+      PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWith3pcdUserBypassIphTest,
+                       Show3pcdUbIphAndOpenCookieControlsViaIcon) {
+  BlockThirdPartyCookies();
   RunTestSequenceInContext(
       context(), ObserveState(kFeatureEngagementInitializedState, browser()),
       WaitForState(kFeatureEngagementInitializedState, true),
