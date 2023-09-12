@@ -9434,7 +9434,8 @@ void PrerenderBrowserTest::TestEmbedderTriggerWithUnsupportedScheme(
       PreloadingData::GetSameURLMatcher(prerendering_url);
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       preloading_predictor, PreloadingType::kPrerender,
-      std::move(same_url_matcher));
+      std::move(same_url_matcher),
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =

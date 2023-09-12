@@ -72,8 +72,7 @@ class CONTENT_EXPORT PreloadingDataImpl
       PreloadingPredictor predictor,
       PreloadingType preloading_type,
       PreloadingURLMatchCallback url_match_predicate,
-      ukm::SourceId triggering_primary_page_source_id =
-          ukm::kInvalidSourceId) override;
+      ukm::SourceId triggering_primary_page_source_id) override;
   void AddPreloadingPrediction(
       PreloadingPredictor predictor,
       int64_t confidence,

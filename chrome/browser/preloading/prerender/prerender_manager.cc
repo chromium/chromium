@@ -339,9 +339,10 @@ PrerenderManager::StartPrerenderBookmark(
   // Create new PreloadingAttempt and pass all the values corresponding to
   // this prerendering attempt for Prerender.
   content::PreloadingAttempt* preloading_attempt =
-      preloading_data->AddPreloadingAttempt(predictor,
-                                            content::PreloadingType::kPrerender,
-                                            std::move(same_url_matcher));
+      preloading_data->AddPreloadingAttempt(
+          predictor, content::PreloadingType::kPrerender,
+          std::move(same_url_matcher),
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   // BookmarkBar only allow https protocol.
   if (!prerendering_url.SchemeIs("https")) {
@@ -385,9 +386,10 @@ PrerenderManager::StartPrerenderNewTabPage(
       content::PreloadingData::GetSameURLMatcher(prerendering_url);
 
   content::PreloadingAttempt* preloading_attempt =
-      preloading_data->AddPreloadingAttempt(predictor,
-                                            content::PreloadingType::kPrerender,
-                                            std::move(same_url_matcher));
+      preloading_data->AddPreloadingAttempt(
+          predictor, content::PreloadingType::kPrerender,
+          std::move(same_url_matcher),
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   // New Tab Page only allow https protocol.
   if (!prerendering_url.SchemeIs("https")) {
@@ -498,7 +500,8 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kDefaultSearchEngine,
-          content::PreloadingType::kPrerender, same_url_matcher);
+          content::PreloadingType::kPrerender, same_url_matcher,
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   // If the caller does not want to prerender a new result, this does not need
   // to do anything.

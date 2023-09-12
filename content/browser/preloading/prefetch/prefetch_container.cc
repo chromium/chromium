@@ -379,8 +379,9 @@ PrefetchContainer::PrefetchContainer(
   auto* rfhi = RenderFrameHostImpl::FromID(referring_render_frame_host_id);
   // Note: |rfhi| is only nullptr in unit tests.
   if (rfhi) {
-    auto* preloading_data = PreloadingData::GetOrCreateForWebContents(
-        WebContents::FromRenderFrameHost(rfhi));
+    auto* web_contents = WebContents::FromRenderFrameHost(rfhi);
+    auto* preloading_data =
+        PreloadingData::GetOrCreateForWebContents(web_contents);
     auto matcher =
         base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)
             ? PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
@@ -389,7 +390,8 @@ PrefetchContainer::PrefetchContainer(
     auto* attempt = static_cast<PreloadingAttemptImpl*>(
         preloading_data->AddPreloadingAttempt(
             GetPredictorForSpeculationRules(world), PreloadingType::kPrefetch,
-            std::move(matcher)));
+            std::move(matcher),
+            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
     attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
     attempt_ = attempt->GetWeakPtr();
     initiator_devtools_navigation_token_ = rfhi->GetDevToolsNavigationToken();

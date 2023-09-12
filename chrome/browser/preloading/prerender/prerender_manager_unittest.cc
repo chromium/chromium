@@ -199,7 +199,8 @@ TEST_F(PrerenderManagerTest, StartCleanPrerenderDirectUrlInput) {
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kOmniboxDirectURLInput,
-          content::PreloadingType::kPrerender, same_url_matcher);
+          content::PreloadingType::kPrerender, same_url_matcher,
+          GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   prerender_manager()->StartPrerenderDirectUrlInput(prerendering_url,
                                                     *preloading_attempt);
@@ -222,7 +223,8 @@ TEST_F(PrerenderManagerTest, StartNewPrerenderDirectUrlInput) {
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kOmniboxDirectURLInput,
-          content::PreloadingType::kPrerender, same_url_matcher);
+          content::PreloadingType::kPrerender, same_url_matcher,
+          GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   prerender_manager()->StartPrerenderDirectUrlInput(prerendering_url,
                                                     *preloading_attempt);
@@ -237,7 +239,8 @@ TEST_F(PrerenderManagerTest, StartNewPrerenderDirectUrlInput) {
   content::PreloadingAttempt* preloading_attempt2 =
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kOmniboxDirectURLInput,
-          content::PreloadingType::kPrerender, same_url_matcher);
+          content::PreloadingType::kPrerender, same_url_matcher,
+          GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   prerender_manager()->StartPrerenderDirectUrlInput(prerendering_url2,
                                                     *preloading_attempt2);
   host_observer.WaitForDestroyed();

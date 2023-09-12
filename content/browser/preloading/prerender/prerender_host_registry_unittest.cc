@@ -341,7 +341,8 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_PreloadingConfigHoldback) {
       PreloadingData::GetSameURLMatcher(kPrerenderingUrl);
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       content_preloading_predictor::kSpeculationRules,
-      PreloadingType::kPrerender, std::move(same_url_matcher));
+      PreloadingType::kPrerender, std::move(same_url_matcher),
+      contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   const int prerender_frame_tree_node_id = registry().CreateAndStartHost(
       GeneratePrerenderAttributes(kPrerenderingUrl,
                                   PrerenderTriggerType::kSpeculationRule, "",
@@ -359,7 +360,8 @@ TEST_F(PrerenderHostRegistryTest,
       PreloadingData::GetSameURLMatcher(kPrerenderingUrl);
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       content_preloading_predictor::kSpeculationRules,
-      PreloadingType::kPrerender, std::move(same_url_matcher));
+      PreloadingType::kPrerender, std::move(same_url_matcher),
+      contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   auto attributes = GeneratePrerenderAttributes(
       kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
@@ -384,7 +386,8 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_HoldbackOverride_Allowed) {
       PreloadingData::GetSameURLMatcher(kPrerenderingUrl);
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       content_preloading_predictor::kSpeculationRules,
-      PreloadingType::kPrerender, std::move(same_url_matcher));
+      PreloadingType::kPrerender, std::move(same_url_matcher),
+      contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   auto attributes = GeneratePrerenderAttributes(
       kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",

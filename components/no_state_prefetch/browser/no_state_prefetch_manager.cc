@@ -250,7 +250,8 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
         content::preloading_predictor::kLinkRel, confidence, same_url_matcher);
     attempt = preloading_data->AddPreloadingAttempt(
         content::preloading_predictor::kLinkRel,
-        content::PreloadingType::kNoStatePrefetch, same_url_matcher);
+        content::PreloadingType::kNoStatePrefetch, same_url_matcher,
+        source_web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
   return StartPrefetchingWithPreconnectFallback(
       origin, url, referrer, initiator_origin, gfx::Rect(size),

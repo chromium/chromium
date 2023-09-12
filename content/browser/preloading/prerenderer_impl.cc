@@ -265,7 +265,8 @@ bool PrerendererImpl::MaybePrerender(
       auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
           preloading_data->AddPreloadingAttempt(
               GetPredictorForSpeculationRules(candidate->injection_world),
-              PreloadingType::kPrerender, std::move(same_url_matcher)));
+              PreloadingType::kPrerender, std::move(same_url_matcher),
+              web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
       preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
 
       int prerender_host_id =

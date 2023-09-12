@@ -56,9 +56,10 @@ AnchorElementPreloader::AnchorElementPreloader(
 }
 
 void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&*render_frame_host_);
   content::PreloadingData* preloading_data =
-      content::PreloadingData::GetOrCreateForWebContents(
-          content::WebContents::FromRenderFrameHost(&*render_frame_host_));
+      content::PreloadingData::GetOrCreateForWebContents(web_contents);
   url::SchemeHostPort scheme_host_port(target);
   content::PreloadingURLMatchCallback match_callback =
       base::BindRepeating(is_match_for_preconnect, scheme_host_port);
@@ -71,7 +72,8 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
       /*confidence=*/100, match_callback);
   content::PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(
       chrome_preloading_predictor::kPointerDownOnAnchor,
-      content::PreloadingType::kPreconnect, match_callback);
+      content::PreloadingType::kPreconnect, match_callback,
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   if (content::PreloadingEligibility eligibility =
           prefetch::IsSomePreloadingEnabled(

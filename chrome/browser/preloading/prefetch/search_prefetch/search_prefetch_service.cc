@@ -277,7 +277,8 @@ bool SearchPrefetchService::MaybePrefetchURL(
   // this DefaultSearchEngine or OmniboxSearchPredictor prefetch attempt when
   // |navigation_prefetch| is true.
   attempt = preloading_data->AddPreloadingAttempt(
-      predictor, content::PreloadingType::kPrefetch, same_url_matcher);
+      predictor, content::PreloadingType::kPrefetch, same_url_matcher,
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   if (!search_with_terms) {
     recorder.reason_ =
@@ -1074,7 +1075,8 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kDefaultSearchEngine,
-          content::PreloadingType::kPrerender, same_url_matcher);
+          content::PreloadingType::kPrerender, same_url_matcher,
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   auto prefetch_request_iter = prefetches_.find(canonical_search_url);
   if (prefetch_request_iter == prefetches_.end()) {
