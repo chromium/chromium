@@ -110,6 +110,7 @@ ci.thin_tester(
         short_name = "N",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "woa-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -146,6 +147,7 @@ ci.thin_tester(
         short_name = "O",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "woa-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -182,6 +184,7 @@ ci.thin_tester(
         short_name = "P",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "woa-engprod@google.com",
 )
 
 ci.builder(
