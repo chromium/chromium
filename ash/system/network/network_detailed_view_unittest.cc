@@ -68,6 +68,11 @@ class NetworkDetailedViewTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void DestroyNetworkDetailedView() {
+    delete network_detailed_view_;
+    base::RunLoop().RunUntilIdle();
+  }
+
   views::Button* FindSettingsButton() {
     return FindViewById<views::Button*>(
         NetworkDetailedView::NetworkDetailedViewChildId::kSettingsButton);
@@ -78,8 +83,8 @@ class NetworkDetailedViewTest : public AshTestBase {
         NetworkDetailedView::NetworkDetailedViewChildId::kInfoButton);
   }
 
-  NetworkInfoBubble* GetInfoBubble() {
-    return network_detailed_view_->info_bubble_;
+  views::View* GetInfoBubble() {
+    return network_detailed_view_->info_bubble_tracker_.view();
   }
 
   int GetTitleRowStringId() {
@@ -161,6 +166,20 @@ TEST_F(NetworkDetailedViewTest, PressingInfoButtonOpensInfoBubble) {
       EXPECT_FALSE(network_detailed_view()->GetWidget()->IsActive());
     }
   }
+}
+
+TEST_F(NetworkDetailedViewTest, InfoBubbleClosedWhenDetailedViewClosed) {
+  CreateNetworkDetailedView();
+
+  views::Button* info_button = FindInfoButton();
+  LeftClickOn(info_button);
+  views::ViewTracker bubble_tracker_;
+  bubble_tracker_.SetView(GetInfoBubble());
+  EXPECT_TRUE(bubble_tracker_.view());
+
+  // The info bubble should not exist after the detailed view has been closed.
+  DestroyNetworkDetailedView();
+  EXPECT_FALSE(bubble_tracker_.view());
 }
 
 TEST_F(NetworkDetailedViewTest, TitleRowString_InstantHotspotRebrandEnabled) {

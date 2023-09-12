@@ -44,7 +44,12 @@ NetworkDetailedView::NetworkDetailedView(
   // TODO(b/207089013): add metrics for UI surface displayed.
 }
 
-NetworkDetailedView::~NetworkDetailedView() = default;
+NetworkDetailedView::~NetworkDetailedView() {
+  if (info_bubble_tracker_.view()) {
+    info_bubble_tracker_.view()->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+  }
+}
 
 void NetworkDetailedView::HandleViewClicked(views::View* view) {
   if (login_ == LoginStatus::LOCKED) {
@@ -99,31 +104,23 @@ bool NetworkDetailedView::ShouldIncludeDeviceAddresses() {
 }
 
 void NetworkDetailedView::OnInfoBubbleDestroyed() {
-  info_bubble_ = nullptr;
-
   // Widget of info bubble is activated while info bubble is shown. To move
   // focus back to the widget of this view, activate it again here.
   GetWidget()->Activate();
 }
 
 void NetworkDetailedView::OnInfoClicked() {
-  if (CloseInfoBubble()) {
-    return;
+  if (info_bubble_tracker_.view()) {
+    info_bubble_tracker_.view()->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kCloseButtonClicked);
   }
 
-  info_bubble_ =
-      new NetworkInfoBubble(weak_ptr_factory_.GetWeakPtr(), tri_view());
-  views::BubbleDialogDelegateView::CreateBubble(info_bubble_)->Show();
-  info_bubble_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, false);
-}
-
-bool NetworkDetailedView::CloseInfoBubble() {
-  if (!info_bubble_) {
-    return false;
-  }
-
-  info_bubble_->GetWidget()->Close();
-  return true;
+  auto info_bubble = std::make_unique<NetworkInfoBubble>(
+      weak_ptr_factory_.GetWeakPtr(), tri_view());
+  info_bubble_tracker_.SetView(info_bubble.get());
+  views::BubbleDialogDelegateView::CreateBubble(std::move(info_bubble))->Show();
+  info_bubble_tracker_.view()->NotifyAccessibilityEvent(
+      ax::mojom::Event::kAlert, false);
 }
 
 void NetworkDetailedView::OnSettingsClicked() {
