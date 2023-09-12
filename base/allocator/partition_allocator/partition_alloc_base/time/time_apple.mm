@@ -28,7 +28,6 @@ namespace partition_alloc::internal::base {
 
 namespace {
 
-#if BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 // Returns a pointer to the initialized Mach timebase info struct.
 mach_timebase_info_data_t* MachTimebaseInfo() {
   static mach_timebase_info_data_t timebase_info = []() {
@@ -81,29 +80,14 @@ int64_t MachTimeToMicroseconds(uint64_t mach_time) {
   // 9223372036854775807 / (1e6 * 60 * 60 * 24 * 365.2425) = 292,277).
   return checked_cast<int64_t>(microseconds);
 }
-#endif  // BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 
 // Returns monotonically growing number of ticks in microseconds since some
 // unspecified starting point.
 int64_t ComputeCurrentTicks() {
-#if !BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
-  struct timespec tp;
-  // clock_gettime() returns 0 on success and -1 on failure. Failure can only
-  // happen because of bad arguments (unsupported clock type or timespec
-  // pointer out of accessible address space). Here it is known that neither
-  // can happen since the timespec parameter is stack allocated right above and
-  // `CLOCK_MONOTONIC` is supported on all versions of iOS that Chrome is
-  // supported on.
-  int res = clock_gettime(CLOCK_MONOTONIC, &tp);
-  PA_BASE_DCHECK(0 == res) << "Failed clock_gettime, errno: " << errno;
-
-  return (int64_t)tp.tv_sec * 1000000 + tp.tv_nsec / 1000;
-#else
   // mach_absolute_time is it when it comes to ticks on the Mac.  Other calls
   // with less precision (such as TickCount) just call through to
   // mach_absolute_time.
   return MachTimeToMicroseconds(mach_absolute_time());
-#endif  // !BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 }
 
 int64_t ComputeThreadTicks() {
@@ -188,12 +172,10 @@ NSDate* Time::ToNSDate() const {
 
 // TimeDelta ------------------------------------------------------------------
 
-#if BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 // static
 TimeDelta TimeDelta::FromMachTime(uint64_t mach_time) {
   return Microseconds(MachTimeToMicroseconds(mach_time));
 }
-#endif  // BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 
 // TimeTicks ------------------------------------------------------------------
 
@@ -213,7 +195,6 @@ bool TimeTicks::IsConsistentAcrossProcesses() {
   return true;
 }
 
-#if BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 // static
 TimeTicks TimeTicks::FromMachAbsoluteTime(uint64_t mach_absolute_time) {
   return TimeTicks(MachTimeToMicroseconds(mach_absolute_time));
@@ -229,15 +210,9 @@ mach_timebase_info_data_t TimeTicks::SetMachTimebaseInfoForTesting(
   return orig_timebase;
 }
 
-#endif  // BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
-
 // static
 TimeTicks::Clock TimeTicks::GetClock() {
-#if !BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
-  return Clock::IOS_CF_ABSOLUTE_TIME_MINUS_KERN_BOOTTIME;
-#else
   return Clock::MAC_MACH_ABSOLUTE_TIME;
-#endif  // !BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 }
 
 // ThreadTicks ----------------------------------------------------------------
