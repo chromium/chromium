@@ -76,6 +76,12 @@ template("system_image_stub_apk") {
       _package_name = invoker.package_name
       _version_code = invoker.version_code
       _version_name = invoker.version_name
+
+      # TODO(crbug.com/1408164): Make static_library_version mandatory.
+      if (defined(invoker.static_library_version)) {
+        assert(invoker.static_library_version == _version_code,
+               "$invoker.static_library_version must equal $_version_code.")
+      }
     } else {
       _target = invoker.package_info_from_target
       deps += [ "${_target}$build_config_target_suffix" ]
@@ -86,7 +92,18 @@ template("system_image_stub_apk") {
       _package_name = "@FileArg($_rebased_build_config:deps_info:package_name)"
       _version_code = "@FileArg($_rebased_build_config:deps_info:version_code)"
       _version_name = "@FileArg($_rebased_build_config:deps_info:version_name)"
+
+      # TODO(crbug.com/1408164): Make static_library_version mandatory.
+      # Pass this through to ensure that the version code in the build config is
+      # the same as the static library version.
+      if (defined(invoker.static_library_version)) {
+        args += [
+          "--static-library-version",
+          invoker.static_library_version,
+        ]
+      }
     }
+
     args += [
       "--rename-manifest-package=$_package_name",
       "--arsc-package-name=$_package_name",

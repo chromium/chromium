@@ -126,6 +126,8 @@ def _ParseArgs(args):
       '--debuggable',
       action='store_true',
       help='Whether to add android:debuggable="true".')
+  input_opts.add_argument('--static-library-version',
+                          help='Version code for static library.')
   input_opts.add_argument('--version-code', help='Version code for apk.')
   input_opts.add_argument('--version-name', help='Version name for apk.')
   input_opts.add_argument(
@@ -226,6 +228,13 @@ def _ParseArgs(args):
 
   if options.package_id and options.shared_resources:
     parser.error('--package-id and --shared-resources are mutually exclusive')
+
+  if options.static_library_version and (options.static_library_version !=
+                                         options.version_code):
+    assert options.static_library_version == options.version_code, (
+        f'static_library_version={options.static_library_version} must equal '
+        f'version_code={options.version_code}. Please verify the version code '
+        'map for this target is defined correctly.')
 
   return options
 
