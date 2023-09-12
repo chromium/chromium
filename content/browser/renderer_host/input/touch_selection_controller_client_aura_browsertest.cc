@@ -394,6 +394,11 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
         ->set_max_touch_move_in_pixels_for_click(5);
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
  private:
   void TearDownOnMainThread() override {
     menu_runner_ = nullptr;
@@ -409,23 +414,9 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class TouchSelectionControllerClientAuraCAPFeatureTest
-    : public TouchSelectionControllerClientAuraTest,
-      public testing::WithParamInterface<bool> {
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    TouchSelectionControllerClientAuraTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(GetParam()
-                                        ? switches::kEnableBlinkFeatures
-                                        : switches::kDisableBlinkFeatures,
-                                    "CompositeAfterPaint");
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-};
-
 // Tests that long-pressing on a text brings up selection handles and the quick
 // menu properly.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
-                       BasicSelection) {
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest, BasicSelection) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(true);
@@ -457,10 +448,6 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   EXPECT_NE(gfx::RectF(),
             rwhva->selection_controller()->GetVisibleRectBetweenBounds());
 }
-
-INSTANTIATE_TEST_SUITE_P(TouchSelectionForCAPFeatureTests,
-                         TouchSelectionControllerClientAuraCAPFeatureTest,
-                         testing::Bool());
 
 class GestureEventWaiter : public RenderWidgetHost::InputEventObserver {
  public:
@@ -1010,7 +997,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 // Tests that tapping in a textfield brings up the insertion handle, but not the
 // quick menu, initially. Then, successive taps on the insertion handle toggle
 // the quick menu visibility.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        BasicInsertionFollowedByTapsOnHandle) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1058,7 +1045,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests that the text selection can be adjusted by touch dragging after a long
 // press gesture on readable text.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        LongPressDragSelectionReadableText) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1095,7 +1082,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 
 // Tests that the text selection can be adjusted by touch dragging after a long
 // press gesture on editable text.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        LongPressDragSelectionEditableText) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1132,7 +1119,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 
 // Tests that the text selection can be adjusted by touch dragging after a
 // double press gesture on editable text.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        DoublePressDragSelection) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1169,7 +1156,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 
 // Tests that touch selection dragging adjusts the selection using a direction
 // strategy (roughly, expands by word and shrinks by character).
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        SelectionDraggingDirectionStrategy) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1223,7 +1210,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 }
 
 // Tests that a magnifier is shown when touch selection dragging.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        SelectionDraggingShowsMagnifier) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1258,8 +1245,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 }
 
 // Tests that tapping the caret toggles showing and hiding the quick menu.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
-                       TapOnCaret) {
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest, TapOnCaret) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(true);
@@ -1306,7 +1292,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 
 // Tests that the insertion handle and menu are hidden when a mouse event
 // occurs, then can be shown again by tapping on the caret.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        HandleVisibilityAfterMouseEvent) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1362,7 +1348,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that touch selection dragging records a histogram entry.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        SelectionDraggingMetrics) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1472,8 +1458,7 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
 }
 
 // Tests that the quick menu and touch handles are hidden during an scroll.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
-                       HiddenOnScroll) {
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest, HiddenOnScroll) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(true);
@@ -1558,7 +1543,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 
 // Tests that the magnifier is correctly shown for a swipe-to-move-cursor
 // gesture.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        SwipeToMoveCursorMagnifier) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1599,7 +1584,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 }
 
 // Tests that the select all menu command works correctly.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        SelectAllCommand) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(false);
@@ -1639,7 +1624,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 }
 
 // Tests that the select word menu command works correctly.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        SelectWordCommand) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(false);
@@ -1680,7 +1665,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 
 // Tests that the select all and select word commands in the quick menu are
 // disabled for empty textfields.
-IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        SelectCommandsEmptyTextfield) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(false);
@@ -1709,29 +1694,14 @@ class TouchSelectionControllerClientAuraScaleFactorTest
   static constexpr float kScaleFactor = 2.0f;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    TouchSelectionControllerClientAuraTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
   }
 };
 
-class TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest
-    : public TouchSelectionControllerClientAuraScaleFactorTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    TouchSelectionControllerClientAuraScaleFactorTest::SetUpCommandLine(
-        command_line);
-    command_line->AppendSwitchASCII(GetParam()
-                                        ? switches::kEnableBlinkFeatures
-                                        : switches::kDisableBlinkFeatures,
-                                    "CompositeAfterPaint");
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-};
-
 // Tests that selection handles are properly positioned at 2x DSF.
-IN_PROC_BROWSER_TEST_P(
-    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
-    SelectionHandleCoordinates) {
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
+                       SelectionHandleCoordinates) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(true);
 
@@ -1762,9 +1732,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Tests that selection handle coordinates are updated after dragging at 2x DSF.
-IN_PROC_BROWSER_TEST_P(
-    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
-    SelectionHandleCoordinatesAfterDrag) {
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
+                       SelectionHandleCoordinatesAfterDrag) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(true);
 
@@ -1796,9 +1765,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Tests that the menu is correctly shown after dragging a selection handle.
-IN_PROC_BROWSER_TEST_P(
-    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
-    SelectionHandleDragShowsMenu) {
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
+                       SelectionHandleDragShowsMenu) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
 
   InitSelectionController(true);
@@ -1836,9 +1804,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Tests that the magnifier is correctly shown when dragging a selection handle.
-IN_PROC_BROWSER_TEST_P(
-    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
-    SelectionHandleDragShowsMagnifier) {
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
+                       SelectionHandleDragShowsMagnifier) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
 
   InitSelectionController(true);
@@ -1875,16 +1842,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(selection_controller_client()->IsMagnifierVisible());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    TouchSelectionScaleFactorForCAPFeatureTests,
-    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
-    testing::Bool());
-
 // Tests that insertion handles are properly positioned at 2x DSF and that the
 // magnifier is updated with the insertion handle.
-IN_PROC_BROWSER_TEST_P(
-    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
-    InsertionHandleCoordinates) {
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
+                       InsertionHandleCoordinates) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(true);
