@@ -692,14 +692,22 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
   OverflowBehavior GetOverflowBehavior() const;
   SearchResultTextItem& SetOverflowBehavior(OverflowBehavior overflow_behavior);
 
+  bool GetAlternateIconAndTextStyling() const;
+  SearchResultTextItem& SetAlternateIconAndTextStyling(
+      bool alternate_icon_text_code_styling);
+
  private:
   SearchResultTextItemType item_type_;
-  // used for type SearchResultTextItemType::kString.
+  // Used for type SearchResultTextItemType::kString.
   absl::optional<std::u16string> raw_text_;
   absl::optional<SearchResultTags> text_tags_;
-  // used for type SearchResultTextItemType::kIconCode.
+  // Used for type SearchResultTextItemType::kIconCode.
   absl::optional<IconCode> icon_code_;
-  // used for type SearchResultTextItemType::kCustomIcon.
+  // Used for type SearchResultTextItemType::kIconCode and
+  // SearchResultTextItemType::kString. Alternate styling is used to distinguish
+  // regular keys such as 'c' and 'v' from 'ctrl' and 'alt'.
+  bool alternate_icon_text_code_styling_ = false;
+  // Used for type SearchResultTextItemType::kCustomIcon.
   absl::optional<gfx::ImageSkia> raw_image_;
   // Behavior of the text item when there is not enough space to show it in the
   // UI. only applicable to SearchResultTextItemType::kString.

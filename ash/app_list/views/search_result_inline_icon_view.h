@@ -22,7 +22,7 @@ namespace ash {
 // Displays a rounded rect bubble containing styled text xor a vector icon.
 class ASH_EXPORT SearchResultInlineIconView : public views::View {
  public:
-  SearchResultInlineIconView();
+  explicit SearchResultInlineIconView(bool use_modified_styling);
   SearchResultInlineIconView(const SearchResultInlineIconView&) = delete;
   SearchResultInlineIconView& operator=(const SearchResultInlineIconView&) =
       delete;
@@ -36,9 +36,11 @@ class ASH_EXPORT SearchResultInlineIconView : public views::View {
  private:
   class SizedLabel;
 
+  // Style iconified text for modifier keys like 'ctrl' and 'alt' differently.
+  const bool use_modified_styling_;
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  void OnThemeChanged() override;
 
   // Cached icon used to recolor icon_image_ when OnThemeChanged() is called.
   raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_ = nullptr;

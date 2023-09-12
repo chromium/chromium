@@ -343,9 +343,11 @@ views::ProgressBar* SetupChildProgressBarView(
 }
 
 SearchResultInlineIconView* SetupChildInlineIconView(
-    views::FlexLayoutView* parent) {
+    views::FlexLayoutView* parent,
+    bool alterante_icon_and_text_styling) {
   SearchResultInlineIconView* inline_icon_view =
-      parent->AddChildView(std::make_unique<SearchResultInlineIconView>());
+      parent->AddChildView(std::make_unique<SearchResultInlineIconView>(
+          alterante_icon_and_text_styling));
   inline_icon_view->SetCanProcessEventsWithinSubtree(false);
   inline_icon_view->GetViewAccessibility().OverrideIsIgnored(true);
   inline_icon_view->SetVisible(false);
@@ -882,13 +884,14 @@ SearchResultView::SetupContainerViewForTextVector(
       } break;
       case SearchResultTextItemType::kIconifiedText: {
         SearchResultInlineIconView* iconified_text_view =
-            SetupChildInlineIconView(parent);
+            SetupChildInlineIconView(parent,
+                                     span.GetAlternateIconAndTextStyling());
         iconified_text_view->SetText(span.GetText());
         iconified_text_view->SetVisible(true);
       } break;
       case SearchResultTextItemType::kIconCode: {
-        SearchResultInlineIconView* icon_view =
-            SetupChildInlineIconView(parent);
+        SearchResultInlineIconView* icon_view = SetupChildInlineIconView(
+            parent, span.GetAlternateIconAndTextStyling());
         icon_view->SetIcon(*span.GetIconFromCode());
         icon_view->SetVisible(true);
       } break;

@@ -536,6 +536,20 @@ SearchResultTextItem& SearchResultTextItem::SetOverflowBehavior(
   return *this;
 }
 
+bool SearchResultTextItem::GetAlternateIconAndTextStyling() const {
+  CHECK(item_type_ == SearchResultTextItemType::kIconifiedText ||
+        item_type_ == SearchResultTextItemType::kIconCode);
+  return alternate_icon_text_code_styling_;
+}
+
+SearchResultTextItem& SearchResultTextItem::SetAlternateIconAndTextStyling(
+    bool alternate_icon_text_code_styling) {
+  CHECK(item_type_ == SearchResultTextItemType::kIconifiedText ||
+        item_type_ == SearchResultTextItemType::kIconCode);
+  alternate_icon_text_code_styling_ = alternate_icon_text_code_styling;
+  return *this;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SearchResultMetadata:
 

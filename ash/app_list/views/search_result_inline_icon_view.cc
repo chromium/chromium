@@ -8,12 +8,15 @@
 #include <memory>
 
 #include "ash/app_list/app_list_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_provider.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -27,15 +30,19 @@ namespace ash {
 namespace {
 
 constexpr int kBorderThickness = 1;
-constexpr float kButtonCornerRadius = 6.0f;
+constexpr float kFocusRingCornerRadius = 6.0f;
+constexpr float kContentCornerRadius = 12.0f;
 constexpr int kLeftRightMargin = 6;
 constexpr int kIconSize = 14;
 constexpr int kLabelMinEdgeLength = 20;
 
 }  // namespace
 
-SearchResultInlineIconView::SearchResultInlineIconView() {
+SearchResultInlineIconView::SearchResultInlineIconView(
+    bool use_modified_styling)
+    : use_modified_styling_(use_modified_styling) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 6, 0, 6));
 }
 
 SearchResultInlineIconView::~SearchResultInlineIconView() = default;
@@ -49,9 +56,21 @@ void SearchResultInlineIconView::SetIcon(const gfx::VectorIcon& icon) {
   }
 
   icon_ = &icon;
-  icon_image_->SetImage(gfx::CreateVectorIcon(
-      *icon_, AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kTextColorURL)));
+
+  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+    icon_image_->SetImage(gfx::CreateVectorIcon(
+        *icon_, use_modified_styling_ ? cros_tokens::kCrosSysOnPrimaryContainer
+                                      : cros_tokens::kCrosSysOnSurface));
+
+    icon_image_->SetBackground(views::CreateThemedRoundedRectBackground(
+        use_modified_styling_ ? cros_tokens::kCrosSysPrimaryContainer
+                              : cros_tokens::kCrosSysSurface,
+        kContentCornerRadius));
+  } else {
+    icon_image_->SetImage(
+        gfx::CreateVectorIcon(*icon_, cros_tokens::kCrosSysPrimary));
+  }
+
   icon_image_->SetImageSize(gfx::Size(kIconSize, kIconSize));
   icon_image_->SetVisible(true);
 
@@ -66,7 +85,6 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
   DCHECK(!icon_image_);
   if (!label_) {
     label_ = AddChildView(std::make_unique<views::Label>());
-    label_->SetBackgroundColor(SK_ColorTRANSPARENT);
     label_->SetVisible(true);
     label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS);
@@ -76,40 +94,40 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
   label_->SetText(text);
   label_->SetVisible(true);
 
+  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+    label_->SetEnabledColorId(use_modified_styling_
+                                  ? cros_tokens::kCrosSysOnPrimaryContainer
+                                  : cros_tokens::kCrosSysOnSurface);
+    label_->SetBackground(views::CreateThemedRoundedRectBackground(
+        use_modified_styling_ ? cros_tokens::kCrosSysPrimaryContainer
+                              : cros_tokens::kCrosSysSurface,
+        kContentCornerRadius));
+  } else {
+    label_->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
+  }
+
   int label_left_right_margin =
       std::max(kLeftRightMargin, (kLabelMinEdgeLength - label_->width()) / 2);
   label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       0, label_left_right_margin, 0, label_left_right_margin)));
 
-  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorURL));
   SetVisible(true);
 }
 
 void SearchResultInlineIconView::OnPaint(gfx::Canvas* canvas) {
+  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+    return;
+  }
+
   cc::PaintFlags paint_flags;
   paint_flags.setAntiAlias(true);
-  paint_flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorURL));
+  paint_flags.setColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary));
   paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
   paint_flags.setStrokeWidth(kBorderThickness);
   gfx::Rect bounds = GetContentsBounds();
   bounds.Inset(gfx::Insets(kBorderThickness));
-  canvas->DrawRoundRect(bounds, kButtonCornerRadius, paint_flags);
-}
-
-void SearchResultInlineIconView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (icon_image_) {
-    DCHECK(icon_);
-    icon_image_->SetImage(gfx::CreateVectorIcon(
-        *icon_, AshColorProvider::Get()->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kTextColorURL)));
-  }
-  if (label_) {
-    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorURL));
-  }
+  canvas->DrawRoundRect(bounds, kFocusRingCornerRadius, paint_flags);
 }
 
 }  // namespace ash
