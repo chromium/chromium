@@ -98,7 +98,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   // Add and configure the TabSearchContainer.
   std::unique_ptr<TabSearchContainer> tab_search_container;
   if (browser && browser->is_type_normal()) {
-    tab_search_container = std::make_unique<TabSearchContainer>(tab_strip_);
+    tab_search_container = std::make_unique<TabSearchContainer>(
+        tab_strip_, render_tab_search_before_tab_strip_);
     tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                       views::LayoutAlignment::kCenter);
   }

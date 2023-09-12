@@ -26,15 +26,31 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
 
     auto controller = std::make_unique<FakeBaseTabStripController>();
     auto tab_strip = std::make_unique<TabStrip>(std::move(controller));
-    container_ = std::make_unique<TabSearchContainer>(tab_strip.get());
+    container_before_tab_strip_ =
+        std::make_unique<TabSearchContainer>(tab_strip.get(), true);
+    container_after_tab_strip_ =
+        std::make_unique<TabSearchContainer>(tab_strip.get(), false);
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TabSearchContainer> container_;
+  std::unique_ptr<TabSearchContainer> container_before_tab_strip_;
+  std::unique_ptr<TabSearchContainer> container_after_tab_strip_;
 };
 
 TEST_F(TabSearchContainerTest, ShowsOrganizationButton) {
-  ASSERT_TRUE(container_->tab_search_button());
-  ASSERT_TRUE(container_->tab_organization_button());
+  ASSERT_TRUE(container_before_tab_strip_->tab_search_button());
+  ASSERT_TRUE(container_before_tab_strip_->tab_organization_button());
+}
+
+TEST_F(TabSearchContainerTest, OrdersButtonsCorrectly) {
+  ASSERT_EQ(container_before_tab_strip_->tab_search_button(),
+            container_before_tab_strip_->children()[0]);
+  ASSERT_EQ(container_before_tab_strip_->tab_organization_button(),
+            container_before_tab_strip_->children()[1]);
+
+  ASSERT_EQ(container_after_tab_strip_->tab_organization_button(),
+            container_after_tab_strip_->children()[0]);
+  ASSERT_EQ(container_after_tab_strip_->tab_search_button(),
+            container_after_tab_strip_->children()[1]);
 }

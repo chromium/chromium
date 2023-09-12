@@ -16,7 +16,7 @@ class TabStrip;
 class TabSearchContainer : public views::View {
  public:
   METADATA_HEADER(TabSearchContainer);
-  explicit TabSearchContainer(TabStrip* tab_strip);
+  TabSearchContainer(TabStrip* tab_strip, bool before_tab_strip);
   TabSearchContainer(const TabSearchContainer&) = delete;
   TabSearchContainer& operator=(const TabSearchContainer&) = delete;
   ~TabSearchContainer() override;
@@ -30,6 +30,7 @@ class TabSearchContainer : public views::View {
   raw_ptr<TabOrganizationButton, DanglingUntriaged> tab_organization_button_ =
       nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
+  bool before_tab_strip_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_CONTAINER_H_
