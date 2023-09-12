@@ -269,6 +269,14 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis/x86.yaml",
             },
             {
+                "sdk_package_name": "system-images;android-30;google_atd;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_atd/x86.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-30;google_atd;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_atd/x86_64.yaml",
+            },
+            {
                 "sdk_package_name": "system-images;android-30;google_apis_playstore;x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis_playstore/x86.yaml",
             },
