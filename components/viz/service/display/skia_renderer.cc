@@ -1267,6 +1267,20 @@ void SkiaRenderer::DrawQuadInternal(const DrawQuad* quad,
     FlushBatchedQuads();
   }
 
+  if (OverlayCandidate::RequiresOverlay(quad)) {
+    // We cannot composite this quad properly, replace it with a fallback
+    // solid color quad.
+    if (!batched_quads_.empty()) {
+      FlushBatchedQuads();
+    }
+#if DCHECK_IS_ON()
+    DrawColoredQuad(SkColors::kMagenta, rpdq_params, params);
+#else
+    DrawColoredQuad(SkColors::kBlack, rpdq_params, params);
+#endif
+    return;
+  }
+
   switch (quad->material) {
     case DrawQuad::Material::kAggregatedRenderPass:
       DrawRenderPassQuad(AggregatedRenderPassDrawQuad::MaterialCast(quad),

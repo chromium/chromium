@@ -17,6 +17,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -1856,6 +1857,74 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallback) {
       &pass_list, base::FilePath(FILE_PATH_LITERAL("black.png")),
       cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 #endif
+}
+
+// Check that the renderer draws a fallback quad for quads that require overlay,
+// but are processed by the RPDQ bypass case.
+TEST_P(GPURendererPixelTest, OverlayHintRequiredFallbackRPDQBypassCase) {
+  gfx::Rect rect(this->device_viewport_size_);
+
+  AggregatedRenderPassList pass_list;
+
+  // Inner pass with just a video quad. This is intended to trigger the RPDQ
+  // bypass case in DirectRenderer.
+  AggregatedRenderPassId inner_id{2};
+  {
+    auto pass = CreateTestRenderPass(inner_id, rect, gfx::Transform());
+
+    SharedQuadState* sqs = CreateTestSharedQuadState(
+        gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
+
+    // Add a texture quad with the overlay priority of "required". Most
+    // properties shouldn't matter since the renderer shouldn't attempt to draw
+    // this quad.
+    TextureDrawQuad* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+    const float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    quad->SetNew(sqs, gfx::Rect(this->device_viewport_size_),
+                 gfx::Rect(this->device_viewport_size_), false,
+                 kInvalidResourceId, true, gfx::PointF(), gfx::PointF(),
+                 SkColors::kTransparent, &vertex_opacity[0], false, false,
+                 false, gfx::ProtectedVideoType::kClear);
+    quad->overlay_priority_hint = OverlayPriority::kRequired;
+
+    pass_list.push_back(std::move(pass));
+  }
+
+  // Root pass with a RPDQ
+  {
+    AggregatedRenderPassId id{1};
+    auto pass = CreateTestRootRenderPass(id, rect);
+
+    SharedQuadState* sqs = CreateTestSharedQuadState(
+        gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
+
+    CreateTestRenderPassDrawQuad(sqs, rect, inner_id, pass.get());
+
+    // Add a background that's not the expected fallback color.
+    auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    color_quad->SetNew(sqs, rect, rect, SkColors::kWhite, false);
+
+    pass_list.push_back(std::move(pass));
+  }
+
+  const size_t num_passes = pass_list.size();
+
+  base::HistogramTester histogram;
+
+#if DCHECK_IS_ON()
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("magenta.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+#else
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("black.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+#endif
+
+  // Check that we have two render passes, but one of them hit the RPDQ bypass
+  // case.
+  EXPECT_EQ(num_passes, 2u);
+  histogram.ExpectTotalCount("Compositing.Display.FlattenedRenderPassCount", 1);
 }
 
 class IntersectingQuadPixelTest : public VizPixelTestWithParam {

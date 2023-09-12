@@ -722,22 +722,6 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
     SetScissorStateForQuad(quad, render_pass_scissor_in_draw_space,
                            render_pass_requires_scissor);
 
-    if (OverlayCandidate::RequiresOverlay(&quad)) {
-      // We cannot composite this quad properly, replace it with a fallback
-      // solid color quad.
-      SolidColorDrawQuad overlay_fallback;
-      overlay_fallback.SetAll(quad.shared_quad_state, quad.rect, quad.rect,
-                              /*needs_blending=*/false,
-#if DCHECK_IS_ON()
-                              SkColors::kMagenta,
-#else
-                              SkColors::kBlack,
-#endif
-                              /*anti_aliasing_off=*/true);
-      DoDrawQuad(&overlay_fallback, nullptr);
-      continue;
-    }
-
     DoDrawQuad(&quad, nullptr);
   }
   FlushPolygons(&poly_list, render_pass_scissor_in_draw_space,
