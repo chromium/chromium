@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.27](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.26...chromium-bidi-v0.4.27) (2023-09-12)
+
+
+### Features
+
+* add get network intercepts method ([#1250](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1250)) ([57cc9e9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/57cc9e992e2728257995bab4ce70ecd907208030)), closes [#1183](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1183)
+* browsingContext.reload: return the navigation instead of empty ([#1255](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1255)) ([c534e0e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c534e0ed2bcf2c3f7f3213e75412bf83423b9d5b)), closes [#650](https://github.com/GoogleChromeLabs/chromium-bidi/issues/650)
+* restore network redirects ([#1249](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1249)) ([5bbe93f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5bbe93f65752f425438c5f0e67d239a62d09e890))
+* throw InvalidArgument instead of UnsupportedOperation for print… ([#1280](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1280)) ([b32ea31](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b32ea31ca346caacf4af673c857ab97cb1e9ba45))
+
+
+### Bug Fixes
+
+* flatten event type ([#1292](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1292)) ([8f4cd2b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8f4cd2bce395089e11a79094e9f438724fb16d71))
+* replace empty string `namespaceURI` with null ([#1285](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1285)) ([93fdf47](https://github.com/GoogleChromeLabs/chromium-bidi/commit/93fdf4735d0497ee4ef92c8360a36e45ccfe93c1))
+
 ## [0.4.26](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.25...chromium-bidi-v0.4.26) (2023-09-08)
 
 
