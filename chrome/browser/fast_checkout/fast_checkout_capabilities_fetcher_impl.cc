@@ -181,11 +181,6 @@ void FastCheckoutCapabilitiesFetcherImpl::AddFunnelToCache(
 bool FastCheckoutCapabilitiesFetcherImpl::IsTriggerFormSupported(
     const url::Origin& origin,
     autofill::FormSignature form_signature) {
-  if (base::FeatureList::IsEnabled(
-          features::kForceEnableFastCheckoutCapabilities)) {
-    return true;
-  }
-
   if (!cache_.contains(origin)) {
     base::UmaHistogramEnumeration(
         kUmaKeyCacheStateIsTriggerFormSupported,
