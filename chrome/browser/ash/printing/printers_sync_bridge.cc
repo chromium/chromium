@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/printing/specifics_translation.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -162,6 +163,9 @@ class PrintersSyncBridge::StoreProxy {
   void OnReadAllMetadata(
       const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+    TRACE_EVENT0(
+        "ui",
+        "ash::{anonympus}::PrintersSyncBridge::StoreProxy::OnReadAllMetadata");
     if (error) {
       owner_->change_processor()->ReportError(*error);
       return;
