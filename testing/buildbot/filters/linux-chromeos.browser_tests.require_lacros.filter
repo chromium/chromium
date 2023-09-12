@@ -36,8 +36,6 @@ CrosapiSystemLogSourceTest*
 -ChromeVoxPanelTest.LinkMenu
 -ChromeVoxPortalsTest.PortalName
 -ChromeVoxPortalsTest.ShouldFocusPortal
-# TODO(crbug.com/1378396) Flaky due to Lacros failure to start up.
--SelectToSpeakContextMenuTest.*
 -SelectToSpeakEnhancedNetworkTtsVoicesTest.*
 -SelectToSpeakNavigationControlTest.*
 -SwitchAccessItemScanManagerTest.*
