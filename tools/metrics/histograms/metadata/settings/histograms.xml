@@ -260,6 +260,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.Preloading.DeprecatedRedirect" enum="BooleanEnabled"
+    expires_after="2024-03-30">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Whether or not navigations to the performance page occured because the user
+    was redirected from the deprecated preloading page.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PreloadStatus.OnStartup" enum="BooleanEnabled"
     expires_after="2023-04-30">
   <obsolete>

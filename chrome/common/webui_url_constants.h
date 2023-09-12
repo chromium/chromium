@@ -555,6 +555,8 @@ extern const char kPrivacySandboxSubPage[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kAdPrivacySubPagePath[];
 extern const char kPrivacySandboxSubPagePath[];
+extern const char kPerformanceSubPagePath[];
+extern const char kPreloadingSubPagePath[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -628,6 +628,8 @@ const char kPrivacySandboxSubPage[] = "privacySandbox";
 #if !BUILDFLAG(IS_ANDROID)
 const char kAdPrivacySubPagePath[] = "/adPrivacy";
 const char kPrivacySandboxSubPagePath[] = "/privacySandbox";
+const char kPerformanceSubPagePath[] = "/performance";
+const char kPreloadingSubPagePath[] = "/preloading";
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
