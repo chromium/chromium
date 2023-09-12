@@ -201,6 +201,9 @@ PrintDialogGtk::~PrintDialogGtk() {
     gtk::GtkWindowDestroy(dialog_);
     dialog_ = nullptr;
   }
+  if (reenable_parent_events_) {
+    std::move(reenable_parent_events_).Run();
+  }
   if (gtk_settings_) {
     g_object_unref(gtk_settings_.ExtractAsDangling());
   }
@@ -423,7 +426,7 @@ void PrintDialogGtk::ShowDialog(
 
   // Disable input handling so the user cannot focus the same tab and press
   // print again.
-  gtk::DisableHostInputHandling(dialog_, parent_view);
+  reenable_parent_events_ = gtk::DisableHostInputHandling(dialog_, parent_view);
 
   // Since we only generate PDF, only show printers that support PDF.
   // TODO(thestig) Add more capabilities to support?
@@ -503,6 +506,9 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
   CHECK_EQ(1, num_matched_handlers);
 
   gtk_widget_hide(dialog_);
+  if (reenable_parent_events_) {
+    std::move(reenable_parent_events_).Run();
+  }
 
   switch (response_id) {
     case GTK_RESPONSE_OK: {

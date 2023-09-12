@@ -5,8 +5,8 @@
 #ifndef UI_GTK_SELECT_FILE_DIALOG_LINUX_GTK_H_
 #define UI_GTK_SELECT_FILE_DIALOG_LINUX_GTK_H_
 
-#include <map>
-
+#include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
@@ -44,6 +44,27 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
 
  private:
   friend class FilePicker;
+
+  struct DialogState {
+    DialogState();
+    DialogState(void* params,
+                unsigned long signal_handler_id,
+                aura::Window* parent,
+                base::OnceClosure reenable_parent_events);
+    DialogState(DialogState&& other);
+    DialogState& operator=(DialogState&& other);
+    ~DialogState();
+
+    // User-supplied data
+    raw_ptr<void> params = nullptr;
+
+    unsigned long signal_handler_id = 0;
+
+    raw_ptr<aura::Window> parent = nullptr;
+
+    base::OnceClosure reenable_parent_events;
+  };
+
   bool HasMultipleFileTypeChoicesImpl() override;
 
   // Overridden from aura::WindowObserver:
@@ -134,20 +155,13 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
                      OnUpdatePreview,
                      GtkWidget*);
 
-  // A map from dialog windows to the |params| user data associated with them.
-  std::map<GtkWidget*, void*> params_map_;
-
   // Only used on GTK3 since GTK4 provides its own preview.
   // The GtkImage widget for showing previews of selected images.
   // This field is not a raw_ptr<> because of a static_cast not related by
   // inheritance.
   RAW_PTR_EXCLUSION GtkWidget* preview_ = nullptr;
 
-  // Maps from dialogs to signal handler IDs.
-  std::map<GtkWidget*, unsigned long> dialogs_;
-
-  // The set of all parent windows for which we are currently running dialogs.
-  std::set<aura::Window*> parents_;
+  base::flat_map<GtkWidget*, DialogState> dialogs_;
 };
 
 }  // namespace gtk

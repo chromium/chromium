@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/environment.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -175,13 +176,6 @@ double GetOpacityFromRenderNode(GskRenderNode* node) {
   return GetOpacityFromRenderNode(GetRenderNodeChild(node));
 }
 
-// Runs DesktopWindowTreeHostLinux::EnableEventListening() when the dialog is
-// closed.
-void OnDialogDestroy(base::OnceClosure* callback_raw) {
-  std::unique_ptr<base::OnceClosure> callback = base::WrapUnique(callback_raw);
-  std::move(*callback).Run();
-}
-
 }  // namespace
 
 const char* GtkCssMenu() {
@@ -232,28 +226,23 @@ void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
       parent->GetHost()->GetAcceleratedWidget());
 }
 
-void DisableHostInputHandling(GtkWidget* dialog, aura::Window* parent) {
+base::OnceClosure DisableHostInputHandling(GtkWidget* dialog,
+                                           aura::Window* parent) {
   if (!parent) {
-    return;
+    return {};
   }
   auto* host =
       static_cast<views::DesktopWindowTreeHostLinux*>(parent->GetHost());
   if (!host) {
-    return;
+    return {};
   }
 
+  gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
   // In some circumstances the mouse has been captured and by turning off event
   // listening, it is never released. So we manually ensure there is no current
   // capture.
   host->ReleaseCapture();
-  auto callback =
-      std::make_unique<base::OnceClosure>(host->DisableEventListening());
-  // OnDialogDestroy() is called when |dialog| destroyed, which allows
-  // to invoke the callback function to re-enable event handling on the
-  // owning window.
-  g_object_set_data_full(G_OBJECT(dialog), "callback", callback.release(),
-                         reinterpret_cast<GDestroyNotify>(OnDialogDestroy));
-  gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
+  return host->DisableEventListening();
 }
 
 void ParseButtonLayout(const std::string& button_string,

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/color/color_id.h"
@@ -42,8 +43,11 @@ aura::Window* GetAuraTransientParent(GtkWidget* dialog);
 // Clears the transient parent for |dialog|.
 void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent);
 
-// Disable input events handling on `parent` to make `dialog` modal.
-void DisableHostInputHandling(GtkWidget* dialog, aura::Window* parent);
+// Disable input events handling on `parent` to make `dialog` modal.  The caller
+// is responsible for running the returned closure when the dialog is hidden to
+// reenable event processing on `parent`.
+[[nodiscard]] base::OnceClosure DisableHostInputHandling(GtkWidget* dialog,
+                                                         aura::Window* parent);
 
 // Parses |button_string| into |leading_buttons| and
 // |trailing_buttons|.  The string is of the format
