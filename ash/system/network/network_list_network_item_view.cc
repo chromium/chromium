@@ -100,6 +100,16 @@ bool IsCellularNetworkSimLocked(
   return network_properties->type_state->get_cellular()->sim_locked;
 }
 
+bool IsCellularNetworkCarrierLocked(
+    const NetworkStatePropertiesPtr& network_properties) {
+  CHECK(features::IsCellularCarrierLockEnabled());
+  CHECK(
+      NetworkTypeMatchesType(network_properties->type, NetworkType::kCellular));
+  return network_properties->type_state->get_cellular()->sim_locked &&
+         network_properties->type_state->get_cellular()->sim_lock_type ==
+             "network-pin";
+}
+
 bool IsNetworkConnectable(const NetworkStatePropertiesPtr& network_properties) {
   // The network must not already be connected to be able to be connected to.
   if (network_properties->connection_state !=
@@ -219,6 +229,12 @@ gfx::ImageSkia GetNetworkImageForNetwork(
 
 int GetCellularNetworkSubText(
     const NetworkStatePropertiesPtr& network_properties) {
+  if (features::IsCellularCarrierLockEnabled()) {
+    if (IsCellularNetworkCarrierLocked(network_properties)) {
+      return IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CARRIER_LOCKED;
+    }
+  }
+
   if (IsCellularNetworkUnActivated(network_properties)) {
     if (Shell::Get()->session_controller()->login_status() ==
         LoginStatus::NOT_LOGGED_IN) {
@@ -539,6 +555,12 @@ std::u16string
 NetworkListNetworkItemView::GenerateAccessibilityDescriptionForCellular(
     const std::u16string& connection_status,
     int signal_strength) {
+  if (features::IsCellularCarrierLockEnabled()) {
+    if (IsCellularNetworkCarrierLocked(network_properties())) {
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CARRIER_LOCKED);
+    }
+  }
   if (IsCellularNetworkUnActivated(network_properties())) {
     if (Shell::Get()->session_controller()->login_status() ==
         LoginStatus::NOT_LOGGED_IN) {

@@ -2843,6 +2843,9 @@ Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_UNLOCK" desc="The label used in quick settings to indicate a cellular network is locked and clicking on it will open unlock dialog in ChromeOS settings. [CHAR_LIMIT=29]">
         Click to unlock
+        </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CARRIER_LOCKED" desc="The label used in quick settings to indicate a cellular network is carrier locked. [CHAR_LIMIT=29]">
+        Locked by provider
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGN_IN_TO_UNLOCK" desc="The label used in quick settings to indicate a cellular network is locked, after signing in the user can unlock the network. [CHAR_LIMIT=29]">
         Sign in to unlock

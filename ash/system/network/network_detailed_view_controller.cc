@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -157,6 +158,14 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
         network->type_state->get_cellular()->sim_locked) {
       if (!Shell::Get()->session_controller()->ShouldEnableSettings()) {
         return;
+      }
+      // It is not possible to unlock the carrier locked device by entering the
+      // pin on UI as unlock flow is triggered by simLock server
+      if (features::IsCellularCarrierLockEnabled()) {
+        if (network->type_state->get_cellular()->sim_lock_type ==
+            "network-pin") {
+          return;
+        }
       }
       RecordNetworkRowClickedAction(
           NetworkRowClickedAction::kOpenSimUnlockDialog);
