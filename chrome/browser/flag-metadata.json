@@ -4120,7 +4120,7 @@
   {
     "name": "extensions-menu-access-control",
     "owners": [ "emiliapaz" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 123
   },
   {
     "name": "extensions-on-chrome-urls",
@@ -5138,14 +5138,14 @@
     "owners": [
       "emiliapaz"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "iph-extensions-request-access-button-feature",
     "owners": [
       "emiliapaz"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
       "name": "iph-price-notifications-while-browsing",
