@@ -214,12 +214,14 @@ build_webui_tests("build") {
     "os_bluetooth_page/os_saved_devices_list_test.ts",
     "os_bluetooth_page/test_os_bluetooth_subpage_browser_proxy.ts",
 
+    "os_files_page/files_settings_card_test.ts",
     "os_files_page/google_drive_page_test.ts",
     "os_files_page/office_page_test.ts",
     "os_files_page/one_drive_page_test.ts",
+    "os_files_page/one_drive_test_browser_proxy.ts",
     "os_files_page/os_files_page_test.ts",
     "os_files_page/smb_shares_page_test.ts",
-    "os_files_page/one_drive_test_browser_proxy.ts",
+    "os_files_page/test_smb_browser_proxy.ts",
 
     "os_languages_page/input_method_options_page_test.ts",
     "os_languages_page/input_page_test.ts",

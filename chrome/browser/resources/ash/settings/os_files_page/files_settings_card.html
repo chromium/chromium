@@ -1,0 +1,83 @@
+<style include="settings-shared"></style>
+
+<settings-card header-text="$i18n{filesPageTitle}">
+  <template is="dom-if" if="[[!shouldShowGoogleDriveSettings_]]">
+    <settings-toggle-button id="disconnectGoogleDriveAccountToggle"
+        pref="{{prefs.gdata.disabled}}"
+        label="$i18n{disconnectGoogleDriveAccount}"
+        deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+    </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[shouldShowGoogleDriveSettings_]]">
+    <cr-link-row id="googleDriveRow"
+        start-icon="settings20:google-drive"
+        class="hr"
+        on-click="onClickGoogleDrive_"
+        label="$i18n{googleDriveLabel}"
+        sub-label="[[computeGoogleDriveSublabel_(driveDisabled_, bulkPinningPrefEnabled_)]]"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </template>
+
+  <template is="dom-if" if="[[shouldShowOfficeSettings_]]">
+    <cr-link-row id="oneDriveRow"
+        start-icon="settings20:onedrive"
+        class="hr"
+        on-click="onClickOneDrive_"
+        label="$i18n{oneDriveLabel}"
+        sub-label="[[computeOneDriveSignedInLabel_(oneDriveConnectionState_)]]"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <cr-link-row id="officeRow"
+        class="hr"
+        on-click="onClickOffice_"
+        label="$i18n{officeLabel}"
+        sub-label="$i18n{officeSublabel}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </template>
+
+  <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+    <template is="dom-if" if="[[shouldShowAddSmbButton_]]" restamp>
+      <div id="addSmbSharesRow" class="settings-box two-line">
+        <div class="start">
+          <div class="settings-box-text">
+            <div>
+              $i18n{smbSharesTitle}
+            </div>
+            <div id="secondaryText" class="secondary">
+              <localized-link
+                  localized-string="$i18n{smbSharesTitleDescription}"
+                  link-url="$i18n{smbSharesLearnMoreURL}">
+              </localized-link>
+            </div>
+          </div>
+        </div>
+        <controlled-button id="addShareButton"
+            class="action-button"
+            on-click="openAddSmbDialog_"
+            label="$i18n{addSmbShare}"
+            disabled="[[!prefs.network_file_shares.allowed.value]]"
+            pref="[[prefs.network_file_shares.allowed]]"
+            end-justified>
+        </controlled-button>
+      </div>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[computeShowSmbLinkRow_(shouldShowAddSmbButton_)]]" restamp>
+    <cr-link-row id="smbSharesRow"
+        class="hr"
+        on-click="onClickSmbShares_"
+        label="$i18n{smbSharesTitle}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </template>
+</settings-card>
+
+<template is="dom-if" if="[[shouldShowAddSmbDialog_]]" restamp>
+  <add-smb-share-dialog on-close="closeAddSmbDialog_"
+      last-url="[[prefs.network_file_shares.most_recently_used_url.value]]"
+      should-open-file-manager-after-mount>
+  </add-smb-share-dialog>
+</template>

@@ -233,6 +233,7 @@ build_webui("build") {
     "os_bluetooth_page/os_saved_devices_list.ts",
     "os_bluetooth_page/os_saved_devices_list_item.ts",
     "os_bluetooth_page/settings_fast_pair_toggle.ts",
+    "os_files_page/files_settings_card.ts",
     "os_files_page/office_page.ts",
     "os_files_page/os_files_page.ts",
     "os_files_page/smb_shares_page.ts",

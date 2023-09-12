@@ -1,71 +1,7 @@
 <style include="settings-shared"></style>
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
-    <settings-card header-text="$i18n{filesPageTitle}">
-      <template is="dom-if" if="[[!showGoogleDriveSettingsPage_]]">
-        <settings-toggle-button
-            id="disconnectGoogleDriveAccount"
-            pref="{{prefs.gdata.disabled}}"
-            label="$i18n{disconnectGoogleDriveAccount}"
-            deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
-        </settings-toggle-button>
-      </template>
-      <template is="dom-if" if="[[showGoogleDriveSettingsPage_]]">
-        <cr-link-row
-            id="GoogleDriveLink"
-            start-icon="settings20:google-drive"
-            class="hr" on-click="onGoogleDrive_"
-            label="$i18n{googleDriveLabel}"
-            sub-label="[[googleDriveSublabel_(driveDisabled_, bulkPinningPrefEnabled_, isBulkPinningEnabled_)]]"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
-      <template is="dom-if" if="[[showOfficeSettings_]]">
-        <cr-link-row
-            id="OneDriveLink"
-            start-icon="settings20:onedrive"
-            class="hr" on-click="onTapOneDrive_"
-            label="$i18n{oneDriveLabel}"
-            sub-label="[[oneDriveSignedInLabel_(oneDriveConnectionState_)]]"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-        <cr-link-row id="office" class="hr" on-click="onTapOffice_"
-            label="$i18n{officeLabel}"
-            sub-label="$i18n{officeSublabel}"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
-      <template is="dom-if" if="[[computeShowSmbButton_(isRevampWayfindingEnabled_, showAddSmbButton_)]]" restamp>
-        <div id="smbSharesRowButton" class="settings-box two-line">
-          <div class="start">
-            <div class="settings-box-text">
-              <div>
-                $i18n{smbSharesTitle}
-              </div>
-              <div class="secondary" id="secondaryText">
-                <localized-link
-                    localized-string="$i18n{smbSharesTitleDescription}"
-                    link-url="$i18n{smbSharesLearnMoreURL}">
-                </localized-link>
-              </div>
-            </div>
-          </div>
-          <controlled-button id="addShareButton" class="action-button"
-              on-click="onAddShareClick_"
-              label="$i18n{addSmbShare}"
-              disabled="[[!prefs.network_file_shares.allowed.value]]"
-              pref="[[prefs.network_file_shares.allowed]]"
-              end-justified>
-          </controlled-button>
-        </div>
-      </template>
-      <template is="dom-if" if="[[computeShowSmbLinkRow_(isRevampWayfindingEnabled_, showAddSmbButton_)]]" restamp>
-        <cr-link-row id="smbSharesRow" class="hr" on-click="onTapSmbShares_"
-            label="$i18n{smbSharesTitle}"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
-    </settings-card>
+    <files-settings-card prefs="{{prefs}}"></files-settings-card>
   </div>
 
   <template is="dom-if" route-path="/smbShares">
@@ -74,6 +10,7 @@
       </settings-smb-shares-page>
     </os-settings-subpage>
   </template>
+
   <template is="dom-if" route-path="/googleDrive">
     <os-settings-subpage
         page-title="$i18n{googleDriveLabel}"
@@ -84,13 +21,15 @@
       </settings-google-drive-subpage>
     </os-settings-subpage>
   </template>
-  <template is="dom-if" if="[[showOfficeSettings_]]">
+
+  <template is="dom-if" if="[[shouldShowOfficeSettings_]]">
     <template is="dom-if" route-path="/oneDrive">
       <os-settings-subpage page-title="$i18n{oneDriveLabel}">
         <settings-one-drive-subpage prefs="{{prefs}}">
         </settings-one-drive-subpage>
       </os-settings-subpage>
     </template>
+
     <template is="dom-if" route-path="/officeFiles">
       <os-settings-subpage page-title="$i18n{officeSubpageTitle}">
         <settings-office-page prefs="{{prefs}}">
@@ -99,10 +38,3 @@
     </template>
   </template>
 </os-settings-animated-pages>
-
-<template is="dom-if" if="[[showAddSmbDialog_]]" restamp>
-  <add-smb-share-dialog on-close="onAddSmbDialogClosed_"
-      last-url="[[prefs.network_file_shares.most_recently_used_url.value]]"
-      should-open-file-manager-after-mount>
-  </add-smb-share-dialog>
-</template>

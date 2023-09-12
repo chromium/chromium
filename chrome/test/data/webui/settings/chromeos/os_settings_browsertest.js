@@ -697,6 +697,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_bluetooth_page/os_paired_bluetooth_list_item_test.js'
  ],
  ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
+ ['OsFilesPageFilesSettingsCard', 'os_files_page/files_settings_card_test.js'],
  ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
  ['OsFilesPageOneDrivePage', 'os_files_page/one_drive_page_test.js'],
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
