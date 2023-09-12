@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
+#include "chrome/browser/ui/views/commerce/shopping_collection_iph_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -167,6 +168,40 @@ base::OnceCallback<void()> CreatePriceTrackingEmailCallback(
       profile, bookmark, std::move(show_dialog_callback));
 }
 
+bool ShouldShowShoppingCollectionFootnote(Profile* profile,
+                                          bookmarks::BookmarkModel* model,
+                                          const bookmarks::BookmarkNode* node) {
+  // Skip if not in the experiment.
+  if (!base::FeatureList::IsEnabled(commerce::kShoppingCollection)) {
+    return false;
+  }
+
+  if (!commerce::IsProductBookmark(model, node)) {
+    return false;
+  }
+
+  // Only show the IPH if the bookmark was saved to the shopping collection.
+  const bookmarks::BookmarkNode* collection =
+      commerce::GetShoppingCollectionBookmarkFolder(model);
+  if (!collection || node->parent()->uuid() != collection->uuid()) {
+    return false;
+  }
+
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+
+  if (!tracker || !tracker->ShouldTriggerHelpUI(
+                      feature_engagement::kIPHShoppingCollectionFeature)) {
+    return false;
+  }
+
+  // Immediately dismiss the explainer so that it doesn't prevent the IPH
+  // for other features from showing.
+  tracker->Dismissed(feature_engagement::kIPHShoppingCollectionFeature);
+
+  return true;
+}
+
 }  // namespace
 
 class BookmarkBubbleView::BookmarkBubbleDelegate
@@ -175,12 +210,10 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   BookmarkBubbleDelegate(std::unique_ptr<BubbleSyncPromoDelegate> delegate,
                          Browser* browser,
                          const GURL& url,
-                         base::OnceCallback<void()> close_callback,
                          bool simplified_flow_shown)
       : delegate_(std::move(delegate)),
         browser_(browser),
         url_(url),
-        close_callback_(std::move(close_callback)),
         is_showing_simplified_flow_(simplified_flow_shown) {}
 
   // Handles presses on the secondary (usually cancel) button and returns
@@ -217,12 +250,18 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     return true;
   }
 
+  void SetCloseCallback(base::OnceCallback<void()> close_callback) {
+    close_callback_ = std::move(close_callback);
+  }
+
   void OnWindowClosing() {
     if (should_apply_edits_)
       ApplyEdits();
     bookmark_bubble_ = nullptr;
 
-    std::move(close_callback_).Run();
+    if (close_callback_) {
+      std::move(close_callback_).Run();
+    }
   }
 
   void OnEditButton(const ui::Event& event) {
@@ -347,8 +386,7 @@ void BookmarkBubbleView::ShowBubble(
                                  power_bookmarks::kSimplifiedBookmarkSaveFlow);
 
   auto bubble_delegate_unique = std::make_unique<BookmarkBubbleDelegate>(
-      std::move(delegate), browser, url, std::move(post_save_callback),
-      show_simplified_flow);
+      std::move(delegate), browser, url, show_simplified_flow);
   BookmarkBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
   absl::optional<commerce::ProductInfo> product_info = absl::nullopt;
@@ -498,8 +536,11 @@ void BookmarkBubbleView::ShowBubble(
   if (highlighted_button)
     bubble->SetHighlightedButton(highlighted_button);
 
+  if (ShouldShowShoppingCollectionFootnote(profile, bookmark_model, bookmark_node)) {
+    bubble->SetFootnoteView(
+        std::make_unique<commerce::ShoppingCollectionIphView>());
+  } else if (SyncPromoUI::ShouldShowSyncPromo(profile)) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (SyncPromoUI::ShouldShowSyncPromo(profile)) {
     // TODO(pbos): Consider adding model support for footnotes so that this does
     // not need to be tied to views.
     // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the
@@ -509,8 +550,10 @@ void BookmarkBubbleView::ShowBubble(
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
         IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE,
         /*dice_signin_button_prominent=*/false));
-  }
 #endif
+  }
+
+  bubble_delegate->SetCloseCallback(std::move(post_save_callback));
 
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble));

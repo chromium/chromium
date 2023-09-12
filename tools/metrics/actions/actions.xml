@@ -39469,6 +39469,8 @@ should be able to be added at any place in this file.
       label="For Sharing Hub link toggle feature."/>
   <suffix name="SharingHubWebnotesStylize"
       label="For SharingHubWebnotesStylize feature."/>
+  <suffix name="ShoppingCollectionFeature"
+      label="For the explanation of what the shopping collection is."/>
   <suffix name="ShoppingListMenuItem"
       label="For ShoppingListMenuItem feature."/>
   <suffix name="ShoppingListSaveFlow"

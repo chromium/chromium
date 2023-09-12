@@ -115,6 +115,9 @@ BASE_FEATURE(kIPHReadingListInSidePanelFeature,
 BASE_FEATURE(kIPHReadingModeSidePanelFeature,
              "IPH_ReadingModeSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHShoppingCollectionFeature,
+             "IPH_ShoppingCollectionFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHSideSearchAutoTriggeringFeature,
              "IPH_SideSearchAutoTriggering",
              base::FEATURE_DISABLED_BY_DEFAULT);

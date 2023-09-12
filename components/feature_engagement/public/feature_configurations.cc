@@ -300,6 +300,18 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHShoppingCollectionFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // Show the IPH 3 times per year.
+    config->trigger = EventConfig("shopping_collection_trigger",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    return config;
+  }
+
   if (kIPHExtensionsMenuFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
