@@ -12,9 +12,8 @@
 
 namespace base {
 
-// Amount of threads that will be system-wide restricted from being used
-// by thread pools.
-BASE_EXPORT BASE_DECLARE_FEATURE(kThreadPoolCap);
+// Fixed amount of threads that will be used as a cap for thread pools.
+BASE_EXPORT BASE_DECLARE_FEATURE(kThreadPoolCap2);
 
 extern const BASE_EXPORT base::FeatureParam<int> kThreadPoolCapRestrictedCount;
 

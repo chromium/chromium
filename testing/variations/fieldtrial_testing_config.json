@@ -16364,7 +16364,7 @@
             ]
         }
     ],
-    "ThreadPoolCap": [
+    "ThreadPoolCap2": [
         {
             "platforms": [
                 "android",
@@ -16378,12 +16378,12 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithRestricted2_20230515",
+                    "name": "EnabledWithRestricted3_20230907",
                     "params": {
-                        "restricted_count": "2"
+                        "restricted_count": "3"
                     },
                     "enable_features": [
-                        "ThreadPoolCap"
+                        "ThreadPoolCap2"
                     ]
                 }
             ]

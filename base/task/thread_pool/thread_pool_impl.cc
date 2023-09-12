@@ -181,17 +181,13 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 
   size_t foreground_threads = init_params.max_num_foreground_threads;
   size_t utility_threads = init_params.max_num_utility_threads;
-  // Set the size of each ThreadGroup such that N cores are left available
-  // for other threads. N is the number of threads that the application is
-  // expected to need to be responsive (currently configurable via field trial).
-  // The size of each ThreadGroup can grow beyond the value set here when tasks
-  // enter ScopedBlockingCall.
-  if (base::FeatureList::IsEnabled(kThreadPoolCap)) {
-    int restricted_threads = kThreadPoolCapRestrictedCount.Get();
-    int max_allowed_workers_per_pool =
-        (base::SysInfo::NumberOfProcessors() - restricted_threads);
-    // Set a positive minimum amount of workers per pool.
-    max_allowed_workers_per_pool = std::max(2, max_allowed_workers_per_pool);
+
+  if (base::FeatureList::IsEnabled(kThreadPoolCap2)) {
+    // Set the size of each ThreadGroup to a initial fixed size which can grow
+    // beyond the value set here when tasks enter ScopedBlockingCall and
+    // set a minimum amount of workers per pool.
+    const int max_allowed_workers_per_pool =
+        std::max(2, kThreadPoolCapRestrictedCount.Get());
     foreground_threads =
         std::min(init_params.max_num_foreground_threads,
                  static_cast<size_t>(max_allowed_workers_per_pool));
