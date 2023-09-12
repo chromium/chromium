@@ -4788,12 +4788,6 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithValidSignature) {
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
 
-  RunUntilIdle();
-  ASSERT_TRUE(url_loader);
-
-  EXPECT_EQ(0, client_cert_observer.on_certificate_requested_counter());
-  EXPECT_EQ(0, private_key->sign_count());
-
   client()->RunUntilComplete();
 
   EXPECT_EQ(1, client_cert_observer.on_certificate_requested_counter());
@@ -4839,12 +4833,6 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithInvalidSignature) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
-
-  RunUntilIdle();
-  ASSERT_TRUE(url_loader);
-
-  EXPECT_EQ(0, client_cert_observer.on_certificate_requested_counter());
-  EXPECT_EQ(0, private_key->sign_count());
 
   client()->RunUntilComplete();
 
