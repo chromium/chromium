@@ -125,15 +125,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void Shutdown();
 
   // Add/remove observers.
-  void AddObserver(NetworkStateHandlerObserver* observer,
-                   const base::Location& from_here);
-  void AddObserver(NetworkStateHandlerObserver* observer);
+  using Observer = NetworkStateHandlerObserver;
 
-  void RemoveObserver(NetworkStateHandlerObserver* observer,
-                      const base::Location& from_here);
-  void RemoveObserver(NetworkStateHandlerObserver* observer);
+  void AddObserver(Observer* observer, const base::Location& from_here);
+  void AddObserver(Observer* observer);
 
-  bool HasObserver(NetworkStateHandlerObserver* observer);
+  void RemoveObserver(Observer* observer, const base::Location& from_here);
+  void RemoveObserver(Observer* observer);
+
+  bool HasObserver(Observer* observer) {
+    return observers_.HasObserver(observer);
+  }
 
   // Returns the state for technology |type|. Only
   // NetworkTypePattern::Primitive, ::Mobile, ::Ethernet, and ::Tether are
@@ -748,7 +750,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
 
   // Observer list
-  base::ObserverList<NetworkStateHandlerObserver, true>::Unchecked observers_;
+  base::ObserverList<Observer, true>::Unchecked observers_;
 
   // List of managed network states
   ManagedStateList network_list_;
