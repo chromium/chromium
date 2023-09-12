@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
@@ -41,6 +41,9 @@ constexpr CGFloat kNewIPHBadgeFontSize = 10.0;
 // labels when no dot is present.
 constexpr CGFloat kDefaultTextLabelSpacing = 4;
 
+// kBlueDotColor is the specific blue used for the blue dot notification badge.
+constexpr NSString* kBlueDotColor = @"blue_600_color";
+
 // Returns the notification dot view for `TableViewDetailIconCell`.
 UIView* NotificationDotView() {
   UIView* notificationDotUIView = [[UIView alloc] init];
@@ -49,7 +52,7 @@ UIView* NotificationDotView() {
   UIView* dotUIView = [[UIView alloc] init];
   dotUIView.translatesAutoresizingMaskIntoConstraints = NO;
   dotUIView.layer.cornerRadius = kDotSize / 2;
-  dotUIView.backgroundColor = [UIColor colorNamed:kBlue600Color];
+  dotUIView.backgroundColor = [UIColor colorNamed:kBlueDotColor];
   [notificationDotUIView addSubview:dotUIView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -66,11 +69,42 @@ UIView* NotificationDotView() {
 }
 
 // Returns the "new" ("N") IPH badge view for `TableViewDetailIconCell`.
-NewFeatureBadgeView* NewIPHBadgeView() {
-  NewFeatureBadgeView* newIPHBadgeView =
-      [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewIPHBadgeSize
-                                            fontSize:kNewIPHBadgeFontSize];
+UIView* NewIPHBadgeView() {
+  UIView* newIPHBadgeView = [[UIView alloc] init];
   newIPHBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIImageView* newBadgeBackground = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(kSealFillSymbol,
+                                               kNewIPHBadgeSize)];
+  newBadgeBackground.translatesAutoresizingMaskIntoConstraints = NO;
+  newBadgeBackground.tintColor = [UIColor colorNamed:kBlue600Color];
+  [newIPHBadgeView addSubview:newBadgeBackground];
+
+  UILabel* newLabel = [[UILabel alloc] init];
+  newLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  newLabel.text =
+      l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_LABEL_FEATURE_BADGE);
+  newLabel.textColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  UIFont* font = [UIFont systemFontOfSize:kNewIPHBadgeFontSize
+                                   weight:UIFontWeightBold];
+  UIFontDescriptor* descriptor = [font.fontDescriptor
+      fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
+  font = [UIFont fontWithDescriptor:descriptor size:kNewIPHBadgeFontSize];
+  newLabel.font = font;
+  [newIPHBadgeView addSubview:newLabel];
+  AddSameCenterConstraints(newLabel, newBadgeBackground);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [newIPHBadgeView.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kNewIPHBadgeSize],
+    [newBadgeBackground.widthAnchor constraintEqualToConstant:kNewIPHBadgeSize],
+    [newBadgeBackground.heightAnchor
+        constraintEqualToConstant:kNewIPHBadgeSize],
+    [newBadgeBackground.centerYAnchor
+        constraintEqualToAnchor:newIPHBadgeView.centerYAnchor],
+    [newBadgeBackground.leadingAnchor
+        constraintEqualToAnchor:newIPHBadgeView.leadingAnchor],
+  ]];
   return newIPHBadgeView;
 }
 
