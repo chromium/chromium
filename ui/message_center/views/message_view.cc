@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -403,7 +404,7 @@ void MessageView::OnSlideOut() {
   if (ShouldParentHandleSlide() && parent_message_view_)
     return parent_message_view_->OnSlideOut();
 
-  // The notification will be deleted after slide out, so give observers a
+  // The notification may be deleted after slide out, so give observers a
   // chance to handle the notification before fulling sliding out.
   for (auto& observer : observers_)
     observer.OnPreSlideOut(notification_id_);
@@ -416,8 +417,14 @@ void MessageView::OnSlideOut() {
   for (auto& observer : observers_)
     observer.OnSlideOut(notification_id_);
 
-  MessageCenter::Get()->RemoveNotification(notification_id_copy,
-                                           true /* by_user */);
+  auto* message_center = MessageCenter::Get();
+  if (features::IsNotificationGesturesUpdateEnabled() &&
+      message_center->FindPopupNotificationById(notification_id_copy)) {
+    message_center->MarkSinglePopupAsShown(notification_id_copy,
+                                           /*mark_notification_as_read=*/true);
+    return;
+  }
+  message_center->RemoveNotification(notification_id_copy, /*by_user=*/true);
 }
 
 void MessageView::OnWillChangeFocus(views::View* before, views::View* now) {}

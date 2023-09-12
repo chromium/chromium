@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -505,6 +506,10 @@ TEST_P(NotificationGroupingControllerTest,
 // the center of the screen. Also, tests that the correct notifications are
 // dismissed by swiping in the expanded state.
 TEST_P(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kNotificationGesturesUpdate);
+
   auto* message_center = MessageCenter::Get();
   std::string parent_id, id0, id1, id2, id3;
   const GURL url(u"http://test-url.com/");
@@ -540,14 +545,14 @@ TEST_P(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
   EXPECT_FALSE(parent_message_view->IsExpanded());
 
   // Swiping out a group child notification while the parent notification is
-  // collapsed should slide and remove the entire group notification including
-  // the parent and other child notifications.
+  // collapsed should dismiss the popup but keep all notifications in the
+  // notification center.
   GenerateSwipe(300, GetSlideOutController(
                          static_cast<AshNotificationView*>(message_view_2)));
 
-  EXPECT_FALSE(message_center->FindNotificationById(parent_id));
-  EXPECT_FALSE(message_center->FindNotificationById(id1));
-  EXPECT_FALSE(message_center->FindNotificationById(id2));
+  EXPECT_FALSE(message_center->FindPopupNotificationById(parent_id));
+  EXPECT_TRUE(message_center->FindNotificationById(id1));
+  EXPECT_TRUE(message_center->FindNotificationById(id2));
 }
 
 // Regression test for b/251684908. Tests that a duplicate `AddNotification`
