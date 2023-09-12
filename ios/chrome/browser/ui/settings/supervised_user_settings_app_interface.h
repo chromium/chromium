@@ -44,6 +44,18 @@
 // Marks the "first time banner" of the SU interstitial as not shown.
 + (void)resetFirstTimeBanner;
 
+// Sets the behaviour of Safe Search filtering: it sets the default
+// response of the ClassifyUrl endpoint to allow or restrict all requests.
+// In order to use this method, use setUp/tearDown TestUrlLoaderFactoryHelper
+// to set up the necessary dependencies.
++ (void)setDefaultClassifyURLNavigationIsAllowed:(BOOL)is_allowed;
+
+// Creates a TestUrlLoaderFactoryHelper singleton.
++ (void)setUpTestUrlLoaderFactoryHelper;
+
+// Tear down the TestUrlLoaderFactoryHelper singleton.
++ (void)tearDownTestUrlLoaderFactoryHelper;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SUPERVISED_USER_SETTINGS_APP_INTERFACE_H_

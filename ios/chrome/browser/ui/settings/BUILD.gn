@@ -391,9 +391,11 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/supervised_user",
     "//ios/chrome/browser/supervised_user:sync_settings_factory",
     "//ios/chrome/test/app:test_support",
+    "//services/network:test_support",
   ]
   public_deps = [ "//components/content_settings/core/common" ]
 }

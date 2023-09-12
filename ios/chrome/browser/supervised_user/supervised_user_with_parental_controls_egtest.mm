@@ -39,15 +39,14 @@ static const char* kInterstitialFirstTimeBanner =
 @interface SupervisedUserWithParentalControlsTestCase : ChromeTestCase
 @end
 
-// TODO(b/296996910): Add test cases for the option "Blocked Mature
-// Content".
-
 @implementation SupervisedUserWithParentalControlsTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+  config.features_enabled.push_back(
+      supervised_user::kEnableProtoApiForClassifyUrl);
   return config;
 }
 
@@ -67,12 +66,14 @@ static const char* kInterstitialFirstTimeBanner =
   [super setUp];
   bool started = self.testServer->Start();
   GREYAssertTrue(started, @"Test server failed to start.");
+  [SupervisedUserSettingsAppInterface setUpTestUrlLoaderFactoryHelper];
 }
 
 - (void)tearDown {
   [ChromeEarlGrey closeCurrentTab];
   [SupervisedUserSettingsAppInterface resetSupervisedUserURLFilterBehavior];
   [SupervisedUserSettingsAppInterface resetManualUrlFiltering];
+  [SupervisedUserSettingsAppInterface tearDownTestUrlLoaderFactoryHelper];
   [super tearDown];
 }
 
@@ -167,14 +168,37 @@ static const char* kInterstitialFirstTimeBanner =
   [self checkInterstitalIsShown];
 }
 
-// Tests that users with "Allow All" filtering are not blocked
-// when they navigate to a site (allowed by default).
-- (void)testSupervisedUserWithAllowAllSitesFilteringCanViewWebages {
+// Tests that users with "Allow All" filtering are shown the interstitial
+// when they navigate to a site that ClassifyUrl classifies as unsafe.
+- (void)testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  [SupervisedUserSettingsAppInterface
+      setDefaultClassifyURLNavigationIsAllowed:NO];
 
-  GURL allowedURL = self.testServer->GetURL(kEchoPath);
-  [ChromeEarlGrey loadURL:allowedURL];
+  // When safe search classifies the url as restricted, the user navigation is
+  // blocked.
+  GURL blockedSafeSearchURL = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:blockedSafeSearchURL];
+
+  [self checkInterstitalIsShown];
+}
+
+// Tests that users with "Allow All" filtering are not blocked
+// when they navigate to a website allowed by ClassifyUrl.
+- (void)testSupervisedUserWithAllowAllSitesAndSafeSearchAllowed {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  // TODO(b/297313665): Instead of a default response, introduce a stack-based
+  // approach for the mocked reponses. See `kids_management_api_server_mock.h`.
+  [SupervisedUserSettingsAppInterface
+      setDefaultClassifyURLNavigationIsAllowed:YES];
+
+  // When safe search classifies the url as allowed, the user can navigate to
+  // it.
+  GURL allowedSafeSearchURL = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:allowedSafeSearchURL];
+
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
 }
 
