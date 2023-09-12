@@ -17,6 +17,8 @@ source_set("elements") {
     "home_waiting_view.mm",
     "instruction_view.h",
     "instruction_view.mm",
+    "new_feature_badge_view.h",
+    "new_feature_badge_view.mm",
     "self_sizing_table_view.h",
     "self_sizing_table_view.mm",
     "text_field_configuration.h",
@@ -28,14 +30,17 @@ source_set("elements") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
     "//ios/third_party/material_components_ios",
+    "//ui/base",
   ]
 }
 
