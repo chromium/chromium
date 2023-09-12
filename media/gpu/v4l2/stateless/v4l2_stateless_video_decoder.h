@@ -16,6 +16,7 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
 #include "media/base/waiting.h"
+#include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/v4l2/stateless/stateless_decode_surface_handler.h"
 #include "media/gpu/v4l2/stateless/stateless_device.h"
@@ -71,6 +72,15 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
       scoped_refptr<StatelessDevice> device);
   ~V4L2StatelessVideoDecoder() override;
 
+  // Create a codec specific decoder. When successful this decoder is stored in
+  // the |decoder_| member variable.
+  bool CreateDecoder(VideoCodecProfile profile, VideoColorSpace color_space);
+
+  // Process the data in the |compressed_buffer| using the |decoder_|.
+  void ProcessCompressedBuffer(scoped_refptr<DecoderBuffer> compressed_buffer,
+                               VideoDecoder::DecodeCB decode_cb,
+                               int32_t bitstream_id);
+
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 
   const scoped_refptr<StatelessDevice> device_;
@@ -78,6 +88,16 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // Callback obtained from Initialize() to be called after every frame
   // has finished decoding and is ready for the client to display.
   OutputCB output_cb_;
+
+  // Video decoder used to parse stream headers by software.
+  std::unique_ptr<AcceleratedVideoDecoder> decoder_;
+
+  // Int32 safe ID generator, starting at 0. Generated IDs are used to uniquely
+  // identify a Decode() request for stateless backends. BitstreamID is just
+  // a "phantom type" (see StrongAlias), essentially just a name.
+  struct BitstreamID {};
+  base::IdType32<BitstreamID>::Generator bitstream_id_generator_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 };
 
 }  // namespace media

@@ -13,6 +13,8 @@ class MEDIA_GPU_EXPORT StatelessDevice : public Device {
   bool CheckCapabilities(VideoCodec codec) override;
   bool Open() override;
 
+  bool IsCompressedVP9HeaderSupported();
+
  protected:
   ~StatelessDevice() override;
 

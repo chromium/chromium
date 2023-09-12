@@ -66,6 +66,14 @@ bool StatelessDevice::CheckCapabilities(VideoCodec codec) {
   return true;
 }
 
+bool StatelessDevice::IsCompressedVP9HeaderSupported() {
+  struct v4l2_queryctrl query_ctrl;
+  memset(&query_ctrl, 0, sizeof(query_ctrl));
+  query_ctrl.id = V4L2_CID_STATELESS_VP9_COMPRESSED_HDR;
+
+  return IoctlDevice(VIDIOC_QUERYCTRL, &query_ctrl) == 0;
+}
+
 StatelessDevice::~StatelessDevice() {}
 
 uint32_t StatelessDevice::VideoCodecToV4L2PixFmt(VideoCodec codec) {
